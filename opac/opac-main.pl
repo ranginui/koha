@@ -40,7 +40,7 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
     }
 );
 
-my $usecache=1;
+my $usecache=C4::Context->preference('usecache');
 my $memd;
 if ($usecache){
     $memd = new Cache::Memcached('debug' => 1,
