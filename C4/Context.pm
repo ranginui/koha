@@ -459,12 +459,11 @@ sub preference
     my $self = shift;
     my $var = shift;        # The system preference to return
     my $retval;            # Return value
-#    my $usecache=1;
     if ($usecache) {
 	$retval = $memd->get("preference:$var");
 	return $retval if $retval;
-	
-	my $dbh = C4::Context->dbh or return 0;
+    }
+    my $dbh = C4::Context->dbh or return 0;
 	# Look up systempreferences.variable==$var
 	$retval = $dbh->selectrow_array(<<EOT);
         SELECT    value
@@ -472,21 +471,10 @@ sub preference
         WHERE    variable='$var'
         LIMIT    1
 EOT
-
+    if ($usecache) {
 	$memd->set("preference:$var", $retval);
-	return $retval;
     }
-    else {
-	my $dbh = C4::Context->dbh or return 0;
-	# Look up systempreferences.variable==$var
-	$retval = $dbh->selectrow_array(<<EOT);
-        SELECT    value
-        FROM    systempreferences
-        WHERE    variable='$var'
-        LIMIT    1
-EOT
-        return $retval;
-    }
+    return $retval;
 }
 
 sub boolean_preference ($) {
