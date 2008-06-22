@@ -50,6 +50,22 @@ my $apacheVersion = `httpd -v`;
 $apacheVersion = `httpd2 -v` unless $apacheVersion;
 $apacheVersion = (`/usr/sbin/apache2 -V`)[0] unless $apacheVersion;
 my $zebraVersion = `zebraidx -V`;
+if (C4::Context->preference('usecache')){
+    require Cache::Memcached;
+    Cache::Memcached->import();
+    my $memd = new Cache::Memcached(
+	'servers'=>['127.0.0.1:11211'],
+    );
+
+
+    my $cachestats = $memd->stats();
+        use Data::Dumper;
+    warn Dumper $cachestats;
+    $template->param(
+	cachehits => $cachestats->{total}->{get_hits},
+	cachemiss => $cachestats->{total}->{get_misses}
+    );
+}
 
 $template->param(
     kohaVersion   => $kohaVersion,

@@ -47,6 +47,8 @@
             <tr><th scope="row">MySQL version: </th><td><!-- TMPL_VAR ESCAPE="HTML" name="mysqlVersion" --></td></tr>
             <tr><th scope="row">Apache version: </th><td><!-- TMPL_VAR ESCAPE="HTML" name="apacheVersion" --></td></tr>
             <tr><th scope="row">Zebra version: </th><td><!-- TMPL_VAR ESCAPE="HTML" name="zebraVersion" --></td></tr>
+	    <!-- TMPL_IF name="cachehits" --> <tr><th>Cache Hits:</th><td><!-- TMPL_VAR name="cachehits" --></td></tr><!-- /TMPL_IF -->
+	    <!-- TMPL_IF name="cachemiss" --> <tr><th>Cache Misses:</th><td><!-- TMPL_VAR name="cachemiss" --></td></tr><!-- /TMPL_IF -->
         </table>
         </div>
         <div id="perl">

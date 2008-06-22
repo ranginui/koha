@@ -75,7 +75,7 @@ BEGIN {
     if ($usecache) {
 	require Cache::Memcached;
 	Cache::Memcached->import();
-	$memd = new Cache::Memcached('debug' => 1,
+	$memd = new Cache::Memcached(
 	    'servers'=>['127.0.0.1:11211'],
 	);
     }
