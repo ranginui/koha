@@ -27,8 +27,8 @@ use C4::Members;         # GetMember
 use C4::NewsChannels;    # get_opac_news
 use C4::Acquisition;     # GetRecentAcqui
 
+
 my $input = new CGI;
-my $dbh   = C4::Context->dbh;
 
 my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
     {
@@ -40,6 +40,20 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
     }
 );
 
+my $usecache=1;
+my $memd;
+if ($usecache){
+    $memd = new Cache::Memcached('debug' => 1,
+	'servers'=>['127.0.0.1:11211'],
+    );
+    my $page = $memd->get('opacmain');
+    if ($page && !$borrowernumber){
+	output_html_with_http_headers $input, $cookie, $page;
+        exit;
+    }
+}    
+
+my $dbh   = C4::Context->dbh;
 my $borrower = GetMember( $borrowernumber, 'borrowernumber' );
 $template->param(
     textmessaging        => $borrower->{textmessaging},
@@ -60,4 +74,8 @@ $template->param(
     'Disable_Dictionary' => C4::Context->preference("Disable_Dictionary") )
   if ( C4::Context->preference("Disable_Dictionary") );
 
+if ($usecache && !$borrowernumber){
+    my $page = $template->output();
+    $memd->set('opacmain', $page, 300);
+}
 output_html_with_http_headers $input, $cookie, $template->output;
