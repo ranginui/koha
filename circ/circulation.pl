@@ -44,7 +44,14 @@ use Date::Calc qw(
   Date_to_Days
 );
 
-
+my $memd;
+if (C4::Context->preference('usecache')){
+    require Cache::Memcached;
+    Cache::Memcached->import();
+    $memd = new Cache::Memcached(
+	'servers'=>['127.0.0.1:11211'],
+    );
+}
 #
 # PARAMETERS READING
 #

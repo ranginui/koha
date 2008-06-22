@@ -21,7 +21,17 @@ require Exporter;
 use C4::Context;
 use C4::Koha;
 
-use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
+use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $memd $usecache);
+
+$usecache = C4::Context->preference('usecache');
+if ($usecache){
+    require Cache::Memcached;
+    Cache::Memcached->import();
+    $memd = new Cache::Memcached(
+#	'servers'=>C4::Context->preference('cacheservers'),    
+    'servers'=>['127.0.0.1:11211'],
+    );
+}
 
 BEGIN {
 	# set the version for version checking
@@ -97,6 +107,12 @@ sub GetBranches {
     my ($onlymine)=@_;
     # returns a reference to a hash of references to ALL branches...
     my %branches;
+    if ($usecache){
+	my $cachedbranch = $memd->get('koha:branches');
+	if ($cachedbranch){
+	    return $cachedbranch;	    
+	}
+    }
     my $dbh = C4::Context->dbh;
     my $sth;
     my $query="SELECT * FROM branches";
@@ -128,6 +144,9 @@ sub GetBranches {
             $branch->{category}{$cat} = 1;
         }
         $branches{ $branch->{'branchcode'} } = $branch;
+    }
+    if ($usecache){
+	$memd->set('koha:branches',\%branches,300);
     }
     return ( \%branches );
 }

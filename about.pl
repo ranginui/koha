@@ -56,11 +56,7 @@ if (C4::Context->preference('usecache')){
     my $memd = new Cache::Memcached(
 	'servers'=>['127.0.0.1:11211'],
     );
-
-
     my $cachestats = $memd->stats();
-        use Data::Dumper;
-    warn Dumper $cachestats;
     $template->param(
 	cachehits => $cachestats->{total}->{get_hits},
 	cachemiss => $cachestats->{total}->{get_misses}
