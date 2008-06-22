@@ -17,7 +17,7 @@ package C4::Context;
 # Suite 330, Boston, MA  02111-1307 USA
 
 use strict;
-use vars qw($VERSION $AUTOLOAD $context @context_stack);
+use vars qw($VERSION $AUTOLOAD $context @context_stack $usecache $memd);
 
 BEGIN {
 	if ($ENV{'HTTP_USER_AGENT'})	{
@@ -71,6 +71,14 @@ BEGIN {
 		}
     }  	# else there is no browser to send fatals to!
 	$VERSION = '3.00.00.036';
+    $usecache = 1;
+    if ($usecache) {
+	require Cache::Memcached;
+	Cache::Memcached->import();
+	$memd = new Cache::Memcached('debug' => 1,
+	    'servers'=>['127.0.0.1:11211'],
+	);
+    }
 }
 
 use DBI;
@@ -451,15 +459,34 @@ sub preference
     my $self = shift;
     my $var = shift;        # The system preference to return
     my $retval;            # Return value
-    my $dbh = C4::Context->dbh or return 0;
-    # Look up systempreferences.variable==$var
-    $retval = $dbh->selectrow_array(<<EOT);
+#    my $usecache=1;
+    if ($usecache) {
+	$retval = $memd->get("preference:$var");
+	return $retval if $retval;
+	
+	my $dbh = C4::Context->dbh or return 0;
+	# Look up systempreferences.variable==$var
+	$retval = $dbh->selectrow_array(<<EOT);
         SELECT    value
         FROM    systempreferences
         WHERE    variable='$var'
         LIMIT    1
 EOT
-    return $retval;
+
+	$memd->set("preference:$var", $retval);
+	return $retval;
+    }
+    else {
+	my $dbh = C4::Context->dbh or return 0;
+	# Look up systempreferences.variable==$var
+	$retval = $dbh->selectrow_array(<<EOT);
+        SELECT    value
+        FROM    systempreferences
+        WHERE    variable='$var'
+        LIMIT    1
+EOT
+        return $retval;
+    }
 }
 
 sub boolean_preference ($) {
