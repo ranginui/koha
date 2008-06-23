@@ -17,18 +17,48 @@
 
 
 use strict;
-require Exporter;
+
+# my $usecache=C4::Context->preference('usecache');
 use CGI;
-use C4::Auth;    # get_template_and_user
-use C4::Output;
-use C4::VirtualShelves;
-use C4::Branch;          # GetBranches
-use C4::Members;         # GetMember
-use C4::NewsChannels;    # get_opac_news
-use C4::Acquisition;     # GetRecentAcqui
-
-
 my $input = new CGI;
+
+my $memd;
+
+my $borrowernumber;
+my $usecache=1;
+if ($usecache){
+    require Cache::Memcached;
+    Cache::Memcached->import();
+    $memd = new Cache::Memcached(
+	'servers'=>['127.0.0.1:11211'],
+    );
+    my $page = $memd->get('opacmain');
+    if ($page && !$borrowernumber){
+	print $input->header;
+	print $page;
+#	output_html_with_http_headers $input, $cookie, $page;
+        exit;
+    }
+}    
+else {
+    require C4::Auth;
+    C4::Auth->import();
+    require C4::Output;
+    C4::Output->import();
+    require C4::VirtualShelves;
+    C4::VirtualShelves->import();
+    require C4::Branch;
+    C4::Branch->import();
+    require C4::Members;
+    C4::Members->import();
+    require C4::NewsChannels;
+    C4::NewsChannels->import();
+    require C4::Acquisition;
+    C4::Acquisition->import();
+
+}
+
+
 
 my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
     {
@@ -40,18 +70,7 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
     }
 );
 
-my $usecache=C4::Context->preference('usecache');
-my $memd;
-if ($usecache){
-    $memd = new Cache::Memcached('debug' => 1,
-	'servers'=>['127.0.0.1:11211'],
-    );
-    my $page = $memd->get('opacmain');
-    if ($page && !$borrowernumber){
-	output_html_with_http_headers $input, $cookie, $page;
-        exit;
-    }
-}    
+
 
 my $dbh   = C4::Context->dbh;
 my $borrower = GetMember( $borrowernumber, 'borrowernumber' );
@@ -76,6 +95,6 @@ $template->param(
 
 if ($usecache && !$borrowernumber){
     my $page = $template->output();
-    $memd->set('opacmain', $page, 300);
+    $memd->set('opacmain', $page);
 }
-output_html_with_http_headers $input, $cookie, $template->output;
+C4::Output::output_html_with_http_headers $input, $cookie, $template->output;

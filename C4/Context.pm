@@ -71,7 +71,7 @@ BEGIN {
 		}
     }  	# else there is no browser to send fatals to!
 	$VERSION = '3.00.00.036';
-    $usecache = 1;
+    $usecache = 0;
     if ($usecache) {
 	require Cache::Memcached;
 	Cache::Memcached->import();
