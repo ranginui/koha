@@ -788,7 +788,7 @@ sub CanBookBeIssued {
     my ( $restype, $res ) = C4::Reserves::CheckReserves( $item->{'itemnumber'} );
     if ($restype) {
 		my $resbor = $res->{'borrowernumber'};
-		my ( $resborrower, $flags ) = GetMemberDetails( $resbor, 0 );
+		my ( $resborrower ) = GetMemberDetails( $resbor, 0 );
 		my $branches  = GetBranches();
 		my $branchname = $branches->{ $res->{'branchcode'} }->{'branchname'};
         if ( $resbor ne $borrower->{'borrowernumber'} && $restype eq "Waiting" )
@@ -850,9 +850,8 @@ sub AddIssue {
 	my $barcodecheck=CheckValidBarcode($barcode);
 	if ($borrower and $barcode and $barcodecheck ne '0'){
 		# find which item we issue
-		my $item = GetItem('', $barcode);
+		my $item = GetItem('', $barcode) or return undef;	# if we don't get an Item, abort.
 		my $datedue; 
-		
 		my $branch;
 		# Get which branchcode we need
 		if (C4::Context->preference('CircControl') eq 'PickupLibrary'){
@@ -910,7 +909,7 @@ sub AddIssue {
 					# warn "Waiting";
 					# The item is on reserve and waiting, but has been
 					# reserved by some other patron.
-					my ( $resborrower, $flags ) = GetMemberDetails( $resbor, 0 );
+					my ( $resborrower ) = GetMemberDetails( $resbor, 0 );
 					my $branches   = GetBranches();
 					my $branchname =
 					  $branches->{ $res->{'branchcode'} }->{'branchname'};
@@ -919,8 +918,7 @@ sub AddIssue {
 
 					# warn "Reserved";
 					# The item is reserved by someone else.
-					my ( $resborrower, $flags ) =
-					  GetMemberDetails( $resbor, 0 );
+					my ( $resborrower ) = GetMemberDetails( $resbor, 0 );
 					my $branches   = GetBranches();
 					my $branchname =  $branches->{ $res->{'branchcode'} }->{'branchname'};
 					if ($cancelreserve) { # cancel reserves on this item
