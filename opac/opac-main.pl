@@ -24,23 +24,7 @@ my $input = new CGI;
 
 my $memd;
 
-my $borrowernumber;
-my $usecache=1;
-if ($usecache){
-    require Cache::Memcached;
-    Cache::Memcached->import();
-    $memd = new Cache::Memcached(
-	'servers'=>['127.0.0.1:11211'],
-    );
-    my $page = $memd->get('opacmain');
-    if ($page && !$borrowernumber){
-	print $input->header;
-	print $page;
-#	output_html_with_http_headers $input, $cookie, $page;
-        exit;
-    }
-}    
-else {
+
     require C4::Auth;
     C4::Auth->import();
     require C4::Output;
@@ -56,8 +40,6 @@ else {
     require C4::Acquisition;
     C4::Acquisition->import();
 
-}
-
 
 
 my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
@@ -69,6 +51,23 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
         flagsrequired   => { borrow => 1 },
     }
 );
+
+my $usecache=1;
+if ($usecache){
+    require Cache::Memcached;
+    Cache::Memcached->import();
+    $memd = new Cache::Memcached(
+	'servers'=>['127.0.0.1:11211'],
+    );
+    my $page = $memd->get("koha:opacmain:$borrowernumber");
+    if ($page){
+	output_html_with_http_headers $input, $cookie, $page;
+        exit;
+    }
+}    
+
+
+
 
 
 
@@ -93,8 +92,8 @@ $template->param(
     'Disable_Dictionary' => C4::Context->preference("Disable_Dictionary") )
   if ( C4::Context->preference("Disable_Dictionary") );
 
-if ($usecache && !$borrowernumber){
+if ($usecache){
     my $page = $template->output();
-    $memd->set('opacmain', $page);
+    $memd->set("koha:opacmain:$borrowernumber", $page, 300);
 }
 C4::Output::output_html_with_http_headers $input, $cookie, $template->output;
