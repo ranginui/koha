@@ -214,7 +214,17 @@ if ($findborrower) {
 my $borrower;
 my @lines;
 if ($borrowernumber) {
-    $borrower = GetMemberDetails( $borrowernumber, 0 );
+    if (C4::Context->preference('usecache')){
+	$borrower=$memd->get("koha:circulation:$borrowernumber");
+	if (! $borrower){
+	    $borrower = GetMemberDetails( $borrowernumber, 0 );
+	    $memd->set("koha:circulation:$borrowernumber", $borrower, 300);
+	}
+    } 
+    else {
+	$borrower = GetMemberDetails( $borrowernumber, 0 );
+    }
+    # we cant cache the fines details, these change to much
     my ( $od, $issue, $fines ) = GetMemberIssuesAndFines( $borrowernumber );
 
     # Warningdate is the date that the warning starts appearing
