@@ -18,29 +18,21 @@
 
 use strict;
 
-# my $usecache=C4::Context->preference('usecache');
+
 use CGI;
 my $input = new CGI;
 
 my $memd;
 
+use C4::Auth;
+use C4::Output;
+use C4::VirtualShelves;
+use C4::Branch;
+use C4::Members;
+use C4::NewsChannels;
+use C4::Acquisition;
 
-    require C4::Auth;
-    C4::Auth->import();
-    require C4::Output;
-    C4::Output->import();
-    require C4::VirtualShelves;
-    C4::VirtualShelves->import();
-    require C4::Branch;
-    C4::Branch->import();
-    require C4::Members;
-    C4::Members->import();
-    require C4::NewsChannels;
-    C4::NewsChannels->import();
-    require C4::Acquisition;
-    C4::Acquisition->import();
-
-
+my $usecache=C4::Context->preference('usecache');
 
 my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
     {
@@ -52,7 +44,6 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
     }
 );
 
-my $usecache=1;
 if ($usecache){
     require Cache::Memcached;
     Cache::Memcached->import();
@@ -65,10 +56,6 @@ if ($usecache){
         exit;
     }
 }    
-
-
-
-
 
 
 my $dbh   = C4::Context->dbh;
