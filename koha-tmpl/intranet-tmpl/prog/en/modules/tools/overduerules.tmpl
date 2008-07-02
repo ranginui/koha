@@ -1,6 +1,18 @@
 <!-- TMPL_INCLUDE NAME="doc-head-open.inc" -->
 <title>Koha &rsaquo; Tools &rsaquo; Notice Triggers</title>
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
+
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function() {
+        $('#selectlibrary').find("input:submit").hide();
+        $('#branch').change(function() {
+                $('#selectlibrary').submit();
+        });
+});
+//]]>
+</script>
+
 </head>
 <body>
 <!-- TMPL_INCLUDE NAME="header.inc" -->
@@ -20,7 +32,7 @@
             <p>If you want Koha to trigger an action (send a letter or debar member), a delay value is required.</p>
             <p>Columns must be filled left to right: if the first column is blank, other columns will be ignored. </p>
         </div>
-            <form method="post" action="/cgi-bin/koha/tools/overduerules.pl">
+            <form method="post" action="/cgi-bin/koha/tools/overduerules.pl" id="selectlibrary">
             <label for="branch">Select a library:</label>
                 <select id="branch" name="branch">
                     <option value="">Default</option>
@@ -40,10 +52,13 @@
                 <p>The following fields have a forbidden value. Correct them and press OK again :</p>
                 <ul>
                 <!-- TMPL_IF NAME="ERRORDELAY" -->
-                    <li>Delay <!--TMPL_VAR Name="ERRORDELAY"--> for <!--TMPL_VAR Name="bor"--> borrower category has some unexpected characters. There should be only numerical characters. </li>
+                    <li>Delay <!--TMPL_VAR Name="ERRORDELAY"--> for <!--TMPL_VAR Name="BORERR"--> borrower category has some unexpected characters. There should be only numerical characters. </li>
+                <!-- /TMPL_IF -->
+                <!-- TMPL_IF NAME="ERRORUSELESSDELAY" -->
+                    <li>No letter or debar action specified for delay <!--TMPL_VAR Name="ERRORUSELESSDELAY"--> for <!--TMPL_VAR Name="BORERR"--> borrower category.  If a delay is supplied, either a letter, debar action, or both should be specified.</li>
                 <!-- /TMPL_IF -->
                 <!-- TMPL_IF NAME="ERRORORDER" -->
-                    <li>Delay1 should be less than Delay2 which should be less than Delay3 for <!--TMPL_VAR Name="bor"--> borrower category </li>
+                    <li>Delay1 should be less than Delay2 which should be less than Delay3 for <!--TMPL_VAR Name="BORERR"--> borrower category </li>
                 <!-- /TMPL_IF -->
                 </ul>
             </div>
@@ -51,10 +66,11 @@
             <!-- TMPL_IF name="table" -->
             <form method="post" action="/cgi-bin/koha/tools/overduerules.pl">
                 <input type="hidden" name="op" value="save" />
+                <input type="hidden" name="branch" value="<!-- TMPL_VAR NAME="branch" -->" />
                 <table>
                     <caption>Rules for overdue actions: <!--TMPL_IF Name="branch"--><!-- TMPL_VAR NAME="branch" --><!--TMPL_ELSE--> default library <!--/TMPL_IF-->
                     <!--TMPL_IF Name="datasaved"-->
-                        <br /><h3 align="center">INPUT SAVED</h3>
+                        <br /><div class="dialog message">INPUT SAVED</div>
                     <!--/TMPL_IF -->
                     </caption>
                     <tr>
