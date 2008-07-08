@@ -18,14 +18,15 @@ use warnings;
 
 use lib qw( .. );
 
-use C4::Koha;
-
 use Data::Dumper;
 use File::Find;
-use Test::More tests => 1;
+use Test::More tests => 3;
 
-my $opac_icon_directory  = getitemtypeimagedir('opac');
-my $staff_icon_directory = getitemtypeimagedir('intranet');
+my $opac_icon_directory  = 'koha-tmpl/opac-tmpl/prog/itemtypeimg';
+my $staff_icon_directory = 'koha-tmpl/intranet-tmpl/prog/img/itemtypeimg';
+
+ok( -d $opac_icon_directory, "opac_icon_directory: $opac_icon_directory exists" );
+ok( -d $staff_icon_directory, "staff_icon_directory: $staff_icon_directory exists" );
 
 my $opac_icons; # hashref of filenames to sizes
 sub opac_wanted {
@@ -44,7 +45,7 @@ sub staff_wanted {
 }
 find( \&staff_wanted, $staff_icon_directory );
 
-is_deeply( $opac_icons, $staff_icons )
+is_deeply( $opac_icons, $staff_icons, "staff and OPAC icon directories have same contents" )
   or diag( Data::Dumper->Dump( [ $opac_icons ], [ 'opac_icons' ] ) );
 
 
