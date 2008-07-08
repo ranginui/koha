@@ -69,9 +69,10 @@ BEGIN {
 		if ($ENV{KOHA_BACKTRACES}) {
 			$main::SIG{__DIE__} = \&CGI::Carp::confess;
 		}
-    }  	# else there is no browser to send fatals to!
-	$VERSION = '3.00.00.036';
-    $usecache = 0;
+    }  	# else there is no browser to send fatals to!	
+$VERSION = '3.00.00.036';
+#    $usecache = preference("usecache");
+    $usecache;
     if ($usecache) {
 	require Cache::Memcached;
 	Cache::Memcached->import();
@@ -235,7 +236,16 @@ Returns undef in case of error.
 =cut
 
 sub read_config_file {		# Pass argument naming config file to read
-    my $koha = XMLin(shift, keyattr => ['id'], forcearray => ['listen', 'server', 'serverinfo']);
+    my $koha;
+    if ($usecache){
+	$koha =  $memd->get("Koha:context:config");
+	if (! $koha){
+	  $koha = XMLin(shift, keyattr => ['id'], forcearray => ['listen', 'server', 'serverinfo']);
+	  $memd->set("Koha:context:config",$koha);
+	}
+	return $koha;
+    }
+    $koha = XMLin(shift, keyattr => ['id'], forcearray => ['listen', 'server', 'serverinfo']);
     return $koha;			# Return value: ref-to-hash holding the configuration
 }
 
@@ -460,7 +470,7 @@ sub preference
     my $var = shift;        # The system preference to return
     my $retval;            # Return value
     if ($usecache) {
-	$retval = $memd->get("preference:$var");
+	$retval = $memd->get("Koha:preference:$var");
 	return $retval if $retval;
     }
     my $dbh = C4::Context->dbh or return 0;
@@ -472,7 +482,7 @@ sub preference
         LIMIT    1
 EOT
     if ($usecache) {
-	$memd->set("preference:$var", $retval);
+	$memd->set("Koha:preference:$var", $retval);
     }
     return $retval;
 }
