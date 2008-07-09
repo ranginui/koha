@@ -46,6 +46,13 @@ my $borrowernumber=$input->param('borrowernumber');
 #get borrower details
 my $data=GetMember($borrowernumber,'borrowernumber');
 
+if ( $data->{'category_type'} eq 'C') {
+   my  ( $catcodes, $labels ) =  GetborCatFromCatType( 'A', 'WHERE category_type = ?' );
+   my $cnt = scalar(@$catcodes);
+   $template->param( 'CATCODE_MULTI' => 1) if $cnt > 1;
+   $template->param( 'catcode' =>    $catcodes->[0])  if $cnt == 1;
+}
+
 #get account details
 my ($total,$accts,$numaccts)=GetMemberAccountRecords($borrowernumber);
 my $totalcredit;
@@ -111,6 +118,7 @@ $template->param(
 	branchname			=> GetBranchName($data->{'branchcode'}),
     total               => sprintf("%.2f",$total),
     totalcredit         => $totalcredit,
+	is_child        => ($data->{'category_type'} eq 'C'),
     accounts            => \@accountrows );
 
 output_html_with_http_headers $input, $cookie, $template->output;

@@ -414,6 +414,8 @@ my @results;
 
 ## parse the query_cgi string and put it into a form suitable for <input>s
 my @query_inputs;
+my $scan_index;
+
 for my $this_cgi ( split('&',$query_cgi) ) {
     next unless $this_cgi;
     $this_cgi =~ m/(.*=)(.*)/;
@@ -421,8 +423,10 @@ for my $this_cgi ( split('&',$query_cgi) ) {
     my $input_value = $2;
     $input_name =~ s/=$//;
     push @query_inputs, { input_name => $input_name, input_value => $input_value };
+    $scan_index = $input_value unless $scan_index;
 }
-$template->param ( QUERY_INPUTS => \@query_inputs );
+$template->param ( QUERY_INPUTS => \@query_inputs,
+                   scan_index => $scan_index );
 
 ## parse the limit_cgi string and put it into a form suitable for <input>s
 my @limit_inputs;
@@ -505,7 +509,7 @@ for (my $i=0;$i<@servers;$i++) {
     if ($server =~/biblioserver/) { # this is the local bibliographic server
         $hits = $results_hashref->{$server}->{"hits"};
         my $page = $cgi->param('page') || 0;
-        my @newresults = searchResults( $query_desc,$hits,$results_per_page,$offset,@{$results_hashref->{$server}->{"RECORDS"}});
+        my @newresults = searchResults( $query_desc,$hits,$results_per_page,$offset,$scan,@{$results_hashref->{$server}->{"RECORDS"}});
         $total = $total + $results_hashref->{$server}->{"hits"};
         ## If there's just one result, redirect to the detail page
         if ($total == 1) {         

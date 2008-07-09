@@ -63,14 +63,7 @@ sub _get_filepath ($;$) {
     $referer =~ /.*koha\/(.+)\.pl.*/;
     my $from   = "help/$1.tmpl";
     my $htdocs = C4::Context->config('intrahtdocs');
-	my ($theme, $lang);
-	# This split behavior was part of the old script.  I'm not sure why.  -atz
-	if (@_) {
-		($theme, $lang) = themelanguage( $htdocs, $from, "intranet", $input );
-	} else {
-		$theme = C4::Context->preference('template');
-   		$lang  = C4::Context->preference('language') || 'en';
-	}
+    my ($theme, $lang) = themelanguage( $htdocs, $from, "intranet", $input );
 	$debug and print STDERR "help filepath: $htdocs/$theme/$lang/modules/$from";
 	return "$htdocs/$theme/$lang/modules/$from";
 }
@@ -80,10 +73,8 @@ if ( $type eq 'addnew' ) {
 }
 elsif ( $type eq 'create' || $type eq 'save' ) {
 	my $file = _get_filepath($referer);
-	if (! -w $file) {
-		$error = "Cannot write file: '$file'";
-    } else {
-        open (OUTFILE, ">$file") or die "Cannot write file: '$file'";	# unlikely death, since we just checked
+	unless (open (OUTFILE, ">$file")) {$error = "Cannot write file: '$file'";} else {
+        #open (OUTFILE, ">$file") or die "Cannot write file: '$file'";	# unlikely death, since we just checked
         # file is open write to it
         print OUTFILE "<!-- TMPL_INCLUDE NAME=\"help-top.inc\" -->\n";
 		print OUTFILE ($type eq 'create') ? "<div class=\"main\">\n$help\n</div>" : $help;
@@ -91,6 +82,7 @@ elsif ( $type eq 'create' || $type eq 'save' ) {
         close OUTFILE;
 		print $input->redirect("/cgi-bin/koha/help.pl?url=$oldreferer");
     }
+    
 }
 elsif ( $type eq 'modify' ) {
     # open file load data, kill include calls, pass data to the template

@@ -131,6 +131,13 @@ if ( $check == 0 ) {
           };
     }
 	
+if ( $data->{'category_type'} eq 'C') {
+   my  ( $catcodes, $labels ) =  GetborCatFromCatType( 'A', 'WHERE category_type = ?' );
+   my $cnt = scalar(@$catcodes);
+   $template->param( 'CATCODE_MULTI' => 1) if $cnt > 1;
+   $template->param( 'catcode' =>    $catcodes->[0])  if $cnt == 1;
+}
+	
 $template->param( adultborrower => 1 ) if ( $data->{'category_type'} eq 'A' );
 my ($picture, $dberror) = GetPatronImage($data->{'cardnumber'});
 $template->param( picture => 1 ) if $picture;
@@ -151,6 +158,7 @@ $template->param( picture => 1 ) if $picture;
 		phone => $data->{'phone'},
 		email => $data->{'email'},
 	    branchcode => $data->{'branchcode'},
+		is_child        => ($data->{'category_type'} eq 'C'),
         total          => sprintf( "%.2f", $total )
     );
     output_html_with_http_headers $input, $cookie, $template->output;

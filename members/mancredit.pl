@@ -53,6 +53,14 @@ if ($add){
 					  flagsrequired => {borrowers => 1},
 					  debug => 1,
 					  });
+					  
+    if ( $data->{'category_type'} eq 'C') {
+        my  ( $catcodes, $labels ) =  GetborCatFromCatType( 'A', 'WHERE category_type = ?' );
+        my $cnt = scalar(@$catcodes);
+        $template->param( 'CATCODE_MULTI' => 1) if $cnt > 1;
+        $template->param( 'catcode' =>    $catcodes->[0])  if $cnt == 1;
+    }
+					  
     $template->param( adultborrower => 1 ) if ( $data->{category_type} eq 'A' );
     my ($picture, $dberror) = GetPatronImage($data->{'cardnumber'});
     $template->param( picture => 1 ) if $picture;
@@ -71,6 +79,7 @@ if ($add){
 		    zipcode => $data->{'zipcode'},
 		    phone => $data->{'phone'},
 		    email => $data->{'email'},
+		    is_child        => ($data->{'category_type'} eq 'C'),
         );
     output_html_with_http_headers $input, $cookie, $template->output;
 }

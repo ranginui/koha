@@ -76,6 +76,13 @@ if ( $newpassword  && ! $errormsg ) {
 	$defaultnewpassword.=substr($chars, int(rand(length($chars))),1);
     }
 	
+    if ( $bor->{'category_type'} eq 'C') {
+        my  ( $catcodes, $labels ) =  GetborCatFromCatType( 'A', 'WHERE category_type = ?' );
+        my $cnt = scalar(@$catcodes);
+        $template->param( 'CATCODE_MULTI' => 1) if $cnt > 1;
+        $template->param( 'catcode' =>    $catcodes->[0])  if $cnt == 1;
+    }
+	
 $template->param( adultborrower => 1 ) if ( $bor->{'category_type'} eq 'A' );
 my ($picture, $dberror) = GetPatronImage($bor->{'cardnumber'});
 $template->param( picture => 1 ) if $picture;
@@ -97,6 +104,7 @@ $template->param( picture => 1 ) if $picture;
 	    branchcode => $bor->{'branchcode'},
 	    userid      => $bor->{'userid'},
 	    destination => $destination,
+		is_child        => ($bor->{'category_type'} eq 'C'),
 	    defaultnewpassword => $defaultnewpassword 
 	);
 
