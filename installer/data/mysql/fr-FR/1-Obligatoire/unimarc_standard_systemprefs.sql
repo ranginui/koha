@@ -24,7 +24,6 @@ INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('checkdigit','none','If ON, enable checks on patron cardnumber: none or \"Katipo\" style checks','none|katipo','Choice');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('dateformat', 'us', 'Ce paramètre définit le format d''affichage des dates (us mm/jj/aaaa, metric jj/mm/aaaa, ISO aaaa/mm/jj)', 'metric|us|iso', 'Choice');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('delimiter', ';', 'Ce paramètre définit le séparateur par défaut lors des exports (au format csv) de données (Rapports, statistiques...)', ';|tabulation|,|/|\\|#', 'Choice');
-INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('Disable_Dictionary','1','Désactive ou non la recherche dictionnaire à l''OPAC','','YesNo');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES ('EnhancedMessagingPreferences',0,'If ON, allows patrons to select to receive additional messages about items due or nearly due.','','YesNo');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('expandedSearchOption', '1', 'active par défaut la recherche la plus avancée', '', 'YesNo');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('FinesLog', '0', 'Activer ce paramètre pour enregistrer les actions sur les pénalités financières', '', 'YesNo');
@@ -149,7 +148,6 @@ INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('staffClientBaseURL','','Spécifie l''adresse de l''interface professionnelle ',NULL,'free');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('minPasswordLength',3,'Spécifie la longueur minimale des mots de passe',NULL,'free');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('noItemTypeImages',0,'Si activé, n''affiche pas les vignettes de type de document',NULL,'YesNo');
-INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('noOPACHolds',0,'Si activé, il est impossible de faire des réservations',NULL,'YesNo');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('emailLibrarianWhenHoldIsPlaced',0,'Si activé, envoie un mail à la bibliothèque lorsqu''une réservation est posée',NULL,'YesNo');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('holdCancelLength','','Spécifie le nombre de jours avant qu''une réservation soit annulée',NULL,'free');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('libraryAddress','','L''adresse pour l''impression des reçus, des amendes... si elle est différente de l''adresse physique de la bibliothèque',NULL,'free');
@@ -212,3 +210,5 @@ INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES
 INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('AdvancedSearchTypes','itemtypes','itemtypes|ccode','Select which set of fields comprise the Type limit in the advanced search','Choice');
 INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('AllowOnShelfHolds', '0', '', 'Allow hold requests to be placed on items that are not on loan', 'YesNo');
 INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('AllowHoldsOnDamagedItems', '1', '', 'Allow hold requests to be placed on damaged items', 'YesNo');
+INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('OpacSuppression', '0', '', 'Turn ON the OPAC Suppression feature, requires further setup, ask your system administrator for details', 'YesNo');
+

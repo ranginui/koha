@@ -84,3 +84,4 @@ if ($usecache){
     $memd->set("koha:opacmain:$borrowernumber", $page, 300);
 }
 C4::Output::output_html_with_http_headers $input, $cookie, $template->output;
+

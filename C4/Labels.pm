@@ -21,7 +21,7 @@ use strict;
 use vars qw($VERSION @ISA @EXPORT);
 
 use PDF::Reuse;
-#use Text::Wrap;
+use Text::Wrap;
 use Algorithm::CheckDigits;
 use C4::Members;
 use C4::Branch;
@@ -999,14 +999,23 @@ sub DrawSpineText {
                     push @strings, $str;    # if $nowrap == 1 do not wrap or remove segmentation markers...
                 }
             } else {
-                $str =~ s/\/$//g;    # Here we will strip out all trailing '/' in fields other than the call number...
-                if ( length($str) > $text_wrap_cols ) {    # wrap lines greater than $text_wrap_cols width...
-                    my $wrap = substr($str, ($text_wrap_cols - length($str)), $text_wrap_cols, "");
-                    push @strings, $str;
-                    push @strings, $wrap;
+                $str =~ s/\/$//g;       # Here we will strip out all trailing '/' in fields other than the call number...
+                $str =~ s/\(/\\\(/g;    # Escape '(' and ')' for the postscript stream...
+                $str =~ s/\)/\\\)/g;
+                # Wrap text lines exceeding $text_wrap_cols length...
+                $Text::Wrap::columns = $text_wrap_cols;
+                my @line = split(/\n/ ,wrap('', '', $str));
+                # If this is a title field, limit to two lines; all others limit to one...
+                if ($field->{code} eq 'title' && scalar(@line) >= 2) {
+                    while (scalar(@line) > 2) {
+                        pop @line;
+                    }
                 } else {
-                    push @strings, $str;
+                    while (scalar(@line) > 1) {
+                        pop @line;
+                    }
                 }
+                push(@strings, @line);
             }
             # loop for each string line
             foreach my $str (@strings) {

@@ -594,9 +594,16 @@ sub GetMemberIssuesAndFines {
 
 =head2 ModMember
 
-  &ModMember($borrowernumber);
+=over 4
+
+my $success = ModMember(borrowernumber => $borrowernumber, [ field => value ]... );
 
 Modify borrower's data.  All date fields should ALREADY be in ISO format.
+
+return :
+true on success, or false on failure
+
+=back
 
 =cut
 
@@ -617,7 +624,7 @@ sub ModMember {
         }
     }
     if (!$data{'dateofbirth'}){
-        undef $data{'dateofbirth'};
+        delete $data{'dateofbirth'};
     }
     my $qborrower=$dbh->prepare("SHOW columns from borrowers");
     $qborrower->execute;
@@ -630,11 +637,13 @@ sub ModMember {
     my @parameters;  
     
     # test to know if you must update or not the borrower password
-    if ( $data{'password'} eq '****' ) {
-        delete $data{'password'};
-    } else {
-        $data{'password'} = md5_base64( $data{'password'} )  if ($data{'password'} ne "");
-        delete $data{'password'} if ($data{password} eq "");
+    if ( exists $data{'password'} ) {
+        if ( $data{'password'} eq '****' ) {
+            delete $data{'password'};
+        } else {
+            $data{'password'} = md5_base64( $data{'password'} ) if ( $data{'password'} ne "" );
+            delete $data{'password'} if ( $data{password} eq "" );
+        }
     }
     foreach (keys %data){  
         if ($_ ne 'borrowernumber' and $_ ne 'flags' and $hashborrowerfields{$_}){
@@ -647,19 +656,21 @@ sub ModMember {
     push @parameters, $data{'borrowernumber'};
     $debug and print STDERR "$query (executed w/ arg: $data{'borrowernumber'})";
     $sth = $dbh->prepare($query);
-    $sth->execute(@parameters);
+    my $execute_success = $sth->execute(@parameters);
     $sth->finish;
 
 # ok if its an adult (type) it may have borrowers that depend on it as a guarantor
 # so when we update information for an adult we should check for guarantees and update the relevant part
 # of their records, ie addresses and phone numbers
     my $borrowercategory= GetBorrowercategory( $data{'category_type'} );
-    if ( $borrowercategory->{'category_type'} eq ('A' || 'S') ) {
+    if ( exists  $borrowercategory->{'category_type'} && $borrowercategory->{'category_type'} eq ('A' || 'S') ) {
         # is adult check guarantees;
         UpdateGuarantees(%data);
     }
     logaction("MEMBERS", "MODIFY", $data{'borrowernumber'}, "$query (executed w/ arg: $data{'borrowernumber'})") 
         if C4::Context->preference("BorrowersLog");
+
+    return $execute_success;
 }
 
 
@@ -2018,6 +2029,34 @@ sub GetBorrowersNamesAndLatestIssue {
     my $results = $sth->fetchall_arrayref({});
     return $results;
 }
+
+=head2 DebarMember
+
+=over 4
+
+my $success = DebarMember( $borrowernumber );
+
+marks a Member as debarred, and therefore unable to checkout any more
+items.
+
+return :
+true on success, false on failure
+
+=back
+
+=cut
+
+sub DebarMember {
+    my $borrowernumber = shift;
+
+    return unless defined $borrowernumber;
+    return unless $borrowernumber =~ /^\d+$/;
+
+    return ModMember( borrowernumber => $borrowernumber,
+                      debarred       => 1 );
+    
+}
+
 END { }    # module clean-up code here (global destructor)
 
 1;

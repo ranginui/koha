@@ -729,7 +729,6 @@ $dbh->do("INSERT INTO `systempreferences` (variable,value,explanation,options,ty
 $dbh->do("INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('staffClientBaseURL','','Specify the base URL of the staff client',NULL,'free')");
 $dbh->do("INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('minPasswordLength',3,'Specify the minimum length of a patron/staff password',NULL,'free')");
 $dbh->do("INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('noItemTypeImages',0,'If ON, disables item-type images',NULL,'YesNo')");
-$dbh->do("INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('noOPACHolds',0,'If ON, disables holds globally',NULL,'YesNo')");
 $dbh->do("INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('emailLibrarianWhenHoldIsPlaced',0,'If ON, emails the librarian whenever a hold is placed',NULL,'YesNo')");
 $dbh->do("INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('holdCancelLength','','Specify how many days before a hold is canceled',NULL,'free')");
 $dbh->do("INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('libraryAddress','','The address to use for printing receipts, overdues, etc. if different than physical address',NULL,'free')");
@@ -1835,6 +1834,37 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
 	print "Upgrade to $DBversion done (fix name borrower_message_preferences.wants_digest)\n";
     SetVersion ($DBversion);
 }
+
+$DBversion = '3.00.00.097';
+if ( C4::Context->preference('Version') < TransformToNum($DBversion) ) {
+
+    $dbh->do('ALTER TABLE message_queue ADD to_address   mediumtext default NULL');
+    $dbh->do('ALTER TABLE message_queue ADD from_address mediumtext default NULL');
+    $dbh->do('ALTER TABLE message_queue ADD content_type text');
+    $dbh->do('ALTER TABLE message_queue CHANGE borrowernumber borrowernumber int(11) default NULL');
+
+    print "Upgrade to $DBversion done (updating 4 fields in message_queue table)\n";
+    SetVersion($DBversion);
+}
+
+$DBversion = '3.00.00.098';
+if ( C4::Context->preference('Version') < TransformToNum($DBversion) ) {
+
+    $dbh->do(q(DELETE FROM message_transport_types WHERE message_transport_type = 'rss'));
+    $dbh->do(q(DELETE FROM message_transports WHERE message_transport_type = 'rss'));
+
+    print "Upgrade to $DBversion done (removing unused RSS message_transport_type)\n";
+    SetVersion($DBversion);
+}
+
+$DBversion = '3.00.00.099';
+if ( C4::Context->preference('Version') < TransformToNum($DBversion) ) {
+    $dbh->do("INSERT INTO systempreferences (variable,value,options,explanation,type) VALUES('OpacSuppression', '0', '', 'Turn ON the OPAC Suppression feature, requires further setup, ask your system administrator for details', 'YesNo')");
+    print "Upgrade to $DBversion done (Adding OpacSuppression syspref)\n";
+    SetVersion($DBversion);
+}
+
+
 =item DropAllForeignKeys($table)
 
   Drop all foreign keys of the table $table

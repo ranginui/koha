@@ -427,7 +427,11 @@ sub _version_check ($$) {
     my $version;
     # If Version syspref is unavailable, it means Koha is beeing installed,
     # and so we must redirect to OPAC maintenance page or to the WebInstaller
-    #warn "about to check version";
+	# also, if OpacMaintenance is ON, OPAC should redirect to maintenance
+	if (C4::Context->preference('OpacMaintenance') && $type eq 'opac') {
+		warn "OPAC Install required, redirecting to maintenance";
+		print $query->redirect("/cgi-bin/koha/maintenance.pl");
+	}
     unless ($version = C4::Context->preference('Version')) {    # assignment, not comparison
       if ($type ne 'opac') {
         warn "Install required, redirecting to Installer";
@@ -784,6 +788,7 @@ sub checkauth {
         OpacAuthorities      => C4::Context->preference("OpacAuthorities"),
         OpacBrowser          => C4::Context->preference("OpacBrowser"),
         opacheader           => C4::Context->preference("opacheader"),
+        TagsEnabled                  => C4::Context->preference("TagsEnabled"),
         OPACUserCSS           => C4::Context->preference("OPACUserCSS"),
         intranetcolorstylesheet =>
 								C4::Context->preference("intranetcolorstylesheet"),
