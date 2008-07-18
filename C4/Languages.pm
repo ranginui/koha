@@ -62,6 +62,16 @@ Returns a reference to an array of hashes:
  }
 
 =cut
+our $memd;
+if (C4::Context->preference('usecache')){
+    require Cache::Memcached;
+    Cache::Memcached->import();
+    $memd = new Cache::Memcached(
+	'servers'=>['127.0.0.1:11211'],
+    );
+}
+
+
 
 sub getFrameworkLanguages {
     # get a hash with all language codes, names, and locale names
@@ -268,7 +278,13 @@ FIXME: this could be rewritten and simplified using map
 =cut
 
 sub _build_languages_arrayref {
-        my ($all_languages,$translated_languages,$current_language,$enabled_languages) = @_;
+    my ($all_languages,$translated_languages,$current_language,$enabled_languages) = @_;
+    if (C4::Context->preference('usecache')){
+	my $languages = $memd->get("koha::C4::Languages::languages");
+	if ($languages) {
+	    return $languages;
+	}
+    }
         my @translated_languages = @$translated_languages;
         my @languages_loop; # the final reference to an array of hashrefs
         my @enabled_languages = @$enabled_languages;
@@ -321,7 +337,10 @@ sub _build_languages_arrayref {
                             one_language_enabled => $one_language_enabled,
                            };
         }
-        return \@languages_loop;
+    if (C4::Context->preference('usecache')){
+	$memd->set("koha::C4::Languages::languages",\@languages_loop);
+    }
+    return \@languages_loop;
 }
 
 sub language_get_description {
