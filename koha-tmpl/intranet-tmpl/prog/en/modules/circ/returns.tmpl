@@ -214,10 +214,12 @@ function Dopop(link) {
         <form method="post" action="returns.pl" class="confirm">
             <!-- TMPL_IF name="transfertodo" -->
                 <input type="submit" class="approve" value="Confirm hold and transfer" />
-			<input type="submit" value="Print Slip and Confirm" class="print" onclick="Dopop('hold-transfer-slip.pl?transfer=1&amp;borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->&amp;biblionumber=<!-- TMPL_VAR NAME="itembiblionumber" -->&amp;op=slip'); this.form.submit();" />
+                <input type="submit" value="Print Slip and Confirm" class="print" onclick="Dopop('hold-transfer-slip.pl?transfer=1&amp;borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->&amp;biblionumber=<!-- TMPL_VAR NAME="itembiblionumber" -->&amp;op=slip'); this.form.submit();" />
             <!-- TMPL_ELSE -->
                 <input type="submit" class="approve" value="Confirm hold" />
+                <input type="submit" value="Print Slip and Confirm" class="print" onclick="Dopop('hold-transfer-slip.pl?borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->&amp;biblionumber=<!-- TMPL_VAR NAME="itembiblionumber" -->&amp;op=slip'); this.form.submit();" />
             <!-- /TMPL_IF -->
+                <input type="submit" class="deny" value="Ignore" onclick="$('.dialog:visible').hide('slow'); return false;" />
             <!-- TMPL_LOOP Name="inputloop" -->
 	<input type="hidden" name="ri-<!-- TMPL_VAR Name="counter" -->" value="<!-- TMPL_VAR Name="barcode" -->" />
 	<input type="hidden" name="dd-<!-- TMPL_VAR Name="counter" -->" value="<!-- TMPL_VAR Name="duedate" -->" />
@@ -264,7 +266,7 @@ function Dopop(link) {
 </div>
 	<div class="yui-g">
     <form method="post" action="/cgi-bin/koha/circ/returns.pl" >
-     <!-- TMPL_IF NAME="overduecharges" --><div class="yui-u first"><!-- /TMPL_IF -->
+    <div class="yui-u first">
             <fieldset>
 	<legend>Check In</legend>
             <label for="barcode">Enter item barcode: </label>
@@ -284,31 +286,35 @@ function Dopop(link) {
 			
    
             </fieldset>
-         <!-- TMPL_IF NAME="overduecharges" -->
-</div>
-<div class="yui-u">
-<fieldset id="checkin_options">
-			<legend>Options</legend>
+            </div>
+            <div class="yui-u">
+            <fieldset id="checkin_options">
+                <legend>Options</legend>
 
-<ul>		<li>
-<!-- TMPL_IF NAME="exemptfine" -->
-<input type="checkbox" id="exemptcheck" name="exemptfine" value="exemptfine" checked="checked" />
-<!-- TMPL_ELSE -->
-<input type="checkbox" id="exemptcheck" name="exemptfine" value="exemptfine" />
-<!-- /TMPL_IF --><label for="exemptcheck">Forgive overdue charges</label></li>
-
-<li><!-- (fixme) -->
-	
-<!-- TMPL_IF NAME="dropboxmode" -->
-<input type="checkbox" id="dropboxcheck" name="dropboxmode" value="dropboxmode" checked="checked" />
-<!-- TMPL_ELSE -->
-<input type="checkbox" id="dropboxcheck" name="dropboxmode" value="dropboxmode" />
-<!-- /TMPL_IF -->		<label for="dropboxcheck">Dropbox mode </label></li>		</ul>				
-								
-		</fieldset>
-</div>
-		<!-- /TMPL_IF --> <!-- overduecharges -->
-        </form>
+                <ul>
+                    <!-- TMPL_IF NAME="overduecharges" -->
+                    <li>
+                        <!-- TMPL_IF NAME="exemptfine" -->
+                        <input type="checkbox" id="exemptcheck" name="exemptfine" value="exemptfine" checked="checked" />
+                        <!-- TMPL_ELSE -->
+                        <input type="checkbox" id="exemptcheck" name="exemptfine" value="exemptfine" />
+                        <!-- /TMPL_IF -->
+                        <label for="exemptcheck">Forgive overdue charges</label>
+                    </li>
+                    <!-- /TMPL_IF --> <!-- overduecharges -->
+                    <li>
+                        <!-- (fixme) -->
+                        <!-- TMPL_IF NAME="dropboxmode" -->
+                        <input type="checkbox" id="dropboxcheck" name="dropboxmode" value="dropboxmode" checked="checked" />
+                        <!-- TMPL_ELSE -->
+                        <input type="checkbox" id="dropboxcheck" name="dropboxmode" value="dropboxmode" />
+                        <!-- /TMPL_IF -->
+                        <label for="dropboxcheck">Dropbox mode</label>
+                    </li>
+                </ul>
+            </fieldset>
+        </div>
+    </form>
 </div>
 
 <!-- TMPL_IF Name="returned" -->

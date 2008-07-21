@@ -99,6 +99,7 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user (
         flagsrequired   => { circulate => 1 },
     }
 );
+
 my $branches = GetBranches();
 
 my $printers = GetPrinters();
@@ -137,6 +138,7 @@ my $cancelreserve  = $query->param('cancelreserve');
 my $organisation   = $query->param('organisations');
 my $print          = $query->param('print');
 my $newexpiry      = $query->param('dateexpiry');
+my $debt_confirmed = $query->param('debt_confirmed') || 0; # Don't show the debt error dialog twice
 
 #set up cookie.....
 # my $branchcookie;
@@ -278,6 +280,8 @@ if ($barcode) {
   my ( $error, $question ) =
     CanBookBeIssued( $borrower, $barcode, $datedue , $inprocess );
   my $noerror = $invalidduedate ? 0 : 1;
+
+  delete $question->{'DEBT'} if ($debt_confirmed);
   foreach my $impossible ( keys %$error ) {
             $template->param(
                 $impossible => $$error{$impossible},
@@ -469,7 +473,6 @@ if ($borrower) {
         # ADDED BY JF: NEW ITEMTYPE COUNT DISPLAY
         $issued_itemtypes_count->{ $it->{'itemtype'} }++;
 
-        warn "$todaysdate, $it->{'issuedate'}, $it->{'lastreneweddate'}, $it->{'barcode'}";
         if ( $todaysdate eq $it->{'issuedate'} or $todaysdate eq $it->{'lastreneweddate'} ) {
             push @todaysissues, $it;
         } else {
@@ -730,9 +733,10 @@ $template->param( picture => 1 ) if $picture;
 
 
 $template->param(
+    debt_confirmed           => $debt_confirmed,
     SpecifyDueDate           => C4::Context->preference("SpecifyDueDate"),
     CircAutocompl            => C4::Context->preference("CircAutocompl"),
-	dateformat            => C4::Context->preference("dateformat"),
+    dateformat               => C4::Context->preference("dateformat"),
     DHTMLcalendar_dateformat => C4::Dates->DHTMLcalendar(),
 );
 output_html_with_http_headers $query, $cookie, $template->output;

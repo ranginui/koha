@@ -1377,8 +1377,8 @@ sub NewSubscription {
     $sth = $dbh->prepare($query);
     $sth->execute(
         "$serialseq", $subscriptionid, $biblionumber, 1,
-        format_date_in_iso($startdate),
-        format_date_in_iso($startdate)
+        format_date_in_iso($firstacquidate),
+        format_date_in_iso($firstacquidate)
     );
     
     logaction("SERIAL", "ADD", $subscriptionid, "") if C4::Context->preference("SubscriptionLog");
@@ -1746,7 +1746,7 @@ sub HasSubscriptionExpired {
     } else {
       if ($subscription->{'numberlength'}){
         my $countreceived=countissuesfrom($subscriptionid,$subscription->{'startdate'});
-      	return 1 if ($countreceived >$subscription->{'numberlentgh'});
+      	return 1 if ($countreceived >$subscription->{'numberlength'});
 	      return 0;
       } else {
 	      return 0;
