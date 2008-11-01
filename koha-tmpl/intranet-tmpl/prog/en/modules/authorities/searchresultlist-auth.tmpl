@@ -1,5 +1,5 @@
 <!-- TMPL_INCLUDE NAME="doc-head-open.inc" -->
-<title>Koha &rsaquo; Cataloguing Authority Plugin</title>
+<title>Koha &rsaquo; Cataloging Authority Plugin</title>
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
 <style type="text/css">
 #custom-doc { width:51.46em;*width:50.17em;min-width:675px; margin:auto; text-align:left; } 
@@ -53,6 +53,7 @@ function jumpfull(page)
                     <th>Summary</th>
                     <th>Used</th>
                     <th>Get It!</th>
+                    <th>Other action</th>
                 </tr>
                 <tr>
                     <td>&nbsp;</td>
@@ -62,6 +63,8 @@ function jumpfull(page)
                             Clear
                         </a>
                     </td>
+                    <td>&nbsp;</td>
+                </tr>
                 <!-- TMPL_LOOP NAME="result" -->
                     <tr>
                         <td><!-- TMPL_VAR NAME="summary" --></td>
@@ -69,6 +72,7 @@ function jumpfull(page)
                         <td>
                             <a href="javascript:jumpfull('blinddetail-biblio-search.pl?authid=<!-- TMPL_VAR NAME="authid" -->&amp;index=<!-- TMPL_VAR NAME="index" -->')">choose</a>
                         </td>
+                        <td><a href="authorities.pl?authid=<!-- TMPL_VAR NAME="authid" -->">Edit authority</a></td>
                     </tr>
                 <!-- /TMPL_LOOP -->
             </table>
@@ -93,6 +97,7 @@ function jumpfull(page)
                         &gt;&gt;</a>
                 <!-- /TMPL_IF -->
         </div><!-- /TMPL_IF -->
+</div>
 </div>
 </div>
 </div>

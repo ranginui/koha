@@ -128,9 +128,6 @@ $printer = C4::Context->userenv->{'branchprinter'};
 my $barcode        = $query->param('barcode') || '';
 
 $barcode = barcodedecode($barcode) if( $barcode && C4::Context->preference('itemBarcodeInputFilter'));
-my $year           = $query->param('year');
-my $month          = $query->param('month');
-my $day            = $query->param('day');
 my $stickyduedate  = $query->param('stickyduedate');
 my $duedatespec    = $query->param('duedatespec');
 my $issueconfirmed = $query->param('issueconfirmed');
@@ -407,12 +404,12 @@ if ($borrowernumber) {
             my $getbibtype = getitemtypeinfo( $getbibinfo->{'itemtype'} );  # fixme - we should have item-level reserves here ?
             $getreserv{color}           = 'inwait';
             $getreserv{title}           = $getbibinfo->{'title'};
-            $getreserv{waitingposition} = $num_res->{'priority'};
             $getreserv{nottransfered}   = 0;
             $getreserv{itemtype}        = $getbibtype->{'description'};
             $getreserv{author}          = $getbibinfo->{'author'};
           $getreserv{biblionumber}    = $num_res->{'biblionumber'};
         }
+        $getreserv{waitingposition} = $num_res->{'priority'};
         push( @reservloop, \%getreserv );
 
 #         if we have a reserve waiting, initiate waitingreserveloop
@@ -458,13 +455,14 @@ if ($borrower) {
             $it->{'itemnumber'}, $borrower->{'borrowernumber'}
         );
         $it->{'charge'} = sprintf("%.2f", $it->{'charge'});
-        my $can_renew_error;
-        ($it->{'can_renew'}, $can_renew_error) = CanBookBeRenewed( 
+        my ($can_renew, $can_renew_error) = CanBookBeRenewed( 
             $borrower->{'borrowernumber'},$it->{'itemnumber'}
         );
         $it->{"renew_error_${can_renew_error}"} = 1 if defined $can_renew_error;
         my ( $restype, $reserves ) = CheckReserves( $it->{'itemnumber'} );
-        ( $restype ) and $it->{'can_renew'} = 0;
+		$it->{'can_renew'} = $can_renew;
+		$it->{'can_confirm'} = !$can_renew && !$restype;
+		$it->{'renew_error'} = $restype;
 
         $it->{'dd'} = format_date($it->{'date_due'});
         $it->{'od'} = ( $it->{'date_due'} lt $todaysdate ) ? 1 : 0 ;
@@ -543,10 +541,7 @@ my %labels;
 my $CGIselectborrower;
 if ($borrowerslist) {
     foreach (
-        sort {
-                lc $a->{'surname'}
-              . lc $a->{'firstname'} cmp lc $b->{'surname'}
-              . lc $b->{'firstname'}
+        sort {(lc $a->{'surname'} cmp lc $b->{'surname'} ?lc $a->{'surname'} cmp lc $b->{'surname'}:lc $a->{'firstname'} cmp lc $b->{'firstname'})
         } @$borrowerslist
       )
     {
@@ -591,6 +586,7 @@ foreach $flag ( sort keys %$flags ) {
             $template->param(
                 charges    => 'true',
                 chargesmsg => $flags->{'CHARGES'}->{'message'},
+                chargesamount => $flags->{'CHARGES'}->{'amount'},
                 charges_is_blocker => 1
             );
         }
@@ -606,7 +602,8 @@ foreach $flag ( sort keys %$flags ) {
             $template->param(
                 charges    => 'true',
                 flagged    => 1,
-                chargesmsg => $flags->{'CHARGES'}->{'message'}
+                chargesmsg => $flags->{'CHARGES'}->{'message'},
+                chargesamount => $flags->{'CHARGES'}->{'amount'},
             );
         }
         if ( $flag eq 'CREDITS' ) {
@@ -693,13 +690,14 @@ $template->param(
     dateexpiry        => format_date($newexpiry),
     expiry            => format_date($borrower->{'dateexpiry'}),
     categorycode      => $borrower->{'categorycode'},
-    categoryname      => $borrowercategory->{description},
+    categoryname      => $borrower->{description},
     address           => $borrower->{'address'},
     address2          => $borrower->{'address2'},
     email             => $borrower->{'email'},
     emailpro          => $borrower->{'emailpro'},
     borrowernotes     => $borrower->{'borrowernotes'},
     city              => $borrower->{'city'},
+    zipcode	      => $borrower->{'zipcode'},
     phone             => $borrower->{'phone'} || $borrower->{'mobile'},
     cardnumber        => $borrower->{'cardnumber'},
     amountold         => $amountold,
@@ -733,10 +731,11 @@ $template->param( picture => 1 ) if $picture;
 
 
 $template->param(
-    debt_confirmed           => $debt_confirmed,
-    SpecifyDueDate           => C4::Context->preference("SpecifyDueDate"),
-    CircAutocompl            => C4::Context->preference("CircAutocompl"),
-    dateformat               => C4::Context->preference("dateformat"),
-    DHTMLcalendar_dateformat => C4::Dates->DHTMLcalendar(),
+    debt_confirmed            => $debt_confirmed,
+    SpecifyDueDate            => C4::Context->preference("SpecifyDueDate"),
+    CircAutocompl             => C4::Context->preference("CircAutocompl"),
+	AllowRenewalLimitOverride => C4::Context->preference("AllowRenewalLimitOverride"),
+    dateformat                => C4::Context->preference("dateformat"),
+    DHTMLcalendar_dateformat  => C4::Dates->DHTMLcalendar(),
 );
 output_html_with_http_headers $query, $cookie, $template->output;

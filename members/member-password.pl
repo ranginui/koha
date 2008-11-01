@@ -9,6 +9,7 @@ use C4::Auth;
 use C4::Output;
 use C4::Context;
 use C4::Members;
+use C4::Branch;
 use C4::Circulation;
 use CGI;
 
@@ -44,7 +45,7 @@ if(( $member ne $loggedinuser ) && ($bor->{'category_type'} eq 'S' ) ) {
 }
 my $newpassword = $input->param('newpassword');
 my $minpw = C4::Context->preference('minPasswordLength');
-$errormsg = 'SHORTPASSWORD' if( $newpassword && $minpw & (length($newpassword) < $minpw ) );
+$errormsg = 'SHORTPASSWORD' if( $newpassword && $minpw && (length($newpassword) < $minpw ) );
 
 if ( $newpassword  && ! $errormsg ) {
     my $digest=md5_base64($input->param('newpassword'));
@@ -94,7 +95,7 @@ $template->param( picture => 1 ) if $picture;
 	    cardnumber => $bor->{'cardnumber'},
 	    categorycode => $bor->{'categorycode'},
 	    category_type => $bor->{'category_type'},
-	    category_description => $bor->{'description'},
+	    categoryname => $bor->{'description'},
 	    address => $bor->{'address'},
 	    address2 => $bor->{'address2'},
 	    city => $bor->{'city'},
@@ -102,6 +103,7 @@ $template->param( picture => 1 ) if $picture;
 	    phone => $bor->{'phone'},
 	    email => $bor->{'email'},
 	    branchcode => $bor->{'branchcode'},
+	    branchname => GetBranchName($bor->{'branchcode'}),
 	    userid      => $bor->{'userid'},
 	    destination => $destination,
 		is_child        => ($bor->{'category_type'} eq 'C'),

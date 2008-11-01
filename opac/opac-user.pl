@@ -17,7 +17,7 @@
 
 
 use strict;
-require Exporter;
+
 use CGI;
 
 use C4::Auth;
@@ -82,15 +82,15 @@ $template->param(   BORROWER_INFO  => \@bordat,
 
 #get issued items ....
 my ($countissues,$issues) = GetPendingIssues($borrowernumber);
+my @issue_list = sort { $b->{'date_due'} cmp $a->{'date_due'} } @$issues;
 
 my $count          = 0;
 my $toggle = 0;
 my $overdues_count = 0;
 my @overdues;
 my @issuedat;
-my $imgdir = getitemtypeimagesrc();
 my $itemtypes = GetItemTypes();
-foreach my $issue ( @$issues ) {
+foreach my $issue ( @issue_list ) {
 	if($count%2 eq 0){ $issue->{'toggle'} = 1; } else { $issue->{'toggle'} = 0; }
     # check for reserves
     my ( $restype, $res ) = CheckReserves( $issue->{'itemnumber'} );
@@ -132,7 +132,7 @@ foreach my $issue ( @$issues ) {
     # imageurl:
     my $itemtype = $issue->{'itemtype'};
     if ( $itemtype ) {
-        $issue->{'imageurl'}    = $imgdir."/".$itemtypes->{$itemtype}->{'imageurl'};
+        $issue->{'imageurl'}    = getitemtypeimagelocation( 'opac', $itemtypes->{$itemtype}->{'imageurl'} );
         $issue->{'description'} = $itemtypes->{$itemtype}->{'description'};
     }
     $issue->{date_due} = format_date($issue->{date_due});

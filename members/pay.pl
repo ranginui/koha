@@ -115,7 +115,7 @@ if ( $check == 0 ) {
                 $line{title}          = $accts->[$i]{'title'};
                 $line{notify_id}      = $accts->[$i]{'notify_id'};
                 $line{notify_level}   = $accts->[$i]{'notify_level'};
-                $line{net_balance} = 1;
+                $line{net_balance} = 1 if($accts->[$i]{'amountoutstanding'} > 0); # you can't pay a credit.
                 push( @loop_pay, \%line );
             }
         }
@@ -147,18 +147,19 @@ $template->param( picture => 1 ) if $picture;
         firstname      => $data->{'firstname'},
         surname        => $data->{'surname'},
         borrowernumber => $borrowernumber,
-		cardnumber => $data->{'cardnumber'},
-	    categorycode => $data->{'categorycode'},
-	    category_type => $data->{'category_type'},
-	    category_description => $data->{'description'},
-	    address => $data->{'address'},
-		address2 => $data->{'address2'},
-	    city => $data->{'city'},
-		zipcode => $data->{'zipcode'},
-		phone => $data->{'phone'},
-		email => $data->{'email'},
-	    branchcode => $data->{'branchcode'},
-		is_child        => ($data->{'category_type'} eq 'C'),
+	cardnumber => $data->{'cardnumber'},
+	categorycode => $data->{'categorycode'},
+	category_type => $data->{'category_type'},
+	categoryname  => $data->{'description'},
+	address => $data->{'address'},
+	address2 => $data->{'address2'},
+	city => $data->{'city'},
+	zipcode => $data->{'zipcode'},
+	phone => $data->{'phone'},
+	email => $data->{'email'},
+	branchcode => $data->{'branchcode'},
+	branchname => GetBranchName($data->{'branchcode'}),
+	is_child        => ($data->{'category_type'} eq 'C'),
         total          => sprintf( "%.2f", $total )
     );
     output_html_with_http_headers $input, $cookie, $template->output;

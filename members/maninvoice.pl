@@ -27,6 +27,8 @@ use C4::Output;
 use CGI;
 use C4::Members;
 use C4::Accounts;
+use C4::Items;
+use C4::Branch;
 
 my $input=new CGI;
 
@@ -37,7 +39,8 @@ my $data=GetMember($borrowernumber,'borrowernumber');
 my $add=$input->param('add');
 if ($add){
 #  print $input->header;
-    my $itemnum=$input->param('itemnum');
+    my $barcode=$input->param('barcode');
+	my $itemnum = GetItemnumberFromBarcode($barcode) if $barcode;
     my $desc=$input->param('desc');
     my $amount=$input->param('amount');
     my $type=$input->param('type');
@@ -84,20 +87,22 @@ if ($add){
     $template->param( picture => 1 ) if $picture;
 
 	$template->param(
-                    borrowernumber => $borrowernumber,
-                    firstname => $data->{'firstname'},
-                    surname  => $data->{'surname'},
-					cardnumber => $data->{'cardnumber'},
-				    categorycode => $data->{'categorycode'},
-	    			category_type => $data->{'category_type'},
-				    category_description => $data->{'description'},
-				    address => $data->{'address'},
-					address2 => $data->{'address2'},
-				    city => $data->{'city'},
-					zipcode => $data->{'zipcode'},
-					phone => $data->{'phone'},
-					email => $data->{'email'},
-					is_child        => ($data->{'category_type'} eq 'C'),
+                borrowernumber => $borrowernumber,
+		firstname => $data->{'firstname'},
+                surname  => $data->{'surname'},
+		cardnumber => $data->{'cardnumber'},
+		categorycode => $data->{'categorycode'},
+		category_type => $data->{'category_type'},
+		categoryname  => $data->{'description'},
+		address => $data->{'address'},
+		address2 => $data->{'address2'},
+		city => $data->{'city'},
+		zipcode => $data->{'zipcode'},
+		phone => $data->{'phone'},
+		email => $data->{'email'},
+		branchcode => $data->{'branchcode'},
+		branchname => GetBranchName($data->{'branchcode'}),
+		is_child        => ($data->{'category_type'} eq 'C'),
     );
     output_html_with_http_headers $input, $cookie, $template->output;
 }

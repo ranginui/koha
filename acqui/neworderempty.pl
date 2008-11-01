@@ -186,10 +186,9 @@ my $CGIbookfund = CGI::scrolling_list(
     -name     => 'bookfund',
 	-id       => 'bookfund',
     -values   => \@select_bookfund,
-    -default  => $data->{'bookfundid'},
+    -default  => ($data->{'bookfundid'} ? $data->{'bookfundid'} : $select_bookfund[0]),
     -labels   => \%select_bookfunds,
 	#-size     => 1,
-	-tabindex =>'',
     -multiple => 0
 );
 

@@ -96,8 +96,10 @@ if ($op eq "additem") {
     my @indicator = $input->param('indicator');
     my $xml = TransformHtmlToXml(\@tags,\@subfields,\@values,\@indicator,\@ind_tag, 'ITEM');
         my $record=MARC::Record::new_from_xml($xml, 'UTF-8');
-    # if autoBarcode is ON, calculate barcode...
-    if (C4::Context->preference('autoBarcode')) {
+    # if autoBarcode is set to 'incremental', calculate barcode...
+	# NOTE: This code is subject to change in 3.2 with the implemenation of ajax based autobarcode code
+	# NOTE: 'incremental' is the ONLY autoBarcode option available to those not using javascript
+    if (C4::Context->preference('autoBarcode') eq 'incremental') {
         my ($tagfield,$tagsubfield) = &GetMarcFromKohaField("items.barcode",$frameworkcode);
         unless ($record->field($tagfield)->subfield($tagsubfield)) {
             my $sth_barcode = $dbh->prepare("select max(abs(barcode)) from items");
@@ -207,10 +209,12 @@ foreach my $field (@fields) {
                 && $subf[$i][0] ne $itemtagsubfield));
 
         $witness{$subf[$i][0]} = $tagslib->{$field->tag()}->{$subf[$i][0]}->{lib} if ($tagslib->{$field->tag()}->{$subf[$i][0]}->{tab}  eq 10);
+		if ($tagslib->{$field->tag()}->{$subf[$i][0]}->{tab}  eq 10) {
+        	$this_row{$subf[$i][0]}=GetAuthorisedValueDesc( $field->tag(),
+                        $subf[$i][0], $subf[$i][1], '', $tagslib) 
+						|| $subf[$i][1];
+		}
 
-        $this_row{$subf[$i][0]}=GetAuthorisedValueDesc( $field->tag(),
-                        $subf[$i][0], $subf[$i][1], '', $tagslib) if ($tagslib->{$field->tag()}->{$subf[$i][0]}->{tab}  eq 10);
-        
         if (($field->tag eq $branchtagfield) && ($subf[$i][$0] eq $branchtagsubfield) && C4::Context->preference("IndependantBranches")) {
             #verifying rights
             my $userenv = C4::Context->userenv();
@@ -369,10 +373,9 @@ foreach my $tag (sort keys %{$tagslib}) {
                           ($class_source eq $default_source);
               push @authorised_values, $class_source;
               $authorised_lib{$class_source} = $class_sources->{$class_source}->{'description'};
-              $value = $class_source unless ($value);
-              $value = $default_source unless ($value);
           }
-  
+		  $value = $default_source unless ($value);
+
           #---- "true" authorised value
       }
       else {

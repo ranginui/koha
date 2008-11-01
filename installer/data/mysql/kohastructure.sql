@@ -842,7 +842,7 @@ CREATE TABLE `deletedborrowers` (
   `B_phone` mediumtext,
   `dateofbirth` date default NULL,
   `branchcode` varchar(10) NOT NULL default '',
-  `categorycode` varchar(2) default NULL,
+  `categorycode` varchar(10) default NULL,
   `dateenrolled` date default NULL,
   `dateexpiry` date default NULL,
   `gonenoaddress` tinyint(1) default NULL,
@@ -936,6 +936,28 @@ CREATE TABLE `ethnicity` (
   `code` varchar(10) NOT NULL default '',
   `name` varchar(255) default NULL,
   PRIMARY KEY  (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `hold_fill_targets`
+--
+
+CREATE TABLE hold_fill_targets (
+  `borrowernumber` int(11) NOT NULL,
+  `biblionumber` int(11) NOT NULL,
+  `itemnumber` int(11) NOT NULL,
+  `source_branchcode`  varchar(10) default NULL,
+  `item_level_request` tinyint(4) NOT NULL default 0,
+  PRIMARY KEY `itemnumber` (`itemnumber`),
+  KEY `bib_branch` (`biblionumber`, `source_branchcode`),
+  CONSTRAINT `hold_fill_targets_ibfk_1` FOREIGN KEY (`borrowernumber`) 
+    REFERENCES `borrowers` (`borrowernumber`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `hold_fill_targets_ibfk_2` FOREIGN KEY (`biblionumber`) 
+    REFERENCES `biblio` (`biblionumber`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `hold_fill_targets_ibfk_3` FOREIGN KEY (`itemnumber`) 
+    REFERENCES `items` (`itemnumber`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `hold_fill_targets_ibfk_4` FOREIGN KEY (`source_branchcode`) 
+    REFERENCES `branches` (`branchcode`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -1508,7 +1530,7 @@ CREATE TABLE `opac_news` (
 DROP TABLE IF EXISTS `overduerules`;
 CREATE TABLE `overduerules` (
   `branchcode` varchar(10) NOT NULL default '',
-  `categorycode` varchar(2) NOT NULL default '',
+  `categorycode` varchar(10) NOT NULL default '',
   `delay1` int(4) default 0,
   `letter1` varchar(20) default NULL,
   `debarred1` varchar(1) default 0,
@@ -2008,6 +2030,7 @@ CREATE TABLE `virtualshelves` (
   `owner` varchar(80) default NULL,
   `category` varchar(1) default NULL,
   `sortfield` varchar(16) default NULL,
+  `lastmodified` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   PRIMARY KEY  (`shelfnumber`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -2132,13 +2155,15 @@ CREATE TABLE `permissions` (
     ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS serialitems;
-CREATE TABLE serialitems (
-        serialid int(11) NOT NULL,
-        itemnumber int(11) NOT NULL,
-        UNIQUE KEY `serialididx` (`serialid`)
+DROP TABLE IF EXISTS `serialitems`;
+CREATE TABLE `serialitems` (
+	`itemnumber` int(11) NOT NULL,
+	`serialid` int(11) NOT NULL,
+	UNIQUE KEY `serialitemsidx` (`itemnumber`),
+	KEY `serialitems_sfk_1` (`serialid`),
+	CONSTRAINT `serialitems_sfk_1` FOREIGN KEY (`serialid`) REFERENCES `serial` (`serialid`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
+		  
 DROP TABLE IF EXISTS `user_permissions`;
 CREATE TABLE `user_permissions` (
   `borrowernumber` int(11) NOT NULL DEFAULT 0,
@@ -2169,7 +2194,8 @@ CREATE TABLE `tmp_holdsqueue` (
   `itemcallnumber` varchar(30) default NULL,
   `holdingbranch` varchar(10) default NULL,
   `pickbranch` varchar(10) default NULL,
-  `notes` text
+  `notes` text,
+  `item_level_request` tinyint(4) NOT NULL default 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --

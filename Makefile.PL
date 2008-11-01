@@ -540,6 +540,7 @@ WriteMakefile(
                             'Class::Factory::Util'             => 1.6,
                             'Class::Accessor'                  => 0.30,
                             'DBD::mysql'                       => 4.004,
+                            'DBD::SQLite'                      => 1.13, # optional, used for offline circulation
                             'DBI'                              => 1.53,
                             'Data::ICal'                       => 0.13,
                             'Data::Dumper'                     => 2.121,
@@ -547,7 +548,9 @@ WriteMakefile(
                             'Date::ICal'                       => 1.72,
                             'Date::Manip'                      => 5.44,
                             'Digest::MD5'                      => 2.36,
+                            'Email::Date'                      => 1.103,
                             'File::Temp'                       => 0.16,
+                            'GD'                               => 2.39,    #optional
                             'GD::Barcode::UPCE'                => 1.1,
                             'Getopt::Long'                     => 2.35,
                             'Getopt::Std'                      => 1.05,
@@ -555,7 +558,6 @@ WriteMakefile(
                             'HTML::Scrubber'                   => 0.08,
                             'HTTP::Cookies'                    => 1.39,
                             'HTTP::Request::Common'            => 1.26,
-                            'Image::Magick'                    => 6.2, # optional
                             'LWP::Simple'                      => 1.41,
                             'LWP::UserAgent'                   => 2.033,
                             'Lingua::Stem'                     => 0.82,
@@ -606,8 +608,9 @@ WriteMakefile(
               PM => $file_map,
 
               # Man pages generated from POD
-              INSTALLMAN1DIR => File::Spec->catdir($target_directories->{'MAN_DIR'}, 'man1'),
-              INSTALLMAN3DIR => File::Spec->catdir($target_directories->{'MAN_DIR'}, 'man3'),
+	      # ExtUtils::MakeMaker already manage $(DESTDIR)
+              INSTALLMAN1DIR => File::Spec->catdir(_strip_destdir($target_directories->{'MAN_DIR'}), 'man1'),
+              INSTALLMAN3DIR => File::Spec->catdir(_strip_destdir($target_directories->{'MAN_DIR'}), 'man3'),
 
               PL_FILES => $pl_files,
 );
@@ -1273,6 +1276,7 @@ sub get_target_directories {
 
     _get_env_overrides(\%dirmap);
     _get_argv_overrides(\%dirmap);
+    _add_destdir(\%dirmap);
 
     return \%dirmap, \%skipdirs;
 }
@@ -1319,6 +1323,20 @@ sub _get_argv_overrides {
         }
     }
     @ARGV = @new_argv;
+}
+
+sub _strip_destdir {
+    my $dir = shift;
+    $dir =~ s/^\$\(DESTDIR\)//;
+    return $dir;
+}
+
+sub _add_destdir {
+    my $dirmap = shift;
+
+    foreach my $key (keys %$dirmap) {
+        $dirmap->{$key} = '$(DESTDIR)'.$dirmap->{$key};
+    }
 }
 
 sub display_configuration {
@@ -1418,9 +1436,10 @@ install :: all install_koha set_koha_ownership set_koha_permissions warn_koha_en
 
 			$install .= "\n";
 			$install .= "set_koha_ownership ::\n";
+# Do not try to change ownership if DESTDIR is set
 			if ($config{'INSTALL_MODE'} eq 'standard' and $config{'KOHA_USER'} ne "root") {
 				foreach my $key (sort keys %$target_directories) {
-					$install .= "\t\$(NOECHO) chown -R $config{'KOHA_USER'}:$config{'KOHA_GROUP'} \$(KOHA_DEST_$key)\n"
+					$install .= "\t\$(NOECHO) if test -z \"\$(DESTDIR)\"; then chown -R $config{'KOHA_USER'}:$config{'KOHA_GROUP'} \$(KOHA_DEST_$key); fi\n"
 						unless ($config{'INSTALL_ZEBRA'} ne "yes" and $key =~ /ZEBRA/) or exists $skip_directories->{$key};
 				}
 			} else {
@@ -1568,7 +1587,7 @@ sub postamble {
 
             # these directories will be relocated to the 't' directory
             foreach my $dirname ( keys %$target_directories ) {
-                my $dir = $target_directories->{$dirname};
+                my $dir = main::_strip_destdir( $target_directories->{$dirname} );
                 if ( exists $test_suite_override_dirs{$dirname} ) {
                     $dir = main::get_test_dir($dirname);
                 }

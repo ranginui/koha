@@ -189,7 +189,7 @@ foreach my $itm (@items) {
         }
     }
 	$itemhash{$itm->{'itemnumber'}}=$itm;
-	if (!$itm->{'notforloan'} && !$itm->{'itemnotforloan'}){
+	if (!$itm->{'notforloan'} && !($itm->{'itemnotforloan'} > 0)){
 		$forloan=1;
 	}
 }
@@ -423,7 +423,7 @@ foreach my $biblioitemnumber (@biblioitemnumbers) {
         while (my $wait_hashref = $sth2->fetchrow_hashref) {
             $item->{waitingdate} = format_date($wait_hashref->{waitingdate});
         }
-	$item->{imageurl} = getitemtypeimagesrc() . "/".$itemtypes->{ $item->{itype} }{imageurl};
+	$item->{imageurl} = getitemtypeimagelocation( 'opac', $itemtypes->{ $item->{itype} }{imageurl} );
         push @{ $biblioitem->{itemloop} }, $item;
     }
 

@@ -108,7 +108,7 @@ reports</p>
 <td><a href="/cgi-bin/koha/reports/guided_reports.pl?reports=<!-- TMPL_VAR NAME="id" -->&amp;phase=Show%20SQL">Show SQL</a></td>
 <td><a href="/cgi-bin/koha/reports/guided_reports.pl?reports=<!-- TMPL_VAR NAME="id" -->&amp;phase=Run%20this%20report">Run this Report</a></td>
 <td><a href="/cgi-bin/koha/tools/scheduler.pl?id=<!-- TMPL_VAR NAME="id" -->">Schedule this Report</a></td>
-<td><a class="confirmdelete" title="delete this saved report" href="/cgi-bin/koha/reports/guided_reports.pl?reports=<!-- TMPL_VAR NAME="id" -->&amp;phase=Delete%20Saved">Delete</a></td></tr>
+<td><a class="confirmdelete" title="Delete this saved report" href="/cgi-bin/koha/reports/guided_reports.pl?reports=<!-- TMPL_VAR NAME="id" -->&amp;phase=Delete%20Saved">Delete</a></td></tr>
 <!-- /TMPL_LOOP -->
 </table>
 </form>
@@ -152,8 +152,7 @@ reports</p>
 <input type="submit" name="submit" value="Next &gt;&gt;" /></fieldset>
 </form>
 </div>
-<div class="yui-gb"><div class="yui-u first">Tabular:
-<img src="<!-- TMPL_VAR name="themelang" -->/../img/reports-tabular-graphic.gif" alt="" /></div>
+<div class="yui-gb"><div class="yui-u first"></div>
 
 <!--- Summary and Matrix reports have not yet been implemented-->
 <!--<div class="yui-u">Summary:
@@ -230,9 +229,9 @@ NAME="name" -->"><!-- TMPL_VAR NAME="description" --> </label>
 /><img src="<!-- TMPL_VAR Name="themelang" -->/lib/calendar/cal.gif" id="buttonfrom<!-- TMPL_VAR NAME="name" -->" style="cursor: pointer;" alt="Show Calendar" title="Show Calendar" />                 
 <script type="text/javascript">   
 Calendar.setup({  
-inputField     : "<!-- TMPL_VAR NAME="name" -->_value",                               
-ifFormat       : "%Y-%m-%d",                               
-button         : "buttonfrom<!-- TMPL_VAR NAME="name" -->",                               
+inputField     : "<!-- TMPL_VAR NAME="name" -->_value",
+ifFormat       : "<!-- TMPL_VAR NAME="DHTMLcalendar_dateformat" -->",
+button         : "buttonfrom<!-- TMPL_VAR NAME="name" -->",
 align          : "Tl" 
 });     
 </script>          
@@ -359,7 +358,9 @@ NAME="name" -->"><!-- TMPL_VAR NAME="name"--></label></td><td>
 
 <!-- TMPL_IF NAME="execute" -->
 <h1><!-- TMPL_VAR NAME="name" --></h1>
-<p><!-- TMPL_VAR NAME="notes" --></p>
+<!-- TMPL_IF NAME="notes" --><p><!-- TMPL_VAR NAME="notes" --></p><!-- /TMPL_IF -->
+<!-- TMPL_IF name="pagination_bar" --><!-- TMPL_VAR name='pagination_bar'--><!-- /TMPL_IF -->
+<!-- TMPL_UNLESS name="errors" -->
 <table>
 <!-- TMPL_LOOP NAME="results" -->
 <!-- TMPL_VAR NAME="row" -->
@@ -376,6 +377,21 @@ NAME="name" -->"><!-- TMPL_VAR NAME="name"--></label></td><td>
 <input type="hidden" name="phase" value="Export" />
 <input type="submit" name="submit" value="Download" /></fieldset>
 </form>
+<!-- /TMPL_UNLESS -->
+<!-- TMPL_IF NAME="errors" -->
+<form action="/cgi-bin/koha/reports/guided_reports.pl" method="post">
+<div class="dialog alert">
+<b>The following error was encountered:</b><br />
+<!-- TMPL_LOOP name="errors" -->
+<!-- TMPL_IF NAME="sqlerr" -->This report contains the SQL keyword <!-- TMPL_VAR name="sqlerr" -->.<br />Use of this keyword is not allowed in Koha reports due to security and data integrity risks.<br />Please return to the "Saved Reports" screen and delete this report.
+<!-- TMPL_ELSIF NAME="queryerr" -->The database returned the following error: <br /><!-- TMPL_VAR NAME="queryerr" --><br />Please check the log for further details.
+<!-- /TMPL_IF -->
+<!-- /TMPL_LOOP -->
+</div>
+<fieldset class="action"><input type="hidden" name="phase" value="Used saved" />
+<input type="submit" name="submit" value="Saved Reports" /></fieldset>
+</form>
+<!-- /TMPL_IF -->
 <!-- /TMPL_IF -->
 
 <!-- TMPL_IF NAME="create" -->
@@ -383,10 +399,10 @@ NAME="name" -->"><!-- TMPL_VAR NAME="name"--></label></td><td>
 <fieldset class="rows">
 <legend>Create Report From SQL</legend>
 <ol>
-	<li><label for="reportname">Report Name:</label> <input type="text" id="reportname" name="reportname" /> </li>
-	<li><label for="notes">Notes:</label> <textarea  id="notes" name="notes" cols="50" rows="2"></textarea></li>
-	<li><label for="types">Type:</label><select id="types"  name="types"><!-- TMPL_LOOP NAME="types" --><option value="<!-- TMPL_VAR NAME="id" -->"><!-- TMPL_VAR NAME="name"--></option><!-- /TMPL_LOOP --></select></li>
-	<li><label for="sql">SQL: </label><textarea  id="sql" name="sql" cols="50" rows="10"></textarea></li>
+	<li><label for="reportname">Report Name:</label> <input type="text" id="reportname" name="reportname"<!--TMPL_IF NAME="reportname" --> value="<!-- TMPL_VAR NAME="reportname"-->"<!-- /TMPL_IF --> /> </li>
+	<li><label for="notes">Notes:</label> <textarea  id="notes" name="notes" cols="50" rows="2"><!--TMPL_IF NAME="notes" --><!-- TMPL_VAR NAME="notes"--><!-- /TMPL_IF --></textarea></li>
+	<li><label for="types">Type:</label><select id="types"  name="types"><!-- TMPL_LOOP NAME="types" --><option value="<!-- TMPL_VAR NAME="id" -->"<!-- TMPL_IF NAME="selected" --> selected="selected"<!-- /TMPL_IF -->><!-- TMPL_VAR NAME="name"--></option><!-- /TMPL_LOOP --></select></li>
+	<li><label for="sql">SQL: </label><textarea  id="sql" name="sql" cols="50" rows="10"><!--TMPL_IF NAME="sql" --><!-- TMPL_VAR NAME="sql"--><!-- /TMPL_IF --></textarea></li>
 </ol>
 </fieldset>
 
@@ -437,16 +453,33 @@ Sub report:<select name="subreport">
 <!-- /TMPL_IF -->
 
 <!-- TMPL_IF NAME="save_successful" -->
+<!-- TMPL_UNLESS NAME="errors" -->
 <h2>Your report has been saved</h2>
 <p>The report you have created has now been saved. You can now</p>
 <ul>
-	<li>Access this report from the: <a href="/cgi-bin/koha/reports/guided_reports.pl?phase=Used+saved">Saved Reports Page</a></li>
+	<li>Access this report from the: <a href="/cgi-bin/koha/reports/guided_reports.pl?phase=Used%20saved">Saved Reports Page</a></li>
 	<li>Schedule this report to run using the: <a href="/cgi-bin/koha/tools/scheduler.pl">Scheduler Tool</a></li>
-	<li>Return to: <a href="/cgi-bin/koha/reports/guided_reports.pl?phase=Used+saved">Guided Reports</a></li>
+	<li>Return to: <a href="/cgi-bin/koha/reports/guided_reports.pl?phase=Used%20saved">Guided Reports</a></li>
 </ul>
-
-
-
+<!-- /TMPL_UNLESS -->
+<!-- TMPL_IF NAME="errors" -->
+<form action="/cgi-bin/koha/reports/guided_reports.pl" method="post">
+<div class="dialog alert">
+<b>The following error was encountered:</b><br />
+<!-- TMPL_LOOP name="errors" -->
+<!-- TMPL_IF NAME="sqlerr" -->The SQL statement contains the keyword <!-- TMPL_VAR name="sqlerr" -->. Use of this keyword is not allowed in Koha reports due to security and data integrity risks.
+<!-- TMPL_ELSIF NAME="queryerr" -->The SQL statment is missing the SELECT keyword.<br />Please check the SQL statement syntax.
+<!-- /TMPL_IF -->
+<!-- /TMPL_LOOP -->
+</div>
+<input type="hidden" name="sql" value="<!-- TMPL_VAR NAME="sql" -->" />
+<input type="hidden" name="reportname" value="<!-- TMPL_VAR NAME="reportname" -->" />
+<input type="hidden" name="type" value="<!-- TMPL_VAR NAME="type" -->" />
+<input type="hidden" name="notes" value="<!-- TMPL_VAR NAME="notes" -->" />
+<fieldset class="action"><input type="hidden" name="phase" value="Create report from SQL" />
+<input type="submit" name="submit" value="Edit SQL" /></fieldset>
+</form>
+<!-- /TMPL_IF -->
 <!-- /TMPL_IF -->
 
 </div>

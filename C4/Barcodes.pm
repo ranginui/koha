@@ -1,5 +1,3 @@
-#!/usr/bin/perl
-
 package C4::Barcodes;
 
 # Copyright 2008 LibLime
@@ -243,8 +241,6 @@ sub new_object {
 }
 1;
 __END__
-
-=doc
 
 =head1 Barcodes
 

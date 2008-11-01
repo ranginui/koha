@@ -38,6 +38,7 @@ use C4::Auth;
 use C4::Output;
 use C4::Members;
 use C4::Members::Attributes;
+use C4::Members::AttributeTypes;
 use C4::Dates;
 use C4::Reserves;
 use C4::Circulation;
@@ -61,13 +62,14 @@ my $dbh = C4::Context->dbh;
 my $input = new CGI;
 $debug or $debug = $input->param('debug') || 0;
 my $print = $input->param('print');
+my $override_limit = $input->param("override_limit") || 0;
 my @failedrenews = $input->param('failedrenew');
 my @failedreturns = $input->param('failedreturn');
 my $error = $input->param('error');
-my @renew_failed;
-for my $renew (@failedrenews) { $renew_failed[$renew] = 1; }
-my @return_failed;
-for my $failedret (@failedreturns) { $return_failed[$failedret] = 1; }
+my %renew_failed;
+for my $renew (@failedrenews) { $renew_failed{$renew} = 1; }
+my %return_failed;
+for my $failedret (@failedreturns) { $return_failed{$failedret} = 1; }
 
 my $template_name;
 
@@ -244,11 +246,12 @@ for ( my $i = 0 ; $i < $count ; $i++ ) {
 
     $row{'charge'} = sprintf( "%.2f", $charge );
 
-	my ( $renewokay,$renewerror ) = CanBookBeRenewed( $borrowernumber, $issue->[$i]{'itemnumber'});
+	my ( $renewokay,$renewerror ) = CanBookBeRenewed( $borrowernumber, $issue->[$i]{'itemnumber'}, $override_limit );
 	$row{'norenew'} = !$renewokay;
+	$row{'can_confirm'} = ( !$renewokay && $renewerror ne 'on_reserve' );
 	$row{"norenew_reason_$renewerror"} = 1 if $renewerror;
-	$row{'renew_failed'} = $renew_failed[$issue->[$i]{'itemnumber'}];		
-	$row{'return_failed'} = $return_failed[$issue->[$i]{'barcode'}];   
+	$row{'renew_failed'} = $renew_failed{ $issue->[$i]{'itemnumber'} };
+	$row{'return_failed'} = $return_failed{$issue->[$i]{'barcode'}};   
     push( @issuedata, \%row );
 }
 
@@ -272,9 +275,10 @@ if ($borrowernumber) {
 				$getreserv{$_} = 0;
 		}
         $getreserv{reservedate}  = C4::Dates->new($num_res->{'reservedate'},'iso')->output('syspref');
-		foreach (qw(biblionumber title author barcodereserv itemcallnumber )) {
+		foreach (qw(biblionumber title author itemcallnumber )) {
 				$getreserv{$_} = $getiteminfo->{$_};
 		}
+        $getreserv{barcodereserv}  = $getiteminfo->{'barcode'};
         $getreserv{itemtype}  = $itemtypeinfo->{'description'};
 
         # 		check if we have a waitin status for reservations
@@ -301,16 +305,16 @@ if ($borrowernumber) {
 
 # 		if we don't have a reserv on item, we put the biblio infos and the waiting position
         if ( $getiteminfo->{'title'} eq '' ) {
-            my $getbibinfo = GetBiblioItemData( $num_res->{'biblionumber'} );
+            my $getbibinfo = GetBiblioData( $num_res->{'biblionumber'} );
             my $getbibtype = getitemtypeinfo( $getbibinfo->{'itemtype'} );
             $getreserv{color}           = 'inwait';
             $getreserv{title}           = $getbibinfo->{'title'};
-            $getreserv{waitingposition} = $num_res->{'priority'};
             $getreserv{nottransfered}   = 0;
             $getreserv{itemtype}        = $getbibtype->{'description'};
             $getreserv{author}          = $getbibinfo->{'author'};
             $getreserv{biblionumber}  = $num_res->{'biblionumber'};	
         }
+        $getreserv{waitingposition} = $num_res->{'priority'};
 
         push( @reservloop, \%getreserv );
     }
@@ -339,10 +343,15 @@ $template->param($data);
 if (C4::Context->preference('ExtendedPatronAttributes')) {
     $template->param(ExtendedPatronAttributes => 1);
     $template->param(patron_attributes => C4::Members::Attributes::GetBorrowerAttributes($borrowernumber));
+    my @types = C4::Members::AttributeTypes::GetAttributeTypes();
+    if (scalar(@types) == 0) {
+        $template->param(no_patron_attribute_types => 1);
+    }
 }
 
 $template->param(
 	detailview => 1,
+    AllowRenewalLimitOverride => C4::Context->preference("AllowRenewalLimitOverride"),
   DHTMLcalendar_dateformat=>C4::Dates->DHTMLcalendar(), 
     roaddetails      => $roaddetails,
     borrowernumber   => $borrowernumber,

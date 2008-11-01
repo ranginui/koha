@@ -21,7 +21,8 @@ use strict;
 use C4::Auth;
 use CGI;
 use C4::Output;
-use C4::Reports;
+use C4::Reports::Guided;
+use C4::Dates;
 
 =head1 NAME
 
@@ -52,7 +53,7 @@ my 	( $template, $borrowernumber, $cookie ) = get_template_and_user(
 
 if ($phase eq 'View Dictionary'){
 	# view the dictionary we use to set up abstract variables such as all borrowers over fifty who live in a certain town
-	my $areas = C4::Reports::get_report_areas();
+	my $areas = get_report_areas();
 	my $definitions = get_from_dictionary();
 	$template->param( 'areas' => $areas ,
 		'start_dictionary' => 1,
@@ -67,7 +68,7 @@ elsif ($phase eq 'Add New Definition'){
 
 elsif ($phase eq 'New Term step 2'){
 	# Choosing the area
-	my $areas = C4::Reports::get_report_areas();
+	my $areas = C4::Reports::Guided::get_report_areas();
 	my $definition_name=$input->param('definition_name');
 	my $definition_description=$input->param('definition_description');		
 	$template->param( 'step_2' => 1,
@@ -127,13 +128,13 @@ elsif ($phase eq 'New Term step 4'){
 		'definition_description' => $definition_description,
 		'columns' => \@column_loop,
 		'columnstring' => $columnstring,
-
+                'DHTMLcalendar_dateformat' => C4::Dates->DHTMLcalendar(),
 	);
 }
 
 elsif ($phase eq 'New Term step 5'){
 	# Confirmation screen
-	my $areas = C4::Reports::get_report_areas();
+	my $areas = C4::Reports::Guided::get_report_areas();
 	my $area = $input->param('area');
     my $areaname = $areas->[$area - 1]->{'name'};
 	my $columnstring = $input->param('columnstring');
@@ -145,28 +146,39 @@ elsif ($phase eq 'New Term step 5'){
 	foreach my $crit (@criteria) {
 		my $value = $input->param( $crit . "_value" );
 		if ($value) {
-			$query_criteria .= " AND $crit='$value'";
-			my %tmp_hash;
-			$tmp_hash{'name'}=$crit;
-			$tmp_hash{'value'} = $value;
-			push @criteria_loop,\%tmp_hash;
+                    my %tmp_hash;
+                    $tmp_hash{'name'}=$crit;
+                    $tmp_hash{'value'} = $value;
+                    push @criteria_loop,\%tmp_hash;
+                    if ($value =~ C4::Dates->regexp(C4::Context->preference('dateformat'))) {    
+                        my $date = C4::Dates->new($value);
+                        $value = $date->output("iso");
+                    }
+                    $query_criteria .= " AND $crit='$value'";
 		}
-		
 		$value = $input->param( $crit . "_start_value" );
 		if ($value) {
-			$query_criteria .= " AND $crit > '$value'";
-			my %tmp_hash;
-			$tmp_hash{'name'}="$crit Start";
-			$tmp_hash{'value'} = $value;
-			push @criteria_loop,\%tmp_hash;
+                    my %tmp_hash;
+                    $tmp_hash{'name'}="$crit Start";
+                    $tmp_hash{'value'} = $value;
+                    push @criteria_loop,\%tmp_hash;
+                    if ($value =~ C4::Dates->regexp(C4::Context->preference('dateformat'))) {    
+                        my $date = C4::Dates->new($value);
+                        $value = $date->output("iso");
+                    }
+                    $query_criteria .= " AND $crit >= '$value'";
 		}
 		$value = $input->param( $crit . "_end_value" );
 		if ($value) {
-			$query_criteria .= " AND $crit <= '$value'";
-			my %tmp_hash;
-			$tmp_hash{'name'}="$crit End";
-			$tmp_hash{'value'} = $value;
-			push @criteria_loop,\%tmp_hash;
+                    my %tmp_hash;
+                    $tmp_hash{'name'}="$crit End";
+                    $tmp_hash{'value'} = $value;
+                    push @criteria_loop,\%tmp_hash;
+                    if ($value =~ C4::Dates->regexp(C4::Context->preference('dateformat'))) {    
+                        my $date = C4::Dates->new($value);
+                        $value = $date->output("iso");
+                    }
+                    $query_criteria .= " AND $crit <= '$value'";
 		}		  
 	}
 	$template->param( 'step_5' => 1,
@@ -195,7 +207,7 @@ elsif ($phase eq 'Delete Definition'){
 	$no_html=1;
 	my $id = $input->param('id');
 	delete_definition($id);
-	print $input->redirect("/cgi-bin/koha/reports/guided_reports.pl?phase=View%20Dictionary");
+	print $input->redirect("/cgi-bin/koha/reports/dictionary.pl?phase=View%20Dictionary");
 	}
 
 $template->param( 'referer' => $referer );

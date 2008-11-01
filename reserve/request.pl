@@ -93,7 +93,6 @@ if ($findborrower) {
 
 if ($cardnumber) {
     my $borrowerinfo = GetMemberDetails( 0, $cardnumber );
-    my $expiry;
     my $diffbranch;
     my @getreservloop;
     my $count_reserv = 0;
@@ -110,16 +109,12 @@ if ($cardnumber) {
         $maxreserves = 1;
     }
 
-    # we check the date expiricy of the borrower (only if there is an expiry date, otherwise, set to 1 (warn)
-    if ($borrowerinfo->{'dateexpiry'} ne '0000-00-00') {
-        my $warning = (Date_to_Days(split /-/,$date) > Date_to_Days( split /-/,$borrowerinfo->{'dateexpiry'}));
-        if ( $warning > 0 ) {
-			$messages = 1;
-            $expiry = 1;
-        }
-    } else {
-		$messages = 1;
-        $expiry = 1;
+    # we check the date expiry of the borrower (only if there is an expiry date, otherwise, set to 1 (warn)
+    my $expiry_date = $borrowerinfo->{dateexpiry};
+    my $expiry = 0; # flag set if patron account has expired
+    if ($expiry_date and $expiry_date ne '0000-00-00' and
+            Date_to_Days(split /-/,$date) > Date_to_Days(split /-/,$expiry_date)) {
+		$messages = $expiry = 1;
     }
      
 
@@ -260,7 +255,7 @@ foreach my $biblioitemnumber (@biblioitemnumbers) {
     {
         my $item = $iteminfos_of->{$itemnumber};
     $item->{itypename} = $itemtypes->{ $item->{itype} }{description};
-    $item->{imageurl} = getitemtypeimagesrc() . "/".$itemtypes->{ $item->{itype} }{imageurl};
+    $item->{imageurl} = getitemtypeimagelocation( 'intranet', $itemtypes->{ $item->{itype} }{imageurl} );
         $item->{homebranchname} =
           $branches->{ $item->{homebranch} }{branchname};
 
@@ -396,6 +391,13 @@ foreach my $res ( sort { $a->{found} cmp $b->{found} } @$reserves ) {
         }
         # set found to 1 if reserve is waiting for patron pickup
         $reserve{'found'} = 1 if $res->{'found'} eq 'W';
+    } elsif ($res->{priority} > 0) {
+        if (defined($res->{itemnumber})) {
+            my $item = GetItem($res->{itemnumber});
+            $reserve{'itemnumber'}  = $res->{'itemnumber'};
+            $reserve{'barcodenumber'}   = $item->{'barcode'};
+            $reserve{'item_level_hold'} = 1;
+        }
     }
     
 #     get borrowers reserve info

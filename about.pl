@@ -16,7 +16,6 @@
 # Suite 330, Boston, MA  02111-1307 USA
 
 use strict;
-require Exporter;
 
 use C4::Output;    # contains gettemplate
 use C4::Auth;
@@ -89,7 +88,9 @@ Date::Calc
 Data::ICal
 Date::Manip
 Digest::MD5
+Email::Date
 File::Temp
+GD
 GD::Barcode::UPCE
 Getopt::Long
 Getopt::Std
@@ -97,7 +98,6 @@ HTML::Template::Pro
 HTTP::Cookies
 HTTP::Request::Common
 HTML::Scrubber
-Image::Magick
 LWP::Simple
 LWP::UserAgent
 Lingua::Stem
@@ -158,14 +158,12 @@ foreach my $component ( sort @component_names ) {
     else {
         $version = 'module is missing';
     }
-    $counter++;
-    $counter=0 if $counter >3;
     push(
         @components,
         {
             name    => $component,
             version => $version,
-            counter => $counter,
+            newrow  => (++$counter % 4) ? 0 : 1,
         }
     );
 }

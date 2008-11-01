@@ -17,7 +17,7 @@
 
 
 use strict;
-require Exporter;
+
 use CGI;
 use C4::Auth;
 use C4::Dates qw/format_date/;
@@ -93,7 +93,7 @@ foreach my $subscription (@subscriptions) {
       GetLatestSerials( $subscription->{subscriptionid}, 3 );
     push @subs, \%cell;
 }
-$dat->{imageurl} = getitemtypeimagesrc() . "/".$itemtypes->{ $dat->{itemtype} }{imageurl};
+$dat->{imageurl} = getitemtypeimagelocation( 'intranet', $itemtypes->{ $dat->{itemtype} }{imageurl} );
 $dat->{'count'} = scalar @items;
 my $shelflocations = GetKohaAuthorisedValues('items.location', $fw);
 my $collections    = GetKohaAuthorisedValues('items.ccode'   , $fw);
@@ -106,7 +106,7 @@ foreach my $item (@items) {
 
     # format some item fields for display
     $item->{ $item->{'publictype'} } = 1;
-    $item->{imageurl} = getitemtypeimagesrc() . "/".$itemtypes->{ $item->{itype} }{imageurl};
+    $item->{imageurl} = getitemtypeimagelocation( 'intranet', $itemtypes->{ $item->{itype} }{imageurl} );
 	foreach (qw(datedue datelastseen onloan)) {
 		$item->{$_} = format_date($item->{$_});
 	}
@@ -167,6 +167,7 @@ $template->param(
 	itemdata_ccode      => $itemfields{ccode},
 	itemdata_enumchron  => $itemfields{enumchron},
 	itemdata_copynumber => $itemfields{copynumber},
+	volinfo				=> $itemfields{enumchron} || $dat->{'serial'} ,
 );
 
 my @results = ( $dat, );
@@ -187,8 +188,8 @@ $template->param(
 
 # XISBN Stuff
 my $xisbn=$dat->{'isbn'};
-$xisbn =~ s/(p|-| |:)//g;
-$template->param(amazonisbn => $xisbn);
+$xisbn =~ /(\d*[X]*)/;
+$template->param(amazonisbn => $1);		# FIXME: so it is OK if the ISBN = 'XXXXX' ?
 if (C4::Context->preference("FRBRizeEditions")==1) {
     eval {
         $template->param(
@@ -208,8 +209,10 @@ if ( C4::Context->preference("AmazonContent") == 1 ) {
         # do we have any of these isbns in our collection?
         my $similar_biblionumbers = get_biblionumber_from_isbn($similar_product->{ASIN});
         # verify that there is at least one similar item
-        $similar_products_exist++ if ${@$similar_biblionumbers}[0];
-        push @similar_products, +{ similar_biblionumbers => $similar_biblionumbers, title => $similar_product->{Title}, ASIN => $similar_product->{ASIN}  };
+		if (scalar(@$similar_biblionumbers)){            
+			$similar_products_exist++ if ($similar_biblionumbers && $similar_biblionumbers->[0]);
+            push @similar_products, +{ similar_biblionumbers => $similar_biblionumbers, title => $similar_product->{Title}, ASIN => $similar_product->{ASIN}  };
+        }
     }
     my $editorial_reviews = \@{$amazon_details->{Items}->{Item}->{EditorialReviews}->{EditorialReview}};
     my $average_rating = $amazon_details->{Items}->{Item}->{CustomerReviews}->{AverageRating};

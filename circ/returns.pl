@@ -129,7 +129,7 @@ if ( $query->param('resbarcode') ) {
     
 #     addin in ModReserveAffect the possibility to check if the document is expected in this library or not,
 # if not we send a value in reserve waiting for not implementting waiting status
-    if ($diffBranchReturned) {
+    if (C4::Context->userenv->{'branch'} ne $diffBranchReturned) {
         $diffBranchSend = $diffBranchReturned;
     }
     else {
@@ -456,6 +456,7 @@ if ($borrower) {
         if ( $flag eq 'CHARGES' ) {
             $flaginfo{msg}            = $flag;
             $flaginfo{charges}        = 1;
+            $flaginfo{chargeamount}   = $flags->{$flag}->{amount};
             $flaginfo{borrowernumber} = $borrower->{borrowernumber};
         }
         elsif ( $flag eq 'WAITING' ) {
@@ -561,6 +562,7 @@ foreach ( sort { $a <=> $b } keys %returneditems ) {
         $ri{itemtype}         = $biblio->{'itemtype'};
         $ri{itemnote}         = $biblio->{'itemnotes'};
         $ri{ccode}            = $biblio->{'ccode'};
+	$ri{itemnumber}       = $biblio->{'itemnumber'};
         $ri{barcode}          = $barcode;
     }
     else {

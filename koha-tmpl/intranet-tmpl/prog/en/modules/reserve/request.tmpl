@@ -1,5 +1,5 @@
 <!-- TMPL_INCLUDE NAME="doc-head-open.inc" -->
-<title>Koha &rsaquo; Circulation &rsaquo; Holds &rsaquo; Place a hold on <!-- TMPL_VAR NAME="title" --></title>
+<title>Koha &rsaquo; Circulation &rsaquo; Holds &rsaquo; Place a hold on <!-- TMPL_VAR NAME="title" escape="html" --></title>
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
 <script type="text/javascript">
 // <![CDATA[ 
@@ -32,14 +32,14 @@ if (document.form.alreadyreserved.value == "1"){
 }
 
 if (count_reserv == "0"){
-		msg += ("- Please select an item to place a hold\n");
+		msg += (_("- Please select an item to place a hold\n"));
 }
 if (count_reserv >= "2"){
-		msg += ("- You may only place a hold on one item at a time\n");
+		msg += (_("- You may only place a hold on one item at a time\n"));
 }
 
 if (alreadyreserved > "0"){
-		msg += ("- This patron had already placed a hold on this item\n Please cancel the previous hold first \n");
+		msg += (_("- This patron had already placed a hold on this item\n Please cancel the previous hold first \n"));
 }
 
 	if (msg == "") return(true);
@@ -79,7 +79,7 @@ if (alreadyreserved > "0"){
 <!-- TMPL_INCLUDE NAME="header.inc" -->
 <!-- TMPL_INCLUDE NAME="circ-search.inc" -->
 
-<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/catalogue/search.pl">Catalogue</a> &rsaquo; <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->"><!-- TMPL_VAR NAME="title" --></a> &rsaquo; Place a hold on <!-- TMPL_VAR NAME="title" --></div>
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/catalogue/search.pl">Catalog</a> &rsaquo; <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->"><!-- TMPL_VAR NAME="title" escape="html" --></a> &rsaquo; Place a hold on <!-- TMPL_VAR NAME="title" escape="html" --></div>
 
  <div id="doc3" class="yui-t2">
 
@@ -101,7 +101,7 @@ if (alreadyreserved > "0"){
 			</form>
 		</div>
 	<!-- /TMPL_IF -->
-<h1>Place a hold on <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->"><!-- TMPL_VAR NAME="title" --></a></h1>
+<h1>Place a hold on <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->"><!-- TMPL_VAR NAME="title" escape="html" --></a></h1>
 
 <!-- TMPL_UNLESS NAME="cardnumber"-->
     <!-- TMPL_IF NAME="messageborrower" -->                                    
@@ -133,7 +133,7 @@ if (alreadyreserved > "0"){
     <!-- /TMPL_IF -->
 
     <!-- TMPL_IF NAME="alreadyreserved" -->
-     <li><a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->"><!-- TMPL_VAR NAME="borrowerfirstname" --> <!-- TMPL_VAR NAME="borrowersurname" --> </a> <strong>already has a hold</strong> on this item </li>
+     <li><a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->"><!-- TMPL_VAR NAME="borrowerfirstname" --> <!-- TMPL_VAR NAME="borrowersurname" --></a> <strong>already has a hold</strong> on this item </li>
     <!-- /TMPL_IF -->
 	</ul></div>
 <!-- /TMPL_IF -->	
@@ -141,11 +141,11 @@ if (alreadyreserved > "0"){
 <!-- TMPL_IF NAME="messages" -->
     <div class="dialog message"><ul>
     <!-- TMPL_IF NAME="expiry" -->
-      <li><a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->"><!-- TMPL_VAR NAME="borrowerfirstname" --> <!-- TMPL_VAR NAME="borrowersurname" --> </a>'s <strong>account has expired</strong></li>
+    <li><a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->"><!-- TMPL_VAR NAME="borrowerfirstname" --> <!-- TMPL_VAR NAME="borrowersurname" --></a>'s <strong>account has expired</strong></li>
     <!-- /TMPL_IF -->
 
-<!-- TMPL_IF NAME="diffbranch" --><h3>Pickup Library Mismatch</h3>
-      <li> <strong>Pickup library is different</strong> than <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->"><!-- TMPL_VAR NAME="borrowerfirstname" --> <!-- TMPL_VAR NAME="borrowersurname" --> </a>'s home library (<!-- TMPL_VAR NAME="borrower_branchname" --> / <!-- TMPL_VAR NAME="borrower_branchcode" --> )</li>
+<!-- TMPL_IF NAME="diffbranch" -->
+    <li> <strong>Pickup library is different</strong> than <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->"><!-- TMPL_VAR NAME="borrowerfirstname" --> <!-- TMPL_VAR NAME="borrowersurname" --></a>'s home library (<!-- TMPL_VAR NAME="borrower_branchname" --> / <!-- TMPL_VAR NAME="borrower_branchcode" --> )</li>
     <!-- /TMPL_IF -->
 </ul></div>
 <!-- /TMPL_IF -->
@@ -220,9 +220,9 @@ if (alreadyreserved > "0"){
         <tr class="<!-- TMPL_VAR NAME="backgroundcolor" -->">
             <td>
             <!-- TMPL_IF NAME="available" -->
-                <input type="checkbox" name="checkitem" value="<!-- TMPL_VAR NAME="itemnumber" -->" />
+                <input type="radio" name="checkitem" value="<!-- TMPL_VAR NAME="itemnumber" -->" />
             <!-- TMPL_ELSE -->
-                <input disabled="disabled" type="checkbox" name="checkitem" value="<!-- TMPL_VAR NAME="itemnumber" -->" /> 
+                <input disabled="disabled" type="radio" name="checkitem" value="<!-- TMPL_VAR NAME="itemnumber" -->" /> 
             <!-- /TMPL_IF -->
             </td>
             <!-- TMPL_IF NAME="item-level_itypes" -->
@@ -360,7 +360,21 @@ if (alreadyreserved > "0"){
           </a>
     <!-- TMPL_ELSE -->
       <!-- TMPL_IF Name="constrainttypea" -->
-          <i>Next available</i>
+            <!-- TMPL_IF Name="item_level_hold" -->
+                <i>Only item 
+                <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME='biblionumber' -->">
+                     <!-- TMPL_IF NAME="barcodenumber" -->
+                         <!-- TMPL_VAR NAME="barcodenumber" -->
+                        <input type="hidden" name="itemnumber" value="<!-- TMPL_VAR NAME="itemnumber" -->" />
+                    <!-- TMPL_ELSE -->
+                        No Barcode
+                    <!-- /TMPL_IF -->
+                </a>
+                </i>
+            <!-- TMPL_ELSE -->
+                <i>Next available</i>
+                 <input type="hidden" name="itemnumber" value="" />
+            <!-- /TMPL_IF -->
       <!-- TMPL_ELSE -->
         <!-- TMPL_IF Name="constrainttypeo" -->
           only this type :<b><!-- TMPL_VAR NAME="volumeddesc" --> <!-- TMPL_VAR NAME="itemtype" --></b>

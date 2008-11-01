@@ -702,11 +702,12 @@ sub _remove_stopwords {
         foreach ( keys %{ C4::Context->stopwords } ) {
             next if ( $_ =~ /(and|or|not)/ );    # don't remove operators
             if ( $operand =~
-                /(\P{IsAlpha}$_\P{IsAlpha}|^$_\P{IsAlpha}|\P{IsAlpha}$_$)/ )
+                /(\P{IsAlpha}$_\P{IsAlpha}|^$_\P{IsAlpha}|\P{IsAlpha}$_$|^$_$)/ )
             {
                 $operand =~ s/\P{IsAlpha}$_\P{IsAlpha}/ /gi;
                 $operand =~ s/^$_\P{IsAlpha}/ /gi;
                 $operand =~ s/\P{IsAlpha}$_$/ /gi;
+				$operand =~ s/$1//gi;
                 push @stopwords_removed, $_;
             }
         }
@@ -1261,20 +1262,12 @@ sub searchResults {
         $oldbiblio->{result_number} = $i + 1;
 
         # add imageurl to itemtype if there is one
-        if ( $itemtypes{ $oldbiblio->{itemtype} }->{imageurl} =~ /^http:/ ) {
-            $oldbiblio->{imageurl} =
-              $itemtypes{ $oldbiblio->{itemtype} }->{imageurl};
-        } else {
-            $oldbiblio->{imageurl} =
-              getitemtypeimagesrc() . "/"
-              . $itemtypes{ $oldbiblio->{itemtype} }->{imageurl}
-              if ( $itemtypes{ $oldbiblio->{itemtype} }->{imageurl} );
-        }
-		my $biblio_authorised_value_images = C4::Items::get_authorised_value_images( C4::Biblio::get_biblio_authorised_values( $oldbiblio->{biblionumber} ) );
-		$oldbiblio->{authorised_value_images} = $biblio_authorised_value_images;
-        my $aisbn = $oldbiblio->{'isbn'};
-        $aisbn =~ /(\d*[X]*)/;
-        $oldbiblio->{amazonisbn} = $1;
+        $oldbiblio->{imageurl} = getitemtypeimagelocation( 'opac', $itemtypes{ $oldbiblio->{itemtype} }->{imageurl} );
+
+        $oldbiblio->{'authorised_value_images'}  = C4::Items::get_authorised_value_images( C4::Biblio::get_biblio_authorised_values( $oldbiblio->{'biblionumber'} ) );
+        (my $aisbn) = $oldbiblio->{isbn} =~ /([\d-]*[X]*)/;
+        $aisbn =~ s/-//g;
+        $oldbiblio->{amazonisbn} = $aisbn;
 		$oldbiblio->{description} = $itemtypes{ $oldbiblio->{itemtype} }->{description};
  # Build summary if there is one (the summary is defined in the itemtypes table)
  # FIXME: is this used anywhere, I think it can be commented out? -- JF
@@ -1399,11 +1392,11 @@ s/\[(.?.?.?.?)$tagsubf(.*?)]/$1$subfieldvalue$2\[$1$tagsubf$2]/g;
                 $onloan_count++;
 				my $key = $prefix . $item->{due_date};
 				$onloan_items->{$key}->{due_date} = format_date($item->{onloan});
-				$onloan_items->{$key}->{count}++ if $item->{homebranch};
+				$onloan_items->{$key}->{count}++ if $item->{$hbranch};
 				$onloan_items->{$key}->{branchname} = $item->{branchname};
 				$onloan_items->{$key}->{location} = $shelflocations->{ $item->{location} };
 				$onloan_items->{$key}->{itemcallnumber} = $item->{itemcallnumber};
-				$onloan_items->{$key}->{imageurl} = getitemtypeimagesrc() . "/" . $itemtypes{ $item->{itype} }->{imageurl};
+				$onloan_items->{$key}->{imageurl} = getitemtypeimagelocation( 'opac', $itemtypes{ $item->{itype} }->{imageurl} );
                 # if something's checked out and lost, mark it as 'long overdue'
                 if ( $item->{itemlost} ) {
                     $onloan_items->{$prefix}->{longoverdue}++;
@@ -1466,20 +1459,20 @@ s/\[(.?.?.?.?)$tagsubf(.*?)]/$1$subfieldvalue$2\[$1$tagsubf$2]/g;
 					}
                     $other_items->{$key}->{intransit} = ($transfertwhen ne '') ? 1 : 0;
 					$other_items->{$key}->{notforloan} = GetAuthorisedValueDesc('','',$item->{notforloan},'','',$notforloan_authorised_value) if $notforloan_authorised_value;
-					$other_items->{$key}->{count}++ if $item->{homebranch};
+					$other_items->{$key}->{count}++ if $item->{$hbranch};
 					$other_items->{$key}->{location} = $shelflocations->{ $item->{location} };
-					$other_items->{$key}->{imageurl} = getitemtypeimagesrc() . "/" . $itemtypes{ $item->{itype} }->{imageurl};
+					$other_items->{$key}->{imageurl} = getitemtypeimagelocation( 'opac', $itemtypes{ $item->{itype} }->{imageurl} );
                 }
                 # item is available
                 else {
                     $can_place_holds = 1;
                     $available_count++;
-					$available_items->{$prefix}->{count}++ if $item->{homebranch};
+					$available_items->{$prefix}->{count}++ if $item->{$hbranch};
 					foreach (qw(branchname itemcallnumber)) {
                     	$available_items->{$prefix}->{$_} = $item->{$_};
 					}
 					$available_items->{$prefix}->{location} = $shelflocations->{ $item->{location} };
-					$available_items->{$prefix}->{imageurl} = getitemtypeimagesrc() . "/" . $itemtypes{ $item->{itype} }->{imageurl};
+					$available_items->{$prefix}->{imageurl} = getitemtypeimagelocation( 'opac', $itemtypes{ $item->{itype} }->{imageurl} );
                 }
             }
         }    # notforloan, item level and biblioitem level
@@ -1529,7 +1522,6 @@ s/\[(.?.?.?.?)$tagsubf(.*?)]/$1$subfieldvalue$2\[$1$tagsubf$2]/g;
         $oldbiblio->{orderedcount}         = $ordered_count;
         $oldbiblio->{isbn} =~
           s/-//g;    # deleting - in isbn to enable amazon content
-        $oldbiblio->{'authorised_value_images'}  = C4::Items::get_authorised_value_images( C4::Biblio::get_biblio_authorised_values( $oldbiblio->{'biblionumber'} ) );
         push( @newresults, $oldbiblio );
     }
     return @newresults;

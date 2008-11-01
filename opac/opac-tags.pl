@@ -132,13 +132,13 @@ if (scalar @newtags_keys) {
 				}
 			}
 			my $result = ($openadds) ?
-				add_tag($biblionumber,$clean_tag,$loggedinuser,0) : # pre-approved
+				add_tag($biblionumber,$clean_tag,$loggedinuser,$loggedinuser) : # pre-approved
 				add_tag($biblionumber,$clean_tag,$loggedinuser)   ;
 			if ($result) {
 				$counts{$biblionumber}++;
 			} else {
 				push @errors, {failed_add_tag=>$clean_tag};
-				warn "add_tag($biblionumber,$clean_tag,$loggedinuser...) returned bad result ($result)";
+				$debug and warn "add_tag($biblionumber,$clean_tag,$loggedinuser...) returned bad result (" . (defined $result ? $result : 'UNDEF') .")";
 			}
 		}
 	}
@@ -155,15 +155,18 @@ foreach (@deltags) {
 if ($is_ajax) {
 	my $sum = 0;
 	foreach (values %counts) {$sum += $_;}
-	my $js_reply = sprintf("response = {\n\tadded: %d,\n\tdeleted: %d,\n\terrors: %d,",$sum,$dels,scalar @errors);
+	my $js_reply = sprintf("response = {\n\tadded: %d,\n\tdeleted: %d,\n\terrors: %d",$sum,$dels,scalar @errors);
 	my $err_string = '';
 	if (scalar @errors) {
-		$err_string = "\n\talerts: [";	# open response_function
+		$err_string = ",\n\talerts: [";	# open response_function
+		my $i = 1;
 		foreach (@errors) {
 			my $key = (keys %$_)[0];
-			$err_string .= "\n\t\t KOHA.Tags.tag_message.$key(\"" . $_->{$key} . '"),';
+			$err_string .= "\n\t\t KOHA.Tags.tag_message.$key(\"" . $_->{$key} . '")';
+			if($i < scalar @errors){ $err_string .= ","; }
+			$i++;
 		}
-		$err_string .= "\n\t],\n";	# close response_function
+		$err_string .= "\n\t]\n";	# close response_function
 	}
 	output_ajax_with_http_headers($query, "$js_reply\n$err_string};");
 	exit;
@@ -184,7 +187,10 @@ if ($loggedinuser and not $query->param('hidemytags')) {
 		$_->{date_created_display} = format_date($_->{date_created});
 	}
 }
-$template->param(tagsview => 1,);
+
+$template->param(tagsview => 1,
+dateformat => C4::Context->preference("dateformat"));
+
 if ($add_op) {
 	my $adds = 0;
 	for (values %counts) {$adds += $_;}
@@ -199,13 +205,14 @@ if ($add_op) {
 	$limit = $query->param('limit') || $hardmax;
 	($limit =~ /^\d+$/ and $limit <= $hardmax) or $limit = $hardmax;
 	$template->param(limit => $limit);
+	my $arghash = {approved=>1, limit=>$limit, 'sort'=>'-weight_total'};
+	# ($openadds) or $arghash->{approved} = 1;
 	if ($arg = $query->param('tag')) {
-		$results = get_approval_rows({term => $arg, approved=>1, limit=>$limit, 'sort'=>'-weight_total'});
+		$arghash->{term} = $arg;
 	} elsif ($arg = $query->param('biblionumber')) {
-		$results = get_approval_rows({biblionumber => $arg, approved=>1, limit=>$limit, 'sort'=>'-weight_total'});
-	} else {
-		$results = get_approval_rows({limit=>$limit, approved=>1, 'sort'=>'-weight_total'});
+		$arghash->{biblionumber} = $arg;
 	}
+	$results = get_approval_rows($arghash);
 
 	my $count = scalar @$results;
 	$template->param(TAGLOOP_COUNT => $count);

@@ -21,6 +21,7 @@ package C4::Koha;
 use strict;
 use C4::Context;
 use C4::Output;
+use URI::Split qw(uri_split);
 
 use vars qw($VERSION @ISA @EXPORT $DEBUG);
 
@@ -42,11 +43,11 @@ BEGIN {
 		&getFacets
 		&displayServers
 		&getnbpages
-		&getitemtypeimagesrcfromurl
 		&get_infos_of
 		&get_notforloan_label_of
 		&getitemtypeimagedir
 		&getitemtypeimagesrc
+		&getitemtypeimagelocation
 		&GetAuthorisedValues
 		&GetAuthorisedValueCategories
 		&GetKohaAuthorisedValues
@@ -73,9 +74,8 @@ BEGIN {
 
 =head1 FUNCTIONS
 
-=over 2
-
 =cut
+
 =head2 slashifyDate
 
   $slash_date = &slashifyDate($dash_date);
@@ -261,16 +261,17 @@ sub GetItemTypes {
 sub get_itemtypeinfos_of {
     my @itemtypes = @_;
 
-    my $query = '
+    my $placeholders = join( ', ', map { '?' } @itemtypes );
+    my $query = <<"END_SQL";
 SELECT itemtype,
        description,
        imageurl,
        notforloan
   FROM itemtypes
-  WHERE itemtype IN (' . join( ',', map( { "'" . $_ . "'" } @itemtypes ) ) . ')
-';
+  WHERE itemtype IN ( $placeholders )
+END_SQL
 
-    return get_infos_of( $query, 'itemtype' );
+    return get_infos_of( $query, 'itemtype', undef, \@itemtypes );
 }
 
 # this is temporary until we separate collection codes and item types
@@ -440,19 +441,9 @@ sub getitemtypeinfo {
     $sth->execute($itemtype);
     my $res = $sth->fetchrow_hashref;
 
-    $res->{imageurl} = getitemtypeimagesrcfromurl( $res->{imageurl} );
+    $res->{imageurl} = getitemtypeimagelocation( 'intranet', $res->{imageurl} );
 
     return $res;
-}
-
-sub getitemtypeimagesrcfromurl {
-    my ($imageurl) = @_;
-
-    if ( defined $imageurl and $imageurl !~ m/^http/ ) {
-        $imageurl = getitemtypeimagesrc() . '/' . $imageurl;
-    }
-
-    return $imageurl;
 }
 
 =head2 getitemtypeimagedir
@@ -472,25 +463,33 @@ returns the full path to the appropriate directory containing images.
 =cut
 
 sub getitemtypeimagedir {
-	my $src = shift;
-        $src = 'opac' unless defined $src;
-
+	my $src = shift || 'opac';
 	if ($src eq 'intranet') {
 		return C4::Context->config('intrahtdocs') . '/' .C4::Context->preference('template') . '/img/itemtypeimg';
-	}
-	else {
+	} else {
 		return C4::Context->config('opachtdocs') . '/' . C4::Context->preference('template') . '/itemtypeimg';
 	}
 }
 
 sub getitemtypeimagesrc {
-	 my $src = shift;
+	my $src = shift || 'opac';
 	if ($src eq 'intranet') {
 		return '/intranet-tmpl' . '/' .	C4::Context->preference('template') . '/img/itemtypeimg';
-	} 
-	else {
+	} else {
 		return '/opac-tmpl' . '/' . C4::Context->preference('template') . '/itemtypeimg';
 	}
+}
+
+sub getitemtypeimagelocation($$) {
+	my ( $src, $image ) = @_;
+
+	return '' if ( !$image );
+
+	my $scheme = ( uri_split( $image ) )[0];
+
+	return $image if ( $scheme );
+
+	return getitemtypeimagesrc( $src ) . '/' . $image;
 }
 
 =head3 _getImagesFromDirectory
@@ -645,7 +644,7 @@ sub GetPrinter ($$) {
     return $printer;
 }
 
-=item getnbpages
+=head2 getnbpages
 
 Returns the number of pages to display in a pagination bar, given the number
 of items and the number of items per page.
@@ -658,7 +657,7 @@ sub getnbpages {
     return int( ( $nb_items - 1 ) / $nb_items_per_page ) + 1;
 }
 
-=item getallthemes
+=head2 getallthemes
 
   (@themes) = &getallthemes('opac');
   (@themes) = &getallthemes('intranet');
@@ -788,9 +787,12 @@ sub getFacets {
 
 =head2 get_infos_of
 
-Return a href where a key is associated to a href. You give a query, the
-name of the key among the fields returned by the query. If you also give as
-third argument the name of the value, the function returns a href of scalar.
+Return a href where a key is associated to a href. You give a query,
+the name of the key among the fields returned by the query. If you
+also give as third argument the name of the value, the function
+returns a href of scalar. The optional 4th argument is an arrayref of
+items passed to the C<execute()> call. It is designed to bind
+parameters to any placeholders in your SQL.
 
   my $query = '
 SELECT itemnumber,
@@ -810,12 +812,12 @@ SELECT itemnumber,
 =cut
 
 sub get_infos_of {
-    my ( $query, $key_name, $value_name ) = @_;
+    my ( $query, $key_name, $value_name, $bind_params ) = @_;
 
     my $dbh = C4::Context->dbh;
 
     my $sth = $dbh->prepare($query);
-    $sth->execute();
+    $sth->execute( @$bind_params );
 
     my %infos_of;
     while ( my $row = $sth->fetchrow_hashref ) {
@@ -883,37 +885,73 @@ SELECT lib,
     return \%notforloan_label_of;
 }
 
+=head2 displayServers
+
+=over 4
+
+my $servers = displayServers();
+
+my $servers = displayServers( $position );
+
+my $servers = displayServers( $position, $type );
+
+=back
+
+displayServers returns a listref of hashrefs, each containing
+information about available z3950 servers. Each hashref has a format
+like:
+
+    {
+      'checked'    => 'checked',
+      'encoding'   => 'MARC-8'
+      'icon'       => undef,
+      'id'         => 'LIBRARY OF CONGRESS',
+      'label'      => '',
+      'name'       => 'server',
+      'opensearch' => '',
+      'value'      => 'z3950.loc.gov:7090/',
+      'zed'        => 1,
+    },
+
+
+=cut
+
 sub displayServers {
     my ( $position, $type ) = @_;
-    my $dbh    = C4::Context->dbh;
-    my $strsth = "SELECT * FROM z3950servers where 1";
-    $strsth .= " AND position=\"$position\"" if ($position);
-    $strsth .= " AND type=\"$type\""         if ($type);
+    my $dbh = C4::Context->dbh;
+
+    my $strsth = 'SELECT * FROM z3950servers';
+    my @where_clauses;
+    my @bind_params;
+
+    if ($position) {
+        push @bind_params,   $position;
+        push @where_clauses, ' position = ? ';
+    }
+
+    if ($type) {
+        push @bind_params,   $type;
+        push @where_clauses, ' type = ? ';
+    }
+
+    # reassemble where clause from where clause pieces
+    if (@where_clauses) {
+        $strsth .= ' WHERE ' . join( ' AND ', @where_clauses );
+    }
+
     my $rq = $dbh->prepare($strsth);
-    $rq->execute;
+    $rq->execute(@bind_params);
     my @primaryserverloop;
 
     while ( my $data = $rq->fetchrow_hashref ) {
-        my %cell;
-        $cell{label} = $data->{'description'};
-        $cell{id}    = $data->{'name'};
-        $cell{value} =
-            $data->{host}
-          . ( $data->{port} ? ":" . $data->{port} : "" ) . "/"
-          . $data->{database}
-          if ( $data->{host} );
-        $cell{checked} = $data->{checked};
         push @primaryserverloop,
-          {
-            label => $data->{description},
-            id    => $data->{name},
-            name  => "server",
-            value => $data->{host} . ":"
-              . $data->{port} . "/"
-              . $data->{database},
-            encoding   => ($data->{encoding}?$data->{encoding}:"iso-5426"),
-            checked    => "checked",
-            icon       => $data->{icon},
+          { label    => $data->{description},
+            id       => $data->{name},
+            name     => "server",
+            value    => $data->{host} . ":" . $data->{port} . "/" . $data->{database},
+            encoding => ( $data->{encoding} ? $data->{encoding} : "iso-5426" ),
+            checked  => "checked",
+            icon     => $data->{icon},
             zed        => $data->{type} eq 'zed',
             opensearch => $data->{type} eq 'opensearch'
           };
@@ -953,18 +991,16 @@ sub GetAuthValCode {
 
 =head2 GetAuthorisedValues
 
-$authvalues = GetAuthorisedValues($category);
+$authvalues = GetAuthorisedValues([$category], [$selected]);
 
-this function get all authorised values from 'authosied_value' table into a reference to array which
-each value containt an hashref.
+This function returns all authorised values from the'authosied_value' table in a reference to array of hashrefs.
 
-Set C<$category> on input args if you want to limits your query to this one. This params is not mandatory.
+C<$category> returns authorised values for just one category (optional).
 
 =cut
 
 sub GetAuthorisedValues {
     my ($category,$selected) = @_;
-	my $count = 0;
 	my @results;
     my $dbh      = C4::Context->dbh;
     my $query    = "SELECT * FROM authorised_values";
@@ -976,8 +1012,7 @@ sub GetAuthorisedValues {
 		if ($selected eq $data->{'authorised_value'} ) {
 			$data->{'selected'} = 1;
 		}
-		$results[$count] = $data;
-		$count++;
+        push @results, $data;
 	}
     #my $data = $sth->fetchall_arrayref({});
     return \@results; #$data;

@@ -1,5 +1,5 @@
 <!-- TMPL_INCLUDE NAME="doc-head-open.inc" -->
-<title>Koha &rsaquo; Catalogue &rsaquo; Details for <!-- TMPL_VAR NAME="title" --></title>
+<title>Koha &rsaquo; Catalog &rsaquo; Details for <!-- TMPL_VAR NAME="title" escape="html" --></title>
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" --><script type="text/JavaScript" language="JavaScript">
 //<![CDATA[
 // http://www.oreillynet.com/pub/a/javascript/2003/10/21/amazonhacks.html
@@ -44,7 +44,7 @@ function verify_images() {
 <!-- TMPL_INCLUDE NAME="header.inc" -->
 <!-- TMPL_INCLUDE NAME="cat-search.inc" -->
 
-<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/catalogue/search.pl">Catalogue</a>  &rsaquo; Details for <i><!-- TMPL_VAR NAME="title" --></i></div>
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/catalogue/search.pl">Catalog</a>  &rsaquo; Details for <i><!-- TMPL_VAR NAME="title" escape="html" --></i></div>
 
 <div id="doc3" class="yui-t2">
    
@@ -56,17 +56,17 @@ function verify_images() {
     <!-- TMPL_IF NAME="AmazonContent" --><div class="yui-gb"><!-- TMPL_ELSE --><div class="yui-g"><!-- /TMPL_IF -->
     <div id="catalogue_detail_biblio" class="yui-u first">
         
-    <h3><!-- TMPL_VAR NAME="title" --> <!-- TMPL_VAR NAME="subtitle" --></h3> 
+    <h3><!-- TMPL_VAR NAME="title" escape="html" --> <!-- TMPL_VAR NAME="subtitle" --></h3> 
             <!-- TMPL_UNLESS NAME="item-level_itypes" --><img src="<!-- TMPL_VAR NAME="imageurl" -->" alt="<!-- TMPL_VAR NAME="description" -->" title="<!-- TMPL_VAR NAME="description" -->"><!-- /TMPL_UNLESS -->
             <!-- TMPL_IF name="volume" --> <!-- TMPL_VAR name="volume" --><!-- /TMPL_IF -->
             <!-- TMPL_IF name="volumedesc" -->, <!-- TMPL_VAR name="volumedesc" --><!-- /TMPL_IF --> <!-- TMPL_IF NAME="number" --> <!-- TMPL_VAR NAME="number" --> <!-- /TMPL_IF -->
-            <!-- TMPL_IF name="unititle" -->, <!-- TMPL_VAR name="unititle" -->/<!-- /TMPL_IF -->
-            <!-- TMPL_IF NAME="author" -->By <a href="/cgi-bin/koha/catalogue/search.pl?q=au:<!-- TMPL_VAR NAME="author" -->"><!-- TMPL_VAR NAME="author" --></a><!-- /TMPL_IF -->
+            <!-- TMPL_IF name="unititle" -->, <!-- TMPL_VAR name="unititle" escape="html" -->/<!-- /TMPL_IF -->
+            <!-- TMPL_IF NAME="author" -->By <a href="/cgi-bin/koha/catalogue/search.pl?q=au:<!-- TMPL_VAR NAME="author" ESCAPE="url" -->"><!-- TMPL_VAR NAME="author" --></a><!-- /TMPL_IF -->
         <ul>
         <!-- TMPL_IF name="MARCAUTHORS" -->
             <li><strong>Additional Authors:</strong><ul>
             <!-- TMPL_LOOP NAME="MARCAUTHORS" -->
-                <li><!-- TMPL_LOOP NAME="MARCAUTHOR_SUBFIELDS_LOOP" --><!-- TMPL_VAR NAME="separator" --><a title="‡<!-- TMPL_VAR NAME=code --> <!-- TMPL_VAR NAME=value -->" href="/cgi-bin/koha/catalogue/search.pl?q=<!-- TMPL_LOOP NAME=link_loop --><!-- TMPL_VAR NAME=operator --><!-- TMPL_VAR name='limit' -->:<!-- TMPL_VAR NAME=link --><!-- /TMPL_LOOP -->"><!-- TMPL_VAR NAME="value" --></a><!-- /TMPL_LOOP --></li>
+                <li><!-- TMPL_LOOP NAME="MARCAUTHOR_SUBFIELDS_LOOP" --><!-- TMPL_VAR NAME="separator" --><a title="&#8225;<!-- TMPL_VAR NAME="code" --> <!-- TMPL_VAR NAME="value" escape="url" -->" href="/cgi-bin/koha/catalogue/search.pl?q=<!-- TMPL_LOOP NAME="link_loop" --><!-- TMPL_VAR NAME="operator" escape="url" --><!-- TMPL_VAR name="limit" -->:<!-- TMPL_VAR NAME="link" ESCAPE="url" --><!-- /TMPL_LOOP -->"><!-- TMPL_VAR NAME="value" --></a><!-- /TMPL_LOOP --></li>
                 <!-- /TMPL_LOOP -->
 
         </ul>
@@ -74,8 +74,8 @@ function verify_images() {
         <!-- /TMPL_IF -->
         <!-- TMPL_IF name="publishercode" -->
     <li><strong>Published by:</strong>
-        <a href="/cgi-bin/koha/catalogue/search.pl?q=pb:<!-- TMPL_VAR NAME="publishercode"-->">
-            <!-- TMPL_VAR NAME="publishercode" --> 
+        <a href="/cgi-bin/koha/catalogue/search.pl?q=pb:<!-- TMPL_VAR NAME="publishercode" ESCAPE="url" -->">
+            <!-- TMPL_VAR NAME="publishercode" ESCAPE="html" -->
         </a> <!-- TMPL_IF name="place" -->(<!-- TMPL_VAR NAME="place"-->)<!--/TMPL_IF--> <!-- TMPL_IF NAME="publicationyear" -->, <!-- TMPL_VAR NAME="publicationyear" --><!-- /TMPL_IF --> <!-- TMPL_IF NAME="editionstatement" --><!-- TMPL_VAR NAME="editionstatement" --><!-- /TMPL_IF --> <!-- TMPL_IF NAME="editionresponsability" --><!-- TMPL_VAR NAME="editionresponsability" --><!-- /TMPL_IF -->
     </li>
     <!-- /TMPL_IF -->
@@ -99,7 +99,7 @@ function verify_images() {
         </div>
         
 <!-- TMPL_IF NAME="AmazonContent" --><div class="yui-u" id="bookcoverimg">
-        <a href="http://www.amazon.com/gp/reader/<!-- TMPL_VAR NAME="isbn" -->/ref=sib_dp_pt/002-7879865-0184864#reader-link"><img border="0" src="http://images.amazon.com/images/P/<!-- TMPL_VAR NAME="isbn" -->.01._PIdp-schmooS,TopRight,7,-26_SCMZZZZZZZ_.jpg" alt="" /></a></div><!-- /TMPL_IF -->
+        <a href="http://www.amazon.com/gp/reader/<!-- TMPL_VAR NAME="amazonisbn" -->/ref=sib_dp_pt/002-7879865-0184864#reader-link"><img border="0" src="http://images.amazon.com/images/P/<!-- TMPL_VAR NAME="amazonisbn" -->.01._PIdp-schmooS,TopRight,7,-26_SCMZZZZZZZ_.jpg" alt="" /></a></div><!-- /TMPL_IF -->
         
         <div class="yui-u" style="margin-top: 1em;">
         <ul>
@@ -118,7 +118,7 @@ function verify_images() {
             <li><strong>Subjects:</strong> 
             <ul>
                 <!-- TMPL_LOOP NAME="MARCSUBJCTS" -->
-                <li><!-- TMPL_LOOP NAME="MARCSUBJECT_SUBFIELDS_LOOP" --> <!-- TMPL_VAR NAME="separator" --> <a title="‡<!-- TMPL_VAR NAME="code" --> <!-- TMPL_VAR NAME="value" -->" href="/cgi-bin/koha/catalogue/search.pl?q=<!-- TMPL_LOOP NAME="link_loop" --><!-- TMPL_VAR NAME="operator" --><!-- TMPL_VAR name="limit" -->:<!-- TMPL_VAR NAME="link" --><!-- /TMPL_LOOP -->"><!-- TMPL_VAR NAME="value" --></a><!-- /TMPL_LOOP --></li>
+                <li><!-- TMPL_LOOP NAME="MARCSUBJECT_SUBFIELDS_LOOP" --> <!-- TMPL_VAR NAME="separator" --> <a title="&#8225;<!-- TMPL_VAR NAME="code" --> <!-- TMPL_VAR NAME="value" -->" href="/cgi-bin/koha/catalogue/search.pl?q=<!-- TMPL_LOOP NAME="link_loop" --><!-- TMPL_VAR NAME="operator" escape="url" --><!-- TMPL_VAR name="limit" -->:<!-- TMPL_VAR NAME="link" escape="url" --><!-- /TMPL_LOOP -->"><!-- TMPL_VAR NAME="value" ESCAPE="html" --></a><!-- /TMPL_LOOP --></li>
                 <!-- /TMPL_LOOP -->
                 </ul>
             </li>
@@ -164,14 +164,12 @@ function verify_images() {
                 <th>Status</th>
                 <th>Last seen</th>
                 <th>Barcode</th>
-                <!-- TMPL_IF NAME="itemdata_enumchron" --><th>Publication Details</th>
-				<!-- TMPL_ELSIF NAME="serial" --><th>Volume</th>
-				<!-- /TMPL_IF -->
+                <!-- TMPL_IF NAME="volinfo" --><th>Publication Details</th><!-- /TMPL_IF -->
                 <!-- TMPL_IF NAME="itemdata_copynumber" --><th>Copy No.</th><!-- /TMPL_IF -->
             </tr>
             <!-- TMPL_LOOP NAME="itemloop" -->
                 <tr>
-                    <!-- TMPL_IF NAME="item-level_itypes" --><td class="itype"><!-- TMPL_IF NAME="noItemTypeImages" --><!-- TMPL_VAR NAME="description" --><!-- TMPL_ELSE --><img src="<!-- TMPL_VAR NAME="imageurl" -->" alt="<!-- TMPL_VAR NAME="description" -->" title="<!-- TMPL_VAR NAME="description" -->"><!-- /TMPL_IF --></td><!-- /TMPL_IF -->
+                    <!-- TMPL_IF NAME="item-level_itypes" --><td class="itype"><!-- TMPL_IF NAME="noItemTypeImages" --><!-- TMPL_VAR NAME="description" --><!-- TMPL_ELSE --><img src="<!-- TMPL_VAR NAME="imageurl" -->" alt="<!-- TMPL_VAR NAME="description" -->" title="<!-- TMPL_VAR NAME="description" -->" /><!-- /TMPL_IF --></td><!-- /TMPL_IF -->
                     <td class="location"><!-- TMPL_UNLESS NAME="singlebranchmode" --><!-- TMPL_VAR NAME="branchname" --><!-- /TMPL_UNLESS --> <!-- TMPL_VAR NAME="location" --> </td>
                     <!-- TMPL_IF NAME="itemdata_ccode" --><td><!-- TMPL_VAR name="ccode" --></td><!-- /TMPL_IF -->
                     <td class="itemcallnumber"><!-- TMPL_IF NAME="itemcallnumber" --> <!-- TMPL_VAR NAME="itemcallnumber" --><!-- /TMPL_IF --></td>
@@ -248,12 +246,15 @@ function verify_images() {
                         
                     </td>
                     <td class="datelastseen"><!-- TMPL_VAR NAME="datelastseen" --></td>
-                    <td><a href="/cgi-bin/koha/catalogue/moredetail.pl?type=<!-- TMPL_VAR NAME="type" -->&amp;item=<!-- TMPL_VAR NAME="itemnumber" -->&amp;biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->&amp;bi=<!-- TMPL_VAR NAME="biblioitemnumber" -->#item<!-- TMPL_VAR NAME="itemnumber">"><!-- TMPL_VAR NAME="barcode" --></a></td>
-				<!-- TMPL_IF NAME="itemdata_enumchron" -->
-					<td class="enumchron"><!-- TMPL_VAR NAME="enumchron" --></td>
-                <!-- TMPL_ELSIF NAME="serial" -->
-					<td class="serialseq"><!-- TMPL_VAR NAME="serialseq" --><!-- TMPL_IF NAME="publisheddate" --> (<!-- TMPL_VAR NAME="publisheddate" -->)<!-- /TMPL_IF --></td>
-				<!-- /TMPL_IF -->
+                    <td><a href="/cgi-bin/koha/catalogue/moredetail.pl?type=<!-- TMPL_VAR NAME="type" -->&amp;itemnumber=<!-- TMPL_VAR NAME="itemnumber" -->&amp;biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->&amp;bi=<!-- TMPL_VAR NAME="biblioitemnumber" -->#item<!-- TMPL_VAR NAME="itemnumber">"><!-- TMPL_VAR NAME="barcode" --></a></td>
+				<!-- TMPL_IF NAME="volinfo" -->	<td class="enumchron">
+					<!-- TMPL_IF NAME="itemdata_enumchron" -->
+						<!-- TMPL_IF NAME="enumchron" -->
+						<!-- TMPL_VAR NAME="enumchron" --><!-- TMPL_IF NAME="serialseq" --> -- <!-- /TMPL_IF -->
+						<!-- /TMPL_IF -->
+					<!-- /TMPL_IF -->
+					<!-- TMPL_VAR NAME="serialseq" --><!-- TMPL_IF NAME="publisheddate" --> (<!-- TMPL_VAR NAME="publisheddate" -->)<!-- /TMPL_IF -->
+				</td><!-- /TMPL_IF -->
 				<!-- TMPL_IF NAME="itemdata_copynumber" -->
 					<td class="copynumber"><!-- TMPL_VAR NAME="copynumber" --></td>
 				<!-- /TMPL_IF -->
@@ -303,7 +304,7 @@ function verify_images() {
 <div id="editions"><h2>Editions</h2>
 <table>
 <!-- TMPL_LOOP NAME="XISBNS" --><tr><!-- TMPL_IF NAME="AmazonContent" --><td><a href="http://www.amazon.com/gp/reader/<!-- TMPL_VAR NAME="isbn" -->/ref=sib_dp_pt/002-7879865-0184864#reader-link"><img src="http://images.amazon.com/images/P/<!-- TMPL_VAR NAME="isbn" -->.01._AA75_PU_PU-5_.jpg" /></a></td><!-- /TMPL_IF --><td><!-- TMPL_IF NAME="noItemTypeImages" --><!-- TMPL_VAR NAME="description" --><!-- TMPL_ELSE --><img src="<!-- TMPL_VAR NAME="imageurl" -->" alt="<!-- TMPL_VAR NAME="description" -->" title="<!-- TMPL_VAR NAME="description" -->"><!-- /TMPL_IF --></td><td>
-<a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->"><!-- TMPL_VAR NAME="title" --></a> by <!-- TMPL_VAR NAME="author" --> &copy;<!-- TMPL_VAR NAME="copyrightdate" -->
+<a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->"><!-- TMPL_VAR NAME="title" escape="html" --></a> by <!-- TMPL_VAR NAME="author" --> &copy;<!-- TMPL_VAR NAME="copyrightdate" -->
   <!-- TMPL_IF name="publishercode" -->
 <!-- TMPL_VAR NAME="publishercode" --> <!-- TMPL_IF name="place" -->(<!-- TMPL_VAR NAME="place"-->)<!--/TMPL_IF--> <!-- TMPL_IF NAME="publicationyear" -->, <!-- TMPL_VAR NAME="publicationyear" --><!-- /TMPL_IF --> <!-- TMPL_IF NAME="editionstatement" --><!-- TMPL_VAR NAME="editionstatement" --><!-- /TMPL_IF --> <!-- TMPL_IF NAME="editionresponsability" --><!-- TMPL_VAR NAME="editionresponsability" --><!-- /TMPL_IF -->
     <!-- /TMPL_IF -->

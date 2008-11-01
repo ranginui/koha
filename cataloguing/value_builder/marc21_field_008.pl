@@ -1,4 +1,3 @@
-
 #!/usr/bin/perl
 
 
@@ -51,7 +50,12 @@ sub plugin_javascript {
 //<![CDATA[
 
 function Focus$function_name(subfield_managed) {
-    document.getElementById(\"$field_number\").value='$dateentered' + 't        xxu||||| |||| 00| 0 eng d';
+
+	if ( document.getElementById(\"$field_number\").value ) {
+	}
+	else {
+		document.getElementById(\"$field_number\").value='$dateentered' + 't        xxu||||| |||| 00| 0 eng d';
+	}
     return 1;
 }
 

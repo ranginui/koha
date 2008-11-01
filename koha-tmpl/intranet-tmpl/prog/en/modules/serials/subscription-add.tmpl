@@ -1,16 +1,57 @@
 <!-- TMPL_INCLUDE NAME="doc-head-open.inc" -->
-<title>Koha &rsaquo; Serials &rsaquo; <!-- TMPL_IF name="mod" --> Modify subscription to <!-- TMPL_VAR name="bibliotitle" --><!-- TMPL_ELSE -->New subscription<!-- /TMPL_IF --></title>
+<title>Koha &rsaquo; Serials &rsaquo; <!-- TMPL_IF name="mod" --><!-- TMPL_VAR name="bibliotitle" escape="html" --> &rsaquo; Modify subscription<!-- TMPL_ELSE -->New subscription<!-- /TMPL_IF --></title>
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
 <!-- TMPL_INCLUDE NAME="calendar.inc" -->
 
 <script type="text/javascript">
-<!--
+//<![CDATA[
 
 // the english words used in display purposes
 var text = new Array(_("Number"),_("Volume"),_("Issue"),_("Month"),_("Week"),_("Starting with:"),_("Rollover at:"),_("Choose Hemisphere:"),_("Northern"),_("Southern"),
 _("Autumn"),_("Winter"),_("Spring"),_("Summer"),_("Fall"),_("Season"),_("Year"));
+var weekno_label = _("Week # ");
 var is_season = 0;
 var is_hemisphere = 1;
+var irregular_issues;   // will hold irregularity object.
+
+function formatDate(myDate) {
+    var d = new Array( myDate.getFullYear(), myDate.getMonth() + 1 ,myDate.getDate());
+    if(d[1].toString().length == 1) { d[1] = '0'+d[1] };
+    if(d[2].toString().length == 1) { d[2] = '0'+d[2] };
+    <!-- TMPL_IF NAME="dateformat_us" -->
+        return(d[1] + '/' + d[2] + '/' + d[0]) ;
+    <!-- TMPL_ELSIF NAME="dateformat_metric" -->
+        return(d[2] + '/' + d[1] + '/' + d[0]) ;
+    <!-- TMPL_ELSE -->
+        return(''+d[0] + '-' + d[1] + '-' + d[2]) ;
+    <!-- /TMPL_IF -->    
+}
+
+Date.prototype.addDays = function(days) {
+    this.setDate(this.getDate()+days);
+}
+
+function getWeeksArray(startDate,periodicity) {
+// returns an array of syspref-formatted dates starting at the first day of startDate's year.
+// This prediction method will not accurately predict irregularites beyond the first year.
+// FIXME : Should replace with ajax query to get the first Monday of the year so that week numbers have correct dates.
+    var incr=1;
+    if(periodicity==3) {  // 1/2 wks
+        incr=2;
+    } else if(periodicity == 4) { // 1/3 wks
+        incr=3;
+    }
+    var weeksArray = new Array;
+    var jan01 = new Date();
+    jan01.setDate(1);
+    jan01.setMonth(0);
+    jan01.setFullYear(startDate.getFullYear());
+    for(var i=0;i<52;i++) {
+        weeksArray[i] = formatDate(jan01) + ' ' + weekno_label + (i + 1);
+        jan01.addDays( 7 ); 
+    }
+    return weeksArray;
+}
 
 function YMDaToYWDa(S) {
     with (new Date(Date.UTC(S[0], S[1] - 1, S[2]))) {
@@ -33,8 +74,72 @@ return ddiff+1;
 }
 
 
+// create irregularity object.
+function IrregularPattern() {
+	this.months = new Array(_("January"),_("February"),_("March"),_("April"),_("May"),_("June"),_("July"),_("August"),_("September"),_("October"),_("November"),_("December"));
+	this.seasons = new Array(_("Autumn"),_("Winter"),_("Spring"),_("Summer"),_("Fall"));
+    this.daynames = new Array(_("Monday"),_("Tuesday"),_("Wednesday"),_("Thursday"),_("Friday"),_("Saturday"),_("Sunday"));
+    // create weeks irregularity selection array:
+    this.firstissue = new Date();
+    this.firstissue.setDate(1);
+    this.firstissue.setMonth(0);
+    <!-- TMPL_IF NAME='firstacquiyear' --> // it's a mod, we already have a start date.
+        this.firstissue.setFullYear( <!-- TMPL_VAR NAME="firstacquiyear" --> );
+    <!-- /TMPL_IF -->
+   	this.weeks = getWeeksArray(this.firstissue); 
+
+    this.numskipped = 0;
+    // init:
+	var irregular = '<!-- TMPL_VAR NAME="irregularity" -->';
+    this.skipped = irregular.split(',');
+}
+
+IrregularPattern.prototype.update = function() {
+		this.skipped= new Array;
+		var cnt = 0;
+		// daily periodicity, we interpret irregular array as which days of week to skip.
+		// else if weekly periodicity, week numbers (starting from 01 Jan) to skip.
+        // else  irregular array is list of issues to skip
+		var summary_str = '';
+		this.numskipped = 0;
+        if(document.f.irregularity_select) {
+            for( var i in document.f.irregularity_select.options ) {
+                if( document.f.irregularity_select.options[i].selected ) {
+                    this.skipped[cnt] = document.f.irregularity_select.options[i].value ;
+                    summary_str += document.f.irregularity_select.options[i].text + "\n" ;
+				    cnt++;
+				    this.numskipped++;
+			    }
+		    }
+		    var summary = document.getElementById("irregularity_summary");
+		    if(summary) {
+			    summary.value = summary_str;
+			    summary.rows= ( cnt > 6 ) ? cnt : 6 ; // textarea will bre resized, but not more than 6 lines will show.
+		    }
+        }
+}
+
+IrregularPattern.prototype.irregular = function(index) { 
+	for( var i in this.skipped) {
+			if( this.skipped[i] == index) {
+				return true;
+			}
+	}
+	return false;
+}
+
+function init_pattern() {
+	irregular_issues = new IrregularPattern();
+}
+function reset_pattern() {
+	document.getElementById("numberpattern").value = '';
+    document.getElementById("irregularity").innerHTML = '';
+	init_pattern();
+	reset_num_pattern();
+
+}
 // common pre defined number patterns
-function num_pattern() {
+function reset_num_pattern() {
 var patternchoice = document.getElementById("numberpattern").value;
     switch(patternchoice){
     case "2":
@@ -50,9 +155,9 @@ var patternchoice = document.getElementById("numberpattern").value;
         document.f.setto1.value=0;
         document.f.setto2.value=1;
         document.f.setto3.value=1;
-/*        document.f.lastvalue1.value=1;
+        document.f.lastvalue1.value=1;
         document.f.lastvalue2.value=1;
-        document.f.lastvalue3.value=1;*/
+        document.f.lastvalue3.value=1;
         document.f.numberingmethod.value=_("Vol {X}, No {Y}, Issue {Z}");
         moreoptions(text[1],text[0],text[2]);
         display_table(0); // toggle info box on (1) or off (0)
@@ -70,9 +175,9 @@ var patternchoice = document.getElementById("numberpattern").value;
         document.f.setto1.value=0;
         document.f.setto2.value=1;
         document.f.setto3.value='';
-/*        document.f.lastvalue1.value=1;
+        document.f.lastvalue1.value=1;
         document.f.lastvalue2.value=1;
-        document.f.lastvalue3.value='';*/
+        document.f.lastvalue3.value='';
         document.f.numberingmethod.value=_("Vol {X}, No {Y}");
         moreoptions(text[1],text[0]);
         display_table(0);
@@ -90,6 +195,9 @@ var patternchoice = document.getElementById("numberpattern").value;
         document.f.setto1.value=0;
         document.f.setto2.value=1;
         document.f.setto3.value='';
+        document.f.lastvalue1.value=1;
+        document.f.lastvalue2.value=1;
+        document.f.lastvalue3.value='';
         document.f.numberingmethod.value=_("Vol {X}, Issue {Y}");
         moreoptions(text[1],text[2]);
         display_table(0);
@@ -131,10 +239,10 @@ var patternchoice = document.getElementById("numberpattern").value;
         document.f.setto1.value=0;
         document.f.setto2.value='1';
         document.f.setto3.value='';
-        document.f.lastvaluetemp1.value=sYear;
         document.f.periodicity.value='8';
         document.f.numberingmethod.value=_("{Y} {X}");
         moreoptions_seasons(text[15],sYear);
+        document.f.lastvalue1temp.value=document.f.lastvalue1.value=sYear;
         display_table(0);
         is_season = 1;
         break;
@@ -143,8 +251,8 @@ var patternchoice = document.getElementById("numberpattern").value;
         document.getElementById("more_options").innerHTML = '';
         document.f.irreg_check.value=1; 
         break;
-    case "8":
-        var d = new Date(document.f.startdate.value);
+    case "8":  // Year/Number
+        var d = (document.f.firstacquidate.value) ? new Date( document.f.firstacquidate.value) : new Date() ;
         var sYear = d.getFullYear();
         document.f.add1.value=1;
         document.f.add2.value=1;
@@ -158,30 +266,22 @@ var patternchoice = document.getElementById("numberpattern").value;
         document.f.setto1.value=0;
         document.f.setto2.value=1;
         document.f.setto3.value='';
-//         document.f.setto3.value='';
-        if (document.f.lastvalue1.value==0){document.f.lastvalue1.value=sYear};
-        if (document.f.lastvalue2.value==0 ||document.f.lastvalue2.value=='' ){    
+        document.f.lastvalue1.value=sYear;
           switch (document.f.periodicity.value){
             case 1:              
               var doy = dayofyear(d);
-              //var Weeknumber=YWDA[1];
               document.f.lastvalue2.value=doy; 
+              document.f.whenmorethan2.value=365; 
               break;      
             case 12:     
               var doy = dayofyear(d);
-              //var Weeknumber=YWDA[1];
               document.f.lastvalue2.value=doy*2; 
-              break;      
-            case 13:     
-              var doy = dayofyear(d);
-              //var Weeknumber=YWDA[1];
-              document.f.lastvalue2.value=doy/3; 
+              document.f.whenmorethan2.value=730; 
               break;      
             case 2:
             case 3:
             case 4:
               var YWDa = YMDaToYWDa(d);
-              //var Weeknumber=YWDA[1];
               document.f.lastvalue2.value=YWDA[1]/(document.f.periodicity.value-1); 
               break;      
             case 5:
@@ -191,23 +291,26 @@ var patternchoice = document.getElementById("numberpattern").value;
             case 6:
               var smonth = d.getMonth();
               document.f.lastvalue2.value=smonth/2;
+              document.f.whenmorethan2.value=6;
               break;      
             case 7:
             case 8:      
               var smonth = d.getMonth();
               document.f.lastvalue2.value=smonth/3;
+              document.f.whenmorethan2.value=4;
               break;      
             case 9:                        
               var smonth = d.getMonth();
               document.f.lastvalue2.value=smonth/6;
+              document.f.whenmorethan2.value=2;
               break;      
             default:
           } 
-        }    
-        //         document.f.lastvalue2.value=document.f.lastvaluetemp2.value;
         document.f.lastvalue3.value='';
-        document.f.numberingmethod.value=_("{X}/{Y}");
+        document.f.numberingmethod.value=_("{X} / {Y}");
         moreoptions(text[16],text[0]);
+     //   document.f.lastvalue1temp.value=sYear;
+     //   document.f.lastvalue2temp.value=document.f.lastvalue2.value;
         display_table(0);
         break;
     default:
@@ -223,11 +326,12 @@ var patternchoice = document.getElementById("numberpattern").value;
         document.f.setto1.value=0;
         document.f.setto2.value='';
         document.f.setto3.value='';
-/*        document.f.lastvalue1.value=1;
+        document.f.lastvalue1.value=1;
         document.f.lastvalue2.value='';
-        document.f.lastvalue3.value='';*/
+        document.f.lastvalue3.value='';
         document.f.numberingmethod.value='{X}';
-        moreoptions_daily_check(text[0]);
+//        moreoptions_daily_check(text[0]);
+        moreoptions(text[0]);
         document.f.irreg_check.value=1;
         display_table(0);
         break;
@@ -237,15 +341,18 @@ var patternchoice = document.getElementById("numberpattern").value;
 function display_table(n) {
     if(n==1){
         document.getElementById("basetable").style.display = 'block';
-    } else {
+    } else if(n==0){
         document.getElementById("basetable").style.display = 'none';
-    }
+    } else {
+		var disp_val = ( document.getElementById("basetable").style.display == 'none' ) ? 'block' : 'none' ;
+			document.getElementById("basetable").style.display = disp_val;
+	}
 }
 
-function modify_num_pattern() {
+function set_num_pattern_from_template_vars() {
 	if(!document.getElementById("numberpattern")){ return false; }
     document.getElementById("numberpattern").value = '<!-- TMPL_VAR NAME="numberpattern" -->';
-    num_pattern();
+    reset_num_pattern();
     
     document.f.add1.value='<!-- TMPL_VAR NAME="add1" -->';
     document.f.add2.value='<!-- TMPL_VAR NAME="add2" -->';
@@ -276,28 +383,27 @@ function modify_num_pattern() {
         more_strZ="Z";
     }
     <!-- /TMPL_IF -->
-
-    document.f.lastvaluetemp1.value='<!-- TMPL_VAR NAME="lastvalue1" -->';
+    document.f.lastvalue1temp.value='<!-- TMPL_VAR NAME="lastvalue1" -->';
     if(more_strY){
-        document.f.lastvaluetemp2.value='<!-- TMPL_VAR NAME="lastvalue2" -->';
-    document.f.whenmorethantemp2.value='<!-- TMPL_VAR NAME="whenmorethan2" -->';
+        document.f.lastvalue2temp.value='<!-- TMPL_VAR NAME="lastvalue2" -->';
+    document.f.whenmorethan2temp.value='<!-- TMPL_VAR NAME="whenmorethan2" -->';
     }
     if(more_strZ){
-        document.f.lastvaluetemp3.value='<!-- TMPL_VAR NAME="lastvalue3" -->';
-    document.f.whenmorethantemp3.value='<!-- TMPL_VAR NAME="whenmorethan3" -->';
+        document.f.lastvalue3temp.value='<!-- TMPL_VAR NAME="lastvalue3" -->';
+    document.f.whenmorethan3temp.value='<!-- TMPL_VAR NAME="whenmorethan3" -->';
     }
 }
 
 // a pre check with more options to see if 'number' and '1/day' are chosen
+<!-- 
 function moreoptions_daily_check(x) {
     var periodicity = document.f.periodicity.value;
     var errortext='';
-    if(periodicity == 1){
+    if(periodicity == 1){ // i.e. daily
         document.getElementById("irregularity").innerHTML = '';
-        var daynames = new Array(_("Monday"),_("Tuesday"),_("Wednesday"),_("Thursday"),_("Friday"),_("Saturday"),_("Sunday"));
         errortext =_("Please indicate which days of the week you <b>DO NOT<\/b> expect to receive issues.<br \/>");
-        for(var j=0;j<daynames.length;j++){
-            errortext +="<input type='checkbox' name='irregular' id='irregular"+(j+1)+"' value='"+(j+1)+"' />"+daynames[j]+" &nbsp; ";
+        for(var j=0;j<irregular_issues.daynames.length;j++){
+            errortext +="<input type='checkbox' name='irregular' id='irregular"+(j+1)+"' value='"+(j+1)+"' />"+irregular_issues.daynames[j]+" &nbsp; ";
         }
         var error = errortext;
         moreoptions(x);
@@ -308,6 +414,8 @@ function moreoptions_daily_check(x) {
         moreoptions(x);
     }
 }
+-->
+
 
 // to dispaly the more options section
 function moreoptions(x,y,z){
@@ -316,7 +424,7 @@ document.getElementById("more_options").innerHTML = '';
 var textbox = '';
     // alert("X: "+x+"Y: "+y+"Z: "+z);
     if(x){
-        textbox +="<table>\n<tr><th>&nbsp;<\/th><th>"+x+"<\/th>";
+        textbox +="<table id='irregularity_table'>\n<tr><th>&nbsp;<\/th><th>"+x+"<\/th>";
         if(y){
             textbox +="<th>"+y+"<\/th>";
             if(z){
@@ -324,24 +432,24 @@ var textbox = '';
             }
         }
         textbox +="<\/tr>\n";
-        textbox +="<tr><th scope=\"row\">"+text[5]+"<\/td><td><input type='text' name='lastvaluetemp1' size='4' onkeyup='moreoptionsupdate(\"lastvalue1\")' value=\"" + document.f.lastvalue1.value +  "\" /><\/td>\n";
+        textbox +="<tr><th scope=\"row\">"+text[5]+"<\/td><td><input type='text' name='lastvalue1temp' id='lastvalue1temp' size='4' onkeyup='moreoptionsupdate(this)' value=\"" + document.f.lastvalue1.value +  "\" /><\/td>\n";
         if(y){
-            textbox +="<td><input type='text' name='lastvaluetemp2' size='4' onkeyup='moreoptionsupdate(\"lastvalue2\")' value=\"" + document.f.lastvalue2.value + "\" /><\/td>\n";
+            textbox +="<td><input type='text' name='lastvalue2temp' id='lastvalue2temp' size='4' onkeyup='moreoptionsupdate(this)' value=\"" + document.f.lastvalue2.value + "\" /><\/td>\n";
             if(z){
-                textbox +="<td><input type='text' name='lastvaluetemp3' size='4' onkeyup='moreoptionsupdate(\"lastvalue3\")' value=\"" + document.f.lastvalue3.value + "\" /><\/td>\n";
+                textbox +="<td><input type='text' name='lastvalue3temp' id='lastvalue3temp' size='4' onkeyup='moreoptionsupdate(this)' value=\"" + document.f.lastvalue3.value + "\" /><\/td>\n";
             }
         }
         textbox +="<\/tr>\n";
         if(y){
             textbox +="<tr><th scope=\"row\">"+text[6]+"<\/th>";
-            textbox +="<td><a href='javascript:irregularity_check()'>"+_("Irregularity?")+"<\/a><\/td>\n";
-            textbox +="<td><input type='text' name='whenmorethantemp2' size='4' onkeyup='moreoptionsupdate(\"whenmorethan2\",1)'><\/td>\n";
+            textbox +="<td>&nbsp;<\/td>\n";
+            textbox +="<td><input type='text' name='whenmorethan2temp' id='whenmorethan2temp' size='4' onkeyup='moreoptionsupdate(this,1)'><\/td>\n";
             if(z){
-                textbox +="<td><input type='text' name='whenmorethantemp3' size='4' onkeyup='moreoptionsupdate(\"whenmorethan3\",1)'><\/td>\n";
+                textbox +="<td><input type='text' name='whenmorethan3temp' id='whenmorethan3temp' size='4' onkeyup='moreoptionsupdate(this,1)'><\/td>\n";
             }
             textbox +="<\/tr>";
         } else {
-          textbox +="<tr> <td>"+_("issues expected")+"</td><td><input type='text' name='issuesexpectedtemp1' size='4' onkeyup='moreoptionsupdate(\"issuesexpected1\",0)' value=\"" + document.f.issuesexpected1.value + "\" ><br/><a href='javascript:irregularity_check()'>"+_("Irregularity?")+"</a></td></tr>";
+          textbox +="<tr> <td>"+_("issues expected")+"<\/td><td><input type='text' name='issuesexpected1temp' id='issuesexpected1temp' size='4' onkeyup='moreoptionsupdate(this,0)' value=\"" + document.f.issuesexpected1.value + "\" ><\/td><\/tr>";
         }
         textbox +="<\/table>\n";
     }
@@ -354,7 +462,7 @@ var selbox = document.getElementById("season1");
     var selboxselected = selbox.options[selbox.selectedIndex].value;
     selbox.options.length = 0;
 
-    if (chosen == "1") {
+    if ( (chosen == "1") || ( ! (chosen) && is_hemisphere == 1 )) {
         selbox.options[selbox.options.length] = new Option(text[11],'1');
         selbox.options[selbox.options.length] = new Option(text[12],'2');
         selbox.options[selbox.options.length] = new Option(text[13],'3');
@@ -363,7 +471,7 @@ var selbox = document.getElementById("season1");
         selbox.options[selboxselected-1].selected = true;
     }
 
-    if (chosen == "2") {
+    if ( (chosen == "2") || ( ! (chosen) && is_hemisphere == 2 )) {
         selbox.options[selbox.options.length] = new Option(text[13],'1');
         selbox.options[selbox.options.length] = new Option(text[10],'2');
         selbox.options[selbox.options.length] = new Option(text[11],'3');
@@ -374,8 +482,9 @@ var selbox = document.getElementById("season1");
     }
 }
 
-// to dispaly the more options section for seasons
+// to display the more options section for seasons
 function moreoptions_seasons(x,y){
+// x = 'Season'.  y = 'Year'.
 document.getElementById("irregularity").innerHTML = '';
 document.getElementById("more_options").innerHTML = '';
 var textbox = '';
@@ -391,21 +500,18 @@ var textbox = '';
             textbox +=">"+text[i+7]+"<\/option>";
         }
         textbox +="<\/li>\n";
-        textbox +="<table><tr><th>&nbsp;<\/th><th>"+x+"<\/th>";
+        textbox +="<table id='seasonal_irregularity'><tr><th>&nbsp;<\/th><th>"+x+"<\/th>";
         textbox +="<th>"+text[16]+"<\/th>";
         textbox +="<\/tr>\n";
-        textbox +="<tr><th scope=\"row\">"+text[5]+"<\/th><td><select name='lastvaluetemp2' id='season1' onchange='moreoptionsupdate(\"lastvalue2\")'>";
+        textbox +="<tr><th scope=\"row\">"+text[5]+"<\/th><td><select name='lastvalue2temp' id='lastvalue2temp' id='season1' onchange='moreoptionsupdate(this)'>";
         for(var j = 1; j <= 4; j++){
-            textbox +="<option value='"+j+"'>"+text[j+10]+"<\/option>";
+            textbox +="<option value='"+j+"'>"+text[j+9]+"<\/option>";
         }
-        textbox +="<\/select><\/td><td><select name='lastvaluetemp1' onchange='moreoptionsupdate(\"lastvalue1\")'>";
-        for(var k = parseInt(y); k <= parseInt(y)+15; k++){
-            textbox +="<option value='"+k+"'>"+k+"<\/option>";
-        }
-        textbox +="<\/select><\/td><\/tr>\n";
+        textbox +="<\/select><\/td>";
+        var isyr = irregular_issues.firstissue;
+        textbox += "<td>" + irregular_issues.firstissue.getFullYear() + "<\/td><\/tr>\n";
         textbox +="<tr><th scope=\"row\">"+text[6]+"<\/th>";
-        textbox +="<td><a href='javascript:irregularity_check()'>"+_("Irregularity?")+"<\/a><\/td>\n";
-        textbox +="<td><input type='text' name='whenmorethantemp2' size='4' onkeyup='moreoptionsupdate(\"whenmorethan2\",1)'><\/td>\n";
+        textbox +="<td><input type='text' name='whenmorethan2temp' id='whenmorethan2temp' size='4' onkeyup='moreoptionsupdate(this,1)'><\/td>\n";
                 textbox +="<\/tr><\/table>\n";
 
     }
@@ -416,11 +522,16 @@ function irregularity_check(){
     document.f.irreg_check.value = 1; // Irregularity button now pushed
     var periodicity = document.f.periodicity.value;
 	var rollover = document.f.issuesexpected1.value;
-    if(document.f.whenmorethantemp2){
-      rollover = document.f.whenmorethantemp2.value;
+    if( (document.f.whenmorethan2) && ( document.f.whenmorethan2.value > 0) ){
+      rollover = document.f.whenmorethan2.value;
     }
-    if(document.f.whenmorethantemp3){
-        rollover = document.f.whenmorethantemp3.value;
+    if((document.f.whenmorethan3) && document.f.whenmorethan3.value > 0 ){
+        // FIXME: Irregularity check assumes that the full prediction pattern repeats each year.
+		//  In cases where the outermost periodicity is > 1 year,  
+		//  e.g. where a volume spans two years, the irregularity check will be incorrect, 
+        // but you can safely ignore the check, submit the form, and the prediction pattern should be correct.
+		//  a way to distinguish between these two cases is needed.
+		rollover = document.f.whenmorethan3.value * document.f.whenmorethan2.value;
     }
     var error='';
     var toobig;
@@ -438,13 +549,6 @@ function irregularity_check(){
         if(rollover < 365) expected =365;
         if(rollover > 365) {
             expectedover=365;
-            toobig=1;
-        }
-        break;
-    case "13":
-        if(rollover < 156) expected =156;
-        if(rollover > 156) {
-            expectedover=156;
             toobig=1;
         }
         break;
@@ -515,66 +619,58 @@ function irregularity_check(){
         break;
     }
     if(expected){
-        if(expected == 365 || expected==730){
-            var daynames = new Array(_("Monday"),_("Tuesday"),_("Wednesday"),_("Thursday"),_("Friday"),_("Saturday"),_("Sunday"));
+        if(expected == 365 || expected==730){  // what about leap years ?
+			// FIXME:  We interpret irregularity as which days per week for periodicity==1.
+			//  We need two cases: one in which we're published n days/week, in which case irregularity should be per week,
+			//  and a regular daily pub, where irregularity should be per year.
             errortext += _("Please indicate which days of the week you <b>DO NOT<\/b> expect to receive issues.<br \/>");
-            for(var j=0;j<daynames.length;j++){
-                errortext +="<input type='checkbox' name='irregular' id='irregular"+(j+1)+"' value='"+(j+1)+"' />"+daynames[j]+" &nbsp; ";
-            }
-            error=errortext;
         } else {
             errortext +=expected+_(" issues expected, ")+rollover+_(" were entered. <br \/>Please indicate which date(s) an issue is not expected<br \/>");
-            var count=0;
-            for(var i=rollover;i<expected;i++){
-                errortext +="<select name='irregular' id='irregular"+count+"' onchange='display_example(expected)'>\n";
-                errortext +=irregular_options(periodicity);
-                errortext +="<\/select>\n";
-                count++;
-            }
-            error=errortext;
-        }
+            irregular_issues.numskipped = expected - rollover;
+		}
+        errortext +="<select multiple id='irregularity_select' name='irregularity_select' onchange='irregular_issues.update();'>\n"; 
+		errortext +=irregular_options(periodicity);
+		errortext += "<\/select>\n <textarea rows='6' width='18' id='irregularity_summary' name='irregularity_summary' value='foo' />";
+        error=errortext;
     }
     if(toobig){
-        errortext +=expectedover+_(" issues expected, ")+rollover+_(" were entered.<br \/> You seem to have indicated more issues per year than expected.");
+        errortext +=expectedover+_(" issues expected, ")+rollover+_(" were entered.<p class='warning'> You seem to have indicated more issues per year than expected.<\/p>");
         error=errortext;
     }
     if(error.length ==0){
         error=_("No irregularities noticed");
     }
-    display_example(expected);
+	display_example(expected);
     document.getElementById("irregularity").innerHTML = error;
+	irregular_issues.update();
 }
 
 function irregular_options(periodicity){
     var titles;
     var count;
-<!-- TMPL_IF NAME="weekarrayjs" -->
-    var weeks = new Array(<!-- TMPL_VAR NAME="weekarrayjs" -->); 
-<!-- /TMPL_IF -->
-    var months = new Array(_("January"),_("February"),_("March"),_("April"),_("May"),_("June"),_("July"),_("August"),_("September"),_("October"),_("November"),_("December"));
-    var seasons = new Array(_("Autumn"),_("Winter"),_("Spring"),_("Summer"),_("Fall"));
     var errortext='';
     if(periodicity == 1) {
-        expected = 366;
-        titles = "Day";
+        expected = 7;
+        titles = irregular_issues.daynames;
         count = 1;
     }
     if(periodicity == 2 || periodicity == 3 || periodicity == 4) { 
-        expected = 52;
-    <!-- TMPL_IF NAME="weekarrayjs" -->
-        titles = weeks;
-        count = <!-- TMPL_VAR NAME="weekno" -->;
-    <!-- TMPL_ELSE -->
-        titles = "Week";
-        count = 1;
-    <!-- /TMPL_IF -->
+        titles = irregular_issues.weeks;
+		count = 1;
+        if(periodicity==3) {  // 1/2 wks
+            expected = 26;
+        } else if(periodicity == 4) { // 1/3 wks
+            expected = 17;
+        } else {
+            expected = 52;
+        }
     }
     if(periodicity == 5 || periodicity == 6 || periodicity == 7 || periodicity == 8 || periodicity == 9) {
-        if(periodicity == 8) {
+        if(periodicity == 8 && numberpattern==8) {
             is_season = 1; // setting up from edit page
         } 
         if(is_season){
-            titles = seasons;
+            titles = irregular_issues.seasons;
             expected = 4;
             if(is_hemisphere == 2){
                 count = 2;
@@ -582,12 +678,15 @@ function irregular_options(periodicity){
                 count = 1;
             }
         } else {
-            titles = months;
+            titles = irregular_issues.months;
             expected = 12;
             count = 1;
         }
     }
-    for(var j=1;j<=expected;j++){
+	if( !expected) {
+		return '';   // don't know how to deal with irregularity.
+	} 	
+    for(var j=0;j<expected;j++){   // rch - changed frrom (1..expected).
         if(isArray(titles)){
             if(count>expected){
                 count = count-expected;
@@ -598,31 +697,27 @@ function irregular_options(periodicity){
             } else if(is_season && is_hemisphere == 2){
                 errortext +="<option value='"+((count*3)-2)+"'>"+titles[j-1]+"<\/option>\n";
 // alert("value: "+((count*3)-2)+" title: "+titles[j-1]);
-            } else {
-                errortext +="<option value='"+count+"'>"+titles[j-1]+"<\/option>\n";
+            } else {  // all non-seasonal periodicities:
+                var incr=1; // multiplier for ( 1/n weeks)  patterns; in this case the irreg calc relies on the week# , not the issue#.
+                if(periodicity==3) {  // 1/2 wks
+                    incr=2;
+                } else if(periodicity == 4) { // 1/3 wks
+                    incr=3;
+                }
+                errortext += "<option value='" + (1+j*incr) ;  
+				if(irregular_issues.irregular(1+incr*j)) {
+					errortext += "' selected='selected" ;
+				}
+				errortext += "'>"+titles[incr*j]+"<\/option>\n";
             }
             count++;
-        } else {
+        } else { 
             errortext +="<option value='"+j+"'>"+titles+" "+j+"<\/option>\n";
         }
     }
     return errortext;
 }
 
-function irregular_order(){
-    var irregular = '<!-- TMPL_VAR NAME="irregularity" -->';
-    var periodicity = document.f.periodicity.value;
-    var irregarray = irregular.split(',');
-    if(periodicity ==1){
-        for(j=0;j<irregarray.length;j++){
-        document.getElementById("irregular"+irregarray[j]).checked = true; 
-        }
-    } else {
-        for(i=0;i<irregarray.length;i++){    
-            document.getElementById("irregular"+i).value = irregarray[i];
-        }
-    }
-}
 
 function display_example(expected){
     var startfrom1 = parseInt(document.f.lastvalue1.value);
@@ -636,11 +731,11 @@ function display_example(expected){
     var whenmorethan3 = parseInt(document.f.whenmorethan3.value);
     var setto2 = parseInt(document.f.setto2.value);
     var setto3 = parseInt(document.f.setto3.value);
-    var displaytext = _("Based on the information<br \/>entered the Numbering Pattern<br \/>will look like this<br \/>\n");
+    var displaytext = _("Based on the information entered, the Numbering Pattern will look like this: <br \/><ul class=\"numpattern_preview\">");
     if(startfrom3>0){
         var count=startfrom3-1;
         var count2=startfrom2;
-        for(var i=0;i<12;i++){
+        for(var i = 0 ; i < 12; i++){
             if(count>=whenmorethan3){
                 count=setto3;
                 if(count2>=whenmorethan2){
@@ -652,9 +747,9 @@ function display_example(expected){
             } else {
                 count++;
             }
-            displaytext += numberpattern.replace(/{Z}/,count)+'\n';
-            displaytext = displaytext.replace(/{Y}/,count2)+'<br \/>\n';
-            displaytext = displaytext.replace(/{X}/,startfrom1)+'<br \/>\n';
+            displaytext += '<li>' + numberpattern.replace(/{Z}/,count) + '<\/li>\n';
+            displaytext = displaytext.replace(/{Y}/,count2);
+            displaytext = displaytext.replace(/{X}/,startfrom1);
 
         }
     }
@@ -693,7 +788,7 @@ function display_example(expected){
             displaytext += numberpattern.replace(/{X}/,i)+'<br \/>\n';
         }
     }
-    displaytext = "<div style='padding: 5px; background-color: #CCCCCC'>"+displaytext+"<\/div>";
+   //  displaytext = "<div style='padding: 5px; background-color: #CCCCCC'>"+displaytext+"<\/div>";
     document.getElementById("displayexample").innerHTML = displaytext;
 }
 
@@ -704,28 +799,37 @@ else
     return true;
 }
 
-function moreoptionsupdate(fieldnames,rollover){
-    fieldname = fieldnames;
-    fld = fieldname.length;
-    fld = fld-1;
-    fieldnametempnumber = fieldname.substr(fld);
-    //alert(fieldnametempnumber);
-    fieldnametemp = fieldname.slice(0,-1)+"temp"+fieldnametempnumber;
-    // alert(fieldnametemp);
-    eval("document.f."+fieldname+".value = document.f."+fieldnametemp+".value");
-//     alert (fieldname+" : "+eval("document.f."+fieldname+".value") +' '+fieldnametemp+' : ' +eval("document.f."+fieldnametemp+".value"));
+function moreoptionsupdate(inputfield,rollover){
+    fieldname = inputfield.name;
+    // find parent element in base table by stripping 'temp' from element name.
+    basefield = document.getElementById(fieldname.slice(0,-4));
+    var fieldnumber = fieldname.slice(-5,-4);
+
+    basefield.value = inputfield.value;
+    if(basefield.name.slice(0,-1) == 'lastvalue') {
+        // lastvalue seems to mean 'begins with', tracking the first received issue so
+        // we can recreate the whole historeven after receiving.  innerloop is the var that
+        // actually tracks which issue we're on, though.
+        document.getElementById('innerloop'+fieldnumber).value = inputfield.value;
+    }
     var patternchoice = document.getElementById("numberpattern").value;
     switch(patternchoice){
     case "2":
     case "4":
     case "5":
-    case "8":
-       if (document.f.lastvaluetemp2.value>0){document.f.innerloop1.value = document.f.lastvaluetemp2.value - 1;}
+    case "8": // Year, Number.  -- Why not just use Vol, Number withvol==year??
+       if (document.f.lastvalue2temp.value>0){document.f.innerloop1.value = document.f.lastvalue2temp.value - 1;}
       break;   
     }  
     if(rollover){
-        eval("document.f.every"+(fieldnametempnumber-1)+".value = document.f."+fieldnametemp+".value");
-    }
+       // calculate rollover  for higher level of periodicity.
+       // if there are two levels of periodicity, (e.g. vol{X},num{Y},issue{Z}, then every1=every2*whenmorethan2 
+       // otherwise, every2 == 1.
+       var addN = (document.getElementById('add'+fieldnumber)) ? document.getElementById('add'+fieldnumber).value : 1 ;
+       var everyN = (document.getElementById('every'+fieldnumber)) ? document.getElementById('every'+fieldnumber).value : 1 ;
+       document.getElementById('every'+(fieldnumber-1)).value = basefield.value * everyN / addN ;
+     }
+     //FIXME : add checks for innerloop || lastvalue  > rollover  
 }
 
 
@@ -779,38 +883,48 @@ function Check(f) {
             if(f.numbering_pattern.value == ''){
                 alert(_("Please choose a numbering pattern"));
             } else {
-                alert(_("Please check for irregularity by clicking 'Irregularity?'"));
+                alert(_("Please check for irregularity by clicking 'Test Prediction Pattern'"));
             }
         }
     } else {
         alert(_("You must choose a start date and a subscription length"));
     }
+	if(irregular_issues.numskipped < irregular_issues.skipped.length ) {
+		alert(_("You have not accounted for all missing issues."));
+	}
     return false;
 }
+
+$(document).ready(function() {
+init_pattern();
 <!-- TMPL_IF name="mod" -->
-window.onload = modify_num_pattern();
+    set_num_pattern_from_template_vars();
     <!-- TMPL_IF name="hemisphere" -->
-    window.onload = hemispheres(<!-- TMPL_VAR NAME="hemisphere" -->);
+	is_hemisphere = <!-- TMPL_VAR NAME="hemisphere" --> ;
+    hemispheres();
     <!-- /TMPL_IF -->
 <!-- /TMPL_IF -->
 <!-- TMPL_IF name="irregularity" -->
-window.onload = irregularity_check();
-window.onload = irregular_order();
+    irregularity_check();
 <!-- /TMPL_IF -->
--->
+$('#numberpattern').change( function() { 
+    reset_num_pattern(); 
+    });
+});
+//]]>
 </script>
 </head>
 <body>
 <!-- TMPL_INCLUDE NAME="header.inc" -->
 <!-- TMPL_INCLUDE NAME="serials-search.inc" -->
 
-<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/serials/serials-home.pl">Serials</a> &rsaquo; <!-- TMPL_IF name="mod" --> Modify subscription for <span class="title"><!-- TMPL_VAR name="bibliotitle" --></span><!-- TMPL_ELSE -->New subscription<!-- /TMPL_IF --></div>
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/serials/serials-home.pl">Serials</a> &rsaquo; <!-- TMPL_IF name="mod" --><a href="/cgi-bin/koha/serials/subscription-detail.pl?subscriptionid=<!-- TMPL_VAR NAME="subscriptionid" -->"><i><!-- TMPL_VAR NAME="bibliotitle" escape="html" --></i></a> &rsaquo; Modify subscription<!-- TMPL_ELSE -->New subscription<!-- /TMPL_IF --></div>
 
 <div id="doc3" class="yui-t7">
    
    <div id="bd">
    <div class="yui-g">
-<h1><!-- TMPL_IF name="mod" --> Modify subscription for <i><!-- TMPL_VAR name="bibliotitle" --></i><!-- TMPL_ELSE -->Add a new subscription<!-- /TMPL_IF --></h1>
+<h1><!-- TMPL_IF name="mod" --> Modify subscription for <i><!-- TMPL_VAR name="bibliotitle" escape="html" --></i><!-- TMPL_ELSE -->Add a new subscription<!-- /TMPL_IF --></h1>
     <form method="post" name="f" action="/cgi-bin/koha/serials/subscription-add.pl">
 <!-- TMPL_IF name="mod" -->
         <input type="hidden" name="op" value="modsubscription" />
@@ -820,7 +934,7 @@ window.onload = irregular_order();
 <!-- /TMPL_IF -->
 <input type="hidden" name="user" value="<!-- TMPL_VAR name="loggedinusername" -->" />
 <input type="hidden" name="irreg_check" value="0" />
-<input type="hidden" name="issuesexpected1" value="0" />
+<input type="hidden" name="issuesexpected1" id="issuesexpected1" value="0" />
 
 	<div class="yui-u first">
     <fieldset id="subscription_add_information" class="rows">
@@ -835,10 +949,10 @@ window.onload = irregular_order();
             <input type="text" name="aqbooksellerid" id="aqbooksellerid" value="<!-- TMPL_VAR name="aqbooksellerid" -->" size="8" /> (<input type="text" name="aqbooksellername" value="<!-- TMPL_VAR name="aqbooksellername" -->" disabled="disabled" readonly="readonly" />) <div class="inputnote"><a href="#" onclick="FindAcqui(f)">Search for a vendor</a></div>
         </li>
         <li>
-            <label for="biblionumber">Biblio: (*)</label>
+            <label for="biblionumber" class="required" title="Subscriptions must be associated with a bibliographic record">Biblio:</label>
             
                 <input type="text" name="biblionumber" id="biblionumber" value="<!-- TMPL_VAR name="bibnum" -->" size="8" /> 
-                (<input type="text" name="title" value="<!-- TMPL_VAR name="bibliotitle" -->" disabled="disabled" readonly="readonly" />)
+                (<input type="text" name="title" value="<!-- TMPL_VAR name="bibliotitle" -->" disabled="disabled" readonly="readonly" />) <span class="required" title="Subscriptions must be associated with a bibliographic record">Required</span>
                <div class="inputnote"> <a href="#" onclick="Plugin(f)">Search for Biblio</a> | <!--TMPL_IF Name="mod"--><a href="#" onclick="addbiblioPopup(<!-- TMPL_VAR NAME="bibnum" -->); return false;">Edit biblio</a><!-- TMPL_ELSE -->
                 <a href="#" onclick="addbiblioPopup(); return false;">Create Biblio</a><!--/TMPL_IF--></div>
             
@@ -853,11 +967,11 @@ window.onload = irregular_order();
             <!-- /TMPL_IF -->
         </li>
         <li>
-            <label for="callnumber">Call Number</label>
+            <label for="callnumber">Call Number:</label>
             <input type="text" name="callnumber" id="callnumber" value="<!-- TMPL_VAR name="callnumber" -->" size="20" />
         </li>
         <li>
-            <label for="branchcode">Library</label>
+            <label for="branchcode">Library:</label>
             
                 <select name="branchcode" id="branchcode" style="width: 20em;">
                     <!-- TMPL_UNLESS NAME="Independantbranches" --><option value="">None</option><!-- /TMPL_UNLESS -->
@@ -870,15 +984,15 @@ window.onload = irregular_order();
             
         </li>
         <li>
-            <label for="notes">Public note</label>
+            <label for="notes">Public note:</label>
             <textarea name="notes" id="notes" cols="30" rows="2"><!-- TMPL_VAR name="notes" --></textarea>
         </li>
         <li>
-            <label for="internalnotes">Nonpublic note</label>
+            <label for="internalnotes">Nonpublic note:</label>
             <textarea name="internalnotes" id="internalnotes" cols="30" rows="2"><!-- TMPL_VAR name="internalnotes" --></textarea>
         </li>
         <li>
-            <label for="letter">Patron notification </label>
+            <label for="letter">Patron notification: </label>
             
                <!-- TMPL_IF NAME="letterloop" -->
 			   <select name="letter" id="letter">
@@ -891,18 +1005,18 @@ window.onload = irregular_order();
 <!-- /TMPL_IF -->
                 <!-- /TMPL_LOOP -->
                 </select> 
-				<div class="inputnote">Select a notice and patrons on the routing list will be notified when new issues are received.</div>
+				<div class="hint">Select a notice and patrons on the routing list will be notified when new issues are received.</div>
             	<!-- TMPL_ELSE -->
-				<div class="inputnote">To notify patrons of new serial issues, you must <a href="/cgi-bin/koha/tools/letter.pl">define a notice</a>.</div>
+				<div class="hint">To notify patrons of new serial issues, you must <a href="/cgi-bin/koha/tools/letter.pl">define a notice</a>.</div>
 				<!-- /TMPL_IF -->
         </li>
 	</ol>
 
-            <div class="warning"><b>Note:</b>
+            <div style="float:left;clear:left;margin:1em;"><strong>Note:</strong>
             
                 <ul>
-                    <li>The subscription <b>must</b> be associated with a bibliographic record.</li>
-                    <li>You <b>must</b> select a vendor if you wish to generate claims.</li>
+                    <li>The subscription <strong>must</strong> be associated with a bibliographic record.</li>
+                    <li>You <strong>must</strong> select a vendor if you wish to generate claims.</li>
                 </ul></div>
             
             
@@ -916,32 +1030,51 @@ window.onload = irregular_order();
     <ol>
         <li>
            <label for="firstacquidate"> First issue publication date:</label>
-            
-                <img src="<!-- TMPL_VAR Name="themelang" -->/lib/calendar/cal.gif" id="button2" style="cursor: pointer;" alt="Show Calendar" title="Show Calendar" />
-                <input type="text" name="firstacquidate" value="<!-- TMPL_VAR name="firstacquidate" -->" size="13" maxlength="10" id="acqui_date" style="border-width: 0px;" />
-                <!-- both scripts for calendar must follow the input field --> 
-                <script type="text/javascript">
-                    Calendar.setup({
-                        inputField:"acqui_date",
-                        ifFormat       :   "<!-- TMPL_VAR NAME="DHTMLcalendar_dateformat" -->",
-                        button         :   "button2",
-                        align          :   "Tl"
-                    });
-                </script>
-                <script type="text/javascript">
-                    Calendar.setup({
-                        inputField     :   "acqui_date",
-                        ifFormat       :   "<!-- TMPL_VAR NAME="DHTMLcalendar_dateformat" -->",
-                        button         :   "acqui_date",
-                        align          :   "Tl"
-                    });
-                </script>
-           
+                <!-- TMPL_UNLESS NAME="mod" --><img src="<!-- TMPL_VAR Name="themelang" -->/lib/calendar/cal.gif" id="acqui_button" style="cursor: pointer;" alt="Show Calendar" title="Show Calendar" /><!-- /TMPL_UNLESS -->
+                <input type="text" name="firstacquidate" value="<!-- TMPL_VAR name="firstacquidate" -->"  size="13" maxlength="10" id="acqui_date" <!-- TMPL_IF NAME="mod" -->disabled="true"<!-- /TMPL_IF --> style="border-width: 0px;"  />
         </li>
-        <li>
-            <label for="periodicity">Frequency: (*)</label>
+           <!-- TMPL_IF NAME="mod" --><li><label for="nextacquidate"> Next issue publication date:</label>
+                <img src="<!-- TMPL_VAR Name="themelang" -->/lib/calendar/cal.gif" id="next_acqui_button" style="cursor: pointer;" alt="Show Calendar" title="Show Calendar" />
+                <input type="text" name="nextacquidate" value="<!-- TMPL_VAR name="nextacquidate" -->" size="13" maxlength="10" id="next_acqui_date" style="border-width: 0px;"  />
+                </li><!-- /TMPL_IF -->
+                
+        <li><!-- both scripts for calendar must follow the input field --> 
+                <script type="text/javascript">
+                    Calendar.setup({
+                        inputField      :   "<!-- TMPL_IF NAME="mod" -->next_<!-- /TMPL_IF -->acqui_date",
+                        ifFormat       :   "<!-- TMPL_VAR NAME="DHTMLcalendar_dateformat" -->",
+                        button         :   "<!-- TMPL_IF NAME="mod" -->next_<!-- /TMPL_IF -->acqui_button",
+                        align          :   "Tl",
+                        onUpdate        :    function(cal) { 
+                                                             irregular_issues.weeks = getWeeksArray(cal.date);
+                                                            irregular_issues.firstissue = cal.date;
+                                                            if(document.irregularity_summary) {
+                                                                irregular_issues.update();
+                                                            }
+                                                            if(document.getElementById("seasonal_irregularity")) {
+                                                                moreoptions_seasons(text[15]);
+                                                            }
+                                                        } 
+                        });
+                    Calendar.setup({
+                        inputField      :   "<!-- TMPL_IF NAME="mod" -->next_<!-- /TMPL_IF -->acqui_date",
+                        ifFormat       :   "<!-- TMPL_VAR NAME="DHTMLcalendar_dateformat" -->",
+                        button         :   "<!-- TMPL_IF NAME="mod" -->next_<!-- /TMPL_IF -->acqui_date",
+                        align          :   "Tl",
+                        onUpdate        :    function(cal) { irregular_issues.weeks = getWeeksArray(cal.date);
+                                                            irregular_issues.firstissue = cal.date;
+                                                            if(document.irregularity_summary) {
+                                                                irregular_issues.update();
+                                                            }
+                                                            if(document.getElementById("seasonal_irregularity")) {
+                                                                moreoptions_seasons(text[15]);
+                                                            }
+                                                        } 
+                        });
+                </script>
+            <label for="periodicity" class="required">Frequency:</label>
             
-                <select name="periodicity" size="1" id="periodicity" onchange="javascript:document.getElementsByName('manualhist')[0].checked=(this.value==1); num_pattern();">
+                <select name="periodicity" size="1" id="periodicity" onchange="javascript:document.getElementsByName('manualhist')[0].checked=(this.value==1); reset_num_pattern();">
                 <option value="" selected="selected">-- please choose --</option>
                 <!-- TMPL_IF name="periodicity16" -->
                 <option value="16" selected="selected">Without periodicity</option>
@@ -965,14 +1098,9 @@ window.onload = irregular_order();
                     <option value="12">2/day</option>
                 <!-- /TMPL_IF -->
                 <!-- TMPL_IF name="periodicity1" -->
-                    <option value="1" selected="selected">1/day</option>
+                    <option value="1" selected="selected">daily (n/week)</option>
                 <!-- TMPL_ELSE -->
-                    <option value="1">1/day</option>
-                <!-- /TMPL_IF -->
-                <!-- TMPL_IF name="periodicity13" -->
-                    <option value="13" selected="selected">3/week</option>
-                <!-- TMPL_ELSE -->
-                    <option value="13">3/week</option>
+                    <option value="1">daily (n/week)</option>
                 <!-- /TMPL_IF -->
                 <!-- TMPL_IF name="periodicity2" -->
                     <option value="2" selected="selected">1/week</option>
@@ -1026,12 +1154,12 @@ window.onload = irregular_order();
                 <!-- TMPL_ELSE -->
                     <option value="11">1/2 years</option>
                 <!-- /TMPL_IF -->
-                </select></li>
+                </select> <span class="required">Required</span></li>
 				<li><label for="manuallist"> Manual history:</label> <input type="checkbox" name="manualhist" id="manuallist" value="1" /></li>
         <li>
            <label for="numberpattern"> Numbering pattern:</label>
             
-                <select name="numbering_pattern" size="1" id="numberpattern" onchange="num_pattern()">
+                <select name="numbering_pattern" size="1" id="numberpattern" >
                     <option value="" selected="selected">-- please choose --</option>
                     <!-- TMPL_IF name="numberpattern1" -->
                         <option value="1" selected="selected">Number</option>
@@ -1079,7 +1207,7 @@ window.onload = irregular_order();
                 <li id="irregularity"></li>
    	           <li id="displayexample"></li>
         <li>
-           <label for="startdate"> Subscription start date: (*)</label>
+           <label for="startdate" class="required"> Subscription start date:</label>
             
                 <img src="<!-- TMPL_VAR Name="themelang" -->/lib/calendar/cal.gif" id="button1" style="cursor: pointer;" alt="Show Calendar" title="Show Calendar" />
                 <input type="text" name="startdate" value="<!-- TMPL_VAR name="startdate" -->" size="13" maxlength="10" id="beginning_date" style="border-width: 0px;" />
@@ -1100,10 +1228,10 @@ window.onload = irregular_order();
                         align        : "Tl"
                     });
                 </script>
-            
+            <span class="required">Required</span>
         </li>
         <li>
-            <label for="subtype">Subscription length:</label>
+            <label for="subtype" class="required">Subscription length:</label>
             
                 <select name="subtype" id="subtype">
                     <!-- TMPL_LOOP NAME="subtype" -->
@@ -1116,15 +1244,26 @@ window.onload = irregular_order();
                         </option>
                     <!-- /TMPL_LOOP -->
                 </select>
-                <input type="text" name="sublength" value="<!-- TMPL_VAR name="sublength" -->" size="3" onkeypress="return check_input(event)" /> (*) (enter amount in numerals)
-            
+                <input type="text" name="sublength" value="<!-- TMPL_VAR name="sublength" -->" size="3" onkeypress="return check_input(event)" /> (enter amount in numerals)
+            <span class="required">Required</span>
         </li>
     <li><label for="numberingmethod">Numbering formula:</label> <input type="text" name="numberingmethod" id="numberingmethod" value="<!-- TMPL_VAR name="numberingmethod" -->" />
     </li>
-    <li>
-           <div id="basetable" style="display: none;">
+    </ol>
+	</fieldset>
+</div>
+	<fieldset class="action">
+	<input type="button" class="action_test" value="Test Prediction Pattern" onclick="javascript:irregularity_check()" />
+	<input type="button" class="action_reset" value="Reset Pattern" onclick="javascript:reset_pattern()" />
+    <input type="button" class="action_save"  value="Save subscription" onclick="Check(this.form)" accesskey="w" />
+	</fieldset>
+    <fieldset class="action">
+    <input type="button" class="action_advanced" value="Show/Hide Advanced Pattern" onclick="javascript:display_table()" />
+    </fieldset>
+           <div id="basetable"  style="display: none;">
             <table class="small">
-                <tr>
+                <tr><th colspan="4">Advanced Prediction Pattern</th></tr>
+				<tr>
                     <th>&nbsp;</th>
                     <th>X</th>
                     <th>Y</th>
@@ -1133,38 +1272,38 @@ window.onload = irregular_order();
                 <tr>
                     <td>Add</td>
                     <td>
-                        <input type="text" name="add1" value="<!-- TMPL_VAR name="add1" -->" />
+                        <input type="text" name="add1" id="add1" value="<!-- TMPL_VAR name="add1" -->" />
                     </td>
                     <td>
-                        <input type="text" name="add2" value="<!-- TMPL_VAR name="add2" -->" />
+                        <input type="text" name="add2" id="add2" value="<!-- TMPL_VAR name="add2" -->" />
                     </td>
                     <td>
-                        <input type="text" name="add3" value="<!-- TMPL_VAR name="add3" -->" />
+                        <input type="text" name="add3" id="add3" value="<!-- TMPL_VAR name="add3" -->" />
                     </td>
                 </tr>
                 <tr>
                     <td>once every</td>
-                    <td><input type="text" name="every1" value="<!-- TMPL_VAR name="every1" -->" /></td>
-                    <td><input type="text" name="every2" value="<!-- TMPL_VAR name="every2" -->" /></td>
-                    <td><input type="text" name="every3" value="<!-- TMPL_VAR name="every3" -->" /></td>
+                    <td><input type="text" name="every1" id="every1" value="<!-- TMPL_VAR name="every1" -->" /></td>
+                    <td><input type="text" name="every2" id="every2" value="<!-- TMPL_VAR name="every2" -->" /></td>
+                    <td><input type="text" name="every3" id="every3" value="<!-- TMPL_VAR name="every3" -->" /></td>
                 </tr>
                 <tr>
                     <td>When more than</td>
-                    <td><input type="text" name="whenmorethan1" value="<!-- TMPL_VAR name="whenmorethan1" -->" /></td>
-                    <td><input type="text" name="whenmorethan2" value="<!-- TMPL_VAR name="whenmorethan2" -->" /></td>
-                    <td><input type="text" name="whenmorethan3" value="<!-- TMPL_VAR name="whenmorethan3" -->" /></td>
+                    <td><input type="text" name="whenmorethan1" id="whenmorethan1" value="<!-- TMPL_VAR name="whenmorethan1" -->" /></td>
+                    <td><input type="text" name="whenmorethan2" id="whenmorethan2" value="<!-- TMPL_VAR name="whenmorethan2" -->" /></td>
+                    <td><input type="text" name="whenmorethan3" id="whenmorethan3" value="<!-- TMPL_VAR name="whenmorethan3" -->" /></td>
                 </tr>
                 <tr>
                     <td>inner counter</td>
-                    <td><input type="text" name="innerloop1" value="<!-- TMPL_VAR name="innerloop1" -->" /></td>
-                    <td><input type="text" name="innerloop2" value="<!-- TMPL_VAR name="innerloop2" -->" /></td>
-                    <td><input type="text" name="innerloop3" value="<!-- TMPL_VAR name="innerloop3" -->" /></td>
+                    <td><input type="text" name="innerloop1" id="innerloop1" value="<!-- TMPL_VAR name="innerloop1" -->" /></td>
+                    <td><input type="text" name="innerloop2" id="innerloop2" value="<!-- TMPL_VAR name="innerloop2" -->" /></td>
+                    <td><input type="text" name="innerloop3" id="innerloop3" value="<!-- TMPL_VAR name="innerloop3" -->" /></td>
                 </tr>
                 <tr>
                     <td>Set back to</td>
-                    <td><input type="text" name="setto1" value="<!-- TMPL_VAR name="setto1" -->" /></td>
-                    <td><input type="text" name="setto2" value="<!-- TMPL_VAR name="setto2" -->" /></td>
-                    <td><input type="text" name="setto3" value="<!-- TMPL_VAR name="setto3" -->" /></td>
+                    <td><input type="text" name="setto1" id="setto1" value="<!-- TMPL_VAR name="setto1" -->" /></td>
+                    <td><input type="text" name="setto2" id="setto2" value="<!-- TMPL_VAR name="setto2" -->" /></td>
+                    <td><input type="text" name="setto3" id="setto3" value="<!-- TMPL_VAR name="setto3" -->" /></td>
                 </tr>
                 <tr>
                     <td>
@@ -1174,18 +1313,13 @@ window.onload = irregular_order();
                             Begins with
                         <!-- /TMPL_IF -->
                     </td>
-                    <td><input type="text" name="lastvalue1" value="<!-- TMPL_VAR name="lastvalue1" -->" /></td>
-                    <td><input type="text" name="lastvalue2" value="<!-- TMPL_VAR name="lastvalue2" -->" /></td>
-                    <td><input type="text" name="lastvalue3" value="<!-- TMPL_VAR name="lastvalue3" -->" /></td>
+                    <td><input type="text" name="lastvalue1" id="lastvalue1" value="<!-- TMPL_VAR name="lastvalue1" -->" /></td>
+                    <td><input type="text" name="lastvalue2" id="lastvalue2" value="<!-- TMPL_VAR name="lastvalue2" -->" /></td>
+                    <td><input type="text" name="lastvalue3" id="lastvalue3" value="<!-- TMPL_VAR name="lastvalue3" -->" /></td>
                 </tr>
             </table>
         </div>
-        </li>
-    </ol>
-	</fieldset>
-</div>
-	<fieldset class="action">
-    <input type="button" value="Save subscription" onclick="Check(this.form)" accesskey="w" /></fieldset>
+
 </div>
 
 </form>
@@ -1198,34 +1332,36 @@ window.onload = irregular_order();
         <input type="hidden" name="op" value="modsubscription" />
         <input type="hidden" name="subscriptionid" value="<!-- TMPL_VAR name="subscriptionid" -->" />
         <input type="hidden" name="history_only" value="1" />
-        <p>Hint : you can update the serial history manually. This can be useful for an old subscription or to clean the existing history. Modify those fields with care, as future serial recieve will continue to update them automatically.</p>
-        <table>
-            <tr>
-            <td>Subscription start date</td>
-            <td><input type="text" name="histstartdate" value="<!-- TMPL_VAR name="histstartdate" -->" /> (start date of the 1st subscription)</td>
-            </tr>
-            <tr>
-            <td>Subscription end date</td>
-            <td><input type="text" name="histenddate" value="<!-- TMPL_VAR name="histenddate" -->" />(if empty, subscription is still active)</td>
-            </tr>
-            <tr>
-                <td>Received issues</td>
-                <td><textarea name="recievedlist" cols="60" rows="5"><!-- TMPL_VAR name="recievedlist" --></textarea></td>
-            </tr>
-            <tr>
-                <td>Missing issues</td>
-                <td><textarea name="missinglist" cols="60" rows="5"><!-- TMPL_VAR name="missinglist" --></textarea></td>
-            </tr>
-            <tr>
-                <td>Note for OPAC</td>
-                <td><textarea name="opacnote" cols="60" rows="5"><!-- TMPL_VAR name="opacnote" --></textarea></td>
-            </tr>
-            <tr>
-                <td>Note for staff</td>
-                <td><textarea name="librariannote" cols="60" rows="5"><!-- TMPL_VAR name="librariannote" --></textarea></td>
-            </tr>
-        </table>
-    <input type="submit" value="Save subscription history"  />
+        <p>Hint : you can update the serial history manually. This can be useful for an old subscription or to clean the existing history. Modify these fields with care, as future serial receive will continue to update them automatically.</p>
+        <fieldset class="rows">
+		<ol>
+            <li>
+            <label for="histstartdate">Subscription start date</label>
+            <input type="text" name="histstartdate" id="histstartdate" value="<!-- TMPL_VAR name="histstartdate" -->" /><div class="hint"> (start date of the 1st subscription)</div>
+            </li>
+            <li>
+            <label for="histenddate">Subscription end date</label>
+            <input type="text" name="histenddate" id="histenddate" value="<!-- TMPL_VAR name="histenddate" -->" /> <div class="hint">(if empty, subscription is still active)</div>
+            </li>
+            <li>
+                <label for="recievedlist">Received issues</label>
+            <textarea name="recievedlist" id="recievedlist" cols="60" rows="5"><!-- TMPL_VAR name="recievedlist" --></textarea>
+            </li>
+            <li>
+                <label for="missinglist">Missing issues</label>
+            <textarea name="missinglist" id="missinglist" cols="60" rows="5"><!-- TMPL_VAR name="missinglist" --></textarea>
+            </li>
+            <li>
+                <label for="opacnote">Note for OPAC</label>
+            <textarea name="opacnote" id="opacnote" cols="60" rows="5"><!-- TMPL_VAR name="opacnote" --></textarea>
+            </li>
+            <li>
+                <label for="librariannote">Note for staff</label>
+            <textarea name="librariannote" id="librariannote" cols="60" rows="5"><!-- TMPL_VAR name="librariannote" --></textarea>
+            </li>
+		</ol>
+        </fieldset>
+    <fieldset class="action"><input type="submit" value="Save subscription history"  /></fieldset>
     </form>
 </div>
 <!--/TMPL_IF-->

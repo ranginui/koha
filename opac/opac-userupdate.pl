@@ -18,7 +18,7 @@
 # Suite 330, Boston, MA  02111-1307 USA
 
 use strict;
-require Exporter;
+
 use CGI;
 use Mail::Sendmail;
 
@@ -118,7 +118,7 @@ EOF
 }
 
 $borr->{'dateenrolled'} = format_date( $borr->{'dateenrolled'} );
-$borr->{'expiry'}       = format_date( $borr->{'expiry'} );
+$borr->{'dateexpiry'}       = format_date( $borr->{'dateexpiry'} );
 $borr->{'dateofbirth'}  = format_date( $borr->{'dateofbirth'} );
 $borr->{'ethnicity'}    = fixEthnicity( $borr->{'ethnicity'} );
 

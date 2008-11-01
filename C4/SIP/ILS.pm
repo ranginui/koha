@@ -138,7 +138,7 @@ sub checkout {
 		$circ->screen_msg("Patron Blocked");
     } elsif (!$item) {
 		$circ->screen_msg("Invalid Item");
-    } elsif ($item->hold_queue && @{$item->hold_queue} && ($patron_id ne $item->hold_queue->[0])) {
+    } elsif ($item->hold_queue && @{$item->hold_queue} && ! $item->barcode_is_borrowernumber($patron_id, $item->hold_queue->[0]->{borrowernumber})) {
 		$circ->screen_msg("Item on Hold for Another User");
     } elsif ($item->{patron} && ($item->{patron} ne $patron_id)) {
 	# I can't deal with this right now
@@ -146,7 +146,7 @@ sub checkout {
     } else {
 		$circ->do_checkout();
 		if ($circ->ok){
-			warn "circ is ok";
+			$debug and warn "circ is ok";
 			# If the item is already associated with this patron, then
 			# we're renewing it.
 			$circ->renew_ok($item->{patron} && ($item->{patron} eq $patron_id));
@@ -160,7 +160,7 @@ sub checkout {
 				$patron_id, join(', ', @{$patron->{items}}));
 		}
 		else {
-			syslog("LOG_DEBUG", "ILS::Checkout Issue failed");
+			syslog("LOG_ERR", "ILS::Checkout Issue failed");
 		}
     }
     # END TRANSACTION
@@ -302,7 +302,7 @@ sub cancel_hold {
     # record but not on the item record, we'll treat that as success.
     foreach my $i (0 .. scalar @{$item->hold_queue}) {
 		$hold = $item->hold_queue->[$i];
-		if ($hold->{patron_id} eq $patron->id) {
+		if ($item->barcode_is_borrowernumber($patron->id, $hold->{borrowernumber})) {
 		    # found it: delete it.
 		    splice @{$item->hold_queue}, $i, 1;
 		    last;		# ?? should we keep going, in case there are multiples

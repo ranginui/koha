@@ -272,14 +272,21 @@ sub db_scheme2dbi {
 }
 
 sub import {
-    my $package = shift;
-    my $conf_fname = shift;        # Config file name
+    # Create the default context ($C4::Context::Context)
+    # the first time the module is called
+    # (a config file can be optionaly passed)
 
-    # Create a new context from the given config file name, if
-    # any, then set it as the current context.
-    $context = new C4::Context($conf_fname) unless $context;
-    return undef if !defined($context);
-    $context->set_context;
+    # default context allready exists? 
+    return if $context;
+
+    # no ? so load it!
+    my ($pkg,$config_file) = @_ ;
+    my $new_ctx = __PACKAGE__->new($config_file);
+    return unless $new_ctx;
+
+    # if successfully loaded, use it by default
+    $new_ctx->set_context;
+    1;
 }
 
 =item new
@@ -458,20 +465,24 @@ sub ModZebrations {
 
 =item preference
 
-  $sys_preference = C4::Context->preference("some_variable");
+  $sys_preference = C4::Context->preference('some_variable');
 
 Looks up the value of the given system preference in the
 systempreferences table of the Koha database, and returns it. If the
-variable is not set, or in case of error, returns the undefined value.
+variable is not set or does not exist, undef is returned.
+
+In case of an error, this may return 0.
+
+Note: It is impossible to tell the difference between system
+preferences which do not exist, and those whose values are set to NULL
+with this method.
 
 =cut
 
-#'
 # FIXME - The preferences aren't likely to change over the lifetime of
 # the script (and things might break if they did change), so perhaps
 # this function should cache the results it finds.
-sub preference
-{
+sub preference {
     my $self = shift;
     my $var = shift;        # The system preference to return
     my $retval;            # Return value
@@ -484,7 +495,7 @@ sub preference
 	$retval = $dbh->selectrow_array(<<EOT);
         SELECT    value
         FROM    systempreferences
-        WHERE    variable='$var'
+        WHERE    variable=?
         LIMIT    1
 EOT
     if ($usecache) {
@@ -652,21 +663,23 @@ sub _new_dbh
 
     my $db_name   = $context->config("database");
     my $db_host   = $context->config("hostname");
-    my $db_port   = $context->config("port");
-    $db_port = "" unless defined $db_port;
+    my $db_port   = $context->config("port") || '';
     my $db_user   = $context->config("user");
     my $db_passwd = $context->config("pass");
     # MJR added or die here, as we can't work without dbh
     my $dbh= DBI->connect("DBI:$db_driver:dbname=$db_name;host=$db_host;port=$db_port",
 	$db_user, $db_passwd) or die $DBI::errstr;
+	my $tz = $ENV{TZ};
     if ( $db_driver eq 'mysql' ) { 
         # Koha 3.0 is utf-8, so force utf8 communication between mySQL and koha, whatever the mysql default config.
         # this is better than modifying my.cnf (and forcing all communications to be in utf8)
         $dbh->{'mysql_enable_utf8'}=1; #enable
         $dbh->do("set NAMES 'utf8'");
+        ($tz) and $dbh->do(qq(SET time_zone = "$tz"));
     }
     elsif ( $db_driver eq 'Pg' ) {
 	    $dbh->do( "set client_encoding = 'UTF8';" );
+        ($tz) and $dbh->do(qq(SET TIME ZONE = "$tz"));
     }
     return $dbh;
 }
@@ -938,6 +951,7 @@ sub set_shelves_userenv ($$) {
 	my $activeuser = $context->{activeuser} or return undef;
 	$context->{userenv}->{$activeuser}->{barshelves} = $shelves if $type eq 'bar';
 	$context->{userenv}->{$activeuser}->{pubshelves} = $shelves if $type eq 'pub';
+	$context->{userenv}->{$activeuser}->{totshelves} = $shelves if $type eq 'tot';
 }
 
 sub get_shelves_userenv () {
@@ -946,9 +960,10 @@ sub get_shelves_userenv () {
 		$debug and warn "get_shelves_userenv cannot retrieve context->{userenv}->{context->{activeuser}}";
 		return undef;
 	}
+	my $totshelves = $active->{totshelves} or undef;
 	my $pubshelves = $active->{pubshelves} or undef;
-	my $barshelves = $active->{barshelves} or undef;#  die "get_shelves_userenv: activeenv has no ->{shelves}";
-	return $pubshelves, $barshelves;
+	my $barshelves = $active->{barshelves} or undef;
+	return ($totshelves, $pubshelves, $barshelves);
 }
 
 =item _new_userenv

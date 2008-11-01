@@ -17,8 +17,6 @@
 
 
 use strict;
-
-
 use CGI;
 my $input = new CGI;
 

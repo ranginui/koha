@@ -35,7 +35,7 @@
 </div>
 <!-- /TMPL_IF -->
 
-	<!-- TMPL_IF NAME="OpacMainUserBlock" --><div class="container"><!-- TMPL_VAR NAME="OpacMainUserBlock" --></div><!-- /TMPL_IF -->
+	<!-- TMPL_IF NAME="OpacMainUserBlock" --><div id="opacmainuserblock" class="container"><!-- TMPL_VAR NAME="OpacMainUserBlock" --></div><!-- /TMPL_IF -->
 
 <!-- TMPL_IF NAME="recentacquiloop"-->
     <div class="searchresults">
@@ -53,7 +53,7 @@
                     <!-- TMPL_IF name="BiblioDefaultViewmarc" -->
                     <a class="title" href="/cgi-bin/koha/opac-MARCdetail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" ESCAPE="URL" -->">
                     <!-- TMPL_IF NAME="title"-->
-                        <!-- TMPL_VAR NAME="title" -->
+                        <!-- TMPL_VAR NAME="title" escape="html" -->
                     <!-- TMPL_ELSE -->
                         <span class="problem">(no title)</span>
                     <!-- /TMPL_IF -->
@@ -61,7 +61,7 @@
                     <!-- TMPL_ELSE -->
                     <!-- TMPL_IF name="BiblioDefaultViewisbd" -->
                     <a class="title" href="/cgi-bin/koha/opac-ISBDdetail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" ESCAPE="URL" -->">
-                    <!-- TMPL_IF NAME="title"-->
+                    <!-- TMPL_IF NAME="title" escape="html"-->
                         <!-- TMPL_VAR NAME="title" -->
                     <!-- TMPL_ELSE -->
                         <span class="problem">(no title)</span>
@@ -69,7 +69,7 @@
                     </a>
                     <!-- TMPL_ELSE -->
                     <a class="title" href="/cgi-bin/koha/opac-detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" ESCAPE="URL" -->">
-                    <!-- TMPL_IF NAME="title"-->
+                    <!-- TMPL_IF NAME="title" escape="html" -->
                         <!-- TMPL_VAR NAME="title" -->
                     <!-- TMPL_ELSE -->
                         <span class="problem">(no title)</span>
@@ -115,7 +115,7 @@
 </div>
 </div>
 <!-- TMPL_IF NAME="OpacNav" --><div class="yui-b">
-<div class="container">
+<div id="opacnav" class="container">
 <!--TMPL_INCLUDE NAME="navigation.inc" -->
 </div>
 </div><!-- /TMPL_IF -->

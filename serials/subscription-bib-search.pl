@@ -48,7 +48,7 @@ to multipage gestion.
 
 
 use strict;
-require Exporter;
+
 use CGI;
 use C4::Koha;
 use C4::Auth;
@@ -88,7 +88,6 @@ if ($op eq "do_search" && $query) {
         exit;
     }
     my @results;
-    warn "total=".$total;
     
     for(my $i=0;$i<$total;$i++) {
         my %resultsloop;
@@ -181,7 +180,6 @@ if ($op eq "do_search" && $query) {
     my @itemtypesloop;
     my $selected=1;
     my $cnt;
-    my $imgdir = getitemtypeimagesrc('intranet');
     foreach my $thisitemtype ( sort {$itemtypes->{$a}->{'description'} cmp $itemtypes->{$b}->{'description'} } keys %$itemtypes ) {
         my %row =(
                     code => $thisitemtype,
@@ -208,7 +206,6 @@ if ($op eq "do_search" && $query) {
     my @itemtypesloop;
     my $selected=1;
     my $cnt;
-    my $imgdir = getitemtypeimagesrc('intranet');
     foreach my $thisitemtype ( sort {$itemtypes->{$a}->{'description'} cmp $itemtypes->{$b}->{'description'} } keys %$itemtypes ) {
         my %row =(
                     code => $thisitemtype,

@@ -1,5 +1,5 @@
 <!-- TMPL_INCLUDE NAME="doc-head-open.inc" -->
-<title>Koha &rsaquo; Catalogue &rsaquo; Item details for <!-- TMPL_LOOP NAME="BIBITEM_DATA" --><!-- TMPL_VAR NAME="title" --><!-- /TMPL_LOOP --></title>
+<title>Koha &rsaquo; Catalog &rsaquo; Item details for <!-- TMPL_LOOP NAME="BIBITEM_DATA" --><!-- TMPL_VAR NAME="title" --><!-- /TMPL_LOOP --></title>
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
 <style type="text/css">h3{padding-top: 1em; border-top: 2px solid #CCCCCC;}</style>
 </head>
@@ -8,7 +8,7 @@
 <!-- TMPL_INCLUDE NAME="header.inc" -->
 <!-- TMPL_INCLUDE NAME="cat-search.inc" -->
 
-<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/catalogue/search.pl">Catalogue</a>  &rsaquo; Item Details for <i><!-- TMPL_LOOP NAME="BIBITEM_DATA" --><!-- TMPL_VAR NAME="title" --><!-- /TMPL_LOOP --></i></div>
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/catalogue/search.pl">Catalog</a>  &rsaquo; Item Details for <i><!-- TMPL_LOOP NAME="BIBITEM_DATA" --><!-- TMPL_VAR NAME="title" escape="html" --><!-- /TMPL_LOOP --></i></div>
 
 <div id="doc3" class="yui-t2">
    
@@ -19,7 +19,7 @@
 
 <div id="catalogue_detail_biblio">
     <!-- TMPL_LOOP NAME="BIBITEM_DATA" -->
-    <h2><!-- TMPL_VAR NAME="title" --> <!-- TMPL_IF NAME="author" -->, by <!-- TMPL_VAR NAME="author" --><!-- /TMPL_IF --></h2>
+    <h2><!-- TMPL_VAR NAME="title" ESCAPE="html" --> <!-- TMPL_IF NAME="author" -->, by <!-- TMPL_VAR NAME="author" --><!-- /TMPL_IF --></h2>
     <ol class="bibliodetails">
         <li><span class="label">Biblionumber:</span> <!-- TMPL_VAR NAME="biblionumber" -->&nbsp;</li>
         <!-- TMPL_UNLESS NAME="item-level_itypes" -->
@@ -28,7 +28,7 @@
         <!-- deprecated? <li><span class="label">Loan length:</span> <!-- TMPL_VAR NAME="loanlength" -->&nbsp;</li> -->
         <li><span class="label">Rental charge:</span>$<!-- TMPL_VAR NAME="rentalcharge" -->&nbsp;</li>
         <li><span class="label">ISBN:</span> <!-- TMPL_VAR NAME="isbn" -->&nbsp;</li>
-        <li><span class="label">Publisher:</span><!-- TMPL_VAR NAME="place" --> <!-- TMPL_VAR NAME="publishercode" --> <!-- TMPL_VAR NAME="publicationyear" -->&nbsp;</li>
+        <li><span class="label">Publisher:</span><!-- TMPL_VAR NAME="place" --> <!-- TMPL_VAR NAME="publishercode" ESCAPE="html" --> <!-- TMPL_VAR NAME="publicationyear" -->&nbsp;</li>
         <!-- TMPL_IF NAME="volumeddesc" --><li><span class="label">Volume:</span> <!-- TMPL_VAR NAME="volumeddesc" --></li><!-- /TMPL_IF -->
         <li><span class="label">Physical Details:</span> <!-- TMPL_VAR NAME="pages" --> <!-- TMPL_VAR NAME="illus" --> <!-- TMPL_VAR NAME="size" -->&nbsp;</li>
         <!-- TMPL_IF NAME="bnotes" --><li><span class="label">Notes:</span> <!-- TMPL_VAR NAME="bnotes" --></li><!-- /TMPL_IF -->
@@ -36,6 +36,9 @@
     </ol>
     <!-- /TMPL_LOOP -->
     <br clear="all" />
+    <!-- TMPL_IF NAME="ONLY_ONE" -->
+        <div class="dialog message">You are only viewing one item.  <a href="/cgi-bin/koha/catalogue/moredetail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->&amp;bi=<!-- TMPL_VAR NAME="biblioitemnumber" -->#item<!-- TMPL_VAR NAME="itemnumber">">View All</a></div>
+    <!-- /TMPL_IF -->
     <!-- TMPL_LOOP NAME="ITEM_DATA" -->
     <div class="yui-g">
         <h3 id="item<!-- TMPL_VAR NAME="itemnumber" -->">Barcode <!-- TMPL_VAR NAME="barcode" -->  <!-- TMPL_IF name="notforloantext" --><!-- TMPL_VAR name="notforloantext" --> <!-- /TMPL_IF --></h3>
@@ -59,7 +62,7 @@
             
             <ol class="bibliodetails">
             <li><span class="label">Current Location:</span> <!-- TMPL_VAR NAME="holdingbranchname" -->&nbsp;</li>
-            <li><span class="label">Circulation Status:</span> <!-- TMPL_IF NAME="issue" -->Checked out to <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->"><!-- TMPL_VAR NAME="cardnumber" --></a>, Due back on <!-- TMPL_VAR NAME="onloan" --><!-- TMPL_ELSE -->Not Checked out <!-- /TMPL_IF --></li>
+            <li><span class="label">Checkout Status:</span> <!-- TMPL_IF NAME="issue" -->Checked out to <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->"><!-- TMPL_VAR NAME="cardnumber" --></a>, Due back on <!-- TMPL_VAR NAME="onloan" --><!-- TMPL_ELSE -->Not Checked out <!-- /TMPL_IF --></li>
             <li><span class="label">Lost Status:</span>
                 <!-- TMPL_IF NAME="CAN_user_circulate" -->
                     <form action="updateitem.pl" method="post">
@@ -140,7 +143,7 @@
 
                 <li><span class="label">Total Renewals:</span> <!-- TMPL_VAR NAME="renewals" -->&nbsp;</li>
 
-                <li><span class="label">Total Checkouts:</span><!-- TMPL_IF NAME="issues" --><!-- TMPL_VAR NAME="issues" --><!-- TMPL_ELSE -->0<!-- /TMPL_IF -->  (<a href="/cgi-bin/koha/circ/bookcount.pl?&amp;biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->&amp;bi=<!-- TMPL_VAR NAME="biblioitemnumber" -->&amp;itm=<!-- TMPL_VAR NAME="itemnumber" -->">View Circulation History</a>)</li>
+                <li><span class="label">Total Checkouts:</span><!-- TMPL_IF NAME="issues" --><!-- TMPL_VAR NAME="issues" --><!-- TMPL_ELSE -->0<!-- /TMPL_IF -->  (<a href="/cgi-bin/koha/circ/bookcount.pl?&amp;biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->&amp;bi=<!-- TMPL_VAR NAME="biblioitemnumber" -->&amp;itm=<!-- TMPL_VAR NAME="itemnumber" -->">View item's checkout history</a>)</li>
 
 
                 <li><span class="label">Last seen:</span> <!-- TMPL_VAR NAME="datelastseen" -->&nbsp;</li>

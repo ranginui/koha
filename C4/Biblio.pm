@@ -539,7 +539,7 @@ sub GetBiblioItemData {
     my ($biblioitemnumber) = @_;
     my $dbh       = C4::Context->dbh;
     my $query = "SELECT *,biblioitems.notes AS bnotes
-        FROM biblio LEFT JOIN biblioitems on biblio.biblionumber=biblioitems.biblioitemnumber ";
+        FROM biblio LEFT JOIN biblioitems on biblio.biblionumber=biblioitems.biblionumber ";
     unless(C4::Context->preference('item-level_itypes')) { 
         $query .= "LEFT JOIN itemtypes on biblioitems.itemtype=itemtypes.itemtype ";
     }    
@@ -1880,7 +1880,7 @@ Returns a hash with all the fields for Display a given item data in a template
 
 sub PrepareItemrecordDisplay {
 
-    my ( $bibnum, $itemnum ) = @_;
+    my ( $bibnum, $itemnum, $defaultvalues ) = @_;
 
     my $dbh = C4::Context->dbh;
     my $frameworkcode = &GetFrameworkCode( $bibnum );
@@ -1909,11 +1909,7 @@ sub PrepareItemrecordDisplay {
                   $tagslib->{$tag}->{$subfield}->{'kohafield'};
 
          #        $subfield_data{marc_lib}=$tagslib->{$tag}->{$subfield}->{lib};
-                $subfield_data{marc_lib} =
-                    "<span id=\"error\" title=\""
-                  . $tagslib->{$tag}->{$subfield}->{lib} . "\">"
-                  . substr( $tagslib->{$tag}->{$subfield}->{lib}, 0, 12 )
-                  . "</span>";
+                $subfield_data{marc_lib} = $tagslib->{$tag}->{$subfield}->{lib};
                 $subfield_data{mandatory} =
                   $tagslib->{$tag}->{$subfield}->{mandatory};
                 $subfield_data{repeatable} =
@@ -1937,6 +1933,26 @@ sub PrepareItemrecordDisplay {
                     my $temp = $itemrecord->field($CNtag) if ($itemrecord);
                     if ($temp) {
                         $value = $temp->subfield($CNsubfield);
+                    }
+                }
+                if ( $tagslib->{$tag}->{$subfield}->{kohafield} eq
+                    'items.itemcallnumber'
+                    && $defaultvalues->{'callnumber'} )
+                {
+                    my $temp = $itemrecord->field($subfield) if ($itemrecord);
+                    unless ($temp) {
+                        $value = $defaultvalues->{'callnumber'};
+                    }
+                }
+                if ( ($tagslib->{$tag}->{$subfield}->{kohafield} eq
+                    'items.holdingbranch' ||
+                    $tagslib->{$tag}->{$subfield}->{kohafield} eq
+                    'items.homebranch')          
+                    && $defaultvalues->{'branchcode'} )
+                {
+                    my $temp = $itemrecord->field($subfield) if ($itemrecord);
+                    unless ($temp) {
+                        $value = $defaultvalues->{branchcode};
                     }
                 }
                 if ( $tagslib->{$tag}->{$subfield}->{authorised_value} ) {
@@ -2028,7 +2044,7 @@ sub PrepareItemrecordDisplay {
                 }
                 elsif ( $tagslib->{$tag}->{$subfield}->{thesaurus_category} ) {
                     $subfield_data{marc_value} =
-"<input type=\"text\" name=\"field_value\"  size=47 maxlength=255> <a href=\"javascript:Dopop('cataloguing/thesaurus_popup.pl?category=$tagslib->{$tag}->{$subfield}->{thesaurus_category}&index=',)\">...</a>";
+"<input type=\"text\" name=\"field_value\"  size=\"47\" maxlength=\"255\" /> <a href=\"javascript:Dopop('cataloguing/thesaurus_popup.pl?category=$tagslib->{$tag}->{$subfield}->{thesaurus_category}&index=',)\">...</a>";
 
 #"
 # COMMENTED OUT because No $i is provided with this API.
@@ -2043,7 +2059,7 @@ sub PrepareItemrecordDisplay {
                 }
                 else {
                     $subfield_data{marc_value} =
-"<input type=\"text\" name=\"field_value\" value=\"$value\" size=50 maxlength=255>";
+"<input type=\"text\" name=\"field_value\" value=\"$value\" size=\"50\" maxlength=\"255\" />";
                 }
                 push( @loop_data, \%subfield_data );
             }
@@ -2124,8 +2140,8 @@ sub ModZebra {
         # lock the nozebra table : we will read index lines, update them in Perl process
         # and write everything in 1 transaction.
         # lock the table to avoid someone else overwriting what we are doing
-        $dbh->do('LOCK TABLES nozebra WRITE,biblio WRITE,biblioitems WRITE, systempreferences WRITE, auth_types WRITE, auth_header WRITE');
-        my %result; # the result hash that will be builded by deletion / add, and written on mySQL at the end, to improve speed
+        $dbh->do('LOCK TABLES nozebra WRITE,biblio WRITE,biblioitems WRITE, systempreferences WRITE, auth_types WRITE, auth_header WRITE, auth_subfield_structure READ');
+        my %result; # the result hash that will be built by deletion / add, and written on mySQL at the end, to improve speed
         if ($op eq 'specialUpdate') {
             # OK, we have to add or update the record
             # 1st delete (virtually, in indexes), if record actually exists
@@ -2147,7 +2163,6 @@ sub ModZebra {
             }
         }
         $dbh->do('UNLOCK TABLES');
-
     } else {
         #
         # we use zebra, just fill zebraqueue table

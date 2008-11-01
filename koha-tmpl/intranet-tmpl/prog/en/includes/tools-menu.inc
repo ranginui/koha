@@ -25,6 +25,8 @@
     <!-- TMPL_IF NAME="CAN_user_tools_moderate_comments" -->
 	<li><a href="/cgi-bin/koha/reviews/reviewswaiting.pl">Moderate OPAC comments</a></li>
     <!-- /TMPL_IF -->
+    <!-- TMPL_IF NAME="CAN_user_tools_moderate_comments" --><!-- FIXME: Update here when Tag specific permission is created. --><li><a href="/cgi-bin/koha/tags/review.pl">Moderate patron tags</a></li>
+    <!-- /TMPL_IF -->
     <!-- TMPL_IF NAME="CAN_user_tools_view_system_logs" -->
 	<li><a href="/cgi-bin/koha/tools/viewlog.pl">Log viewer</a></li>
     <!-- /TMPL_IF -->
@@ -44,7 +46,7 @@
 	<li><a href="/cgi-bin/koha/tools/import_borrowers.pl">Import patrons</a></li>
     <!-- /TMPL_IF -->
     <!-- TMPL_IF NAME="CAN_user_tools_delete_anonymize_patrons" -->
-	<li><a href="/cgi-bin/koha/tools/cleanborrowers.pl">Patrons (anonomize, bulk-delete)</a></li>
+	<li><a href="/cgi-bin/koha/tools/cleanborrowers.pl">Patrons (anonymize, bulk-delete)</a></li>
     <!-- /TMPL_IF -->
     <!-- TMPL_IF NAME="CAN_user_tools_batch_upload_patron_images" -->
 	<li><a href="/cgi-bin/koha/tools/picture-upload.pl">Upload Patron Images</a></li>

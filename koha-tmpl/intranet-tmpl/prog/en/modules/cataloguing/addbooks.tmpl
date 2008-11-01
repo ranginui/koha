@@ -1,5 +1,5 @@
 <!-- TMPL_INCLUDE NAME="doc-head-open.inc" -->
-<title>Koha &rsaquo; Cataloguing</title>
+<title>Koha &rsaquo; Cataloging</title>
 <!-- TMPL_INCLUDE NAME="greybox.inc" -->
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
 <script type="text/javascript">
@@ -12,7 +12,7 @@
 <!-- TMPL_INCLUDE NAME="header.inc" -->
 <!-- TMPL_INCLUDE NAME="cataloging-search.inc" -->
 
-<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; Cataloguing</div>
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; Cataloging</div>
 
 <div id="doc" class="yui-t7">
    
@@ -109,9 +109,9 @@
 </div>
 <!-- TMPL_ELSE -->
     <!-- TMPL_IF name='query'-->
-        <b>No results found</b>
+        <!-- TMPL_IF NAME="error" --><div class="dialog alert"><!-- /TMPL_IF --><b>No results found</b>
         <!-- TMPL_IF NAME="error" -->
-            Error: <span class="error"><!-- TMPL_VAR NAME="error" --></span>
+            Error: <span class="error"><!-- TMPL_VAR NAME="error" --></span></div>
         <!-- /TMPL_IF -->
     <!-- /TMPL_IF -->
 <!-- /TMPL_IF -->
@@ -130,7 +130,7 @@
             </tr>
             <!-- TMPL_LOOP NAME="breeding_loop" -->
             <!-- TMPL_IF NAME="toggle" --><tr><!-- TMPL_ELSE --><tr class="hilighted"><!-- /TMPL_IF -->
-                <td><!-- TMPL_VAR NAME="title" -->
+                <td><!-- TMPL_VAR NAME="title" escape="html" -->
                 <!-- TMPL_VAR NAME="author" --></td>
                 <td><!-- TMPL_VAR NAME="isbn" --></td>
                 <td><!-- TMPL_VAR NAME="file" --></td>

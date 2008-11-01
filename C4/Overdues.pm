@@ -101,9 +101,7 @@ overdue items. It is primarily used by the 'misc/fines2.pl' script.
 
 =head1 FUNCTIONS
 
-=over 2
-
-=item Getoverdues
+=head2 Getoverdues
 
   $overdues = Getoverdues( { minimumdays => 1, maximumdays => 30 } );
 
@@ -118,21 +116,22 @@ Koha database.
 #'
 sub Getoverdues {
     my $params = shift;
-
     my $dbh = C4::Context->dbh;
     my $statement;
     if ( C4::Context->preference('item-level_itypes') ) {
         $statement = "
-SELECT issues.*,items.itype as itemtype, items.homebranch FROM issues 
-LEFT JOIN items USING (itemnumber)
-WHERE date_due < now() 
+   SELECT issues.*, items.itype as itemtype, items.homebranch, items.barcode
+     FROM issues 
+LEFT JOIN items       USING (itemnumber)
+    WHERE date_due < now() 
 ";
     } else {
         $statement = "
-SELECT issues.*,biblioitems.itemtype,items.itype, items.homebranch  FROM issues 
-  LEFT JOIN items USING (itemnumber)
-  LEFT JOIN biblioitems USING (biblioitemnumber)
-  WHERE date_due < now() 
+   SELECT issues.*, biblioitems.itemtype, items.itype, items.homebranch, items.barcode
+     FROM issues 
+LEFT JOIN items       USING (itemnumber)
+LEFT JOIN biblioitems USING (biblioitemnumber)
+    WHERE date_due < now() 
 ";
     }
 
@@ -189,7 +188,7 @@ sub checkoverdues {
     return ( $count, \@overdueitems );
 }
 
-=item CalcFine
+=head2 CalcFine
 
   ($amount, $chargename, $daycount, $daycounttotal) =
     &CalcFine($item, $categorycode, $branch, $days_overdue, $description, $start_date, $end_date );
@@ -239,11 +238,10 @@ or "Final Notice".  But CalcFine never defined any value.
 
 =cut
 
-#'
 sub CalcFine {
     my ( $item, $bortype, $branchcode, $difference ,$dues , $start_date, $end_date  ) = @_;
 	$debug and warn sprintf("CalcFine(%s, %s, %s, %s, %s, %s, %s)",
-			($item    ? '{item}' : 'UNDEF'), 
+			($item ? '{item}' : 'UNDEF'), 
 			($bortype    || 'UNDEF'), 
 			($branchcode || 'UNDEF'), 
 			($difference || 'UNDEF'), 
@@ -255,7 +253,8 @@ sub CalcFine {
     my $amount = 0;
 	my $daystocharge;
 	# get issuingrules (fines part will be used)
-    my $data = C4::Circulation::GetIssuingRule($bortype, $item->{'itemtype'},$branchcode);
+    $debug and warn sprintf("CalcFine calling GetIssuingRule(%s, %s, %s)", $bortype, $item->{'itemtype'}, $branchcode);
+    my $data = C4::Circulation::GetIssuingRule($bortype, $item->{'itemtype'}, $branchcode);
 	if($difference) {
 		# if $difference is supplied, the difference has already been calculated, but we still need to adjust for the calendar.
     	# use copy-pasted functions from calendar module.  (deprecated -- these functions will be removed from C4::Overdues ).
@@ -266,7 +265,7 @@ sub CalcFine {
 	} else {
 		# if $difference is not supplied, we have C4::Dates objects giving us the date range, and we use the calendar module.
 		if(C4::Context->preference('finesCalendar') eq 'noFinesWhenClosed') {
-			my $calendar = C4::Calendar->new(  branchcode => $branchcode );
+			my $calendar = C4::Calendar->new( branchcode => $branchcode );
 			$daystocharge = $calendar->daysBetween( $start_date, $end_date );
 		} else {
 			$daystocharge = Date_to_Days(split('-',$end_date->output('iso'))) - Date_to_Days(split('-',$start_date->output('iso')));
@@ -279,11 +278,14 @@ sub CalcFine {
     } else {
         # a zero (or null)  chargeperiod means no charge.
     }
-    return ( $amount, $data->{'chargename'}, $days_minus_grace, $daystocharge);
+	$amount = C4::Context->preference('maxFine') if(C4::Context->preference('maxFine') && ( $amount > C4::Context->preference('maxFine')));
+	$debug and warn sprintf("CalcFine returning (%s, %s, %s, %s)", $amount, $data->{'chargename'}, $days_minus_grace, $daystocharge);
+    return ($amount, $data->{'chargename'}, $days_minus_grace, $daystocharge);
+    # FIXME: chargename is NEVER populated anywhere.
 }
 
 
-=item GetSpecialHolidays
+=head2 GetSpecialHolidays
 
 &GetSpecialHolidays($date_dues,$itemnumber);
 
@@ -336,7 +338,7 @@ my $specialdaycount=scalar(@result_date);
 return $specialdaycount;
 }
 
-=item GetRepeatableHolidays
+=head2 GetRepeatableHolidays
 
 &GetRepeatableHolidays($date_dues, $itemnumber, $difference,);
 
@@ -374,7 +376,7 @@ return scalar(@dayclosedcount);
 }
 
 
-=item GetWayFromItemnumber
+=head2 GetWayFromItemnumber
 
 &Getwdayfromitemnumber($itemnumber);
 
@@ -404,7 +406,7 @@ return @result;
 }
 
 
-=item GetIssuesIteminfo
+=head2 GetIssuesIteminfo
 
 &GetIssuesIteminfo($itemnumber);
 
@@ -428,7 +430,7 @@ return $issuesinfo;
 }
 
 
-=item UpdateFine
+=head2 UpdateFine
 
   &UpdateFine($itemnumber, $borrowernumber, $amount, $type, $description);
 
@@ -492,9 +494,12 @@ sub UpdateFine {
 
     if ( my $data = $sth->fetchrow_hashref ) {
 
-		# we're updating an existing fine.
+		# we're updating an existing fine.  Only modify if we're adding to the charge.
+        # Note that in the current implementation, you cannot pay against an accruing fine
+        # (i.e. , of accounttype 'FU').  Doing so will break accrual.
     	if ( $data->{'amount'} != $amount ) {
             my $diff = $amount - $data->{'amount'};
+            $diff = 0 if ( $data->{amount} > $amount);
             my $out  = $data->{'amountoutstanding'} + $diff;
             my $query = "
                 UPDATE accountlines
@@ -552,7 +557,7 @@ sub UpdateFine {
         ) if C4::Context->preference("FinesLog");
 }
 
-=item BorType
+=head2 BorType
 
   $borrower = &BorType($borrowernumber);
 
@@ -580,7 +585,7 @@ sub BorType {
     return ($data);
 }
 
-=item ReplacementCost
+=head2 ReplacementCost
 
   $cost = &ReplacementCost($itemnumber);
 
@@ -602,7 +607,7 @@ sub ReplacementCost {
     return ( $data->{'replacementprice'} );
 }
 
-=item GetFine
+=head2 GetFine
 
 $data->{'sum(amountoutstanding)'} = &GetFine($itemnum,$borrowernumber);
 
@@ -628,7 +633,7 @@ sub GetFine {
 }
 
 
-=item GetIssuingRules
+=head2 GetIssuingRules
 
 FIXME - This sub should be deprecated and removed.
 It ignores branch and defaults.
@@ -678,7 +683,7 @@ sub ReplacementCost2 {
 }
 
 
-=item GetNextIdNotify
+=head2 GetNextIdNotify
 
 ($result) = &GetNextIdNotify($reference);
 
@@ -721,7 +726,7 @@ return $result;
 }
 
 
-=item NumberNotifyId
+=head2 NumberNotifyId
 
 (@notify) = &NumberNotifyId($borrowernumber);
 
@@ -750,7 +755,7 @@ sub NumberNotifyId{
 
 }
 
-=item AmountNotify
+=head2 AmountNotify
 
 ($totalnotify) = &AmountNotify($notifyid);
 
@@ -777,7 +782,7 @@ sub AmountNotify{
 }
 
 
-=item GetNotifyId
+=head2 GetNotifyId
 
 ($notify_id) = &GetNotifyId($borrowernumber,$itemnumber);
 
@@ -808,7 +813,7 @@ C<$notify_id> contains the file number for the borrower number nad item number
 
  }
 
-=item CreateItemAccountLine
+=head2 CreateItemAccountLine
 
 () = &CreateItemAccountLine($borrowernumber,$itemnumber,$date,$amount,$description,$accounttype,$amountoutstanding,$timestamp,$notify_id,$level);
 
@@ -855,7 +860,7 @@ C<$level> contains the file level
   $sth->finish;
  }
 
-=item UpdateAccountLines
+=head2 UpdateAccountLines
 
 () = &UpdateAccountLines($notify_id,$notify_level,$borrowernumber,$itemnumber);
 
@@ -907,7 +912,7 @@ if ($notify_id eq '')
 }
 
 
-=item GetItems
+=head2 GetItems
 
 ($items) = &GetItems($itemnumber);
 
@@ -933,7 +938,7 @@ sub GetItems {
     return($items);
 }
 
-=item GetOverdueDelays
+=head2 GetOverdueDelays
 
 (@delays) = &GetOverdueDelays($categorycode);
 
@@ -972,14 +977,14 @@ returns a list of branch codes for branches with overdue rules defined.
 
 sub GetBranchcodesWithOverdueRules {
     my $dbh               = C4::Context->dbh;
-    my $rqoverduebranches = $dbh->prepare("SELECT DISTINCT branchcode FROM overduerules WHERE delay1 IS NOT NULL");
+    my $rqoverduebranches = $dbh->prepare("SELECT DISTINCT branchcode FROM overduerules WHERE delay1 IS NOT NULL AND branchcode <> ''");
     $rqoverduebranches->execute;
     my @branches = map { shift @$_ } @{ $rqoverduebranches->fetchall_arrayref };
     $rqoverduebranches->finish;
     return @branches;
 }
 
-=item CheckAccountLineLevelInfo
+=head2 CheckAccountLineLevelInfo
 
 ($exist) = &CheckAccountLineLevelInfo($borrowernumber,$itemnumber,$accounttype,notify_level);
 
@@ -1014,7 +1019,7 @@ sub CheckAccountLineLevelInfo {
         return($exist);
 }
 
-=item GetOverduerules
+=head2 GetOverduerules
 
 ($overduerules) = &GetOverduerules($categorycode);
 
@@ -1025,8 +1030,8 @@ C<$overduerules> return value of debbraed field in overduerules table
 C<$category> contains the borrower categorycode
 
 C<$notify_level> contains the notify level
-=cut
 
+=cut
 
 sub GetOverduerules{
     my($category,$notify_level) = @_;
@@ -1042,7 +1047,7 @@ sub GetOverduerules{
 }
 
 
-=item CheckBorrowerDebarred
+=head2 CheckBorrowerDebarred
 
 ($debarredstatus) = &CheckBorrowerDebarred($borrowernumber);
 
@@ -1073,7 +1078,7 @@ sub CheckBorrowerDebarred{
     }
 }
 
-=item UpdateBorrowerDebarred
+=head2 UpdateBorrowerDebarred
 
 ($borrowerstatut) = &UpdateBorrowerDebarred($borrowernumber);
 
@@ -1096,7 +1101,7 @@ sub UpdateBorrowerDebarred{
         return 1;
 }
 
-=item CheckExistantNotifyid
+=head2 CheckExistantNotifyid
 
   ($exist) = &CheckExistantNotifyid($borrowernumber,$itemnumber,$accounttype,$notify_id);
 
@@ -1131,7 +1136,7 @@ sub CheckExistantNotifyid {
     }
 }
 
-=item CheckAccountLineItemInfo
+=head2 CheckAccountLineItemInfo
 
   ($exist) = &CheckAccountLineItemInfo($borrowernumber,$itemnumber,$accounttype,$notify_id);
 
@@ -1359,8 +1364,6 @@ sub RemoveNotifyLine {
 
 1;
 __END__
-
-=back
 
 =head1 AUTHOR
 

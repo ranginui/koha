@@ -13,13 +13,15 @@
 <script type="text/javascript">
 //<![CDATA[
 $(document).ready(function(){
+	var param1 = "<label for=\"addto\">Add to: <\/label><select name=\"addto\" id=\"addto\"><option value=\"\"><\/option>"<!-- TMPL_IF name="opacbookbag" -->+"<option value=\"addtocart\">Cart<\/option>"+<!-- /TMPL_IF --><!-- TMPL_IF NAME="virtualshelves" --><!-- TMPL_IF NAME="loggedinusername" -->"<optgroup label=\"Your Lists:\">"+<!-- TMPL_IF NAME="addbarshelves" --><!-- TMPL_LOOP NAME="addbarshelvesloop" -->"<option id=\"s<!-- TMPL_VAR NAME="shelfnumber" -->\" value=\"addtolist\"><!-- TMPL_VAR NAME="shelfname" ESCAPE="html"--><\/option>"+<!-- /TMPL_LOOP --><!-- /TMPL_IF -->"<\/optgroup>";
+	param1 += "<optgroup label=\"Public Lists:\">"+<!-- TMPL_IF NAME="addpubshelves" --><!-- TMPL_LOOP NAME="addpubshelvesloop" -->"<option id=\"s<!-- TMPL_VAR NAME="shelfnumber" -->\" value=\"addtolist\"><!-- TMPL_VAR NAME="shelfname" ESCAPE="html"--><\/option>"+<!-- /TMPL_LOOP --><!-- /TMPL_IF -->"<\/optgroup><option value=\"newlist\">[ New List ]<\/option>"+<!-- TMPL_ELSE -->"<optgroup label=\"Public Lists:\">"+<!-- TMPL_IF NAME="addpubshelves" --><!-- TMPL_LOOP NAME="addpubshelvesloop" -->"<option id=\"s<!-- TMPL_VAR NAME="shelfnumber" -->\" value=\"addtolist\"><!-- TMPL_VAR NAME="shelfname" ESCAPE="html"--><\/option>"+<!-- /TMPL_LOOP --><!-- /TMPL_IF -->"<\/optgroup>"+<!-- /TMPL_IF --><!-- /TMPL_IF -->"<\/select> <input type=\"submit\" class=\"submit\" value=\"Save\" />";
 	$('#sortsubmit').hide();
     $('#sort_by').change(function() {
         $('#bookbag_form').submit();
     });
-	$("span.clearall").html("<a id=\"CheckNone\" href=\"#\">Clear All</a>");
-	$("span.checkall").html("<a id=\"CheckAll\" href=\"#\">Select All</a>");
-	$("span.addto").html("<label for=\"addto\">Add to: </label><select name=\"addto\" id=\"addto\"><option value=\"\"></option><!-- TMPL_IF name="opacbookbag" --><option value=\"addtocart\">Cart</option><!-- /TMPL_IF --><!-- TMPL_IF NAME="virtualshelves" --><!-- TMPL_IF NAME="loggedinusername" --><optgroup label=\"Your Lists:\"><!-- TMPL_IF NAME="barshelves" --><!-- TMPL_LOOP NAME="barshelvesloop" --><!-- TMPL_IF EXPR="category == 1" --><option id=\"s<!-- TMPL_VAR NAME="shelfnumber" -->\" value=\"addtolist\"><!-- TMPL_VAR NAME="shelfname" ESCAPE="html"--></option><!-- /TMPL_IF --><!-- /TMPL_LOOP --><!-- /TMPL_IF --></optgroup><optgroup label=\"Public Lists:\"><!-- TMPL_IF NAME="pubshelves" --><!-- TMPL_LOOP NAME="pubshelvesloop" --><option id=\"s<!-- TMPL_VAR NAME="shelfnumber" -->\" value=\"addtolist\"><!-- TMPL_VAR NAME="shelfname" ESCAPE="html"--></option><!-- /TMPL_LOOP --><!-- /TMPL_IF --></optgroup><option value=\"newlist\">[ New List ]</option><!-- TMPL_ELSE --><optgroup label=\"Public Lists:\"><!-- TMPL_IF NAME="pubshelves" --><!-- TMPL_LOOP NAME="pubshelvesloop" --><option id=\"s<!-- TMPL_VAR NAME="shelfnumber" -->\" value=\"addtolist\"><!-- TMPL_VAR NAME="shelfname" ESCAPE="html"--></option><!-- /TMPL_LOOP --><!-- /TMPL_IF --></optgroup><!-- /TMPL_IF --><!-- /TMPL_IF --></select> <input type=\"submit\" class=\"submit\" value=\"Save\" />");
+	$("span.clearall").html("<a id=\"CheckNone\" href=\"#\">Clear All<\/a>");
+	$("span.checkall").html("<a id=\"CheckAll\" href=\"#\">Select All<\/a>");
+	$("span.addto").html(param1);
 	$("#addto").change(function(){
 		cartList();
 	});
@@ -82,7 +84,7 @@ $(document).ready(function(){
 <!-- /TMPL_IF -->
 
 <!-- TMPL_IF NAME="query_error" -->
-<div class="error">
+<div class="dialog alert">
 	<h4>Error:</h4>
     <!-- TMPL_VAR NAME="query_error" -->
 </div>
@@ -199,7 +201,7 @@ $(document).ready(function(){
 				<!-- TMPL_IF NAME="XSLTResultsDisplay" -->
                 <!-- TMPL_VAR NAME="XSLTResultsRecord" -->
 				<!-- TMPL_ELSE -->
-				<!-- TMPL_IF name="BiblioDefaultViewmarc" --><a class="title" href="/cgi-bin/koha/opac-MARCdetail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" ESCAPE="URL" -->" title="View details for this title"><!-- TMPL_VAR NAME="title"  --> <!-- TMPL_VAR NAME="subtitle"  --></a>
+				<!-- TMPL_IF name="BiblioDefaultViewmarc" --><a class="title" href="/cgi-bin/koha/opac-MARCdetail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" ESCAPE="URL" -->" title="View details for this title"><!-- TMPL_VAR NAME="title" --> <!-- TMPL_VAR NAME="subtitle" --></a>
                                 <!-- TMPL_ELSE -->
                                 <!-- TMPL_IF name="BiblioDefaultViewisbd" --><a class="title" href="/cgi-bin/koha/opac-ISBDdetail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" ESCAPE="URL" -->" title="View details for this title"><!-- TMPL_VAR NAME="title"  --> <!-- TMPL_VAR NAME="subtitle"  --></a>
                                 <!-- TMPL_ELSE --><a class="title" href="/cgi-bin/koha/opac-detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" ESCAPE="URL" -->" title="View details for this title"><!-- TMPL_VAR NAME="title" --> <!-- TMPL_VAR NAME="subtitle"  --></a>
@@ -231,7 +233,7 @@ $(document).ready(function(){
                     <!-- /TMPL_IF -->
 
                     <!-- TMPL_IF name="OPACItemsResultsDisplay" -->
-                        <!-- TMPL_IF NAME="location" --><!-- TMPL_VAR NAME="location" --><!-- /TMPL_IF -->
+					    <!-- TMPL_UNLESS NAME="singleBranchMode" --><!-- TMPL_VAR NAME="location" --><!-- /TMPL_UNLESS -->
                         <!-- TMPL_IF NAME="itemcallnumber" -->[<a href="/cgi-bin/koha/opac-search.pl?q=callnum:<!-- TMPL_VAR NAME="itemcallnumber" ESCAPE="URL" -->"><!-- TMPL_VAR NAME="itemcallnumber" --></a>]<!-- /TMPL_IF -->
                     <!-- /TMPL_IF -->
                     (<!-- TMPL_VAR NAME="count" -->),

@@ -27,7 +27,10 @@ use C4::Output;
 use CGI;
 
 use C4::Members;
+use C4::Branch;
 use C4::Accounts;
+use C4::Items;
+
 my $input=new CGI;
 
 my $borrowernumber=$input->param('borrowernumber');
@@ -37,7 +40,8 @@ my $data=GetMember($borrowernumber,'borrowernumber');
 my $add=$input->param('add');
 
 if ($add){
-    my $itemnum=$input->param('itemnum');
+    my $barcode=$input->param('barcode');
+    my $itemnum = GetItemnumberFromBarcode($barcode) if $barcode;
     my $desc=$input->param('desc');
     my $amount=$input->param('amount');
     $amount = -$amount;
@@ -72,13 +76,15 @@ if ($add){
 		    cardnumber => $data->{'cardnumber'},
 		    categorycode => $data->{'categorycode'},
 		    category_type => $data->{'category_type'},
-		    category_description => $data->{'description'},
+		    categoryname  => $data->{'description'},
 		    address => $data->{'address'},
 		    address2 => $data->{'address2'},
 		    city => $data->{'city'},
 		    zipcode => $data->{'zipcode'},
 		    phone => $data->{'phone'},
 		    email => $data->{'email'},
+		    branchcode => $data->{'branchcode'},
+		    branchname => GetBranchName($data->{'branchcode'}),
 		    is_child        => ($data->{'category_type'} eq 'C'),
         );
     output_html_with_http_headers $input, $cookie, $template->output;

@@ -47,7 +47,7 @@ BEGIN {
     &GetLatestSerials   &ModSerialStatus    &GetNextDate       &GetSerials2
     &ReNewSubscription  &GetLateIssues      &GetLateOrMissingIssues
     &GetSerialInformation                   &AddItem2Serial
-    &PrepareSerialsData
+    &PrepareSerialsData &GetNextExpected    &ModNextExpected
     
     &UpdateClaimdateIssues
     &GetSuppliersWithLateIssues             &getsupplierbyserialid
@@ -256,17 +256,18 @@ sub GetSerialInformation {
     my $data = $rq->fetchrow_hashref;
     # create item information if we have serialsadditems for this subscription
     if ( $data->{'serialsadditems'} ) {
-        if ( $data->{'itemnumber'} ) {
-            my @itemnumbers = split /,/, $data->{'itemnumber'};
-            foreach my $itemnum (@itemnumbers) {
-
+        my $queryitem=$dbh->prepare("SELECT itemnumber from serialitems where serialid=?");
+        $queryitem->execute($serialid);
+        my $itemnumbers=$queryitem->fetchall_arrayref([0]);
+        if (scalar(@$itemnumbers)>0){
+            foreach my $itemnum (@$itemnumbers) {
                 #It is ASSUMED that GetMarcItem ALWAYS WORK...
                 #Maybe GetMarcItem should return values on failure
-                $debug and warn "itemnumber :$itemnum, bibnum :".$data->{'biblionumber'};
+                $debug and warn "itemnumber :$itemnum->[0], bibnum :".$data->{'biblionumber'};
                 my $itemprocessed =
-                  PrepareItemrecordDisplay( $data->{'biblionumber'}, $itemnum );
-                $itemprocessed->{'itemnumber'}   = $itemnum;
-                $itemprocessed->{'itemid'}       = $itemnum;
+                  PrepareItemrecordDisplay( $data->{'biblionumber'}, $itemnum->[0] , $data );
+                $itemprocessed->{'itemnumber'}   = $itemnum->[0];
+                $itemprocessed->{'itemid'}       = $itemnum->[0];
                 $itemprocessed->{'serialid'}     = $serialid;
                 $itemprocessed->{'biblionumber'} = $data->{'biblionumber'};
                 push @{ $data->{'items'} }, $itemprocessed;
@@ -274,7 +275,7 @@ sub GetSerialInformation {
         }
         else {
             my $itemprocessed =
-              PrepareItemrecordDisplay( $data->{'biblionumber'} );
+              PrepareItemrecordDisplay( $data->{'biblionumber'}, '', $data );
             $itemprocessed->{'itemid'}       = "N$serialid";
             $itemprocessed->{'serialid'}     = $serialid;
             $itemprocessed->{'biblionumber'} = $data->{'biblionumber'};
@@ -296,6 +297,7 @@ sub GetSerialInformation {
 
 $data = AddItem2Serial($serialid,$itemnumber);
 Adds an itemnumber to Serial record
+
 =back
 
 =cut
@@ -316,6 +318,7 @@ UpdateClaimdateIssues($serialids,[$date]);
 
 Update Claimdate for issues in @$serialids list with date $date 
 (Take Today if none)
+
 =back
 
 =cut
@@ -720,6 +723,8 @@ sub GetSubscriptions {
 this function get every serial not arrived for a given subscription
 as well as the number of issues registered in the database (all types)
 this number is used to see if a subscription can be deleted (=it must have only 1 issue)
+
+FIXME: We should return \@serials.
 
 =back
 
@@ -1212,6 +1217,61 @@ sub ModSerialStatus {
             SendAlerts( 'issue', $val->{subscriptionid}, $val->{letter} );
         }
     }
+}
+
+=head2 GetNextExpected
+
+=over 4
+
+$nextexpected = GetNextExpected($subscriptionid)
+
+Get the planneddate for the current expected issue of the subscription.
+
+returns a hashref:
+
+$nextexepected = {
+    serialid => int
+    planneddate => C4::Dates object
+    }
+
+=back
+
+=cut
+
+sub GetNextExpected($) {
+    my ($subscriptionid) = @_;
+    my $dbh = C4::Context->dbh;
+    my $sth = $dbh->prepare('SELECT serialid, planneddate FROM serial WHERE subscriptionid=? AND status=?');
+    # Each subscription has only one 'expected' issue, with serial.status==1.
+    $sth->execute( $subscriptionid, 1 );
+    my ( $nextissue ) = $sth->fetchrow_hashref;
+    $nextissue->{planneddate} = C4::Dates->new($nextissue->{planneddate},'iso');
+    return $nextissue;
+}
+=head2 ModNextExpected
+
+=over 4
+
+ModNextExpected($subscriptionid,$date)
+
+Update the planneddate for the current expected issue of the subscription.
+This will modify all future prediction results.  
+
+C<$date> is a C4::Dates object.
+
+=back
+
+=cut
+
+sub ModNextExpected($$) {
+    my ($subscriptionid,$date) = @_;
+    my $dbh = C4::Context->dbh;
+    #FIXME: Would expect to only set planneddate, but we set both on new issue creation, so updating it here
+    my $sth = $dbh->prepare('UPDATE serial SET planneddate=?,publisheddate=? WHERE subscriptionid=? AND status=?');
+    # Each subscription has only one 'expected' issue, with serial.status==1.
+    $sth->execute( $date->output('iso'),$date->output('iso'), $subscriptionid, 1);
+    return 0;
+
 }
 
 =head2 ModSubscription
@@ -2056,6 +2116,7 @@ sub getsupplierbyserialid {
 
 this function checks to see if a serial has a routing list and returns the count of routingid
 used to show either an 'add' or 'edit' link
+
 =back
 
 =cut
@@ -2592,10 +2653,13 @@ sub GetNextDate(@) {
     my @resultdate;
 
     #       warn "DOW $dayofweek";
-    if ( $subscription->{periodicity} % 16 == 0 ) {
+    if ( $subscription->{periodicity} % 16 == 0 ) {  # 'without regularity' || 'irregular'
       return 0;
     }  
-    if ( $subscription->{periodicity} == 1 ) {
+    #   daily : n / week
+    #   Since we're interpreting irregularity here as which days of the week to skip an issue,
+    #   renaming this pattern from 1/day to " n / week ".
+    if ( $subscription->{periodicity} == 1 ) {  
         my $dayofweek = eval{Day_of_Week( $year,$month, $day )};
         if ($@){warn "year month day : $year $month $day $subscription->{subscriptionid} : $@";}
         else {    
@@ -2609,11 +2673,13 @@ sub GetNextDate(@) {
           @resultdate = Add_Delta_Days($year,$month, $day , 1 );
         }    
     }
+    #   1  week
     if ( $subscription->{periodicity} == 2 ) {
         my ($wkno,$year) = eval {Week_of_Year( $year,$month, $day )};
         if ($@){warn "year month day : $year $month $day $subscription->{subscriptionid} : $@";}
         else {    
           for ( my $i = 0 ; $i < @irreg ; $i++ ) {
+          #FIXME: if two consecutive irreg, do we only skip one?
               if ( $irreg[$i] == (($wkno!=51)?($wkno +1) % 52 :52)) {
                   ($year,$month,$day) = Add_Delta_Days($year,$month, $day , 7 );
                   $wkno=(($wkno!=51)?($wkno +1) % 52 :52);
@@ -2622,6 +2688,7 @@ sub GetNextDate(@) {
           @resultdate = Add_Delta_Days( $year,$month, $day, 7);
         }        
     }
+    #   1 / 2 weeks
     if ( $subscription->{periodicity} == 3 ) {        
         my ($wkno,$year) = eval {Week_of_Year( $year,$month, $day )};
         if ($@){warn "year month day : $year $month $day $subscription->{subscriptionid} : $@";}
@@ -2636,6 +2703,7 @@ sub GetNextDate(@) {
           @resultdate = Add_Delta_Days($year,$month, $day , 14 );
         }        
     }
+    #   1 / 3 weeks
     if ( $subscription->{periodicity} == 4 ) {
         my ($wkno,$year) = eval {Week_of_Year( $year,$month, $day )};
         if ($@){warn "année mois jour : $year $month $day $subscription->{subscriptionid} : $@";}
@@ -2737,8 +2805,6 @@ sub itemdata {
 
 1;
 __END__
-
-=back
 
 =head1 AUTHOR
 

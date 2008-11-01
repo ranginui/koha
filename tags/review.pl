@@ -89,7 +89,7 @@ my ($template, $borrowernumber, $cookie) = get_template_and_user({
 });
 
 my ($op, @errors, @tags);
-$op   = $input->param('op') || 'none';
+$op   = lc($input->param('op')) || 'none';
 @tags = $input->param('tags');
 
 $borrowernumber == 0 and push @errors, {op_zero=>1};

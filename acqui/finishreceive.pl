@@ -54,34 +54,47 @@ my @ccode=$input->param('ccode');
 my @itemtype=$input->param('itemtype');
 my @location=$input->param('location');
 my @enumchron=$input->param('volinf');
-my $cnt = 0;
+my $cnt=0;
+my $error_url_str;	
 
 if ($quantityrec > $origquantityrec ) {
-    # save the quantity recieved.
-    $datereceived = ModReceiveOrder($biblionumber,$ordnum,$quantityrec,$user,$cost,$invoiceno,$freight,$replacement,undef,$datereceived);
-    # create items if the user has entered barcodes
-   # my @barcodes=split(/\,| |\|/,$barcode);
-    # foreach barcode provided, build the item MARC::Record and create the item
-    foreach my $bc (@barcode) {
-        my $itemRecord = TransformKohaToMarc({
-                    "items.replacementprice" => $replacement,
-                    "items.price"            => $cost,
-                    "items.booksellerid"     => $supplierid,
-                    "items.homebranch"       => $branch[$cnt],
-                    "items.holdingbranch"    => $branch[$cnt],
-                    "items.barcode"          => $barcode[$cnt],
-                    "items.ccode"          => $ccode[$cnt],
-                    "items.itype"          => $itemtype[$cnt],
-                    "items.location"          => $location[$cnt],
-                    "items.enumchron"          => $enumchron[$cnt], # FIXME : No integration here with serials module.
-                    "items.loan"             => 0, });
-		AddItemFromMarc($itemRecord,$biblionumber);
-		$cnt++;
+	foreach my $bc (@barcode) {
+        if ($bc) {
+            my $item_hash = {
+                        "items.replacementprice" => $replacement,
+                        "items.price"            => $cost,
+                        "items.booksellerid"     => $supplierid,
+                        "items.homebranch"       => $branch[$cnt],
+                        "items.holdingbranch"    => $branch[$cnt],
+                        "items.barcode"          => $barcode[$cnt],
+                        "items.ccode"          => $ccode[$cnt],
+                        "items.itype"          => $itemtype[$cnt],
+                        "items.location"          => $location[$cnt],
+                        "items.enumchron"          => $enumchron[$cnt], # FIXME : No integration here with serials module.
+                        "items.loan"             => 0, 
+                        };
+            $item_hash->{'items.cn_source'} = C4::Context->preference('DefaultClassificationSource') if(C4::Context->preference('DefaultClassificationSource') );
+            # FIXME : cn_sort is populated by Items::_set_derived_columns_for_add , which is never called with AddItemFromMarc .  Bug 2403
+            my $itemRecord = TransformKohaToMarc($item_hash);
+            $cnt++;
+            $item_hash = TransformMarcToKoha(undef,$itemRecord,'','items');
+            # FIXME: possible race condition.  duplicate barcode check should happen in AddItem, but for now we have to do it here.
+            my %err = CheckItemPreSave($item_hash);
+            if(%err) {
+                for my $err_cnd (keys %err) {
+                    $error_url_str .= "&error=" . $err_cnd . "&error_param=" . $err{$err_cnd};
+                }
+                $quantityrec--;
+            } else {
+                AddItemFromMarc($itemRecord,$biblionumber);
+            }
+        }
+	}
+	
+    # save the quantity received.
+	if( $quantityrec > 0 ) {
+    	$datereceived = ModReceiveOrder($biblionumber,$ordnum, $quantityrec ,$user,$cost,$invoiceno,$freight,$replacement,undef,$datereceived);
 	}
 }
-    print $input->redirect("/cgi-bin/koha/acqui/parcel.pl?invoice=$invoiceno&supplierid=$supplierid&freight=$freight&gst=$gst&datereceived=$datereceived");
-#} else {
-#    print $input->header;
-#    #delorder($biblionumber,$ordnum);
-#    print $input->redirect("/acquisitions/");
-#}
+    print $input->redirect("/cgi-bin/koha/acqui/parcel.pl?invoice=$invoiceno&supplierid=$supplierid&freight=$freight&gst=$gst&datereceived=$datereceived$error_url_str");
+

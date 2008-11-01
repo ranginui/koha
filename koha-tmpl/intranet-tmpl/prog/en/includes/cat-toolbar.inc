@@ -33,17 +33,24 @@ function confirm_deletion() {
 	    $("#edititems").parent().remove();
 	    $("#duplicatebiblio").parent().remove();
 		$("#deletebiblio").parent().remove();
+		$("#newitem").parent().remove();
 	    $("#editmenuc").empty();
+		$("#newmenuc").empty();
 		$("#addtoshelfc").empty();
 		$("#printbiblioc").empty();
 		$("#export").remove();
-		$("#addtoshelfc").before("<li id=\"savemenuc\"></li>");
+		$("#addtoshelfc").before("<li id=\"savemenuc\"><\/li>");
 	    yuiToolbar();
 	 });
 
 	// YUI Toolbar Functions
 
 	function yuiToolbar() {
+		var newmenu = [
+			{text: _("New Record"), url: "/cgi-bin/koha/cataloguing/addbiblio.pl" },
+			{text: _("New Item"), url: "/cgi-bin/koha/cataloguing/additem.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->#additema" }
+		];
+	
 	    var editmenu = [
 	        { text: _("Edit Record"), url: "/cgi-bin/koha/cataloguing/addbiblio.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->&amp;frameworkcode=&amp;op=" },
 	        { text: _("Edit Items"), url: "/cgi-bin/koha/cataloguing/additem.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->" },
@@ -56,7 +63,7 @@ function confirm_deletion() {
 		{ text: _("Dublin Core (XML)"), url: "/cgi-bin/koha/catalogue/export.pl?format=dc&op=export&bib=<!-- TMPL_VAR NAME="biblionumber" -->" },
 		{ text: _("MARCXML"), url: "/cgi-bin/koha/catalogue/export.pl?format=marcxml&op=export&bib=<!-- TMPL_VAR NAME="biblionumber" -->" },
 		{ text: _("MARC (non-Unicode/MARC-8)"), url: "/cgi-bin/koha/catalogue/export.pl?format=marc8&op=export&bib=<!-- TMPL_VAR NAME="biblionumber" -->" },
-		{ text: _("MARC (Unicode/UTF-8)"), url: "/cgi-bin/koha/catalogue/export.pl?format=utf8&op=export&bib=<!-- TMPL_VAR NAME="biblionumber" -->" },
+		{ text: _("MARC (Unicode/UTF-8)"), url: "/cgi-bin/koha/catalogue/export.pl?format=utf8&op=export&bib=<!-- TMPL_VAR NAME="biblionumber" -->" }
 		];
 
 	    new YAHOO.widget.Button({
@@ -72,8 +79,15 @@ function confirm_deletion() {
 	        label: _("Edit"),
 	        name: "editmenubutton",
 	        menu: editmenu,
-	        container: "editmenuc",
-			
+	        container: "editmenuc"
+	    });
+	    
+		new YAHOO.widget.Button({
+	        type: "menu",
+	        label: _("New"),
+	        name: "newmenubutton",
+	        menu: newmenu,
+	        container: "newmenuc"
 	    });
 		
 		var addtoshelfButton = new YAHOO.widget.Button({
@@ -102,8 +116,8 @@ function confirm_deletion() {
 	
 <ul class="toolbar">
 	<!-- TMPL_IF NAME="CAN_user_editcatalogue" -->
-	<li><a id="newbiblio" href="/cgi-bin/koha/cataloguing/addbiblio.pl">New</a></li>
-	
+	<li id="newmenuc"><a id="newbiblio" href="/cgi-bin/koha/cataloguing/addbiblio.pl">New Record</a></li>
+	<li><a id="newitem" href="/cgi-bin/koha/cataloguing/additem.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->">New Item</a></li>
 	<li id="editmenuc"><a id="editbiblio" href="/cgi-bin/koha/cataloguing/addbiblio.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->&amp;frameworkcode=<!--TMPL_VAR Name="current_framework" -->&amp;op=">Edit Record</a></li>
 	<li><a id="edititems" href="/cgi-bin/koha/cataloguing/additem.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->">Edit Items</a></li>
 	<li><a id="duplicatebiblio" href="/cgi-bin/koha/cataloguing/addbiblio.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->&amp;frameworkcode=<!--TMPL_VAR Name="current_framework" -->&amp;op=duplicate">Duplicate Record</a></li>

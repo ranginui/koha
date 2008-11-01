@@ -16,9 +16,10 @@
 # Suite 330, Boston, MA  02111-1307 USA
 
 use strict;
-require Exporter;
+
 use CGI;
 use C4::Auth;    # get_template_and_user
+use C4::Branch;
 use C4::Output;
 use C4::Suggestions;
 
@@ -33,7 +34,7 @@ my $publicationyear = $input->param('publicationyear');
 my $place           = $input->param('place');
 my $isbn            = $input->param('isbn');
 my $status          = $input->param('status');
-my $suggestedbyme   = (defined $input->param('suggestedbyme')? $input->param('suggestedbyme'):1);
+my $suggestedbyme   = (defined $input->param('suggestedby')? $input->param('suggestedby'):1);
 my $op              = $input->param('op');
 $op = 'else' unless $op;
 
@@ -95,6 +96,7 @@ if ( $op eq "delete_confirm" ) {
 my $suggestions_loop =
   &SearchSuggestion( $borrowernumber, $author, $title, $publishercode, $status,
     $suggestedbyme );
+map{ $_->{'branchcodesuggestedby'}=GetBranchInfo($_->{'branchcodesuggestedby'})->[0]->{'branchname'}} @$suggestions_loop;  
 $template->param(
     suggestions_loop => $suggestions_loop,
     title            => $title,

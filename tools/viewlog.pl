@@ -28,23 +28,20 @@ use C4::Output;
 use C4::Log;
 use C4::Items;
 use C4::Branch;
-use Data::Dumper;
+use C4::Debug;
+# use Data::Dumper;
 
-use vars qw($debug);
-
-BEGIN {
-	$debug = $ENV{DEBUG} || 0;
-}
+use vars qw($debug $cgi_debug);
 
 =head1 viewlog.pl
 
-plugin that shows a stats on borrowers
+plugin that shows stats
 
 =cut
 
 my $input    = new CGI;
 
-$debug or $debug = $input->param('debug') || 0;
+$debug or $debug = $cgi_debug;
 my $do_it    = $input->param('do_it');
 my $module   = $input->param("module");
 my $user     = $input->param("user");
@@ -88,6 +85,7 @@ if ($src eq 'circ') {   # if we were called from circulation, use the circulatio
                         address         => $data->{'address'},
                         address2        => $data->{'address2'},
                         city            => $data->{'city'},
+			zipcode		=> $data->{'zipcode'},
                         phone           => $data->{'phone'},
                         phonepro        => $data->{'phonepro'},
                         email           => $data->{'email'},
@@ -106,7 +104,6 @@ if ($do_it) {
 
     my $results = GetLogs($datefrom,$dateto,$user,$module,$action,$object,$info);
     my $total = scalar @$results;
-    warn "Total records retrieved = $total";
     foreach my $result (@$results){
 	if ($result->{'info'} eq 'item'){
 	    # get item information so we can create a working link

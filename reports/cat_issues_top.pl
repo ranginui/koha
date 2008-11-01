@@ -26,6 +26,7 @@ use C4::Branch; # GetBranches
 use C4::Output;
 use C4::Koha;
 use C4::Circulation;
+use C4::Reports;
 use C4::Dates qw/format_date format_date_in_iso/;
 use C4::Members;
 
@@ -50,7 +51,6 @@ $filters[1]=format_date_in_iso($filters[1]);
 my $output = $input->param("output");
 my $basename = $input->param("basename");
 my $mime = $input->param("MIME");
-my $del = $input->param("sep");
 #warn "calcul : ".$calc;
 my ($template, $borrowernumber, $cookie)
     = get_template_and_user({template_name => $fullreportname,
@@ -60,6 +60,8 @@ my ($template, $borrowernumber, $cookie)
                 flagsrequired => { reports => 1},
                 debug => 1,
                 });
+our $sep     = $input->param("sep");
+$sep = "\t" if ($sep eq 'tabulation');
 $template->param(do_it => $do_it,
         DHTMLcalendar_dateformat => C4::Dates->DHTMLcalendar(),
         );
@@ -80,8 +82,6 @@ if ($do_it) {
                             -filename=>"$basename.csv" );
         my $cols = @$results[0]->{loopcol};
         my $lines = @$results[0]->{looprow};
-        my $sep;
-        $sep =C4::Context->preference("delimiter");
 # header top-right
         print @$results[0]->{line} ."/". @$results[0]->{column} .$sep;
 # Other header
@@ -128,13 +128,7 @@ if ($do_it) {
                 -size     => 1,
                 -multiple => 0 );
     
-    my @dels = ( C4::Context->preference("delimiter") );
-    my $CGIsepChoice=CGI::scrolling_list(
-                -name     => 'sep',
-                -id       => 'sep',
-                -values   => \@dels,
-                -size     => 1,
-                -multiple => 0 );
+    my $CGIsepChoice=GetDelimiterChoices;
     #branch
     my $branches = GetBranches;
     my @branchloop;
@@ -378,7 +372,7 @@ sub calculate {
     my %indice;
     while (my  @data = $dbcalc->fetchrow) {
         my ($row, $rank, $id, $col )=@data;
-        $col = "zzEMPTY" if ($col eq undef);
+        $col = "zzEMPTY" if (!defined($col));
         $indice{$col}=1 if (not($indice{$col}));
         $table[$indice{$col}]->{$col}->{'name'}=$row;
         $table[$indice{$col}]->{$col}->{'count'}=$rank;

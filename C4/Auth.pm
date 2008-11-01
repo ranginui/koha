@@ -31,7 +31,7 @@ use C4::Output;    # to get the template
 use C4::Members;
 use C4::Koha;
 use C4::Branch; # GetBranches
-use C4::VirtualShelves 3.02 qw(GetShelvesSummary);
+use C4::VirtualShelves;
 
 # use utf8;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $debug $ldap);
@@ -145,14 +145,18 @@ sub get_template_and_user {
         $template->param( loggedinusername => $user );
         $template->param( sessionID        => $sessionID );
 
-		my ($pubshelves, $barshelves) = C4::Context->get_shelves_userenv();
+		my ($total, $pubshelves, $barshelves) = C4::Context->get_shelves_userenv();
 		if (defined($pubshelves)) {
-        	$template->param( pubshelves     => scalar (@$pubshelves));
-        	$template->param( pubshelvesloop => $pubshelves);
+        	$template->param( 	pubshelves     	=> scalar (@$pubshelves),
+        						pubshelvesloop 	=> $pubshelves,
+							);
+			$template->param(	pubtotal		=> $total->{'pubtotal'}, ) if ($total->{'pubtotal'} > scalar (@$pubshelves));
 		}
 		if (defined($barshelves)) {
-        	$template->param( barshelves     => scalar (@$barshelves));
-        	$template->param( barshelvesloop => $barshelves);
+        	$template->param(	barshelves     	=> scalar (@$barshelves),
+        						barshelvesloop 	=> $barshelves,
+							);
+			$template->param(	bartotal		=> $total->{'bartotal'}, ) if ($total->{'bartotal'} > scalar (@$barshelves));
 		}
 
         $borrowernumber = getborrowernumber($user);
@@ -240,10 +244,12 @@ sub get_template_and_user {
 
         $template->param( sessionID        => $sessionID );
 		
-		my ($pubshelves) = C4::Context->get_shelves_userenv();	# an anonymous user has no 'barshelves'...
+		my ($total, $pubshelves) = C4::Context->get_shelves_userenv();	# an anonymous user has no 'barshelves'...
 		if (defined(($pubshelves))) {
-        	$template->param( pubshelves     => scalar (@$pubshelves));
-        	$template->param( pubshelvesloop => $pubshelves);
+        	$template->param(	pubshelves     	=> scalar (@$pubshelves),
+        						pubshelvesloop 	=> $pubshelves,
+							);
+			$template->param(	pubtotal		=> $total->{'pubtotal'}, ) if ($total->{'pubtotal'} > scalar (@$pubshelves));
 		}
 
 	}
@@ -259,6 +265,7 @@ sub get_template_and_user {
             LoginSurname                 => C4::Context->userenv?C4::Context->userenv->{"surname"}:"Inconnu",
             TagsEnabled                  => C4::Context->preference("TagsEnabled"),
             hide_marc                    => C4::Context->preference("hide_marc"),
+            dateformat                   => C4::Context->preference("dateformat"),
             'item-level_itypes'          => C4::Context->preference('item-level_itypes'),
             patronimages                 => C4::Context->preference("patronimages"),
             singleBranchMode             => C4::Context->preference("singleBranchMode"),
@@ -340,7 +347,6 @@ sub get_template_and_user {
             virtualshelves            => "" . C4::Context->preference("virtualshelves"),
         );
     }
-	$template->param(listloop=>[{shelfname=>"Freelist", shelfnumber=>110}]);
     return ( $template, $borrowernumber, $cookie, $flags);
 }
 
@@ -519,6 +525,7 @@ sub checkauth {
             );
             C4::Context::set_shelves_userenv('bar',$session->param('barshelves'));
             C4::Context::set_shelves_userenv('pub',$session->param('pubshelves'));
+            C4::Context::set_shelves_userenv('tot',$session->param('totshelves'));
             $debug and printf STDERR "AUTH_SESSION: (%s)\t%s %s - %s\n", map {$session->param($_)} qw(cardnumber firstname surname branch) ;
             $ip       = $session->param('ip');
             $lasttime = $session->param('lasttime');
@@ -699,15 +706,22 @@ sub checkauth {
 					$session->param('emailaddress'), $session->param('branchprinter')
 				);
 
-				# Grab borrower's shelves and add to the session...
-				$barshelves = GetShelvesSummary($borrowernumber,2,10);
-				$session->param('barshelves', $barshelves);
-				C4::Context::set_shelves_userenv('bar',$barshelves);
-
-				# Grab the public shelves and add to the session...
-				$pubshelves = GetShelvesSummary(0,2,10);
-				$session->param('pubshelves', $pubshelves);
-				C4::Context::set_shelves_userenv('pub',$pubshelves);
+				# Grab borrower's shelves and public shelves and add them to the session
+				# $row_count determines how many records are returned from the db query
+				# and the number of lists to be displayed of each type in the 'Lists' button drop down
+				my $row_count = 10; # FIXME:This probably should be a syspref
+				my ($total, $totshelves, $barshelves, $pubshelves);
+				($barshelves, $totshelves) = C4::VirtualShelves::GetRecentShelves(1, $row_count, $borrowernumber);
+				$total->{'bartotal'} = $totshelves;
+				($pubshelves, $totshelves) = C4::VirtualShelves::GetRecentShelves(2, $row_count, undef);
+				$total->{'pubtotal'} = $totshelves;
+				$session->param('barshelves', $barshelves->[0]);
+				$session->param('pubshelves', $pubshelves->[0]);
+				$session->param('totshelves', $total);
+				
+				C4::Context::set_shelves_userenv('bar',$barshelves->[0]);
+				C4::Context::set_shelves_userenv('pub',$pubshelves->[0]);
+				C4::Context::set_shelves_userenv('tot',$total);
 			}
         	else {
             	if ($userid) {
@@ -722,9 +736,14 @@ sub checkauth {
 			$debug and warn "Initiating an anonymous session...";
 
 			# Grab the public shelves and add to the session...
-			$pubshelves = GetShelvesSummary(0,2,10);
-			$session->param('pubshelves', $pubshelves);
-			C4::Context::set_shelves_userenv('pub',$pubshelves);
+			my $row_count = 20; # FIXME:This probably should be a syspref
+			my ($total, $totshelves, $pubshelves);
+			($pubshelves, $totshelves) = C4::VirtualShelves::GetRecentShelves(2, $row_count, undef);
+			$total->{'pubtotal'} = $totshelves;
+			$session->param('pubshelves', $pubshelves->[0]);
+			$session->param('totshelves', $total);
+			C4::Context::set_shelves_userenv('pub',$pubshelves->[0]);
+			C4::Context::set_shelves_userenv('tot',$total);
 			
 			# setting a couple of other session vars...
 			$session->param('ip',$session->remote_addr());

@@ -110,6 +110,7 @@ if ($op eq 'add_form') {
     my $new_category = $input->param('category');
     my $new_authorised_value = $input->param('authorised_value');
     my $imageurl=$input->param( 'imageurl' )|'';   
+	$imageurl = '' if $imageurl =~ /removeImage/;
     my $duplicate_entry = 0;
 
     if ( $id ) { # Update
@@ -226,7 +227,6 @@ sub default_form {
 			-values=> \@category_list,
 			-default=>"",
 			-size=>1,
- 			-tabindex=>'',
 			-multiple=>0,
 			);
 	if (!$searchfield) {
@@ -246,7 +246,7 @@ sub default_form {
 		$row_data{category}         = $results->[$i]{'category'};
 		$row_data{authorised_value} = $results->[$i]{'authorised_value'};
 		$row_data{lib}              = $results->[$i]{'lib'};
-		$row_data{imageurl}         =  getitemtypeimagesrc('intranet') . '/' . $results->[$i]{'imageurl'};
+		$row_data{imageurl}         = getitemtypeimagelocation( 'intranet', $results->[$i]{'imageurl'} );
 		$row_data{edit}             = "$script_name?op=add_form&amp;id=".$results->[$i]{'id'};
 		$row_data{delete}           = "$script_name?op=delete_confirm&amp;searchfield=$searchfield&amp;id=".$results->[$i]{'id'};
 		push(@loop_data, \%row_data);

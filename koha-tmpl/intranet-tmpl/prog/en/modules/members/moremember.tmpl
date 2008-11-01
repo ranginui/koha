@@ -35,12 +35,22 @@ $(document).ready(function() {
 		 return confirm('Are you sure you want to replace the current patron image? This cannot be undone.');
 		 }
 	});<!-- /TMPL_IF -->
-	$("#renew_all").click(function(){ $(".checkboxed").checkCheckboxes(":not(input[@name*=barcodes])"); $(".checkboxed").unCheckCheckboxes(":not(input[@name*=items])"); });
-	$("#return_all").click(function(){ $(".checkboxed").checkCheckboxes(":not(input[@name*=items])"); $(".checkboxed").unCheckCheckboxes(":not(input[@name*=barcodes])"); });
-	$("#CheckAllitems").click(function(){ $(".checkboxed").checkCheckboxes(":not(input[@name*=barcodes])"); $(".checkboxed").unCheckCheckboxes(":not(input[@name*=items])"); return false; });
-    $("#CheckNoitems").click(function(){ $(".checkboxed").unCheckCheckboxes(":not(input[@name*=barcodes])"); return false; });
-	$("#CheckAllreturns").click(function(){ $(".checkboxed").checkCheckboxes(":not(input[@name*=items])"); $(".checkboxed").unCheckCheckboxes(":not(input[@name*=barcodes])"); return false; });
-    $("#CheckNoreturns").click(function(){ $(".checkboxed").unCheckCheckboxes(":not(input[@name*=items])"); return false; });
+	$("#renew_all").click(function(){ $(".checkboxed").checkCheckboxes(":input[@name*=items]"); $(".checkboxed").unCheckCheckboxes(":input[@name*=barcodes]"); });
+	$("#return_all").click(function(){ $(".checkboxed").checkCheckboxes(":input[@name*=barcodes]"); $(".checkboxed").unCheckCheckboxes(":input[@name*=items]"); });
+	$("#CheckAllitems").click(function(){ $(".checkboxed").checkCheckboxes(":input[@name*=items]"); $(".checkboxed").unCheckCheckboxes(":input[@name*=barcodes]"); return false; });
+    $("#CheckNoitems").click(function(){ $(".checkboxed").unCheckCheckboxes(":input[@name*=items]"); return false; });
+	$("#CheckAllreturns").click(function(){ $(".checkboxed").checkCheckboxes(":input[@name*=barcodes]"); $(".checkboxed").unCheckCheckboxes(":input[@name*=items]"); return false; });
+    $("#CheckNoreturns").click(function(){ $(".checkboxed").unCheckCheckboxes(":input[@name*=barcodes]"); return false; });
+
+    <!-- TMPL_IF NAME="AllowRenewalLimitOverride" -->
+    $( '#override_limit' ).click( function () {
+        if ( this.checked ) {
+           $( '.renewals-allowed' ).show(); $( '.renewals-disabled' ).hide();
+        } else {
+           $( '.renewals-allowed' ).hide(); $( '.renewals-disabled' ).show();
+        }
+    } ).attr( 'checked', false );
+    <!-- /TMPL_IF -->
  });
 function uncheck_sibling(me){
 nodename=me.getAttribute("name");
@@ -65,6 +75,7 @@ if (nodename =="barcodes[]"){
    }   
 }
 }
+
 //]]>
 </script>
 
@@ -155,8 +166,8 @@ if (nodename =="barcodes[]"){
 		    <!-- TMPL_IF NAME="phonepro" --><li><span class="label">Work: </span><!-- TMPL_VAR NAME="phonepro" --></li><!-- /TMPL_IF -->
 		<!-- /TMPL_UNLESS -->
 		<!-- TMPL_IF NAME="I" -->
-			<!-- TMPL_IF NAME="phonepro" --><li><span class="label">Organisation phone: </span><!-- TMPL_VAR NAME="phonepro" --></li><!-- /TMPL_IF -->
-			<!-- TMPL_IF NAME="emailpro" --><li><span class="label">Organisation email: </span><!-- TMPL_VAR NAME="emailpro" --></li><!-- /TMPL_IF -->
+			<!-- TMPL_IF NAME="phonepro" --><li><span class="label">Organization phone: </span><!-- TMPL_VAR NAME="phonepro" --></li><!-- /TMPL_IF -->
+			<!-- TMPL_IF NAME="emailpro" --><li><span class="label">Organization email: </span><!-- TMPL_VAR NAME="emailpro" --></li><!-- /TMPL_IF -->
     <!-- /TMPL_IF -->
 
     <!-- TMPL_IF NAME="P"-->
@@ -203,11 +214,11 @@ if (nodename =="barcodes[]"){
 	        <form method="post" action="/cgi-bin/koha/tools/picture-upload.pl" enctype="multipart/form-data">
                 <!-- TMPL_IF NAME="picture" -->
                     <fieldset class="brief"><legend>Manage Patron Image</legend>
-                        <div class="hint">To update the image for <!-- TMPL_VAR NAME="title" --> <!-- TMPL_VAR NAME="surname" -->, enter the name of the new image file to upload and click 'Upload.' <br />Click the 'Delete' button to remove the current image.</div>
+                        <div class="hint">To update the image for <!-- TMPL_VAR NAME="title" --> <!-- TMPL_VAR NAME="surname" -->, enter the name of the new image file to upload and click 'Upload.' <br />Click the 'Delete' button to remove the current image. <br /> Only PNG, GIF, JPEG, XPM formats are supported.</div>
                 <!-- /TMPL_IF -->
                 <!-- TMPL_UNLESS NAME="picture" -->
                     <fieldset class="brief"><legend>Upload Patron Image</legend>
-                        <div class="hint"><!-- TMPL_VAR NAME="title" --> <!-- TMPL_VAR NAME="firstname" --> <!-- TMPL_VAR NAME="surname" --> does not currently have an image available. To import an image for <!-- TMPL_VAR NAME="title" --> <!-- TMPL_VAR NAME="surname" -->, enter the name of an image file to upload.</div>
+                        <div class="hint"><!-- TMPL_VAR NAME="title" --> <!-- TMPL_VAR NAME="firstname" --> <!-- TMPL_VAR NAME="surname" --> does not currently have an image available. To import an image for <!-- TMPL_VAR NAME="title" --> <!-- TMPL_VAR NAME="surname" -->, enter the name of an image file to upload. <br /> Only PNG, JPEG, XPM formats are supported.</div>
                 <!-- /TMPL_UNLESS -->
 		    <input type="hidden" id="image" name="filetype" value="image" />
 		    <input type="hidden" id="cardnumber" name="cardnumber" value="<!-- TMPL_VAR NAME="cardnumber" -->" />
@@ -218,8 +229,9 @@ if (nodename =="barcodes[]"){
                          </li>
     	             </ol>
                     <fieldset class="action">
-                        <input name="op" type="submit" value="Upload" class="submit" />
-                        <!-- TMPL_IF NAME="picture" --><input name="op" type="submit" value="Delete" class="submit" /><!-- /TMPL_IF -->
+                        <input type="submit" value="Upload" class="submit" />
+                        <input name="op" type="hidden" value="Upload" />
+                        <!-- TMPL_IF NAME="picture" --><a href="/cgi-bin/koha/tools/picture-upload.pl?op=Delete&amp;cardnumber=<!-- TMPL_VAR NAME="cardnumber" -->&amp;borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->" class="delete">Delete</a><!-- /TMPL_IF -->
                     </fieldset>
                 </fieldset>
                 </form>
@@ -230,6 +242,7 @@ if (nodename =="barcodes[]"){
 <!-- End Upload Patron Image Section -->
 
 <!-- TMPL_IF NAME="ExtendedPatronAttributes" -->
+<!-- TMPL_UNLESS NAME="no_patron_attribute_types" -->
 <div id="patron-extended-attributes" style="padding-top: 1em;">
 <h3>Additional attributes and identifiers</h3>
 <table>
@@ -250,8 +263,8 @@ if (nodename =="barcodes[]"){
 </table>
 </div>
 <div class="action"><a href="memberentry.pl?op=modify&amp;borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->&amp;step=4">Edit</a></div>
+<!-- /TMPL_UNLESS -->
 <!-- /TMPL_IF -->
-
 </div>
  <div class="yui-u"> 
  <div id="patron-library-details">
@@ -281,8 +294,8 @@ if (nodename =="barcodes[]"){
    <!--TMPL_ELSE -->
   <li><span class="label">OPAC password: </span><span class="problem"><a href="/cgi-bin/koha/members/member-password.pl?member=<!-- TMPL_VAR NAME="borrowernumber" -->">Undefined</a></span></li> 
    <!--/TMPL_IF --> 
-  <!-- TMPL_IF NAME="borrowernotes" --><li><span class="label">Circulation notes: </span><!-- TMPL_VAR name="borrowernotes" --></li><!-- /TMPL_IF -->
-    <!-- TMPL_IF NAME="opacnote" --><li><span class="label">Message to Patron:</span><!-- TMPL_VAR NAME="opacnote" --></li><!-- /TMPL_IF -->
+  <!-- TMPL_IF NAME="borrowernotes" --><li><span class="label">Circulation note: </span><!-- TMPL_VAR name="borrowernotes" --></li><!-- /TMPL_IF -->
+    <!-- TMPL_IF NAME="opacnote" --><li><span class="label">OPAC note:</span><!-- TMPL_VAR NAME="opacnote" --></li><!-- /TMPL_IF -->
 	</ol>
 	</div>
  </div>
@@ -369,7 +382,7 @@ if (nodename =="barcodes[]"){
                 <img src="<!-- TMPL_VAR NAME="itemtype_image" -->" alt="" />
                 <!-- /TMPL_IF --><!-- /TMPL_UNLESS -->
                 <!-- TMPL_VAR NAME="itemtype_description" --></td>
-            <td><!-- TMPL_IF NAME="red" --><a class="overdue" href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->"><!-- TMPL_VAR NAME="title" --></a><!-- TMPL_ELSE --><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->"><!-- TMPL_VAR NAME="title" --></a><!-- /TMPL_IF --> <!-- TMPL_IF NAME="author" -->, by <!-- TMPL_VAR name="author" --><!-- /TMPL_IF --> <!-- TMPL_IF name="publishercode" -->; <!-- TMPL_VAR name="publishercode" --> <!-- /TMPL_IF --> <!-- TMPL_IF name="publicationyear" -->, <!-- TMPL_VAR name="publicationyear" --><!-- /TMPL_IF --> <a href="/cgi-bin/koha/catalogue/moredetail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->"><!-- TMPL_VAR NAME="barcode" --></a></td>
+            <td><!-- TMPL_IF NAME="red" --><a class="overdue" href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->"><!-- TMPL_VAR NAME="title" escape="html"--></a><!-- TMPL_ELSE --><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->"><!-- TMPL_VAR NAME="title" escape="html" --></a><!-- /TMPL_IF --> <!-- TMPL_IF NAME="author" -->, by <!-- TMPL_VAR name="author" --><!-- /TMPL_IF --> <!-- TMPL_IF name="publishercode" -->; <!-- TMPL_VAR name="publishercode" --> <!-- /TMPL_IF --> <!-- TMPL_IF name="publicationyear" -->, <!-- TMPL_VAR name="publicationyear" --><!-- /TMPL_IF --> <a href="/cgi-bin/koha/catalogue/moredetail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->&amp;itemnumber=<!-- TMPL_VAR NAME="itemnumber" -->#item<!-- TMPL_VAR NAME="itemnumber" -->"><!-- TMPL_VAR NAME="barcode" --></a></td>
             <td><!-- TMPL_VAR NAME="issuedate" --></td>
             <td><!-- TMPL_IF NAME="red" --><span class="overdue"><!-- TMPL_VAR NAME="date_due" --></span><!-- TMPL_ELSE --><!-- TMPL_VAR NAME="date_due" --><!-- /TMPL_IF --></td>
             <td><!-- TMPL_VAR NAME="charge" --></td>
@@ -379,12 +392,25 @@ if (nodename =="barcodes[]"){
       <!-- TMPL_ELSE -->
             <td>
             <!-- TMPL_IF name="norenew" -->
+                <!-- TMPL_IF NAME="can_confirm" --><span class="renewals-allowed" style="display: none">
+                    <input type="checkbox" name="all_items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" checked="checked" style="display: none;" />
+                    <!-- TMPL_IF NAME="od" -->
+                        <input type="checkbox" name="items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" checked="checked" />
+                    <!-- TMPL_ELSE -->
+                        <input type="checkbox" name="items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" />
+                    <!-- /TMPL_IF -->
+                    </span>
+                    <span class="renewals-disabled">
+                <!-- /TMPL_IF -->
 			      <!-- TMPL_IF NAME="norenew_reason_on_reserve" -->
               <a href="/cgi-bin/koha/reserve/request.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->">On Hold</a>
 				    <!-- /TMPL_IF -->
 				    <!-- TMPL_IF NAME="norenew_reason_too_many" -->
 				        Too Many Renewals
 				    <!-- /TMPL_IF -->
+                <!-- TMPL_IF NAME="can_confirm" -->
+                    </span>
+                <!-- /TMPL_IF -->
             <!-- TMPL_ELSE -->
             <input type="checkbox" name="all_items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" checked="checked" style="display: none;" />
             <!-- TMPL_IF NAME="red" -->
@@ -428,6 +454,10 @@ if (nodename =="barcodes[]"){
         </tr>
         </table>
         <fieldset class="action">
+        <!-- TMPL_IF NAME="AllowRenewalLimitOverride" -->
+        <label for="override_limit">Override Renewal Limit:</label>
+        <input type="checkbox" name="override_limit" id="override_limit" value="1" />
+        <!-- /TMPL_IF -->
         <input type="submit" name="renew_checked" value="Renew or Return checked items" />
         <input type="submit" id="renew_all" name="renew_all" value="Renew all" />
         <input type="submit" id="return_all" name="return_all" value="Return all" />
@@ -456,7 +486,7 @@ if (nodename =="barcodes[]"){
 						<!-- TMPL_VAR NAME="reservedate" -->
 					</td>
 					<td>
-						<a href="/cgi-bin/koha/reserve/request.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->"><!-- TMPL_VAR NAME="title" --></a><!-- TMPL_IF NAME="author" -->, by <!-- TMPL_VAR NAME="author" --><!-- /TMPL_IF -->
+						<a href="/cgi-bin/koha/reserve/request.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->"><!-- TMPL_VAR NAME="title" escape="html" --></a><!-- TMPL_IF NAME="author" -->, by <!-- TMPL_VAR NAME="author" --><!-- /TMPL_IF -->
                         
 					</td>
 					<td><!-- TMPL_VAR NAME="itemtype" --></td>

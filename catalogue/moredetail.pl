@@ -19,7 +19,6 @@
 
 
 use strict;
-require Exporter;
 use C4::Koha;
 use CGI;
 use C4::Biblio;
@@ -51,7 +50,8 @@ my ($template, $loggedinuser, $cookie) = get_template_and_user({
 
 my $biblionumber=$query->param('biblionumber');
 my $title=$query->param('title');
-# my $bi=$query->param('bi');
+my $itemnumber=$query->param('itemnumber');
+my $bi=$query->param('bi');
 # $bi = $biblionumber unless $bi;
 my $data=GetBiblioData($biblionumber);
 my $dewey = $data->{'dewey'};
@@ -83,6 +83,7 @@ my $itemtypes = GetItemTypes;
 
 $data->{'itemtypename'} = $itemtypes->{$data->{'itemtype'}}->{'description'};
 $results[0]=$data;
+($itemnumber) and @items = (grep {$_->{'itemnumber'} == $itemnumber} @items);
 foreach my $item (@items){
     $item->{itemlostloop}= GetAuthorisedValues(GetAuthValCode('items.itemlost',$fw),$item->{itemlost}) if GetAuthValCode('items.itemlost',$fw);
     $item->{itemdamagedloop}= GetAuthorisedValues(GetAuthValCode('items.damaged',$fw),$item->{damaged}) if GetAuthValCode('items.damaged',$fw);
@@ -94,9 +95,10 @@ foreach my $item (@items){
     $item->{'datelastseen'} = format_date($item->{'datelastseen'});
     $item->{'ordernumber'} = $ordernum;
     $item->{'booksellerinvoicenumber'} = $order->{'booksellerinvoicenumber'};
-	if ($item->{notforloantext} or $item->{itemlost} or $item->{damaged} or $item->{wthdrawn}) {
-		$item->{status_advisory} = 1;
-	}
+    $item->{'copyvol'} = $item->{'copynumber'};
+    if ($item->{notforloantext} or $item->{itemlost} or $item->{damaged} or $item->{wthdrawn}) {
+        $item->{status_advisory} = 1;
+    }
 
     if (C4::Context->preference("IndependantBranches")) {
         #verifying rights
@@ -123,6 +125,9 @@ $template->param(ITEM_DATA => \@items);
 $template->param(moredetailview => 1);
 $template->param(loggedinuser => $loggedinuser);
 $template->param(biblionumber => $biblionumber);
+$template->param(biblioitemnumber => $bi);
+$template->param(itemnumber => $itemnumber);
+$template->param(ONLY_ONE => 1) if ( $itemnumber && $count != @items );
 
 output_html_with_http_headers $query, $cookie, $template->output;
 

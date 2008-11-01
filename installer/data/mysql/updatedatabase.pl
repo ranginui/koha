@@ -15,7 +15,7 @@
 # NOTE: Please keep the version in kohaversion.pl up-to-date!
 
 use strict;
-# use warnings;
+use warnings;
 
 # CPAN modules
 use DBI;
@@ -1379,12 +1379,12 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
 	#);
 	$dbh->do(q#
 	INSERT INTO `systempreferences` VALUES
-		('BakerTaylorBookstoreURL','','','URL template for \"My Libary Bookstore\" links, to which the \"key\" value is appended, and \"https://\" is prepended.  It should include your hostname and \"Parent Number\".  Make this variable empty to turn MLB links off.<br /> Example: ocls.mylibrarybookstore.com/MLB/actions/searchHandler.do?nextPage=bookDetails&parentNum=10923&key=',''),
+		('BakerTaylorBookstoreURL','','','URL template for \"My Libary Bookstore\" links, to which the \"key\" value is appended, and \"https://\" is prepended.  It should include your hostname and \"Parent Number\".  Make this variable empty to turn MLB links off.  Example: ocls.mylibrarybookstore.com/MLB/actions/searchHandler.do?nextPage=bookDetails&parentNum=10923&key=',''),
 		('BakerTaylorEnabled','0','','Enable or disable all Baker & Taylor features.','YesNo'),
 		('BakerTaylorPassword','','','Baker & Taylor Password for Content Cafe (external content)','Textarea'),
 		('BakerTaylorUsername','','','Baker & Taylor Username for Content Cafe (external content)','Textarea'),
 		('TagsEnabled','1','','Enables or disables all tagging features.  This is the main switch for tags.','YesNo'),
-		('TagsExternalDictionary',NULL,'','Path on server to local ispell executable, used to set $Lingua::Ispell::path <br />This dictionary is used as a \"whitelist\" of pre-allowed tags.',''),
+		('TagsExternalDictionary',NULL,'','Path on server to local ispell executable, used to set $Lingua::Ispell::path  This dictionary is used as a \"whitelist\" of pre-allowed tags.',''),
 		('TagsInputOnDetail','1','','Allow users to input tags from the detail page.',         'YesNo'),
 		('TagsInputOnList',  '0','','Allow users to input tags from the search results list.', 'YesNo'),
 		('TagsModeration',  NULL,'','Require tags from patrons to be approved before becoming visible.','YesNo'),
@@ -1864,6 +1864,181 @@ if ( C4::Context->preference('Version') < TransformToNum($DBversion) ) {
     SetVersion($DBversion);
 }
 
+$DBversion = '3.00.00.100';
+if ( C4::Context->preference('Version') < TransformToNum($DBversion) ) {
+	$dbh->do('ALTER TABLE virtualshelves ADD COLUMN lastmodified timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP');
+    print "Upgrade to $DBversion done (Adding lastmodified column to virtualshelves)\n";
+    SetVersion($DBversion);
+}
+
+$DBversion = '3.00.00.101';
+if ( C4::Context->preference('Version') < TransformToNum($DBversion) ) {
+	$dbh->do('ALTER TABLE `overduerules` CHANGE `categorycode` `categorycode` VARCHAR(10) NOT NULL');
+	$dbh->do('ALTER TABLE `deletedborrowers` CHANGE `categorycode` `categorycode` VARCHAR(10) NOT NULL');
+    print "Upgrade to $DBversion done (Updating columnd definitions for patron category codes in notice/statsu triggers and deletedborrowers tables.)\n";
+    SetVersion($DBversion);
+}
+
+$DBversion = '3.00.00.102';
+if ( C4::Context->preference('Version') < TransformToNum($DBversion) ) {
+	$dbh->do('ALTER TABLE serialitems MODIFY `serialid` int(11) NOT NULL AFTER itemnumber' );
+	$dbh->do('ALTER TABLE serialitems DROP KEY serialididx' );
+	$dbh->do('ALTER TABLE serialitems ADD CONSTRAINT UNIQUE KEY serialitemsidx (itemnumber)' );
+	# before setting constraint, delete any unvalid data
+	$dbh->do('DELETE from serialitems WHERE serialid not in (SELECT serial.serialid FROM serial)');
+	$dbh->do('ALTER TABLE serialitems ADD CONSTRAINT serialitems_sfk_1 FOREIGN KEY (serialid) REFERENCES serial (serialid) ON DELETE CASCADE ON UPDATE CASCADE' );
+    print "Upgrade to $DBversion done (Updating serialitems table to allow for multiple items per serial fixing kohabug 2380)\n";
+    SetVersion($DBversion);
+}
+
+$DBversion = "3.00.00.103";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("DELETE FROM systempreferences WHERE variable='serialsadditems'");
+    print "Upgrade to $DBversion done ( Verifying the removal of serialsadditems from syspref fixing kohabug 2219)\n";
+    SetVersion ($DBversion);
+}
+
+$DBversion = "3.00.00.104";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("DELETE FROM systempreferences WHERE variable='noOPACHolds'");
+    print "Upgrade to $DBversion done (remove superseded 'noOPACHolds' system preference per bug 2413)\n";
+    SetVersion ($DBversion);
+}
+
+$DBversion = '3.00.00.105';
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+
+    # it is possible that this syspref is already defined since the feature was added some time ago.
+    unless ( $dbh->do(q(SELECT variable FROM systempreferences WHERE variable = 'SMSSendDriver')) ) {
+        $dbh->do(<<'END_SQL');
+INSERT INTO `systempreferences`
+  (variable,value,explanation,options,type)
+VALUES
+('SMSSendDriver','','Sets which SMS::Send driver is used to send SMS messages.','','free')
+END_SQL
+    }
+    print "Upgrade to $DBversion done (added SMSSendDriver system preference)\n";
+    SetVersion($DBversion);
+}
+
+$DBversion = "3.00.00.106";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("DELETE FROM systempreferences WHERE variable='noOPACHolds'");
+
+# db revision 105 didn't apply correctly, so we're rolling this into 106
+	$dbh->do("INSERT INTO `systempreferences`
+   (variable,value,explanation,options,type)
+	VALUES
+	('SMSSendDriver','','Sets which SMS::Send driver is used to send SMS messages.','','free')");
+
+    print "Upgrade to $DBversion done (remove default '0000-00-00' in subscriptionhistory.enddate field)\n";
+    $dbh->do("ALTER TABLE `subscriptionhistory` CHANGE `enddate` `enddate` DATE NULL DEFAULT NULL ");
+    $dbh->do("UPDATE subscriptionhistory SET enddate=NULL WHERE enddate='0000-00-00'");
+    SetVersion ($DBversion);
+}
+
+$DBversion = '3.00.00.107';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do(<<'END_SQL');
+UPDATE systempreferences
+  SET explanation = CONCAT( explanation, '. WARNING: this feature is very resource consuming on collections with large numbers of items.' )
+  WHERE variable = 'OPACShelfBrowser'
+    AND explanation NOT LIKE '%WARNING%'
+END_SQL
+    $dbh->do(<<'END_SQL');
+UPDATE systempreferences
+  SET explanation = CONCAT( explanation, '. WARNING: this feature is very resource consuming.' )
+  WHERE variable = 'CataloguingLog'
+    AND explanation NOT LIKE '%WARNING%'
+END_SQL
+    $dbh->do(<<'END_SQL');
+UPDATE systempreferences
+  SET explanation = CONCAT( explanation, '. WARNING: using NoZebra on even modest sized collections is very slow.' )
+  WHERE variable = 'NoZebra'
+    AND explanation NOT LIKE '%WARNING%'
+END_SQL
+    print "Upgrade to $DBversion done (warning added to OPACShelfBrowser system preference)\n";
+    SetVersion ($DBversion);
+}
+
+$DBversion = '3.01.00.000';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    print "Upgrade to $DBversion done (start of 3.1)\n";
+    SetVersion ($DBversion);
+}
+
+$DBversion = '3.01.00.001';
+if ( C4::Context->preference('Version') < TransformToNum($DBversion) ) {
+    $dbh->do("
+        CREATE TABLE hold_fill_targets (
+            `borrowernumber` int(11) NOT NULL,
+            `biblionumber` int(11) NOT NULL,
+            `itemnumber` int(11) NOT NULL,
+            `source_branchcode`  varchar(10) default NULL,
+            `item_level_request` tinyint(4) NOT NULL default 0,
+            PRIMARY KEY `itemnumber` (`itemnumber`),
+            KEY `bib_branch` (`biblionumber`, `source_branchcode`),
+            CONSTRAINT `hold_fill_targets_ibfk_1` FOREIGN KEY (`borrowernumber`) 
+                REFERENCES `borrowers` (`borrowernumber`) ON DELETE CASCADE ON UPDATE CASCADE,
+            CONSTRAINT `hold_fill_targets_ibfk_2` FOREIGN KEY (`biblionumber`) 
+                REFERENCES `biblio` (`biblionumber`) ON DELETE CASCADE ON UPDATE CASCADE,
+            CONSTRAINT `hold_fill_targets_ibfk_3` FOREIGN KEY (`itemnumber`) 
+                REFERENCES `items` (`itemnumber`) ON DELETE CASCADE ON UPDATE CASCADE,
+            CONSTRAINT `hold_fill_targets_ibfk_4` FOREIGN KEY (`source_branchcode`) 
+                REFERENCES `branches` (`branchcode`) ON DELETE CASCADE ON UPDATE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8
+    ");
+    $dbh->do("
+        ALTER TABLE tmp_holdsqueue
+            ADD item_level_request tinyint(4) NOT NULL default 0
+    ");
+
+    print "Upgrade to $DBversion done (add hold_fill_targets table and a column to tmp_holdsqueue)";
+    SetVersion($DBversion);
+}
+
+$DBversion = '3.01.00.002';
+if ( C4::Context->preference('Version') < TransformToNum($DBversion) ) {
+    # use statistics where available
+    $dbh->do("
+        ALTER TABLE statistics ADD KEY  tmp_stats (type, itemnumber, borrowernumber)
+    ");
+    $dbh->do("
+        UPDATE issues iss
+        SET issuedate = (
+            SELECT max(datetime)
+            FROM statistics 
+            WHERE type = 'issue'
+            AND itemnumber = iss.itemnumber
+            AND borrowernumber = iss.borrowernumber
+        )
+        WHERE issuedate IS NULL;
+    ");  
+    $dbh->do("ALTER TABLE statistics DROP KEY tmp_stats");
+
+    # default to last renewal date
+    $dbh->do("
+        UPDATE issues
+        SET issuedate = lastreneweddate
+        WHERE issuedate IS NULL
+        and lastreneweddate IS NOT NULL
+    ");
+
+    my $num_bad_issuedates = $dbh->selectrow_array("SELECT COUNT(*) FROM issues WHERE issuedate IS NULL");
+    if ($num_bad_issuedates > 0) {
+        print STDERR "After the upgrade to $DBversion, there are still $num_bad_issuedates loan(s) with a NULL (blank) loan date. ",
+                     "Please check the issues table in your database.";
+    }
+    print "Upgrade to $DBversion done (bug 2582: set null issues.issuedate to lastreneweddate)";
+    SetVersion($DBversion);
+}
+
+$DBversion = "3.01.00.003";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES('AllowRenewalLimitOverride', '0', 'if ON, allows renewal limits to be overridden on the circulation screen',NULL,'YesNo')");
+    print "Upgrade to $DBversion done (add new syspref)\n";
+    SetVersion ($DBversion);
+}
 
 =item DropAllForeignKeys($table)
 

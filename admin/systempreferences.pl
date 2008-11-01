@@ -69,7 +69,6 @@ my %tabsysprefs;
     $tabsysprefs{gist}="Acquisitions";
     $tabsysprefs{emailPurchaseSuggestions}="Acquisitions";
     $tabsysprefs{RenewSerialAddsSuggestion}="Acquisitions";
-    $tabsysprefs{serialsadditems}="Acquisitions";
 
 # Admin
     $tabsysprefs{singleBranchMode}="Admin";
@@ -136,6 +135,7 @@ my %tabsysprefs;
     $tabsysprefs{useDaysMode}="Circulation";
     $tabsysprefs{ReservesNeedReturns}="Circulation";
     $tabsysprefs{CircAutocompl}="Circulation";
+    $tabsysprefs{AllowRenewalLimitOverride}="Circulation";
     $tabsysprefs{canreservefromotherbranches}="Circulation";
     $tabsysprefs{finesMode}="Circulation";
     $tabsysprefs{emailLibrarianWhenHoldIsPlaced}="Circulation";
@@ -185,6 +185,7 @@ my %tabsysprefs;
     $tabsysprefs{AutoEmailOpacUser}="Patrons";
     $tabsysprefs{AutoEmailPrimaryAddress}="Patrons";
     $tabsysprefs{EnhancedMessagingPreferences}="Patrons";
+    $tabsysprefs{'SMSSendDriver'}             = 'Patrons';
 
 # I18N/L10N
     $tabsysprefs{dateformat}="I18N/L10N";

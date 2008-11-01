@@ -1,5 +1,3 @@
-#!/usr/bin/perl
-
 package C4::Barcodes::incremental;
 
 # Copyright 2008 LibLime
@@ -32,7 +30,7 @@ BEGIN {
 1;
 __END__
 
-=doc
+=head2
 
 Since incremental is the default in C4::Barcodes, we do not override anything here.
 In fact, this file is more of a place holder.

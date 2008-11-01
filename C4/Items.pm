@@ -356,7 +356,48 @@ C<MARC::Record> object containing an embedded item field.
 This API is meant for the use of C<additem.pl>; for 
 other purposes, C<ModItem> should be used.
 
+This function uses the hash %default_values_for_mod_from_marc,
+which contains default values for item fields to
+apply when modifying an item.  This is needed beccause
+if an item field's value is cleared, TransformMarcToKoha
+does not include the column in the
+hash that's passed to ModItem, which without
+use of this hash makes it impossible to clear
+an item field's value.  See bug 2466.
+
+Note that only columns that can be directly
+changed from the cataloging and serials
+item editors are included in this hash.
+
 =cut
+
+my %default_values_for_mod_from_marc = (
+    barcode              => undef, 
+    booksellerid         => undef, 
+    ccode                => undef, 
+    'items.cn_source'    => undef, 
+    copynumber           => undef, 
+    damaged              => 0,
+    dateaccessioned      => undef, 
+    enumchron            => undef, 
+    holdingbranch        => undef, 
+    homebranch           => undef, 
+    itemcallnumber       => undef, 
+    itemlost             => 0,
+    itemnotes            => undef, 
+    itype                => undef, 
+    location             => undef, 
+    materials            => undef, 
+    notforloan           => 0,
+    paidfor              => undef, 
+    price                => undef, 
+    replacementprice     => undef, 
+    replacementpricedate => undef, 
+    restricted           => undef, 
+    stack                => undef, 
+    uri                  => undef, 
+    wthdrawn             => 0,
+);
 
 sub ModItemFromMarc {
     my $item_marc = shift;
@@ -366,6 +407,9 @@ sub ModItemFromMarc {
     my $dbh = C4::Context->dbh;
     my $frameworkcode = GetFrameworkCode( $biblionumber );
     my $item = &TransformMarcToKoha( $dbh, $item_marc, $frameworkcode );
+    foreach my $item_field (keys %default_values_for_mod_from_marc) {
+        $item->{$item_field} = $default_values_for_mod_from_marc{$item_field} unless exists $item->{$item_field};
+    }
     my $unlinked_item_subfields = _get_unlinked_item_subfields($item_marc, $frameworkcode);
    
     return ModItem($item, $biblionumber, $itemnumber, $dbh, $frameworkcode, $unlinked_item_subfields); 
@@ -915,16 +959,17 @@ sub GetLostItems {
 
 =over 4
 
-$itemlist = GetItemsForInventory($minlocation,$maxlocation,$datelastseen,$offset,$size)
+$itemlist = GetItemsForInventory($minlocation, $maxlocation, $location, $itemtype $datelastseen, $branch, $offset, $size);
 
 =back
 
 Retrieve a list of title/authors/barcode/callnumber, for biblio inventory.
 
-The sub returns a list of hashes, containing itemnumber, author, title, barcode & item callnumber.
-It is ordered by callnumber,title.
+The sub returns a reference to a list of hashes, each containing
+itemnumber, author, title, barcode, item callnumber, and date last
+seen. It is ordered by callnumber then title.
 
-The minlocation & maxlocation parameters are used to specify a range of item callnumbers
+The required minlocation & maxlocation parameters are used to specify a range of item callnumbers
 the datelastseen can be used to specify that you want to see items not seen since a past date only.
 offset & size can be used to retrieve only a part of the whole listing (defaut behaviour)
 
@@ -933,39 +978,42 @@ offset & size can be used to retrieve only a part of the whole listing (defaut b
 sub GetItemsForInventory {
     my ( $minlocation, $maxlocation,$location, $itemtype, $datelastseen, $branch, $offset, $size ) = @_;
     my $dbh = C4::Context->dbh;
-    my $sth;
+
+    my $query = <<'END_SQL';
+SELECT itemnumber, barcode, itemcallnumber, title, author, biblio.biblionumber, datelastseen
+FROM items
+  LEFT JOIN biblio ON items.biblionumber = biblio.biblionumber
+  LEFT JOIN biblioitems on items.biblionumber = biblioitems.biblionumber
+WHERE itemcallnumber >= ?
+  AND itemcallnumber <= ?
+END_SQL
+    my @bind_params = ( $minlocation, $maxlocation );
+
     if ($datelastseen) {
-        $datelastseen=format_date_in_iso($datelastseen);  
-        my $query =
-                "SELECT itemnumber,barcode,itemcallnumber,title,author,biblio.biblionumber,datelastseen
-                 FROM items
-                   LEFT JOIN biblio ON items.biblionumber=biblio.biblionumber
-                   LEFT JOIN biblioitems on items.biblionumber=biblioitems.biblionumber
-                 WHERE itemcallnumber>= ?
-                   AND itemcallnumber <=?
-                   AND (datelastseen< ? OR datelastseen IS NULL)";
-        $query.= " AND items.location=".$dbh->quote($location) if $location;
-        $query.= " AND items.homebranch=".$dbh->quote($branch) if $branch;
-        $query.= " AND biblioitems.itemtype=".$dbh->quote($itemtype) if $itemtype;
-        $query .= " ORDER BY itemcallnumber,title";
-        $sth = $dbh->prepare($query);
-        $sth->execute( $minlocation, $maxlocation, $datelastseen );
+        $datelastseen = format_date_in_iso($datelastseen);  
+        $query .= ' AND (datelastseen < ? OR datelastseen IS NULL) ';
+        push @bind_params, $datelastseen;
     }
-    else {
-        my $query ="
-                SELECT itemnumber,barcode,itemcallnumber,biblio.biblionumber,title,author,datelastseen
-                FROM items 
-                    LEFT JOIN biblio ON items.biblionumber=biblio.biblionumber 
-                   LEFT JOIN biblioitems on items.biblionumber=biblioitems.biblionumber
-                WHERE itemcallnumber>= ?
-                  AND itemcallnumber <=?";
-        $query.= " AND items.location=".$dbh->quote($location) if $location;
-        $query.= " AND items.homebranch=".$dbh->quote($branch) if $branch;
-        $query.= " AND biblioitems.itemtype=".$dbh->quote($itemtype) if $itemtype;
-        $query .= " ORDER BY itemcallnumber,title";
-        $sth = $dbh->prepare($query);
-        $sth->execute( $minlocation, $maxlocation );
+
+    if ( $location ) {
+        $query.= ' AND items.location = ? ';
+        push @bind_params, $location;
     }
+    
+    if ( $branch ) {
+        $query.= ' AND items.homebranch = ? ';
+        push @bind_params, $branch;
+    }
+    
+    if ( $itemtype ) {
+        $query.= ' AND biblioitems.itemtype = ? ';
+        push @bind_params, $itemtype;
+    }
+
+    $query .= ' ORDER BY itemcallnumber, title';
+    my $sth = $dbh->prepare($query);
+    $sth->execute( @bind_params );
+
     my @results;
     $size--;
     while ( my $row = $sth->fetchrow_hashref ) {
@@ -1136,7 +1184,7 @@ If this is set, it is set to C<One Order>.
 sub GetItemsInfo {
     my ( $biblionumber, $type ) = @_;
     my $dbh   = C4::Context->dbh;
-    my $query = "SELECT *,items.notforloan as itemnotforloan
+    my $query = "SELECT items.*,biblio.*,biblioitems.volume,biblioitems.number,biblioitems.itemtype,biblioitems.isbn,biblioitems.issn,biblioitems.publicationyear,biblioitems.publishercode,biblioitems.volumedate,biblioitems.volumedesc,biblioitems.lccn,biblioitems.url,items.notforloan as itemnotforloan
                  FROM items 
                  LEFT JOIN biblio ON biblio.biblionumber = items.biblionumber
                  LEFT JOIN biblioitems ON biblioitems.biblioitemnumber = items.biblioitemnumber";
@@ -1219,6 +1267,7 @@ sub GetItemsInfo {
             my ($lib) = $sthnflstatus->fetchrow;
             $data->{notforloanvalue} = $lib;
         }
+		$data->{itypenotforloan} = $data->{notforloan} if (C4::Context->preference('item-level_itypes'));
 
         # my stack procedures
         my $stackstatus = $dbh->prepare(
@@ -1246,6 +1295,7 @@ sub GetItemsInfo {
         my $sth2 = $dbh->prepare("SELECT * FROM old_issues,borrowers
                                     WHERE itemnumber = ?
                                     AND old_issues.borrowernumber = borrowers.borrowernumber
+                                    ORDER BY returndate DESC
                                     LIMIT 3");
         $sth2->execute($data->{'itemnumber'});
         my $ii = 0;
@@ -1261,7 +1311,7 @@ sub GetItemsInfo {
     }
     $sth->finish;
 	if($serial) {
-		return( sort { $b->{'publisheddate'} cmp $a->{'publisheddate'} } @results );
+		return( sort { ($b->{'publisheddate'} || $b->{'enumchron'}) cmp ($a->{'publisheddate'} || $a->{'enumchron'}) } @results );
 	} else {
     	return (@results);
 	}
@@ -1414,7 +1464,7 @@ sub get_authorised_value_images {
              && $authorised_values->{ $this_authorised_value->{'category'} } eq $this_authorised_value->{'authorised_value'} ) {
             # warn ( Data::Dumper->Dump( [ $this_authorised_value ], [ 'this_authorised_value' ] ) );
             if ( defined $this_authorised_value->{'imageurl'} ) {
-                push @imagelist, { imageurl => C4::Koha::getitemtypeimagesrc( 'intranet' ) . '/' . $this_authorised_value->{'imageurl'},
+                push @imagelist, { imageurl => C4::Koha::getitemtypeimagelocation( 'intranet', $this_authorised_value->{'imageurl'} ),
                                    label    => $this_authorised_value->{'lib'},
                                    category => $this_authorised_value->{'category'},
                                    value    => $this_authorised_value->{'authorised_value'}, };
@@ -1785,9 +1835,10 @@ sub _koha_new_item {
             ccode               = ?,
             itype               = ?,
             materials           = ?,
-			uri                 = ?,
+            uri = ?,
             enumchron           = ?,
-			more_subfields_xml  = ?
+            more_subfields_xml  = ?,
+            copynumber          = ?
           ";
     my $sth = $dbh->prepare($query);
    $sth->execute(
@@ -1822,7 +1873,8 @@ sub _koha_new_item {
             $item->{'materials'},
             $item->{'uri'},
             $item->{'enumchron'},
-			$item->{'more_subfields_xml'},
+            $item->{'more_subfields_xml'},
+            $item->{'copynumber'},
     );
     my $itemnumber = $dbh->{'mysql_insertid'};
     if ( defined $sth->errstr ) {

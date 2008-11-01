@@ -17,7 +17,7 @@
 
 
 use strict;
-require Exporter;
+
 use CGI;
 use C4::Auth;
 use C4::Output;
@@ -42,8 +42,6 @@ my $params = $query->Vars;
 
 my $biblionumber = $params->{'biblionumber'};
 my $itemnumber   = $params->{'itemnumber'};
-my $title        = $params->{'title'};
-my $author       = $params->{'author'};
 
 my ($issues,$biblio,$barcode);
 if ($itemnumber){

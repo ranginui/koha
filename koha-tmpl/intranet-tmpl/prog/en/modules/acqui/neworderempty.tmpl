@@ -45,10 +45,10 @@ function messenger(X,Y,etc){	// FIXME: unused?
     win=window.open("","mess","height="+X+",width="+Y+",screenX=150,screenY=0");
     win.focus();
     win.document.close();
-    win.document.write("<body link='#333333' bgcolor='#ffffff' text='#000000'><font size='2'><p><br />");
+    win.document.write("<body>");
     win.document.write(etc);
-    win.document.write("<center><form><input type=button onclick='self.close()' value='Close'></form></center>");
-    win.document.write("</font></body></html>");
+    win.document.write("<form><input type=\"button\" onclick=\"self.close()\" value=\"Close\" \/><\/form>");
+    win.document.write("<\/body><\/html>");
 }
 
 function check(f) {
@@ -101,7 +101,7 @@ if (quantity ==0) {
 
 <form action="/cgi-bin/koha/acqui/addorder.pl" method="post" name="frusin">
 <fieldset class="rows">
-        <legend>Catalogue details</legend>
+        <legend>Catalog details</legend>
         <!-- TMPL_UNLESS name="existing" -->
 		<input type="hidden" name="existing" value="no" />
         <!-- /TMPL_UNLESS -->
@@ -122,7 +122,7 @@ if (quantity ==0) {
         <ol><li>
             <!-- TMPL_IF name="biblionumber" -->
 			<span class="label">Title</span>
-                <input type="hidden" size="20" name="title" value="<!-- TMPL_VAR NAME="title" -->" /> <span class="title"><!-- TMPL_VAR NAME="title" --></span>
+                <input type="hidden" size="20" name="title" value="<!-- TMPL_VAR NAME="title" -->" /> <span class="title"><!-- TMPL_VAR NAME="title" escape="html" --></span>
             <!-- TMPL_ELSE -->
             <label for="entertitle" class="required">Title: </label>
                 <input type="text" id="entertitle" size="20" name="title" value="<!-- TMPL_VAR NAME="title" -->" />

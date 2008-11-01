@@ -243,6 +243,10 @@ th {
 	text-align : center;
 }
 
+table+table {
+	margin-top : 1em;
+}
+
 #editions table, #editions td {
 	border : 0;
 }
@@ -370,13 +374,14 @@ div.yui-b h5 {
 }
 
 dt {
-	font-size : 110%;
 	font-weight : bold;
 }
 
 dd {
 	padding : .2em;
-	text-indent : 1.5em;
+	font-size : 90%;
+	text-indent : 2.5em;
+	font-weight : normal;
 }
 
 div#toolbar {
@@ -484,7 +489,7 @@ div.yui-b fieldset.brief select {
 
 fieldset.rows {  
 border-width : 1px;
-border-bottom : 1px solid black;
+border-bottom : 1px solid #666;
 float : left;
 font-size : 90%;
 clear : left;
@@ -858,6 +863,13 @@ fieldset.rows .inputnote {
 
 #editmenuc .first-child, #deleteshelf .first-child,#newmenuc .first-child, #addbiblio .first-child, #z3950search .first-child, #printmenuc .first-child, #newsupplier .first-child, #savemenuc .first-child {
 	padding-left : 15px;
+}
+
+.error,
+.error a,
+.error a:link,
+.error a:visited {
+       color: #cc0000;
 }
 
 div.error {
@@ -1314,7 +1326,7 @@ overflow :  hidden;
 }
 
 div.pages {
-	margin-top : .5em;
+	margin : .5em 0;
 }
 
 div.pages a {
@@ -1357,7 +1369,7 @@ input[type=submit], input[type=button] {
 	color: #333333;
 }
 
-input.submit {
+input.submit,button.submit {
 	border: 1px solid #999999;
 	border-top-color: #666;
 	border-left-color: #666;
@@ -1374,11 +1386,7 @@ input[type=submit]:active, input[type=button]:active {
 	border : 1px inset #999999;
 }
 
-input.submit:active {
-	border : 1px inset #999999;
-}
-
-input[type=reset], input[type=button], input.submit {
+input[type=reset], input[type=button], input.submit, button.submit {
 	border: 1px outset #999999;
 	border-top-color: #666;
 	border-left-color: #666;
@@ -1387,7 +1395,7 @@ input[type=reset], input[type=button], input.submit {
 	color: #333333;
 }
 
-input[type=reset]:active, input[type=button]:active, input.submit:active {
+input[type=reset]:active, input[type=button]:active, input.submit:active, button.submit:active {
 	border : 1px inset #999999;
 }
 
@@ -1401,6 +1409,16 @@ a.yuimenuitemlabel:hover {
 	color : #000;
 }
 		
+#displayexample {
+	padding: 5px; 
+	margin-bottom: 10px;
+	background-color: #CCCCCC;
+}
+
+#irregularity_summary {
+	vertical-align : top;
+}
+
 #toplevelnav {
 	float : left;
 	margin-left : .5em;
@@ -1512,7 +1530,7 @@ ul#i18nMenu li.more ul li a {
   overflow:auto;
  }
 
-#CheckAll, #CheckNone {
+#CheckAll, #CheckNone, #CheckPending {
 	font-weight : normal;
 	margin : 0 .5em 0 0;
 }
@@ -1565,13 +1583,12 @@ span.permissiondesc {
 }
 /* autocomplete additions */
 #borrowerautocomplete { width: 450px; text-align:left;} /* z-index needed on top instances for ie & sf absolute inside relative issue */
-.autocomplete { width:130px; }/* set width of widget here*/
 .autocomplete .yui-ac-highlight ,
 .autocomplete .yui-ac-highlight .sample-result,
 .autocomplete .yui-ac-highlight .sample-query { color:#FFF; }
 .autocomplete .sample-result { color: black; }
 .autocomplete .sample-query { color:#000; }
-#findborrower { position:static; width:335px; }
+#findborrower { position:static; width:auto; }
 #yborrowercontainer { text-align:left;width:335px; }
 #mainuserblock {
 	border : 1px solid #E8E8E8;

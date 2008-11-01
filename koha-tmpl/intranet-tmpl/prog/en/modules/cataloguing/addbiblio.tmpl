@@ -1,5 +1,5 @@
 <!-- TMPL_INCLUDE NAME="doc-head-open.inc" -->
-<title>Koha &rsaquo; Cataloging &rsaquo; <!-- TMPL_IF NAME="biblionumber" -->Editing <!-- TMPL_VAR NAME="title" --> (Record Number <!-- TMPL_VAR name="biblionumber" -->)<!-- TMPL_ELSE -->Add MARC Record<!-- /TMPL_IF --></title>
+<title>Koha &rsaquo; Cataloging &rsaquo; <!-- TMPL_IF NAME="biblionumber" -->Editing <!-- TMPL_VAR NAME="title" escape="html" --> (Record Number <!-- TMPL_VAR name="biblionumber" -->)<!-- TMPL_ELSE -->Add MARC Record<!-- /TMPL_IF --></title>
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
 <script type="text/javascript" src="<!-- TMPL_VAR name="themelang" -->/lib/yui/plugins/bubbling-min.js"></script>
 <script type="text/javascript">
@@ -473,7 +473,7 @@ function unHideSubfield(index,labelindex) { // FIXME :: is it used ?
 }
 //]]>
 </script>
-<link rel="stylesheet" href="<!-- TMPL_VAR NAME="themelang" -->/css/addbiblio.css" />
+<link type="text/css" rel="stylesheet" href="<!-- TMPL_VAR NAME="themelang" -->/css/addbiblio.css" />
 </head>
 <body>
 <div id="yui-cms-loading">
@@ -493,7 +493,7 @@ function unHideSubfield(index,labelindex) { // FIXME :: is it used ?
 //]]>
 </script>
 <!-- TMPL_INCLUDE NAME="header.inc" -->
-<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/cataloguing/addbooks.pl">Cataloguing</a>  &rsaquo; <!-- TMPL_IF NAME="biblionumber" -->Editing <em><!-- TMPL_VAR NAME="title" --></em> (Record Number <!-- TMPL_VAR name="biblionumber" -->)<!-- TMPL_ELSE -->Add MARC Record<!-- /TMPL_IF --></div>
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/cataloguing/addbooks.pl">Cataloging</a>  &rsaquo; <!-- TMPL_IF NAME="biblionumber" -->Editing <em><!-- TMPL_VAR NAME="title" escape="html" --></em> (Record Number <!-- TMPL_VAR name="biblionumber" -->)<!-- TMPL_ELSE -->Add MARC Record<!-- /TMPL_IF --></div>
 
 <div id="doc" class="yui-t7">
 
@@ -503,7 +503,7 @@ function unHideSubfield(index,labelindex) { // FIXME :: is it used ?
 
 
 
-<h1><!-- TMPL_IF NAME="biblionumber" -->Editing <em><!-- TMPL_VAR NAME="title" --></em> (Record Number <!-- TMPL_VAR name="biblionumber" -->)</h1><!-- TMPL_ELSE -->Add MARC Record</h1><!-- /TMPL_IF -->
+<h1><!-- TMPL_IF NAME="biblionumber" -->Editing <em><!-- TMPL_VAR NAME="title" escape="html" --></em> (Record Number <!-- TMPL_VAR name="biblionumber" -->)</h1><!-- TMPL_ELSE -->Add MARC Record</h1><!-- /TMPL_IF -->
 
 <!-- TMPL_UNLESS name="number" -->
     <!-- show duplicate warning on tab 0 only -->
@@ -651,7 +651,7 @@ function unHideSubfield(index,labelindex) { // FIXME :: is it used ?
                     <!-- TMPL_ELSE -->
                         <img class="buttonUp" src="<!-- TMPL_VAR NAME="themelang" -->/../img/up.png" onclick="upSubfield('subfield<!-- TMPL_VAR NAME='tag' --><!-- TMPL_VAR NAME='subfield' --><!-- TMPL_VAR name="random" -->')" alt="Move Up" title="Move Up" />
                     <!-- /TMPL_IF -->
-                        <input title="<!-- TMPL_VAR NAME='marc_lib_plain' -->" style=" <!-- TMPL_IF NAME="fixedfield" -->display:none; <!-- /TMPL_IF -->border:0;" type="text" name="tag_<!-- TMPL_VAR NAME='tag'-->_code_<!--  TMPL_VAR NAME='subfield'-->_<!-- TMPL_VAR NAME='index'-->_<!-- TMPL_VAR NAME='index_subfield'-->" value="<!-- TMPL_VAR NAME="subfield" -->" size="1" maxlength="1" class="flat" tabindex="-1" />
+                        <input title="<!-- TMPL_VAR NAME='marc_lib_plain' -->" style=" <!-- TMPL_IF NAME="fixedfield" -->display:none; <!-- /TMPL_IF -->border:0;" type="text" name="tag_<!-- TMPL_VAR NAME='tag'-->_code_<!--  TMPL_VAR NAME='subfield'-->_<!-- TMPL_VAR NAME='index'-->_<!-- TMPL_VAR NAME='index_subfield'-->" value="<!-- TMPL_VAR NAME="subfield" -->" size="1" maxlength="1" class="flat" tabindex="0" />
  </span>
                 <!-- TMPL_ELSE -->
                     <input type="hidden" name="tag_<!-- TMPL_VAR NAME='tag'-->_code_<!--  TMPL_VAR NAME='subfield'-->_<!-- TMPL_VAR NAME='index'-->_<!-- TMPL_VAR NAME='index_subfield'-->" value="<!-- TMPL_VAR NAME="subfield" -->" />

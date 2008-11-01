@@ -62,11 +62,7 @@ orders, basket and parcels.
 
 =head1 FUNCTIONS
 
-=over 2
-
 =head2 FUNCTIONS ABOUT BASKETS
-
-=over 2
 
 =head3 GetBasket
 
@@ -78,8 +74,6 @@ get all basket informations in aqbasket for a given basket
 
 return :
 informations for a given basket returned as a hashref.
-
-=back
 
 =back
 
@@ -162,11 +156,7 @@ sub CloseBasket {
 
 #------------------------------------------------------------#
 
-=back
-
 =head2 FUNCTIONS ABOUT ORDERS
-
-=over 2
 
 =cut
 
@@ -266,7 +256,7 @@ sub GetOrders {
     my $dbh   = C4::Context->dbh;
     my $query  ="
          SELECT  aqorderbreakdown.*,
-                biblio.*,biblioitems.publishercode,
+                biblio.*,biblioitems.*,
                 aqorders.*,
                 aqbookfund.bookfundname,
                 biblio.title
@@ -300,9 +290,13 @@ sub GetOrders {
 
 $ordernumber = &GetOrderNumber($biblioitemnumber, $biblionumber);
 
+=back
+
 Looks up the ordernumber with the given biblionumber and biblioitemnumber.
 
 Returns the number of this order.
+
+=over 4
 
 =item C<$ordernumber> is the order number.
 
@@ -370,7 +364,7 @@ sub GetOrder {
   &NewOrder($basket, $biblionumber, $title, $quantity, $listprice,
     $booksellerid, $who, $notes, $bookfund, $biblioitemnumber, $rrp,
     $ecost, $gst, $budget, $unitprice, $subscription,
-    $booksellerinvoicenumber, $purchaseorder);
+    $booksellerinvoicenumber, $purchaseorder, $branchcode);
 
 Adds a new order to the database. Any argument that isn't described
 below is the new value of the field with the same name in the aqorders
@@ -398,7 +392,8 @@ sub NewOrder {
         $listprice, $booksellerid, $authorisedby, $notes,
         $bookfund,  $bibitemnum,   $rrp,          $ecost,
         $gst,       $budget,       $cost,         $sub,
-        $invoice,   $sort1,        $sort2,        $purchaseorder
+        $invoice,   $sort1,        $sort2,        $purchaseorder,
+		$branchcode
       )
       = @_;
 
@@ -454,11 +449,11 @@ sub NewOrder {
     #get ordnum MYSQL dependant, but $dbh->last_insert_id returns null
     my $ordnum = $dbh->{'mysql_insertid'};
     $query = "
-        INSERT INTO aqorderbreakdown (ordernumber,bookfundid)
-        VALUES (?,?)
+        INSERT INTO aqorderbreakdown (ordernumber,bookfundid, branchcode)
+        VALUES (?,?,?)
     ";
     $sth = $dbh->prepare($query);
-    $sth->execute( $ordnum, $bookfund );
+    $sth->execute( $ordnum, $bookfund, $branchcode );
     $sth->finish;
     return ( $basketno, $ordnum );
 }
@@ -790,12 +785,7 @@ sub DelOrder {
     $sth->finish;
 }
 
-
-=back
-
 =head2 FUNCTIONS ABOUT PARCELS
-
-=over 2
 
 =cut
 
@@ -880,7 +870,11 @@ sub GetParcel {
 $results = &GetParcels($bookseller, $order, $code, $datefrom, $dateto);
 get a lists of parcels.
 
+=back
+
 * Input arg :
+
+=over 4
 
 =item $bookseller
 is the bookseller this function has to get parcels.
@@ -1206,8 +1200,6 @@ sub GetRecentAcqui {
 
 1;
 __END__
-
-=back
 
 =head1 AUTHOR
 

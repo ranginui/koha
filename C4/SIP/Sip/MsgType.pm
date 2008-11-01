@@ -10,7 +10,6 @@ use strict;
 use warnings;
 use Exporter;
 use Sys::Syslog qw(syslog);
-use UNIVERSAL qw(can);
 
 use Sip qw(:all);
 use Sip::Constants qw(:all);
@@ -19,6 +18,8 @@ use Sip::Checksum qw(verify_cksum);
 use Data::Dumper;
 use CGI;
 use C4::Auth qw(&check_api_auth);
+
+use UNIVERSAL qw(can);	# make sure this is *after* C4 modules.
 
 use vars qw(@ISA $VERSION @EXPORT_OK);
 
@@ -839,7 +840,15 @@ sub handle_login {
 		$status = 0;
     }
 	else { $status = login_core($server,$uid,$pwd); }
-=doc 
+
+=pod
+
+Note: This block was commented out with improperly formatted POD. It
+was not interpreted by perl, but not properly handled by POD
+formatters. I fixed the POD syntax error so this code is now obviously
+a comment and not code. The code has been extracted to the login_core
+sub and is called above. -- amoore Aug 12, 2008
+
     if (!exists($server->{config}->{accounts}->{$uid})) {
 		syslog("LOG_WARNING", "MsgType::handle_login: Unknown login '$uid'");
 		$status = 0;
@@ -882,7 +891,9 @@ sub handle_login {
 			}
 		}
 	}
+
 =cut	
+
 	$self->write_msg(LOGIN_RESP . $status);
     return $status ? LOGIN : '';
 }
