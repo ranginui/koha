@@ -78,13 +78,13 @@ BEGIN {
 		}
     }  	# else there is no browser to send fatals to!	
 $VERSION = '3.00.00.036';
-#    $usecache = preference("usecache");
-    $usecache;
+    $usecache = preference("usecache");
     if ($usecache) {
-	require Cache::Memcached;
-	Cache::Memcached->import();
-	$memd = new Cache::Memcached(
-	    'servers'=>['127.0.0.1:11211'],
+	require C4::Cache;
+	C4::Cache->import();
+	$memd = C4::Cache->new ( {'cache_type' => C4::Context->config("cache_type"),
+	                         'cache_servers' => C4::Context->config("cache_servers")
+				 }
 	);
     }
 }
