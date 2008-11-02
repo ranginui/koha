@@ -17,7 +17,7 @@ package C4::Context;
 # Suite 330, Boston, MA  02111-1307 USA
 
 use strict;
-use vars qw($VERSION $AUTOLOAD $context @context_stack $usecache $memd);
+use vars qw($VERSION $AUTOLOAD $context @context_stack $usecache $cache);
 
 BEGIN {
 	if ($ENV{'HTTP_USER_AGENT'})	{
@@ -78,11 +78,11 @@ BEGIN {
 		}
     }  	# else there is no browser to send fatals to!	
 $VERSION = '3.00.00.036';
-    $usecache = preference("usecache");
+#    $usecache = C4::Context->preference("usecache");
     if ($usecache) {
 	require C4::Cache;
 	C4::Cache->import();
-	$memd = C4::Cache->new ( {'cache_type' => C4::Context->config("cache_type"),
+	$cache = C4::Cache->new ( {'cache_type' => C4::Context->config("cache_type"),
 	                         'cache_servers' => C4::Context->config("cache_servers")
 				 }
 	);
@@ -245,10 +245,10 @@ Returns undef in case of error.
 sub read_config_file {		# Pass argument naming config file to read
     my $koha;
     if ($usecache){
-	$koha =  $memd->get("Koha:context:config");
+	$koha =  $cache->get_from_cache("Koha:context:config");
 	if (! $koha){
 	  $koha = XMLin(shift, keyattr => ['id'], forcearray => ['listen', 'server', 'serverinfo']);
-	  $memd->set("Koha:context:config",$koha);
+	  $cache->set_in_cache("Koha:context:config",$koha);
 	}
 	return $koha;
     }
@@ -487,20 +487,21 @@ sub preference {
     my $var = shift;        # The system preference to return
     my $retval;            # Return value
     if ($usecache) {
-	$retval = $memd->get("Koha:preference:$var");
-	return $retval if $retval;
+	$retval = $cache->get_from_cache("Koha:preference:$var");
+	return $retval;
     }
     my $dbh = C4::Context->dbh or return 0;
-	# Look up systempreferences.variable==$var
-	$retval = $dbh->selectrow_array(<<EOT);
-        SELECT    value
-        FROM    systempreferences
-        WHERE    variable=?
-        LIMIT    1
-EOT
+    my $sql = <<'END_SQL';
+    SELECT    value
+      FROM    systempreferences
+      WHERE    variable=?
+      LIMIT    1
+END_SQL
+    $retval = $dbh->selectrow_array( $sql, {}, $var );return $retval if $retval;
     if ($usecache) {
-	$memd->set("Koha:preference:$var", $retval);
+	$cache->set_in_cache("Koha:preference:$var", $retval);
     }
+    print "oi oi $retval";
     return $retval;
 }
 

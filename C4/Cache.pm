@@ -46,7 +46,10 @@ use Carp;
 
 use base qw(Class::Accessor);
 
-__Package__->mk_ro_accessors( qw( cache ) );
+use C4::Cache::Memcached;
+use C4::Cache::FastMemcached;
+
+__PACKAGE__->mk_ro_accessors( qw( cache ) );
 
 sub new {
     my $class = shift;                                                          
