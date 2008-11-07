@@ -20,6 +20,7 @@ my $language = $query->param('language');
 my ( $template, $loggedinuser, $cookie );
 
 my $all_languages = getAllLanguages();
+print $query->header;
 
 if ( defined($language) ) {
     setlanguagecookie( $query, $language, "install.pl?step=1" );
@@ -50,8 +51,9 @@ my $dbh = DBI->connect(
       . ( $info{port} ? ";port=$info{port}" : "" ),
     $info{'user'}, $info{'password'}
 );
-
+print "got db";
 if ( $step && $step == 1 ) {
+    print "step 1";
     #First Step
     #Checking ALL perl Modules and services needed are installed.
     #Whenever there is an error, adding a report to the page
@@ -166,6 +168,7 @@ if ( $step && $step == 1 ) {
 
 }
 elsif ( $step && $step == 2 ) {
+    print "step 2";
 #
 #STEP 2 Check Database connection and access
 #
@@ -252,6 +255,7 @@ elsif ( $step && $step == 2 ) {
     }
 }
 elsif ( $step && $step == 3 ) {
+    print "step 3";
 #
 #
 # STEP 3 : database setup
@@ -430,6 +434,7 @@ elsif ( $step && $step == 3 ) {
             $template->param( "count" => $count, "proposeimport" => 1 );
         }
         else {
+	    print "here we are its an upgrade ";
             #
             # we have tables, propose to select files to upload or updatedatabase
             #
@@ -440,7 +445,9 @@ elsif ( $step && $step == 3 ) {
             # if there is none, then we need to install the database
             #
             if (C4::Context->preference('Version')) {
+		
                 my $dbversion = C4::Context->preference('Version');
+		print $dbversion;
                 $dbversion =~ /(.*)\.(..)(..)(...)/;
                 $dbversion = "$1.$2.$3.$4";
                 $template->param("upgrading" => 1,
@@ -448,24 +455,29 @@ elsif ( $step && $step == 3 ) {
                                 "kohaversion" => C4::Context->KOHAVERSION,
                                 );
             }
+	    else {
+		print "cant get version";
+		}
         }
 
         $dbh->disconnect;
     }
 }
 else {
-
+    print "lang selection";
     # LANGUAGE SELECTION page by default
     # using opendir + language Hash
     my $languages_loop = getTranslatedLanguages('intranet');
     $template->param( installer_languages_loop => $languages_loop );
     if ($dbh) {
+	print "checking version";
         my $rq =
           $dbh->prepare(
-            "SELECT * from systempreferences WHERE variable='Version'");
+            "SELECT value from systempreferences WHERE variable='Version'");
         if ( $rq->execute ) {
             my ($version) = $rq->fetchrow;
             if ($version) {
+		print "version is $version";
                 $query->redirect("install.pl?step=3");
 				exit;
             }

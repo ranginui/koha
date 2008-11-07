@@ -48,7 +48,7 @@ if ($usecache){
     $memd = new Cache::Memcached(
 	'servers'=>['127.0.0.1:11211'],
     );
-    my $page = $memd->get("koha:opacmain:$borrowernumber");
+    my $page = $memd->get("koha:opacmain:$borrowernumber:$cookie");
     if ($page){
 	output_html_with_http_headers $input, $cookie, $page;
         exit;
