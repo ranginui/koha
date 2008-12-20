@@ -21,7 +21,7 @@ $(document).ready(function(){
 
 	function confirmDelete(message){
 		if (window.confirm(message)) {
-			location.href="/cgi-bin/koha/virtualshelves/shelves.pl?shelves=1&amp;DEL-<!-- TMPL_VAR NAME="shelfnumber" -->=1";
+			location.href="/cgi-bin/koha/virtualshelves/shelves.pl?<!-- TMPL_IF NAME="showprivateshelves" -->display=privateshelves&<!-- /TMPL_IF -->shelves=1&amp;DEL-<!-- TMPL_VAR NAME="shelfnumber" -->=1";
 		} else { 
 			return false;
 		}
@@ -57,12 +57,6 @@ $(document).ready(function(){
     }
     //]]>
 </script>
-<style type="text/css">
-	input.confirm {
-		background:lightblue url(../../img/button-bg.gif) repeat-x scroll left top;
-		border-width:2pt;
-	}
-</style>
 </head>
 <body>
 <!-- TMPL_INCLUDE NAME="header.inc" -->
@@ -299,7 +293,7 @@ $(document).ready(function(){
         		<tr><th>List Name</th><th>Contents</th><th>Sort by</th><th>Type</th><th>Options</th></tr>
                 <!-- TMPL_LOOP NAME="shelveslooppriv" -->
                     <!-- TMPL_IF NAME="toggle" --><tr class="highlight"><!--TMPL_ELSE--><tr><!-- /TMPL_IF -->
-        <td><a href="shelves.pl?viewshelf=<!-- TMPL_VAR NAME="shelf" -->"><!-- TMPL_VAR NAME="shelfname" ESCAPE="html"  --></a></td>
+        <td><a href="shelves.pl?<!-- TMPL_IF NAME="showprivateshelves" -->display=privateshelves&amp;<!-- /TMPL_IF -->viewshelf=<!-- TMPL_VAR NAME="shelf" -->"><!-- TMPL_VAR NAME="shelfname" ESCAPE="html"  --></a></td>
         <td><!-- TMPL_VAR NAME="count" --> item(s)</td>
         <td><!-- TMPL_VAR NAME="sortfield" --></td>
         <td><!-- TMPL_IF NAME="viewcategory1" -->Private<!-- /TMPL_IF -->
@@ -315,10 +309,11 @@ $(document).ready(function(){
 				</form>
 				<form action="shelves.pl" method="post">
 					<input type="hidden" name="shelves" value="1" />
+                    <input type="hidden" name="display" value="privateshelves" />
 					<input type="hidden" name="DEL-<!-- TMPL_VAR NAME="shelf" -->" value="1" />
 					<!-- TMPL_IF NAME="confirm" -->
 					<input type="hidden" name="CONFIRM-<!-- TMPL_VAR NAME="confirm" -->" value="1" />
-					<input type="submit" class="confirm" value="Confirm" />
+					<input type="submit" class="approve" value="Confirm" />
 					<!-- TMPL_ELSE -->
 					<input type="submit" class="deleteshelf" onclick="return confirmDelete(_('Are you sure you want to remove this List?'));" value="Delete" />
 					<!-- /TMPL_IF -->

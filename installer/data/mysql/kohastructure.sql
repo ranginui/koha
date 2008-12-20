@@ -420,6 +420,7 @@ CREATE TABLE `biblioitems` (
   KEY `bibnoidx` (`biblionumber`),
   KEY `isbn` (`isbn`),
   KEY `publishercode` (`publishercode`),
+  KEY `issn` (`issn`),
   CONSTRAINT `biblioitems_ibfk_1` FOREIGN KEY (`biblionumber`) REFERENCES `biblio` (`biblionumber`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -942,6 +943,7 @@ CREATE TABLE `ethnicity` (
 -- Table structure for table `hold_fill_targets`
 --
 
+DROP TABLE IF EXISTS `hold_fill_targets`;
 CREATE TABLE hold_fill_targets (
   `borrowernumber` int(11) NOT NULL,
   `biblionumber` int(11) NOT NULL,
@@ -1958,6 +1960,7 @@ CREATE TABLE `tags` (
 -- Table structure for table `tags_all`
 --
 
+DROP TABLE IF EXISTS `tags_all`;
 CREATE TABLE `tags_all` (
   `tag_id`         int(11) NOT NULL auto_increment,
   `borrowernumber` int(11) NOT NULL,
@@ -1978,6 +1981,7 @@ CREATE TABLE `tags_all` (
 -- Table structure for table `tags_approval`
 --
 
+DROP TABLE IF EXISTS `tags_approval`;
 CREATE TABLE `tags_approval` (
   `term`   varchar(255) NOT NULL,
   `approved`     int(1) NOT NULL default '0',
@@ -1994,6 +1998,7 @@ CREATE TABLE `tags_approval` (
 -- Table structure for table `tags_index`
 --
 
+DROP TABLE IF EXISTS `tags_index`;
 CREATE TABLE `tags_index` (
   `term`    varchar(255) NOT NULL,
   `biblionumber` int(11) NOT NULL,
@@ -2202,6 +2207,7 @@ CREATE TABLE `tmp_holdsqueue` (
 -- Table structure for table `message_queue`
 --
 
+DROP TABLE IF EXISTS `message_queue`;
 CREATE TABLE `message_queue` (
   `message_id` int(11) NOT NULL auto_increment,
   `borrowernumber` int(11) default NULL,
@@ -2292,6 +2298,19 @@ CREATE TABLE `borrower_message_transport_preferences` (
   KEY `message_transport_type` (`message_transport_type`),
   CONSTRAINT `borrower_message_transport_preferences_ibfk_1` FOREIGN KEY (`borrower_message_preference_id`) REFERENCES `borrower_message_preferences` (`borrower_message_preference_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `borrower_message_transport_preferences_ibfk_2` FOREIGN KEY (`message_transport_type`) REFERENCES `message_transport_types` (`message_transport_type`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for the table branch_transfer_limits
+--
+
+DROP TABLE IF EXISTS `branch_transfer_limits`;
+CREATE TABLE branch_transfer_limits (
+    limitId int(8) NOT NULL auto_increment,
+    toBranch varchar(4) NOT NULL,
+    fromBranch varchar(4) NOT NULL,
+    itemtype varchar(4) NOT NULL,  
+    PRIMARY KEY  (limitId)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

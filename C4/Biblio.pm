@@ -2042,21 +2042,6 @@ sub PrepareItemrecordDisplay {
                         -multiple => 0,
                     );
                 }
-                elsif ( $tagslib->{$tag}->{$subfield}->{thesaurus_category} ) {
-                    $subfield_data{marc_value} =
-"<input type=\"text\" name=\"field_value\"  size=\"47\" maxlength=\"255\" /> <a href=\"javascript:Dopop('cataloguing/thesaurus_popup.pl?category=$tagslib->{$tag}->{$subfield}->{thesaurus_category}&index=',)\">...</a>";
-
-#"
-# COMMENTED OUT because No $i is provided with this API.
-# And thus, no value_builder can be activated.
-# BUT could be thought over.
-#         } elsif ($tagslib->{$tag}->{$subfield}->{'value_builder'}) {
-#             my $plugin="value_builder/".$tagslib->{$tag}->{$subfield}->{'value_builder'};
-#             require $plugin;
-#             my $extended_param = plugin_parameters($dbh,$itemrecord,$tagslib,$i,0);
-#             my ($function_name,$javascript) = plugin_javascript($dbh,$record,$tagslib,$i,0);
-#             $subfield_data{marc_value}="<input type=\"text\" value=\"$value\" name=\"field_value\"  size=47 maxlength=255 DISABLE READONLY OnFocus=\"javascript:Focus$function_name()\" OnBlur=\"javascript:Blur$function_name()\"> <a href=\"javascript:Clic$function_name()\">...</a> $javascript";
-                }
                 else {
                     $subfield_data{marc_value} =
 "<input type=\"text\" name=\"field_value\" value=\"$value\" size=\"50\" maxlength=\"255\" />";
@@ -2195,13 +2180,11 @@ sub ModZebra {
 sub GetNoZebraIndexes {
     my $index = C4::Context->preference('NoZebraIndexes');
     my %indexes;
-    foreach my $line (split /('|"),/,$index) {
+    foreach my $line (split /('|"),[\n\r]*/,$index) {
         $line =~ /(.*)=>(.*)/;
-        my $index = substr($1,1); # get the index, don't forget to remove initial ' or "
+        my $index = $1; # initial ' or " is removed afterwards
         my $fields = $2;
         $index =~ s/'|"|\s//g;
-
-
         $fields =~ s/'|"|\s//g;
         $indexes{$index}=$fields;
     }

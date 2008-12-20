@@ -97,15 +97,16 @@ BEGIN {
 	);
 
 	#Check data
-	push @EXPORT, qw(
-		&checkuniquemember 
-		&checkuserpassword
-		&Check_Userid
-		&fixEthnicity
-		&ethnicitycategories 
-		&fixup_cardnumber
-		&checkcardnumber
-	);
+    push @EXPORT, qw(
+        &checkuniquemember
+        &checkuserpassword
+        &Check_Userid
+        &Generate_Userid
+        &fixEthnicity
+        &ethnicitycategories
+        &fixup_cardnumber
+        &checkcardnumber
+    );
 }
 
 =head1 NAME
@@ -527,7 +528,7 @@ SELECT borrowers.*, categories.category_type, categories.description
 FROM borrowers 
 LEFT JOIN categories on borrowers.categorycode=categories.categorycode 
 ";
-    if ( defined $type && ( $type eq 'cardnumber' || $type eq 'firstname'|| $type eq 'userid'|| $type eq 'borrowernumber' ) ){
+    if (defined($type) and ( $type eq 'cardnumber' || $type eq 'firstname'|| $type eq 'userid'|| $type eq 'borrowernumber' ) ){
         $information = uc $information;
         $sth = $dbh->prepare("$select WHERE $type=?");
     } else {
@@ -535,14 +536,12 @@ LEFT JOIN categories on borrowers.categorycode=categories.categorycode
     }
     $sth->execute($information);
     my $data = $sth->fetchrow_hashref;
-    $sth->finish;
     ($data) and return ($data);
 
-    if ($type eq 'cardnumber' || $type eq 'firstname') {    # otherwise, try with firstname
+    if (defined($type) and ($type eq 'cardnumber' || $type eq 'firstname')) {    # otherwise, try with firstname
         $sth = $dbh->prepare("$select WHERE firstname like ?");
         $sth->execute($information);
         $data = $sth->fetchrow_hashref;
-        $sth->finish;
         ($data) and return ($data);
     }
     return undef;        
@@ -801,6 +800,21 @@ sub Check_Userid {
     }
 }
 
+sub Generate_Userid {
+  my ($borrowernumber, $firstname, $surname) = @_;
+  my $newuid;
+  my $offset = 0;
+  do {
+    $firstname =~ s/[[:digit:][:space:][:blank:][:punct:][:cntrl:]]//g;
+    $surname =~ s/[[:digit:][:space:][:blank:][:punct:][:cntrl:]]//g;
+    $newuid = lc("$firstname.$surname");
+    $newuid .= $offset unless $offset == 0;
+    $offset++;
+
+   } while (!Check_Userid($newuid,$borrowernumber));
+
+   return $newuid;
+}
 
 sub changepassword {
     my ( $uid, $member, $digest ) = @_;

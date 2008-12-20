@@ -5,7 +5,7 @@
 
 <h5>Basic parameters</h5>
 <ul>
-	<li><a href="/cgi-bin/koha/admin/branches.pl">Libraries, branches, groups</a></li>
+	<li><a href="/cgi-bin/koha/admin/branches.pl">Libraries and groups</a></li>
 	<li><a href="/cgi-bin/koha/admin/aqbookfund.pl">Funds and budgets</a></li>
 	<li><a href="/cgi-bin/koha/admin/currency.pl">Currencies and exchange rates</a></li>
 	<li><a href="/cgi-bin/koha/admin/itemtypes.pl">Item types and circulation codes</a></li>
@@ -18,6 +18,7 @@
 	<li><a href="/cgi-bin/koha/admin/roadtype.pl">Road types</a></li>
 	<li><a href="/cgi-bin/koha/admin/patron-attr-types.pl">Patron attribute types</a></li>
 	<li><a href="/cgi-bin/koha/admin/smart-rules.pl">Circulation and fines rules</a></li>
+	<li><a href="/cgi-bin/koha/admin/branch_transfer_limits.pl">Library transfer limits</a></li>
 </ul>
 
 <h5>Catalog</h5>

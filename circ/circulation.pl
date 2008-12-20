@@ -1,7 +1,5 @@
 #!/usr/bin/perl
 
-# Please use 8-character tabs for this file (indents are every 4 characters)
-
 # written 8/5/2002 by Finlay
 # script to execute issuing of books
 
@@ -23,6 +21,7 @@
 # Suite 330, Boston, MA  02111-1307 USA
 
 use strict;
+# use warnings;  # FIXME
 use CGI;
 use C4::Output;
 use C4::Print;
@@ -63,7 +62,6 @@ my $query = new CGI;
 my $branch = $query->param('branch');
 if ($branch){
     # update our session so the userenv is updated
-    my $dbh=C4::Context->dbh;
     my $sessionID = $query->cookie("CGISESSID") ;
     my $session = get_session($sessionID);
     $session->param('branch',$branch);
@@ -74,7 +72,6 @@ if ($branch){
 my $printer = $query->param('printer');
 if ($printer){
     # update our session so the userenv is updated
-  my $dbh=C4::Context->dbh;
   my $sessionID = $query->cookie("CGISESSID") ;
   my $session = get_session($sessionID);
   $session->param('branchprinter',$printer);
@@ -101,7 +98,6 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user (
 );
 
 my $branches = GetBranches();
-
 my $printers = GetPrinters();
 
 my @failedrenews = $query->param('failedrenew');
@@ -118,12 +114,9 @@ $printer = C4::Context->userenv->{'branchprinter'};
 
 
 # If Autolocated is not activated, we show the Circulation Parameters to chage settings of librarian
-    if (C4::Context->preference("AutoLocation") ne 1)
-        {
-            $template->param(
-            ManualLocation => 1,
-            );
-        }
+if (C4::Context->preference("AutoLocation") ne 1) { # FIXME: string comparison to number
+    $template->param(ManualLocation => 1);
+}
 
 my $barcode        = $query->param('barcode') || '';
 
@@ -146,21 +139,37 @@ my $debt_confirmed = $query->param('debt_confirmed') || 0; # Don't show the debt
 # }
 #
 
-my ($datedue,$invalidduedate);
-if ($duedatespec) {
-	if ($duedatespec =~ C4::Dates->regexp('syspref')) {
-		my $tempdate = C4::Dates->new($duedatespec);
-		if ($tempdate and $tempdate->output('iso') gt C4::Dates->new()->output('iso')) {
-			# i.e., it has to be later than today/now
-			$datedue = $tempdate;
-		} else {
-			$invalidduedate = 1;
-			$template->param(IMPOSSIBLE=>1, INVALID_DATE=>$duedatespec);
-		}
-	} else {
-		$invalidduedate = 1;
-		$template->param(IMPOSSIBLE=>1, INVALID_DATE=>$duedatespec);
-	}
+my ($datedue,$invalidduedate,$globalduedate);
+
+if(C4::Context->preference('globalDueDate') && (C4::Context->preference('globalDueDate') =~ C4::Dates->regexp('syspref'))){
+        $globalduedate = C4::Dates->new(C4::Context->preference('globalDueDate'));
+}
+my $duedatespec_allow = C4::Context->preference('SpecifyDueDate');
+if($duedatespec_allow){
+    if ($duedatespec) {
+    	if ($duedatespec =~ C4::Dates->regexp('syspref')) {
+    		my $tempdate = C4::Dates->new($duedatespec);
+    		if ($tempdate and $tempdate->output('iso') gt C4::Dates->new()->output('iso')) {
+    			# i.e., it has to be later than today/now
+    			$datedue = $tempdate;
+    		} else {
+    			$invalidduedate = 1;
+    			$template->param(IMPOSSIBLE=>1, INVALID_DATE=>$duedatespec);
+    		}
+    	} else {
+    		$invalidduedate = 1;
+    		$template->param(IMPOSSIBLE=>1, INVALID_DATE=>$duedatespec);
+    	}
+    } else {
+        # pass global due date to tmpl if specifyduedate is true 
+        # and we have no barcode (loading circ page but not checking out)
+        if($globalduedate &&  ! $barcode ){
+            $duedatespec = $globalduedate->output();
+            $stickyduedate = 1;
+        }
+    }
+} else {
+    $datedue = $globalduedate if($globalduedate);
 }
 
 my $todaysdate = C4::Dates->new->output('iso');
@@ -171,7 +180,6 @@ if ( $barcode eq '' && $print eq 'maybe' ) {
 }
 
 my $inprocess = ($barcode eq '') ? '' : $query->param('inprocess');
-
 if ( $barcode eq '' && $query->param('charges') eq 'yes' ) {
     $template->param(
         PAYCHARGES     => 'yes',
@@ -276,7 +284,7 @@ if ($barcode) {
   # always check for blockers on issuing
   my ( $error, $question ) =
     CanBookBeIssued( $borrower, $barcode, $datedue , $inprocess );
-  my $noerror = $invalidduedate ? 0 : 1;
+  my $blocker = $invalidduedate ? 1 : 0;
 
   delete $question->{'DEBT'} if ($debt_confirmed);
   foreach my $impossible ( keys %$error ) {
@@ -284,51 +292,38 @@ if ($barcode) {
                 $impossible => $$error{$impossible},
                 IMPOSSIBLE  => 1
             );
-            $noerror = 0;
+            $blocker = 1;
         }
-    
-  if ($issueconfirmed && $noerror) {
-    # we have no blockers for issuing and any issues needing confirmation have been resolved
-        AddIssue( $borrower, $barcode, $datedue, $cancelreserve );
-        $inprocess = 1;
-    }
-  elsif ($issueconfirmed){	# FIXME: Do something? Or is this to *intentionally* do nothing?
-  }
-  else {
-        my $noquestion = 1;
-#         Get the item title for more information
-    	my $getmessageiteminfo  = GetBiblioFromItemNumber(undef,$barcode);
-		if ($noerror) {
-			# only pass needsconfirmation to template if issuing is possible 
-        	foreach my $needsconfirmation ( keys %$question ) {
-        	    $template->param(
-        	        $needsconfirmation => $$question{$needsconfirmation},
-        	        getTitleMessageIteminfo => $getmessageiteminfo->{'title'},
-        	        NEEDSCONFIRMATION  => 1
-        	    );
-        	    $noquestion = 0;
-        	}
-			# Because of the weird conditional structure (empty elsif block),
-			# if we reached here, $issueconfirmed must be false.
-			# Also, since we moved inside the if ($noerror) conditional,
-			# this old chunky conditional can be simplified:
-   		    # if ( $noerror && ( $noquestion || $issueconfirmed ) ) {
-			if ($noquestion) {
-				AddIssue( $borrower, $barcode, $datedue );
-				$inprocess = 1;
-			}
-   	    }
-		$template->param(
-			 itemhomebranch => $getmessageiteminfo->{'homebranch'} ,	             
-			 duedatespec => $duedatespec,
-        );
+    if( !$blocker ){
+        my $confirm_required = 0;
+    	unless($issueconfirmed){
+            #  Get the item title for more information
+            my $getmessageiteminfo  = GetBiblioFromItemNumber(undef,$barcode);
+		    $template->param( itemhomebranch => $getmessageiteminfo->{'homebranch'} );
+
+		    # pass needsconfirmation to template if issuing is possible and user hasn't yet confirmed.
+       	    foreach my $needsconfirmation ( keys %$question ) {
+       	        $template->param(
+       	            $needsconfirmation => $$question{$needsconfirmation},
+       	            getTitleMessageIteminfo => $getmessageiteminfo->{'title'},
+       	            NEEDSCONFIRMATION  => 1
+       	        );
+       	        $confirm_required = 1;
+       	    }
+		}
+        unless($confirm_required) {
+            AddIssue( $borrower, $barcode, $datedue, $cancelreserve );
+			$inprocess = 1;
+            if($globalduedate && ! $stickyduedate && $duedatespec_allow ){
+                $duedatespec = $globalduedate->output();
+                $stickyduedate = 1;
+            }
+		}
     }
     
-# FIXME If the issue is confirmed, we launch another time borrdata2, now display the issue count after issue 
-        my ( $od, $issue, $fines ) = GetMemberIssuesAndFines( $borrowernumber );
-        $template->param(
-        issuecount   => $issue,
-        );
+    # FIXME If the issue is confirmed, we launch another time GetMemberIssuesAndFines, now display the issue count after issue 
+    my ( $od, $issue, $fines ) = GetMemberIssuesAndFines( $borrowernumber );
+    $template->param( issuecount   => $issue );
 }
 
 # reload the borrower info for the sake of reseting the flags.....
@@ -375,10 +370,10 @@ if ($borrowernumber) {
             $getreserv{waiting} = 1;
 #     genarate information displaying only waiting reserves
         $getWaitingReserveInfo{title}        = $getiteminfo->{'title'};
-        $getWaitingReserveInfo{biblionumber}   = $getiteminfo->{'biblionumber'};
-        $getWaitingReserveInfo{itemtype}    = $itemtypeinfo->{'description'};
-        $getWaitingReserveInfo{author}        = $getiteminfo->{'author'};
-        $getWaitingReserveInfo{reservedate}    = format_date( $num_res->{'reservedate'} );
+        $getWaitingReserveInfo{biblionumber} = $getiteminfo->{'biblionumber'};
+        $getWaitingReserveInfo{itemtype}     = $itemtypeinfo->{'description'};
+        $getWaitingReserveInfo{author}       = $getiteminfo->{'author'};
+        $getWaitingReserveInfo{reservedate}  = format_date( $num_res->{'reservedate'} );
         $getWaitingReserveInfo{waitingat}    = GetBranchName( $num_res->{'branchcode'} );
       if($num_res->{'branchcode'} eq $branch){ $getWaitingReserveInfo{waitinghere} = 1; }
         }
@@ -489,14 +484,6 @@ if ($borrower) {
     else {
         @previousissues = sort { $b->{'date_due'} cmp $a->{'date_due'} } @previousissues;
     }
-    my $i = 1;
-    foreach my $book ( @todaysissues ) {
-        $book->{'togglecolor'} = ( ++$i % 2 ) ? 0 : 1 ;
-    }
-    $i = 1;
-    foreach my $book ( @previousissues ) {
-        $book->{'togglecolor'} = ( ++$i % 2 ) ? 0 : 1 ;
-    }
 }
 
 #### ADDED BY JF FOR COUNTS BY ITEMTYPE RULES
@@ -541,7 +528,7 @@ my %labels;
 my $CGIselectborrower;
 if ($borrowerslist) {
     foreach (
-        sort {(lc $a->{'surname'} cmp lc $b->{'surname'} ?lc $a->{'surname'} cmp lc $b->{'surname'}:lc $a->{'firstname'} cmp lc $b->{'firstname'})
+        sort {(lc $a->{'surname'} cmp lc $b->{'surname'} || lc $a->{'firstname'} cmp lc $b->{'firstname'})
         } @$borrowerslist
       )
     {
@@ -646,12 +633,12 @@ foreach $flag ( sort keys %$flags ) {
 my $amountold = $borrower->{flags}->{'CHARGES'}->{'message'} || 0;
 my @temp = split( /\$/, $amountold );
 
-    if ( $borrower->{'category_type'} eq 'C') {
-        my  ( $catcodes, $labels ) =  GetborCatFromCatType( 'A', 'WHERE category_type = ?' );
-        my $cnt = scalar(@$catcodes);
-        $template->param( 'CATCODE_MULTI' => 1) if $cnt > 1;
-        $template->param( 'catcode' =>    $catcodes->[0])  if $cnt == 1;
-    }
+if ( $borrower->{'category_type'} eq 'C') {
+    my  ( $catcodes, $labels ) =  GetborCatFromCatType( 'A', 'WHERE category_type = ?' );
+    my $cnt = scalar(@$catcodes);
+    $template->param( 'CATCODE_MULTI' => 1) if $cnt > 1;
+    $template->param( 'catcode' =>    $catcodes->[0])  if $cnt == 1;
+}
 
 my $CGIorganisations;
 my $member_of_institution;
@@ -675,7 +662,6 @@ if ( C4::Context->preference("memberofinstitution") ) {
 
 $amountold = $temp[1];
 
-
 $template->param(
     issued_itemtypes_count_loop => $issued_itemtypes_loop,
     findborrower                => $findborrower,
@@ -697,12 +683,13 @@ $template->param(
     emailpro          => $borrower->{'emailpro'},
     borrowernotes     => $borrower->{'borrowernotes'},
     city              => $borrower->{'city'},
-    zipcode	      => $borrower->{'zipcode'},
+    zipcode	          => $borrower->{'zipcode'},
     phone             => $borrower->{'phone'} || $borrower->{'mobile'},
     cardnumber        => $borrower->{'cardnumber'},
     amountold         => $amountold,
     barcode           => $barcode,
     stickyduedate     => $stickyduedate,
+    duedatespec       => $duedatespec,
     message           => $message,
     CGIselectborrower => $CGIselectborrower,
     todayissues       => \@todaysissues,
@@ -710,17 +697,10 @@ $template->param(
     inprocess         => $inprocess,
     memberofinstution => $member_of_institution,
     CGIorganisations  => $CGIorganisations,
-	is_child        => ($borrower->{'category_type'} eq 'C'),
-  circview => 1,
-  
+	is_child          => ($borrower->{'category_type'} eq 'C'),
+    circview => 1,
 );
 
-# set return date if stickyduedate
-if ($stickyduedate) {
-    $template->param(
-        duedatespec => $duedatespec,
-    );
-}
 
 #if ($branchcookie) {
 #$cookie=[$cookie, $branchcookie, $printercookie];
@@ -732,7 +712,7 @@ $template->param( picture => 1 ) if $picture;
 
 $template->param(
     debt_confirmed            => $debt_confirmed,
-    SpecifyDueDate            => C4::Context->preference("SpecifyDueDate"),
+    SpecifyDueDate            => $duedatespec_allow,
     CircAutocompl             => C4::Context->preference("CircAutocompl"),
 	AllowRenewalLimitOverride => C4::Context->preference("AllowRenewalLimitOverride"),
     dateformat                => C4::Context->preference("dateformat"),

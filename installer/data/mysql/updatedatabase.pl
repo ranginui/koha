@@ -1993,7 +1993,7 @@ if ( C4::Context->preference('Version') < TransformToNum($DBversion) ) {
             ADD item_level_request tinyint(4) NOT NULL default 0
     ");
 
-    print "Upgrade to $DBversion done (add hold_fill_targets table and a column to tmp_holdsqueue)";
+    print "Upgrade to $DBversion done (add hold_fill_targets table and a column to tmp_holdsqueue)\n";
     SetVersion($DBversion);
 }
 
@@ -2029,7 +2029,7 @@ if ( C4::Context->preference('Version') < TransformToNum($DBversion) ) {
         print STDERR "After the upgrade to $DBversion, there are still $num_bad_issuedates loan(s) with a NULL (blank) loan date. ",
                      "Please check the issues table in your database.";
     }
-    print "Upgrade to $DBversion done (bug 2582: set null issues.issuedate to lastreneweddate)";
+    print "Upgrade to $DBversion done (bug 2582: set null issues.issuedate to lastreneweddate)\n";
     SetVersion($DBversion);
 }
 
@@ -2039,6 +2039,80 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     print "Upgrade to $DBversion done (add new syspref)\n";
     SetVersion ($DBversion);
 }
+
+$DBversion = '3.01.00.004';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('OPACDisplayRequestPriority','0','Show patrons the priority level on holds in the OPAC','','YesNo')");
+    print "Upgrade to $DBversion done (added OPACDisplayRequestPriority system preference)\n";
+    SetVersion ($DBversion);
+}
+
+$DBversion = '3.01.00.005';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("
+        INSERT INTO `letter` (module, code, name, title, content)
+        VALUES('reserves', 'HOLD', 'Hold Available for Pickup', 'Hold Available for Pickup at <<branches.branchname>>', 'Dear <<borrowers.firstname>> <<borrowers.surname>>,\r\n\r\nYou have a hold available for pickup as of <<reserves.waitingdate>>:\r\n\r\nTitle: <<biblio.title>>\r\nAuthor: <<biblio.author>>\r\nCopy: <<items.copynumber>>\r\nLocation: <<branches.branchname>>\r\n<<branches.branchaddress1>>\r\n<<branches.branchaddress2>>\r\n<<branches.branchaddress3>>')
+    ");
+    $dbh->do("INSERT INTO `message_attributes` (message_attribute_id, message_name, takes_days) values(4, 'Hold Filled', 0)");
+    $dbh->do("INSERT INTO `message_transports` (message_attribute_id, message_transport_type, is_digest, letter_module, letter_code) values(4, 'sms', 0, 'reserves', 'HOLD')");
+    $dbh->do("INSERT INTO `message_transports` (message_attribute_id, message_transport_type, is_digest, letter_module, letter_code) values(4, 'email', 0, 'reserves', 'HOLD')");
+    print "Upgrade to $DBversion done (Add letter for holds notifications)\n";
+    SetVersion ($DBversion);
+}
+
+$DBversion = '3.01.00.006';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("ALTER TABLE `biblioitems` ADD KEY issn (issn)");
+    print "Upgrade to $DBversion done (add index on biblioitems.issn)\n";
+    SetVersion ($DBversion);
+}
+
+$DBversion = "3.01.00.007";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("UPDATE `systempreferences` SET options='70|10' WHERE variable='intranetmainUserblock'");
+    $dbh->do("UPDATE `systempreferences` SET options='70|10' WHERE variable='intranetuserjs'");
+    $dbh->do("UPDATE `systempreferences` SET options='70|10' WHERE variable='opacheader'");
+    $dbh->do("UPDATE `systempreferences` SET options='70|10' WHERE variable='OpacMainUserBlock'");
+    $dbh->do("UPDATE `systempreferences` SET options='70|10' WHERE variable='OpacNav'");
+    $dbh->do("UPDATE `systempreferences` SET options='70|10' WHERE variable='opacuserjs'");
+    $dbh->do("UPDATE `systempreferences` SET options='30|10', type='Textarea' WHERE variable='OAI-PMH:Set'");
+    $dbh->do("UPDATE `systempreferences` SET options='50' WHERE variable='intranetstylesheet'");
+    $dbh->do("UPDATE `systempreferences` SET options='50' WHERE variable='intranetcolorstylesheet'");
+    $dbh->do("UPDATE `systempreferences` SET options='10' WHERE variable='globalDueDate'");
+    $dbh->do("UPDATE `systempreferences` SET type='Integer' WHERE variable='numSearchResults'");
+    $dbh->do("UPDATE `systempreferences` SET type='Integer' WHERE variable='OPACnumSearchResults'");
+    $dbh->do("UPDATE `systempreferences` SET type='Integer' WHERE variable='ReservesMaxPickupDelay'");
+    $dbh->do("UPDATE `systempreferences` SET type='Integer' WHERE variable='TransfersMaxDaysWarning'");
+    $dbh->do("UPDATE `systempreferences` SET type='Integer' WHERE variable='StaticHoldsQueueWeight'");
+    $dbh->do("UPDATE `systempreferences` SET type='Integer' WHERE variable='holdCancelLength'");
+    $dbh->do("UPDATE `systempreferences` SET type='Integer' WHERE variable='XISBNDailyLimit'");
+    $dbh->do("UPDATE `systempreferences` SET type='Float' WHERE variable='gist'");
+    $dbh->do("UPDATE `systempreferences` SET type='Free' WHERE variable='BakerTaylorUsername'");
+    $dbh->do("UPDATE `systempreferences` SET type='Free' WHERE variable='BakerTaylorPassword'");
+    $dbh->do("UPDATE `systempreferences` SET type='Textarea', options='70|10' WHERE variable='ISBD'");
+    $dbh->do("UPDATE `systempreferences` SET type='Textarea', options='70|10', explanation='Enter a specific hash for NoZebra indexes. Enter : \\\'indexname\\\' => \\\'100a,245a,500*\\\',\\\'index2\\\' => \\\'...\\\'' WHERE variable='NoZebraIndexes'");
+    print "Upgrade to $DBversion done (fix display of many sysprefs)\n";
+    SetVersion ($DBversion);
+}
+
+$DBversion = '3.01.00.008';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+
+    $dbh->do("CREATE TABLE branch_transfer_limits (
+                          limitId int(8) NOT NULL auto_increment,
+                          toBranch varchar(4) NOT NULL,
+                          fromBranch varchar(4) NOT NULL,
+                          itemtype varchar(4) NOT NULL,
+                          PRIMARY KEY  (limitId)
+                          ) ENGINE=InnoDB DEFAULT CHARSET=utf8"
+                        );
+
+    $dbh->do("INSERT INTO `systempreferences` ( `variable` , `value` , `options` , `explanation` , `type` ) VALUES ( 'UseBranchTransferLimits', '0', '', 'If ON, Koha will will use the rules defined in branch_transfer_limits to decide if an item transfer should be allowed.', 'YesNo')");
+
+    print "Upgrade to $DBversion done (added branch_transfer_limits table and UseBranchTransferLimits system preference)\n";
+    SetVersion ($DBversion);
+}
+
 
 =item DropAllForeignKeys($table)
 

@@ -479,16 +479,22 @@ with this method.
 
 =cut
 
-# FIXME - The preferences aren't likely to change over the lifetime of
-# the script (and things might break if they did change), so perhaps
-# this function should cache the results it finds.
+# FIXME: running this under mod_perl will require a means of
+# flushing the caching mechanism.
+
+my %sysprefs;
+
 sub preference {
     my $self = shift;
     my $var = shift;        # The system preference to return
     my $retval;            # Return value
+    
+    if (exists $sysprefs{$var}) {
+        return $sysprefs{$var};
+    }
     if ($usecache) {
-	$retval = $cache->get_from_cache("Koha:preference:$var");
-	return $retval;
+	$sysprefs($var) = $cache->get_from_cache("Koha:preference:$var");
+	return $sysprefs($var);
     }
     my $dbh = C4::Context->dbh or return 0;
     my $sql = <<'END_SQL';
@@ -497,12 +503,11 @@ sub preference {
       WHERE    variable=?
       LIMIT    1
 END_SQL
-    $retval = $dbh->selectrow_array( $sql, {}, $var );return $retval if $retval;
+    $sysprefs($var) = $dbh->selectrow_array( $sql, {}, $var );
     if ($usecache) {
-	$cache->set_in_cache("Koha:preference:$var", $retval);
+	$cache->set_in_cache("Koha:preference:$var", $syspref($var));
     }
-    print "oi oi $retval";
-    return $retval;
+    return $sysprefs{$var};
 }
 
 sub boolean_preference ($) {
@@ -510,6 +515,20 @@ sub boolean_preference ($) {
     my $var = shift;        # The system preference to return
     my $it = preference($self, $var);
     return defined($it)? C4::Boolean::true_p($it): undef;
+}
+
+=item clear_syspref_cache
+
+  C4::Context->clear_syspref_cache();
+
+  cleans the internal cache of sysprefs. Please call this method if
+  you update the systempreferences table. Otherwise, your new changes
+  will not be seen by this process.
+
+=cut
+
+sub clear_syspref_cache {
+    %sysprefs = ();
 }
 
 # AUTOLOAD
@@ -706,9 +725,8 @@ sub dbh
     my $self = shift;
     my $sth;
 
-    if (defined($context->{"dbh"})) {
-        $sth=$context->{"dbh"}->prepare("select 1");
-        return $context->{"dbh"} if (defined($sth->execute));
+    if (defined($context->{"dbh"}) && $context->{"dbh"}->ping()) {
+	return $context->{"dbh"};
     }
 
     # No database handle or it died . Create one.
