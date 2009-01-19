@@ -65,9 +65,11 @@ my ($template, $loggedinuser, $cookie)
 					debug => 1,
 					});
 
-$template->param(SCRIPT_NAME => $ENV{'SCRIPT_NAME'},
-						uploadmarc => $fileID);
-
+$template->param(
+    SCRIPT_NAME => $ENV{'SCRIPT_NAME'},
+    uploadmarc  => $fileID,
+    "syntax_" . lc C4::Context->preference('marcflavour') => 1,
+    );
 my %cookies = parse CGI::Cookie($cookie);
 my $sessionID = $cookies{'CGISESSID'}->value;
 if ($completedJobID) {
