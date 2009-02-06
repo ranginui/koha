@@ -493,8 +493,8 @@ sub preference {
         return $sysprefs{$var};
     }
     if ($usecache) {
-	$sysprefs($var) = $cache->get_from_cache("Koha:preference:$var");
-	return $sysprefs($var);
+	$sysprefs{$var} = $cache->get_from_cache("Koha:preference:$var");
+	return $sysprefs{$var};
     }
     my $dbh = C4::Context->dbh or return 0;
     my $sql = <<'END_SQL';
@@ -503,9 +503,9 @@ sub preference {
       WHERE    variable=?
       LIMIT    1
 END_SQL
-    $sysprefs($var) = $dbh->selectrow_array( $sql, {}, $var );
+    $sysprefs{$var} = $dbh->selectrow_array( $sql, {}, $var );
     if ($usecache) {
-	$cache->set_in_cache("Koha:preference:$var", $syspref($var));
+	$cache->set_in_cache("Koha:preference:$var", $sysprefs{$var});
     }
     return $sysprefs{$var};
 }
