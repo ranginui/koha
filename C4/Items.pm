@@ -978,38 +978,50 @@ offset & size can be used to retrieve only a part of the whole listing (defaut b
 sub GetItemsForInventory {
     my ( $minlocation, $maxlocation,$location, $itemtype, $datelastseen, $branch, $offset, $size ) = @_;
     my $dbh = C4::Context->dbh;
+    my ( @bind_params, @where_strings );
 
     my $query = <<'END_SQL';
 SELECT itemnumber, barcode, itemcallnumber, title, author, biblio.biblionumber, datelastseen
 FROM items
   LEFT JOIN biblio ON items.biblionumber = biblio.biblionumber
   LEFT JOIN biblioitems on items.biblionumber = biblioitems.biblionumber
-WHERE itemcallnumber >= ?
-  AND itemcallnumber <= ?
 END_SQL
-    my @bind_params = ( $minlocation, $maxlocation );
+
+    if ($minlocation) {
+        push @where_strings, 'itemcallnumber >= ?';
+        push @bind_params, $minlocation;
+    }
+
+    if ($maxlocation) {
+        push @where_strings, 'itemcallnumber <= ?';
+        push @bind_params, $maxlocation;
+    }
 
     if ($datelastseen) {
         $datelastseen = format_date_in_iso($datelastseen);  
-        $query .= ' AND (datelastseen < ? OR datelastseen IS NULL) ';
+        push @where_strings, '(datelastseen < ? OR datelastseen IS NULL)';
         push @bind_params, $datelastseen;
     }
 
     if ( $location ) {
-        $query.= ' AND items.location = ? ';
+        push @where_strings, 'items.location = ?';
         push @bind_params, $location;
     }
     
     if ( $branch ) {
-        $query.= ' AND items.homebranch = ? ';
+        push @where_strings, 'items.homebranch = ?';
         push @bind_params, $branch;
     }
     
     if ( $itemtype ) {
-        $query.= ' AND biblioitems.itemtype = ? ';
+        push @where_strings, 'biblioitems.itemtype = ?';
         push @bind_params, $itemtype;
     }
 
+    if ( @where_strings ) {
+        $query .= 'WHERE ';
+        $query .= join ' AND ', @where_strings;
+    }
     $query .= ' ORDER BY itemcallnumber, title';
     my $sth = $dbh->prepare($query);
     $sth->execute( @bind_params );
@@ -1184,14 +1196,29 @@ If this is set, it is set to C<One Order>.
 sub GetItemsInfo {
     my ( $biblionumber, $type ) = @_;
     my $dbh   = C4::Context->dbh;
-    my $query = "SELECT items.*,biblio.*,biblioitems.volume,biblioitems.number,biblioitems.itemtype,biblioitems.isbn,biblioitems.issn,biblioitems.publicationyear,biblioitems.publishercode,biblioitems.volumedate,biblioitems.volumedesc,biblioitems.lccn,biblioitems.url,items.notforloan as itemnotforloan
-                 FROM items 
-                 LEFT JOIN biblio ON biblio.biblionumber = items.biblionumber
-                 LEFT JOIN biblioitems ON biblioitems.biblioitemnumber = items.biblioitemnumber";
-    $query .=  (C4::Context->preference('item-level_itypes')) ?
-                     " LEFT JOIN itemtypes on items.itype = itemtypes.itemtype "
-                    : " LEFT JOIN itemtypes on biblioitems.itemtype = itemtypes.itemtype ";
-    $query .= "WHERE items.biblionumber = ? ORDER BY items.dateaccessioned desc" ;
+    # note biblioitems.* must be avoided to prevent large marc and marcxml fields from killing performance.
+    my $query = "
+    SELECT items.*,
+           biblio.*,
+           biblioitems.volume,
+           biblioitems.number,
+           biblioitems.itemtype,
+           biblioitems.isbn,
+           biblioitems.issn,
+           biblioitems.publicationyear,
+           biblioitems.publishercode,
+           biblioitems.volumedate,
+           biblioitems.volumedesc,
+           biblioitems.lccn,
+           biblioitems.url,
+           items.notforloan as itemnotforloan,
+           itemtypes.description
+     FROM items
+     LEFT JOIN biblio      ON      biblio.biblionumber     = items.biblionumber
+     LEFT JOIN biblioitems ON biblioitems.biblioitemnumber = items.biblioitemnumber
+     LEFT JOIN itemtypes   ON   itemtypes.itemtype         = "
+     . (C4::Context->preference('item-level_itypes') ? 'items.itype' : 'biblioitems.itemtype');
+    $query .= " WHERE items.biblionumber = ? ORDER BY items.dateaccessioned desc" ;
     my $sth = $dbh->prepare($query);
     $sth->execute($biblionumber);
     my $i = 0;
@@ -1309,7 +1336,6 @@ sub GetItemsInfo {
         $results[$i] = $data;
         $i++;
     }
-    $sth->finish;
 	if($serial) {
 		return( sort { ($b->{'publisheddate'} || $b->{'enumchron'}) cmp ($a->{'publisheddate'} || $a->{'enumchron'}) } @results );
 	} else {
@@ -1521,7 +1547,11 @@ sub GetMarcItem {
 
     # Tack on 'items.' prefix to column names so that TransformKohaToMarc will work.
     # Also, don't emit a subfield if the underlying field is blank.
-    my $mungeditem = { map {  $itemrecord->{$_} ne '' ? ("items.$_" => $itemrecord->{$_}) : ()  } keys %{ $itemrecord } };
+    my $mungeditem = { 
+        map {  
+            defined($itemrecord->{$_}) && $itemrecord->{$_} ne '' ? ("items.$_" => $itemrecord->{$_}) : ()  
+        } keys %{ $itemrecord } 
+    };
     my $itemmarc = TransformKohaToMarc($mungeditem);
 
     my $unlinked_item_subfields = _parse_unlinked_item_subfields_from_xml($mungeditem->{'items.more_subfields_xml'});

@@ -265,7 +265,12 @@ if ( $template_type eq 'advsearch' ) {
     
     my $secondary_servers_loop;# = displaySecondaryServers();
     $template->param(outer_sup_servers_loop => $secondary_servers_loop,);
-    
+
+    # set the default sorting
+    my $default_sort_by = C4::Context->preference('defaultSortField')."_".C4::Context->preference('defaultSortOrder')
+        if (C4::Context->preference('OPACdefaultSortField') && C4::Context->preference('OPACdefaultSortOrder'));
+    $template->param($default_sort_by => 1);
+
     # determine what to display next to the search boxes (ie, boolean option
     # shouldn't appear on the first one, scan indexes should, adding a new
     # box should only appear on the last, etc.
@@ -529,6 +534,9 @@ for (my $i=0;$i<@servers;$i++) {
             } 
             exit;
         }
+
+
+
         if ($hits) {
             $template->param(total => $hits);
             my $limit_cgi_not_availablity = $limit_cgi;
@@ -575,6 +583,9 @@ for (my $i=0;$i<@servers;$i++) {
                 }
                         
             }
+
+
+
             # now, show twenty pages, with the current one smack in the middle
             else {
                 for (my $i=$current_page_number; $i<=($current_page_number + 20 );$i++) {
@@ -592,10 +603,20 @@ for (my $i=0;$i<@servers;$i++) {
                                 previous_page_offset => $previous_page_offset) unless $pages < 2;
             $template->param(   next_page_offset => $next_page_offset) unless $pages eq $current_page_number;
         }
+
+
+
+
+
         # no hits
         else {
             $template->param(searchdesc => 1,query_desc => $query_desc,limit_desc => $limit_desc);
         }
+
+
+
+
+
     } # end of the if local
 
     # asynchronously search the authority server

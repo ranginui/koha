@@ -86,7 +86,7 @@ strong em {
 	font-style : italic;
 }
 
-em {
+em, cite {
 	font-style : italic;
 }
 
@@ -1083,7 +1083,7 @@ td input.approve {
 .dialog input:hover {
  	background-color : #ffc;
  }
- 
+
 div.alert {
   background : #FFC url(../../img/alert-bg.gif) repeat-x left 0;
   text-align : center;
@@ -1405,6 +1405,16 @@ input[type=reset], input[type=button], input.submit, button.submit {
 
 input[type=reset]:active, input[type=button]:active, input.submit:active, button.submit:active {
 	border : 1px inset #999999;
+}
+
+ul li input.submit {
+	font-size : 87%;
+	padding : 2px;
+}
+
+input.warning {
+    background : #FFF url(../../img/famfamfam/silk/error.png) no-repeat 4px center;
+	padding : 0.25em 0.25em 0.25em 25px;
 }
 
 .searchhighlightblob {

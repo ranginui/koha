@@ -19,7 +19,7 @@
 
 # pragma
 use strict;
-# use warnings;  # FIXME: really.
+use warnings;
 
 # external modules
 use CGI;
@@ -70,6 +70,10 @@ my $cardnumber     = $input->param('cardnumber');
 my $check_member   = $input->param('check_member');
 my $name_city      = $input->param('name_city');
 my $nodouble       = $input->param('nodouble');
+$nodouble = 1 if $op eq 'modify'; # FIXME hack to represent fact that if we're
+                                  # modifying an existing patron, it ipso facto
+                                  # isn't a duplicate.  Marking FIXME because this
+                                  # script needs to be refactored.
 my $select_city    = $input->param('select_city');
 my $nok            = $input->param('nok');
 my $guarantorinfo  = $input->param('guarantorinfo');
@@ -95,7 +99,7 @@ foreach (@field_check) {
 	$template->param( "mandatory$_" => 1);    
 }
 $template->param("add"=>1) if ($op eq 'add');
-$template->param("checked" => 1) if ($nodouble eq 1);
+$template->param("checked" => 1) if (defined($nodouble) && $nodouble eq 1);
 ($borrower_data = GetMember($borrowernumber,'borrowernumber')) if ($op eq 'modify' or $op eq 'save');
 my $categorycode  = $input->param('categorycode') || $borrower_data->{'categorycode'};
 my $category_type = $input->param('category_type');
@@ -111,12 +115,15 @@ $category_type="A" unless $category_type; # FIXME we should display a error mess
 # if a add or modify is requested => check validity of data.
 %data = %$borrower_data if ($borrower_data);
 
+# initialize %newdata
 my %newdata;	# comes from $input->param()
 if ($op eq 'insert' || $op eq 'modify' || $op eq 'save') {
     my @names= ($borrower_data && $op ne 'save') ? keys %$borrower_data : $input->param();
     foreach my $key (@names) {
-        $newdata{$key} = $input->param($key) if (defined $input->param($key));
-        $newdata{$key} =~ s/\"/&quot;/gg unless $key eq 'borrowernotes' or $key eq 'opacnote';
+        if (defined $input->param($key)) {
+            $newdata{$key} = $input->param($key);
+            $newdata{$key} =~ s/\"/&quot;/g unless $key eq 'borrowernotes' or $key eq 'opacnote';
+        }
     }
     my $dateobject = C4::Dates->new();
     my $syspref = $dateobject->regexp();		# same syspref format for all 3 dates
@@ -139,8 +146,26 @@ if ($op eq 'insert' || $op eq 'modify' || $op eq 'save') {
     }
 }
 
+# remove keys from %newdata that ModMember() doesn't like
+{
+    my @keys_to_delete = qw(
+        BorrowerMandatoryField
+        category_type
+        check_member
+        destination
+        nodouble
+        op
+        save
+        select_roadtype
+        updtype
+    );
+    for (@keys_to_delete) {
+        delete($newdata{$_});
+    }
+}
+
 #############test for member being unique #############
-if ($op eq 'insert'){
+if (($op eq 'insert') and !$nodouble){
         my $category_type_send=$category_type if ($category_type eq 'I'); 
         my $check_category; # recover the category code of the doublon suspect borrowers
 			#   ($result,$categorycode) = checkuniquemember($collectivity,$surname,$firstname,$dateofbirth)
@@ -150,8 +175,10 @@ if ($op eq 'insert'){
 			($newdata{firstname}   ? $newdata{firstname}   : $data{firstname}  ),
 			($newdata{dateofbirth} ? $newdata{dateofbirth} : $data{dateofbirth})
 		);
-          
-  #   recover the category type if the borrowers is a doublon 
+        if(!$check_member){
+            $nodouble = 1;
+        }
+  #   recover the category type if the borrowers is a doublon
     if ($check_category) {
       my $tmpborrowercategory=GetBorrowercategory($check_category);
       $check_categorytype=$tmpborrowercategory->{'category_type'};
@@ -159,21 +186,21 @@ if ($op eq 'insert'){
 }
 
   #recover all data from guarantor address phone ,fax... 
-if (($category_type eq 'C' || $category_type eq 'P') and $guarantorid ne '' ){
+if (defined($guarantorid) and ($category_type eq 'C' || $category_type eq 'P') and $guarantorid ne '' ){
   my $guarantordata=GetMember($guarantorid);
   $guarantorinfo=$guarantordata->{'surname'}." , ".$guarantordata->{'firstname'};
-  if (($data{'contactname'} eq '' or $data{'contactname'} ne $guarantordata->{'surname'})) {
-    $data{'contactfirstname'}= $guarantordata->{'firstname'};
-    $data{'contactname'}     = $guarantordata->{'surname'};
-    $data{'contacttitle'}    = $guarantordata->{'title'};
+  if (!defined($data{'contactname'}) or $data{'contactname'} eq '' or $data{'contactname'} ne $guarantordata->{'surname'}) {
+    $newdata{'contactfirstname'}= $guarantordata->{'firstname'};
+    $newdata{'contactname'}     = $guarantordata->{'surname'};
+    $newdata{'contacttitle'}    = $guarantordata->{'title'};
 	  foreach (qw(streetnumber address streettype address2 zipcode city phone phonepro mobile fax email emailpro branchcode)) {
-		$data{$_} = $guarantordata->{$_};
+		$newdata{$_} = $guarantordata->{$_};
 	}
   }
 }
 
 ###############test to take the right zipcode and city name ##############
-if ($guarantorid eq '') {
+if (!defined($guarantorid) or $guarantorid eq '') {
     # set only if parameter was passed from the form
     $newdata{'city'}    = $input->param('city')    if defined($input->param('city'));
     $newdata{'zipcode'} = $input->param('zipcode') if defined($input->param('zipcode'));
@@ -235,9 +262,8 @@ if ($op eq 'modify' || $op eq 'insert' || $op eq 'save' ){
 }
 
 ###  Error checks should happen before this line.
-
 $nok = $nok || scalar(@errors);
-if ((!$nok) and ($op eq 'insert' or $op eq 'save')){
+if ((!$nok) and $nodouble and ($op eq 'insert' or $op eq 'save')){
 	$debug and warn "$op dates: " . join "\t", map {"$_: $newdata{$_}"} qw(dateofbirth dateenrolled dateexpiry);
 	if ($op eq 'insert'){
 		# we know it's not a duplicate borrowernumber or there would already be an error
@@ -283,7 +309,7 @@ if ((!$nok) and ($op eq 'insert' or $op eq 'save')){
 			delete $newdata{'password'};
 			delete $newdata{'userid'};
 		}
-		&ModMember(%newdata);    
+		&ModMember(%newdata);
         if (C4::Context->preference('ExtendedPatronAttributes') and $input->param('setting_extended_patron_attributes')) {
             C4::Members::Attributes::SetBorrowerAttributes($borrowernumber, $extended_patron_attributes);
         }
@@ -299,7 +325,7 @@ if ($delete){
 	exit;		# same as above
 }
 
-if ($nok){
+if ($nok or !$nodouble){
     $op="add" if ($op eq "insert");
     $op="modify" if ($op eq "save");
     %data=%newdata; 
@@ -328,8 +354,10 @@ if ($op eq "modify")  {
 }
 # my $cardnumber=$data{'cardnumber'};
 $data{'cardnumber'}=fixup_cardnumber($data{'cardnumber'}) if $op eq 'add';
-if ($data{'sex'} eq 'F'){
-    $template->param(female => 1);
+if(!defined($data{'sex'})){
+    $template->param( none => 1);
+} elsif($data{'sex'} eq 'F'){
+    $template->param( female => 1);
 } elsif ($data{'sex'} eq 'M'){
     $template->param(  male => 1);
 } else {
@@ -359,7 +387,9 @@ foreach (qw(C A S P I X)) {
 	foreach my $cat (@$categories){
 		push @categoryloop,{'categorycode' => $cat,
 			  'categoryname' => $labels->{$cat},
-			  'categorycodeselected' => ($cat eq $borrower_data->{'categorycode'} || $cat eq $categorycode),
+			  'categorycodeselected' => ((defined($borrower_data->{'categorycode'}) && 
+                                                     $cat eq $borrower_data->{'categorycode'}) 
+                                                     || (defined($categorycode) && $cat eq $categorycode)),
 		};
 	}
 	my %typehash;
@@ -371,9 +401,9 @@ foreach (qw(C A S P I X)) {
 $template->param('typeloop' => \@typeloop);
 
 # test in city
-$select_city=getidcity($data{'city'}) if ($guarantorid ne '0');
+$select_city=getidcity($data{'city'}) if defined $guarantorid and ($guarantorid ne '0');
 ($default_city=$select_city) if ($step eq 0);
-if ($select_city eq '' ){
+if (!defined($select_city) or $select_city eq '' ){
 	$default_city = &getidcity($data{'city'});
 }
 my($cityid);
@@ -414,7 +444,7 @@ my @relshipdata;
 while (@relationships) {
   my $relship = shift @relationships || '';
   my %row = ('relationship' => $relship);
-  if ($data{'relationship'} eq $relship) {
+  if (defined($data{'relationship'}) and $data{'relationship'} eq $relship) {
     $row{'selected'}=' selected';
   } else {
     $row{'selected'}='';
@@ -485,7 +515,7 @@ if (C4::Context->preference("memberofinstitution")){
         $org_labels{$organisation}=$organisations->{$organisation}->{'surname'};
     }
     $member_of_institution=1;
-    
+
     $CGIorganisations = CGI::scrolling_list( -id => 'organisations',
         -name     => 'organisations',
         -labels   => \%org_labels,
@@ -520,7 +550,7 @@ if ($nok) {
   
   #Formatting data for display    
   
-if ($data{'dateenrolled'} eq ''){
+if (!defined($data{'dateenrolled'}) or $data{'dateenrolled'} eq ''){
   $data{'dateenrolled'}=C4::Dates->today('iso');
 }
 if (C4::Context->preference('uppercasesurnames')) {
@@ -543,6 +573,7 @@ $template->param(%data);
 $template->param( "step_$step"  => 1) if $step;	# associate with step to know where u are
 $template->param(  step  => $step   ) if $step;	# associate with step to know where u are
 $template->param( debug  => $debug  ) if $debug;
+
 $template->param(
   BorrowerMandatoryField => C4::Context->preference("BorrowerMandatoryField"),#field to test with javascript
   category_type => $category_type,#to know the category type of the borrower
@@ -551,12 +582,12 @@ $template->param(
   "$category_type"  => 1,# associate with step to know where u are
   destination   => $destination,#to know wher u come from and wher u must go in redirect
   check_member    => $check_member,#to know if the borrower already exist(=>1) or not (=>0) 
-  flags   =>$data{'flags'},   
-  "op$op"   => 1,
+  "op$op"   => 1);
+
+$template->param(
   nodouble  => $nodouble,
-  borrowernumber  => $borrowernumber,#register number
-  "contacttitle_".$data{'contacttitle'} => "SELECTED" ,
-  guarantorid => $borrower_data ? $borrower_data->{'guarantorid'} : $guarantorid,
+  borrowernumber  => $borrowernumber, #register number
+  guarantorid => (defined($borrower_data->{'guarantorid'})) ? $borrower_data->{'guarantorid'} : $guarantorid,
   ethcatpopup => $ethcatpopup,
   relshiploop => \@relshipdata,
   citypopup => $citypopup,
@@ -574,6 +605,14 @@ $template->param(
   CGIorganisations => $CGIorganisations,
   NoUpdateLogin =>  $NoUpdateLogin
   );
+
+if(defined($data{'flags'})){
+  $template->param(flags=>$data{'flags'});
+}
+if(defined($data{'contacttitle'})){
+  $template->param("contacttitle_" . $data{'contacttitle'} => "SELECTED");
+}
+
   
 output_html_with_http_headers $input, $cookie, $template->output;
 

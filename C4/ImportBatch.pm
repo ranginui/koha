@@ -654,6 +654,8 @@ sub BatchRevertBibRecords {
             $num_items_deleted += BatchRevertItems($rowref->{'import_record_id'}, $rowref->{'matched_biblionumber'});
             SetImportRecordStatus($rowref->{'import_record_id'}, 'reverted');
         }
+        my $sth2 = $dbh->prepare_cached("UPDATE import_biblios SET matched_biblionumber = NULL WHERE import_record_id = ?");
+        $sth2->execute($rowref->{'import_record_id'});
     }
 
     $sth->finish();
@@ -813,7 +815,7 @@ sub GetImportBibliosRange {
 
     my $dbh = C4::Context->dbh;
     my $sth = $dbh->prepare_cached("SELECT title, author, isbn, issn, import_record_id, record_sequence,
-                                           status, overlay_status
+                                           matched_biblionumber, status, overlay_status
                                     FROM   import_records
                                     JOIN   import_biblios USING (import_record_id)
                                     WHERE  import_batch_id = ?
@@ -869,14 +871,13 @@ sub GetImportBatchStatus {
     my ($batch_id) = @_;
 
     my $dbh = C4::Context->dbh;
-    my $sth = $dbh->prepare("SELECT import_status FROM import_batches WHERE batch_id = ?");
+    my $sth = $dbh->prepare("SELECT import_status FROM import_batches WHERE import_batch_id = ?");
     $sth->execute($batch_id);
     my ($status) = $sth->fetchrow_array();
     $sth->finish();
-    return;
+    return $status;
 
 }
-
 
 =head2 SetImportBatchStatus
 

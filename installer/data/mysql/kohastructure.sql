@@ -522,13 +522,25 @@ DROP TABLE IF EXISTS `borrower_attributes`;
 CREATE TABLE `borrower_attributes` (
   `borrowernumber` int(11) NOT NULL,
   `code` varchar(10) NOT NULL,
-  `attribute` varchar(30) default NULL,
-  `password` varchar(30) default NULL,
+  `attribute` varchar(64) default NULL,
+  `password` varchar(64) default NULL,
   KEY `borrowernumber` (`borrowernumber`),
   KEY `code_attribute` (`code`, `attribute`),
   CONSTRAINT `borrower_attributes_ibfk_1` FOREIGN KEY (`borrowernumber`) REFERENCES `borrowers` (`borrowernumber`)
     ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `borrower_attributes_ibfk_2` FOREIGN KEY (`code`) REFERENCES `borrower_attribute_types` (`code`)
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `branch_item_rules` (
+  `branchcode` varchar(10) NOT NULL,
+  `itemtype` varchar(10) NOT NULL,
+  `holdallowed` tinyint(1) default NULL,
+  PRIMARY KEY  (`itemtype`,`branchcode`),
+  KEY `branch_item_rules_ibfk_2` (`branchcode`),
+  CONSTRAINT `branch_item_rules_ibfk_1` FOREIGN KEY (`itemtype`) REFERENCES `itemtypes` (`itemtype`)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `branch_item_rules_ibfk_2` FOREIGN KEY (`branchcode`) REFERENCES `branches` (`branchcode`)
     ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -672,8 +684,21 @@ DROP TABLE IF EXISTS `default_branch_circ_rules`;
 CREATE TABLE `default_branch_circ_rules` (
   `branchcode` VARCHAR(10) NOT NULL,
   `maxissueqty` int(4) default NULL,
+  `holdallowed` tinyint(1) default NULL,
   PRIMARY KEY (`branchcode`),
   CONSTRAINT `default_branch_circ_rules_ibfk_1` FOREIGN KEY (`branchcode`) REFERENCES `branches` (`branchcode`)
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `default_branch_item_rules`
+--
+
+CREATE TABLE `default_branch_item_rules` (
+  `itemtype` varchar(10) NOT NULL,
+  `holdallowed` tinyint(1) default NULL,
+  PRIMARY KEY  (`itemtype`),
+  CONSTRAINT `default_branch_item_rules_ibfk_1` FOREIGN KEY (`itemtype`) REFERENCES `itemtypes` (`itemtype`)
     ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -685,6 +710,7 @@ DROP TABLE IF EXISTS `default_circ_rules`;
 CREATE TABLE `default_circ_rules` (
     `singleton` enum('singleton') NOT NULL default 'singleton',
     `maxissueqty` int(4) default NULL,
+    `holdallowed` int(1) default NULL,
     PRIMARY KEY (`singleton`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -2153,7 +2179,7 @@ CREATE TABLE language_script_mapping (
 DROP TABLE IF EXISTS `permissions`;
 CREATE TABLE `permissions` (
   `module_bit` int(11) NOT NULL DEFAULT 0,
-  `code` varchar(30) DEFAULT NULL,
+  `code` varchar(64) DEFAULT NULL,
   `description` varchar(255) DEFAULT NULL,
   PRIMARY KEY  (`module_bit`, `code`),
   CONSTRAINT `permissions_ibfk_1` FOREIGN KEY (`module_bit`) REFERENCES `userflags` (`bit`)
@@ -2173,7 +2199,7 @@ DROP TABLE IF EXISTS `user_permissions`;
 CREATE TABLE `user_permissions` (
   `borrowernumber` int(11) NOT NULL DEFAULT 0,
   `module_bit` int(11) NOT NULL DEFAULT 0,
-  `code` varchar(30) DEFAULT NULL,
+  `code` varchar(64) DEFAULT NULL,
   CONSTRAINT `user_permissions_ibfk_1` FOREIGN KEY (`borrowernumber`) REFERENCES `borrowers` (`borrowernumber`)
     ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `user_permissions_ibfk_2` FOREIGN KEY (`module_bit`, `code`) REFERENCES `permissions` (`module_bit`, `code`)
@@ -2213,6 +2239,8 @@ CREATE TABLE `message_queue` (
   `borrowernumber` int(11) default NULL,
   `subject` text,
   `content` text,
+  `metadata` text DEFAULT NULL,
+  `letter_code` varchar(64) DEFAULT NULL,
   `message_transport_type` varchar(20) NOT NULL,
   `status` enum('sent','pending','failed','deleted') NOT NULL default 'pending',
   `time_queued` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
@@ -2311,6 +2339,21 @@ CREATE TABLE branch_transfer_limits (
     fromBranch varchar(4) NOT NULL,
     itemtype varchar(4) NOT NULL,  
     PRIMARY KEY  (limitId)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `item_circulation_alert_preferences`
+--
+
+DROP TABLE IF EXISTS `item_circulation_alert_preferences`;
+CREATE TABLE `item_circulation_alert_preferences` (
+  `id` int(11) NOT NULL auto_increment,
+  `branchcode` varchar(10) NOT NULL,
+  `categorycode` varchar(10) NOT NULL,
+  `item_type` varchar(10) NOT NULL,
+  `notification` varchar(16) NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `branchcode` (`branchcode`,`categorycode`,`item_type`, `notification`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

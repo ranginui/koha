@@ -216,7 +216,8 @@ my $lib2 = &GetSortDetails( "Bsort2", $data->{'sort2'} );
 
 # current issues
 #
-my ( $count, $issue ) = GetPendingIssues($borrowernumber);
+my $issue = GetPendingIssues($borrowernumber);
+my $count = scalar(@$issue);
 my $roaddetails = &GetRoadTypeDetails( $data->{'streettype'} );
 my $today       = POSIX::strftime("%Y-%m-%d", localtime);	# iso format
 my @issuedata;
@@ -350,9 +351,9 @@ if (C4::Context->preference('ExtendedPatronAttributes')) {
 }
 
 $template->param(
-	detailview => 1,
+    detailview => 1,
     AllowRenewalLimitOverride => C4::Context->preference("AllowRenewalLimitOverride"),
-  DHTMLcalendar_dateformat=>C4::Dates->DHTMLcalendar(), 
+    DHTMLcalendar_dateformat=>C4::Dates->DHTMLcalendar(),
     roaddetails      => $roaddetails,
     borrowernumber   => $borrowernumber,
     categoryname	=> $data->{'description'},

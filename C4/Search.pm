@@ -1262,7 +1262,7 @@ sub searchResults {
         # add imageurl to itemtype if there is one
         $oldbiblio->{imageurl} = getitemtypeimagelocation( 'opac', $itemtypes{ $oldbiblio->{itemtype} }->{imageurl} );
 
-        $oldbiblio->{'authorised_value_images'}  = C4::Items::get_authorised_value_images( C4::Biblio::get_biblio_authorised_values( $oldbiblio->{'biblionumber'} ) );
+        $oldbiblio->{'authorised_value_images'}  = C4::Items::get_authorised_value_images( C4::Biblio::get_biblio_authorised_values( $oldbiblio->{'biblionumber'}, $marcrecord ) );
         (my $aisbn) = $oldbiblio->{isbn} =~ /([\d-]*[X]*)/;
         $aisbn =~ s/-//g;
         $oldbiblio->{amazonisbn} = $aisbn;
@@ -1492,7 +1492,7 @@ s/\[(.?.?.?.?)$tagsubf(.*?)]/$1$subfieldvalue$2\[$1$tagsubf$2]/g;
 
         # XSLT processing of some stuff
         if (C4::Context->preference("XSLTResultsDisplay") && !$scan) {
-            my $newxmlrecord = XSLTParse4Display($oldbiblio->{biblionumber},C4::Context->config('opachtdocs')."/prog/en/xslt/MARC21slim2OPACResults.xsl");
+            my $newxmlrecord = XSLTParse4Display($oldbiblio->{biblionumber}, $marcrecord, C4::Context->config('opachtdocs')."/prog/en/xslt/MARC21slim2OPACResults.xsl");
             $oldbiblio->{XSLTResultsRecord} = $newxmlrecord;
         }
 
@@ -1947,15 +1947,13 @@ sub NZorder {
             my ( $biblionumber, $title ) = split /,/, $_;
             my $record = GetMarcBiblio($biblionumber);
             my $callnumber;
-            my ( $callnumber_tag, $callnumber_subfield ) =
-              GetMarcFromKohaField( $dbh, 'items.itemcallnumber' );
-            ( $callnumber_tag, $callnumber_subfield ) =
-              GetMarcFromKohaField('biblioitems.callnumber')
-              unless $callnumber_tag;
+            my $frameworkcode = GetFrameworkCode($biblionumber);
+            my ( $callnumber_tag, $callnumber_subfield ) = GetMarcFromKohaField(  'items.itemcallnumber', $frameworkcode);
+               ( $callnumber_tag, $callnumber_subfield ) = GetMarcFromKohaField('biblioitems.callnumber', $frameworkcode)
+                unless $callnumber_tag;
             if ( C4::Context->preference('marcflavour') eq 'UNIMARC' ) {
                 $callnumber = $record->subfield( '200', 'f' );
-            }
-            else {
+            } else {
                 $callnumber = $record->subfield( '100', 'a' );
             }
 
@@ -2169,8 +2167,8 @@ sub ModBiblios {
         $tag = $tag . $subfield;
         undef $subfield;
     }
-    my ( $bntag,   $bnsubf )   = GetMarcFromKohaField('biblio.biblionumber');
-    my ( $itemtag, $itemsubf ) = GetMarcFromKohaField('items.itemnumber');
+    my ( $bntag,   $bnsubf )   = GetMarcFromKohaField('biblio.biblionumber', '');
+    my ( $itemtag, $itemsubf ) = GetMarcFromKohaField('items.itemnumber', '');
     if ($tag eq $itemtag) {
         # do not allow the embedded item tag to be 
         # edited from here

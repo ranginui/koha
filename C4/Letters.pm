@@ -502,8 +502,7 @@ sub parseletter {
     $sth->execute;
     while ( ( my $field ) = $sth->fetchrow_array ) {
         my $replacefield = "<<$table.$field>>";
-        my $replacedby   = $values->{$field};
-
+        my $replacedby   = $values->{$field} || '';
         $letter->{title}   =~ s/$replacefield/$replacedby/g;
         $letter->{content} =~ s/$replacefield/$replacedby/g;
     }
@@ -545,9 +544,9 @@ sub EnqueueLetter {
     my $dbh       = C4::Context->dbh();
     my $statement = << 'ENDSQL';
 INSERT INTO message_queue
-( borrowernumber, subject, content, message_transport_type, status, time_queued, to_address, from_address, content_type )
+( borrowernumber, subject, content, metadata, letter_code, message_transport_type, status, time_queued, to_address, from_address, content_type )
 VALUES
-( ?,              ?,       ?,       ?,                      ?,      NOW(),       ?,          ?,            ? )
+( ?,              ?,       ?,       ?,        ?,           ?,                      ?,      NOW(),       ?,          ?,            ? )
 ENDSQL
 
     my $sth    = $dbh->prepare($statement);
@@ -555,6 +554,8 @@ ENDSQL
         $params->{'borrowernumber'},              # borrowernumber
         $params->{'letter'}->{'title'},           # subject
         $params->{'letter'}->{'content'},         # content
+        $params->{'letter'}->{'metadata'} || '',  # metadata
+        $params->{'letter'}->{'code'}     || '',  # letter_code
         $params->{'message_transport_type'},      # message_transport_type
         'pending',                                # status
         $params->{'to_address'},                  # to_address

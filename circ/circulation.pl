@@ -93,7 +93,7 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user (
         query           => $query,
         type            => "intranet",
         authnotrequired => 0,
-        flagsrequired   => { circulate => 1 },
+        flagsrequired   => { circulate => 'circulate_remaining_permissions' },
     }
 );
 
@@ -439,7 +439,7 @@ my @issued_itemtypes_count_loop;
 
 if ($borrower) {
 # get each issue of the borrower & separate them in todayissues & previous issues
-    my ($countissues,$issueslist) = GetPendingIssues($borrower->{'borrowernumber'});
+    my ($issueslist) = GetPendingIssues($borrower->{'borrowernumber'});
 
     # split in 2 arrays for today & previous
     foreach my $it ( @$issueslist ) {
@@ -499,7 +499,7 @@ FROM issuingrules
   WHERE categorycode=?
 " );
 #my @issued_itemtypes_count;  # huh?
-$issueqty_sth->execute("*");	# FIXME: Why have a WHERE clause at all with a hardcoded "*"?
+$issueqty_sth->execute("*");	# This is a literal asterisk, not a wildcard.
 
 while ( my $data = $issueqty_sth->fetchrow_hashref() ) {
 
@@ -542,6 +542,7 @@ if ($borrowerslist) {
         -id       => 'borrowernumber',
         -values   => \@values,
         -labels   => \%labels,
+	-onclick  => "window.location = '/cgi-bin/koha/circ/circulation.pl?borrowernumber=' + this.value;",
         -size     => 7,
         -tabindex => '',
         -multiple => 0

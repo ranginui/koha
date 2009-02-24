@@ -330,7 +330,7 @@ sub plugin {
         my $startfrom      = $query->param('startfrom');
         my $resultsperpage = $query->param('resultsperpage') || 20;
         my $orderby;
-        my ( $errors, $results, $total_hits ) = SimpleSearch($search, $startfrom, $resultsperpage );
+        my ( $errors, $results, $total_hits ) = SimpleSearch($search, $startfrom * $resultsperpage, $resultsperpage );
         my $total = scalar(@$results);
 
         #        warn " biblio count : ".$total;
@@ -349,17 +349,15 @@ sub plugin {
         # multi page display gestion
         my $displaynext = 0;
         my $displayprev = $startfrom;
-        if ( ( $total - ( ( $startfrom + 1 ) * ($resultsperpage) ) ) > 0 ) {
+
+        if( ( $total_hits - ( ( $startfrom + 1 ) * ($resultsperpage) ) ) > 0 ) {
             $displaynext = 1;
         }
         my @arrayresults;
         my @field_data = ($search);
          for (
-             my $i = $startfrom * $resultsperpage ;
-             $i < (( $startfrom * $resultsperpage + $resultsperpage  < scalar(@$results))
-                 ? $startfrom * $resultsperpage + $resultsperpage
-                 : scalar(@$results)
-             ) ;
+             my $i = 0 ;
+             $i < $resultsperpage ;
              $i++
            )
          {
@@ -414,11 +412,10 @@ sub plugin {
         my $from = $startfrom * $resultsperpage + 1;
         my $to;
 
-        if ( $total < ( ( $startfrom + 1 ) * $resultsperpage ) ) {
-            $to = $total;
-        }
-        else {
-            $to = ( ( $startfrom + 1 ) * $resultsperpage );
+        if ( $total_hits < $from + $resultsperpage ) {
+            $to = $total_hits;
+        }else{
+            $to = $from + $resultsperpage ;
         }
         my $defaultview =
           'BiblioDefaultView' . C4::Context->preference('BiblioDefaultView');
@@ -445,7 +442,7 @@ sub plugin {
             startfromnext  => $startfrom + 1,
             startfromprev  => $startfrom - 1,
             searchdata     => \@field_data,
-            total          => $total,
+            total          => $total_hits,
             from           => $from,
             to             => $to,
             numbers        => \@numbers,

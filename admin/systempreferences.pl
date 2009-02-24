@@ -156,6 +156,7 @@ $tabsysprefs{StaticHoldsQueueWeight}         = "Circulation";
 $tabsysprefs{AllowOnShelfHolds}              = "Circulation";
 $tabsysprefs{AllowHoldsOnDamagedItems}       = "Circulation";
 $tabsysprefs{UseBranchTransferLimits}        = "Circulation";
+$tabsysprefs{AllowHoldPolicyOverride}        = "Circulation";
 
 # Staff Client
 $tabsysprefs{TemplateEncoding}        = "StaffClient";
@@ -194,7 +195,7 @@ $tabsysprefs{'SMSSendDriver'}              = 'Patrons';
 # I18N/L10N
 $tabsysprefs{dateformat}    = "I18N/L10N";
 $tabsysprefs{opaclanguages} = "I18N/L10N";
-$tabsysprefs{opacthemes}    = "I18N/L10N";
+$tabsysprefs{opaclanguagesdisplay} = "I18N/L10N";
 $tabsysprefs{language}      = "I18N/L10N";
 
 # Searching
@@ -279,7 +280,6 @@ $tabsysprefs{OPACDisplayRequestPriority} = "OPAC";
 $tabsysprefs{SearchMyLibraryFirst} = "OPAC";
 $tabsysprefs{hidelostitems}        = "OPAC";
 $tabsysprefs{opacbookbag}          = "OPAC";
-$tabsysprefs{opaclanguagesdisplay} = "OPAC";
 $tabsysprefs{OpacPasswordChange}   = "OPAC";
 $tabsysprefs{opacreadinghistory}   = "OPAC";
 $tabsysprefs{virtualshelves}       = "OPAC";
@@ -673,18 +673,11 @@ if ( $op eq 'add_form' ) {
     my $tab = $input->param('tab');
     $template->param( $tab => 1 );
     my ( $count, $results ) = StringSearch( $searchfield, $tab );
-    my $toggle    = 0;
     my @loop_data = ();
     for ( my $i = $offset ; $i < ( $offset + $pagesize < $count ? $offset + $pagesize : $count ) ; $i++ ) {
-        if ( $toggle == 0 ) {
-            $toggle = 1;
-        } else {
-            $toggle = 0;
-        }
         my $row_data = $results->[$i];
         $row_data->{'lang'} = $template->param('lang');
         $row_data           = GetPrefParams($row_data);                                                         # get a fresh hash for the row data
-        $row_data->{toggle} = $toggle;
         $row_data->{edit}   = "$script_name?op=add_form&amp;searchfield=" . $results->[$i]{'variable'};
         $row_data->{delete} = "$script_name?op=delete_confirm&amp;searchfield=" . $results->[$i]{'variable'};
         push( @loop_data, $row_data );

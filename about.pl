@@ -83,6 +83,7 @@ Class::Factory::Util
 Class::Accessor
 Compress::Zlib
 DBD::mysql
+DBD::SQLite
 DBI
 Data::Dumper
 Date::Calc

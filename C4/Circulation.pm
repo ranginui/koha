@@ -30,6 +30,8 @@ use C4::Members;
 use C4::Dates;
 use C4::Calendar;
 use C4::Accounts;
+use C4::ItemCirculationAlertPreference;
+use C4::Message;
 use Date::Calc qw(
   Today
   Today_and_Now
@@ -72,6 +74,7 @@ BEGIN {
 		&GetIssuingCharges
 		&GetIssuingRule
         &GetBranchBorrowerCircRule
+        &GetBranchItemRule
 		&GetBiblioIssues
 		&AnonymiseIssueHistory
 	);
@@ -113,7 +116,7 @@ Also deals with stocktaking.
 
 =head2 barcodedecode
 
-=head3 $str = &barcodedecode($barcode);
+=head3 $str = &barcodedecode($barcode, [$filter]);
 
 =over 4
 
@@ -124,6 +127,10 @@ to circulation.pl that differs from the barcode stored for the item.
 For proper functioning of this filter, calling the function on the 
 correct barcode string (items.barcode) should return an unaltered barcode.
 
+The optional $filter argument is to allow for testing or explicit 
+behavior that ignores the System Pref.  Valid values are the same as the 
+System Pref options.
+
 =back
 
 =cut
@@ -132,31 +139,27 @@ correct barcode string (items.barcode) should return an unaltered barcode.
 # FIXME -- these plugins should be moved out of Circulation.pm
 #
 sub barcodedecode {
-    my ($barcode) = @_;
-    my $filter = C4::Context->preference('itemBarcodeInputFilter');
-	if($filter eq 'whitespace') {
+    my ($barcode, $filter) = @_;
+    $filter = C4::Context->preference('itemBarcodeInputFilter') unless $filter;
+    $filter or return $barcode;     # ensure filter is defined, else return untouched barcode
+	if ($filter eq 'whitespace') {
 		$barcode =~ s/\s//g;
-		return $barcode;
-	} elsif($filter eq 'cuecat') {
+	} elsif ($filter eq 'cuecat') {
 		chomp($barcode);
 	    my @fields = split( /\./, $barcode );
 	    my @results = map( decode($_), @fields[ 1 .. $#fields ] );
-	    if ( $#results == 2 ) {
-	        return $results[2];
-	    }
-	    else {
-	        return $barcode;
-	    }
-	} elsif($filter eq 'T-prefix') {
-		if ( $barcode =~ /^[Tt]/) {
-			if (substr($barcode,1,1) eq '0') {
-				return $barcode;
-			} else {
-				$barcode = substr($barcode,2) + 0 ;
-			}
+	    ($#results == 2) and return $results[2];
+	} elsif ($filter eq 'T-prefix') {
+		if ($barcode =~ /^[Tt](\d)/) {
+			(defined($1) and $1 eq '0') and return $barcode;
+            $barcode = substr($barcode, 2) + 0;     # FIXME: probably should be substr($barcode, 1)
 		}
-		return sprintf( "T%07d",$barcode);
+        return sprintf("T%07d", $barcode);
+        # FIXME: $barcode could be "T1", causing warning: substr outside of string
+        # Why drop the nonzero digit after the T?
+        # Why pass non-digits (or empty string) to "T%07d"?
 	}
+    return $barcode;    # return barcode, modified or not
 }
 
 =head2 decode
@@ -167,6 +170,9 @@ sub barcodedecode {
 
 =item Decodes a segment of a string emitted by a CueCat barcode scanner and
 returns it.
+
+FIXME: Should be replaced with Barcode::Cuecat from CPAN
+or Javascript based decoding on the client side.
 
 =back
 
@@ -180,7 +186,7 @@ sub decode {
     my $l = ( $#s + 1 ) % 4;
     if ($l) {
         if ( $l == 1 ) {
-            warn "Error!";
+            # warn "Error: Cuecat decode parsing failed!";
             return;
         }
         $l = 4 - $l;
@@ -845,46 +851,40 @@ Calculated if empty.
 Defaults to today.  Unlike C<$datedue>, NOT a C4::Dates object, unfortunately.
 
 AddIssue does the following things :
-- step 01: check that there is a borrowernumber & a barcode provided
-- check for RENEWAL (book issued & being issued to the same patron)
-    - renewal YES = Calculate Charge & renew
-    - renewal NO  = 
-        * BOOK ACTUALLY ISSUED ? do a return if book is actually issued (but to someone else)
-        * RESERVE PLACED ?
-            - fill reserve if reserve to this patron
-            - cancel reserve or not, otherwise
-        * TRANSFERT PENDING ?
-            - complete the transfert
-        * ISSUE THE BOOK
+
+  - step 01: check that there is a borrowernumber & a barcode provided
+  - check for RENEWAL (book issued & being issued to the same patron)
+      - renewal YES = Calculate Charge & renew
+      - renewal NO  =
+          * BOOK ACTUALLY ISSUED ? do a return if book is actually issued (but to someone else)
+          * RESERVE PLACED ?
+              - fill reserve if reserve to this patron
+              - cancel reserve or not, otherwise
+          * TRANSFERT PENDING ?
+              - complete the transfert
+          * ISSUE THE BOOK
 
 =back
 
 =cut
 
 sub AddIssue {
-    my ( $borrower, $barcode, $datedue, $cancelreserve, $issuedate ) = @_;
+    my ( $borrower, $barcode, $datedue, $cancelreserve, $issuedate, $sipmode) = @_;
     my $dbh = C4::Context->dbh;
 	my $barcodecheck=CheckValidBarcode($barcode);
 
     # $issuedate defaults to today.
     if ( ! defined $issuedate ) {
         $issuedate = strftime( "%Y-%m-%d", localtime );
+        # TODO: for hourly circ, this will need to be a C4::Dates object
+        # and all calls to AddIssue including issuedate will need to pass a Dates object.
     }
 	if ($borrower and $barcode and $barcodecheck ne '0'){
 		# find which item we issue
 		my $item = GetItem('', $barcode) or return undef;	# if we don't get an Item, abort.
-		my $branch;
-		# Get which branchcode we need
-		if (C4::Context->preference('CircControl') eq 'PickupLibrary'){
-			$branch = C4::Context->userenv->{'branch'}; 
-		}
-		elsif (C4::Context->preference('CircControl') eq 'PatronLibrary'){
-			$branch = $borrower->{'branchcode'}; 
-		}
-		else {
-			# items home library
-			$branch = $item->{'homebranch'};
-		}
+		my $branch = (C4::Context->preference('CircControl') eq 'PickupLibrary') ? C4::Context->userenv->{'branch'} :
+                     (C4::Context->preference('CircControl') eq 'PatronLibrary') ? $borrower->{'branchcode'}        : 
+                     $item->{'homebranch'};     # fallback to item's homebranch
 		
 		# get actual issuing if there is one
 		my $actualissue = GetItemIssue( $item->{itemnumber});
@@ -921,28 +921,23 @@ sub AddIssue {
 			if ($restype) {
 				my $resbor = $res->{'borrowernumber'};
 				if ( $resbor eq $borrower->{'borrowernumber'} ) {
-
 					# The item is reserved by the current patron
 					ModReserveFill($res);
 				}
 				elsif ( $restype eq "Waiting" ) {
-
 					# warn "Waiting";
 					# The item is on reserve and waiting, but has been
 					# reserved by some other patron.
 				}
 				elsif ( $restype eq "Reserved" ) {
-
 					# warn "Reserved";
 					# The item is reserved by someone else.
 					if ($cancelreserve) { # cancel reserves on this item
-						CancelReserve( 0, $res->{'itemnumber'},
-							$res->{'borrowernumber'} );
+						CancelReserve(0, $res->{'itemnumber'}, $res->{'borrowernumber'});
 					}
 				}
 				if ($cancelreserve) {
-					CancelReserve( $res->{'biblionumber'}, 0,
-                    $res->{'borrowernumber'} );
+					CancelReserve($res->{'biblionumber'}, 0, $res->{'borrowernumber'});
 				}
 				else {
 					# set waiting reserve to first in reserve queue as book isn't waiting now
@@ -957,8 +952,8 @@ sub AddIssue {
 			# Starting process for transfer job (checking transfert and validate it if we have one)
             my ($datesent) = GetTransfers($item->{'itemnumber'});
             if ($datesent) {
-        # 	updating line of branchtranfert to finish it, and changing the to branch value, implement a comment for lisibility of this case (maybe for stats ....)
-            my $sth =
+        # 	updating line of branchtranfert to finish it, and changing the to branch value, implement a comment for visibility of this case (maybe for stats ....)
+                my $sth =
                     $dbh->prepare(
                     "UPDATE branchtransfers 
                         SET datearrived = now(),
@@ -966,8 +961,7 @@ sub AddIssue {
                         comments = 'Forced branchtransfer'
                     WHERE itemnumber= ? AND datearrived IS NULL"
                     );
-                    $sth->execute(C4::Context->userenv->{'branch'},$item->{'itemnumber'});
-                    $sth->finish;
+                $sth->execute(C4::Context->userenv->{'branch'},$item->{'itemnumber'});
             }
 
         # Record in the database the fact that the book was issued.
@@ -1003,7 +997,7 @@ sub AddIssue {
                   onloan           => $datedue->output('iso'),
                 }, $item->{'biblionumber'}, $item->{'itemnumber'});
         ModDateLastSeen( $item->{'itemnumber'} );
-        
+
         # If it costs to borrow this book, charge it to the patron's account.
         my ( $charge, $itemtype ) = GetIssuingCharges(
             $item->{'itemnumber'},
@@ -1020,12 +1014,29 @@ sub AddIssue {
         # Record the fact that this book was issued.
         &UpdateStats(
             C4::Context->userenv->{'branch'},
-            'issue',                        $charge,
-            '',                             $item->{'itemnumber'},
+            'issue', $charge,
+            ($sipmode ? "SIP-$sipmode" : ''), $item->{'itemnumber'},
             $item->{'itype'}, $borrower->{'borrowernumber'}
         );
+
+        # Send a checkout slip.
+        my $circulation_alert = 'C4::ItemCirculationAlertPreference';
+        my %conditions = (
+            branchcode   => $branch,
+            categorycode => $borrower->{categorycode},
+            item_type    => $item->{itype},
+            notification => 'CHECKOUT',
+        );
+        if ($circulation_alert->is_enabled_for(\%conditions)) {
+            SendCirculationAlert({
+                type     => 'CHECKOUT',
+                item     => $item,
+                borrower => $borrower,
+                branch   => $branch,
+            });
+        }
     }
-    
+
     logaction("CIRCULATION", "ISSUE", $borrower->{'borrowernumber'}, $biblio->{'biblionumber'}) 
         if C4::Context->preference("IssueLog");
   }
@@ -1236,6 +1247,70 @@ sub GetBranchBorrowerCircRule {
     };
 }
 
+=head2 GetBranchItemRule
+
+=over 4
+
+my $branch_item_rule = GetBranchItemRule($branchcode, $itemtype);
+
+=back
+
+Retrieves circulation rule attributes that apply to the given
+branch and item type, regardless of patron category.
+
+The return value is a hashref containing the following key:
+
+holdallowed => Hold policy for this branch and itemtype. Possible values:
+  0: No holds allowed.
+  1: Holds allowed only by patrons that have the same homebranch as the item.
+  2: Holds allowed from any patron.
+
+This searches branchitemrules in the following order:
+
+  * Same branchcode and itemtype
+  * Same branchcode, itemtype '*'
+  * branchcode '*', same itemtype
+  * branchcode and itemtype '*'
+
+Neither C<$branchcode> nor C<$categorycode> should be '*'.
+
+=cut
+
+sub GetBranchItemRule {
+    my ( $branchcode, $itemtype ) = @_;
+    my $dbh = C4::Context->dbh();
+    my $result = {};
+
+    my @attempts = (
+        ['SELECT holdallowed
+            FROM branch_item_rules
+            WHERE branchcode = ?
+              AND itemtype = ?', $branchcode, $itemtype],
+        ['SELECT holdallowed
+            FROM default_branch_circ_rules
+            WHERE branchcode = ?', $branchcode],
+        ['SELECT holdallowed
+            FROM default_branch_item_rules
+            WHERE itemtype = ?', $itemtype],
+        ['SELECT holdallowed
+            FROM default_circ_rules'],
+    );
+
+    foreach my $attempt (@attempts) {
+        my ($query, @bind_params) = @{$attempt};
+
+        # Since branch/category and branch/itemtype use the same per-branch
+        # defaults tables, we have to check that the key we want is set, not
+        # just that a row was returned
+        return $result if ( defined( $result->{'holdallowed'} = $dbh->selectrow_array( $query, {}, @bind_params ) ) );
+    }
+    
+    # built-in default circulation rule
+    return {
+        holdallowed => 2,
+    };
+}
+
 =head2 AddReturn
 
 ($doreturn, $messages, $iteminformation, $borrower) =
@@ -1443,6 +1518,23 @@ sub AddReturn {
             $biblio->{'itemtype'},
             $borrower->{'borrowernumber'}
         );
+
+        # Send a check-in slip.
+        my $circulation_alert = 'C4::ItemCirculationAlertPreference';
+        my %conditions = (
+            branchcode   => $branch,
+            categorycode => $borrower->{categorycode},
+            item_type    => $iteminformation->{itype},
+            notification => 'CHECKIN',
+        );
+        if ($doreturn && $circulation_alert->is_enabled_for(\%conditions)) {
+            SendCirculationAlert({
+                type     => 'CHECKIN',
+                item     => $iteminformation,
+                borrower => $borrower,
+                branch   => $branch,
+            });
+        }
         
         logaction("CIRCULATION", "RETURN", $iteminformation->{borrowernumber}, $iteminformation->{'biblionumber'}) 
             if C4::Context->preference("ReturnLog");
@@ -2196,7 +2288,6 @@ sub GetTransfers {
     return @row;
 }
 
-
 =head2 GetTransfersFromTo
 
 @results = GetTransfersFromTo($frombranch,$tobranch);
@@ -2269,6 +2360,77 @@ sub AnonymiseIssueHistory {
     $query .= " AND borrowernumber = '".$borrowernumber."'" if defined $borrowernumber;
     my $rows_affected = $dbh->do($query);
     return $rows_affected;
+}
+
+=head2 SendCirculationAlert
+
+Send out a C<check-in> or C<checkout> alert using the messaging system.
+
+B<Parameters>:
+
+=over 4
+
+=item type
+
+Valid values for this parameter are: C<CHECKIN> and C<CHECKOUT>.
+
+=item item
+
+Hashref of information about the item being checked in or out.
+
+=item borrower
+
+Hashref of information about the borrower of the item.
+
+=item branch
+
+The branchcode from where the checkout or check-in took place.
+
+=back
+
+B<Example>:
+
+    SendCirculationAlert({
+        type     => 'CHECKOUT',
+        item     => $item,
+        borrower => $borrower,
+        branch   => $branch,
+    });
+
+=cut
+
+sub SendCirculationAlert {
+    my ($opts) = @_;
+    my ($type, $item, $borrower, $branch) =
+        ($opts->{type}, $opts->{item}, $opts->{borrower}, $opts->{branch});
+    my %message_name = (
+        CHECKIN  => 'Item Check-in',
+        CHECKOUT => 'Item Checkout',
+    );
+    my $borrower_preferences = C4::Members::Messaging::GetMessagingPreferences({
+        borrowernumber => $borrower->{borrowernumber},
+        message_name   => $message_name{$type},
+    });
+    my $letter = C4::Letters::getletter('circulation', $type);
+    C4::Letters::parseletter($letter, 'biblio',      $item->{biblionumber});
+    C4::Letters::parseletter($letter, 'biblioitems', $item->{biblionumber});
+    C4::Letters::parseletter($letter, 'borrowers',   $borrower->{borrowernumber});
+    C4::Letters::parseletter($letter, 'branches',    $branch);
+    my @transports = @{ $borrower_preferences->{transports} };
+    # warn "no transports" unless @transports;
+    for (@transports) {
+        # warn "transport: $_";
+        my $message = C4::Message->find_last_message($borrower, $type, $_);
+        if (!$message) {
+            #warn "create new message";
+            C4::Message->enqueue($letter, $borrower, $_);
+        } else {
+            #warn "append to old message";
+            $message->append($letter);
+            $message->update;
+        }
+    }
+    $letter;
 }
 
 =head2 updateWrongTransfer

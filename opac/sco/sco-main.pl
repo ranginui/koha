@@ -29,7 +29,7 @@ my ($template, $loggedinuser, $cookie)
                              query => $query,
                              type => "opac",
                              authnotrequired => 0,
-                             flagsrequired => { circulate => 1 },
+                             flagsrequired => { circulate => "circulate_remaining_permissions" },
                              debug => 1,
                              });
 my $dbh = C4::Context->dbh;
@@ -136,7 +136,7 @@ if ($borrower->{cardnumber}) {
 	my $bornum = $borrower->{borrowernumber};
 	my $borrowername = $borrower->{firstname} . " " . $borrower->{surname};
 	my @issues;
-	my ($countissues,$issueslist) = GetPendingIssues($borrower->{'borrowernumber'});
+	my ($issueslist) = GetPendingIssues($borrower->{'borrowernumber'});
 	foreach my $it ( @$issueslist ) {
 		push @issues, $it;
 		$cnt++;

@@ -812,7 +812,7 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     $dbh->do("INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('uppercasesurnames',0,'If ON, surnames are converted to upper case in patron entry form',NULL,'YesNo')");
     $dbh->do("INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('CircControl','ItemHomeLibrary','Specify the agency that controls the circulation and fines policy','PickupLibrary|PatronLibrary|ItemHomeLibrary','Choice')");
     $dbh->do("INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('finesCalendar','noFinesWhenClosed','Specify whether to use the Calendar in calculating duedates and fines','ignoreCalendar|noFinesWhenClosed','Choice')");
-    $dbh->do("DELETE FROM `systempreferences` WHERE variable='HomeOrHoldingBranch'");
+    # $dbh->do("DELETE FROM `systempreferences` WHERE variable='HomeOrHoldingBranch'"); # Bug #2752
     print "Upgrade to $DBversion done ('add circ sysprefs CircControl, finesCalendar, and uppercasesurnames, and delete HomeOrHoldingBranch.')\n";
     SetVersion ($DBversion);
 }
@@ -2113,6 +2113,113 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     SetVersion ($DBversion);
 }
 
+$DBversion = "3.01.00.009";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("ALTER TABLE permissions MODIFY `code` varchar(64) DEFAULT NULL");
+    $dbh->do("ALTER TABLE user_permissions MODIFY `code` varchar(64) DEFAULT NULL");
+    $dbh->do("INSERT INTO permissions (module_bit, code, description) VALUES ( 1, 'circulate_remaining_permissions', 'Remaining circulation permissions')");
+    $dbh->do("INSERT INTO permissions (module_bit, code, description) VALUES ( 1, 'override_renewals', 'Override blocked renewals')");
+    print "Upgrade to $DBversion done (added subpermissions for circulate permission)\n";
+}
+
+$DBversion = '3.01.00.010';
+if ( C4::Context->preference('Version') < TransformToNum($DBversion) ) {
+    $dbh->do("ALTER TABLE `borrower_attributes` MODIFY COLUMN `attribute` VARCHAR(64) DEFAULT NULL");
+    $dbh->do("ALTER TABLE `borrower_attributes` MODIFY COLUMN `password` VARCHAR(64) DEFAULT NULL");
+    print "Upgrade to $DBversion done (bug 2687: increase length of borrower attribute fields)\n";
+    SetVersion ($DBversion);
+}
+
+$DBversion = '3.01.00.011';
+if ( C4::Context->preference('Version') < TransformToNum($DBversion) ) {
+
+    # Yes, the old value was ^M terminated.
+    my $bad_value = "function prepareEmailPopup(){\r\n  if (!document.getElementById) return false;\r\n  if (!document.getElementById('reserveemail')) return false;\r\n  rsvlink = document.getElementById('reserveemail');\r\n  rsvlink.onclick = function() {\r\n      doReservePopup();\r\n      return false;\r\n	}\r\n}\r\n\r\nfunction doReservePopup(){\r\n}\r\n\r\nfunction prepareReserveList(){\r\n}\r\n\r\naddLoadEvent(prepareEmailPopup);\r\naddLoadEvent(prepareReserveList);";
+
+    my $intranetuserjs = C4::Context->preference('intranetuserjs');
+    if ( $intranetuserjs eq $bad_value ) {
+        my $sql = <<'END_SQL';
+UPDATE systempreferences
+SET value = ''
+WHERE variable = 'intranetuserjs'
+END_SQL
+        $dbh->do($sql);
+    }
+    print "Upgrade to $DBversion done (removed bogus intranetuserjs syspref)\n";
+    SetVersion($DBversion);
+}
+
+$DBversion = "3.01.00.012";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES('AllowHoldPolicyOverride', '0', 'Allow staff to override hold policies when placing holds',NULL,'YesNo')");
+    $dbh->do("
+        CREATE TABLE `branch_item_rules` (
+          `branchcode` varchar(10) NOT NULL,
+          `itemtype` varchar(10) NOT NULL,
+          `holdallowed` tinyint(1) default NULL,
+          PRIMARY KEY  (`itemtype`,`branchcode`),
+          KEY `branch_item_rules_ibfk_2` (`branchcode`),
+          CONSTRAINT `branch_item_rules_ibfk_1` FOREIGN KEY (`itemtype`) REFERENCES `itemtypes` (`itemtype`) ON DELETE CASCADE ON UPDATE CASCADE,
+          CONSTRAINT `branch_item_rules_ibfk_2` FOREIGN KEY (`branchcode`) REFERENCES `branches` (`branchcode`) ON DELETE CASCADE ON UPDATE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8
+    ");
+    $dbh->do("
+        CREATE TABLE `default_branch_item_rules` (
+          `itemtype` varchar(10) NOT NULL,
+          `holdallowed` tinyint(1) default NULL,
+          PRIMARY KEY  (`itemtype`),
+          CONSTRAINT `default_branch_item_rules_ibfk_1` FOREIGN KEY (`itemtype`) REFERENCES `itemtypes` (`itemtype`) ON DELETE CASCADE ON UPDATE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8
+    ");
+    $dbh->do("
+        ALTER TABLE default_branch_circ_rules
+            ADD COLUMN holdallowed tinyint(1) NULL
+    ");
+    $dbh->do("
+        ALTER TABLE default_circ_rules
+            ADD COLUMN holdallowed tinyint(1) NULL
+    ");
+    print "Upgrade to $DBversion done (Add tables and system preferences for holds policies)\n";
+    SetVersion ($DBversion);
+}
+
+$DBversion = '3.01.00.013';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("
+        CREATE TABLE item_circulation_alert_preferences (
+            id           int(11) AUTO_INCREMENT,
+            branchcode   varchar(10) NOT NULL,
+            categorycode varchar(10) NOT NULL,
+            item_type    varchar(10) NOT NULL,
+            notification varchar(16) NOT NULL,
+            PRIMARY KEY (id),
+            KEY (branchcode, categorycode, item_type, notification)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ");
+
+    $dbh->do(q{ ALTER TABLE `message_queue` ADD metadata text DEFAULT NULL           AFTER content;  });
+    $dbh->do(q{ ALTER TABLE `message_queue` ADD letter_code varchar(64) DEFAULT NULL AFTER metadata; });
+
+    $dbh->do(q{
+        INSERT INTO `letter` (`module`, `code`, `name`, `title`, `content`) VALUES
+        ('circulation','CHECKIN','Item Check-in','Check-ins','The following items have been checked in:\r\n----\r\n<<biblio.title>>\r\n----\r\nThank you.');
+    });
+    $dbh->do(q{
+        INSERT INTO `letter` (`module`, `code`, `name`, `title`, `content`) VALUES
+        ('circulation','CHECKOUT','Item Checkout','Checkouts','The following items have been checked out:\r\n----\r\n<<biblio.title>>\r\n----\r\nThank you for visiting <<branches.branchname>>.');
+    });
+
+    $dbh->do(q{INSERT INTO message_attributes (message_attribute_id, message_name, takes_days) VALUES (5, 'Item Check-in', 0);});
+    $dbh->do(q{INSERT INTO message_attributes (message_attribute_id, message_name, takes_days) VALUES (6, 'Item Checkout', 0);});
+
+    $dbh->do(q{INSERT INTO message_transports (message_attribute_id, message_transport_type, is_digest, letter_module, letter_code) VALUES (5, 'email', 0, 'circulation', 'CHECKIN');});
+    $dbh->do(q{INSERT INTO message_transports (message_attribute_id, message_transport_type, is_digest, letter_module, letter_code) VALUES (5, 'sms',   0, 'circulation', 'CHECKIN');});
+    $dbh->do(q{INSERT INTO message_transports (message_attribute_id, message_transport_type, is_digest, letter_module, letter_code) VALUES (6, 'email', 0, 'circulation', 'CHECKOUT');});
+    $dbh->do(q{INSERT INTO message_transports (message_attribute_id, message_transport_type, is_digest, letter_module, letter_code) VALUES (6, 'sms',   0, 'circulation', 'CHECKOUT');});
+
+    print "Upgrade to $DBversion done (data for Email Checkout Slips project)\n";
+    SetVersion ($DBversion);
+}
 
 =item DropAllForeignKeys($table)
 

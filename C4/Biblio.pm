@@ -18,15 +18,14 @@ package C4::Biblio;
 # Suite 330, Boston, MA  02111-1307 USA
 
 use strict;
+use warnings;
 # use utf8;
 use MARC::Record;
 use MARC::File::USMARC;
 use MARC::File::XML;
 use ZOOM;
 
-use C4::Context;
 use C4::Koha;
-use C4::Branch;
 use C4::Dates qw/format_date/;
 use C4::Log; # logaction
 use C4::ClassSource;
@@ -106,12 +105,6 @@ BEGIN {
 		&GetNoZebraIndexes
 	);
 }
-
-# because of interdependencies between
-# C4::Search, C4::Heading, and C4::Biblio,
-# 'use C4::Heading' must occur after
-# the exports have been defined.
-use C4::Heading;
 
 =head1 NAME
 
@@ -826,7 +819,7 @@ for the given frameworkcode
 
 sub GetMarcFromKohaField {
     my ( $kohafield, $frameworkcode ) = @_;
-    return 0, 0 unless $kohafield;
+    return 0, 0 unless $kohafield and defined $frameworkcode;
     my $relations = C4::Context->marcfromkohafield;
     return (
         $relations->{$frameworkcode}->{$kohafield}->[0],
@@ -912,6 +905,9 @@ sub GetAuthorisedValueDesc {
     my $dbh = C4::Context->dbh;
 
     if (!$category) {
+
+        return $value unless defined $tagslib->{$tag}->{$subfield}->{'authorised_value'};
+
 #---- branch
         if ( $tagslib->{$tag}->{$subfield}->{'authorised_value'} eq "branches" ) {
             return C4::Branch::GetBranchName($value);
@@ -1107,7 +1103,7 @@ sub GetMarcAuthors {
             $value = GetAuthorisedValueDesc( $field->tag(), $authors_subfield->[0], $authors_subfield->[1], '', $tagslib ) if ( $marcflavour eq 'UNIMARC' and ($authors_subfield->[0] =~/4/));
             my @this_link_loop = @link_loop;
             my $separator = C4::Context->preference("authoritysep") unless $count_auth==0;
-            push @subfields_loop, {code => $subfieldcode, value => $value, link_loop => \@this_link_loop, separator => $separator} unless ($authors_subfield->[0] == 9 );
+            push @subfields_loop, {code => $subfieldcode, value => $value, link_loop => \@this_link_loop, separator => $separator} unless ($authors_subfield->[0] eq '9' );
             $count_auth++;
         }
         push @marcauthors, { MARCAUTHOR_SUBFIELDS_LOOP => \@subfields_loop };
@@ -1130,8 +1126,8 @@ Assumes web resources (not uncommon in MARC21 to omit resource type ind)
 sub GetMarcUrls {
     my ($record, $marcflavour) = @_;
     my @marcurls;
-    my $marcurl;
     for my $field ($record->field('856')) {
+        my $marcurl;
         my $url = $field->subfield('u');
         my @notes;
         for my $note ( $field->subfield('z')) {
@@ -1159,7 +1155,8 @@ sub GetMarcUrls {
             $marcurl->{'part'} = $s3 if($link);
             $marcurl->{'toc'} = 1 if($s3 =~ /^[Tt]able/) ;
         } else {
-            $marcurl->{'linktext'} = $url || C4::Context->preference('URLLinkText') ;
+            $marcurl->{'linktext'} = $field->subfield('z') || C4::Context->preference('URLLinkText') || $url;
+            $marcurl->{'MARCURL'} = $url ;
         }
         push @marcurls, $marcurl;    
     }
@@ -1379,7 +1376,7 @@ sub TransformHtmlToXml {
     my $prevtag = -1;
     my $first   = 1;
     my $j       = -1;
-    for ( my $i = 0 ; $i <= @$tags ; $i++ ) {
+    for ( my $i = 0 ; $i < @$tags ; $i++ ) {
         if (C4::Context->preference('marcflavour') eq 'UNIMARC' and @$tags[$i] eq "100" and @$subfields[$i] eq "a") {
             # if we have a 100 field and it's values are not correct, skip them.
             # if we don't have any valid 100 field, we will create a default one at the end
@@ -1468,6 +1465,7 @@ sub TransformHtmlToXml {
         }
         $prevtag = @$tags[$i];
     }
+    $xml .= "</datafield>\n" if @$tags > 0;
     if (C4::Context->preference('marcflavour') eq 'UNIMARC' and !$unimarc_and_100_exist) {
 #     warn "SETTING 100 for $auth_type";
         use POSIX qw(strftime);
@@ -1513,7 +1511,7 @@ sub TransformHtmlToXml {
 sub TransformHtmlToMarc {
     my $params = shift;
     my $cgi    = shift;
-   
+
     # explicitly turn on the UTF-8 flag for all
     # 'tag_' parameters to avoid incorrect character
     # conversion later on
@@ -1575,7 +1573,7 @@ sub TransformHtmlToMarc {
                 }
     # > 009, deal with subfields
             } else {
-                while($params->[$j] =~ /_code_/){ # browse all it's subfield
+                while(defined $params->[$j] && $params->[$j] =~ /_code_/){ # browse all it's subfield
                     my $inner_param = $params->[$j];
                     if ($newfield){
                         if($cgi->param($params->[$j+1]) ne ''){  # only if there is a value (code => value)
@@ -1624,13 +1622,15 @@ sub TransformMarcToKoha {
     my ( $dbh, $record, $frameworkcode, $limit_table ) = @_;
 
     my $result;
-
+    $limit_table=$limit_table||0;
+    $frameworkcode = '' unless defined $frameworkcode;
+    
     unless (defined $inverted_field_map) {
         $inverted_field_map = _get_inverted_marc_field_map();
     }
 
     my %tables = ();
-    if ($limit_table eq 'items') {
+    if ( defined $limit_table && $limit_table eq 'items') {
         $tables{'items'} = 1;
     } else {
         $tables{'items'} = 1;
@@ -1681,8 +1681,8 @@ sub TransformMarcToKoha {
     # modify copyrightdate to keep only the 1st year found
     if (exists $result->{'copyrightdate'}) {
         my $temp = $result->{'copyrightdate'};
-        $temp =~ m/c(\d\d\d\d)/;    # search cYYYY first
-        if ( $1 > 0 ) {
+        $temp =~ m/c(\d\d\d\d)/;
+        if ( $temp =~ m/c(\d\d\d\d)/ and $1 > 0 ) { # search cYYYY first
             $result->{'copyrightdate'} = $1;
         }
         else {                      # if no cYYYY, get the 1st date.
@@ -1694,8 +1694,7 @@ sub TransformMarcToKoha {
     # modify publicationyear to keep only the 1st year found
     if (exists $result->{'publicationyear'}) {
         my $temp = $result->{'publicationyear'};
-        $temp =~ m/c(\d\d\d\d)/;    # search cYYYY first
-        if ( $1 > 0 ) {
+        if ( $temp =~ m/c(\d\d\d\d)/ and $1 > 0 ) { # search cYYYY first
             $result->{'publicationyear'} = $1;
         }
         else {                      # if no cYYYY, get the 1st date.
@@ -1713,6 +1712,7 @@ sub _get_inverted_marc_field_map {
 
     foreach my $frameworkcode (keys %{ $relations }) {
         foreach my $kohafield (keys %{ $relations->{$frameworkcode} }) {
+            next unless @{ $relations->{$frameworkcode}->{$kohafield} }; # not all columns are mapped to MARC tag & subfield
             my $tag = $relations->{$frameworkcode}->{$kohafield}->[0];
             my $subfield = $relations->{$frameworkcode}->{$kohafield}->[1];
             my ($table, $column) = split /[.]/, $kohafield, 2;
@@ -2178,9 +2178,9 @@ sub ModZebra {
 =cut
 
 sub GetNoZebraIndexes {
-    my $index = C4::Context->preference('NoZebraIndexes');
+    my $no_zebra_indexes = C4::Context->preference('NoZebraIndexes');
     my %indexes;
-    foreach my $line (split /('|"),[\n\r]*/,$index) {
+    INDEX: foreach my $line (split /['"],[\n\r]*/,$no_zebra_indexes) {
         $line =~ /(.*)=>(.*)/;
         my $index = $1; # initial ' or " is removed afterwards
         my $fields = $2;
@@ -2217,7 +2217,7 @@ sub _DelBiblioNoZebra {
     if ($server eq 'biblioserver') {
         %index=GetNoZebraIndexes;
         # get title of the record (to store the 10 first letters with the index)
-        my ($titletag,$titlesubfield) = GetMarcFromKohaField('biblio.title');
+        my ($titletag,$titlesubfield) = GetMarcFromKohaField('biblio.title', ''); # FIXME: should be GetFrameworkCode($biblionumber) ??
         $title = lc($record->subfield($titletag,$titlesubfield));
     } else {
         # for authorities, the "title" is the $a mainentry
@@ -2257,7 +2257,7 @@ sub _DelBiblioNoZebra {
                     foreach (split / /,$line) {
                         next unless $_; # skip  empty values (multiple spaces)
                         # if the entry is already here, do nothing, the biblionumber has already be removed
-                        unless ($result{$key}->{$_} =~ /$biblionumber,$title\-(\d);/) {
+                        unless ( defined( $result{$key}->{$_} ) && ( $result{$key}->{$_} =~ /$biblionumber,$title\-(\d);/) ) {
                             # get the index value if it exist in the nozebra table and remove the entry, otherwise, do nothing
                             $sth2->execute($server,$key,$_);
                             my $existing_biblionumbers = $sth2->fetchrow;
@@ -2311,7 +2311,7 @@ sub _AddBiblioNoZebra {
     if ($server eq 'biblioserver') {
         %index=GetNoZebraIndexes;
         # get title of the record (to store the 10 first letters with the index)
-        my ($titletag,$titlesubfield) = GetMarcFromKohaField('biblio.title');
+        my ($titletag,$titlesubfield) = GetMarcFromKohaField('biblio.title', ''); # FIXME: should be GetFrameworkCode($biblionumber) ??
         $title = lc($record->subfield($titletag,$titlesubfield));
     } else {
         # warn "server : $server";
@@ -2333,6 +2333,7 @@ sub _AddBiblioNoZebra {
     my $sth2=$dbh->prepare('SELECT biblionumbers FROM nozebra WHERE server=? AND indexname=? AND value=?');
     foreach my $field ($record->fields()) {
         #parse each subfield
+        ###FIXME: impossible to index a 001-009 value with NoZebra
         next if $field->tag <10;
         foreach my $subfield ($field->subfields()) {
             my $tag = $field->tag();
@@ -2353,9 +2354,9 @@ sub _AddBiblioNoZebra {
                         next unless $_; # skip  empty values (multiple spaces)
                         # if the entry is already here, improve weight
 #                         warn "managing $_";
-                        if ($result{$key}->{"$_"} =~ /$biblionumber,\Q$title\E\-(\d);/) { 
-                            my $weight=$1+1;
-                            $result{$key}->{"$_"} =~ s/$biblionumber,\Q$title\E\-(\d);//;
+                        if ( exists $result{$key}->{$_} && $result{$key}->{"$_"} =~ /$biblionumber,\Q$title\E\-(\d+);/) {
+                            my $weight = $1 + 1;
+                            $result{$key}->{"$_"} =~ s/$biblionumber,\Q$title\E\-(\d+);//g;
                             $result{$key}->{"$_"} .= "$biblionumber,$title-$weight;";
                         } else {
                             # get the value if it exist in the nozebra table, otherwise, create it
@@ -2364,8 +2365,8 @@ sub _AddBiblioNoZebra {
                             # it exists
                             if ($existing_biblionumbers) {
                                 $result{$key}->{"$_"} =$existing_biblionumbers;
-                                my $weight=$1+1;
-                                $result{$key}->{"$_"} =~ s/$biblionumber,\Q$title\E\-(\d);//;
+                                my $weight = defined $1 ? $1 + 1 : 1;
+                                $result{$key}->{"$_"} =~ s/$biblionumber,\Q$title\E\-(\d+);//g;
                                 $result{$key}->{"$_"} .= "$biblionumber,$title-$weight;";
                             # create a new ligne for this entry
                             } else {
@@ -2385,9 +2386,9 @@ sub _AddBiblioNoZebra {
                 foreach (split / /,$line) {
                     next unless $_; # skip  empty values (multiple spaces)
                     # if the entry is already here, improve weight
-                    if ($result{'__RAW__'}->{"$_"} =~ /$biblionumber,\Q$title\E\-(\d);/) { 
+                    if ($result{'__RAW__'}->{"$_"} =~ /$biblionumber,\Q$title\E\-(\d+);/) { 
                         my $weight=$1+1;
-                        $result{'__RAW__'}->{"$_"} =~ s/$biblionumber,\Q$title\E\-(\d);//;
+                        $result{'__RAW__'}->{"$_"} =~ s/$biblionumber,\Q$title\E\-(\d+);//;
                         $result{'__RAW__'}->{"$_"} .= "$biblionumber,$title-$weight;";
                     } else {
                         # get the value if it exist in the nozebra table, otherwise, create it
@@ -2397,7 +2398,7 @@ sub _AddBiblioNoZebra {
                         if ($existing_biblionumbers) {
                             $result{'__RAW__'}->{"$_"} =$existing_biblionumbers;
                             my $weight=$1+1;
-                            $result{'__RAW__'}->{"$_"} =~ s/$biblionumber,\Q$title\E\-(\d);//;
+                            $result{'__RAW__'}->{"$_"} =~ s/$biblionumber,\Q$title\E\-(\d+);//;
                             $result{'__RAW__'}->{"$_"} .= "$biblionumber,$title-$weight;";
                         # create a new ligne for this entry
                         } else {
@@ -3134,6 +3135,7 @@ sub set_service_options {
 
   parameters:
     biblionumber
+    MARC::Record of the bib
 
   returns: a hashref malling the authorised value to the value set for this biblionumber
 
@@ -3150,14 +3152,13 @@ sub set_service_options {
 
 sub get_biblio_authorised_values {
     my $biblionumber = shift;
+    my $record       = shift;
     
     my $forlibrarian = 1; # are we in staff or opac?
     my $frameworkcode = GetFrameworkCode( $biblionumber );
 
     my $authorised_values;
 
-    my $record  = GetMarcBiblio( $biblionumber )
-      or return $authorised_values;
     my $tagslib = GetMarcStructure( $forlibrarian, $frameworkcode )
       or return $authorised_values;
 
@@ -3174,7 +3175,7 @@ sub get_biblio_authorised_values {
         foreach my $subfield ( keys( %{$tagslib->{ $tag }} ) ) {
             # warn "checking $subfield. type is: " . ref $tagslib->{ $tag }{ $subfield };
             if ( 'HASH' eq ref $tagslib->{ $tag }{ $subfield } ) {
-                if ( exists $tagslib->{ $tag }{ $subfield }{'authorised_value'} && exists $bibliolevel_authorised_values->{ $tagslib->{ $tag }{ $subfield }{'authorised_value'} } ) {
+                if ( defined $tagslib->{ $tag }{ $subfield }{'authorised_value'} && exists $bibliolevel_authorised_values->{ $tagslib->{ $tag }{ $subfield }{'authorised_value'} } ) {
                     if ( defined $record->field( $tag ) ) {
                         my $this_subfield_value = $record->field( $tag )->subfield( $subfield );
                         if ( defined $this_subfield_value ) {
