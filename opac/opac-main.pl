@@ -20,7 +20,7 @@ use strict;
 use CGI;
 my $input = new CGI;
 
-my $memd;
+my $cache;
 
 use C4::Auth;
 use C4::Output;
@@ -43,12 +43,12 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
 );
 
 if ($usecache){
-    require Cache::Memcached;
-    Cache::Memcached->import();
-    $memd = new Cache::Memcached(
-	'servers'=>['127.0.0.1:11211'],
-    );
-    my $page = $memd->get("koha:opacmain:$borrowernumber:$cookie");
+    require C4::Cache;                                                                                                                     
+    C4::Cache->import();                                                                                                                   
+    $cache = C4::Cache->new ( {'cache_type' => C4::Context->config("cache_type"),                                                          
+				  'cache_servers' => C4::Context->config("cache_servers")                                                       
+			      });   
+    my $page = $cache->get("koha:opacmain:$borrowernumber:$cookie");
     if ($page){
 	output_html_with_http_headers $input, $cookie, $page;
         exit;
@@ -79,7 +79,6 @@ $template->param(
 
 if ($usecache){
     my $page = $template->output();
-    $memd->set("koha:opacmain:$borrowernumber", $page, 300);
+    $cache->set("koha:opacmain:$borrowernumber", $page, 300);
 }
 C4::Output::output_html_with_http_headers $input, $cookie, $template->output;
-
