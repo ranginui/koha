@@ -1,6 +1,6 @@
-package C4::Cache;
+package Koha::Cache;
 
-# Copyright 2008 Chris Cormack and The Koha Dev Team
+# Copyright 2009 Chris Cormack and The Koha Dev Team
 #
 # This file is part of Koha.
 #
@@ -19,11 +19,11 @@ package C4::Cache;
 
 =head1 NAME
 
-    C4::Cache - Handling caching of html and Objects for Koha
+    Koha::Cache - Handling caching of html and Objects for Koha
 
 =head1 SYNOPSIS
 
-  use C4::Cache (cache_type => $cache_type, %params );
+  use Koha::Cache (cache_type => $cache_type, %params );
 
 
 =head1 DESCRIPTION
@@ -68,7 +68,7 @@ sub new {
 
 =head1 SEE ALSO
   
-  C4::Cache::Memcached
+  Koha::Cache::Memcached
 
 =head1 AUTHOR
 
