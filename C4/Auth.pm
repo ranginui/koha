@@ -356,8 +356,8 @@ sub get_template_and_user {
 
 Verifies that the user is authorized to run this script.  If
 the user is authorized, a (userid, cookie, session-id, flags)
-quadruple is returned.  If the user is not authorized but does
-not have the required privilege (see $flagsrequired below), it
+quadruple is returned.  If the user is not authorized due to
+insufficent privileges (see $flagsrequired below), it
 displays an error page and exits.  Otherwise, it displays the
 login page and exits.
 
@@ -1212,7 +1212,7 @@ sub checkpw {
 
     my ( $dbh, $userid, $password ) = @_;
     if ($ldap) {
-        $debug and print "## checkpw - checking LDAP\n";
+        $debug and print STDERR "## checkpw - checking LDAP\n";
         my ($retval,$retcard) = checkpw_ldap(@_);    # EXTERNAL AUTH
         ($retval) and return ($retval,$retcard);
     }
