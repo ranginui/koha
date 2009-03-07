@@ -45,4 +45,14 @@ sub get_context {
     return $self->{CONTEXT};                                                                                                                   
 }         
 
+sub get_object_data {                                                                                                                          
+    my $self = shift;                                                                                                                          
+    return $self->{DATA};                                                                                                                      
+}                                                                                                                                              
+                                                                                                                                               
+sub set_object_data {                                                                                                                          
+    my $self = shift;                                                                                                                          
+    $self->{DATA} = shift;                                                                                                                     
+}     
 
+1;
