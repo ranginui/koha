@@ -12,6 +12,12 @@ use Carp;
 
 use base qw(Class::Accessor);
 
+use constant CACHE_TTL            => undef;
+use constant CACHE_POLICY_NEVER   => 'CACHE_NEVER';
+use constant CACHE_POLICY_CONTEXT => 'CACHE_CONTEXT_DEPENDANT';
+use constant CACHE_POLICY_ALWAYS  => 'CACHE_ALWAYS';
+use constant CACHE_POLICY         => CACHE_POLICY_CONTEXT;
+
 =head1 CONSTRUCTOR
 
 =head2  new( $context, $data )
@@ -24,7 +30,7 @@ sub new {
     my $class = shift;
 
     # Input params
-    my $context = shift or croak "Context not supplied";
+    my $context = shift or croak "Context not supplied in new";
     my $data = shift;
 
     my $self = { CONTEXT => $context };
@@ -60,9 +66,9 @@ sub new_by_primary_key {
     my $class = shift;
 
     # Input params
-    my $context = shift or croak "Context not supplied";
+    my $context = shift || croak "Context not supplied";
 
-    my $self = new($context) or return;
+    my $self = new( $class, $context ) or return;
 
     my $data =
       $self->get_data( $self->CACHE_POLICY, $class, $class->CACHE_TTL,
@@ -146,4 +152,22 @@ sub get_data_context_dependant {
 
     return ref($method) ? $method->(@_) : $self->$method(@_);
 }
+
+sub get_from_cache {
+    my $self = shift;
+    my $key_prefix = shift || ref $self;
+
+    my $log   = $self->log;
+    my $cache = $self->cache;
+
+    my $key = $self->make_cache_key( $key_prefix, @_ );
+
+    my $data = $cache->get_from_cache($key)
+      or $log->info("$key not in cache"),
+      return;
+
+    $log->debug("Got $key from cache");
+    return $data;
+}
+
 1;
