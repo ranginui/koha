@@ -7,7 +7,7 @@ use Carp;
 use base 'Koha::DataObject';
 
 use constant QUERY =>
-'SELECT borrowernumber,cardnumber,firstname,surname,
+'SELECT borrowernumber,cardnumber,firstname,surname
   FROM borrowers WHERE borrowernumber = ?';
 use constant CACHE_POLICY    => __PACKAGE__->CACHE_POLICY_ALWAYS;
 
