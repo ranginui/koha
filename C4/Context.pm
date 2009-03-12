@@ -80,11 +80,12 @@ BEGIN {
     }  	# else there is no browser to send fatals to!	
 $VERSION = '3.00.00.036';
 #    $usecache = C4::Context->preference("usecache");
+$usecache=1;
     if ($usecache) {
-	require C4::Cache;
-	C4::Cache->import();
-	$cache = C4::Cache->new ( {'cache_type' => C4::Context->config("cache_type"),
-	                         'cache_servers' => C4::Context->config("cache_servers")
+	require Koha::Cache;
+	Koha::Cache->import();
+	$cache = Koha::Cache->new ( {'cache_type' => 'FastMemcached',
+	                         'cache_servers' => '127.0.0.1:11211'
 				 }
 	);
     }
@@ -1050,6 +1051,10 @@ sub get_versions {
     return %versions;
 }
 
+sub cache {
+    my $self = shift;
+    return $cache;
+}
 
 1;
 __END__

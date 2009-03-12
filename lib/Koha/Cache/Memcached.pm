@@ -23,7 +23,7 @@ use Carp;
 
 use Cache::Memcached;
 
-use base qw(C4::Cache);
+use base qw(Koha::Cache);
 
 sub _cache_handle {
     my $class  = shift;

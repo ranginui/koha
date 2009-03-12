@@ -100,22 +100,13 @@ sub get_data {
 sub _load_data {
     my $self = shift;
 
-    $self->clear_error;
-    my $log = $self->log;
-    my $dbh = $self->dbh;
+    my $dbh = $self->get_context->dbh;
     my $data;
     eval {
         $data = $dbh->selectrow_hashref( $self->QUERY, undef, @_ )
-          or $log->info( "Cannot load $self from "
-              . $self->QUERY . "; "
-              . join( "\n", @_ )
-              . ";" ), return;
+          or return;
     };
     if ($@) {
-        $log->info( "Cannot load $self from "
-              . $self->QUERY . "; "
-              . join( "\n", @_ )
-              . ";" );
         return;
     }
 
@@ -157,17 +148,50 @@ sub get_from_cache {
     my $self = shift;
     my $key_prefix = shift || ref $self;
 
-    my $log   = $self->log;
-    my $cache = $self->cache;
+    my $cache = $self->get_context->cache;
 
     my $key = $self->make_cache_key( $key_prefix, @_ );
 
     my $data = $cache->get_from_cache($key)
-      or $log->info("$key not in cache"),
-      return;
+      or return;
 
-    $log->debug("Got $key from cache");
     return $data;
+}
+
+sub make_cache_key {
+    my $self = shift;
+
+    my $class = ref($self);
+
+    return $class->_make_cache_key( "Koha", @_ );
+}
+
+sub _make_cache_key {
+    my $class      = shift;
+    my $db_context = shift or croak "No db_context";
+    my $prefix     = shift;
+
+    my @key = ($db_context);
+    push @key, $prefix if defined $prefix;
+    push @key, join( ';', map { defined($_) ? $_ : '' } @_ ) if @_;
+
+    return join '::', @key;
+}
+
+sub store_in_cache {
+    my $self       = shift;
+    my $key_prefix = shift || ref $self;
+    my $ttl        = shift;
+    my $data       = shift or croak "No data";
+
+    my $cache = $self->get_context->cache;
+
+    my $key = $self->make_cache_key( $key_prefix, @_ );
+
+    $cache->set_in_cache( $key, $data, $ttl )
+      or return;
+
+    return 1;
 }
 
 1;
