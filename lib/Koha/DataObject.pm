@@ -8,6 +8,7 @@ Koha::DataObject - base class for context dependant data retrieval and storage c
 
 use strict;
 use warnings;
+use XML::Quick;
 use Carp;
 
 use base qw(Class::Accessor);
@@ -192,6 +193,12 @@ sub store_in_cache {
       or return;
 
     return 1;
+}
+
+sub data2xml {
+    my $self = shift;
+    my $data = shift;
+    return xml($data);
 }
 
 1;
