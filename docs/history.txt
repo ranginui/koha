@@ -1,0 +1,8 @@
+HLT have a proprietary library system, with a y2k bug
+HLT send out RFP, no responses that would actually
+HLT and Katipo look for Opensource ILS, can't find one
+September 6 1999, Work starts on Koha
+January 3 2000, Koha goes live
+July 13 2000, First post to the mailing list
+July 21 2000, Koha 1.00 put up for download
+August 9 2000, Koha 1.01 released
