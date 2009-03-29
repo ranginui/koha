@@ -6,3 +6,18 @@ January 3 2000, Koha goes live
 July 13 2000, First post to the mailing list
 July 21 2000, Koha 1.00 put up for download
 August 9 2000, Koha 1.01 released
+August 17 2000, First request for internationalisation from Poland
+Auguest 19 2000, Koha 1.03 released
+October 9 2000, Koha 1.06 released
+October 17 2000, Koha wins 3M Innovation in Libraries award
+October 27 2000, Koha wins "The best example of interactive media
+specifically made for community and not for profit organisations."
+Interactive NZ Award
+December 16 2000, Glen Stewart sends the first patch for Koha (outside
+of Katipo)
+December 16 2000, Steve Tonnessen begins work on non-acquistions based
+cataloguing interface
+December 21 2000, After returning from my annual leave Koha 1.07 is
+released
+December 21 2000, Koha is set up on sourceforge.net
+January 6 2001, Steve Tonnesen becomes the 5 committer to Koha and the first outside of Koha, Koha has 874 commits at this point
