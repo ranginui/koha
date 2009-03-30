@@ -142,3 +142,8 @@ November 7 2003, 2 articles about Koha on webjunction
 New Zealand Leads the Way: the Horowhenua Open Source Story
 and
 Nelsonville Public Library: Questions and Answers About Open Source
+December 12 2003, Koha has been used as an
+example in a recent study of Open Source Development commissioned by the
+World Bank Group
+
+
