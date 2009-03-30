@@ -137,5 +137,9 @@ September 23 2003, Koha 2.0.0pre4 released
 October 3-5 2003, Open communication for open source software develoment: the Koha
 experience. Paper read at LITA National Forum, at
 Norfolk, VA. http://www.ala.org/ala/lita/litaevents/litanatlforum/forumprograms/cs1-6chawner.ppt.
-
+October 25 2003, Koha 2.0.0pre5 released
 November 1 2003, Owen Leonard becomes the 29th committer to Koha
+November 7 2003, 2 articles about Koha on webjunction
+New Zealand Leads the Way: the Horowhenua Open Source Story
+and
+Nelsonville Public Library: Questions and Answers About Open Source
