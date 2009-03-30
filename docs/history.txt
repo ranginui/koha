@@ -58,6 +58,8 @@ May 27 2002, Mike Mylonas becomes 12th committer to Koha
 May 23 2002, Steve Tonnessen makes searchable logs of the irc channel available
 May 30 2002, Meeting to elect Kaitiaki - Pat Eyler elected
 June 7 2002, Pat sends his first from the Kaitiaki report
+June 15 2002, First bug lodged in bugs.koha.org at 1.15pm
+June 15 2002, First bug in bugzilla fixed at 2pm
 June 15 2002, Koha 1.2.0 Released - Contains templates to make
 translation easier, Chris takes over release maintenance while Paul
 and Steve begin work for 1.4.0
@@ -75,9 +77,29 @@ September 19 2002, Dorian Meid becomes the 13th committer to Koha
 September 22 2002, Andrew Arensburger becomes the 14th committer to Koha, with the neat C4::Context
 September 25 2002, Koha 1.3.0 released - Mulitple MARC flavours supported
 September 27 2002, Koha mentioned in Biblio-Tech review
-October 16 2002, 15th committer to Koha
+October 16 2002, David Strainchamps 15th committer to Koha
 October 16 2002, Koha 1.3.1 released
-October 30-31 2002, Chris Cormack speaks at Think Linux, Chris, Joshua Ferraro and Stephen Hedges man a stand 
+October ??? 2002, NPL (Joshua Ferraro, Stephen Hedges & Owen Leonard)
+at Ohio Library conference, Columbus
+October 30-31 2002, Chris Cormack speaks at Think Linux Toledo, Chris, Joshua Ferraro and Stephen Hedges man a stand 
 November 14 2002, Henri-Damien Laurent becomes 16th committer to Koha
 Novemer 21 2002, Kohausers page is started
+November 30 2002, Francisco M. Marzoa Alonso 17th committer to Koha
+December 2 2002, Koha 1.3.2 released ??
+Decemeber 6 2002, Koha mentioned in an article about opensource in
+American Libraries
+December 6 2002, First known install in france ND-Dombes Abbey 
+December ?? 2002, Koha 1.2.3 released
+December 13 2002, Rob Weir posts links to his Windows32 packages,
+begins the lifelong task of preparing windows packages
+January 6 2003, Andy?? becomes 18th committer to Koha
+January 8 2003, Koha 1.3.3 released
+January 19 2003, Ambrose Li becomes the 19th committer to Koha
+February 1 2003, Article from Pat Eyler about Koha in linux Journal
+February 5 2003, Koha 1.9.0 is released, 2.0.0 becomes much closer
+February 17 2003, Mike Hansen becomes the 20th committer to Koha
+February ?? 2003, Nicolas Morin tells us that Koha was mentioned in the French monthly periodical ARCHIMAG
+March 11 2003, Ingrid Lacis appointed QA Manager
+March 11 2003, Steve Tonnesen appointed Release Manager for 2.1/2.2
+
 
