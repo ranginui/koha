@@ -135,6 +135,7 @@ May 22 2003, Koha 1.9.3 released
 May 26 2003, Koha wins Trophee Du Libre Award
 June 17 2003, Serge Renaux becomes the 23rd committer to Koha
 June 20 2003, Jerome Vizcaino becomes the 24th committer to Koha
+June 21 2003, Paul Gear makes available rpm's of all of Koha's dependencies
 June 23 2003, Michel Lerenard becomes the 25th committer to Koha
 June 24 2003, Koha 2.0.0pre1 released
 June 24 2003, Joshua Ferraro becomes the 26th committer to Koha
@@ -185,8 +186,22 @@ June 30 2004, Koha 2.1.0 released
 June 30 2004, Christopher Brown-Syed emails to tell us Koha and University of Buffalo are continuin their relationship
 July 7 2004, Paul Poulain uses some of the suggestions from University of Buffalo to improve MARC support in Koha
 July 15? 2004, Joshua Ferraro presents Koha at the OLC annual conference
-
-
-
 August 18 2004, Stephen Hedges becomes the 31st committer to Koha
+August 19 2004, Koha 2.1.1 released
+August 26 2004, Katipo installing Koha at Lianza conference (as well as presenting)
+http://www.katipo.co.nz/about-us/news/nr1092719045.shtml
+September 29 2004, Koha 2.1.2 released
+October 20 2004, Koha 2.1.3 released
+November 17 2004, Koha 2.2.0rc1 released
+November 20 2004, Koha 2.2.0rc2 released
+November 23 2004, Koha 2.2.0rc3 released
+December 9 2004, Koha 2.2.0rc4 released
+December 21 2004, Koha 2.2.0rc5 released
+
+
+
+2005
+----
+April 19 2005, Shaun Evans becomes the 32nd committer to Koha
+
 
