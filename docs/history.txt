@@ -2,6 +2,8 @@ HLT have a proprietary library system, with a y2k bug
 HLT send out RFP, no responses that would actually
 HLT and Katipo look for Opensource ILS, can't find one
 September 6 1999, Work starts on Koha
+September,October,December 1999 Katipo work with HLT to write an ILS.
+Olwen Williams does at lot of work on data conversion.
 January 3 2000, Koha goes live
 ?? 2000, Koha written about in Library Life NZ
 July 13 2000, First post to the mailing list
