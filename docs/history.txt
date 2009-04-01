@@ -36,6 +36,7 @@ January 13 2001, Glen Stewart sends patches to fix some bugs with acquisitions
 January 19 2001, Steve Tonnesen begins work on web based circulations
 February 16 2001, Koha developers mailing list set up
 February 27 2001, Koha 1.1.0 released includes Web based circulations
+May 18 2001, Glen Stewart leaves his job and working on Koha, gives us cuecat decoding code as a parting gift.
 June 15 2001, Work begins on importing/exporting MARC to/from koha
 June 23 2001, Benedykt P. Barszcz working on translations
 June 24 2001, Pawel Skuza working on a script to automate translations
@@ -63,6 +64,7 @@ March 13 2002, Katipo's new developer Finlay Thompson becomes the 8th committer 
 March 14 2002, First email from Joshua Ferraro
 March 20 2002, Roger Buck sets up the first Koha wiki
 March 30 2002, Nicholas Rosasco begins work on a documentation site
+April 2 2002, Pat Eyler introduces himself to the community
 April 9 2002, Pat Eyler becomes 8th committer to Koha
 April 10 2002, Gynn Lomax becomes 9th committer to Koha
 April 21 2002, Roger Buck becomes 10th committer to Koha
