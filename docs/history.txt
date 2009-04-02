@@ -9,7 +9,8 @@ Olwen Williams does at lot of work on data conversion.
 
 2000
 ----
-January 3 2000, Koha goes live
+January 3 2000, Koha goes live after many sleepness nights and a few
+hundred commits
 ?? 2000, Koha written about in Library Life NZ
 July 13 2000, First post to the mailing list
 July 21 2000, Koha 1.00 put up for download
@@ -31,7 +32,7 @@ December 21 2000, Koha is set up on sourceforge.net
 
 2001
 ----
-January 6 2001, Steve Tonnesen becomes the 5 committer to Koha and the first outside of Koha, Koha has 874 commits at this point
+January 6 2001, Steve Tonnesen becomes the 5th committer to Koha and the first outside of Katipo, Koha has 874 commits at this point
 January 13 2001, Glen Stewart sends patches to fix some bugs with acquisitions
 January 19 2001, Steve Tonnesen begins work on web based circulations
 February 16 2001, Koha developers mailing list set up
@@ -204,6 +205,21 @@ December 21 2004, Koha 2.2.0rc5 released
 
 2005
 ----
+January 6 2005, Koha 2.2.0 released
+February 1-3 2005, Chris Cormack, Rachel Hamilton-Williams and Russel
+Garlick demonstrate Koha and man a stand at Alia Online, in Australia. Irma Birchall helps out also.
+February 22 2005, Koha 2.2.1 released
+April 8 2005, Koha 2.2.2 released
+April 14 2005, Liblime announce they are providing Koha support
 April 19 2005, Shaun Evans becomes the 32nd committer to Koha
+April 26 2005, Koha 2.2.2b released
+May 8 2005, Stephen Hedges starts work on 2.2 Users guide
+May 20 2005, Stephen Hedges publishes his Koha Diary on www.kohadocs.org
+May 20 2005, Joshua Ferraro appointed Release Manager for 2.4
+June 2 2005, Waylon Robertson becomes the 33rd committer to Koha
+June 3 2005, Gavin ?? becomes the 34th committer to Koha
+June 3 2005, Friedrich zur Hellen becomes the 35th committer to Koha
+June 25-28 2005, Liblime present Koha at ALA
 
-
+August 19 2005, Mason James becomes the 36th committer to Koha
+December 11 2005, Joshua Ferraro becomes the 37th committer to Koha
