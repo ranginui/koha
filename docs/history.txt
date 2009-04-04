@@ -219,7 +219,14 @@ May 20 2005, Joshua Ferraro appointed Release Manager for 2.4
 June 2 2005, Waylon Robertson becomes the 33rd committer to Koha
 June 3 2005, Gavin ?? becomes the 34th committer to Koha
 June 3 2005, Friedrich zur Hellen becomes the 35th committer to Koha
+June 13 2005 Catalogue KOHA : mode d’emploi (in French) by the
+Bibliothèque de sociologie du CNRS, Paris is published on www.kohadocs.org
+June 23 2005, Paul releases 2.2.3
+June 23 2005, 'Traducción de “Templates” de KOHA' by Martin Longo
+published on kohadocs
+
 June 25-28 2005, Liblime present Koha at ALA
+
 
 August 19 2005, Mason James becomes the 36th committer to Koha
 December 11 2005, Joshua Ferraro becomes the 37th committer to Koha
