@@ -207,6 +207,7 @@ August 18 2004, Stephen Hedges becomes the 31st committer to Koha
 August 19 2004, Koha 2.1.1 released
 August 26 2004, Katipo installing Koha at Lianza conference (as well as presenting)
 http://www.katipo.co.nz/about-us/news/nr1092719045.shtml
+September 24 2004, Rachel Hamilton-Williams elected Kaitiaki
 September 29 2004, Koha 2.1.2 released
 October 20 2004, Koha 2.1.3 released
 November 17 2004, Koha 2.2.0rc1 released
@@ -282,21 +283,29 @@ January 26 2006, A new document added to http://www.kohadocs.org -- "Installing 
 January 27 2006,  the first Chinese (Traditional) document on http://www.kohadocs.org :
 Koha 2.2 &#31777;&#20171; -- a translation of Paul Poulain's Logiciel
 documentaire by &#27611; &#24950;&#31118; (Anthony Mao)
-
 February 11 2006, Article in computerworld about Koha
 http://computerworld.co.nz/news.nsf/news/3F65C01EAB666AC6CC25710F00805997?Opendocument&HighLight=2,koha
 February 23 2006, Robert Lyon (working at Katipo) becomes the 39th committer to Koha
 February 27 2006, "Fear and loathing: is open source a developer's dream or business nightmare?"
 http://computerworld.co.nz/news.nsf/spec/68C09CE2C8B8A483CC25711F001161D9?Opendocument&HighLight=2,koha
 March 7 2006, Pierrick Le Gall becomes the 40th committer to Koha
+March 24 2006, Joshua Ferraro has revised his document about installing Koha on Debian to
+accommodate Koha version 2.2.6 and Debian sarge (3.1).  Find it on www.kohadocs.org under "System Administration."
 April 11 2006, Tumer Garip becomes the 41st committer to Koha (major influence in the addition of zebra to Koha and other)
+May 2,3 2006, Kohacon in Paris http://www.koha.org/community/conferences/
 May 12 2006, Bruno Tuomi (from San Ouest Provence) becomes the 42nd committer to Koha
+May 12-18 2006, Developers week at Bibliotheque du Centre de Mathematiques et Informatique (CMI) at the Universite de Provence, in Marseille
 May 19 2006, Arnaud Laurin (als from SAN-OP) becomes the 43rd committer to Koha
 July 5 2006, Antoine Farnault becomes the 44th committer to Koha
 July 18 2006, Katipo starts a dedicated Koha team.
+August 3 2006, Koha 2.2.6rc2 released
 October 3 2006, Rangitikei Library launches new site, featuring Koha. It's opened by the Minister for Libraries from the NZ Government
 October 9-11 2006, Katipo at LIANZA demonstrating Koha, Russel Garlick presents
 http://katipo.co.nz/about-us/news/nr1159247279.shtml
+October 17 2006, Koha 2.2.6 released
+November 11 2006, Han Yan emails to tell the list that The Afghanistan Union catalog was built
+on top of Koha with some modifications such as Arabic support and label printing etc.
+
 
 2007
 ----
