@@ -201,8 +201,6 @@ November 23 2004, Koha 2.2.0rc3 released
 December 9 2004, Koha 2.2.0rc4 released
 December 21 2004, Koha 2.2.0rc5 released
 
-
-
 2005
 ----
 January 6 2005, Koha 2.2.0 released
@@ -224,9 +222,26 @@ Bibliothèque de sociologie du CNRS, Paris is published on www.kohadocs.org
 June 23 2005, Paul releases 2.2.3
 June 23 2005, 'Traducción de “Templates” de KOHA' by Martin Longo
 published on kohadocs
-
 June 25-28 2005, Liblime present Koha at ALA
-
-
+July 12 2005, The first chapter of the Koha Users Guide -- "Setting Up Your Koha System"
+-- is now available in the "General Information" section of
+http://www.kohadocs.org/
+July 12 2005, M J Ray sets up Planet Koha
 August 19 2005, Mason James becomes the 36th committer to Koha
+August 23 2005, A new document is available on http://www.kohadocs.org
+-- "MARC Holdings, Koha, and Migration" by Thomas Dukleth.  Look for it in section 2.2, "Migration."
+August 26 2005, A new link to a document has been added to
+http://www.kohadocs.org -- "Gestion de la bibliothèque du LabSAD avec le logiciel Koha" by Caroline
+Naget (available in pdf format only).  This document is in the General
+Information section because it covers several aspects of Koha:
+installing on Gentoo Linux, setting parameters, and use.
+October 10 2005, Koha 2.2.4 Released
+October 29 2005, Horowhenua Library Trust goes live with Koha 2.2.4 (the 2nd upgrade)
+October 31 2005, Dr Internet Recommends Koha http://www.networkworld.com/columnists/2005/102405internet.html
+November 4 2005, Carol Ku confirms you can search in Chinese in Koha
+November 7 2005, The French-language Koha users guide, "Manuel
+d’utilisation de Koha," is now available in DocBook xml, html, pdf, and OpenDocument formats in the
+General Information section of http://www.kohadocs.org.
 December 11 2005, Joshua Ferraro becomes the 37th committer to Koha
+December 13 2005, Thomas Dukleth becomes the 38th committer to Koha
+
