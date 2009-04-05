@@ -69,7 +69,7 @@ March 20 2002, Roger Buck sets up the first Koha wiki
 March 30 2002, Nicholas Rosasco begins work on a documentation site
 April 2 2002, Pat Eyler introduces himself to the community
 April 9 2002, Pat Eyler becomes 8th committer to Koha
-April 10 2002, Gynn Lomax becomes 9th committer to Koha
+April 10 2002, Gynn Lomax (of Katipo) becomes 9th committer to Koha
 April 21 2002, Roger Buck becomes 10th committer to Koha
 May 18 2002, Alan Millar becomes 11th committer to Koha
 May 27 2002, Mike Mylonas becomes 12th committer to Koha
@@ -122,6 +122,7 @@ January 6 2003, Andy?? becomes 18th committer to Koha
 January 8 2003, Koha 1.3.3 released
 January 19 2003, Ambrose Li becomes the 19th committer to Koha
 February 1 2003, Article from Pat Eyler about Koha in linux Journal
+February 4 2003, Koha Cafepress shop opens.
 February 5 2003, Koha 1.9.0 is released, 2.0.0 becomes much closer
 February 13 2003, "Open source library system a welcome gift"
 http://computerworld.co.nz/news.nsf/news/CC256CED0016AD1ECC256CCB000D1EA7?Opendocument&HighLight=2,koha
@@ -142,6 +143,8 @@ May 21 2003, M J Ray becomes the 22nd committer to Koha
 May 22 2003, Paul Poulain commits new bulkmarcimport tool to Koha
 May 22 2003, Koha 1.9.3 released
 May 26 2003, Koha wins Trophee Du Libre Award
+June 8-23, Rachel and Chris from Katipo go to Vienna to do Koha
+training for UNIDO (United Nations Industrial Development Organisation)
 June 17 2003, Serge Renaux becomes the 23rd committer to Koha
 June 20 2003, Jerome Vizcaino becomes the 24th committer to Koha
 June 21 2003, Paul Gear makes available rpm's of all of Koha's dependencies
@@ -156,9 +159,10 @@ July 17 2003, Ecole des mines de Paris commit to using Koha
 July 17 2003, The University of Buffalo decide to use Koha as a
 teaching tool for Library and Information Studies Students
 August 19 2003, NPL announces they are live with Koha
-August 26 2003, Richard Anderson becomes the 28th committer to Koha
+August 26 2003, Richard Anderson (at Katipo) becomes the 28th committer to Koha
 September 9 2003, Koha 2.0.0pre3 released
 September 23 2003, Koha 2.0.0pre4 released
+October 1 2003, Koha mentioned by Prime Minister of NZ when she was talking to the Chamber of Commerce
 October 3-5 2003, Open communication for open source software develoment: the Koha
 experience. Paper read at LITA National Forum, at
 Norfolk, VA. http://www.ala.org/ala/lita/litaevents/litanatlforum/forumprograms/cs1-6chawner.ppt.
@@ -237,7 +241,7 @@ July 12 2005, The first chapter of the Koha Users Guide -- "Setting Up Your Koha
 -- is now available in the "General Information" section of
 http://www.kohadocs.org/
 July 12 2005, M J Ray sets up Planet Koha
-August 19 2005, Mason James becomes the 36th committer to Koha
+August 19 2005, Mason James (at Katipo) becomes the 36th committer to Koha
 August 23 2005, A new document is available on http://www.kohadocs.org
 -- "MARC Holdings, Koha, and Migration" by Thomas Dukleth.  Look for it in section 2.2, "Migration."
 August 26 2005, A new link to a document has been added to
@@ -245,6 +249,8 @@ http://www.kohadocs.org -- "Gestion de la bibliothèque du LabSAD avec le logici
 Naget (available in pdf format only).  This document is in the General
 Information section because it covers several aspects of Koha:
 installing on Gentoo Linux, setting parameters, and use.
+September 12-14 2005, Katipo and Koha at LIANZA conference
+Octboer 6 2005, New www.koha.org website
 October 10 2005, Koha 2.2.4 Released
 October 29 2005, Horowhenua Library Trust goes live with Koha 2.2.4 (the 2nd upgrade)
 October 31 2005, Dr Internet Recommends Koha http://www.networkworld.com/columnists/2005/102405internet.html
@@ -257,18 +263,47 @@ December 13 2005, Thomas Dukleth becomes the 38th committer to Koha
 
 2006
 ----
+January 10 2006, Koha version 2.2.5 is released
+January 13 2006, Henri Damien Laurent announces new French Koha website
+January 17 2006, New material has been added to the Koha Users Guide
+to bring it up to date with version 2.2.5.  There is also new material on acquiring MARC
+records (Z39.50 and file imports) and templating.  View the Users Guide at
+http://www.kohadocs.org/usersguide/
 January 21 2006, "Australian open source conference comes to NZ"
 http://computerworld.co.nz/news.nsf/news/B9C36AF788353434CC2570FB007C0162?Opendocument&HighLight=2,koha
 January 23 2006, "Maddogs and Africans descend on Dunedin"
 http://computerworld.co.nz/news.nsf/news/4F9349662FA1AAC6CC2570FE006F6371?Opendocument&HighLight=2,koha
+January 25 2006, Chris Cormack is invited speaker at Linux Conf Australia 
+http://katipo.co.nz/about-us/news/nr1134624385.shtml
+January 26 2006, Chris Cormack is interviewed for Otago Daily times,
+and for the National Television news, talking about Koha
+http://katipo.co.nz/about-us/news/nr1138664189.shtml
+January 26 2006, A new document added to http://www.kohadocs.org -- "Installing Koha on Mac OS X" by Stephen Hedges.
+January 27 2006,  the first Chinese (Traditional) document on http://www.kohadocs.org :
+Koha 2.2 &#31777;&#20171; -- a translation of Paul Poulain's Logiciel
+documentaire by &#27611; &#24950;&#31118; (Anthony Mao)
+
 February 11 2006, Article in computerworld about Koha
 http://computerworld.co.nz/news.nsf/news/3F65C01EAB666AC6CC25710F00805997?Opendocument&HighLight=2,koha
+February 23 2006, Robert Lyon (working at Katipo) becomes the 39th committer to Koha
 February 27 2006, "Fear and loathing: is open source a developer's dream or business nightmare?"
 http://computerworld.co.nz/news.nsf/spec/68C09CE2C8B8A483CC25711F001161D9?Opendocument&HighLight=2,koha
+March 7 2006, Pierrick Le Gall becomes the 40th committer to Koha
+April 11 2006, Tumer Garip becomes the 41st committer to Koha (major influence in the addition of zebra to Koha and other)
+May 12 2006, Bruno Tuomi (from San Ouest Provence) becomes the 42nd committer to Koha
+May 19 2006, Arnaud Laurin (als from SAN-OP) becomes the 43rd committer to Koha
+July 5 2006, Antoine Farnault becomes the 44th committer to Koha
+July 18 2006, Katipo starts a dedicated Koha team.
+October 3 2006, Rangitikei Library launches new site, featuring Koha. It's opened by the Minister for Libraries from the NZ Government
+October 9-11 2006, Katipo at LIANZA demonstrating Koha, Russel Garlick presents
+http://katipo.co.nz/about-us/news/nr1159247279.shtml
 
 2007
 ----
+March 10 2007, Ryan Higgins (of Liblime) becomes the 45th committer to Koha
 March 12 2007, "Software development benefits from open source"
+March 31 2007, Katipo sells Koha division to Liblime
+http://katipo.co.nz/about-us/news/nr1175402768.shtml
 http://computerworld.co.nz/news.nsf/devt/2B9B1FE8678CC680CC257299000A233F?Opendocument&HighLight=2,koha
 October 2 2007, "Pharmac publishes directly with open source"
 http://computerworld.co.nz/news.nsf/news/25F72F231ABF8F5ACC2573630083A579?Opendocument&HighLight=2,koha
