@@ -19,6 +19,8 @@ August 17 2000, First request for internationalisation from Poland
 Auguest 19 2000, Koha 1.03 released
 October 9 2000, Koha 1.06 released
 October 17 2000, Koha wins 3M Innovation in Libraries award
+October 24 2000, "WebMedia, E-Loan collect awards"
+http://computerworld.co.nz/news.nsf/news/CC256CED0016AD1ECC2569810006EAE0?Opendocument&HighLight=2,koha
 October 27 2000, Koha wins "The best example of interactive media
 specifically made for community and not for profit organisations."
 Interactive NZ Award
@@ -89,6 +91,8 @@ August 5 2002, Rachel and Rosalie interviewed on National Radio in NZ
 August 26 2002, Nelsonville public library announce their intention to migrate to Koha
 September 3 2002, Nelsonville RFP's gain traction
 September 11 2002, Philanthropy Australia goes live with koha http://www.linuxpr.com/releases/5107.html
+September 12 2002, Article about Koha and NPL in computerworld
+http://computerworld.co.nz/news.nsf/news/CC256CED0016AD1ECC256C30007B0AB9?Opendocument&HighLight=2,koha
 September 19 2002, Dorian Meid becomes the 13th committer to Koha
 September 22 2002, Andrew Arensburger becomes the 14th committer to Koha, with the neat C4::Context
 September 22 2002, Koha and NPL written about in Computerworld NZ
@@ -119,6 +123,8 @@ January 8 2003, Koha 1.3.3 released
 January 19 2003, Ambrose Li becomes the 19th committer to Koha
 February 1 2003, Article from Pat Eyler about Koha in linux Journal
 February 5 2003, Koha 1.9.0 is released, 2.0.0 becomes much closer
+February 13 2003, "Open source library system a welcome gift"
+http://computerworld.co.nz/news.nsf/news/CC256CED0016AD1ECC256CCB000D1EA7?Opendocument&HighLight=2,koha
 February 17 2003, Mike Hansen becomes the 20th committer to Koha
 February ?? 2003, Nicolas Morin tells us that Koha was mentioned in the French monthly periodical ARCHIMAG
 March 11 2003, Ingrid Lacis appointed QA Manager
@@ -182,8 +188,12 @@ April 17 2004, Seminar on Koha at Cairo University, Egypt
 May 13-16 2004, Zeki Celikbas presents Koha at a linux festival in Ankara, Turkey
 May 25 2004, doXulting becomes the 30th committer to Koha
 May 29 2004, Brooke adds the Newbie Guide to the wiki, newbies around the world rejoice
+May 31 2004, "When profit's not the only goal"
+http://computerworld.co.nz/news.nsf/devt/04240726AC168409CC25723600334225?Opendocument&HighLight=2,koha
 June 4 2004, Paul commits first cut at online help
 June 23 2004, Ecole des Mines de Nantes funds the development of a suggestions module, to work with acquisitions
+June 24 2004, "And the winners are ..."
+http://computerworld.co.nz/news.nsf/news/6C696179245321F5CC256EBD006E50BC?Opendocument&HighLight=2,koha
 June 25 2004, Koha wins Computerworld excellence in IT for nonprofit Award
 June 30 2004, Koha 2.1.0 released
 June 30 2004, Christopher Brown-Syed emails to tell us Koha and University of Buffalo are continuin their relationship
@@ -245,3 +255,28 @@ General Information section of http://www.kohadocs.org.
 December 11 2005, Joshua Ferraro becomes the 37th committer to Koha
 December 13 2005, Thomas Dukleth becomes the 38th committer to Koha
 
+2006
+----
+January 21 2006, "Australian open source conference comes to NZ"
+http://computerworld.co.nz/news.nsf/news/B9C36AF788353434CC2570FB007C0162?Opendocument&HighLight=2,koha
+January 23 2006, "Maddogs and Africans descend on Dunedin"
+http://computerworld.co.nz/news.nsf/news/4F9349662FA1AAC6CC2570FE006F6371?Opendocument&HighLight=2,koha
+February 11 2006, Article in computerworld about Koha
+http://computerworld.co.nz/news.nsf/news/3F65C01EAB666AC6CC25710F00805997?Opendocument&HighLight=2,koha
+February 27 2006, "Fear and loathing: is open source a developer's dream or business nightmare?"
+http://computerworld.co.nz/news.nsf/spec/68C09CE2C8B8A483CC25711F001161D9?Opendocument&HighLight=2,koha
+
+2007
+----
+March 12 2007, "Software development benefits from open source"
+http://computerworld.co.nz/news.nsf/devt/2B9B1FE8678CC680CC257299000A233F?Opendocument&HighLight=2,koha
+October 2 2007, "Pharmac publishes directly with open source"
+http://computerworld.co.nz/news.nsf/news/25F72F231ABF8F5ACC2573630083A579?Opendocument&HighLight=2,koha
+October 30 2007, "Open source is a viable option, says the SSC"
+http://computerworld.co.nz/news.nsf/news/30E7D1CD947D73ABCC25737F00834E88?Opendocument&HighLight=2,koha
+
+
+2008
+----
+July 28 2008, "Enterprise doors open for open source"
+http://computerworld.co.nz/news.nsf/spec/446B512F34E476C0CC25749000796965?Opendocument&HighLight=2,koha
