@@ -311,13 +311,20 @@ on top of Koha with some modifications such as Arabic support and label printing
 ----
 March 10 2007, Ryan Higgins (of Liblime) becomes the 45th committer to Koha
 March 12 2007, "Software development benefits from open source"
+http://computerworld.co.nz/news.nsf/devt/2B9B1FE8678CC680CC257299000A233F?Opendocument&HighLight=2,koha
+March 28 2007, Passini becomes the 46th committer to Koha
 March 31 2007, Katipo sells Koha division to Liblime
 http://katipo.co.nz/about-us/news/nr1175402768.shtml
-http://computerworld.co.nz/news.nsf/devt/2B9B1FE8678CC680CC257299000A233F?Opendocument&HighLight=2,koha
+September 14 2007, Russel Garlick becomes the 47th committer to Koha
 October 2 2007, "Pharmac publishes directly with open source"
 http://computerworld.co.nz/news.nsf/news/25F72F231ABF8F5ACC2573630083A579?Opendocument&HighLight=2,koha
+October 3 2007, Joe Atzberger becomes the 48th committer to Koha
+October 3 2007, Chris Catalfo becomes the 49th committer to Koha
+October 10 2007, Frederic Demians becomes the 50th committer to Koha
+October 17 2007, Galen Charlton becomes the 51st committer to Koha
 October 30 2007, "Open source is a viable option, says the SSC"
 http://computerworld.co.nz/news.nsf/news/30E7D1CD947D73ABCC25737F00834E88?Opendocument&HighLight=2,koha
+December 21 2007, Daniel Banzli becomes the 52nd committer to Koha
 
 
 2008
