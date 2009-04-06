@@ -323,14 +323,27 @@ March 31 2007, Katipo sells Koha division to Liblime
 http://katipo.co.nz/about-us/news/nr1175402768.shtml
 April 1 2007, Russel Garlick, Chris Cormack and Mason James start at Liblime
 May 8 2007, Koha 2.2.9 released
+June 5 2007, Rachel Hamilton-Williams explains the logo http://www.koha.org/community/resources/about-the-logo.html
+June 13 2007, Koha presented at Fourteenth International Conference “Crimea 2007”
+http://www.gpntb.ru/win/inter-events/crimea2007/eng/cd/program.html
+http://www.gpntb.ru/win/inter-events/crimea2007/eng/cd/25.pdf
+June 18 2007, First Koha day at Liblime http://blog.bigballofwax.co.nz/2007/06/18/koha-project-day/
+http://lists.katipo.co.nz/public/koha/2007-June/011949.html
 June 24 2007, The Crawford County Federated Library System host an Organizational Meeting of a Koha User Group during ALA
+June 25 2007, Second Koha day http://blog.bigballofwax.co.nz/2007/06/25/koha-project-day-2/
+http://lists.katipo.co.nz/public/koha/2007-June/011987.html
+July 3 2007, Koha day http://lists.katipo.co.nz/public/koha/2007-July/012026.html
+July 28 2007, Koha day http://blog.bigballofwax.co.nz/2007/07/28/koha-project-day-3/
 September 14 2007, Russel Garlick becomes the 47th committer to Koha
+September 24 2007, Chris Hammond-Trashor emails to tell the community that Koha has gone live in Samoa. http://www.nelsonlibrary.ws/
 October 2 2007, "Pharmac publishes directly with open source"
 http://computerworld.co.nz/news.nsf/news/25F72F231ABF8F5ACC2573630083A579?Opendocument&HighLight=2,koha
 October 3 2007, Joe Atzberger becomes the 48th committer to Koha
 October 3 2007, Chris Catalfo becomes the 49th committer to Koha
 October 10 2007, Frederic Demians becomes the 50th committer to Koha
 October 17 2007, Galen Charlton becomes the 51st committer to Koha
+October 18 2007, Chris Cormack wins Open Source contributor of the year at the NZ Open Source awards. Koha was a finalist for project of the year
+http://lists.katipo.co.nz/public/koha/2007-October/012579.html
 October 30 2007, "Open source is a viable option, says the SSC"
 http://computerworld.co.nz/news.nsf/news/30E7D1CD947D73ABCC25737F00834E88?Opendocument&HighLight=2,koha
 December 21 2007, Daniel Banzli becomes the 52nd committer to Koha
@@ -338,10 +351,14 @@ December 21 2007, Daniel Banzli becomes the 52nd committer to Koha
 
 2008
 ----
+January 5 2008, Koha 3.0.0 Alpha is released
 February 23 2008, Jesse Weaver becomes the 53rd committer to Koha
 March 3 2008, Russel Garlick, Chris Cormack and Mason James leave Liblime, Liblime NZ closed
 March 19 2008, Andrew Moore becomes the 54th committer to Koha
+March 23 2008, Koha 3.0.0 Beta is released
 April 2 2008, Darrell Ulm becomes the 55th committer to Koha
+April 5 2008, Koha 3.0.0 Beta 2 is released
+April 13 2008, Voting opens for new Koha website theme
 April 24 2008, Marc Chantreux becomes the 56th committer to Koha
 April 25 2008, Frère Sébastien Marie becomes the 57th committer to Koha
 April 26 2008, Polytechnic University Koha Installation becomes the 58th committer to Koha
@@ -350,12 +367,17 @@ May 18 2008, Koha production??? becomes the 60th committer to Koha
 May 28 2008, Michael Hafen becomes the 61st committer to Koha
 June 17 2008, Daniel Kahn Gillmor becomes the 62nd committer to Koha
 June 21 2008, Ricardo Dias Marques becomes the 63rd committer to Koha
+June 24 2008, String freeze for Koha 3.0.0 announced
+June 24 2008, Koha 3.0.0 rc1 released
 July 1 2008, Philippe Jaillon becomes the 64th committer to Koha
 July 4 2008, DeAndre Carroll becomes the 65th committer to Koha
+July 8 2008, Draft manual for koha 3.0.0 made available
 July 11 2008, Nicole Engard becomes the 66th committer to Koha
 July 28 2008, "Enterprise doors open for open source"
 http://computerworld.co.nz/news.nsf/spec/446B512F34E476C0CC25749000796965?Opendocument&HighLight=2,koha
 August 2 2008, Danny Bouman becomes the 67th committer to Koha
+August 11 2008, Koha 3.0.0 released
+August 11 2008, Dehli public library announce they are going live with Koha 3.0.0
 August 8 2008, Southeastern University becomes the 68th committer to Koha
 August 16 2008, Vincent Danjean becomes the 69th committer to Koha
 September 19 2008, Clay Fouts becomes the 70th committer to Koha
