@@ -309,6 +309,11 @@ on top of Koha with some modifications such as Arabic support and label printing
 
 2007
 ----
+January 10 2007, Italian Translation updated
+January 10 2007, new chinese, japanese & korean translations
+January 17 2007, contribs.koha.org goes live, Thanks to Pierrick Le Gall for the extensions manager. 
+February 15 2007, Frédéric Demians from Tamil announces plan to offer support services around Koha
+March 8 2007, Koha 2.2.8 released
 March 10 2007, Ryan Higgins (of Liblime) becomes the 45th committer to Koha
 March 12 2007, "Software development benefits from open source"
 http://computerworld.co.nz/news.nsf/devt/2B9B1FE8678CC680CC257299000A233F?Opendocument&HighLight=2,koha
@@ -329,5 +334,26 @@ December 21 2007, Daniel Banzli becomes the 52nd committer to Koha
 
 2008
 ----
+February 23 2008, Jesse Weaver becomes the 53rd committer to Koha
+March 19 2008, Andrew Moore becomes the 54th committer to Koha
+April 2 2008, Darrell Ulm becomes the 55th committer to Koha
+April 24 2008, Marc Chantreux becomes the 56th committer to Koha
+April 25 2008, Frère Sébastien Marie becomes the 57th committer to Koha
+April 26 2008, Polytechnic University Koha Installation becomes the 58th committer to Koha
+May 6 2008, NCE becomes the 59th committer to Koha
+May 18 2008, Koha production??? becomes the 60th committer to Koha
+May 28 2008, Michael Hafen becomes the 61st committer to Koha
+June 17 2008, Daniel Kahn Gillmor becomes the 62nd committer to Koha
+June 21 2008, Ricardo Dias Marques becomes the 63rd committer to Koha
+July 1 2008, Philippe Jaillon becomes the 64th committer to Koha
+July 4 2008, DeAndre Carroll becomes the 65th committer to Koha
+July 11 2008, Nicole Engard becomes the 66th committer to Koha
 July 28 2008, "Enterprise doors open for open source"
 http://computerworld.co.nz/news.nsf/spec/446B512F34E476C0CC25749000796965?Opendocument&HighLight=2,koha
+August 2 2008, Danny Bouman becomes the 67th committer to Koha
+August 8 2008, Southeastern University becomes the 68th committer to Koha
+August 16 2008, Vincent Danjean becomes the 69th committer to Koha
+September 19 2008, Clay Fouts becomes the 70th committer to Koha
+October 15 2008, Nahuel Angelinetti becomes the 71st committer to Koha
+October 23 2008, Allen Reinmeyer becomes the 72nd committer to Koha
+October 23 2008, John Beppu becomes the 73rd committer to Koha
