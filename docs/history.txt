@@ -1,7 +1,7 @@
 1999
 ----
 HLT have a proprietary library system, with a y2k bug
-HLT send out RFP, no responses that would actually
+HLT send out RFP, no responses that would actually work over dialup links
 HLT and Katipo look for Opensource ILS, can't find one
 September 6 1999, Work starts on Koha
 September,October,December 1999 Katipo work with HLT to write an ILS.
@@ -346,6 +346,7 @@ October 18 2007, Chris Cormack wins Open Source contributor of the year at the N
 http://lists.katipo.co.nz/public/koha/2007-October/012579.html
 October 30 2007, "Open source is a viable option, says the SSC"
 http://computerworld.co.nz/news.nsf/news/30E7D1CD947D73ABCC25737F00834E88?Opendocument&HighLight=2,koha
+October ?? 2007, Biblibre formed
 December 21 2007, Daniel Banzli becomes the 52nd committer to Koha
 
 
