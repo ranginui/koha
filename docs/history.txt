@@ -379,7 +379,7 @@ http://computerworld.co.nz/news.nsf/spec/446B512F34E476C0CC25749000796965?Opendo
 August 2 2008, Danny Bouman becomes the 67th committer to Koha
 August 8 2008, Southeastern University becomes the 68th committer to Koha
 August 11 2008, Koha 3.0.0 released
-August 11 2008, Dehli public library announce they are going live with Koha 3.0.0
+August 11 2008, Delhi public library announce they are going live with Koha 3.0.0
 August 16 2008, Vincent Danjean becomes the 69th committer to Koha
 August 31 2008, Kyle hall makes a VMWare image of Koha 3.0.0 available
 September 13 2008, Community Meeting, new positions elected
@@ -389,7 +389,7 @@ Documentation Manager - Nicole Engard, LibLime
 3.0 Release Maintainer - Henri-Damien Laurent, BibLibre
 http://koha.org/cgi-bin/logs.pl?look=plain&startdate=2008091212:00:37&enddate=2008091213:30:01&search=Search
 September 19 2008, Clay Fouts becomes the 70th committer to Koha
-October 2 2008, Dehli Public Library goes live with koha 3.0.0
+October 2 2008, Delhi Public Library goes live with koha 3.0.0
 October 15 2008, Nahuel Angelinetti becomes the 71st committer to Koha
 October 23 2008, Allen Reinmeyer becomes the 72nd committer to Koha
 October 23 2008, John Beppu becomes the 73rd committer to Koha
