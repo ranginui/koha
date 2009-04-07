@@ -376,14 +376,25 @@ July 11 2008, Nicole Engard becomes the 66th committer to Koha
 July 28 2008, "Enterprise doors open for open source"
 http://computerworld.co.nz/news.nsf/spec/446B512F34E476C0CC25749000796965?Opendocument&HighLight=2,koha
 August 2 2008, Danny Bouman becomes the 67th committer to Koha
+August 8 2008, Southeastern University becomes the 68th committer to Koha
 August 11 2008, Koha 3.0.0 released
 August 11 2008, Dehli public library announce they are going live with Koha 3.0.0
-August 8 2008, Southeastern University becomes the 68th committer to Koha
 August 16 2008, Vincent Danjean becomes the 69th committer to Koha
+August 31 2008, Kyle hall makes a VMWare image of Koha 3.0.0 available
+September 13 2008, Community Meeting, new positions elected
+3.2 Release Manager - Galen Charlton, LibLime
+Translation Manager - Chris Cormack, Catalyst
+Documentation Manager - Nicole Engard, LibLime
+3.0 Release Maintainer - Henri-Damien Laurent, BibLibre
+http://koha.org/cgi-bin/logs.pl?look=plain&startdate=2008091212:00:37&enddate=2008091213:30:01&search=Search
 September 19 2008, Clay Fouts becomes the 70th committer to Koha
+October 2 2008, Dehli Public Library goes live with koha 3.0.0
 October 15 2008, Nahuel Angelinetti becomes the 71st committer to Koha
 October 23 2008, Allen Reinmeyer becomes the 72nd committer to Koha
 October 23 2008, John Beppu becomes the 73rd committer to Koha
+November 3 2008, Rosalie Blake named a LIANZA Fellow
+http://www.lianza.org.nz/development/awards/professional/2008-recipients.html
+November 18 2008, David Schuster moots the idea of a Koha conference in April 2009
 December 24 2008, Stan Brinkerhoff becomes the 74th committer to Koha
 
 
@@ -392,6 +403,7 @@ December 24 2008, Stan Brinkerhoff becomes the 74th committer to Koha
 January 16 2009, Daniel Sweeney becomes the 75th committer to Koha
 February 6 2009, J. David Bavousett becomes the 76th committer to Koha
 February 10 2009, Andrew Elwell becomes the 77th committer to Koha
+February 19 2009, Koha 3.0.1 released
 March 3 2009, Brian Harrington becomes the 78th committer to Koha
 March 5 2009, James Winter becomes the 79th committer to Koha
 March 5 2009, Stephen Edwards becomes the 80th committer to Koha
