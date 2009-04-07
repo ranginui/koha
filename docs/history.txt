@@ -12,7 +12,7 @@ Olwen Williams does at lot of work on data conversion.
 January 3 2000, Koha goes live after many sleepness nights and a few
 hundred commits
 ?? 2000, Koha written about in Library Life NZ
-July 13 2000, First post to the mailing list
+July 13 2000, First post to the koha mailing list
 July 21 2000, Koha 1.00 put up for download
 August 9 2000, Koha 1.01 released
 August 17 2000, First request for internationalisation from Poland
@@ -76,6 +76,7 @@ May 27 2002, Mike Mylonas becomes 12th committer to Koha
 May 23 2002, Steve Tonnessen makes searchable logs of the irc channel available
 May 30 2002, Meeting to elect Kaitiaki - Pat Eyler elected
 June 7 2002, Pat sends his first from the Kaitiaki report
+June 14 2002, First email to the koha-announce list
 June 15 2002, First bug lodged in bugs.koha.org at 1.15pm
 June 15 2002, First bug in bugzilla fixed at 2pm
 June 15 2002, Koha 1.2.0 Released - Contains templates to make
@@ -83,10 +84,12 @@ translation easier, Chris takes over release maintenance while Paul
 and Steve begin work for 1.4.0
 June 28 2002, Pay for support page started on koha.org
 July 5 2002, Koha 1.2.1 Released
+July 10 2002, First email to the koha-translate mailing list
 July 12 2002, Nicholas sets up a translation section on the wiki and a
 mailing list
 July 19 2002, Koha mentioned in Linux Weekly News
 July 26 2002, Koha 1.2.2 Released
+August 2 2002, Koha translations of the README file in Bangla and Hindi received
 August 5 2002, Rachel and Rosalie interviewed on National Radio in NZ
 August 26 2002, Nelsonville public library announce their intention to migrate to Koha
 September 3 2002, Nelsonville RFP's gain traction
@@ -211,6 +214,7 @@ September 24 2004, Rachel Hamilton-Williams elected Kaitiaki
 September 29 2004, Koha 2.1.2 released
 October 20 2004, Koha 2.1.3 released
 November 17 2004, Koha 2.2.0rc1 released
+November 17 2004, M J Ray releases Koha 2.0.2
 November 20 2004, Koha 2.2.0rc2 released
 November 23 2004, Koha 2.2.0rc3 released
 December 9 2004, Koha 2.2.0rc4 released
@@ -305,7 +309,7 @@ http://katipo.co.nz/about-us/news/nr1159247279.shtml
 October 17 2006, Koha 2.2.6 released
 November 11 2006, Han Yan emails to tell the list that The Afghanistan Union catalog was built
 on top of Koha with some modifications such as Arabic support and label printing etc.
-
+November 23 2006, Paul Poulain announces Koha 2.2.7 has been released
 
 2007
 ----
@@ -396,15 +400,22 @@ October 23 2008, John Beppu becomes the 73rd committer to Koha
 November 3 2008, Rosalie Blake named a LIANZA Fellow
 http://www.lianza.org.nz/development/awards/professional/2008-recipients.html
 November 18 2008, David Schuster moots the idea of a Koha conference in April 2009
+December 19 2008, Andy Giesler writes a great guide to installing Koha on Ubuntu http://www.blazingmoon.org/guides/k3-on-u810-1.html
 December 24 2008, Stan Brinkerhoff becomes the 74th committer to Koha
 
 
 2009
 ----
 January 16 2009, Daniel Sweeney becomes the 75th committer to Koha
+January 24 2009, KUDOS (Koha Users and Developers of Open Source) for those using the software, Meeting at ALA
+January 24 2009, KOHA Interest Group Meeting at ALA
+February 5 2009, Koha 3.0.1 beta released
 February 6 2009, J. David Bavousett becomes the 76th committer to Koha
 February 10 2009, Andrew Elwell becomes the 77th committer to Koha
+February 13 2009, K's Helping Hand launched http://krishnanm.com/khh
+February 13-14 2009, Prashant Kulkarni and Krishnan Mani present Koha at Gnunify 09
 February 19 2009, Koha 3.0.1 released
 March 3 2009, Brian Harrington becomes the 78th committer to Koha
 March 5 2009, James Winter becomes the 79th committer to Koha
 March 5 2009, Stephen Edwards becomes the 80th committer to Koha
+March 12 2009, Biblibre start work on a connector for SOPAC (the social opac) and Koha
