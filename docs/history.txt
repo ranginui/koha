@@ -344,13 +344,13 @@ October 2 2007, "Pharmac publishes directly with open source"
 http://computerworld.co.nz/news.nsf/news/25F72F231ABF8F5ACC2573630083A579?Opendocument&HighLight=2,koha
 October 3 2007, Joe Atzberger becomes the 48th committer to Koha
 October 3 2007, Chris Catalfo becomes the 49th committer to Koha
+October 4 2007, Biblibre formed
 October 10 2007, Frederic Demians becomes the 50th committer to Koha
 October 17 2007, Galen Charlton becomes the 51st committer to Koha
 October 18 2007, Chris Cormack wins Open Source contributor of the year at the NZ Open Source awards. Koha was a finalist for project of the year
 http://lists.katipo.co.nz/public/koha/2007-October/012579.html
 October 30 2007, "Open source is a viable option, says the SSC"
 http://computerworld.co.nz/news.nsf/news/30E7D1CD947D73ABCC25737F00834E88?Opendocument&HighLight=2,koha
-October ?? 2007, Biblibre formed
 December 21 2007, Daniel Banzli becomes the 52nd committer to Koha
 
 
