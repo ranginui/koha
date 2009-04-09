@@ -1125,7 +1125,7 @@ sub GetXmlBiblio {
       $dbh->prepare("SELECT marcxml FROM biblioitems WHERE biblionumber=? ");
     $sth->execute($biblionumber);
     my ($marcxml) = $sth->fetchrow;
-    return $marcxml;
+    return Normalize_String($marcxml);
 }
 
 =head2 GetCOinSBiblio
@@ -3386,7 +3386,7 @@ sub ModBiblioMarc {
     $sth =
       $dbh->prepare(
         "UPDATE biblioitems SET marc=?,marcxml=? WHERE biblionumber=?");
-    $sth->execute( $record->as_usmarc(), $record->as_xml_record($encoding),
+    $sth->execute( $record->as_usmarc(), Normalize_String($record->as_xml_record($encoding)),
         $biblionumber );
     $sth->finish;
     ModZebra($biblionumber,"specialUpdate","biblioserver",$oldRecord,$record);

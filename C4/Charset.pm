@@ -22,6 +22,7 @@ use warnings;
 
 use MARC::Charset qw/marc8_to_utf8/;
 use Text::Iconv;
+use Unicode::Normalize;
 
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
@@ -35,6 +36,7 @@ BEGIN {
         MarcToUTF8Record
         SetMarcUnicodeFlag
         StripNonXmlChars
+		Normalize_String
     );
 }
 
@@ -108,6 +110,30 @@ sub IsStringUTF8ish {
 
     return 1 if utf8::is_utf8($str);
     return utf8::decode($str);
+}
+
+
+=head2 Normalize_String
+
+=over 4
+
+my $$string_normalized = Normalize_String($string);
+
+=back
+
+Returns normalized string C<$string> in C Form 
+
+
+=cut
+
+sub Normalize_String {
+    my $string = shift;
+	if (IsStringUTF8ish($string)){
+		return NFC($string);
+	}
+	else {
+		return $string;
+	}
 }
 
 =head2 MarcToUTF8Record
@@ -215,7 +241,7 @@ sub MarcToUTF8Record {
             @errors = _marc_iso5426_to_utf8($marc_record, $marc_flavour);
         } else {
             # assume any other character encoding is for Text::Iconv
-            @errors = _marc_to_utf8_via_text_iconv($marc_record, $marc_flavour, 'iso-8859-1');
+            @errors = _marc_to_utf8_via_text_iconv($marc_record, $marc_flavour, $source_encoding);
         }
 
         if (@errors) {
@@ -455,6 +481,7 @@ sub _marc_marc8_to_utf8 {
                     # that the resulting string is UTF-8.
                     utf8::upgrade($utf8sf);
                 }
+			    $utf8sf=NFC($utf8sf);
                 push @converted_subfields, $subfield->[0], $utf8sf;
             }
 
@@ -503,6 +530,7 @@ sub _marc_iso5426_to_utf8 {
             my @converted_subfields;
             foreach my $subfield ($field->subfields()) {
                 my $utf8sf = char_decode5426($subfield->[1]);
+			    $utf8sf=NFC($utf8sf);
                 push @converted_subfields, $subfield->[0], $utf8sf;
             }
 
@@ -573,6 +601,7 @@ sub _marc_to_utf8_via_text_iconv {
                     push @converted_subfields, $subfield->[0], $converted_value;
                 } else {
                     $converted_value = $subfield->[1];
+			    	$converted_value=NFC($converted_value);
                     $converted_value =~ s/[\200-\377]/\xef\xbf\xbd/g;
                     push @converted_subfields, $subfield->[0], $converted_value;
                 }
@@ -620,6 +649,7 @@ sub _marc_to_utf8_replacement_char {
             my @converted_subfields;
             foreach my $subfield ($field->subfields()) {
                 my $value = $subfield->[1];
+			   	$value=NFC($value);
                 $value =~ s/[\200-\377]/\xef\xbf\xbd/g;
                 push @converted_subfields, $subfield->[0], $value;
             }
