@@ -63,6 +63,7 @@ November 8 2001, Steve Tonessen succeeds Chris Cormack as Release manager
 ----
 January 24 2002, First message to the main koha list from Stephen Hedges at NPL
 February 1 2002, First message to the main koha list from Paul Poulain
+February 14 2002, First message to the koha-devel list from Paul Poulain
 February 22 2002, Paul Poulain sends an email saying he will work on
 Koha
 March 6 2002, Paul becomes the 7th committer to Koha
