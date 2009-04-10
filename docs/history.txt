@@ -152,13 +152,16 @@ October 23-25 2002, NPL (Joshua Ferraro, Stephen Hedges & Owen Leonard) plus Chr
 October 25 2002, Koha 1.2.3rc20 released
 October 29 2002, Koha 1.2.3rc21 released
 October 30-31 2002, Chris Cormack speaks at Think Linux Toledo, Chris, Joshua Ferraro and Stephen Hedges man a stand 
-November 14 2002, Henri-Damien Laurent becomes 16th committer to Koha
-Novemer 21 2002, Kohausers page is started
-November ?? 2002, Chawner, Brenda. 2002. Koha: an open source success story.
+November 13 2002, Chawner, Brenda. 2002. Koha: an open source success story.
 http://mustafa.emeraldinsight.com/vl=12220074/cl=48/nw=1/rpsv/librarylink/technology/nov02.htm
+November 14 2002, Henri-Damien Laurent becomes 16th committer to Koha
+November 21 2002, Kohausers page is started
+November 22 2002, Paul Poulain starts work on internationalising the Koha installer
+November 27 2002, Koha 1.3.2 released 
+November 27 2002, Steve Tonnesen starts work on a foraging OPAC
 November 30 2002, Francisco M. Marzoa Alonso 17th committer to Koha
-December 2 2002, Koha 1.3.2 released ??
-Decemeber 6 2002, Koha mentioned in an article about opensource in
+December 2 2002, Ed Summers emails to talk about his work with MARC::Charset
+December 6 2002, Koha mentioned in an article about opensource in
 American Libraries
 December 6 2002, First known install in france ND-Dombes Abbey 
 December ?? 2002, Koha 1.2.3 released
@@ -168,11 +171,17 @@ begins the lifelong task of preparing windows packages
 2003
 ----
 January 6 2003, Andy?? becomes 18th committer to Koha
+January 6 2003, Ed Summers starts work on writing tests for Koha
 January 8 2003, Koha 1.3.3 released
+January 13 2003, Rosalie Blake and Regula Sebastio work on the librarian section of the Koha manual
+January 17 2003, Bobby Billingsley releases his Danish translation of Koha
 January 19 2003, Ambrose Li becomes the 19th committer to Koha
+January 22 2003, Bundle::KohaSupport (0.08) released on CPAN by Mike Mylonas
+January 22 2003, Owen Leonard starts work on cleaning up the templates
+January 31 2003, Nicholas Rosasco addes a new page about templating to the wiki
 February 1 2003, Article from Pat Eyler about Koha in linux Journal
 February 4 2003, Koha Cafepress shop opens.
-February 5 2003, Koha 1.9.0 is released, 2.0.0 becomes much closer
+February 5 2003, Koha 1.9.0 is released, 2.0.0 becomes much closer, Feature freeze is called
 February 13 2003, "Open source library system a welcome gift"
 http://computerworld.co.nz/news.nsf/news/CC256CED0016AD1ECC256CCB000D1EA7?Opendocument&HighLight=2,koha
 February 17 2003, Mike Hansen becomes the 20th committer to Koha
