@@ -53,7 +53,7 @@ September 27 2001, Debian package available for debian
 deb http://mail.cmsd.bc.ca/debian local main
 apt-get update
 apt-get install koha
-October 23 2001, Nicolas Rosasco starts work on a FAQ
+October 23 2001, Nicholas Rosasco starts work on a FAQ
 November 1 2001, Can use Z3950 from Koha now
 November 2 2001, Can successfully import MARC records
 November 7 2001, Nicholas Rosasco publishes FAQ for Koha
