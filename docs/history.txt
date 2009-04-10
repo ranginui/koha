@@ -26,7 +26,7 @@ specifically made for community and not for profit organisations."
 Interactive NZ Award
 December 16 2000, Glen Stewart sends the first patch for Koha (outside
 of Katipo)
-December 16 2000, Steve Tonnessen begins work on non-acquistions based
+December 16 2000, Steve Tonnesen begins work on non-acquistions based
 cataloguing interface
 December 21 2000, After returning from my annual leave Koha 1.07 is
 released
@@ -71,10 +71,18 @@ April 2 2002, Pat Eyler introduces himself to the community
 April 9 2002, Pat Eyler becomes 8th committer to Koha
 April 10 2002, Gynn Lomax (of Katipo) becomes 9th committer to Koha
 April 21 2002, Roger Buck becomes 10th committer to Koha
+May 1 2002, Chris announces 1.2.0-rc1
+May 8 2002, Paul Poulain sends his MARC support proposal to the devel list
+May 11 2002, Steve Tonnesen outlines a structure for HTML::Template and the Koha templates
+May 14 2002, Chris Cormack branches cvs and creates rel-1-4-marc branch for work on MARC
+May 15 2002, Steve Tonnesen makes the irc logs publicly available
 May 18 2002, Alan Millar becomes 11th committer to Koha
 May 27 2002, Mike Mylonas becomes 12th committer to Koha
-May 23 2002, Steve Tonnessen makes searchable logs of the irc channel available
+May 23 2002, Steve Tonnesen makes searchable logs of the irc channel available
+May 23 2002, Koha 1.1.2rc1 released
+May 28 2002, Rachel Hamilton-Williams puts up Katipo's Koha work on the wiki to avoid duplication of effort
 May 30 2002, Meeting to elect Kaitiaki - Pat Eyler elected
+June 6 2002, Chris Cormack announces Koha 1.2.0-rc2 
 June 7 2002, Pat sends his first from the Kaitiaki report
 June 14 2002, First email to the koha-announce list
 June 15 2002, First bug lodged in bugs.koha.org at 1.15pm
@@ -141,7 +149,7 @@ clicks to do an install
 April 12 2003, Koha 1.9.2 released
 April 16 2003, Paul Poulain presents on Koha at "Open Source Software in Libraries" at enssib (the French National School for librarians - www.enssib.fr) 
 May 9 2003, Ingrid resigns as QA manager
-May 15 2003, Pat Eyler, Steve Tonnessen and Chris Cormack add RSS support to Koha
+May 15 2003, Pat Eyler, Steve Tonnesen and Chris Cormack add RSS support to Koha
 May 21 2003, M J Ray becomes the 22nd committer to Koha
 May 22 2003, Paul Poulain commits new bulkmarcimport tool to Koha
 May 22 2003, Koha 1.9.3 released
