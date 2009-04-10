@@ -43,6 +43,7 @@ May 18 2001, Glen Stewart leaves his job and working on Koha, gives us cuecat de
 June 15 2001, Work begins on importing/exporting MARC to/from koha
 June 23 2001, Benedykt P. Barszcz working on translations
 June 24 2001, Pawel Skuza working on a script to automate translations
+June 27 2001, Chris Cormack commits the script to automate translations
 July 12 2001, Pawel Skuza becomes the 2nd committer outside of Katipo, and 6th overall and commits his translation script.
 July 17 2001, Koha 1.1.1 released, including new translation script
 August 15 2001, Steve Tonessen has 5 Schools in BC using Koha
@@ -52,14 +53,16 @@ September 27 2001, Debian package available for debian
 deb http://mail.cmsd.bc.ca/debian local main
 apt-get update
 apt-get install koha
+October 23 2001, Nicolas Rosasco starts work on a FAQ
+November 1 2001, Can use Z3950 from Koha now
 November 2 2001, Can successfully import MARC records
-November 7 2001, Nicholas Stephen Rosasco writes FAQ for Koha
+November 7 2001, Nicholas Rosasco publishes FAQ for Koha
 November 8 2001, Steve Tonessen succeeds Chris Cormack as Release manager
 
 2002
 ----
-January 24 2002, First message to the list from Stephen Hedges at NPL
-February 1 2002, First message to the list from Paul Poulain
+January 24 2002, First message to the main koha list from Stephen Hedges at NPL
+February 1 2002, First message to the main koha list from Paul Poulain
 February 22 2002, Paul Poulain sends an email saying he will work on
 Koha
 March 6 2002, Paul becomes the 7th committer to Koha
@@ -69,8 +72,12 @@ March 20 2002, Roger Buck sets up the first Koha wiki
 March 30 2002, Nicholas Rosasco begins work on a documentation site
 April 2 2002, Pat Eyler introduces himself to the community
 April 9 2002, Pat Eyler becomes 8th committer to Koha
+April 14 2002, Chris Cormack asks Nicholas Rosasco to help coordinate the developers with him
 April 10 2002, Gynn Lomax (of Katipo) becomes 9th committer to Koha
+April 20 2002, irc channel #koha set up on irc.katipo.co.nz 
 April 21 2002, Roger Buck becomes 10th committer to Koha
+April 24 2002, Chris Cormack branches cvs to make rel-1-2 branch
+April 24 2002, Pat Eyler starts a who's who page on the wiki
 May 1 2002, Chris announces 1.2.0-rc1
 May 8 2002, Paul Poulain sends his MARC support proposal to the devel list
 May 11 2002, Steve Tonnesen outlines a structure for HTML::Template and the Koha templates
@@ -84,12 +91,19 @@ May 28 2002, Rachel Hamilton-Williams puts up Katipo's Koha work on the wiki to 
 May 30 2002, Meeting to elect Kaitiaki - Pat Eyler elected
 June 6 2002, Chris Cormack announces Koha 1.2.0-rc2 
 June 7 2002, Pat sends his first from the Kaitiaki report
+June 9 2002, Rachel Hamilton-Willams of Katipo sends access to the
+katipo cma to edit the new koha.org site
 June 14 2002, First email to the koha-announce list
 June 15 2002, First bug lodged in bugs.koha.org at 1.15pm
 June 15 2002, First bug in bugzilla fixed at 2pm
 June 15 2002, Koha 1.2.0 Released - Contains templates to make
 translation easier, Chris takes over release maintenance while Paul
 and Steve begin work for 1.4.0
+June 17 2002, Koha mentioned in an article by Ben Ostrowsky about Linux/Open Source
+June 18 2002, Pat Eyler starts a kohabiz mailing list
+June 20 2002, Koha 1.2.1rc1 put up on developer.koha.org
+June 24 2002, Koha 1.2.1rc2 put up on developer.koha.org
+June 25 2002, Koha 1.2.1rc3 put on developer.koha.org
 June 28 2002, Pay for support page started on koha.org
 July 5 2002, Koha 1.2.1 Released
 July 10 2002, First email to the koha-translate mailing list
