@@ -213,20 +213,38 @@ April 13 2005	 Liblime announce they are providing Koha support
 April 19 2005	 Shaun Evans becomes the 32nd committer to Koha
 April 24 2005	 Set Parameters and Migrate Your Data to Koha 2.2, English translation of Paul Poulain's Paramétrer et migrer, by Regula Sebastiao. On kohadocs.org
 April 26 2005	 Koha 2.2.2b released
-May 2 2005	 Koha translated to Swedish
+May 2 2005	 Koha translated to Swedish	translation,sweden
+May 6 2005	 Argentinian start work on customising Koha for use in Argentinian Universities	Argentina
 May 8 2005	 Stephen Hedges starts work on 2.2 Users guide
+May 15 2005	 New document on http://www.kohadocs.org "Command-line scripts," Jared Jennings' translation of Paul Poulain's original French document.  Look for it in section 2.3 "Maintenance and Troubleshooting."
 May 20 2005	 Stephen Hedges publishes his Koha Diary on www.kohadocs.org
 May 20 2005	 Joshua Ferraro appointed Release Manager for 2.4
+May 20 2005	 Russel Garlick updates http://www.koha.org
+May 23 2005	 Website Design committee mooted
+May 23 2005	 Koha mentioned in Linux Today http://linuxtoday.com/infrastructure/2005052200426OSDPPB
+May 25 2005	 #koha-fr channel started on irc						       community, french
+May 25 2005	 Chris Cormack commits some Plucene scripts in cvs Head and Joshua Ferraro does some testing	  search, fulltext
+May 26 2005	 Koha webdesign IRC meeting website
+May 31 2005	 Bugsquashing session
 June 2 2005	 Waylon Robertson becomes the 33rd committer to Koha
 June 3 2005	 Gavin ?? becomes the 34th committer to Koha
+June 3 2005	 Joshua Ferraro and Chris Cormack discuss trying out Koha for fulltext search on irc	searching, fulltext
 June 3 2005	 Friedrich zur Hellen becomes the 35th committer to Koha
+June 5 2005	 Joshuaexpirements with Zebra, finds very positive and encouraging results	searching, fulltext
 June 13 2005 	 Catalogue KOHA : mode d’emploi (in French) by the Bibliothèque de sociologie du CNRS, Paris is published on www.kohadocs.org
+June 13 2005	 After more discussion on irc, Joshua Ferraro sets up a test site using zebra on liblime servers	  search, fulltext, liblime
+June 14 2005	 Draft coding guidelines published
 June 23 2005	 Paul releases 2.2.3
 June 23 2005	 'Traducción de “Templates” de KOHA' by Martin Longo published on kohadocs
 June 25-28 2005	 Liblime present Koha at ALA
+July 4 2005	 Paul Poulain proposes we rename Koha 2.4 to be 3.0
 July 5 2005	 Bug 1000 registered at bugs.koha.org
+July 6 2005	 koha-zebra mailing list created
 July 12 2005	 The first chapter of the Koha Users Guide -- "Setting Up Your Koha System" -- is now available in the "General Information" section of http://www.kohadocs.org/
 July 12 2005	 M J Ray sets up Planet Koha
+July 13 2005	 hatem ibraheem writes to say that MSA university (Modern Sience and Arts university) http://www.msa.eun.eg/library.htm using Koha	community, library, Egypt
+August 13 2005	 "Koha Coding Standards and Guidelines for Contributors." on http://www.kohadocs.org  documentation
+August 18 2005	 An expanded version of the first chapter of the Koha Users Guide is now available at http://www.kohadocs.org/usersguide.	documentation
 August 19 2005	 Mason James (at Katipo) becomes the 36th committer to Koha
 August 23 2005	 A new document is available on http://www.kohadocs.org -- "MARC Holdings, Koha, and Migration" by Thomas Dukleth.  Look for it in section 2.2, "Migration."
 August 26 2005	 A new link to a document has been added to http://www.kohadocs.org -- "Gestion de la bibliothèque du LabSAD avec le logiciel Koha" by Caroline Naget (available in pdf format only).  This document is in the General Information section because it covers several aspects of Koha: installing on Gentoo Linux, setting parameters, and use.
