@@ -2,38 +2,38 @@ Date	Description	Tags
 1999	HLT have a proprietary library system, with a y2k bug	
 1999	HLT send out RFP, no responses that would actually work over dialup links	
 1999	HLT and Katipo look for Opensource ILS, can't find one	
-September 6 1999       Work starts on Koha	
-September,October,December 1999	     Katipo work with HLT to write an ILS.	
+September 6 1999	Work starts on Koha	
+September,October,December 1999	Katipo work with HLT to write an ILS.	
 1999	Olwen Williams does at lot of work on data conversion.	
 January 3 2000	 Koha goes live after many sleepness nights and a few hundred commits
 ?? 2000	 Koha written about in Library Life NZ
 July 13 2000	 First post to the koha mailing list
-July 21 2000	 Koha 1.00 put up for download
-August 9 2000	 Koha 1.01 released
-August 17 2000	 First request for internationalisation from Poland
-Auguest 19 2000	 Koha 1.03 released
-October 9 2000	 Koha 1.06 released
-October 17 2000	 Koha wins 3M Innovation in Libraries award
+July 21 2000	 Koha 1.00 put up for download	release
+August 9 2000	 Koha 1.01 released	release
+August 17 2000	 First request for internationalisation from Poland	translation
+Auguest 19 2000	 Koha 1.03 released	release
+October 9 2000	 Koha 1.06 released	release
+October 17 2000	 Koha wins 3M Innovation in Libraries award	award
 October 24 2000	 "WebMedia, E-Loan collect awards" http://computerworld.co.nz/news.nsf/news/CC256CED0016AD1ECC2569810006EAE0?Opendocument&HighLight=2,koha
-October 27 2000	 Koha wins "The best example of interactive media specifically made for community and not for profit organisations." Interactive NZ Award
+October 27 2000	 Koha wins "The best example of interactive media specifically made for community and not for profit organisations." Interactive NZ Award	award
 December 16 2000	 Glen Stewart sends the first patch for Koha (outside of Katipo)
 December 16 2000	 Steve Tonnesen begins work on non-acquistions based cataloguing interface
-December 21 2000	 After returning from my annual leave Koha 1.07 is released
+December 21 2000	 Chris Cormack returns from annual leave and Koha 1.07 is released	award
 December 21 2000	 Koha is set up on sourceforge.net
 January 6 2001	 Steve Tonnesen becomes the 5th committer to Koha and the first outside of Katipo, Koha has 874 commits at this point
 January 13 2001	 Glen Stewart sends patches to fix some bugs with acquisitions
 January 19 2001	 Steve Tonnesen begins work on web based circulations
 February 16 2001	 Koha developers mailing list set up
-February 27 2001	 Koha 1.1.0 released includes Web based circulations
+February 27 2001	 Koha 1.1.0 released includes Web based circulations	release
 May 18 2001	 Glen Stewart leaves his job and working on Koha, gives us cuecat decoding code as a parting gift.
 June 15 2001	 Work begins on importing/exporting MARC to/from koha
-June 23 2001	 Benedykt P. Barszcz working on translations	 translation,community,poland
-June 24 2001	 Pawel Skuza working on a script to automate translations
-June 27 2001	 Chris Cormack commits the script to automate translations
+June 23 2001	 Benedykt P. Barszcz working on translations	 translation, community, poland
+June 24 2001	 Pawel Skuza working on a script to automate translations	translation
+June 27 2001	 Chris Cormack commits the script to automate translations	translation
 July 12 2001	 Pawel Skuza becomes the 2nd committer outside of Katipo, and 6th overall and commits his translation script.
-July 17 2001	 Koha 1.1.1 released, including new translation script
+July 17 2001	 Koha 1.1.1 released, including new translation script	release
 August 15 2001	 Steve Tonessen has 5 Schools in BC using Koha
-September 5 2001	 Pawel Skuza submits new Polish images for use with Koha
+September 5 2001	 Pawel Skuza submits new Polish images for use with Koha translation,poland
 September 25 2001	 Gerrit Niestijl installs Koha using Oracle
 September 27 2001	 Debian package available for debian deb http://mail.cmsd.bc.ca/debian local main apt-get update apt-get install koha
 October 23 2001	 Nicolas Rosasco starts work on a FAQ
@@ -325,7 +325,7 @@ August 8 2008	 Southeastern University becomes the 68th committer to Koha
 August 11 2008	 Koha 3.0.0 released
 August 11 2008	 Delhi public library announce they are going live with Koha 3.0.0
 August 16 2008	 Vincent Danjean becomes the 69th committer to Koha
-August 31 2008	 Kyle hall makes a VMWare image of Koha 3.0.0 available September 13 2008, Community Meeting, new positions elected 3.2 Release Manager - Galen Charlton, LibLime Translation Manager - Chris Cormack, Catalyst Documentation Manager - Nicole Engard, LibLime	 3.0 Release Maintainer - Henri-Damien Laurent, BibLibre	http://koha.org/cgi-bin/logs.pl?look=plain&startdate=2008091212:00:37&enddate=2008091213:30:01&search=Search
+August 31 2008	Kyle hall makes a VMWare image of Koha 3.0.0 available September 13 2008, Community Meeting, new positions elected 3.2 Release Manager - Galen Charlton, LibLime Translation Manager - Chris Cormack, Catalyst Documentation Manager - Nicole Engard, LibLime 3.0 Release Maintainer - Henri-Damien Laurent, BibLibre http://koha.org/cgi-bin/logs.pl?look=plain&startdate=2008091212:00:37&enddate=2008091213:30:01&search=Search
 September 19 2008	 Clay Fouts becomes the 70th committer to Koha
 October 2 2008	 Delhi Public Library goes live with koha 3.0.0
 October 15 2008	 Nahuel Angelinetti becomes the 71st committer to Koha
