@@ -136,6 +136,7 @@ September 12 2002, Article about Koha and NPL in computerworld
 http://computerworld.co.nz/news.nsf/news/CC256CED0016AD1ECC256C30007B0AB9?Opendocument&HighLight=2,koha
 September 13 2002, Bundle::KohaSupport released on CPAN
 September 17 2002, Finlay Thompson puts forward the spec for using languages and themes with the Koha templates
+September 18 2002, Bug 100 registered at bugs.koha.og
 September 19 2002, Dorian Meid becomes the 13th committer to Koha
 September 22 2002, Andrew Arensburger becomes the 14th committer to Koha, with the C4::Config module
 September 22 2002, Koha and NPL written about in Computerworld NZ
@@ -188,13 +189,21 @@ February 17 2003, Mike Hansen becomes the 20th committer to Koha
 February ?? 2003, Nicolas Morin tells us that Koha was mentioned in the French monthly periodical ARCHIMAG
 March 11 2003, Ingrid Lacis appointed QA Manager
 March 11 2003, Steve Tonnesen appointed Release Manager for 2.1/2.2
+March 12 2003, Nicholas Rosasco steps down as Translation manager,
+continues as Documentation manager
 March 28 2003, Koha-testing mailing list set up
+April 1 2003, QA meeting on irc
+April 2 2003, Bug 250 reported on bugs.koha.org
 April 5 2003, Al Banks becomes the 21st committer to Koha
 April 5 2003, Koha 1.9.1 released
+April 8 2003, General townhall meeting on IRC
+April 10 2003, Pat Eyler creates about.tmpl for the about page in Koha including credits
 April 11 2003, Rob Weir updates the Koha windows packages, now a few
 clicks to do an install
 April 12 2003, Koha 1.9.2 released
 April 16 2003, Paul Poulain presents on Koha at "Open Source Software in Libraries" at enssib (the French National School for librarians - www.enssib.fr) 
+April 29 2003, Pat Eyler posts an article about upcoming 2.0 to usrlib.info
+May 1 2002, koha-bugs mailing list set up
 May 9 2003, Ingrid resigns as QA manager
 May 15 2003, Pat Eyler, Steve Tonnesen and Chris Cormack add RSS support to Koha
 May 21 2003, M J Ray becomes the 22nd committer to Koha
@@ -204,13 +213,16 @@ May 26 2003, Koha wins Trophee Du Libre Award
 June 8-23, Rachel and Chris from Katipo go to Vienna to do Koha
 training for UNIDO (United Nations Industrial Development Organisation)
 June 17 2003, Serge Renaux becomes the 23rd committer to Koha
+June 19 2003, Bug 500 registered at bugs.koha.org
 June 20 2003, Jerome Vizcaino becomes the 24th committer to Koha
 June 21 2003, Paul Gear makes available rpm's of all of Koha's dependencies
 June 23 2003, Michel Lerenard becomes the 25th committer to Koha
 June 24 2003, Koha 2.0.0pre1 released
 June 24 2003, Joshua Ferraro becomes the 26th committer to Koha
+June 24 2003, koha@br.koha.org Brazilian mailing list set up
 July 9 2003, Pierre Cauchois becomes the 27th committer to Koha
 July 11 2003, Koha 2.0.0pre2 released
+July 15 2003, Paul Poulain adds a demo mode to Koha
 July 17 2003, Students at ESIEE develop a feature to allow Koha to
 use LDAP to authenticate
 July 17 2003, Ecole des mines de Paris commit to using Koha
