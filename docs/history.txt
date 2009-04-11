@@ -5,8 +5,7 @@ Date	Description	Tags
 September 6 1999        Work starts on Koha	
 September,October,December 1999	     Katipo work with HLT to write an ILS.	
 	Olwen Williams does at lot of work on data conversion.	
-January 3 2000	 Koha goes live after many sleepness nights and a few
-hundred commits
+January 3 2000	 Koha goes live after many sleepness nights and a few hundred commits
 ?? 2000	 Koha written about in Library Life NZ
 July 13 2000	 First post to the koha mailing list
 July 21 2000	 Koha 1.00 put up for download
@@ -15,17 +14,11 @@ August 17 2000	 First request for internationalisation from Poland
 Auguest 19 2000	 Koha 1.03 released
 October 9 2000	 Koha 1.06 released
 October 17 2000	 Koha wins 3M Innovation in Libraries award
-October 24 2000	 "WebMedia, E-Loan collect awards"
-http://computerworld.co.nz/news.nsf/news/CC256CED0016AD1ECC2569810006EAE0?Opendocument&HighLight=2,koha
-October 27 2000	 Koha wins "The best example of interactive media
-specifically made for community and not for profit organisations."
-Interactive NZ Award
-December 16 2000	 Glen Stewart sends the first patch for Koha (outside
-of Katipo)
-December 16 2000	 Steve Tonnesen begins work on non-acquistions based
-cataloguing interface
-December 21 2000	 After returning from my annual leave Koha 1.07 is
-released
+October 24 2000	 "WebMedia, E-Loan collect awards" http://computerworld.co.nz/news.nsf/news/CC256CED0016AD1ECC2569810006EAE0?Opendocument&HighLight=2,koha
+October 27 2000	 Koha wins "The best example of interactive media specifically made for community and not for profit organisations." Interactive NZ Award
+December 16 2000	 Glen Stewart sends the first patch for Koha (outside of Katipo)
+December 16 2000	 Steve Tonnesen begins work on non-acquistions based cataloguing interface
+December 21 2000	 After returning from my annual leave Koha 1.07 is released
 December 21 2000	 Koha is set up on sourceforge.net
 January 6 2001	 Steve Tonnesen becomes the 5th committer to Koha and the first outside of Katipo, Koha has 874 commits at this point
 January 13 2001	 Glen Stewart sends patches to fix some bugs with acquisitions
@@ -34,7 +27,7 @@ February 16 2001	 Koha developers mailing list set up
 February 27 2001	 Koha 1.1.0 released includes Web based circulations
 May 18 2001	 Glen Stewart leaves his job and working on Koha, gives us cuecat decoding code as a parting gift.
 June 15 2001	 Work begins on importing/exporting MARC to/from koha
-June 23 2001	 Benedykt P. Barszcz working on translations
+June 23 2001	 Benedykt P. Barszcz working on translations	 translation,community,poland
 June 24 2001	 Pawel Skuza working on a script to automate translations
 June 27 2001	 Chris Cormack commits the script to automate translations
 July 12 2001	 Pawel Skuza becomes the 2nd committer outside of Katipo, and 6th overall and commits his translation script.
@@ -42,10 +35,7 @@ July 17 2001	 Koha 1.1.1 released, including new translation script
 August 15 2001	 Steve Tonessen has 5 Schools in BC using Koha
 September 5 2001	 Pawel Skuza submits new Polish images for use with Koha
 September 25 2001	 Gerrit Niestijl installs Koha using Oracle
-September 27 2001	 Debian package available for debian
-deb http://mail.cmsd.bc.ca/debian local main
-apt-get update
-apt-get install koha
+September 27 2001	 Debian package available for debian deb http://mail.cmsd.bc.ca/debian local main apt-get update apt-get install koha
 October 23 2001	 Nicolas Rosasco starts work on a FAQ
 November 1 2001	 Can use Z3950 from Koha now
 November 2 2001	 Can successfully import MARC records
@@ -53,8 +43,7 @@ November 7 2001	 Nicholas Rosasco publishes FAQ for Koha
 November 8 2001	 Steve Tonessen succeeds Chris Cormack as Release manager
 January 24 2002	 First message to the main koha list from Stephen Hedges at NPL
 February 1 2002	 First message to the main koha list from Paul Poulain
-February 22 2002	 Paul Poulain sends an email saying he will work on
-Koha
+February 22 2002	 Paul Poulain sends an email saying he will work on Koha
 March 6 2002	 Paul becomes the 7th committer to Koha
 March 13 2002	 Katipo's new developer Finlay Thompson becomes the 8th committer to Koha
 March 14 2002	 First email from Joshua Ferraro
@@ -81,14 +70,11 @@ May 28 2002	 Rachel Hamilton-Williams puts up Katipo's Koha work on the wiki to 
 May 30 2002	 Meeting to elect Kaitiaki - Pat Eyler elected
 June 6 2002	 Chris Cormack announces Koha 1.2.0-rc2 
 June 7 2002	 Pat sends his first from the Kaitiaki report
-June 9 2002	 Rachel Hamilton-Willams of Katipo sends access to the
-katipo cma to edit the new koha.org site
+June 9 2002	 Rachel Hamilton-Willams of Katipo sends access to the katipo cma to edit the new koha.org site
 June 14 2002	 First email to the koha-announce list
 June 15 2002	 First bug lodged in bugs.koha.org at 1.15pm
 June 15 2002	 First bug in bugzilla fixed at 2pm
-June 15 2002	 Koha 1.2.0 Released - Contains templates to make
-translation easier, Chris takes over release maintenance while Paul
-and Steve begin work for 1.4.0
+June 15 2002	 Koha 1.2.0 Released - Contains templates to make translation easier, Chris takes over release maintenance while Paul and Steve begin work for 1.4.0
 June 17 2002	 Koha mentioned in an article by Ben Ostrowsky about Linux/Open Source
 June 18 2002	 Pat Eyler starts a kohabiz mailing list
 June 20 2002	 Koha 1.2.1rc1 put up on developer.koha.org
@@ -97,8 +83,7 @@ June 25 2002	 Koha 1.2.1rc3 put on developer.koha.org
 June 28 2002	 Pay for support page started on koha.org
 July 5 2002	 Koha 1.2.1 Released
 July 10 2002	 First email to the koha-translate mailing list
-July 12 2002	 Nicholas sets up a translation section on the wiki and a
-mailing list
+July 12 2002	 Nicholas sets up a translation section on the wiki and a mailing list
 July 19 2002	 Koha mentioned in Linux Weekly News
 July 26 2002	 Koha 1.2.2 Released
 August 2 2002	 Koha translations of the README file in Bangla and Hindi received
@@ -106,8 +91,7 @@ August 5 2002	 Rachel and Rosalie interviewed on National Radio in NZ
 August 26 2002	 Nelsonville public library announce their intention to migrate to Koha
 September 3 2002	 Nelsonville RFP's gain traction
 September 11 2002	 Philanthropy Australia goes live with koha http://www.linuxpr.com/releases/5107.html
-September 12 2002	 Article about Koha and NPL in computerworld
-http://computerworld.co.nz/news.nsf/news/CC256CED0016AD1ECC256C30007B0AB9?Opendocument&HighLight=2,koha
+September 12 2002	 Article about Koha and NPL in computerworld http://computerworld.co.nz/news.nsf/news/CC256CED0016AD1ECC256C30007B0AB9?Opendocument&HighLight=2,koha
 September 19 2002	 Dorian Meid becomes the 13th committer to Koha
 September 22 2002	 Andrew Arensburger becomes the 14th committer to Koha, with the neat C4::Context
 September 22 2002	 Koha and NPL written about in Computerworld NZ
@@ -120,24 +104,20 @@ October 23-25 2002	 NPL (Joshua Ferraro, Stephen Hedges & Owen Leonard) plus Chr
 October 30-31 2002	 Chris Cormack speaks at Think Linux Toledo, Chris, Joshua Ferraro and Stephen Hedges man a stand 
 November 14 2002	 Henri-Damien Laurent becomes 16th committer to Koha
 Novemer 21 2002	 Kohausers page is started
-November ?? 2002	 Chawner, Brenda. 2002. Koha: an open source success story.
-http://mustafa.emeraldinsight.com/vl=12220074/cl=48/nw=1/rpsv/librarylink/technology/nov02.htm
+November ?? 2002	 Chawner, Brenda. 2002. Koha: an open source success story. http://mustafa.emeraldinsight.com/vl=12220074/cl=48/nw=1/rpsv/librarylink/technology/nov02.htm
 November 30 2002	 Francisco M. Marzoa Alonso 17th committer to Koha
 December 2 2002	 Koha 1.3.2 released ??
-Decemeber 6 2002	 Koha mentioned in an article about opensource in
-American Libraries
+Decemeber 6 2002	 Koha mentioned in an article about opensource in American Libraries
 December 6 2002	 First known install in france ND-Dombes Abbey 
 December ?? 2002	 Koha 1.2.3 released
-December 13 2002	 Rob Weir posts links to his Windows32 packages,
-begins the lifelong task of preparing windows packages
+December 13 2002	 Rob Weir posts links to his Windows32 packages, begins the lifelong task of preparing windows packages
 January 6 2003	 Andy?? becomes 18th committer to Koha
 January 8 2003	 Koha 1.3.3 released
 January 19 2003	 Ambrose Li becomes the 19th committer to Koha
 February 1 2003	 Article from Pat Eyler about Koha in linux Journal
 February 4 2003	 Koha Cafepress shop opens.
 February 5 2003	 Koha 1.9.0 is released, 2.0.0 becomes much closer
-February 13 2003	 "Open source library system a welcome gift"
-http://computerworld.co.nz/news.nsf/news/CC256CED0016AD1ECC256CCB000D1EA7?Opendocument&HighLight=2,koha
+February 13 2003	 "Open source library system a welcome gift" http://computerworld.co.nz/news.nsf/news/CC256CED0016AD1ECC256CCB000D1EA7?Opendocument&HighLight=2,koha
 February 17 2003	 Mike Hansen becomes the 20th committer to Koha
 February ?? 2003	 Nicolas Morin tells us that Koha was mentioned in the French monthly periodical ARCHIMAG
 March 11 2003	 Ingrid Lacis appointed QA Manager
@@ -145,8 +125,7 @@ March 11 2003	 Steve Tonnesen appointed Release Manager for 2.1/2.2
 March 28 2003	 Koha-testing mailing list set up
 April 5 2003	 Al Banks becomes the 21st committer to Koha
 April 5 2003	 Koha 1.9.1 released
-April 11 2003	 Rob Weir updates the Koha windows packages, now a few
-clicks to do an install
+April 11 2003	 Rob Weir updates the Koha windows packages, now a few clicks to do an install
 April 12 2003	 Koha 1.9.2 released
 April 16 2003	 Paul Poulain presents on Koha at "Open Source Software in Libraries" at enssib (the French National School for librarians - www.enssib.fr) 
 May 9 2003	 Ingrid resigns as QA manager
