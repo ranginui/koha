@@ -2,7 +2,7 @@ Date	Description	Tags
 1999	HLT have a proprietary library system, with a y2k bug	
 1999	HLT send out RFP, no responses that would actually work over dialup links	
 1999	HLT and Katipo look for Opensource ILS, can't find one	
-September 6 1999        Work starts on Koha	
+September 6 1999       Work starts on Koha	
 September,October,December 1999	     Katipo work with HLT to write an ILS.	
 1999	Olwen Williams does at lot of work on data conversion.	
 January 3 2000	 Koha goes live after many sleepness nights and a few hundred commits
