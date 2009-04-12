@@ -113,6 +113,7 @@ December ?? 2002	 Koha 1.2.3 released
 December 13 2002	 Rob Weir posts links to his Windows32 packages, begins the lifelong task of preparing windows packages
 January 6 2003	 Andy?? becomes 18th committer to Koha
 January 8 2003	 Koha 1.3.3 released
+January 12 2003	Benedict finishes the translation of the templates into polish	translation, polish
 January 19 2003	 Ambrose Li becomes the 19th committer to Koha
 February 1 2003	 Article from Pat Eyler about Koha in linux Journal
 February 4 2003	 Koha Cafepress shop opens.
@@ -120,14 +121,16 @@ February 5 2003	 Koha 1.9.0 is released, 2.0.0 becomes much closer
 February 13 2003	 "Open source library system a welcome gift" http://computerworld.co.nz/news.nsf/news/CC256CED0016AD1ECC256CCB000D1EA7?Opendocument&HighLight=2,koha
 February 17 2003	 Mike Hansen becomes the 20th committer to Koha
 February ?? 2003	 Nicolas Morin tells us that Koha was mentioned in the French monthly periodical ARCHIMAG
+February 26 2003	Helena Gironès begins work on a Catalan translation	translation, catalan
 March 11 2003	 Ingrid Lacis appointed QA Manager
-March 11 2003	 Steve Tonnesen appointed Release Manager for 2.1/2.2
+March 11 2003	 Steve Tonnesen appointed Release Manager for 2.1/2.2, Paul Poulain later takes over this role
 March 28 2003	 Koha-testing mailing list set up
 April 5 2003	 Al Banks becomes the 21st committer to Koha
 April 5 2003	 Koha 1.9.1 released
 April 11 2003	 Rob Weir updates the Koha windows packages, now a few clicks to do an install
 April 12 2003	 Koha 1.9.2 released
 April 16 2003	 Paul Poulain presents on Koha at "Open Source Software in Libraries" at enssib (the French National School for librarians - www.enssib.fr) 
+May 3 2003	Dorian Meid translate the opac into German	translation, german
 May 9 2003	 Ingrid resigns as QA manager
 May 15 2003	 Pat Eyler, Steve Tonnesen and Chris Cormack add RSS support to Koha
 May 21 2003	 M J Ray becomes the 22nd committer to Koha
@@ -187,12 +190,14 @@ July 15? 2004	 Joshua Ferraro presents Koha at the OLC annual conference
 August 18 2004	 Stephen Hedges becomes the 31st committer to Koha
 August 19 2004	 Koha 2.1.1 released
 August 26 2004	 Katipo installing Koha at Lianza conference (as well as presenting) http://www.katipo.co.nz/about-us/news/nr1092719045.shtml
+September 1 2004	Martín Longo starts work on translating Koha to spanish	translation, spanish
 September 24 2004	 Rachel Hamilton-Williams elected Kaitiaki
 September 29 2004	 Koha 2.1.2 released
 September 29 2004	 Joshua Ferraro presents at OLC
 October 2 2004	 Paul Poulain announces the birth of his 3rd son :)
 October 20 2004	 Koha 2.1.3 released
 October 29 2004	 Koha 2.0.2beta released
+October 29 2004	Gerry Arthus starts work on a Turkish translation	translation, turkish
 November 17 2004	 Koha 2.2.0rc1 released
 November 17 2004	 M J Ray releases Koha 2.0.2
 November 20 2004	 Koha 2.2.0rc2 released
@@ -207,6 +212,8 @@ February 6 2005	 Koha 2.2, Software Overview and Description of Features -- is n
 February 7 2005	 Paul Poulain announces he has hired Henri Damien Laurent to work with him on Koha
 February 10 2005	  "Koha Architectural Study" by Nicholas Rosasco and Erik Bakke. New doc on kohadocs.org
 February 22 2005	 Koha 2.2.1 released
+March 10 2005	Matti Lassila writes to say work is continuing on a Finnish translation	translation, finnish
+April 7 2005	Lars ?? translates the MARC21 labels to swedish	translation, swedish
 April 8 2005	 Koha 2.2.2 released
 April 13 2005	 Liblime announce they are providing Koha support
 April 19 2005	 Shaun Evans becomes the 32nd committer to Koha
@@ -249,7 +256,8 @@ August 23 2005	 A new document is available on http://www.kohadocs.org -- "MARC 
 August 26 2005	 A new link to a document has been added to http://www.kohadocs.org -- "Gestion de la bibliothèque du LabSAD avec le logiciel Koha" by Caroline Naget (available in pdf format only).  This document is in the General Information section because it covers several aspects of Koha: installing on Gentoo Linux, setting parameters, and use.
 September 8 2005 New website softlaunched
 September 12-14 2005	 Katipo and Koha at LIANZA conference
-Octboer 6 2005	 New www.koha.org website
+September 20 2005	Сергій Дубик starts work on a Ukranian translation	translation, ukranian
+October 6 2005	 New www.koha.org website
 October 10 2005	 Koha 2.2.4 Released
 October 19 2005	 Manuel d’utilisation de Koha by "Boris Gapihan, Christelle Le Borgne, Fabien Malclès, Marie-France Palestro (élèves conservateurs à l'ENSSIB, promotion DCB14)" up on http://www.kohadocs.org
 October 29 2005	 Horowhenua Library Trust goes live with Koha 2.2.4 (the 2nd upgrade)
@@ -257,10 +265,10 @@ October 31 2005	 Dr Internet Recommends Koha http://www.networkworld.com/columni
 November 4 2005	 Carol Ku confirms you can search in Chinese in Koha
 November 6 2005	 The French-language Koha users guide, "Manuel d’utilisation de Koha," is now available in DocBook xml, html, pdf, and OpenDocument formats in the General Information section of http://www.kohadocs.org.
 November 8 2005	 Koha cvs moved to savannah from sourceforge, mailing lists follow
-November 14 2005 Anthony Youngman suggests using git
-November 27 2005 A new version of the Koha 2.2 Users Guide is now available on www.kohadocs.org (in the General Information section)
-December 11 2005 Joshua Ferraro becomes the 37th committer to Koha
-December 13 2005 Thomas Dukleth becomes the 38th committer to Koha
+November 14 2005	Anthony Youngman suggests using git
+November 27 2005	A new version of the Koha 2.2 Users Guide is now available on www.kohadocs.org (in the General Information section)
+December 11 2005	Joshua Ferraro becomes the 37th committer to Koha
+December 13 2005	Thomas Dukleth becomes the 38th committer to Koha
 January 10 2006	 Koha version 2.2.5 is released
 January 13 2006	 Henri Damien Laurent announces new French Koha website
 January 17 2006	 New material has been added to the Koha Users Guide to bring it up to date with version 2.2.5.  There is also new material on acquiring MARC records (Z39.50 and file imports) and templating.  View the Users Guide at http://www.kohadocs.org/usersguide/
@@ -282,22 +290,33 @@ March 6 2006	IRC meeting
 March 7 2006	Pierrick Le Gall becomes the 40th committer to Koha
 March 13 2006	IRC meeting
 March 17 2006	First email from Kyle Hall at ccfls to the Mailing list
-March 24 2006	Joshua Ferraro has revised his document about installing Koha on Debian to accommodate Koha version 2.2.6 and Debian sarge (3.1).  Find it on www.kohadocs.org under "System Administration."
+March 24 2006	Joshua Ferraro has revised his document about installing Koha on Debian to accommodate Koha version 2.2.6 and Debian sarge (3.1).  Find it on www.kohadocs.org under "System Administration."	documentation
+April 3	2006	Developer meeting on IRC
 April 11 2006	 Tümer Garip becomes the 41st committer to Koha (major influence in the addition of zebra to Koha and other)
+April 14 2006	Pierrick Le Gall begins as translation manager
 May 2,3 2006	 Kohacon in Paris http://www.koha.org/community/conferences/
 May 12 2006	 Bruno Tuomi (from San Ouest Provence) becomes the 42nd committer to Koha
 May 12-18 2006	 Developers week at Bibliotheque du Centre de Mathematiques et Informatique (CMI) at the Universite de Provence, in Marseille
-May 19 2006	 Arnaud Laurin (als from SAN-OP) becomes the 43rd committer to Koha
-July 5 2006	 Antoine Farnault becomes the 44th committer to Koha
-July 18 2006	 Katipo starts a dedicated Koha team.
-August 3 2006	 Koha 2.2.6rc2 released
+May 19 2006	 Arnaud Laurin (also from SAN-OP) becomes the 43rd committer to Koha
+May 31 2006	First email from Mike Hafen to the devel list
+June 1 2006	Antoine Farnault hired by Paul Poulain and Henri Damien Laurent to work on Koha
+June 5 2006	IRC meeting
+July 5 2006	Antoine Farnault becomes the 44th committer to Koha
+July 12 2006	Koha 2.3.0 released	release
+July 18 2006	Katipo starts a dedicated Koha team.
+July 18 2006	Paolo Pozzan starts translating koha to Italian	translation, italian
+August 2 2006	Koha 2.2.6rc2 released	release
+August 3 2006	Kyle Hall announces he has finished his offline circ addon for firefox
+August 8 2006	Pierrick Le Gall resigns as QA manager
+August 30 2006	Antoine Farnault branches cvs creates rel_3_0 branch
 October 3 2006	 Rangitikei Library launches new site, featuring Koha. It's opened by the Minister for Libraries from the NZ Government
 October 9-11 2006	 Katipo at LIANZA demonstrating Koha, Russel Garlick presents http://katipo.co.nz/about-us/news/nr1159247279.shtml
 October 17 2006	 Koha 2.2.6 released
 November 11 2006	 Han Yan emails to tell the list that The Afghanistan Union catalog was built on top of Koha with some modifications such as Arabic support and label printing etc.
 November 23 2006	 Paul Poulain announces Koha 2.2.7 has been released
-January 10 2007	 Italian Translation updated
-January 10 2007	 new chinese, japanese & korean translations
+December 19 2006	chinese(zh_TW) translation of koha	translation, chinese, taiwan
+January 10 2007	 Italian Translation updated	translation, italian
+January 10 2007	 new chinese, japanese & korean translations	translation, chinese, japanese, korean
 January 17 2007	 contribs.koha.org goes live, Thanks to Pierrick Le Gall for the extensions manager. 
 February 15 2007	 Frédéric Demians from Tamil announces plan to offer support services around Koha
 March 8 2007	 Koha 2.2.8 released
@@ -307,12 +326,15 @@ March 17 2007	 Liblime accepted to google summer of code, call out to the mailin
 March 28 2007	 Passini becomes the 46th committer to Koha
 March 31 2007	 Katipo sells Koha division to Liblime http://katipo.co.nz/about-us/news/nr1175402768.shtml
 April 1 2007	 Russel Garlick, Chris Cormack and Mason James start at Liblime
-May 8 2007	 Koha 2.2.9 released
+April 10 2007	Agnes Imecs begins work on a Hungarian translation of Koha	translation, hungarian
+May 8 2007	 Koha 2.2.9 released	release
+May 29 2007	Karen Myers begins work on a Tetun translation	translation, tetun
 June 5 2007	 Rachel Hamilton-Williams explains the logo http://www.koha.org/community/resources/about-the-logo.html
 June 13 2007	 Koha presented at Fourteenth International Conference “Crimea 2007” http://www.gpntb.ru/win/inter-events/crimea2007/eng/cd/program.html http://www.gpntb.ru/win/inter-events/crimea2007/eng/cd/25.pdf
 June 18 2007	 First Koha day at Liblime http://blog.bigballofwax.co.nz/2007/06/18/koha-project-day/ http://lists.katipo.co.nz/public/koha/2007-June/011949.html
 June 24 2007	 The Crawford County Federated Library System host an Organizational Meeting of a Koha User Group during ALA
 June 25 2007	 Second Koha day http://blog.bigballofwax.co.nz/2007/06/25/koha-project-day-2/ http://lists.katipo.co.nz/public/koha/2007-June/011987.html
+June 25 2007	Beda Szukics announces updates to the german translations	translation, german
 July 3 2007	 Koha day http://lists.katipo.co.nz/public/koha/2007-July/012026.html
 July 28 2007	 Koha day http://blog.bigballofwax.co.nz/2007/07/28/koha-project-day-3/
 September 14 2007	 Russel Garlick becomes the 47th committer to Koha
@@ -322,13 +344,17 @@ October 3 2007	 Joe Atzberger becomes the 48th committer to Koha
 October 3 2007	 Chris Catalfo becomes the 49th committer to Koha
 October 4 2007	 Biblibre formed
 October 10 2007	 Frederic Demians becomes the 50th committer to Koha
+October 12 2007	Axel Bojer working on Norwegian translation	translation, norwegian
 October 17 2007	 Galen Charlton becomes the 51st committer to Koha
 October 18 2007	 Chris Cormack wins Open Source contributor of the year at the NZ Open Source awards. Koha was a finalist for project of the year http://lists.katipo.co.nz/public/koha/2007-October/012579.html
 October 30 2007	 "Open source is a viable option, says the SSC" http://computerworld.co.nz/news.nsf/news/30E7D1CD947D73ABCC25737F00834E88?Opendocument&HighLight=2,koha
 December 21 2007	 Daniel Banzli becomes the 52nd committer to Koha
-January 5 2008	 Koha 3.0.0 Alpha is released
+January 5 2008	 Koha 3.0.0 Alpha is released	release
+January 28 2008	Anousak Souphavanh working on a Lao translation of Koha	translation, lao
 February 23 2008	 Jesse Weaver becomes the 53rd committer to Koha
 March 3 2008	 Russel Garlick, Chris Cormack and Mason James leave Liblime Liblime NZ closed
+March 11 2008	Kurt Debrouwer working on a Dutch translation	translation, dutch
+March 12 2009	Vladimir Mircevski working on a Serbian translation	translation, serbian
 March 19 2008	 Andrew Moore becomes the 54th committer to Koha
 March 23 2008	 Koha 3.0.0 Beta is released
 April 2 2008	 Darrell Ulm becomes the 55th committer to Koha
@@ -336,6 +362,7 @@ April 5 2008	 Koha 3.0.0 Beta 2 is released
 April 7 2008	 Bug 2000 registered at bugs.koha.org
 April 13 2008	 Voting opens for new Koha website theme
 April 24 2008	 Marc Chantreux becomes the 56th committer to Koha
+April 24 2008	Marijana Glavica working on a Croatian translation	translation, croatian
 April 25 2008	 Frère Sébastien Marie becomes the 57th committer to Koha
 April 26 2008	 Polytechnic University Koha Installation becomes the 58th committer to Koha
 May 6 2008	 NCE becomes the 59th committer to Koha
