@@ -186,7 +186,6 @@ June 30 2004	 Koha 2.1.0 released
 June 30 2004	 MJ Ray announces Koha 2.0.1beta2 released
 June 30 2004	 Christopher Brown-Syed emails to tell us Koha and University of Buffalo are continuin their relationship
 July 7 2004	 Paul Poulain uses some of the suggestions from University of Buffalo to improve MARC support in Koha
-July 15? 2004	 Joshua Ferraro presents Koha at the OLC annual conference
 August 18 2004	 Stephen Hedges becomes the 31st committer to Koha
 August 19 2004	 Koha 2.1.1 released
 August 26 2004	 Katipo installing Koha at Lianza conference (as well as presenting) http://www.katipo.co.nz/about-us/news/nr1092719045.shtml
@@ -310,13 +309,14 @@ August 3 2006	Kyle Hall announces he has finished his offline circ addon for fir
 August 8 2006	Pierrick Le Gall resigns as QA manager
 August 30 2006	Antoine Farnault branches cvs creates rel_3_0 branch
 October 3 2006	 Rangitikei Library launches new site, featuring Koha. It's opened by the Minister for Libraries from the NZ Government
-October 9-11 2006	 Katipo at LIANZA demonstrating Koha, Russel Garlick presents http://katipo.co.nz/about-us/news/nr1159247279.shtml
+October 9-11 2006	 Katipo at LIANZA demonstrating Koha, Russel Garlick presents http://katipo.co.nz/about-us/news/nr1159247279.shtml http://katipo.co.nz/gallery/lianza2006
 October 17 2006	 Koha 2.2.6 released
 November 11 2006	 Han Yan emails to tell the list that The Afghanistan Union catalog was built on top of Koha with some modifications such as Arabic support and label printing etc.
 November 23 2006	 Paul Poulain announces Koha 2.2.7 has been released
 December 19 2006	chinese(zh_TW) translation of koha	translation, chinese, taiwan
 January 10 2007	 Italian Translation updated	translation, italian
 January 10 2007	 new chinese, japanese & korean translations	translation, chinese, japanese, korean
+January 11 2007	Tag cloud and new browsing feature added to Koha
 January 17 2007	 contribs.koha.org goes live, Thanks to Pierrick Le Gall for the extensions manager. 
 February 15 2007	 Frédéric Demians from Tamil announces plan to offer support services around Koha
 March 8 2007	 Koha 2.2.8 released
