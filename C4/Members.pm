@@ -82,6 +82,7 @@ BEGIN {
 	push @EXPORT, qw(
 		&ModMember
 		&changepassword
+        &ModPrivacy
 	);
 
 	#Delete data
@@ -2074,6 +2075,31 @@ sub IsMemberBlocked {
     return (1, $blockedcount) if $blockedcount > 0;
 
     return 0
+}
+
+=head2 ModPrivacy
+
+=over 4
+
+my $success = ModPrivacy( $borrowernumber, $privacy );
+
+Update the privacy of a patron.
+
+return :
+true on success, false on failure
+
+=back
+
+=cut
+
+sub ModPrivacy {
+    my $borrowernumber = shift;
+    my $privacy = shift;
+    return unless defined $borrowernumber;
+    return unless $borrowernumber =~ /^\d+$/;
+
+    return ModMember( borrowernumber => $borrowernumber,
+                      privacy        => $privacy );
 }
 
 END { }    # module clean-up code here (global destructor)

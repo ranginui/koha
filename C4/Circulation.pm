@@ -1496,7 +1496,7 @@ sub AddReturn {
 					# FIXME - is this right ? are we sure that the holdingbranch is still the pickup branch?
 				}
 			}
-            MarkIssueReturned($borrower->{'borrowernumber'}, $iteminformation->{'itemnumber'},$circControlBranch);
+            MarkIssueReturned($borrower->{'borrowernumber'}, $iteminformation->{'itemnumber'},$circControlBranch, '', $borrower->{'privacy'});
             $messages->{'WasReturned'} = 1;    # FIXME is the "= 1" right?
 
             # continue to deal with returns cases, but not only if we have an issue
@@ -1609,7 +1609,7 @@ sub AddReturn {
 
 =over 4
 
-MarkIssueReturned($borrowernumber, $itemnumber, $dropbox_branch, $returndate);
+MarkIssueReturned($borrowernumber, $itemnumber, $dropbox_branch, $returndate, $privacy);
 
 =back
 
@@ -1623,6 +1623,9 @@ it's safe to do this, i.e. last non-holiday > issuedate.
 if C<$returndate> is specified (in iso format), it is used as the date
 of the return. It is ignored when a dropbox_branch is passed in.
 
+C<$privacy> contains the privacy parameter. If the patron has set his privacy to 2,
+the old_issue is immediately anonymised
+
 Ideally, this function would be internal to C<C4::Circulation>,
 not exported, but it is currently needed by one 
 routine in C<C4::Accounts>.
@@ -1630,7 +1633,7 @@ routine in C<C4::Accounts>.
 =cut
 
 sub MarkIssueReturned {
-    my ( $borrowernumber, $itemnumber, $dropbox_branch, $returndate ) = @_;
+    my ( $borrowernumber, $itemnumber, $dropbox_branch, $returndate, $privacy ) = @_;
     my $dbh   = C4::Context->dbh;
     my $query = "UPDATE issues SET returndate=";
     my @bind;
@@ -1654,6 +1657,13 @@ sub MarkIssueReturned {
                                   WHERE borrowernumber = ?
                                   AND itemnumber = ?");
     $sth_copy->execute($borrowernumber, $itemnumber);
+    # immediately anonymize if needed, by setting AnonymousPatron as 'issuer'
+    if ( $privacy == 2 ) {
+        my $sth_ano = $dbh->prepare("UPDATE old_issues SET borrowernumber=?
+                                  WHERE borrowernumber = ?
+                                  AND itemnumber = ?");
+        $sth_ano->execute(C4::Context->preference('AnonymousPatron'), $borrowernumber, $itemnumber);
+    }
     my $sth_del  = $dbh->prepare("DELETE FROM issues
                                   WHERE borrowernumber = ?
                                   AND itemnumber = ?");
@@ -2397,7 +2407,7 @@ sub DeleteTransfer {
 
 =head2 AnonymiseIssueHistory
 
-$rows = AnonymiseIssueHistory($borrowernumber,$date)
+$rows = AnonymiseIssueHistory($date,$borrowernumber)
 
 This function write NULL instead of C<$borrowernumber> given on input arg into the table issues.
 if C<$borrowernumber> is not set, it will delete the issue history for all borrower older than C<$date>.
@@ -2410,11 +2420,14 @@ sub AnonymiseIssueHistory {
     my $date           = shift;
     my $borrowernumber = shift;
     my $dbh            = C4::Context->dbh;
+    # prepare query
+    # note that we don't anonymize patrons that have requested keeping their record forever (privacy=0)
     my $query          = "
         UPDATE old_issues
-        SET    borrowernumber = NULL
+        SET    borrowernumber = ".C4::Context->preference('AnonymousPatron')."
         WHERE  returndate < '".$date."'
           AND borrowernumber IS NOT NULL
+          AND (SELECT privacy FROM borrowers WHERE borrowers.borrowernumber=old_issues.borrowernumber)<>0
     ";
     $query .= " AND borrowernumber = '".$borrowernumber."'" if defined $borrowernumber;
     my $rows_affected = $dbh->do($query);

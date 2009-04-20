@@ -455,6 +455,7 @@ sub get_template_and_user {
             reviewson                 => C4::Context->preference("reviewson"),
             suggestion                => "" . C4::Context->preference("suggestion"),
             virtualshelves            => "" . C4::Context->preference("virtualshelves"),
+            OpacPrivacy               => "" . C4::Context->preference("OpacPrivacy"),
 			OPACSerialIssueDisplayCount => C4::Context->preference("OPACSerialIssueDisplayCount"),
         );
     }

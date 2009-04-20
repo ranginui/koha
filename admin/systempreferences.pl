@@ -201,6 +201,7 @@ $tabsysprefs{AutoEmailOpacUser}            = "Patrons";
 $tabsysprefs{AutoEmailPrimaryAddress}      = "Patrons";
 $tabsysprefs{EnhancedMessagingPreferences} = "Patrons";
 $tabsysprefs{'SMSSendDriver'}              = 'Patrons';
+$tabsysprefs{AnonymousPatron}              = "Patrons";
 
 # I18N/L10N
 $tabsysprefs{dateformat}    = "I18N/L10N";
@@ -330,6 +331,7 @@ $tabsysprefs{kohaspsuggest}        = "OPAC";
 $tabsysprefs{OpacRenewalAllowed}   = "OPAC";
 $tabsysprefs{OPACItemHolds}        = "OPAC";
 $tabsysprefs{OPACGroupResults}     = "OPAC";
+$tabsysprefs{OpacPrivacy}          = "OPAC";
 $tabsysprefs{XSLTDetailsDisplay}   = "OPAC";
 $tabsysprefs{XSLTResultsDisplay}   = "OPAC";
 $tabsysprefs{OPACShowCheckoutName}   = "OPAC";

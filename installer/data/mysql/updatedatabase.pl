@@ -2135,6 +2135,26 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     print "Upgrade to $DBversion done (Adding graceperiod column to subscription table)\n";
     SetVersion ($DBversion);
 }
+$DBversion = "3.01.00.035";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES('OpacPrivacy', '0', 'if ON, allows patrons to define their privacy rules (reading history)',NULL,'YesNo')");
+    # create a new syspref for the 'Mr anonymous' patron
+    $dbh->do("INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES('AnonymousPatron', '0', \"Set the identifier (borrowernumber) of the 'Mister anonymous' patron. Used for Suggestion and reading history privacy\",NULL,'')");
+    # fill AnonymousPatron with AnonymousSuggestion value (copy)
+    my $sth=$dbh->prepare("SELECT value FROM systempreferences WHERE variable='AnonSuggestions'");
+    $sth->execute;
+    my ($value) = $sth->fetchrow();
+    $dbh->do("UPDATE systempreferences SET value=$value WHERE variable='AnonymousPatron'");
+    # set AnonymousSuggestion do YesNo
+    # 1st, set the value (1/True if it had a borrowernumber)
+    $dbh->do("UPDATE systempreferences SET value=1 WHERE variable='AnonSuggestions' AND value>0");
+    # 2nd, change the type to Choice
+    $dbh->do("UPDATE systempreferences SET type='YesNo' WHERE variable='AnonSuggestions'");
+        # borrower reading record privacy : 0 : forever, 1 : laws, 2 : don't keep at all
+    $dbh->do("ALTER TABLE `borrowers` ADD `privacy` INTEGER NOT NULL DEFAULT 1;");
+    print "Upgrade to $DBversion done (add new syspref and column in borrowers)\n";
+    SetVersion ($DBversion);
+}
 
 $DBversion = '3.01.00.035';
 if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
