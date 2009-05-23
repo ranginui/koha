@@ -70,3 +70,10 @@ sub new {
 
 }
 
+sub output {
+    my $self = shift;
+    my $vars = shift;
+    my $file = $self->theme .'/'.$self->lang.'/'.$self->filename;
+    $template->{TEMPLATE}->process( $file, $vars); 
+    return;
+}
