@@ -61,11 +61,11 @@ sub new {
     ) or die Template->error();
     my $self = {
         TEMPLATE => $template,
-        theme    => $theme,
-        lang     => $lang,
-        filename => $filename
     };
     bless $self, $class;
+    $self->theme($theme);
+    $self->lang($lang);
+    $self->filename($filename);
     return $self;
 
 }
