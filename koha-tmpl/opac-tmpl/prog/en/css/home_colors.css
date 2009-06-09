@@ -4,7 +4,6 @@ A, A:visited {
 
 A:hover {
 	color: #BC6030;
-	text-decoration: none;
 }
 
 #bd {
@@ -21,7 +20,7 @@ A:hover {
 }
 
 #header-wrapper {
-	background: #FFFFFF url(http://www.library.org.nz/images/opac/banner-bg-inner.jpg) no-repeat scroll 0 0;
+	background: #FFFFFF url(http://www.library.org.nz/images/opac/banner-bg.jpg) no-repeat scroll 0 0;
 }
 
 #headmenu {
@@ -44,11 +43,6 @@ A:hover {
 
 #headmenu UL LI A {
 	text-decoration: none;
-	color: #22355F;
-}
-
-#headmenu UL LI A:hover {
-	color: #BC6030;
 }
 
 #headmenu UL LI A DIV {
@@ -75,7 +69,9 @@ A:hover {
 	background-image: none;
 	background-color: transparent;
 	border: 0px solid #FFF;
-	padding: 0 0 1.7em 0;
+	padding: 0 0 3.3em 0;
+	*padding: 0 0 0.3em 0;	
+	_padding: 0 0 2.0em 0;
 }
 
 #opac-main-search FORM {
@@ -83,33 +79,36 @@ A:hover {
 }
 
 h1#libraryname {
-	width: 210px;
+	width: 350px;
 	position: relative;
-	top: -40px;
+	top: 0px;
 	left: 0px;
-	background-image: url(http://www.library.org.nz/images/opac/insidepage-logo.gif);
+	background-image: url(http://www.library.org.nz/images/opac/logo.gif);
 	background-repeat: no-repeat;
 	background-position: top right;
 }
 
 h1#libraryname A {
-	width: 500px;
+	width: 600px;
 	margin-left: -300px! important;
-	padding-top: 50px;
+	padding-top: 90px;
 }
 
 #fluid {
 	margin-left: 355px;
-	*margin-left: 145px;
-	_margin-left: 145px;
+	_margin-left: 5px;
 	position: absolute;
 	width: 630px !important;
 	top: 70px;
 }
 
 #fluid-offset {
-	padding-top: 0px;
+	padding-top: 38px;
 }
+
+/*\*/ * html #fluid-offset { padding-top: 31px; } /**/
+
+*:first-child+html #fluid-offset { padding-top: 34px; }
 
 #searchform LABEL {
 	display: none;
@@ -145,26 +144,25 @@ A#listsmenulink, #listsmenulink[class] {
 	background-position: 100% 0%;
 	background-repeat: no-repeat;
 	padding: 0px;
+	margin-left: 10px;
 }
 
-#cartmenulink, #listsmenulink, #cartmenulink *, #listsmenulink * {
+#cartmenulink, #listsmenulink, #cartmenulink *, #listsmenulink *  {
 	background: transparent;
 }
 
 A#cartmenulink DIV {
 	background-image: url(http://www.library.org.nz/images/opac/cart-bg-left.gif);
 	padding: 7px 7px 5px 25px;
-	*padding: 3px 7px 5px 25px;
-	_padding: 7px 7px 9px 25px;	
+	_padding: 7px 7px 9px 7px;
 	background-repeat: no-repeat;
 	_width: 75px;
 }
 
-A#listsmenulink DIV {
+#listsmenulink DIV {
 	background-image: url(http://www.library.org.nz/images/opac/lists-bg-left.gif);
 	padding: 7px 7px 5px 7px;
-	*padding: 3px 7px 5px 7px;
-	_padding: 7px 7px 9px 7px;	
+	_padding: 7px 7px 9px 7px;
 	background-repeat: no-repeat;
 	_width: 75px;
 }
@@ -190,7 +188,9 @@ A#listsmenulink, A#listsmenulink:hover {
 #cartmenulink span { _margin: -6px 0 0 12px; }
 
 #moresearches {
-	margin-top: 4.3em;
+	margin-top: 6.1em;
+	_margin-top: 1.5em;
+
 	margin-right: 1em;
 	text-align: right;
 	color: #FFF;
@@ -208,71 +208,56 @@ A#listsmenulink, A#listsmenulink:hover {
 }
 
 #breadcrumbs {
-	*margin-top: -57px;
-	_margin-top: -5px;	
+	_margin-top: -18px;
 }
 
-DIV#menu {
-	border: 0px solid #FFF;
-	margin: 0;
-}
-
-DIV#menu UL {
+.on-homepage UL {
 	padding: 0;
 }
 
-DIV#menu LI {
+.on-homepage LI {
 	list-style-type: none;
 	_margin-bottom: -16px;
 }
 
-DIV#menu LI A, DIV#menu UL LI.active A {
+.on-homepage LI A {
 	background-color: #EAEDF4;
 	display: block;
 	padding: 5px 10px;
-	border-top: 0px solid #DCDFE4;
 	border-bottom: 1px solid #DCDFE4;
 	border-left: 1px solid #DCDFE4;
 	border-right: 1px solid #DCDFE4;
 	color: #6E7B97;
 	font-size: 90%;
 	text-decoration: none;
-	background-image: none;
-	margin: 0px;
 }
 
-DIV#menu UL LI.active A {
-	background-color: #FFFFFF;
-}
-
-DIV#menu LI A._first {
+.on-homepage LI A._first {
 	background: #EAEDF4 url(http://www.library.org.nz/images/opac/left_menu_top.gif) no-repeat scroll 0 0;
 	border-bottom: 1px solid #DCDFE4;
 	border-left: 0px solid #DCDFE4;
 	border-right: 0px solid #DCDFE4;
 }
 
-DIV#menu LI A._last {
+.on-homepage LI A._last {
 	background: #EAEDF4 url(http://www.library.org.nz/images/opac/left_menu_bottom.gif) no-repeat scroll bottom left;
 	border-bottom: 0px solid #DCDFE4;
 	border-left: 0px solid #DCDFE4;
 	border-right: 0px solid #DCDFE4;
 }
 
-DIV#menu LI A:hover,  DIV#menu UL LI.active A:hover {
+.on-homepage LI A:hover {
 	background-color: #ADBCD3;
 	text-decoration: none;
 	font-weight: bold;
 	color: #0D0E10;
-	background-image: none;
-	margin: 0px;
 }
 
-DIV#menu LI A._first:hover {
+.on-homepage LI A._first:hover {
 	background: #ADBCD3 url(http://www.library.org.nz/images/opac/left_menu_top.gif) no-repeat scroll 0 0;
 }
 
-DIV#menu LI A._last:hover {
+.on-homepage LI A._last:hover {
 	background: #ADBCD3 url(http://www.library.org.nz/images/opac/left_menu_bottom.gif) no-repeat scroll bottom left;
 }
 
@@ -288,6 +273,10 @@ DIV#menu LI A._last:hover {
 	width: 288px;
 	float: left;
 	margin-right: 20px;
+}
+
+#news H3 {
+	color:#22355F;
 }
 
 #news TABLE, #news TH, #news TD {
@@ -306,6 +295,8 @@ DIV#menu LI A._last:hover {
 
 #opacmainuserblock {
 	width: 288px;
+	_width: 278px;
+
 	float: left;
 }
 
@@ -316,11 +307,16 @@ DIV#menu LI A._last:hover {
 
 #login FIELDSET {
 	background: #FFFFFF url(http://www.library.org.nz/images/opac/login-bg.jpg) no-repeat scroll 0px 10px;
+	_background: #FFFFFF url(http://www.library.org.nz/images/opac/login-bg.jpg) no-repeat scroll 5px 30px;
 	border: 0px solid #FFF;
 }
 
 #login FIELDSET FIELDSET {
 	background: transparent;
+}
+
+#login FIELDSET OL {
+	_margin-top:10px;
 }
 
 fieldset.brief legend {
@@ -340,19 +336,11 @@ fieldset.brief input {
 
 .ft {
 	background: #33537C url(http://www.library.org.nz/images/opac/footer-top.gif) no-repeat scroll 0 0;	
-	margin: 10px auto;
+	margin:15px auto;
 	width:980px;
 	*width: 1000px;
-	_width: 980px;	
+	_width: 980px;
 	padding: 3px 10px;
 	color: #FFF;
-}
-
-.on-homepage {
-	display: none;
-}
-
-H3 {
-	color: #22355F;
 }
 
