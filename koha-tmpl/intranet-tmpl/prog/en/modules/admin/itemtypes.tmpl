@@ -285,7 +285,6 @@ Item Types Administration
     <th>Code</th>
     <th>Description</th>
     <th>Not for loan</th>
-    <th>Renewable</th>
     <th>Charge</th>
     <th>Actions</th>
   </tr>
@@ -303,13 +302,6 @@ Item Types Administration
     </td>
     <td><!-- TMPL_VAR name="description" --></td>
     <td><!-- TMPL_IF NAME="notforloan" -->Yes<!-- TMPL_ELSE -->&nbsp;<!-- /TMPL_IF --></td>
-    <td>
-    <!-- TMPL_IF NAME="renewalsallowed" -->
-      <!-- TMPL_VAR name="renewalsallowed" --> times
-    <!-- TMPL_ELSE -->
-      No
-    <!-- /TMPL_IF -->
-    </td>
     <td>
     <!-- TMPL_UNLESS name="notforloan" -->
       <!-- TMPL_VAR NAME="rentalcharge" -->

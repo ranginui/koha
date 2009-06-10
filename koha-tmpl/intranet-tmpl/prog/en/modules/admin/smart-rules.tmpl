@@ -69,6 +69,7 @@ $(document).ready(function() {
                 <th>Fine Grace Period</th>
                 <th>Fine Charging Interval</th>
                 <th>Current Checkouts Allowed</th>
+                <th>Renewals Allowed</th>
                 <th>Loan Period</th><th>&nbsp;</th>
             </tr>
             <!-- TMPL_LOOP NAME="rules" -->
@@ -103,6 +104,7 @@ $(document).ready(function() {
                             <!-- TMPL_VAR NAME="maxissueqty" -->
                         <!-- /TMPL_IF -->
                     </td>
+					<td><!-- TMPL_IF NAME="renewalsallowed" --><!-- TMPL_VAR NAME="renewalsallowed" --> time(s)<!-- /TMPL_IF --></td>
                     <td><!-- TMPL_IF NAME="issuelength" --><!-- TMPL_VAR NAME="issuelength" --> day(s)<!-- /TMPL_IF --></td>
                     <td>
                         <a class="button" href="/cgi-bin/koha/admin/smart-rules.pl?op=delete&amp;itemtype=<!-- TMPL_VAR NAME="itemtype" -->&amp;categorycode=<!-- TMPL_VAR NAME="categorycode" -->&amp;branch=<!-- TMPL_VAR NAME="branch" -->">Delete</a>
@@ -131,6 +133,7 @@ $(document).ready(function() {
                     <td><input name="firstremind" size="2" /> day(s)</td>
                     <td><input name="chargeperiod" size="2" /> day(s)</td>
                     <td><input name="maxissueqty" size="3" /></td>
+                    <td><input name="renewalsallowed" size="3" /></td>
                     <td><input name="issuelength" size="3" /> day(s)</td>
                     <td><input type="hidden" name="branch" value="<!-- TMPL_VAR NAME="branch" -->"/><input type="submit" value="Add" class="submit" /></td>
                 </tr>

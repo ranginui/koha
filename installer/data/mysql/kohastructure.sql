@@ -1142,6 +1142,7 @@ CREATE TABLE `issuingrules` (
   `chargename` varchar(100) default NULL,
   `maxissueqty` int(4) default NULL,
   `issuelength` int(4) default NULL,
+  `renewalsallowed` smallint(6) NOT NULL default "0",
   `branchcode` varchar(10) NOT NULL default '',
   PRIMARY KEY  (`branchcode`,`categorycode`,`itemtype`),
   KEY `categorycode` (`categorycode`),
@@ -1210,7 +1211,6 @@ DROP TABLE IF EXISTS `itemtypes`;
 CREATE TABLE `itemtypes` (
   `itemtype` varchar(10) NOT NULL default '',
   `description` mediumtext,
-  `renewalsallowed` smallint(6) default NULL,
   `rentalcharge` double(16,4) default NULL,
   `notforloan` smallint(6) default NULL,
   `imageurl` varchar(200) default NULL,
