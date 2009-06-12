@@ -88,6 +88,7 @@ my $borrowerslist;
 my $messageborrower;
 my $warnings;
 my $messages;
+my $maxreserves;
 
 my $date = C4::Dates->today('iso');
 
@@ -115,24 +116,20 @@ if ($cardnumber) {
     my $diffbranch;
     my @getreservloop;
     my $count_reserv = 0;
-    my $maxreserves;
 
 #   we check the reserves of the borrower, and if he can reserv a document
 # FIXME At this time we have a simple count of reservs, but, later, we could improve the infos "title" ...
 
+    
+
     my $number_reserves =
       GetReserveCount( $borrowerinfo->{'borrowernumber'} );
-
-    if ( $number_reserves > C4::Context->preference('maxreserves') ) {
-		$warnings = 1;
-        $maxreserves = 1;
-    }
-
+    
     # we check the date expiry of the borrower (only if there is an expiry date, otherwise, set to 1 (warn)
     my $expiry_date = $borrowerinfo->{dateexpiry};
     my $expiry = 0; # flag set if patron account has expired
     if ($expiry_date and $expiry_date ne '0000-00-00' and
-            Date_to_Days(split /-/,$date) > Date_to_Days(split /-/,$expiry_date)) {
+            Date_to_Days(split (/-/,$date)) > Date_to_Days(split (/-/,$expiry_date))) {
 		$messages = $expiry = 1;
     }else{
         $expiry = 0;
@@ -159,7 +156,6 @@ if ($cardnumber) {
                 borroweremailpro => $borrowerinfo->{'emailpro'},
                 borrowercategory => $borrowerinfo->{'category'},
                 borrowerreservs   => $count_reserv,
-                maxreserves       => $maxreserves,
                 expiry            => $expiry,
                 diffbranch        => $diffbranch,
 				messages => $messages,
@@ -214,6 +210,11 @@ if ($multihold) {
 
 my @biblioloop = ();
 foreach my $biblionumber (@biblionumbers) {
+
+    if ( not CanBookBeReserved($borrowerinfo->{borrowernumber}, $biblionumber) ) {
+		$warnings = 1;
+        $maxreserves = 1;
+    }
 
     my %biblioloopiter = ();
 
@@ -401,7 +402,7 @@ foreach my $biblionumber (@biblionumbers) {
                 $policy_holdallowed = 0;
             }
             
-            if (IsAvailableForItemLevelRequest($itemnumber) and not $item->{cantreserve}) {
+            if (IsAvailableForItemLevelRequest($itemnumber) and not $item->{cantreserve} and CanItemBeReserved($borrowerinfo->{borrowernumber}, $itemnumber) ) {
                 if ( not $policy_holdallowed and C4::Context->preference( 'AllowHoldPolicyOverride' ) ) {
                     $item->{override} = 1;
                     $num_override++;
@@ -547,6 +548,7 @@ foreach my $biblionumber (@biblionumbers) {
 
 $template->param( biblioloop => \@biblioloop );
 $template->param( biblionumbers => $biblionumbers );
+$template->param( maxreserves => $maxreserves );
 
 if ($multihold) {
     $template->param( multi_hold => 1 );

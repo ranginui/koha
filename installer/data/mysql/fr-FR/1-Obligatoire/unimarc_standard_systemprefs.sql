@@ -57,7 +57,6 @@ INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('MARCOrgCode', '0', 'Ce paramètre définit votre code organisme MARC. Utilisé en MARC21. Voir  - http://www.loc.gov/marc/organizations/orgshome.html', '', '');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('MaxFine','9999','Amende maximum qu''un ahdérent peut avoir pour un retour en retard','','Integer');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('maxoutstanding', '5', 'Ce paramètre définit le montant maximal des dettes au dela duquel le lecteur ne peut plus faire de réservation', '', 'Integer');
-INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('maxreserves', '2', 'Ce paramètre définit le nombre maximal de réservations qu''un lecteur peut faire.', '', 'Integer');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('memberofinstitution', '0', 'Vos adhérents sont ils membres d''une institution ?', NULL, 'YesNo');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('MIME', 'OPENOFFICE.ORG', 'Ce paramètre définit l''application par défaut à ouvrir lorsqu''on télécharge un fichier (OpenOffice.org ou MS-Excel habituellement)', 'EXCEL|OPENOFFICE.ORG', 'Choice');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('noissuescharge', '5', 'Ce paramètre définit le montant maximal des dettes au delà duquel le lecteur ne peut plus emprunter', '', 'Integer');
@@ -250,3 +249,4 @@ INSERT INTO systempreferences (variable,value,explanation,options,type)VALUES('v
 INSERT INTO systempreferences (variable,value,explanation,options,type)VALUES('viewLabeledMARC','0','Autoriser l''affichage MARC labellis des notices bibliographiques','','YesNo');
 INSERT INTO systempreferences (variable,value,explanation,options,type)VALUES('viewMARC','1','Autoriser l''affichage de la vue MARC des notices bibliographiques','','YesNo');
 INSERT INTO systempreferences (variable,value,explanation,options,type)VALUES('FilterBeforeOverdueReport','0','Ne pas lancer le rapport sur les retards tant qu''il n''y a pas de filtre','','YesNo');
+INSERT INTO systempreferences (variable,value, options, explanation, type) VALUES('ReservesControlBranch','PatronLibrary','ItemHomeLibrary|PatronLibrary','Site de controle pour les reservations','Choice');

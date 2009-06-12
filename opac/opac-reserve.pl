@@ -32,8 +32,6 @@ use C4::Branch; # GetBranches
 use C4::Debug;
 # use Data::Dumper;
 
-my $MAXIMUM_NUMBER_OF_RESERVES = C4::Context->preference("maxreserves");
-
 my $query = new CGI;
 my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
     {
@@ -190,11 +188,13 @@ if ( $query->param('place_reserve') ) {
 
         my $biblioData = $biblioDataHash{$biblioNum};
         my $found;
+        my $canreserve = 0;
         
         # If a specific item was selected and the pickup branch is the same as the
         # holdingbranch, force the value $rank and $found.
         my $rank = $biblioData->{rank};
         if ($itemNum ne ''){
+            $canreserve = 1 if CanItemBeReserved($borrowernumber,$itemNum);
             $rank = '0' unless C4::Context->preference('ReservesNeedReturns');
             my $item = GetItem($itemNum);
             if ( $item->{'holdingbranch'} eq $branch ){
@@ -203,12 +203,13 @@ if ( $query->param('place_reserve') ) {
         }
         else {
             # Inserts a null into the 'itemnumber' field of 'reserves' table.
+            $canreserve = 1 if CanBookBeReserved($borrowernumber,$biblioNum);
             $itemNum = undef;
         }
         
         # Here we actually do the reserveration. Stage 3.
         AddReserve($branch, $borrowernumber, $biblioNum, 'a', [$biblioNum], $rank, $notes,
-                   $biblioData->{'title'}, $itemNum, $found);
+                   $biblioData->{'title'}, $itemNum, $found) if $canreserve;
     }
 
     print $query->redirect("/cgi-bin/koha/opac-user.pl#opac-user-holds");
@@ -253,11 +254,8 @@ if ( $borr->{debarred} && ($borr->{debarred} eq 1) ) {
 
 my @reserves = GetReservesFromBorrowernumber( $borrowernumber );
 $template->param( RESERVES => \@reserves );
-if ( scalar(@reserves) >= $MAXIMUM_NUMBER_OF_RESERVES ) {
-    $template->param( message => 1 );
-    $noreserves = 1;
-    $template->param( too_many_reserves => scalar(@reserves));
-}
+
+
 foreach my $res (@reserves) {
     foreach my $biblionumber (@biblionumbers) {
         if ( $res->{'biblionumber'} == $biblionumber && $res->{'borrowernumber'} == $borrowernumber) {
@@ -421,7 +419,7 @@ foreach my $biblioNum (@biblionumbers) {
             $policy_holdallowed = 0;
         }
 
-        if (IsAvailableForItemLevelRequest($itemNum) and $policy_holdallowed) {
+        if (IsAvailableForItemLevelRequest($itemNum) and $policy_holdallowed and CanItemBeReserved($borrowernumber,$itemNum)) {
             $itemLoopIter->{available} = 1;
             $numCopiesAvailable++;
         }
@@ -447,6 +445,10 @@ foreach my $biblioNum (@biblionumbers) {
         $biblioLoopIter{holdable} = undef;
     }
 
+    if(not CanBookBeReserved($borrowernumber,$biblioNum)){
+        $biblioLoopIter{holdable} = undef;
+    }
+    
     push @$biblioLoop, \%biblioLoopIter;
 }
 

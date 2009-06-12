@@ -2192,6 +2192,22 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     print "Upgrade to $DBversion done (Moving allowed renewals from itemtypes to issuingrule)\n";
 }
 
+$DBversion = '3.01.00.040';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do('ALTER TABLE issuingrules ADD COLUMN `reservesallowed` smallint(6) NOT NULL default "0" AFTER `renewalsallowed`;');
+    
+    my $maxreserves = C4::Context->preference('maxreserves');
+    $sth = $dbh->prepare('UPDATE issuingrules SET reservesallowed = ?;');
+    $sth->execute($maxreserves);
+    
+    $dbh->do('DELETE FROM systempreferences WHERE variable = "maxreserves";');
+
+    $dbh->do("INSERT INTO systempreferences (variable,value, options, explanation, type) VALUES('ReservesControlBranch','PatronLibrary','ItemHomeLibrary|PatronLibrary','Branch checked for members reservations rights','Choice')");
+    
+    SetVersion ($DBversion);
+    print "Upgrade to $DBversion done (Moving max allowed reserves from system preference to issuingrule)\n";
+}
+
 =item DropAllForeignKeys($table)
 
   Drop all foreign keys of the table $table
