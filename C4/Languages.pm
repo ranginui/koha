@@ -21,6 +21,11 @@ package C4::Languages;
 
 use strict; 
 #use warnings;   #FIXME: turn off warnings before release
+
+use Memoize;
+use DB_File;
+use MLDBM qw( DB_File Storable );
+
 use Carp;
 use C4::Context;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $DEBUG);
@@ -62,6 +67,10 @@ Returns a reference to an array of hashes:
  }
 
 =cut
+
+my $filename="/tmp/translated";
+tie my %disk_cache => "MLDBM", $filename, O_CREAT | O_RDWR, 0644;
+memoize 'getTranslatedLanguages', SCALAR_CACHE => [HASH => \%disk_cache];
 
 sub getFrameworkLanguages {
     # get a hash with all language codes, names, and locale names
