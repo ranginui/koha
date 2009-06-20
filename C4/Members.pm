@@ -1649,32 +1649,32 @@ sub GetSortDetails {
     return ($sortvalue) unless ($lib);
 }
 
-=head2 DeleteBorrower 
+=head2 MoveMemberToDeleted
 
-  () = &DeleteBorrower($member);
+  $result = &MoveMemberToDeleted($borrowernumber);
 
-delete all data fo borrowers and add record to deletedborrowers table
-C<&$member>this is the borrowernumber
+Copy the record from borrowers to deletedborrowers table.
 
 =cut
 
+# FIXME: should do it in one SQL statement w/ subquery
+# Otherwise, we should return the @data on success
+
 sub MoveMemberToDeleted {
-    my ($member) = @_;
+    my ($member) = shift or return;
     my $dbh = C4::Context->dbh;
-    my $query;
-    $query = qq|SELECT * 
+    my $query = qq|SELECT * 
           FROM borrowers 
           WHERE borrowernumber=?|;
     my $sth = $dbh->prepare($query);
     $sth->execute($member);
     my @data = $sth->fetchrow_array;
-    $sth->finish;
+    (@data) or return;  # if we got a bad borrowernumber, there's nothing to insert
     $sth =
       $dbh->prepare( "INSERT INTO deletedborrowers VALUES ("
           . ( "?," x ( scalar(@data) - 1 ) )
           . "?)" );
     $sth->execute(@data);
-    $sth->finish;
 }
 
 =head2 DelMember
@@ -1824,10 +1824,8 @@ sub GetPatronImage {
     my $sth = $dbh->prepare($query);
     $sth->execute($cardnumber);
     my $imagedata = $sth->fetchrow_hashref;
-    my $dberror = $sth->errstr;
     warn "Database error!" if $sth->errstr;
-    $sth->finish;
-    return $imagedata, $dberror;
+    return $imagedata, $sth->errstr;
 }
 
 =head2 PutPatronImage
@@ -1847,9 +1845,7 @@ sub PutPatronImage {
     my $sth = $dbh->prepare($query);
     $sth->execute($cardnumber,$mimetype,$imgfile,$imgfile);
     warn "Error returned inserting $cardnumber.$mimetype." if $sth->errstr;
-    my $dberror = $sth->errstr;
-    $sth->finish;
-    return $dberror;
+    return $sth->errstr;
 }
 
 =head2 RmPatronImage
@@ -1869,7 +1865,6 @@ sub RmPatronImage {
     $sth->execute($cardnumber);
     my $dberror = $sth->errstr;
     warn "Database error!" if $sth->errstr;
-    $sth->finish;
     return $dberror;
 }
 
