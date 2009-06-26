@@ -76,6 +76,8 @@ sub output {
     my $vars = shift;
     my $file = $self->htdocs . '/' . $self->theme .'/'.$self->lang.'/'.$self->filename;
     my $template = $self->{TEMPLATE};
+    $vars->{lang} = $self->lang;
+    $vars->{themelang} = $self->theme . '/' . $self->lang;
     $template->process( $file, $vars) || die "Template process failed: ", $template->error();; 
     return;
 }

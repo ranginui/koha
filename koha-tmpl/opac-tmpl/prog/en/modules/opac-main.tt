@@ -1,9 +1,17 @@
 [% INCLUDE 'doc-head-open.inc' %]
-<!-- TMPL_IF NAME="LibraryNameTitle" --><!-- TMPL_VAR NAME="LibraryNameTitle" --><!-- TMPL_ELSE -->Koha Online<!-- /TMPL_IF --> Catalog
-<!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
+[% IF LibraryNameTitle %]
+    [% LibraryNameTitle %]
+[% ELSE %]
+    Koha Online
+[% END %]
+[% INCLUDE 'doc-head-close.inc' %]
 </head>
 <body>
-<!-- TMPL_IF NAME="OpacNav" --><div id="doc3" class="yui-t1"><!-- TMPL_ELSE --><div id="doc3" class="yui-t7"><!-- /TMPL_IF -->
+[% IF OpacNav %]
+    <div id="doc3" class="yui-t1">
+[% ELSE %]
+    <div id="doc3" class="yui-t7">
+[% END %]
    <div id="bd">
 <!--TMPL_INCLUDE NAME="masthead.inc" -->
 
