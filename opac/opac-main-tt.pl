@@ -20,14 +20,8 @@
 use strict;
 use warnings;
 use CGI;
-use C4::Auth;    # get_template_and_user
-use C4::Output;
 use Koha::Templates;
-use C4::VirtualShelves;
-use C4::Branch;          # GetBranches
-use C4::Members;         # GetMember
 use C4::NewsChannels;    # get_opac_news
-use C4::Acquisition;     # GetRecentAcqui
 
 my $input = new CGI;
 my $dbh   = C4::Context->dbh;
