@@ -13,7 +13,7 @@
     <div id="doc3" class="yui-t7">
 [% END %]
    <div id="bd">
-<!--TMPL_INCLUDE NAME="masthead.inc" -->
+[% INCLUDE "masthead.inc" %]
 
 	<div id="yui-main">
 
