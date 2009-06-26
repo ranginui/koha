@@ -33,7 +33,7 @@ use Template::Constants qw( :debug );
 
 use C4::Context;
 
-__PACKAGE__->mk_accessors(qw( theme lang filename htdocs));
+__PACKAGE__->mk_accessors(qw( theme lang filename htdocs interface));
 
 sub new {
     my $class     = shift;
@@ -67,6 +67,7 @@ sub new {
     $self->lang($lang);
     $self->filename($filename);
     $self->htdocs($htdocs);
+    $self->interface($interface);
     return $self;
 
 }
@@ -76,8 +77,20 @@ sub output {
     my $vars = shift;
     my $file = $self->htdocs . '/' . $self->theme .'/'.$self->lang.'/'.$self->filename;
     my $template = $self->{TEMPLATE};
+    if ($self->interface eq 'intranet'){
+	$vars->{themelang} = '/intranet-tmpl';
+    }
+    else {
+	$vars->{themelang} = '/opac-tmpl';
+    }
     $vars->{lang} = $self->lang;
-    $vars->{themelang} = $self->theme . '/' . $self->lang;
+    $vars->{themelang}          .= '/' . $self->theme . '/' . $self->lang;
+    $vars->{yuipath}             = (C4::Context->preference("yuipath") eq "local"?$self->{themelang}."/lib/yui":C4::Context->preference("yuipath"));
+    $vars->{interface}           = ( $vars->{interface} ne 'intranet' ? '/opac-tmpl' : '/intranet-tmpl' );
+    $vars->{theme}               = $self->theme;
+    $vars->{opaccolorstylesheet} = C4::Context->preference('opaccolorstylesheet');
+    $vars->{opacsmallimage}      = C4::Context->preference('opacsmallimage');
+    $vars->{opacstylesheet}      = C4::Context->preference('opacstylesheet');
     $template->process( $file, $vars) || die "Template process failed: ", $template->error();; 
     return;
 }
