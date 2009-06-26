@@ -33,7 +33,7 @@ use Template::Constants qw( :debug );
 
 use C4::Context;
 
-__PACKAGE__->mk_accessors(qw( theme lang filename));
+__PACKAGE__->mk_accessors(qw( theme lang filename htdocs));
 
 sub new {
     my $class     = shift;
@@ -48,13 +48,13 @@ sub new {
     }
 
 #    my ( $theme, $lang ) = themelanguage( $htdocs, $tmplbase, $interface, $query );
-    my $theme;
-    my $lang;
+    my $theme = 'prog';
+    my $lang = 'en';
     my $template = Template->new(
         {
             EVAL_PERL    => 1,
             ABSOLUTE     => 1,
-            INCLUDE_PATH => $htdocs,
+            INCLUDE_PATH => "$htdocs/$theme/$lang/includes",
             FILTERS      => {},
 
         }
@@ -66,6 +66,7 @@ sub new {
     $self->theme($theme);
     $self->lang($lang);
     $self->filename($filename);
+    $self->htdocs($htdocs);
     return $self;
 
 }
@@ -73,7 +74,10 @@ sub new {
 sub output {
     my $self = shift;
     my $vars = shift;
-    my $file = $self->theme .'/'.$self->lang.'/'.$self->filename;
-    $template->{TEMPLATE}->process( $file, $vars); 
+    my $file = $self->htdocs . '/' . $self->theme .'/'.$self->lang.'/'.$self->filename;
+    my $template = $self->{TEMPLATE};
+    $template->process( $file, $vars) || die "Template process failed: ", $template->error();; 
     return;
 }
+
+1;
