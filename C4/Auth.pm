@@ -28,6 +28,7 @@ use C4::Members;
 use C4::Koha;
 use C4::Branch; # GetBranches
 use C4::VirtualShelves;
+use POSIX qw/strftime/;
 
 # use utf8;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $debug $ldap);
@@ -308,9 +309,20 @@ sub get_template_and_user {
     }
     else {
         warn "template type should be OPAC, here it is=[" . $in->{'type'} . "]" unless ( $in->{'type'} eq 'opac' );
+        #TODO : replace LibraryName syspref with 'system name', and remove this html processing
         my $LibraryNameTitle = C4::Context->preference("LibraryName");
         $LibraryNameTitle =~ s/<(?:\/?)(?:br|p)\s*(?:\/?)>/ /sgi;
         $LibraryNameTitle =~ s/<(?:[^<>'"]|'(?:[^']*)'|"(?:[^"]*)")*>//sg;
+        # variables passed from CGI: opac_css_override and opac_search_limits.
+        my $opac_search_limit = $ENV{'OPAC_SEARCH_LIMIT'};
+        my $opac_limit_override = $ENV{'OPAC_LIMIT_OVERRIDE'};
+        my $mylibraryfirst = C4::Context->preference("SearchMyLibraryFirst");
+        my $opac_name;
+        if($opac_limit_override && ($opac_search_limit =~ /branch:(\w+)/) ){
+             $opac_name = C4::Branch::GetBranchName($1)   # opac_search_limit is a branch, so we use it.
+        } elsif($mylibraryfirst){
+            $opac_name = C4::Branch::GetBranchName($mylibraryfirst);
+        }
         $template->param(
             AnonSuggestions           => "" . C4::Context->preference("AnonSuggestions"),
             AuthorisedValueImages     => C4::Context->preference("AuthorisedValueImages"),
@@ -327,9 +339,12 @@ sub get_template_and_user {
             OPACUserCSS               => "". C4::Context->preference("OPACUserCSS"),
             OPACViewOthersSuggestions => "" . C4::Context->preference("OPACViewOthersSuggestions"),
             OpacAuthorities           => C4::Context->preference("OpacAuthorities"),
-            OPACBaseURL               => ($in->{'query'}->https() ? "https://" : "http://") .
-                   $ENV{'SERVER_NAME'} .
+            OPACBaseURL               => ($in->{'query'}->https() ? "https://" : "http://") . $ENV{'SERVER_NAME'} .
                    ($ENV{'SERVER_PORT'} eq ($in->{'query'}->https() ? "443" : "80") ? '' : ":$ENV{'SERVER_PORT'}"),
+            opac_name             => $opac_name,
+            opac_css_override           => $ENV{'OPAC_CSS_OVERRIDE'},
+            opac_search_limit         => $opac_search_limit,
+            opac_limit_override       => $opac_limit_override,
             OpacBrowser               => C4::Context->preference("OpacBrowser"),
             OpacCloud                 => C4::Context->preference("OpacCloud"),
             OpacMainUserBlock         => "" . C4::Context->preference("OpacMainUserBlock"),
@@ -342,13 +357,14 @@ sub get_template_and_user {
             XSLTDetailsDisplay        => C4::Context->preference("XSLTDetailsDisplay"),
             XSLTResultsDisplay        => C4::Context->preference("XSLTResultsDisplay"),
             hidelostitems             => C4::Context->preference("hidelostitems"),
-            mylibraryfirst            => C4::Context->preference("SearchMyLibraryFirst"),
+            mylibraryfirst            => (C4::Context->preference("SearchMyLibraryFirst")) ? C4::Context->userenv->{'branch'} : '',
+            opaclayoutstylesheet      => "" . C4::Context->preference("opaclayoutstylesheet"),
+            opaccolorstylesheet       => "" . C4::Context->preference("opaccolorstylesheet"),
+            opacstylesheet            => "" . C4::Context->preference("opacstylesheet"),
             opacbookbag               => "" . C4::Context->preference("opacbookbag"),
-            opaccolorstylesheet       => "". C4::Context->preference("opaccolorstylesheet"),
             opaccredits               => "" . C4::Context->preference("opaccredits"),
             opacheader                => "" . C4::Context->preference("opacheader"),
-            opaclanguagesdisplay      => "". C4::Context->preference("opaclanguagesdisplay"),
-            opaclayoutstylesheet      => "". C4::Context->preference("opaclayoutstylesheet"),
+            opaclanguagesdisplay      => "" . C4::Context->preference("opaclanguagesdisplay"),
             opacreadinghistory        => C4::Context->preference("opacreadinghistory"),
             opacsmallimage            => "" . C4::Context->preference("opacsmallimage"),
             opacuserjs                => C4::Context->preference("opacuserjs"),
@@ -560,7 +576,7 @@ sub checkauth {
             $session->flush;      
             $session->delete();
             C4::Context->_unset_userenv($sessionID);
-            _session_log(sprintf "%20s from %16s logged out at %30s (manually).\n", $userid,$ip,localtime);
+            _session_log(sprintf "%20s from %16s logged out at %30s (manually).\n", $userid,$ip,(strftime "%c",localtime));
             $sessionID = undef;
             $userid    = undef;
         }
@@ -569,7 +585,7 @@ sub checkauth {
             $info{'timed_out'} = 1;
             $session->delete();
             C4::Context->_unset_userenv($sessionID);
-            _session_log(sprintf "%20s from %16s logged out at %30s (inactivity).\n", $userid,$ip,localtime);
+            _session_log(sprintf "%20s from %16s logged out at %30s (inactivity).\n", $userid,$ip,(strftime "%c",localtime));
             $userid    = undef;
             $sessionID = undef;
         }
@@ -580,7 +596,7 @@ sub checkauth {
             $info{'different_ip'} = 1;
             $session->delete();
             C4::Context->_unset_userenv($sessionID);
-            _session_log(sprintf "%20s from %16s logged out at %30s (ip changed to %16s).\n", $userid,$ip,localtime, $info{'newip'});
+            _session_log(sprintf "%20s from %16s logged out at %30s (ip changed to %16s).\n", $userid,$ip,(strftime "%c",localtime), $info{'newip'});
             $sessionID = undef;
             $userid    = undef;
         }
@@ -607,7 +623,7 @@ sub checkauth {
             my $password = $query->param('password');
             my ( $return, $cardnumber ) = checkpw( $dbh, $userid, $password );
             if ($return) {
-                _session_log(sprintf "%20s from %16s logged in  at %30s.\n", $userid,$ENV{'REMOTE_ADDR'},localtime);
+                _session_log(sprintf "%20s from %16s logged in  at %30s.\n", $userid,$ENV{'REMOTE_ADDR'},(strftime "%c",localtime));
                 if ( $flags = haspermission($userid, $flagsrequired) ) {
                     $loggedin = 1;
                 }

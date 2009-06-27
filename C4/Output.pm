@@ -26,6 +26,7 @@ package C4::Output;
 # templates.
 
 use strict;
+use warnings;
 
 use C4::Context;
 use C4::Languages qw(getTranslatedLanguages get_bidi regex_lang_subtags language_get_description accept_language );
@@ -80,7 +81,6 @@ sub gettemplate {
     }
     my $path = C4::Context->preference('intranet_includes') || 'includes';
     my ( $theme, $lang ) = themelanguage( $htdocs, $tmplbase, $interface, $query );
-    my $opacstylesheet = C4::Context->preference('opacstylesheet');
 
     # if the template doesn't exist, load the English one as a last resort
     my $filename = "$htdocs/$theme/$lang/modules/$tmplbase";
@@ -100,13 +100,10 @@ sub gettemplate {
           . "/$theme/$lang";
     $template->param(
         themelang => $themelang,
-        yuipath => (C4::Context->preference("yuipath") eq "local"?"$themelang/lib/yui":C4::Context->preference("yuipath")),
+        yuipath   => (C4::Context->preference("yuipath") eq "local"?"$themelang/lib/yui":C4::Context->preference("yuipath")),
         interface => ( $interface ne 'intranet' ? '/opac-tmpl' : '/intranet-tmpl' ),
-        theme => $theme,
-        opacstylesheet      => $opacstylesheet,
-        opaccolorstylesheet => C4::Context->preference('opaccolorstylesheet'),
-        opacsmallimage      => C4::Context->preference('opacsmallimage'),
-        lang                => $lang
+        theme     => $theme,
+        lang      => $lang
     );
 
     # Bidirectionality

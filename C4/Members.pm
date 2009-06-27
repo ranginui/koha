@@ -184,7 +184,7 @@ sub SearchMember {
         $query .= ($category_type ? " AND category_type = ".$dbh->quote($category_type) : ""); 
         $query .= " WHERE (surname LIKE ? OR cardnumber like ?) ";
         if (C4::Context->preference("IndependantBranches") && !$showallbranches){
-          if (C4::Context->userenv && C4::Context->userenv->{flags}!=1 && C4::Context->userenv->{'branch'}){
+          if (C4::Context->userenv && C4::Context->userenv->{flags} % 2 !=1 && C4::Context->userenv->{'branch'}){
             $query.=" AND borrowers.branchcode =".$dbh->quote(C4::Context->userenv->{'branch'}) unless (C4::Context->userenv->{'branch'} eq "insecure");
           }
         }
@@ -197,7 +197,7 @@ sub SearchMember {
         $count = @data;
         $query .= " WHERE ";
         if (C4::Context->preference("IndependantBranches") && !$showallbranches){
-          if (C4::Context->userenv && C4::Context->userenv->{flags}!=1 && C4::Context->userenv->{'branch'}){
+          if (C4::Context->userenv && C4::Context->userenv->{flags} % 2 !=1 && C4::Context->userenv->{'branch'}){
             $query.=" borrowers.branchcode =".$dbh->quote(C4::Context->userenv->{'branch'})." AND " unless (C4::Context->userenv->{'branch'} eq "insecure");
           }      
         }     
@@ -266,81 +266,11 @@ about the patron. Its keys act as flags :
         # Patron's card was reported lost
     }
 
-Each flag has a C<message> key, giving a human-readable explanation of
-the flag. If the state of a flag means that the patron should not be
+If the state of a flag means that the patron should not be
 allowed to borrow any more books, then it will have a C<noissues> key
 with a true value.
 
-The possible flags are:
-
-=head3 CHARGES
-
-=over 4
-
-=item Shows the patron's credit or debt, if any.
-
-=back
-
-=head3 GNA
-
-=over 4
-
-=item (Gone, no address.) Set if the patron has left without giving a
-forwarding address.
-
-=back
-
-=head3 LOST
-
-=over 4
-
-=item Set if the patron's card has been reported as lost.
-
-=back
-
-=head3 DBARRED
-
-=over 4
-
-=item Set if the patron has been debarred.
-
-=back
-
-=head3 NOTES
-
-=over 4
-
-=item Any additional notes about the patron.
-
-=back
-
-=head3 ODUES
-
-=over 4
-
-=item Set if the patron has overdue items. This flag has several keys:
-
-C<$flags-E<gt>{ODUES}{itemlist}> is a reference-to-array listing the
-overdue items. Its elements are references-to-hash, each describing an
-overdue item. The keys are selected fields from the issues, biblio,
-biblioitems, and items tables of the Koha database.
-
-C<$flags-E<gt>{ODUES}{itemlist}> is a string giving a text listing of
-the overdue items, one per line.
-
-=back
-
-=head3 WAITING
-
-=over 4
-
-=item Set if any items that the patron has reserved are available.
-
-C<$flags-E<gt>{WAITING}{itemlist}> is a reference-to-array listing the
-available items. Each element is a reference-to-hash whose keys are
-fields from the reserves table of the Koha database.
-
-=back
+See patronflags for more details.
 
 C<$borrower-E<gt>{authflags}> is a hash giving more detailed information
 about the top-level permissions flags set for the borrower.  For example,
@@ -396,37 +326,66 @@ sub GetMemberDetails {
 
 =head2 patronflags
 
- Not exported
-
- NOTE!: If you change this function, be sure to update the POD for
- &GetMemberDetails.
-
  $flags = &patronflags($patron);
 
- $flags->{CHARGES}
-        {message}    Message showing patron's credit or debt
-       {noissues}    Set if patron owes >$5.00
-         {GNA}            Set if patron gone w/o address
-        {message}    "Borrower has no valid address"
-        {noissues}    Set.
-        {LOST}        Set if patron's card reported lost
-        {message}    Message to this effect
-        {noissues}    Set.
-        {DBARRED}        Set is patron is debarred
-        {message}    Message to this effect
-        {noissues}    Set.
-         {NOTES}        Set if patron has notes
-        {message}    Notes about patron
-         {ODUES}        Set if patron has overdue books
-        {message}    "Yes"
-        {itemlist}    ref-to-array: list of overdue books
-        {itemlisttext}    Text list of overdue items
-         {WAITING}        Set if there are items available that the
-                patron reserved
-        {message}    Message to this effect
-        {itemlist}    ref-to-array: list of available items
+ This function is not exported.
+
+ The following will be set where applicable:
+ $flags->{CHARGES}->{amount}        Amount of debt
+ $flags->{CHARGES}->{noissues}      Set if debt amount >$5.00 (or syspref noissuescharge)
+ $flags->{CHARGES}->{message}       Message -- deprecated
+
+ $flags->{CREDITS}->{amount}        Amount of credit
+ $flags->{CREDITS}->{message}       Message -- deprecated
+
+ $flags->{  GNA  }                  Patron has no valid address
+ $flags->{  GNA  }->{noissues}      Set for each GNA
+ $flags->{  GNA  }->{message}       "Borrower has no valid address" -- deprecated
+
+ $flags->{ LOST  }                  Patron's card reported lost
+ $flags->{ LOST  }->{noissues}      Set for each LOST
+ $flags->{ LOST  }->{message}       Message -- deprecated
+
+ $flags->{DBARRED}                  Set if patron debarred, no access
+ $flags->{DBARRED}->{noissues}      Set for each DBARRED
+ $flags->{DBARRED}->{message}       Message -- deprecated
+
+ $flags->{ NOTES }
+ $flags->{ NOTES }->{message}       The note itself.  NOT deprecated
+
+ $flags->{ ODUES }                  Set if patron has overdue books.
+ $flags->{ ODUES }->{message}       "Yes"  -- deprecated
+ $flags->{ ODUES }->{itemlist}      ref-to-array: list of overdue books
+ $flags->{ ODUES }->{itemlisttext}  Text list of overdue items -- deprecated
+
+ $flags->{WAITING}                  Set if any of patron's reserves are available
+ $flags->{WAITING}->{message}       Message -- deprecated
+ $flags->{WAITING}->{itemlist}      ref-to-array: list of available items
+
+=over 4
+
+C<$flags-E<gt>{ODUES}-E<gt>{itemlist}> is a reference-to-array listing the
+overdue items. Its elements are references-to-hash, each describing an
+overdue item. The keys are selected fields from the issues, biblio,
+biblioitems, and items tables of the Koha database.
+
+C<$flags-E<gt>{ODUES}-E<gt>{itemlisttext}> is a string giving a text listing of
+the overdue items, one per line.  Deprecated.
+
+C<$flags-E<gt>{WAITING}-E<gt>{itemlist}> is a reference-to-array listing the
+available items. Each element is a reference-to-hash whose keys are
+fields from the reserves table of the Koha database.
+
+=back
+
+All the "message" fields that include language generated in this function are deprecated, 
+because such strings belong properly in the display layer.
+
+The "message" field that comes from the DB is OK.
 
 =cut
+
+# TODO: use {anonymous => hashes} instead of a dozen %flaginfo
 # FIXME rename this function.
 sub patronflags {
     my %flags;
@@ -435,9 +394,9 @@ sub patronflags {
     my ($amount) = GetMemberAccountRecords( $patroninformation->{'borrowernumber'});
     if ( $amount > 0 ) {
         my %flaginfo;
-        my $noissuescharge = C4::Context->preference("noissuescharge");
+        my $noissuescharge = C4::Context->preference("noissuescharge") || 5;
         $flaginfo{'message'} = sprintf "Patron owes \$%.02f", $amount;
-        $flaginfo{'amount'} = sprintf "%.02f",$amount;
+        $flaginfo{'amount'}  = sprintf "%.02f", $amount;
         if ( $amount > $noissuescharge ) {
             $flaginfo{'noissues'} = 1;
         }
@@ -446,6 +405,7 @@ sub patronflags {
     elsif ( $amount < 0 ) {
         my %flaginfo;
         $flaginfo{'message'} = sprintf "Patron has credit of \$%.02f", -$amount;
+        $flaginfo{'amount'}  = sprintf "%.02f", $amount;
         $flags{'CREDITS'} = \%flaginfo;
     }
     if (   $patroninformation->{'gonenoaddress'}
@@ -474,11 +434,10 @@ sub patronflags {
         && $patroninformation->{'borrowernotes'} )
     {
         my %flaginfo;
-        $flaginfo{'message'} = "$patroninformation->{'borrowernotes'}";
+        $flaginfo{'message'} = $patroninformation->{'borrowernotes'};
         $flags{'NOTES'}      = \%flaginfo;
     }
-    my ( $odues, $itemsoverdue ) =
-      checkoverdues( $patroninformation->{'borrowernumber'}, $dbh );
+    my ( $odues, $itemsoverdue ) = checkoverdues($patroninformation->{'borrowernumber'});
     if ( $odues > 0 ) {
         my %flaginfo;
         $flaginfo{'message'}  = "Yes";
@@ -487,7 +446,7 @@ sub patronflags {
             @$itemsoverdue )
         {
             $flaginfo{'itemlisttext'} .=
-              "$_->{'date_due'} $_->{'barcode'} $_->{'title'} \n";
+              "$_->{'date_due'} $_->{'barcode'} $_->{'title'} \n";  # newline is display layer
         }
         $flags{'ODUES'} = \%flaginfo;
     }
@@ -1646,32 +1605,32 @@ sub GetSortDetails {
     return ($sortvalue) unless ($lib);
 }
 
-=head2 DeleteBorrower 
+=head2 MoveMemberToDeleted
 
-  () = &DeleteBorrower($member);
+  $result = &MoveMemberToDeleted($borrowernumber);
 
-delete all data fo borrowers and add record to deletedborrowers table
-C<&$member>this is the borrowernumber
+Copy the record from borrowers to deletedborrowers table.
 
 =cut
 
+# FIXME: should do it in one SQL statement w/ subquery
+# Otherwise, we should return the @data on success
+
 sub MoveMemberToDeleted {
-    my ($member) = @_;
+    my ($member) = shift or return;
     my $dbh = C4::Context->dbh;
-    my $query;
-    $query = qq|SELECT * 
+    my $query = qq|SELECT * 
           FROM borrowers 
           WHERE borrowernumber=?|;
     my $sth = $dbh->prepare($query);
     $sth->execute($member);
     my @data = $sth->fetchrow_array;
-    $sth->finish;
+    (@data) or return;  # if we got a bad borrowernumber, there's nothing to insert
     $sth =
       $dbh->prepare( "INSERT INTO deletedborrowers VALUES ("
           . ( "?," x ( scalar(@data) - 1 ) )
           . "?)" );
     $sth->execute(@data);
-    $sth->finish;
 }
 
 =head2 DelMember
@@ -1821,10 +1780,8 @@ sub GetPatronImage {
     my $sth = $dbh->prepare($query);
     $sth->execute($cardnumber);
     my $imagedata = $sth->fetchrow_hashref;
-    my $dberror = $sth->errstr;
     warn "Database error!" if $sth->errstr;
-    $sth->finish;
-    return $imagedata, $dberror;
+    return $imagedata, $sth->errstr;
 }
 
 =head2 PutPatronImage
@@ -1844,9 +1801,7 @@ sub PutPatronImage {
     my $sth = $dbh->prepare($query);
     $sth->execute($cardnumber,$mimetype,$imgfile,$imgfile);
     warn "Error returned inserting $cardnumber.$mimetype." if $sth->errstr;
-    my $dberror = $sth->errstr;
-    $sth->finish;
-    return $dberror;
+    return $sth->errstr;
 }
 
 =head2 RmPatronImage
@@ -1866,7 +1821,6 @@ sub RmPatronImage {
     $sth->execute($cardnumber);
     my $dberror = $sth->errstr;
     warn "Database error!" if $sth->errstr;
-    $sth->finish;
     return $dberror;
 }
 
@@ -1908,7 +1862,7 @@ sub GetBorrowersWhoHaveNotBorrowedSince {
     my $filterbranch = shift || 
                         ((C4::Context->preference('IndependantBranches') 
                              && C4::Context->userenv 
-                             && C4::Context->userenv->{flags}!=1 
+                             && C4::Context->userenv->{flags} % 2 !=1 
                              && C4::Context->userenv->{branch})
                          ? C4::Context->userenv->{branch}
                          : "");  
@@ -1960,7 +1914,7 @@ sub GetBorrowersWhoHaveNeverBorrowed {
     my $filterbranch = shift || 
                         ((C4::Context->preference('IndependantBranches') 
                              && C4::Context->userenv 
-                             && C4::Context->userenv->{flags}!=1 
+                             && C4::Context->userenv->{flags} % 2 !=1 
                              && C4::Context->userenv->{branch})
                          ? C4::Context->userenv->{branch}
                          : "");  
@@ -2010,7 +1964,7 @@ sub GetBorrowersWithIssuesHistoryOlderThan {
     my $filterbranch = shift || 
                         ((C4::Context->preference('IndependantBranches') 
                              && C4::Context->userenv 
-                             && C4::Context->userenv->{flags}!=1 
+                             && C4::Context->userenv->{flags} % 2 !=1 
                              && C4::Context->userenv->{branch})
                          ? C4::Context->userenv->{branch}
                          : "");  

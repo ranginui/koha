@@ -161,6 +161,7 @@ $tabsysprefs{AllowHoldPolicyOverride}        = "Circulation";
 $tabsysprefs{BranchTransferLimitsType}       = "Circulation";
 $tabsysprefs{AllowNotForLoanOverride}        = "Circulation";
 $tabsysprefs{RenewalPeriodBase}              = "Circulation";
+$tabsysprefs{FilterBeforeOverdueReport}      = "Circulation";
 
 # Staff Client
 $tabsysprefs{TemplateEncoding}        = "StaffClient";
@@ -171,6 +172,9 @@ $tabsysprefs{intranetcolorstylesheet} = "StaffClient";
 $tabsysprefs{intranetuserjs}          = "StaffClient";
 $tabsysprefs{yuipath}                 = "StaffClient";
 $tabsysprefs{IntranetmainUserblock}   = "StaffClient";
+$tabsysprefs{viewMARC}                = "StaffClient";
+$tabsysprefs{viewLabeledMARC}         = "StaffClient";
+$tabsysprefs{viewISBD}                = "StaffClient";
 
 # Patrons
 $tabsysprefs{autoMemberNum}                = "Patrons";

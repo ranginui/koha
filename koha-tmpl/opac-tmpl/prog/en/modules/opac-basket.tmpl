@@ -122,8 +122,8 @@ function tagAdded() {
 	<li><a class="empty" href="opac-basket.pl" onclick="delBasket(); return false;">Empty and Close</a></li>
 	<li><a class="hide" href="opac-basket.pl" onclick="quit(); return false;">Hide Window</a></li>
 </ul>
-        <!-- /TMPL_UNLESS -->
 </div>
+        <!-- /TMPL_UNLESS -->
 
 <!-- TMPL_IF NAME="verbose" -->
 	<!-- TMPL_UNLESS NAME="print_basket" --><p style="padding: 7px 0; border-top : 1px solid #E8E8E8;"><a id="CheckAll" href="#">Select All</a> <a id="CheckNone" href="#">Clear All</a> | <b>Selected items :</b>
@@ -151,10 +151,12 @@ function tagAdded() {
         <!-- TMPL_IF NAME="print_basket" -->
             <!-- TMPL_VAR NAME="title" -->
                 <!-- TMPL_IF name="subtitle" --> <!-- TMPL_VAR NAME="subtitle" --><!-- /TMPL_IF -->
+                <!-- TMPL_IF name="author" --> <!-- TMPL_VAR NAME="author" --><!-- /TMPL_IF -->
         <!-- TMPL_ELSE -->
                 <input type="checkbox" value="<!-- TMPL_VAR NAME="biblionumber" -->" name="bib<!-- TMPL_VAR NAME="biblionumber" -->" id="bib<!-- TMPL_VAR NAME="biblionumber" -->" onclick="selRecord(value,checked)" />
                 <!-- TMPL_VAR NAME="title" escape="html" -->
                 <!-- TMPL_IF name="subtitle" --> <!-- TMPL_VAR NAME="subtitle" --><!-- /TMPL_IF -->
+                <!-- TMPL_IF name="author" --> <!-- TMPL_VAR NAME="author" --><!-- /TMPL_IF -->
         <!-- /TMPL_IF -->
     </h3>
 	    <!-- COinS / OpenURL -->
@@ -166,13 +168,24 @@ function tagAdded() {
             <td><!-- TMPL_VAR NAME="isbn" --></td>
         </tr>
         <!-- /TMPL_IF -->
-        
-        <!-- TMPL_IF name="MARCAUTHORS" -->
+
+        <!-- TMPL_IF "HASAUTHORS" -->
         <tr>
-            <th scope="row">Authors</th>
-            <td><!-- TMPL_LOOP NAME="MARCAUTHORS" -->
-                    <!-- TMPL_VAR NAME="value" -->
-            <!-- /TMPL_LOOP --></td>
+            <th scope="row">Author(s)</th>
+            <td>
+                   <!-- TMPL_IF NAME="author" -->
+                       <p><!-- TMPL_VAR NAME="author" --></p>
+                   <!-- /TMPL_IF -->
+                   <!-- TMPL_IF NAME="MARCAUTHORS" -->
+                       <!-- TMPL_LOOP NAME="MARCAUTHORS" -->
+                       <p> <!-- TMPL_LOOP NAME="MARCAUTHOR_SUBFIELDS_LOOP" -->
+                              <!-- TMPL_VAR NAME="separator" -->
+                                  <!-- TMPL_VAR NAME="value" -->
+                           <!-- /TMPL_LOOP -->
+                       </p>
+                       <!-- /TMPL_LOOP -->
+                   <!-- /TMPL_IF -->
+	    </td>
         </tr>
         <!-- /TMPL_IF -->
         
@@ -202,7 +215,8 @@ function tagAdded() {
             <td><!-- TMPL_LOOP NAME="MARCSUBJCTS" -->
                    <p> <!-- TMPL_LOOP NAME="MARCSUBJECT_SUBFIELDS_LOOP" -->
                         <!-- TMPL_VAR NAME="separator" --><!-- TMPL_VAR NAME="value" --><!-- /TMPL_LOOP -->
-                <!-- /TMPL_LOOP --></p></td>
+                   </p>
+                <!-- /TMPL_LOOP --></td>
         </tr>
         <!-- /TMPL_IF -->
     

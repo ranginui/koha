@@ -34,6 +34,7 @@ use C4::Members;
 use C4::Serials;
 use C4::XISBN qw(get_xisbns get_biblionumber_from_isbn);
 use C4::External::Amazon;
+use C4::Search;		# enabled_staff_search_views
 
 # use Smart::Comments;
 
@@ -195,12 +196,17 @@ $template->param(
 	itemdata_enumchron  => $itemfields{enumchron},
 	itemdata_copynumber => $itemfields{copynumber},
 	volinfo				=> $itemfields{enumchron} || $dat->{'serial'} ,
+	z3950_search_params	=> C4::Search::z3950_search_args($dat),
+	C4::Search::enabled_staff_search_views,
 );
 
 my @results = ( $dat, );
 foreach ( keys %{$dat} ) {
     $template->param( "$_" => defined $dat->{$_} ? $dat->{$_} : '' );
 }
+
+# does not work: my %views_enabled = map { $_ => 1 } $template->query(loop => 'EnableViews');
+# method query not found?!?!
 
 $template->param(
     itemloop        => \@itemloop,
@@ -239,7 +245,7 @@ if ( C4::Context->preference("AmazonEnabled") == 1 ) {
     if ( $amazon_similars ) {
         my $similar_products_exist;
         my @similar_products;
-        for my $similar_product (@{$amazon_details->{Items}->{Item}->{SimilarProducts}->{SimilarProduct}}) {
+        for my $similar_product (@{$amazon_details->{Items}->{Item}->[0]->{SimilarProducts}->{SimilarProduct}}) {
             # do we have any of these isbns in our collection?
             my $similar_biblionumbers = get_biblionumber_from_isbn($similar_product->{ASIN});
             # verify that there is at least one similar item
@@ -252,10 +258,10 @@ if ( C4::Context->preference("AmazonEnabled") == 1 ) {
         $template->param( AMAZON_SIMILAR_PRODUCTS  => \@similar_products      );
     }
     if ( $amazon_reviews ) {
-        my $item = $amazon_details->{Items}->{Item};
+        my $item = $amazon_details->{Items}->{Item}->[0];
         my $editorial_reviews = \@{ $item->{EditorialReviews}->{EditorialReview} };
-        #my $customer_reviews  = \@{$amazon_details->{Items}->{Item}->{CustomerReviews}->{Review}};
-        #my $average_rating = $amazon_details->{Items}->{Item}->{CustomerReviews}->{AverageRating} || 0;
+        #my $customer_reviews  = \@{$amazon_details->{Items}->{Item}->[0]->{CustomerReviews}->{Review}};
+        #my $average_rating = $amazon_details->{Items}->{Item}->[0]->{CustomerReviews}->{AverageRating} || 0;
         #$template->param( amazon_average_rating    => $average_rating * 20    );
         #$template->param( AMAZON_CUSTOMER_REVIEWS  => $customer_reviews       );
         $template->param( AMAZON_EDITORIAL_REVIEWS => $editorial_reviews      );

@@ -236,10 +236,9 @@ sub AddBiblio {
     _koha_marc_update_biblioitem_cn_sort($record, $olddata, $frameworkcode);
     
     # now add the record
-    $biblionumber = ModBiblioMarc( $record, $biblionumber, $frameworkcode ) unless $defer_marc_save;
+    ModBiblioMarc( $record, $biblionumber, $frameworkcode ) unless $defer_marc_save;
       
     logaction("CATALOGUING", "ADD", $biblionumber, "biblio") if C4::Context->preference("CataloguingLog");
-
     return ( $biblionumber, $biblioitemnumber );
 }
 
@@ -1050,13 +1049,13 @@ sub GetCOinSBiblio {
     my $mtx;
     my $genre;
     my ($aulast, $aufirst) = ('','');
-    my $oauthors;
-    my $title;
-    my $subtitle;
-    my $pubyear;
-    my $isbn;
-    my $issn;
-    my $publisher;
+    my $oauthors  = '';
+    my $title     = '';
+    my $subtitle  = '';
+    my $pubyear   = '';
+    my $isbn      = '';
+    my $issn      = '';
+    my $publisher = '';
 
     if ( C4::Context->preference("marcflavour") eq "UNIMARC" ){
         my $fmts6;
@@ -1125,7 +1124,9 @@ sub GetCOinSBiblio {
         $genre = "&amp;rft.genre=book";
 
         # Setting datas
-        $oauthors .= "&amp;rft.au=".$record->subfield('100','a');
+        if ($record->field('100')) {
+            $oauthors .= "&amp;rft.au=".$record->subfield('100','a');
+        }
         # others authors
         if($record->field('700')){
             for my $au ($record->field('700')->subfield('a')){
@@ -2231,7 +2232,7 @@ sub PrepareItemrecordDisplay {
                         "branches" )
                     {
                         if ( ( C4::Context->preference("IndependantBranches") )
-                            && ( C4::Context->userenv->{flags} != 1 ) )
+                            && ( C4::Context->userenv->{flags} % 2 != 1 ) )
                         {
                             my $sth =
                               $dbh->prepare(

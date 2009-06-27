@@ -95,3 +95,9 @@ src="[% themelang %]/js/basket.js">
 	//]]>
 </script>[% END %]
 <link rel="unapi-server" type="application/xml" title="unAPI" href="[% OPACBaseURL %]/cgi-bin/koha/unapi" />
+[% IF GoogleIndicTransliteration %]
+        <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+        <script type="text/javascript" language="javascript" src="[% themelang %]/js/googleindictransliteration.js"></script>
+[% END %]
+
+
