@@ -2370,6 +2370,21 @@ CREATE TABLE `item_circulation_alert_preferences` (
   KEY `branchcode` (`branchcode`,`categorycode`,`item_type`, `notification`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Table structure for table `fieldmapping`
+--
+
+DROP TABLE IF EXISTS `fieldmapping`;
+CREATE TABLE `fieldmapping` (
+  `id` int(11) NOT NULL auto_increment,
+  `field` varchar(255) NOT NULL,
+  `frameworkcode` char(4) NOT NULL default '',
+  `fieldcode` char(3) NOT NULL,
+  `subfieldcode` char(1) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
