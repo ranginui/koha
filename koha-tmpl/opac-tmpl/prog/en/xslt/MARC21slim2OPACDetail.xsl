@@ -132,7 +132,7 @@
         </div> 
 
 
-        <xsl:if test="$materialTypeCode">
+        <xsl:if test="$materialTypeCode!=''">
         <span class="results_summary"><span class="label">Type: </span>
         <xsl:element name="img"><xsl:attribute name="src">/opac-tmpl/prog/famfamfam/<xsl:value-of select="$materialTypeCode"/>.png</xsl:attribute><xsl:attribute name="alt"></xsl:attribute></xsl:element>
         <xsl:value-of select="$materialTypeLabel"/>
@@ -213,12 +213,13 @@
         </span>
        </xsl:if>
 
+       <abbr class="unapi-id" title="koha:biblionumber:{marc:datafield[@tag=999]/marc:subfield[@code='c']}" ><!-- unAPI --></abbr>
+
        <xsl:if test="marc:datafield[@tag=020]">
         <span class="results_summary"><span class="label">ISBN: </span>
-        <!-- unAPI <abbr/> tag -->
         <xsl:for-each select="marc:datafield[@tag=020]">
         <xsl:variable name="isbn" select="marc:subfield[@code='a']"/>
-        <abbr class="unapi-id" title="koha:isbn:{$isbn}"><xsl:value-of select="marc:subfield[@code='a']"/></abbr>
+                <xsl:value-of select="marc:subfield[@code='a']"/>
                 <xsl:choose><xsl:when test="position()=last()"><xsl:text>.</xsl:text></xsl:when><xsl:otherwise><xsl:text>; </xsl:text></xsl:otherwise></xsl:choose>
         </xsl:for-each>
         </span>

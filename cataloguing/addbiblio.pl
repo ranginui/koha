@@ -93,7 +93,7 @@ sub MARCfindbreeding {
             if (    C4::Context->preference("z3950NormalizeAuthor")
                 and C4::Context->preference("z3950AuthorAuthFields") )
             {
-                my ( $tag, $subfield ) = GetMarcFromKohaField("biblio.author",'');
+                my ( $tag, $subfield ) = GetMarcFromKohaField("biblio.author", '');
 
  #                 my $summary = C4::Context->preference("z3950authortemplate");
                 my $auth_fields =
@@ -168,7 +168,7 @@ sub build_authorized_values_list ($$$$$$$) {
         #Use GetBranches($onlymine)
         my $onlymine=C4::Context->preference('IndependantBranches') && 
                 C4::Context->userenv && 
-                C4::Context->userenv->{flags}!=1 && 
+                C4::Context->userenv->{flags} % 2 == 0 && 
                 C4::Context->userenv->{branch};
         my $branches = GetBranches($onlymine);
         my @branchloop;
@@ -766,6 +766,10 @@ AND (authtypecode IS NOT NULL AND authtypecode<>\"\")|);
          my $authtypedata=GetAuthType($data->{authtypecode});
          next unless $authtypedata;
          my $marcrecordauth=MARC::Record->new();
+		if (C4::Context->preference('marcflavour') eq 'MARC21') {
+			$marcrecordauth->leader('     nz  a22     o  4500');
+			SetMarcUnicodeFlag($marcrecordauth, 'MARC21');
+			}
          my $authfield=MARC::Field->new($authtypedata->{auth_tag_to_report},'','',"a"=>"".$field->subfield('a'));
          map { $authfield->add_subfields($_->[0]=>$_->[1]) if ($_->[0]=~/[A-z]/ && $_->[0] ne "a" )}  $field->subfields();
          $marcrecordauth->insert_fields_ordered($authfield);
@@ -776,11 +780,6 @@ AND (authtypecode IS NOT NULL AND authtypecode<>\"\")|);
          # FIXME: AddAuthority() instead should simply explicitly require that the MARC::Record
          # use UTF-8, but as of 2008-08-05, did not want to introduce that kind
          # of change to a core API just before the 3.0 release.
-         # 
-         # This isn't needed if we set the UTF flag in the leader below
-		#if (C4::Context->preference('marcflavour') eq 'MARC21') {
-        #    SetMarcUnicodeFlag($marcrecordauth, 'MARC21');
-        # }
 
 				if (C4::Context->preference('marcflavour') eq 'MARC21') {
 					$marcrecordauth->leader('     nz  a22     o  4500');

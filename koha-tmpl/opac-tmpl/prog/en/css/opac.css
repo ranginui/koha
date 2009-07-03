@@ -253,6 +253,14 @@ td,th {
 	padding : 3px 5px;
 }
 
+td.place_on_type table,
+td.place_on_type table td {
+	border : 0;
+}
+td caption {
+	font-size : 105%;
+}
+
 th {
 	background-color:#EEE;
 	font-weight : bold;
@@ -448,7 +456,38 @@ a.send {
 	text-decoration : none;
 	padding-left : 21px;
 }
-
+a.hold,
+#placehold input.submit {
+	background-image: url(../../images/placereserve.gif);
+	background-position : 9px center;
+	background-repeat : no-repeat;
+	text-decoration : none;
+	padding-left : 34px;
+}
+#placehold input.submit,
+#tagsel_span input.submit {
+	border : 0;
+	background-color: transparent;
+	font-size : 100%;
+	font-weight : bold;
+	padding-left : 31px;
+	color : #336699;
+	cursor : pointer;
+}
+#tagsel_span input.submit,
+#tagsel_tag {
+	background-image: url(../../images/tags.gif);
+	background-position : 9px center;
+	background-repeat : no-repeat;
+	padding-left : 24px;
+	text-decoration: none;
+}
+#tagsel_tag {
+	padding-left: 27px;
+}
+#placehold input.submit:hover,#tagsel_span input.submit:hover {
+	color: #990033;
+}
 #toolbar a.empty {
 	background-image: url(../../images/trash.gif);
 }
@@ -479,6 +518,11 @@ body#advsearch #breadcrumbs {
 	line-height : 1px;
 	height : 1px;
 	padding : 0;	
+}
+
+body#advsearch #cartmenulink,
+body#advsearch #listsmenulink {
+	float : right;
 }
 
 #advsearch #branchloop,
@@ -777,7 +821,7 @@ a.cancel {
 	margin-top : 5px;
 }
 
-.cartlist input.submit {
+.cartlist input.submit, #tagsel_button {
 	background-color : #d8deb8;
 	background-image : none;
 	border-color : #bebf84;
@@ -855,7 +899,7 @@ td.resultscontrol img {
 	color:#006699;
 }
 
-.unavailable {
+.unavailable, .tagerror, .tagerror:visited {
 	color: #990033;
 }
 
@@ -1053,6 +1097,11 @@ float : right;
 width: 100%;
 }
 
+#translControl{
+float : left;
+padding-left : .4em;
+}
+
 .clearfix:after {
     content: "."; 
     display: block; 
@@ -1102,6 +1151,7 @@ width: 100%;
 .actions a.addtocart {
 	background : url("../../images/cart-small.gif") center left no-repeat;
 	padding-left : 13px;
+	display : none;
 }
 
 .actions a.addtoshelf {
@@ -1245,7 +1295,7 @@ div#changelanguage li.yuimenuitem a.yuimenuitemlabel {
 	padding : 0;
 }
 
-#cartDetails,#cartUpdate {
+#cartDetails,#cartUpdate,#holdDetails,#listsDetails {
 	background-color : #FFF;
 	border: 1px solid #739acf;
 	color : black;
@@ -1781,4 +1831,8 @@ a.p1:active {
 	color : #AAA;
 	text-decoration : none;
 	font-weight : bold;
+}
+
+.copies_row > td:first-child {
+    border-left-style : none;
 }

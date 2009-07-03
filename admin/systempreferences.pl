@@ -100,27 +100,27 @@ $tabsysprefs{dontmerge}             = "Authorities";
 $tabsysprefs{BiblioAddsAuthorities} = "Authorities";
 
 # Cataloguing
-$tabsysprefs{advancedMARCeditor}          = "Cataloguing";
-$tabsysprefs{autoBarcode}                 = "Cataloguing";
-$tabsysprefs{hide_marc}                   = "Cataloguing";
-$tabsysprefs{IntranetBiblioDefaultView}   = "Cataloguing";
-$tabsysprefs{ISBD}                        = "Cataloguing";
-$tabsysprefs{itemcallnumber}              = "Cataloguing";
-$tabsysprefs{LabelMARCView}               = "Cataloguing";
-$tabsysprefs{marc}                        = "Cataloguing";
-$tabsysprefs{marcflavour}                 = "Cataloguing";
-$tabsysprefs{MARCOrgCode}                 = "Cataloguing";
-$tabsysprefs{z3950AuthorAuthFields}       = "Cataloguing";
-$tabsysprefs{z3950NormalizeAuthor}        = "Cataloguing";
-$tabsysprefs{Stemming}                    = "Cataloguing";
-$tabsysprefs{WeightFields}                = "Cataloguing";
-$tabsysprefs{NoZebra}                     = "Cataloguing";
-$tabsysprefs{NoZebraIndexes}              = "Cataloguing";
-$tabsysprefs{ReceiveBackIssues}           = "Cataloguing";
-$tabsysprefs{DefaultClassificationSource} = "Cataloguing";
-$tabsysprefs{RoutingSerials}              = "Cataloguing";
-$tabsysprefs{'item-level_itypes'}         = "Cataloguing";
-$tabsysprefs{OpacSuppression}             = "Cataloguing";
+$tabsysprefs{advancedMARCeditor}          = "Cataloging";
+$tabsysprefs{autoBarcode}                 = "Cataloging";
+$tabsysprefs{hide_marc}                   = "Cataloging";
+$tabsysprefs{IntranetBiblioDefaultView}   = "Cataloging";
+$tabsysprefs{ISBD}                        = "Cataloging";
+$tabsysprefs{itemcallnumber}              = "Cataloging";
+$tabsysprefs{LabelMARCView}               = "Cataloging";
+$tabsysprefs{marc}                        = "Cataloging";
+$tabsysprefs{marcflavour}                 = "Cataloging";
+$tabsysprefs{MARCOrgCode}                 = "Cataloging";
+$tabsysprefs{z3950AuthorAuthFields}       = "Cataloging";
+$tabsysprefs{z3950NormalizeAuthor}        = "Cataloging";
+$tabsysprefs{Stemming}                    = "Cataloging";
+$tabsysprefs{WeightFields}                = "Cataloging";
+$tabsysprefs{NoZebra}                     = "Cataloging";
+$tabsysprefs{NoZebraIndexes}              = "Cataloging";
+$tabsysprefs{ReceiveBackIssues}           = "Cataloging";
+$tabsysprefs{DefaultClassificationSource} = "Cataloging";
+$tabsysprefs{RoutingSerials}              = "Cataloging";
+$tabsysprefs{'item-level_itypes'}         = "Cataloging";
+$tabsysprefs{OpacSuppression}             = "Cataloging";
 
 # Circulation
 $tabsysprefs{maxoutstanding}                 = "Circulation";
@@ -130,6 +130,7 @@ $tabsysprefs{IssuingInProcess}               = "Circulation";
 $tabsysprefs{patronimages}                   = "Circulation";
 $tabsysprefs{printcirculationslips}          = "Circulation";
 $tabsysprefs{ReturnBeforeExpiry}             = "Circulation";
+$tabsysprefs{ceilingDueDate}                 = "Circulation";
 $tabsysprefs{SpecifyDueDate}                 = "Circulation";
 $tabsysprefs{AutomaticItemReturn}            = "Circulation";
 $tabsysprefs{ReservesMaxPickUpDelay}         = "Circulation";
@@ -140,6 +141,7 @@ $tabsysprefs{CircAutocompl}                  = "Circulation";
 $tabsysprefs{AllowRenewalLimitOverride}      = "Circulation";
 $tabsysprefs{canreservefromotherbranches}    = "Circulation";
 $tabsysprefs{finesMode}                      = "Circulation";
+$tabsysprefs{numReturnedItemsToShow}         = "Circulation";
 $tabsysprefs{emailLibrarianWhenHoldIsPlaced} = "Circulation";
 $tabsysprefs{globalDueDate}                  = "Circulation";
 $tabsysprefs{holdCancelLength}               = "Circulation";
@@ -154,6 +156,12 @@ $tabsysprefs{RandomizeHoldsQueueWeight}      = "Circulation";
 $tabsysprefs{StaticHoldsQueueWeight}         = "Circulation";
 $tabsysprefs{AllowOnShelfHolds}              = "Circulation";
 $tabsysprefs{AllowHoldsOnDamagedItems}       = "Circulation";
+$tabsysprefs{UseBranchTransferLimits}        = "Circulation";
+$tabsysprefs{AllowHoldPolicyOverride}        = "Circulation";
+$tabsysprefs{BranchTransferLimitsType}       = "Circulation";
+$tabsysprefs{AllowNotForLoanOverride}        = "Circulation";
+$tabsysprefs{RenewalPeriodBase}              = "Circulation";
+$tabsysprefs{FilterBeforeOverdueReport}      = "Circulation";
 
 # Staff Client
 $tabsysprefs{TemplateEncoding}        = "StaffClient";
@@ -164,6 +172,9 @@ $tabsysprefs{intranetcolorstylesheet} = "StaffClient";
 $tabsysprefs{intranetuserjs}          = "StaffClient";
 $tabsysprefs{yuipath}                 = "StaffClient";
 $tabsysprefs{IntranetmainUserblock}   = "StaffClient";
+$tabsysprefs{viewMARC}                = "StaffClient";
+$tabsysprefs{viewLabeledMARC}         = "StaffClient";
+$tabsysprefs{viewISBD}                = "StaffClient";
 
 # Patrons
 $tabsysprefs{autoMemberNum}                = "Patrons";
@@ -212,19 +223,46 @@ $tabsysprefs{QueryRemoveStopwords}    = "Searching";
 $tabsysprefs{AdvancedSearchTypes}     = "Searching";
 
 # EnhancedContent
-$tabsysprefs{AmazonContent}          = "EnhancedContent";
+$tabsysprefs{AmazonEnabled}          = "EnhancedContent";
+$tabsysprefs{OPACAmazonEnabled}      = "EnhancedContent";
+$tabsysprefs{AmazonCoverImages}      = "EnhancedContent";
+$tabsysprefs{OPACAmazonCoverImages}  = "EnhancedContent";
 $tabsysprefs{AWSAccessKeyID}         = "EnhancedContent";
 $tabsysprefs{AmazonLocale}           = "EnhancedContent";
 $tabsysprefs{AmazonAssocTag}         = "EnhancedContent";
 $tabsysprefs{AmazonSimilarItems}     = "EnhancedContent";
-$tabsysprefs{OPACAmazonContent}      = "EnhancedContent";
 $tabsysprefs{OPACAmazonSimilarItems} = "EnhancedContent";
+$tabsysprefs{AmazonReviews}          = "EnhancedContent";
+$tabsysprefs{OPACAmazonReviews}      = "EnhancedContent";
+
+# Babelthèque
+$tabsysprefs{Babeltheque}            = "EnhancedContent";
 
 # Baker & Taylor
 $tabsysprefs{BakerTaylorBookstoreURL} = 'EnhancedContent';
 $tabsysprefs{BakerTaylorEnabled}      = 'EnhancedContent';
 $tabsysprefs{BakerTaylorPassword}     = 'EnhancedContent';
 $tabsysprefs{BakerTaylorUsername}     = 'EnhancedContent';
+
+# Library Thing for Libraries
+$tabsysprefs{LibraryThingForLibrariesID} = "EnhancedContent"; 
+$tabsysprefs{LibraryThingForLibrariesEnabled} = "EnhancedContent"; 
+$tabsysprefs{LibraryThingForLibrariesTabbedView} = "EnhancedContent";
+
+# Syndetics
+$tabsysprefs{SyndeticsClientCode}     = 'EnhancedContent';
+$tabsysprefs{SyndeticsEnabled}        = 'EnhancedContent';
+$tabsysprefs{SyndeticsCoverImages}    = 'EnhancedContent';
+$tabsysprefs{SyndeticsTOC}            = 'EnhancedContent';
+$tabsysprefs{SyndeticsSummary}        = 'EnhancedContent';
+$tabsysprefs{SyndeticsEditions}       = 'EnhancedContent';
+$tabsysprefs{SyndeticsExcerpt}        = 'EnhancedContent';
+$tabsysprefs{SyndeticsReviews}        = 'EnhancedContent';
+$tabsysprefs{SyndeticsAuthorNotes}    = 'EnhancedContent';
+$tabsysprefs{SyndeticsAwards}         = 'EnhancedContent';
+$tabsysprefs{SyndeticsSeries}         = 'EnhancedContent';
+$tabsysprefs{SyndeticsCoverImageSize} = 'EnhancedContent';
+
 
 # FRBR
 $tabsysprefs{FRBRizeEditions}     = "EnhancedContent";
@@ -291,6 +329,7 @@ $tabsysprefs{OPACItemHolds}        = "OPAC";
 $tabsysprefs{OPACGroupResults}     = "OPAC";
 $tabsysprefs{XSLTDetailsDisplay}   = "OPAC";
 $tabsysprefs{XSLTResultsDisplay}   = "OPAC";
+$tabsysprefs{OPACShowCheckoutName}   = "OPAC";
 
 # Serials
 $tabsysprefs{OPACSerialIssueDisplayCount}  = "Serials";
@@ -673,18 +712,11 @@ if ( $op eq 'add_form' ) {
     my $tab = $input->param('tab');
     $template->param( $tab => 1 );
     my ( $count, $results ) = StringSearch( $searchfield, $tab );
-    my $toggle    = 0;
     my @loop_data = ();
     for ( my $i = $offset ; $i < ( $offset + $pagesize < $count ? $offset + $pagesize : $count ) ; $i++ ) {
-        if ( $toggle == 0 ) {
-            $toggle = 1;
-        } else {
-            $toggle = 0;
-        }
         my $row_data = $results->[$i];
         $row_data->{'lang'} = $template->param('lang');
         $row_data           = GetPrefParams($row_data);                                                         # get a fresh hash for the row data
-        $row_data->{toggle} = $toggle;
         $row_data->{edit}   = "$script_name?op=add_form&amp;searchfield=" . $results->[$i]{'variable'};
         $row_data->{delete} = "$script_name?op=delete_confirm&amp;searchfield=" . $results->[$i]{'variable'};
         push( @loop_data, $row_data );

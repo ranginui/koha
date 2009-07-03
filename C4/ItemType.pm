@@ -88,19 +88,19 @@ sub all {
 
 These are read-only accessors for attributes of a C4::ItemType object.
 
-=head3 $itemtype->itemtype       
+=head3 $itemtype->itemtype
 
-=head3 $itemtype->description    
+=head3 $itemtype->description
 
 =head3 $itemtype->renewalsallowed
 
-=head3 $itemtype->rentalcharge   
+=head3 $itemtype->rentalcharge
 
-=head3 $itemtype->notforloan     
+=head3 $itemtype->notforloan
 
-=head3 $itemtype->imageurl       
+=head3 $itemtype->imageurl
 
-=head3 $itemtype->summary        
+=head3 $itemtype->summary
 
 =cut
 
@@ -115,6 +115,7 @@ sub AUTOLOAD {
     }
 }
 
+sub DESTROY { }
 
 
 
@@ -146,14 +147,3 @@ John Beppu <john.beppu@liblime.com>
 =cut
 
 1;
-
-# Local Variables: ***
-# mode: cperl ***
-# indent-tabs-mode: nil ***
-# cperl-close-paren-offset: -4 ***
-# cperl-continued-statement-offset: 4 ***
-# cperl-indent-level: 4 ***
-# cperl-indent-parens-as-block: t ***
-# cperl-tab-always-indent: nil ***
-# End: ***
-# vim:tabstop=8 softtabstop=4 shiftwidth=4 shiftround expandtab

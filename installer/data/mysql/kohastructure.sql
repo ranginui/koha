@@ -341,7 +341,8 @@ CREATE TABLE `authorised_values` (
   `lib` varchar(80) default NULL,
   `imageurl` varchar(200) default NULL,
   PRIMARY KEY  (`id`),
-  KEY `name` (`category`)
+  KEY `name` (`category`),
+  KEY `lib` (`lib`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -421,6 +422,7 @@ CREATE TABLE `biblioitems` (
   KEY `isbn` (`isbn`),
   KEY `issn` (`issn`),
   KEY `publishercode` (`publishercode`),
+  KEY `issn` (`issn`),
   CONSTRAINT `biblioitems_ibfk_1` FOREIGN KEY (`biblionumber`) REFERENCES `biblio` (`biblionumber`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -529,6 +531,18 @@ CREATE TABLE `borrower_attributes` (
   CONSTRAINT `borrower_attributes_ibfk_1` FOREIGN KEY (`borrowernumber`) REFERENCES `borrowers` (`borrowernumber`)
     ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `borrower_attributes_ibfk_2` FOREIGN KEY (`code`) REFERENCES `borrower_attribute_types` (`code`)
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `branch_item_rules` (
+  `branchcode` varchar(10) NOT NULL,
+  `itemtype` varchar(10) NOT NULL,
+  `holdallowed` tinyint(1) default NULL,
+  PRIMARY KEY  (`itemtype`,`branchcode`),
+  KEY `branch_item_rules_ibfk_2` (`branchcode`),
+  CONSTRAINT `branch_item_rules_ibfk_1` FOREIGN KEY (`itemtype`) REFERENCES `itemtypes` (`itemtype`)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `branch_item_rules_ibfk_2` FOREIGN KEY (`branchcode`) REFERENCES `branches` (`branchcode`)
     ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -672,8 +686,21 @@ DROP TABLE IF EXISTS `default_branch_circ_rules`;
 CREATE TABLE `default_branch_circ_rules` (
   `branchcode` VARCHAR(10) NOT NULL,
   `maxissueqty` int(4) default NULL,
+  `holdallowed` tinyint(1) default NULL,
   PRIMARY KEY (`branchcode`),
   CONSTRAINT `default_branch_circ_rules_ibfk_1` FOREIGN KEY (`branchcode`) REFERENCES `branches` (`branchcode`)
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `default_branch_item_rules`
+--
+
+CREATE TABLE `default_branch_item_rules` (
+  `itemtype` varchar(10) NOT NULL,
+  `holdallowed` tinyint(1) default NULL,
+  PRIMARY KEY  (`itemtype`),
+  CONSTRAINT `default_branch_item_rules_ibfk_1` FOREIGN KEY (`itemtype`) REFERENCES `itemtypes` (`itemtype`)
     ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -685,6 +712,7 @@ DROP TABLE IF EXISTS `default_circ_rules`;
 CREATE TABLE `default_circ_rules` (
     `singleton` enum('singleton') NOT NULL default 'singleton',
     `maxissueqty` int(4) default NULL,
+    `holdallowed` int(1) default NULL,
     PRIMARY KEY (`singleton`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -873,6 +901,7 @@ CREATE TABLE `deletedborrowers` (
   `altcontactaddress3` varchar(255) default NULL,
   `altcontactzipcode` varchar(50) default NULL,
   `altcontactphone` varchar(50) default NULL,
+  `smsalertnumber` varchar(50) default NULL,
   KEY `borrowernumber` (`borrowernumber`),
   KEY `cardnumber` (`cardnumber`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -938,6 +967,29 @@ CREATE TABLE `ethnicity` (
   `code` varchar(10) NOT NULL default '',
   `name` varchar(255) default NULL,
   PRIMARY KEY  (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `hold_fill_targets`
+--
+
+DROP TABLE IF EXISTS `hold_fill_targets`;
+CREATE TABLE hold_fill_targets (
+  `borrowernumber` int(11) NOT NULL,
+  `biblionumber` int(11) NOT NULL,
+  `itemnumber` int(11) NOT NULL,
+  `source_branchcode`  varchar(10) default NULL,
+  `item_level_request` tinyint(4) NOT NULL default 0,
+  PRIMARY KEY `itemnumber` (`itemnumber`),
+  KEY `bib_branch` (`biblionumber`, `source_branchcode`),
+  CONSTRAINT `hold_fill_targets_ibfk_1` FOREIGN KEY (`borrowernumber`) 
+    REFERENCES `borrowers` (`borrowernumber`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `hold_fill_targets_ibfk_2` FOREIGN KEY (`biblionumber`) 
+    REFERENCES `biblio` (`biblionumber`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `hold_fill_targets_ibfk_3` FOREIGN KEY (`itemnumber`) 
+    REFERENCES `items` (`itemnumber`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `hold_fill_targets_ibfk_4` FOREIGN KEY (`source_branchcode`) 
+    REFERENCES `branches` (`branchcode`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -1174,7 +1226,7 @@ CREATE TABLE `itemtypes` (
 DROP TABLE IF EXISTS `labels`;
 CREATE TABLE `labels` (
   `labelid` int(11) NOT NULL auto_increment,
-  `batch_id` varchar(10) NOT NULL default 1,
+  `batch_id` int(10) NOT NULL default 1,
   `itemnumber` varchar(100) NOT NULL default '',
   `timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   PRIMARY KEY  (`labelid`)
@@ -1201,7 +1253,7 @@ CREATE TABLE `labels_conf` (
   `isbn` int(1) default '0',
   `startlabel` int(2) NOT NULL default '1',
   `printingtype` char(32) default 'BAR',
-  `formatstring` varchar(64) default NULL,
+  `formatstring` mediumtext default NULL,
   `layoutname` char(20) NOT NULL default 'TEST',
   `guidebox` int(1) default '0',
   `active` tinyint(1) default '1',
@@ -1844,10 +1896,14 @@ CREATE TABLE `subscription` (
   `distributedto` text,
   `internalnotes` longtext,
   `callnumber` text,
+  `location` varchar(80) NULL default '',
   `branchcode` varchar(10) NOT NULL default '',
   `hemisphere` tinyint(3) default 0,
   `lastbranch` varchar(10),
   `serialsadditems` tinyint(1) NOT NULL default '0',
+  `staffdisplaycount` VARCHAR(10) NULL,
+  `opacdisplaycount` VARCHAR(10) NULL,
+  `graceperiod` int(11) NOT NULL default '0',
   PRIMARY KEY  (`subscriptionid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -2132,7 +2188,7 @@ CREATE TABLE language_script_mapping (
 DROP TABLE IF EXISTS `permissions`;
 CREATE TABLE `permissions` (
   `module_bit` int(11) NOT NULL DEFAULT 0,
-  `code` varchar(30) DEFAULT NULL,
+  `code` varchar(64) DEFAULT NULL,
   `description` varchar(255) DEFAULT NULL,
   PRIMARY KEY  (`module_bit`, `code`),
   CONSTRAINT `permissions_ibfk_1` FOREIGN KEY (`module_bit`) REFERENCES `userflags` (`bit`)
@@ -2152,7 +2208,7 @@ DROP TABLE IF EXISTS `user_permissions`;
 CREATE TABLE `user_permissions` (
   `borrowernumber` int(11) NOT NULL DEFAULT 0,
   `module_bit` int(11) NOT NULL DEFAULT 0,
-  `code` varchar(30) DEFAULT NULL,
+  `code` varchar(64) DEFAULT NULL,
   CONSTRAINT `user_permissions_ibfk_1` FOREIGN KEY (`borrowernumber`) REFERENCES `borrowers` (`borrowernumber`)
     ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `user_permissions_ibfk_2` FOREIGN KEY (`module_bit`, `code`) REFERENCES `permissions` (`module_bit`, `code`)
@@ -2178,7 +2234,8 @@ CREATE TABLE `tmp_holdsqueue` (
   `itemcallnumber` varchar(30) default NULL,
   `holdingbranch` varchar(10) default NULL,
   `pickbranch` varchar(10) default NULL,
-  `notes` text
+  `notes` text,
+  `item_level_request` tinyint(4) NOT NULL default 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -2191,6 +2248,8 @@ CREATE TABLE `message_queue` (
   `borrowernumber` int(11) default NULL,
   `subject` text,
   `content` text,
+  `metadata` text DEFAULT NULL,
+  `letter_code` varchar(64) DEFAULT NULL,
   `message_transport_type` varchar(20) NOT NULL,
   `status` enum('sent','pending','failed','deleted') NOT NULL default 'pending',
   `time_queued` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
@@ -2253,15 +2312,18 @@ CREATE TABLE `message_transports` (
 DROP TABLE IF EXISTS `borrower_message_preferences`;
 CREATE TABLE `borrower_message_preferences` (
   `borrower_message_preference_id` int(11) NOT NULL auto_increment,
-  `borrowernumber` int(11) NOT NULL default '0',
+  `borrowernumber` int(11) default NULL,
+  `categorycode` varchar(10) default NULL,
   `message_attribute_id` int(11) default '0',
   `days_in_advance` int(11) default '0',
   `wants_digest` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`borrower_message_preference_id`),
   KEY `borrowernumber` (`borrowernumber`),
+  KEY `categorycode` (`categorycode`),
   KEY `message_attribute_id` (`message_attribute_id`),
   CONSTRAINT `borrower_message_preferences_ibfk_1` FOREIGN KEY (`borrowernumber`) REFERENCES `borrowers` (`borrowernumber`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `borrower_message_preferences_ibfk_2` FOREIGN KEY (`message_attribute_id`) REFERENCES `message_attributes` (`message_attribute_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `borrower_message_preferences_ibfk_2` FOREIGN KEY (`message_attribute_id`) REFERENCES `message_attributes` (`message_attribute_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `borrower_message_preferences_ibfk_3` FOREIGN KEY (`categorycode`) REFERENCES `categories` (`categorycode`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -2276,6 +2338,35 @@ CREATE TABLE `borrower_message_transport_preferences` (
   KEY `message_transport_type` (`message_transport_type`),
   CONSTRAINT `borrower_message_transport_preferences_ibfk_1` FOREIGN KEY (`borrower_message_preference_id`) REFERENCES `borrower_message_preferences` (`borrower_message_preference_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `borrower_message_transport_preferences_ibfk_2` FOREIGN KEY (`message_transport_type`) REFERENCES `message_transport_types` (`message_transport_type`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for the table branch_transfer_limits
+--
+
+DROP TABLE IF EXISTS `branch_transfer_limits`;
+CREATE TABLE branch_transfer_limits (
+    limitId int(8) NOT NULL auto_increment,
+    toBranch varchar(10) NOT NULL,
+    fromBranch varchar(10) NOT NULL,
+    itemtype varchar(10) NULL,
+    ccode varchar(10) NULL,  
+    PRIMARY KEY  (limitId)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `item_circulation_alert_preferences`
+--
+
+DROP TABLE IF EXISTS `item_circulation_alert_preferences`;
+CREATE TABLE `item_circulation_alert_preferences` (
+  `id` int(11) NOT NULL auto_increment,
+  `branchcode` varchar(10) NOT NULL,
+  `categorycode` varchar(10) NOT NULL,
+  `item_type` varchar(10) NOT NULL,
+  `notification` varchar(16) NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `branchcode` (`branchcode`,`categorycode`,`item_type`, `notification`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

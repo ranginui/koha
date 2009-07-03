@@ -210,6 +210,13 @@ function showCartUpdate(msg){
 	setTimeout("hideCart()",2000);	
 }
 
+function showListsUpdate(msg){
+       // set body of popup window
+       $("#listsDetails").html(msg);
+       showLists();
+       setTimeout("hideLists()",2000); 
+}
+
 function selRecord(num, status) {
     var str = document.myform.records.value
     if (status){
@@ -400,6 +407,7 @@ function vShelfAdd() {
                                 bibs.push("biblionumber=" +  document.bookbag_form.biblionumber[i].value);
                         }
                 }
+	    if (bibs.length == 0) { showListsUpdate(MSG_NO_RECORD_SELECTED); }
             return bibs.join("&");
         } else {
             if (document.bookbag_form.biblionumber.checked) {
@@ -419,12 +427,31 @@ function showCart(){
 		$("#cartDetails").css("position","absolute").css("left",left);
 		$("#cartDetails").fadeIn("fast",function(){
   			$("#cartDetails").dropShadow({left: 3, top: 3, blur: 0,  color: "#000", opacity: 0.1});
-		});	
+        });
+}
+
+function showLists(){
+               var position = $("#listsmenulink").offset();
+              var top = position.top + $("#listsmenulink").outerHeight();
+               var menuWidth = 200;
+               var buttonWidth = $("#listsmenulink").innerWidth();
+               var buttonOffset = menuWidth - buttonWidth;
+               var left = position.left -  buttonOffset;
+               $("#listsDetails").css("position","absolute").css("top",top);
+               $("#listsDetails").css("position","absolute").css("left",left);
+               $("#listsDetails").fadeIn("fast",function(){
+                       $("#listsDetails").dropShadow({left: 3, top: 3, blur: 0,  color: "#000", opacity: 0.1});
+        });
 }
 
 function hideCart(){
-		 $("#cartDetails").removeShadow();
-		 $("#cartDetails").fadeOut("fast");
+    $("#cartDetails").removeShadow();
+    $("#cartDetails").fadeOut("fast");
+}
+
+function hideLists(){
+    $("#listsDetails").removeShadow();
+    $("#listsDetails").fadeOut("fast");
 }
 
 $("#cartDetails").ready(function(){
@@ -437,3 +464,5 @@ $("#cartDetails").ready(function(){
 	});
 	if(basketcount){ updateBasket(basketcount) }
 });
+
+

@@ -93,21 +93,20 @@ $.tablesorter.addParser({
                     <p>
                     <!-- TMPL_IF name="BiblioDefaultViewmarc" -->
                     <a href="/cgi-bin/koha/catalogue/MARCdetail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" ESCAPE="URL" -->">
-                        <!-- TMPL_VAR NAME="title" --> <!-- TMPL_VAR NAME="subtitle" -->
+                        <!-- TMPL_VAR NAME="title" escape="html" --> <!-- TMPL_VAR NAME="subtitle" -->
                     </a>
                     <!-- TMPL_ELSE -->
                         <!-- TMPL_IF name="BiblioDefaultViewisbd" -->
                         <a href="/cgi-bin/koha/catalogue/ISBDdetail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" ESCAPE="URL" -->">
-                            <!-- TMPL_VAR NAME="title" --> <!-- TMPL_VAR NAME="subtitle" -->
+                            <!-- TMPL_VAR NAME="title" escape="html" --> <!-- TMPL_VAR NAME="subtitle" -->
                         </a>
                         <!-- TMPL_ELSE -->
                             <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" ESCAPE="URL" -->">
-                                <!-- TMPL_VAR NAME="title" --> <!-- TMPL_VAR NAME="subtitle" -->
+                                <!-- TMPL_VAR NAME="title" escape="html" --> <!-- TMPL_VAR NAME="subtitle" -->
                             </a>
                         <!-- /TMPL_IF -->
                     <!-- /TMPL_IF -->
                     </p>
-                    <p><!-- TMPL_VAR NAME="notes" --></p>
                 </td>
             <!-- TMPL_ELSE -->
                 <td colspan="3">
@@ -206,7 +205,7 @@ Calendar.setup(
         );
 </script></li>
 </ol>
-<p><i>(Inclusive, default is 10 years ago to yesterday, set "to" to today as needed. )</i></p>
+<p><i>(Inclusive, default is two days ago to today, set other date ranges as needed. )</i></p>
 <fieldset class="action"><input type="submit" value="Submit" class="submit"/></fieldset>
 </fieldset>
 </form>

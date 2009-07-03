@@ -100,16 +100,26 @@ sub checkpw_ldap {
 	}
 
 	my $userldapentry = $search->shift_entry;
-	my $cmpmesg = $db->compare( $userldapentry, attr=>'userpassword', value => $password );
-	if ($cmpmesg->code != 6) {
-		warn "LDAP Auth rejected : invalid password for user '$userid'. " . description($cmpmesg);
-		return 0;
+	if ( $ldap->{auth_by_bind} ) {
+		my $user_ldapname = $userldapentry->dn();
+		my $user_db = Net::LDAP->new( [$prefhost] );
+		$res = $user_db->bind( $user_ldapname, password => $password );
+		if ( $res->code ) {
+			$debug and warn "Bind as user failed ". description( $res );
+			return 0;
+		}
+	} else {
+		my $cmpmesg = $db->compare( $userldapentry, attr=>'userpassword', value => $password );
+		if ($cmpmesg->code != 6) {
+			warn "LDAP Auth rejected : invalid password for user '$userid'. " . description($cmpmesg);
+			return 0;
+		}
 	}
 	unless ($config{update} or $config{replicate}) {
 		return 1;
 	}
 	my %borrower = ldap_entry_2_hash($userldapentry,$userid);
-	$debug and print "checkpw_ldap received \%borrower w/ " . keys(%borrower), " keys: ", join(' ', keys %borrower), "\n";
+	$debug and print STDERR "checkpw_ldap received \%borrower w/ " . keys(%borrower), " keys: ", join(' ', keys %borrower), "\n";
 	my ($borrowernumber,$cardnumber,$savedpw);
 	($borrowernumber,$cardnumber,$userid,$savedpw) = exists_local($userid);
 	if ($borrowernumber) {
@@ -132,9 +142,9 @@ sub ldap_entry_2_hash ($$) {
 	my %memberhash;
 	$userldapentry->exists('uid');	# This is bad, but required!  By side-effect, this initializes the attrs hash. 
 	if ($debug) {
-		print "\nkeys(\%\$userldapentry) = " . join(', ', keys %$userldapentry), "\n", $userldapentry->dump();
+		print STDERR "\nkeys(\%\$userldapentry) = " . join(', ', keys %$userldapentry), "\n", $userldapentry->dump();
 		foreach (keys %$userldapentry) {
-			print "\n\nLDAP key: $_\t", sprintf('(%s)', ref $userldapentry->{$_}), "\n";
+			print STDERR "\n\nLDAP key: $_\t", sprintf('(%s)', ref $userldapentry->{$_}), "\n";
 			hashdump("LDAP key: ",$userldapentry->{$_});
 		}
 	}
@@ -142,13 +152,13 @@ sub ldap_entry_2_hash ($$) {
 	my $key;
 	foreach (keys %$x) {
 		$memberhash{$_} = join ' ', @{$x->{$_}};	
-		$debug and print sprintf("building \$memberhash{%s} = ", $_, join(' ', @{$x->{$_}})), "\n";
+		$debug and print STDERR sprintf("building \$memberhash{%s} = ", $_, join(' ', @{$x->{$_}})), "\n";
 	}
-	$debug and print "Finsihed \%memberhash has ", scalar(keys %memberhash), " keys\n",
+	$debug and print STDERR "Finsihed \%memberhash has ", scalar(keys %memberhash), " keys\n",
 					"Referencing \%mapping with ", scalar(keys %mapping), " keys\n";
 	foreach my $key (keys %mapping) {
 		my  $data = $memberhash{$mapping{$key}->{is}}; 
-		$debug and printf "mapping %20s ==> %-20s (%s)\n", $key, $mapping{$key}->{is}, $data;
+		$debug and print STDERR printf "mapping %20s ==> %-20s (%s)\n", $key, $mapping{$key}->{is}, $data;
 		unless (defined $data) { 
 			$data = $mapping{$key}->{content} || '';	# default or failsafe ''
 		}
@@ -168,12 +178,12 @@ sub exists_local($) {
 
 	my $sth = $dbh->prepare("$select WHERE userid=?");	# was cardnumber=?
 	$sth->execute($arg);
-	$debug and printf "Userid '$arg' exists_local? %s\n", $sth->rows;
+	$debug and print STDERR printf "Userid '$arg' exists_local? %s\n", $sth->rows;
 	($sth->rows == 1) and return $sth->fetchrow;
 
 	$sth = $dbh->prepare("$select WHERE cardnumber=?");
 	$sth->execute($arg);
-	$debug and printf "Cardnumber '$arg' exists_local? %s\n", $sth->rows;
+	$debug and print STDERR printf "Cardnumber '$arg' exists_local? %s\n", $sth->rows;
 	($sth->rows == 1) and return $sth->fetchrow;
 	return 0;
 }
@@ -200,7 +210,7 @@ sub update_local($$$$) {
 
 	# MODIFY PASSWORD/LOGIN
 	# search borrowerid
-	$debug and print "changing local password for borrowernumber=$borrowerid to '$digest'\n";
+	$debug and print STDERR "changing local password for borrowernumber=$borrowerid to '$digest'\n";
 	changepassword($userid, $borrowerid, $digest);
 
 	# Confirm changes
@@ -313,9 +323,11 @@ Example XML stanza for LDAP configuration in KOHA_CONF.
     <hostname>localhost</hostname>
     <base>dc=metavore,dc=com</base>
     <user>cn=Manager,dc=metavore,dc=com</user>             <!-- DN, if not anonymous -->
-    <pass>metavore</pass>      <!-- password, if not anonymous -->
-    <replicate>1</replicate>   <!-- add new users from LDAP to Koha database -->
-    <update>1</update>         <!-- update existing users in Koha database -->
+    <pass>metavore</pass>          <!-- password, if not anonymous -->
+    <replicate>1</replicate>       <!-- add new users from LDAP to Koha database -->
+    <update>1</update>             <!-- update existing users in Koha database -->
+    <auth_by_bind>0</auth_by_bind> <!-- set to 1 to authenticate by binding instead of
+                                        password comparison, e.g., to use Active Directory -->
     <mapping>                  <!-- match koha SQL field names to your LDAP record field names -->
       <firstname    is="givenname"      ></firstname>
       <surname      is="sn"             ></surname>

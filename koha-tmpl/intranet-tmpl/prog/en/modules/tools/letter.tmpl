@@ -144,7 +144,11 @@ $(document).ready(function() {
 			<th>&nbsp;</th>
 		</tr></thead>
 		<tbody><!-- TMPL_LOOP NAME="letter" -->
-		<!-- TMPL_IF NAME="toggle" --><tr class="highlight"><!-- TMPL_ELSE --><tr><!-- /TMPL_IF -->
+		<!-- TMPL_UNLESS NAME="__odd__" -->
+			<tr class="highlight">
+		<!-- TMPL_ELSE -->
+			<tr>
+		<!-- /TMPL_UNLESS -->
 				<td><!-- TMPL_VAR NAME="module" --></td>
 				<td><!-- TMPL_VAR NAME="code" --></td>
 				<td><!-- TMPL_VAR NAME="name" --></td>
@@ -213,6 +217,11 @@ $(document).ready(function() {
                                     <!--TMPL_ELSE-->
                                     <option value="members">Members</option>
                                     <!--/TMPL_IF-->
+                                    <!--TMPL_IF Name="reserves"-->
+                                    <option value="reserves" selected="selected">Holds</option>
+                                    <!--TMPL_ELSE-->
+                                    <option value="reserves">Holds</option>
+                                    <!--/TMPL_IF-->
 				</select>
 			</li>
 			<li>
@@ -253,6 +262,11 @@ $(document).ready(function() {
 						<option value="members" selected="selected">Members</option>
 						<!--TMPL_ELSE-->
 						<option value="members">Members</option>
+						<!--/TMPL_IF-->
+						<!--TMPL_IF Name="reserves"-->
+						<option value="reserves" selected="selected">Holds</option>
+						<!--TMPL_ELSE-->
+						<option value="reserves">Holds</option>
 						<!--/TMPL_IF-->
 				</select>
 			</li>

@@ -157,7 +157,8 @@ sub handle_dir {
     if ($suffix =~ m/zip/i) {     # If we were sent a zip file, process any included data/idlink.txt files 
         my ( $file, $filename, $cardnumber );
         $debug and warn "Passed a zip file.";
-        opendir my $dirhandle, $dir;
+		my $dirhandle="";
+        opendir $dirhandle, $dir;
         while ( my $filename = readdir $dirhandle ) {
             $file = "$dir/$filename" if ($filename =~ m/datalink\.txt/i || $filename =~ m/idlink\.txt/i);
         }

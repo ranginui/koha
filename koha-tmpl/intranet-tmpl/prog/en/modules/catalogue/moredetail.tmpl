@@ -8,7 +8,7 @@
 <!-- TMPL_INCLUDE NAME="header.inc" -->
 <!-- TMPL_INCLUDE NAME="cat-search.inc" -->
 
-<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/catalogue/search.pl">Catalog</a>  &rsaquo; Item Details for <i><!-- TMPL_LOOP NAME="BIBITEM_DATA" --><!-- TMPL_VAR NAME="title" --><!-- /TMPL_LOOP --></i></div>
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/catalogue/search.pl">Catalog</a>  &rsaquo; Item Details for <i><!-- TMPL_LOOP NAME="BIBITEM_DATA" --><!-- TMPL_VAR NAME="title" escape="html" --><!-- /TMPL_LOOP --></i></div>
 
 <div id="doc3" class="yui-t2">
    
@@ -26,7 +26,7 @@
         <li><span class="label">Item type:</span> <!-- TMPL_VAR NAME="itemtypename" -->&nbsp;</li>
         <!-- /TMPL_UNLESS -->
         <!-- deprecated? <li><span class="label">Loan length:</span> <!-- TMPL_VAR NAME="loanlength" -->&nbsp;</li> -->
-        <li><span class="label">Rental charge:</span>$<!-- TMPL_VAR NAME="rentalcharge" -->&nbsp;</li>
+        <li><span class="label">Rental charge:</span><!-- TMPL_VAR NAME="rentalcharge" -->&nbsp;</li>
         <li><span class="label">ISBN:</span> <!-- TMPL_VAR NAME="isbn" -->&nbsp;</li>
         <li><span class="label">Publisher:</span><!-- TMPL_VAR NAME="place" --> <!-- TMPL_VAR NAME="publishercode" ESCAPE="html" --> <!-- TMPL_VAR NAME="publicationyear" -->&nbsp;</li>
         <!-- TMPL_IF NAME="volumeddesc" --><li><span class="label">Volume:</span> <!-- TMPL_VAR NAME="volumeddesc" --></li><!-- /TMPL_IF -->

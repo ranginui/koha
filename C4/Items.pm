@@ -1276,7 +1276,7 @@ sub GetItemsInfo {
     $sth->execute($biblionumber);
     my $i = 0;
     my @results;
-    my ( $date_due, $count_reserves, $serial );
+    my $serial;
 
     my $isth    = $dbh->prepare(
         "SELECT issues.*,borrowers.cardnumber,borrowers.surname,borrowers.firstname,borrowers.branchcode as bcode
@@ -1286,16 +1286,13 @@ sub GetItemsInfo {
 	my $ssth = $dbh->prepare("SELECT serialseq,publisheddate from serialitems left join serial on serialitems.serialid=serial.serialid where serialitems.itemnumber=? "); 
 	while ( my $data = $sth->fetchrow_hashref ) {
         my $datedue = '';
+        my $count_reserves;
         $isth->execute( $data->{'itemnumber'} );
         if ( my $idata = $isth->fetchrow_hashref ) {
-            $data->{borrowernumber} = $idata->{borrowernumber};
-            $data->{cardnumber}     = $idata->{cardnumber};
-            $data->{surname}     = $idata->{surname};
-            $data->{firstname}     = $idata->{firstname};
-            $datedue                = $idata->{'date_due'};
+            $data = $idata;
         if (C4::Context->preference("IndependantBranches")){
         my $userenv = C4::Context->userenv;
-        if ( ($userenv) && ( $userenv->{flags} != 1 ) ) { 
+        if ( ($userenv) && ( $userenv->{flags} % 2 != 1 ) ) { 
             $data->{'NOTSAMEBRANCH'} = 1 if ($idata->{'bcode'} ne $userenv->{branch});
         }
         }
@@ -1308,9 +1305,10 @@ sub GetItemsInfo {
 		if ( $datedue eq '' ) {
             my ( $restype, $reserves ) =
               C4::Reserves::CheckReserves( $data->{'itemnumber'} );
-            if ($restype) {
-                $count_reserves = $restype;
-            }
+# Previous conditional check with if ($restype) is not needed because a true
+# result for one item will result in subsequent items defaulting to this true
+# value.
+            $count_reserves = $restype;
         }
         $isth->finish;
         $ssth->finish;

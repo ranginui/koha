@@ -72,6 +72,7 @@ Class::Factory::Util
 Class::Accessor
 Compress::Zlib
 DBD::mysql
+DBD::SQLite2
 DBI
 Data::Dumper
 Data::ICal

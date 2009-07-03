@@ -31,6 +31,13 @@ use C4::Search;
 use C4::Circulation;
 use C4::Accounts;
 
+# for _koha_notify_reserve
+use C4::Members::Messaging;
+use C4::Members qw( GetMember );
+use C4::Letters;
+use C4::Branch qw( GetBranchDetail );
+use List::MoreUtils qw( firstidx );
+
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
 my $library_name = C4::Context->preference("LibraryName");
@@ -966,6 +973,12 @@ sub ModReserveAffect {
     my $sth = $dbh->prepare("SELECT biblionumber FROM items WHERE itemnumber=?");
     $sth->execute($itemnumber);
     my ($biblionumber) = $sth->fetchrow;
+
+    # get request - need to find out if item is already
+    # waiting in order to not send duplicate hold filled notifications
+    my $request = GetReserveInfo($borrowernumber, $biblionumber);
+    my $already_on_shelf = ($request && $request->{found} eq 'W') ? 1 : 0;
+
     # If we affect a reserve that has to be transfered, don't set to Waiting
     my $query;
     if ($transferToDo) {
@@ -991,7 +1004,8 @@ sub ModReserveAffect {
     }
     $sth = $dbh->prepare($query);
     $sth->execute( $itemnumber, $borrowernumber,$biblionumber);
-    $sth->finish;
+    _koha_notify_reserve( $itemnumber, $borrowernumber, $biblionumber ) if ( !$transferToDo && !$already_on_shelf );
+
     return;
 }
 
@@ -1039,16 +1053,7 @@ sub ModReserveMinusPriority {
     my $sth_upd = $dbh->prepare($query);
     $sth_upd->execute( $itemnumber, $borrowernumber, $biblionumber );
     # second step update all others reservs
-    $query = "
-            UPDATE reserves
-            SET    priority = priority-1
-            WHERE  biblionumber = ?
-            AND priority > 0
-    ";
-    $sth_upd = $dbh->prepare($query);
-    $sth_upd->execute( $biblionumber );
-    $sth_upd->finish;
-    $sth_upd->finish;
+    _FixPriority($biblionumber, $borrowernumber, '0');
 }
 
 =item GetReserveInfo
@@ -1154,6 +1159,7 @@ sub IsAvailableForItemLevelRequest {
                                ($item->{damaged} and not C4::Context->preference('AllowHoldsOnDamagedItems')) or
                                $item->{wthdrawn} or
                                $notforloan_per_itemtype;
+
 
     if (C4::Context->preference('AllowOnShelfHolds')) {
         return $available_per_item;
@@ -1275,6 +1281,65 @@ C<biblioitemnumber>.
 sub _Findgroupreserve {
     my ( $bibitem, $biblio, $itemnumber ) = @_;
     my $dbh   = C4::Context->dbh;
+
+    # check for exact targetted match
+    my $item_level_target_query = qq/
+        SELECT reserves.biblionumber AS biblionumber,
+               reserves.borrowernumber AS borrowernumber,
+               reserves.reservedate AS reservedate,
+               reserves.branchcode AS branchcode,
+               reserves.cancellationdate AS cancellationdate,
+               reserves.found AS found,
+               reserves.reservenotes AS reservenotes,
+               reserves.priority AS priority,
+               reserves.timestamp AS timestamp,
+               biblioitems.biblioitemnumber AS biblioitemnumber,
+               reserves.itemnumber AS itemnumber
+        FROM reserves
+        JOIN biblioitems USING (biblionumber)
+        JOIN hold_fill_targets USING (biblionumber, borrowernumber, itemnumber)
+        WHERE found IS NULL
+        AND priority > 0
+        AND item_level_request = 1
+        AND itemnumber = ?
+    /;
+    my $sth = $dbh->prepare($item_level_target_query);
+    $sth->execute($itemnumber);
+    my @results;
+    if ( my $data = $sth->fetchrow_hashref ) {
+        push( @results, $data );
+    }
+    return @results if @results;
+    
+    # check for title-level targetted match
+    my $title_level_target_query = qq/
+        SELECT reserves.biblionumber AS biblionumber,
+               reserves.borrowernumber AS borrowernumber,
+               reserves.reservedate AS reservedate,
+               reserves.branchcode AS branchcode,
+               reserves.cancellationdate AS cancellationdate,
+               reserves.found AS found,
+               reserves.reservenotes AS reservenotes,
+               reserves.priority AS priority,
+               reserves.timestamp AS timestamp,
+               biblioitems.biblioitemnumber AS biblioitemnumber,
+               reserves.itemnumber AS itemnumber
+        FROM reserves
+        JOIN biblioitems USING (biblionumber)
+        JOIN hold_fill_targets USING (biblionumber, borrowernumber)
+        WHERE found IS NULL
+        AND priority > 0
+        AND item_level_request = 0
+        AND hold_fill_targets.itemnumber = ?
+    /;
+    $sth = $dbh->prepare($title_level_target_query);
+    $sth->execute($itemnumber);
+    @results = ();
+    if ( my $data = $sth->fetchrow_hashref ) {
+        push( @results, $data );
+    }
+    return @results if @results;
+
     my $query = qq/
         SELECT reserves.biblionumber AS biblionumber,
                reserves.borrowernumber AS borrowernumber,
@@ -1296,13 +1361,79 @@ sub _Findgroupreserve {
           OR  reserves.constrainttype='a' )
           AND (reserves.itemnumber IS NULL OR reserves.itemnumber = ?)
     /;
-    my $sth = $dbh->prepare($query);
+    $sth = $dbh->prepare($query);
     $sth->execute( $biblio, $bibitem, $itemnumber );
-    my @results;
+    @results = ();
     while ( my $data = $sth->fetchrow_hashref ) {
         push( @results, $data );
     }
     return @results;
+}
+
+=item _koha_notify_reserve
+
+=over 4
+
+_koha_notify_reserve( $itemnumber, $borrowernumber, $biblionumber );
+
+=back
+
+Sends a notification to the patron that their hold has been filled (through
+ModReserveAffect, _not_ ModReserveFill)
+
+=cut
+
+sub _koha_notify_reserve {
+    my ($itemnumber, $borrowernumber, $biblionumber) = @_;
+
+    my $dbh = C4::Context->dbh;
+    my $messagingprefs = C4::Members::Messaging::GetMessagingPreferences( { borrowernumber => $borrowernumber, message_name => 'Hold Filled' } );
+
+    return if ( !defined( $messagingprefs->{'letter_code'} ) );
+
+    my $sth = $dbh->prepare("
+        SELECT *
+        FROM   reserves
+        WHERE  borrowernumber = ?
+            AND biblionumber = ?
+    ");
+    $sth->execute( $borrowernumber, $biblionumber );
+    my $reserve = $sth->fetchrow_hashref;
+    my $branch_details = GetBranchDetail( $reserve->{'branchcode'} );
+
+    my $admin_email_address = $branch_details->{'branchemail'} || C4::Context->preference('KohaAdminEmailAddress');
+
+    my $letter = getletter( 'reserves', $messagingprefs->{'letter_code'} );
+
+    C4::Letters::parseletter( $letter, 'branches', $reserve->{'branchcode'} );
+    C4::Letters::parseletter( $letter, 'borrowers', $reserve->{'borrowernumber'} );
+    C4::Letters::parseletter( $letter, 'biblio', $reserve->{'biblionumber'} );
+    C4::Letters::parseletter( $letter, 'reserves', $reserve->{'borrowernumber'}, $reserve->{'biblionumber'} );
+
+    if ( $reserve->{'itemnumber'} ) {
+        C4::Letters::parseletter( $letter, 'items', $reserve->{'itemnumber'} );
+    }
+    $letter->{'content'} =~ s/<<[a-z0-9_]+\.[a-z0-9]+>>//g; #remove any stragglers
+
+    if ( -1 !=  firstidx { $_ eq 'email' } @{$messagingprefs->{transports}} ) {
+        # aka, 'email' in ->{'transports'}
+        C4::Letters::EnqueueLetter(
+            {   letter                 => $letter,
+                borrowernumber         => $borrowernumber,
+                message_transport_type => 'email',
+                from_address           => $admin_email_address,
+            }
+        );
+    }
+
+    if ( -1 != firstidx { $_ eq 'sms' } @{$messagingprefs->{transports}} ) {
+        C4::Letters::EnqueueLetter(
+            {   letter                 => $letter,
+                borrowernumber         => $borrowernumber,
+                message_transport_type => 'sms',
+            }
+        );
+    }
 }
 
 =back

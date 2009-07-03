@@ -241,7 +241,6 @@ sub AddBiblio {
     $biblionumber = ModBiblioMarc( $record, $biblionumber, $frameworkcode ) unless $defer_marc_save;
       
     logaction("CATALOGUING", "ADD", $biblionumber, "biblio") if C4::Context->preference("CataloguingLog");
-
     return ( $biblionumber, $biblioitemnumber );
 }
 
@@ -1037,14 +1036,14 @@ sub GetCOinSBiblio {
     my $pos6 = substr $record->leader(), 6,1;
     my $mtx;
     my $genre;
-    my ($aulast, $aufirst);
-    my $oauthors;
-    my $title;
-    my $subtitle;
-    my $pubyear;
-    my $isbn;
-    my $issn;
-    my $publisher;
+    my ($aulast, $aufirst) = ('','');
+    my $oauthors  = '';
+    my $title     = '';
+    my $subtitle  = '';
+    my $pubyear   = '';
+    my $isbn      = '';
+    my $issn      = '';
+    my $publisher = '';
 
     if ( C4::Context->preference("marcflavour") eq "UNIMARC" ){
         my $fmts6;
@@ -1088,36 +1087,39 @@ sub GetCOinSBiblio {
             $mtx = 'dc';
         }
 
-        $genre = ($mtx eq 'dc') ? "&rft.type=$genre" : "&rft.genre=$genre";
+        $genre = ($mtx eq 'dc') ? "&amp;rft.type=$genre" : "&amp;rft.genre=$genre";
 
         # Setting datas
         $aulast     = $record->subfield('700','a');
         $aufirst    = $record->subfield('700','b');
-        $oauthors   = "&rft.au=$aufirst $aulast";
+        $oauthors   = "&amp;rft.au=$aufirst $aulast";
         # others authors
         if($record->field('200')){
             for my $au ($record->field('200')->subfield('g')){
-                $oauthors .= "&rft.au=$au";
+                $oauthors .= "&amp;rft.au=$au";
             }
         }
-        $title      = ( $mtx eq 'dc' ) ? "&rft.title=".$record->subfield('200','a') :
-                                         "&rft.title=".$record->subfield('200','a')."&rft.btitle=".$record->subfield('200','a');
+        $title      = ( $mtx eq 'dc' ) ? "&amp;rft.title=".$record->subfield('200','a') :
+                                         "&amp;rft.title=".$record->subfield('200','a')."&amp;rft.btitle=".$record->subfield('200','a');
         $pubyear    = $record->subfield('210','d');
         $publisher  = $record->subfield('210','c');
         $isbn       = $record->subfield('010','a');
         $issn       = $record->subfield('011','a');
-    }else{
+    }
+	else{
         # MARC21 need some improve
         my $fmts;
         $mtx = 'book';
-        $genre = "&rft.genre=book";
+        $genre = "&amp;rft.genre=book";
 
         # Setting datas
-        $oauthors .= "&rft.au=".$record->subfield('100','a');
+        if ($record->field('100')) {
+            $oauthors .= "&amp;rft.au=".$record->subfield('100','a');
+        }
         # others authors
         if($record->field('700')){
             for my $au ($record->field('700')->subfield('a')){
-                $oauthors .= "&rft.au=$au";
+                $oauthors .= "&amp;rft.au=$au";
             }
         }
         $title      = "&amp;rft.btitle=".$record->subfield('245','a');
@@ -1129,10 +1131,10 @@ sub GetCOinSBiblio {
         $issn       = $record->subfield('022', 'a') || '';
 
     }
-    $coins_value = "ctx_ver=Z39.88-2004&rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3A$mtx$genre$title&rft.isbn=$isbn&rft.issn=$issn&rft.aulast=$aulast&rft.aufirst=$aufirst$oauthors&rft.pub=$publisher&rft.date=$pubyear";
-    $coins_value =~ s/\ /\+/g;
+    $coins_value = "ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3A$mtx$genre$title&amp;rft.isbn=$isbn&amp;rft.issn=$issn&amp;rft.aulast=$aulast&amp;rft.aufirst=$aufirst$oauthors&amp;rft.pub=$publisher&amp;rft.date=$pubyear";
+    $coins_value =~ s/(\ |&[^a])/\+/g;
     #<!-- TMPL_VAR NAME="ocoins_format" -->&amp;rft.au=<!-- TMPL_VAR NAME="author" -->&amp;rft.btitle=<!-- TMPL_VAR NAME="title" -->&amp;rft.date=<!-- TMPL_VAR NAME="publicationyear" -->&amp;rft.pages=<!-- TMPL_VAR NAME="pages" -->&amp;rft.isbn=<!-- TMPL_VAR NAME=amazonisbn -->&amp;rft.aucorp=&amp;rft.place=<!-- TMPL_VAR NAME="place" -->&amp;rft.pub=<!-- TMPL_VAR NAME="publishercode" -->&amp;rft.edition=<!-- TMPL_VAR NAME="edition" -->&amp;rft.series=<!-- TMPL_VAR NAME="series" -->&amp;rft.genre="
-    }
+	}
     return $coins_value;
 }
 
@@ -1412,7 +1414,7 @@ sub GetMarcUrls {
                 };
                 $marcurl->{'linktext'} = $link || $s3 || C4::Context->preference('URLLinkText') || $url;
                 $marcurl->{'part'} = $s3 if ($link);
-                $marcurl->{'toc'} = 1 if ( defined($s3) && $s3 =~ /^table/i );
+                $marcurl->{'toc'} = 1 if ( defined($s3) && $s3 =~ /^[Tt]able/ );
             } else {
                 $marcurl->{'linktext'} = $field->subfield('2') || C4::Context->preference('URLLinkText') || $url;
                 $marcurl->{'MARCURL'} = $url;
@@ -2221,7 +2223,7 @@ sub PrepareItemrecordDisplay {
                         "branches" )
                     {
                         if ( ( C4::Context->preference("IndependantBranches") )
-                            && ( C4::Context->userenv->{flags} != 1 ) )
+                            && ( C4::Context->userenv->{flags} % 2 != 1 ) )
                         {
                             my $sth =
                               $dbh->prepare(
@@ -2473,7 +2475,7 @@ sub _DelBiblioNoZebra {
     if ($server eq 'biblioserver') {
         %index=GetNoZebraIndexes;
         # get title of the record (to store the 10 first letters with the index)
-        my ($titletag,$titlesubfield) = GetMarcFromKohaField('biblio.title','');
+        my ($titletag,$titlesubfield) = GetMarcFromKohaField('biblio.title', ''); # FIXME: should be GetFrameworkCode($biblionumber) ??
         $title = lc($record->subfield($titletag,$titlesubfield));
     } else {
         # for authorities, the "title" is the $a mainentry
@@ -2567,7 +2569,7 @@ sub _AddBiblioNoZebra {
     if ($server eq 'biblioserver') {
         %index=GetNoZebraIndexes;
         # get title of the record (to store the 10 first letters with the index)
-        my ($titletag,$titlesubfield) = GetMarcFromKohaField('biblio.title','');
+        my ($titletag,$titlesubfield) = GetMarcFromKohaField('biblio.title', ''); # FIXME: should be GetFrameworkCode($biblionumber) ??
         $title = lc($record->subfield($titletag,$titlesubfield));
     } else {
         # warn "server : $server";

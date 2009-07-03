@@ -18,6 +18,8 @@ package C4::Charset;
 # Suite 330, Boston, MA  02111-1307 USA
 
 use strict;
+use warnings;
+
 use MARC::Charset qw/marc8_to_utf8/;
 use Text::Iconv;
 
@@ -153,7 +155,23 @@ sub MarcToUTF8Record {
         $marc =~ s/^\s+//;
         $marc =~ s/\s+$//;
         $marc_blob_is_utf8 = IsStringUTF8ish($marc);
-        $marc_record = MARC::Record->new_from_usmarc($marc);
+        eval {
+            $marc_record = MARC::Record->new_from_usmarc($marc);
+        };
+        if ($@) {
+            # if we fail the first time, one likely problem
+            # is that we have a MARC21 record that says that it's
+            # UTF-8 (Leader/09 = 'a') but contains non-UTF-8 characters.
+            # We'll try parsing it again.
+            substr($marc, 9, 1) = ' ';
+            eval {
+                $marc_record = MARC::Record->new_from_usmarc($marc);
+            };
+            if ($@) {
+                # it's hopeless; return an empty MARC::Record
+                return MARC::Record->new(), 'failed', ['could not parse MARC blob'];
+            }
+        }
     }
 
     # If we do not know the source encoding, try some guesses

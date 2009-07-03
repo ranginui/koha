@@ -18,6 +18,7 @@ package C4::NewsChannels;
 # Suite 330, Boston, MA  02111-1307 USA
 
 use strict;
+use warnings;
 
 use C4::Context;
 use C4::Dates qw(format_date);
@@ -39,11 +40,11 @@ BEGIN {
 
 =head1 NAME
 
-C4::NewsChannels - Functions to manage the news channels and its categories
+C4::NewsChannels - Functions to manage OPAC and intranet news
 
 =head1 DESCRIPTION
 
-This module provides the functions needed to admin the news channels and its categories
+This module provides the functions needed to manage OPAC and intranet news.
 
 =head1 FUNCTIONS
 
@@ -279,7 +280,7 @@ sub get_opac_new {
     my $sth = $dbh->prepare("SELECT * FROM opac_news WHERE idnew = ?");
     $sth->execute($idnew);
     my $data = $sth->fetchrow_hashref;
-    $data->{$data->{'lang'}} = 1;
+    $data->{$data->{'lang'}} = 1 if defined $data->{lang};
     $data->{expirationdate} = format_date($data->{expirationdate});
     $data->{timestamp}      = format_date($data->{timestamp});
     $sth->finish;
@@ -328,11 +329,11 @@ sub GetNewsToDisplay {
      SELECT *,timestamp AS newdate
      FROM   opac_news
      WHERE   (
-        expirationdate > CURRENT_DATE()
+        expirationdate >= CURRENT_DATE()
         OR    expirationdate IS NULL
         OR    expirationdate = '00-00-0000'
       )
-      AND   `timestamp` < CURRENT_DATE()
+      AND   `timestamp` <= CURRENT_DATE()
       AND   lang = ?
       ORDER BY number
     ";				# expirationdate field is NOT in ISO format?

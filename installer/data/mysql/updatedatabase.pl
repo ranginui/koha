@@ -15,7 +15,7 @@
 # NOTE: Please keep the version in kohaversion.pl up-to-date!
 
 use strict;
-# use warnings;
+use warnings;
 
 # CPAN modules
 use DBI;
@@ -1323,7 +1323,7 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
 
 $DBversion = "3.00.00.072";
 if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
-    $dbh->do("ALTER TABLE labels_conf ADD COLUMN formatstring VARCHAR(64) DEFAULT NULL AFTER printingtype");
+    $dbh->do("ALTER TABLE labels_conf ADD COLUMN formatstring mediumtext DEFAULT NULL AFTER printingtype");
 	print "Upgrade to $DBversion done ( Adding format string to labels generator. )\n";
     SetVersion ($DBversion);
 }
@@ -1499,8 +1499,6 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     print "Upgrade to $DBversion done (add browser table if not already present)\n";
 	SetVersion ($DBversion);
 }
-
-
 
 $DBversion = "3.00.00.080";
 if (C4::Context->preference("Version") < TransformToNum($DBversion)) {

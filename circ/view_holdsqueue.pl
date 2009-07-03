@@ -29,7 +29,7 @@ use C4::Auth;
 use C4::Output;
 use C4::Biblio;
 use C4::Items;
-use C4::Koha;                  # GetItemTypes
+use C4::Koha;   # GetItemTypes
 use C4::Branch; # GetBranches
 use C4::Dates qw/format_date/;
 
@@ -40,54 +40,40 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
         query           => $query,
         type            => "intranet",
         authnotrequired => 0,
-        flagsrequired   => { circulate => 1 },
+        flagsrequired   => { circulate => "circulate_remaining_permissions" },
         debug           => 1,
     }
 );
 
 my $params = $query->Vars;
-my $run_report = $params->{'run_report'};
-my $branchlimit = $params->{'branchlimit'};
+my $run_report     = $params->{'run_report'};
+my $branchlimit    = $params->{'branchlimit'};
 my $itemtypeslimit = $params->{'itemtypeslimit'};
 
 if ( $run_report ) {
-    my $items = GetHoldsQueueItems( $branchlimit,$itemtypeslimit );
+    my $items = GetHoldsQueueItems($branchlimit, $itemtypeslimit);
     $template->param(
-					 branch    => $branchlimit,
-                     total     => scalar @$items,
-                     itemsloop => $items,
-                     run_report => $run_report,
-                     dateformat => C4::Context->preference("dateformat"),
-                 );
-}
-
-# getting all branches.
-my $branches = GetBranches;
-my $branch   = C4::Context->userenv->{"branchname"};
-my @branchloop;
-foreach my $thisbranch (sort { $branches->{$a}->{branchname} cmp $branches->{$b}->{branchname} } keys %$branches ) {
-    my $selected = 1 if $thisbranch eq $branch;
-    my %row = (
-        value      => $thisbranch,
-        selected   => $selected,
-        branchname => $branches->{$thisbranch}->{'branchname'},
+        branch     => $branchlimit,
+        total      => scalar @$items,
+        itemsloop  => $items,
+        run_report => $run_report,
+        dateformat => C4::Context->preference("dateformat"),
     );
-    push @branchloop, \%row;
 }
 
 # getting all itemtypes
 my $itemtypes = &GetItemTypes();
 my @itemtypesloop;
 foreach my $thisitemtype ( sort keys %$itemtypes ) {
-    my %row = (
+    push @itemtypesloop, {
         value       => $thisitemtype,
         description => $itemtypes->{$thisitemtype}->{'description'},
-    );
-    push @itemtypesloop, \%row;
+    };
 }
 
-$template->param( branchloop     => \@branchloop,
-                  itemtypeloop   => \@itemtypesloop,
+$template->param(
+     branchloop => GetBranchesLoop(C4::Context->userenv->{'branch'}),
+   itemtypeloop => \@itemtypesloop,
 );
 
 sub GetHoldsQueueItems {
@@ -95,13 +81,14 @@ sub GetHoldsQueueItems {
 	my $dbh = C4::Context->dbh;
 
     my @bind_params = ();
-	my $query = q/SELECT tmp_holdsqueue.*, biblio.author, items.ccode, items.location, items.enumchron, items.cn_sort
+	my $query = q/SELECT tmp_holdsqueue.*, biblio.author, items.ccode, items.location, items.enumchron, items.cn_sort, biblioitems.publishercode,biblio.copyrightdate,biblioitems.publicationyear,biblioitems.pages,biblioitems.size,biblioitems.publicationyear,biblioitems.isbn
                   FROM tmp_holdsqueue
-                  JOIN biblio USING (biblionumber)
-                  LEFT JOIN items USING (itemnumber)
+                       JOIN biblio      USING (biblionumber)
+				  LEFT JOIN biblioitems USING (biblionumber)
+                  LEFT JOIN items       USING (  itemnumber)
                 /;
     if ($branchlimit) {
-	    $query .=" WHERE holdingbranch = ?";
+	    $query .=" WHERE tmp_holdsqueue.holdingbranch = ?";
         push @bind_params, $branchlimit;
     }
     $query .= " ORDER BY ccode, location, cn_sort, author, title, pickbranch, reservedate";
@@ -113,7 +100,6 @@ sub GetHoldsQueueItems {
         push @$items, $row;
     }
     return $items;
-
 }
 # writing the template
 output_html_with_http_headers $query, $cookie, $template->output;

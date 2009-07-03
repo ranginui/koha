@@ -19,13 +19,15 @@ use strict;
 # use warnings; # FIXME
 require Exporter;
 use C4::Context;
-use C4::Biblio;    # GetMarcFromKohaField
+use C4::Biblio;    # GetMarcFromKohaField, GetBiblioData
 use C4::Koha;      # getFacets
 use Lingua::Stem;
 use C4::Search::PazPar2;
 use XML::Simple;
 use C4::Dates qw(format_date);
 use C4::XSLT;
+use C4::Branch;
+use URI::Escape;
 
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $DEBUG);
 
@@ -53,7 +55,6 @@ This module provides searching functions for Koha's bibliographic databases
 
 @ISA    = qw(Exporter);
 @EXPORT = qw(
-  &findseealso
   &FindDuplicate
   &SimpleSearch
   &searchResults
@@ -63,32 +64,6 @@ This module provides searching functions for Koha's bibliographic databases
 );
 
 # make all your functions, whether exported or not;
-
-=head2 findseealso($dbh,$fields);
-
-C<$dbh> is a link to the DB handler.
-
-use C4::Context;
-my $dbh =C4::Context->dbh;
-
-C<$fields> is a reference to the fields array
-
-This function modifies the @$fields array and adds related fields to search on.
-
-FIXME: this function is probably deprecated in Koha 3
-
-=cut
-
-sub findseealso {
-    my ( $dbh, $fields ) = @_;
-    my $tagslib = GetMarcStructure(1);
-    for ( my $i = 0 ; $i <= $#{$fields} ; $i++ ) {
-        my ($tag)      = substr( @$fields[$i], 1, 3 );
-        my ($subfield) = substr( @$fields[$i], 4, 1 );
-        @$fields[$i] .= ',' . $tagslib->{$tag}->{$subfield}->{seealso}
-          if ( $tagslib->{$tag}->{$subfield}->{seealso} );
-    }
-}
 
 =head2 FindDuplicate
 
@@ -330,8 +305,7 @@ sub getRecords {
     my $facets_info    = ();
     my $facets         = getFacets();
 
-    my @facets_loop
-      ;    # stores the ref to array of hashes for template facets loop
+    my @facets_loop;    # stores the ref to array of hashes for template facets loop
 
     ### LOOP THROUGH THE SERVERS
     for ( my $i = 0 ; $i < @servers ; $i++ ) {
@@ -613,7 +587,7 @@ sub pazGetRecords {
     my $paz = C4::Search::PazPar2->new(C4::Context->config('pazpar2url'));
     $paz->init();
     $paz->search($simple_query);
-    sleep 1;
+    sleep 1;   # FIXME: WHY?
 
     # do results
     my $results_hashref = {};
@@ -1125,6 +1099,18 @@ sub buildQuery {
                 $limit      .= "$this_limit";
                 $limit_cgi  .= "&limit=$this_limit";
                 $limit_desc .= " $this_limit";
+                if ($this_limit =~ /^branch:(.+)/) {
+                    my $branchcode = $1;
+                    my $branchname = GetBranchName($branchcode);
+                    if (defined $branchname) {
+                        $limit_desc .= " branch:$branchname";
+                    } else {
+                        $limit_desc .= " $this_limit";
+                    }
+                } else {
+                   $limit_desc .= " $this_limit";
+                }
+
             }      
         }
     }
@@ -1252,6 +1238,7 @@ sub searchResults {
         $times = $hits;	 # FIXME: if $hits is undefined, why do we want to equal it?
     }
 
+	my $marcflavour = C4::Context->preference("marcflavour");
     # loop through all of the records we've retrieved
     for ( my $i = $offset ; $i <= $times - 1 ; $i++ ) {
         my $marcrecord = MARC::File::USMARC::decode( $marcresults[$i] );
@@ -1263,9 +1250,14 @@ sub searchResults {
         $oldbiblio->{imageurl} = getitemtypeimagelocation( 'opac', $itemtypes{ $oldbiblio->{itemtype} }->{imageurl} );
 
         $oldbiblio->{'authorised_value_images'}  = C4::Items::get_authorised_value_images( C4::Biblio::get_biblio_authorised_values( $oldbiblio->{'biblionumber'}, $marcrecord ) );
-        (my $aisbn) = $oldbiblio->{isbn} =~ /([\d-]*[X]*)/;
-        $aisbn =~ s/-//g;
-        $oldbiblio->{amazonisbn} = $aisbn;
+		$oldbiblio->{normalized_upc} = GetNormalizedUPC($marcrecord,$marcflavour);
+		$oldbiblio->{normalized_ean} = GetNormalizedEAN($marcrecord,$marcflavour);
+		$oldbiblio->{normalized_oclc} = GetNormalizedOCLCNumber($marcrecord,$marcflavour);
+		$oldbiblio->{normalized_isbn} = GetNormalizedISBN(undef,$marcrecord,$marcflavour);
+		$oldbiblio->{content_identifier_exists} = 1 if ($oldbiblio->{normalized_isbn} or $oldbiblio->{normalized_oclc} or $oldbiblio->{normalized_ean} or $oldbiblio->{normalized_upc});
+
+		# edition information, if any
+        $oldbiblio->{edition} = $oldbiblio->{editionstatement};
 		$oldbiblio->{description} = $itemtypes{ $oldbiblio->{itemtype} }->{description};
  # Build summary if there is one (the summary is defined in the itemtypes table)
  # FIXME: is this used anywhere, I think it can be commented out? -- JF
@@ -1459,37 +1451,18 @@ s/\[(.?.?.?.?)$tagsubf(.*?)]/$1$subfieldvalue$2\[$1$tagsubf$2]/g;
                     $itemdamaged_count++     if $item->{damaged};
                     $item_in_transit_count++ if $transfertwhen ne '';
                     $item->{status} = $item->{wthdrawn} . "-" . $item->{itemlost} . "-" . $item->{damaged} . "-" . $item->{notforloan};
+                    $other_count++;
 
 					my $key = $prefix . $item->{status};
 					
 					foreach (qw(wthdrawn itemlost damaged branchname itemcallnumber)) {
-					    if($item->{notforloan} == 1){
-					        $notforloan_items->{$key}->{$_} = $item->{$_};
-					    }else{
-                    	   $other_items->{$key}->{$_} = $item->{$_};
-					    }
+                    	$other_items->{$key}->{$_} = $item->{$_};
 					}
-
-					if($item->{notforloan} == 1){
-                        $notforloan_count++;
-
-                        $notforloan_items->{$key}->{intransit} = ($transfertwhen ne '') ? 1 : 0;
-    					$notforloan_items->{$key}->{notforloan} = GetAuthorisedValueDesc('','',$item->{notforloan},'','',$notforloan_authorised_value) if $notforloan_authorised_value;
-    					$notforloan_items->{$key}->{count}++ if $item->{$hbranch};
-    					$notforloan_items->{$key}->{location} = $shelflocations->{ $item->{location} };
-    					$notforloan_items->{$key}->{imageurl} = getitemtypeimagelocation( 'opac', $itemtypes{ $item->{itype} }->{imageurl} );
-    					$notforloan_items->{$key}->{barcode} = $item->{barcode};
-                    }else{
-                        $other_count++;
-					
-                        $other_items->{$key}->{intransit} = ($transfertwhen ne '') ? 1 : 0;
-    					$other_items->{$key}->{notforloan} = GetAuthorisedValueDesc('','',$item->{notforloan},'','',$notforloan_authorised_value) if $notforloan_authorised_value;
-    					$other_items->{$key}->{count}++ if $item->{$hbranch};
-    					$other_items->{$key}->{location} = $shelflocations->{ $item->{location} };
-    					$other_items->{$key}->{imageurl} = getitemtypeimagelocation( 'opac', $itemtypes{ $item->{itype} }->{imageurl} );
-    					$other_items->{$key}->{barcode} = $item->{barcode};
-                    }
-
+                    $other_items->{$key}->{intransit} = ($transfertwhen ne '') ? 1 : 0;
+					$other_items->{$key}->{notforloan} = GetAuthorisedValueDesc('','',$item->{notforloan},'','',$notforloan_authorised_value) if $notforloan_authorised_value;
+					$other_items->{$key}->{count}++ if $item->{$hbranch};
+					$other_items->{$key}->{location} = $shelflocations->{ $item->{location} };
+					$other_items->{$key}->{imageurl} = getitemtypeimagelocation( 'opac', $itemtypes{ $item->{itype} }->{imageurl} );
                 }
                 # item is available
                 else {
@@ -1553,8 +1526,6 @@ s/\[(.?.?.?.?)$tagsubf(.*?)]/$1$subfieldvalue$2\[$1$tagsubf$2]/g;
         $oldbiblio->{damagedcount}         = $itemdamaged_count;
         $oldbiblio->{intransitcount}       = $item_in_transit_count;
         $oldbiblio->{orderedcount}         = $ordered_count;
-        $oldbiblio->{isbn} =~
-          s/-//g;    # deleting - in isbn to enable amazon content
         push( @newresults, $oldbiblio );
     }
     return @newresults;
@@ -1984,11 +1955,10 @@ sub NZorder {
             my ( $biblionumber, $title ) = split /,/, $_;
             my $record = GetMarcBiblio($biblionumber);
             my $callnumber;
-            my ( $callnumber_tag, $callnumber_subfield ) =
-              GetMarcFromKohaField( 'items.itemcallnumber','' );
-            ( $callnumber_tag, $callnumber_subfield ) =
-              GetMarcFromKohaField('biblioitems.callnumber','')
-              unless $callnumber_tag;
+            my $frameworkcode = GetFrameworkCode($biblionumber);
+            my ( $callnumber_tag, $callnumber_subfield ) = GetMarcFromKohaField(  'items.itemcallnumber', $frameworkcode);
+               ( $callnumber_tag, $callnumber_subfield ) = GetMarcFromKohaField('biblioitems.callnumber', $frameworkcode)
+                unless $callnumber_tag;
             if ( C4::Context->preference('marcflavour') eq 'UNIMARC' ) {
                 $callnumber = $record->subfield( '200', 'f' );
             }
@@ -2164,6 +2134,96 @@ sub NZorder {
         return $finalresult;
     }
 }
+
+=head2 enabled_staff_search_views
+
+%hash = enabled_staff_search_views()
+
+This function returns a hash that contains three flags obtained from the system
+preferences, used to determine whether a particular staff search results view
+is enabled.
+
+=over 2
+
+=item C<Output arg:>
+
+    * $hash{can_view_MARC} is true only if the MARC view is enabled
+    * $hash{can_view_ISBD} is true only if the ISBD view is enabled
+    * $hash{can_view_labeledMARC} is true only if the Labeled MARC view is enabled
+
+=item C<usage in the script:>
+
+=back
+
+$template->param ( C4::Search::enabled_staff_search_views );
+
+=cut
+
+sub enabled_staff_search_views
+{
+	return (
+		can_view_MARC			=> C4::Context->preference('viewMARC'),			# 1 if the staff search allows the MARC view
+		can_view_ISBD			=> C4::Context->preference('viewISBD'),			# 1 if the staff search allows the ISBD view
+		can_view_labeledMARC	=> C4::Context->preference('viewLabeledMARC'),	# 1 if the staff search allows the Labeled MARC view
+	);
+}
+
+
+=head2 z3950_search_args
+
+$arrayref = z3950_search_args($matchpoints)
+
+This function returns an array reference that contains the search parameters to be
+passed to the Z39.50 search script (z3950_search.pl). The array elements
+are hash refs whose keys are name, value and encvalue, and whose values are the
+name of a search parameter, the value of that search parameter and the URL encoded
+value of that parameter.
+
+The search parameter names are lccn, isbn, issn, title, author, dewey and subject.
+
+The search parameter values are obtained from the bibliographic record whose
+data is in a hash reference in $matchpoints, as returned by Biblio::GetBiblioData().
+
+If $matchpoints is a scalar, it is assumed to be an unnamed query descriptor, e.g.
+a general purpose search argument. In this case, the returned array contains only
+entry: the key is 'title' and the value and encvalue are derived from $matchpoints.
+
+If a search parameter value is undefined or empty, it is not included in the returned
+array.
+
+The returned array reference may be passed directly to the template parameters.
+
+=over 2
+
+=item C<Output arg:>
+
+    * $array containing hash refs as described above
+
+=item C<usage in the script:>
+
+=back
+
+$data = Biblio::GetBiblioData($bibno);
+$template->param ( MYLOOP => C4::Search::z3950_search_args($data) )
+
+*OR*
+
+$template->param ( MYLOOP => C4::Search::z3950_search_args($searchscalar) )
+
+=cut
+
+sub z3950_search_args {
+    my $bibrec = shift;
+    $bibrec = { title => $bibrec } if !ref $bibrec;
+    my $array = [];
+    for my $field (qw/ lccn isbn issn title author dewey subject /)
+    {
+        my $encvalue = URI::Escape::uri_escape_utf8($bibrec->{$field});
+        push @$array, { name=>$field, value=>$bibrec->{$field}, encvalue=>$encvalue } if defined $bibrec->{$field};
+    }
+    return $array;
+}
+
 
 END { }    # module clean-up code here (global destructor)
 

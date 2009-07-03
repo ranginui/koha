@@ -40,6 +40,51 @@
 <li><label for="emailaddress">Email:</label> <input id="emailaddress" type="text" value="<!-- TMPL_VAR name="email" -->"  name="emailaddress" /></li>
 </ol>
 </fieldset>
+
+<fieldset class="brief">
+<legend>Items Borrowed Notifications</legend>
+<ol>
+<li>
+  <label for="items_borrowed_email">Email:</label>
+  <!-- TMPL_IF items_borrowed_email -->
+  <input type="checkbox" id="items_borrowed_email" name="items_borrowed_email" value="1" checked="checked" />
+  <!-- TMPL_ELSE -->
+  <input type="checkbox" id="items_borrowed_email" name="items_borrowed_email" value="1" />
+  <!-- /TMPL_IF -->
+</li>
+<li>
+  <label for="items_borrowed_sms">Text Message:</label>
+  <!-- TMPL_IF items_borrowed_sms -->
+  <input type="checkbox" id="items_borrowed_sms" name="items_borrowed_sms" value="1" checked="checked" />
+  <!-- TMPL_ELSE -->
+  <input type="checkbox" id="items_borrowed_sms" name="items_borrowed_sms" value="1" />
+  <!-- /TMPL_IF -->
+</li>
+</ol>
+</fieldset>
+
+<fieldset class="brief">
+<legend>Items Returned Notifications</legend>
+<ol>
+<li>
+  <label for="items_returned_email">Email:</label>
+  <!-- TMPL_IF items_returned_email -->
+  <input type="checkbox" id="items_returned_email" name="items_returned_email" value="1" checked="checked" />
+  <!-- TMPL_ELSE -->
+  <input type="checkbox" id="items_returned_email" name="items_returned_email" value="1" />
+  <!-- /TMPL_IF -->
+</li>
+<li>
+  <label for="items_returned_sms">Text Message:</label>
+  <!-- TMPL_IF items_returned_sms -->
+  <input type="checkbox" id="items_returned_sms" name="items_returned_sms" value="1" checked="checked" />
+  <!-- TMPL_ELSE -->
+  <input type="checkbox" id="items_returned_sms" name="items_returned_sms" value="1" />
+  <!-- /TMPL_IF -->
+</li>
+</ol>
+</fieldset>
+
 </div>
 <div class="yui-u">
 <fieldset class="brief">
@@ -67,7 +112,7 @@
 <ol>
 	<li><label for="cardnumber">Card number:</label><input type="text" id="cardnumber" disabled="disabled" readonly="readonly" value="<!-- TMPL_VAR NAME="cardnumber" -->" /></li>
 	<li><label for="borrowernumber">Patron Number:</label><input type="text" id="borrowernumber" disabled="disabled" readonly="readonly" value="<!-- TMPL_VAR NAME="borrowernumber" -->" /></li>
-	<li><label for="categorycode">Patron Category:</label><input type="text" id="categorycode" disabled="disabled" readonly="readonly" value="<!-- TMPL_VAR NAME="description" -->" /></li>
+	<li><label for="categorycode">Patron Category:</label><input type="text" id="categorycode" disabled="disabled" readonly="readonly" value="<!-- TMPL_VAR NAME="description" --> (<!-- TMPL_VAR NAME="categorycode" -->)" /></li>
 	<li><label for="dateenrolled">Joined: </label><input type="text" id="dateenrolled" disabled="disabled" readonly="readonly" value="<!-- TMPL_VAR NAME="dateenrolled" -->" /></li>
 	<li><label for="dateexpiry">Expires: </label><input type="text" id="dateexpiry" disabled="disabled" readonly="readonly" value="<!-- TMPL_VAR NAME="dateexpiry" -->" /></li>
    <!-- TMPL_IF NAME="ExtendedPatronAttributes" -->

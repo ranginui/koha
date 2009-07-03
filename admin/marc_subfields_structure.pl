@@ -174,16 +174,9 @@ if ( $op eq 'add_form' ) {
       );    # and tagsubfield='$tagsubfield'");
     $sth->execute( $tagfield, $frameworkcode );
     my @loop_data = ();
-    my $toggle    = 1;
     my $i         = 0;
     while ( $data = $sth->fetchrow_hashref ) {
         my %row_data;    # get a fresh hash for the row data
-        if ( $toggle eq 1 ) {
-            $toggle = 0;
-        }
-        else {
-            $toggle = 1;
-        }
         $row_data{defaultvalue} = $data->{defaultvalue};
         $row_data{tab} = CGI::scrolling_list(
             -name   => 'tab',
@@ -273,7 +266,6 @@ if ( $op eq 'add_form' ) {
             -label    => ''
         );
         $row_data{row}    = $i;
-        $row_data{toggle} = $toggle;
         $row_data{link}   = CGI::escapeHTML( $data->{'link'} ); 
         push( @loop_data, \%row_data );
         $i++;
@@ -368,10 +360,8 @@ if ( $op eq 'add_form' ) {
             -multiple => 0,
         );
         $row_data{link}   = CGI::escapeHTML( $data->{'link'} );
-        $row_data{toggle} = $toggle;
         $row_data{row}    = $j;
         push( @loop_data, \%row_data );
-        use Data::Dumper;
     }
     $template->param( 'use-heading-flags-p'      => 1 );
     $template->param( 'heading-edit-subfields-p' => 1 );
@@ -539,7 +529,6 @@ elsif ( $op eq 'delete_confirmed' ) {
 }
 else {    # DEFAULT
     my ( $count, $results ) = string_search( $tagfield, $frameworkcode );
-    my $toggle    = 1;
     my @loop_data = ();
     for (
         my $i = $offset ;
@@ -547,12 +536,6 @@ else {    # DEFAULT
         $i++
       )
     {
-        if ( $toggle eq 1 ) {
-            $toggle = 0;
-        }
-        else {
-            $toggle = 1;
-        }
         my %row_data;    # get a fresh hash for the row data
         $row_data{tagfield}         = $results->[$i]{'tagfield'};
         $row_data{tagsubfield}      = $results->[$i]{'tagsubfield'};
@@ -572,7 +555,6 @@ else {    # DEFAULT
 "$script_name?op=delete_confirm&amp;tagfield=$tagfield&amp;tagsubfield="
           . $results->[$i]{'tagsubfield'}
           . "&amp;frameworkcode=$frameworkcode";
-        $row_data{toggle} = $toggle;
 
         if ( $row_data{tab} eq -1 ) {
             $row_data{subfield_ignored} = 1;

@@ -51,12 +51,10 @@ BEGIN {
     
     &UpdateClaimdateIssues
     &GetSuppliersWithLateIssues             &getsupplierbyserialid
-    &GetDistributedTo   &SetDistributedTo
     &getroutinglist     &delroutingmember   &addroutingmember
     &reorder_members
     &check_routing &updateClaim &removeMissingIssue
     
-    &old_newsubscription &old_modsubscription &old_getserials
 	);
 }
 
@@ -549,7 +547,7 @@ sub GetSubscriptionsFromBiblionumber {
         $subs->{ "status" . $subs->{'status'} } = 1;
         $subs->{'cannotedit'}=(C4::Context->preference('IndependantBranches') && 
                 C4::Context->userenv && 
-                C4::Context->userenv->{flags} !=1  && 
+                C4::Context->userenv->{flags} % 2 !=1  && 
                 C4::Context->userenv->{branch} && $subs->{branchcode} &&
                 (C4::Context->userenv->{branch} ne $subs->{branchcode}));
         if ( $subs->{enddate} eq '0000-00-00' ) {
@@ -704,7 +702,7 @@ sub GetSubscriptions {
         $line->{toggle} = 1 if $odd == 1;
         $line->{'cannotedit'}=(C4::Context->preference('IndependantBranches') && 
                 C4::Context->userenv && 
-                C4::Context->userenv->{flags} !=1  && 
+                C4::Context->userenv->{flags} % 2 !=1  && 
                 C4::Context->userenv->{branch} && $line->{branchcode} &&
                 (C4::Context->userenv->{branch} ne $line->{branchcode}));
         push @results, $line;
@@ -832,7 +830,7 @@ sub GetLatestSerials {
                         FROM     serial
                         WHERE    subscriptionid = ?
                         AND      (status =2 or status=4)
-                        ORDER BY planneddate DESC LIMIT 0,$limit
+                        ORDER BY publisheddate DESC LIMIT 0,$limit
                 ";
     my $sth = $dbh->prepare($strsth);
     $sth->execute($subscriptionid);
@@ -853,27 +851,6 @@ sub GetLatestSerials {
     #     $sth->execute($subscriptionid);
     #     my ($totalissues) = $sth->fetchrow;
     return \@serials;
-}
-
-=head2 GetDistributedTo
-
-=over 4
-
-$distributedto=GetDistributedTo($subscriptionid)
-This function select the old previous value of distributedto in the database.
-
-=back
-
-=cut
-
-sub GetDistributedTo {
-    my $dbh = C4::Context->dbh;
-    my $distributedto;
-    my $subscriptionid = @_;
-    my $query = "SELECT distributedto FROM subscription WHERE subscriptionid=?";
-    my $sth   = $dbh->prepare($query);
-    $sth->execute($subscriptionid);
-    return ($distributedto) = $sth->fetchrow;
 }
 
 =head2 GetNextSeq
@@ -1300,8 +1277,8 @@ sub ModSubscription {
         $whenmorethan3,   $setto3,       $lastvalue3,     $innerloop3,
         $numberingmethod, $status,       $biblionumber,   $callnumber,
         $notes,           $letter,       $hemisphere,     $manualhistory,
-        $internalnotes,   $serialsadditems,
-        $subscriptionid
+        $internalnotes,   $serialsadditems,$subscriptionid,
+        $staffdisplaycount,$opacdisplaycount, $graceperiod, $location
     ) = @_;
 #     warn $irregularity;
     my $dbh   = C4::Context->dbh;
@@ -1311,9 +1288,9 @@ sub ModSubscription {
                         add1=?,every1=?,whenmorethan1=?,setto1=?,lastvalue1=?,innerloop1=?,
                         add2=?,every2=?,whenmorethan2=?,setto2=?,lastvalue2=?,innerloop2=?,
                         add3=?,every3=?,whenmorethan3=?,setto3=?,lastvalue3=?,innerloop3=?,
-                        numberingmethod=?, status=?, biblionumber=?, callnumber=?, notes=?, letter=?, hemisphere=?,manualhistory=?,internalnotes=?,serialsadditems=?
+                        numberingmethod=?, status=?, biblionumber=?, callnumber=?, notes=?, letter=?, hemisphere=?,manualhistory=?,internalnotes=?,serialsadditems=?,staffdisplaycount = ?,opacdisplaycount = ?, graceperiod = ?, location = ?
                     WHERE subscriptionid = ?";
-#     warn "query :".$query;
+     #warn "query :".$query;
     my $sth = $dbh->prepare($query);
     $sth->execute(
         $auser,           $branchcode,   $aqbooksellerid, $cost,
@@ -1327,6 +1304,7 @@ sub ModSubscription {
         $numberingmethod, $status,       $biblionumber,   $callnumber,
         $notes,           $letter,       $hemisphere,     ($manualhistory?$manualhistory:0),
         $internalnotes,   $serialsadditems,
+        $staffdisplaycount, $opacdisplaycount, $graceperiod, $location,
         $subscriptionid
     );
     my $rows=$sth->rows;
@@ -1345,7 +1323,8 @@ $subscriptionid = &NewSubscription($auser,branchcode,$aqbooksellerid,$cost,$aqbu
     $add1,$every1,$whenmorethan1,$setto1,$lastvalue1,$innerloop1,
     $add2,$every2,$whenmorethan2,$setto2,$lastvalue2,$innerloop2,
     $add3,$every3,$whenmorethan3,$setto3,$lastvalue3,$innerloop3,
-    $numberingmethod, $status, $notes, $serialsadditems)
+    $numberingmethod, $status, $notes, $serialsadditems,
+    $staffdisplaycount, $opacdisplaycount, $graceperiod, $location);
 
 Create a new subscription with value given on input args.
 
@@ -1368,7 +1347,8 @@ sub NewSubscription {
         $lastvalue3,    $innerloop3,   $numberingmethod, $status,
         $notes,         $letter,       $firstacquidate,  $irregularity,
         $numberpattern, $callnumber,   $hemisphere,      $manualhistory,
-        $internalnotes, $serialsadditems,
+        $internalnotes, $serialsadditems, $staffdisplaycount, $opacdisplaycount,
+        $graceperiod, $location
     ) = @_;
     my $dbh = C4::Context->dbh;
 
@@ -1381,8 +1361,9 @@ sub NewSubscription {
             add2,every2,whenmorethan2,setto2,lastvalue2,innerloop2,
             add3,every3,whenmorethan3,setto3,lastvalue3,innerloop3,
             numberingmethod, status, notes, letter,firstacquidate,irregularity,
-            numberpattern, callnumber, hemisphere,manualhistory,internalnotes,serialsadditems)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+            numberpattern, callnumber, hemisphere,manualhistory,internalnotes,serialsadditems,
+            staffdisplaycount,opacdisplaycount,graceperiod,location)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
         |;
     my $sth = $dbh->prepare($query);
     $sth->execute(
@@ -1407,6 +1388,8 @@ sub NewSubscription {
         $numberpattern,                 $callnumber,
         $hemisphere,                    $manualhistory,
         $internalnotes,                 $serialsadditems,
+		$staffdisplaycount,				$opacdisplaycount,
+        $graceperiod,                   $location,
     );
 
     #then create the 1st waited number
@@ -1804,6 +1787,7 @@ sub HasSubscriptionExpired {
       my $sth = $dbh->prepare($query);
       $sth->execute($subscriptionid);
       my ($res) = $sth->fetchrow  ;
+	  return 0 unless $res;
       my @res=split (/-/,$res);
       my @endofsubscriptiondate=split(/-/,$expirationdate);
       return 2 if (scalar(@res)!=3 || scalar(@endofsubscriptiondate)!=3||not check_date(@res) || not check_date(@endofsubscriptiondate));
@@ -1821,29 +1805,6 @@ sub HasSubscriptionExpired {
       }
     }
     return 0;	# Notice that you'll never get here.
-}
-
-=head2 SetDistributedto
-
-=over 4
-
-SetDistributedto($distributedto,$subscriptionid);
-This function update the value of distributedto for a subscription given on input arg.
-
-=back
-
-=cut
-
-sub SetDistributedto {
-    my ( $distributedto, $subscriptionid ) = @_;
-    my $dbh   = C4::Context->dbh;
-    my $query = qq|
-        UPDATE subscription
-        SET    distributedto=?
-        WHERE  subscriptionid=?
-    |;
-    my $sth = $dbh->prepare($query);
-    $sth->execute( $distributedto, $subscriptionid );
 }
 
 =head2 DelSubscription
@@ -2366,9 +2327,9 @@ sub abouttoexpire {
       $sth->execute($subscriptionid);
       my ($res) = $sth->fetchrow ;
 #        warn "date expiration : ".$expirationdate." date courante ".$res;
-      my @res=split /-/,$res;
+      my @res=split (/-/,$res);
       @res=Date::Calc::Today if ($res[0]*$res[1]==0);
-      my @endofsubscriptiondate=split/-/,$expirationdate;
+      my @endofsubscriptiondate=split(/-/,$expirationdate);
       my $x;
       if ( $per == 1 ) {$x=7;}
       if ( $per == 2 ) {$x=7; }
@@ -2394,232 +2355,6 @@ sub abouttoexpire {
    } elsif ($subscription->{numberlength}>0) {
     return (countissuesfrom($subscriptionid,$subscription->{'startdate'}) >=$subscription->{numberlength}-1);
    } else {return 0}
-}
-
-=head2 old_newsubscription
-
-=over 4
-
-($subscriptionid) = &old_newsubscription($auser,$aqbooksellerid,$cost,$aqbudgetid,$biblionumber,
-                        $startdate,$periodicity,$firstacquidate,$dow,$irregularity,$numberpattern,$numberlength,$weeklength,$monthlength,
-                        $add1,$every1,$whenmorethan1,$setto1,$lastvalue1,
-                        $add2,$every2,$whenmorethan2,$setto2,$lastvalue2,
-                        $add3,$every3,$whenmorethan3,$setto3,$lastvalue3,
-                        $numberingmethod, $status, $callnumber, $notes, $hemisphere)
-
-this function is similar to the NewSubscription subroutine but has a few different
-values passed in 
-$firstacquidate - date of first serial issue to arrive
-$irregularity - the issues not expected separated by a '|'
-- eg. monthly issue but not expecting issue for june and july would have $irregularity of '6|7'
-$numberpattern - the number for an array of labels to reconstruct the javascript correctly in the 
-   subscription-add.tmpl file
-$callnumber - display the callnumber of the serial
-$hemisphere - either 2 = southern hemisphere or 1 = northern hemisphere - used for quarterly serials
-
-return :
-the $subscriptionid number of the new subscription
-
-=back
-
-=cut
-
-sub old_newsubscription {
-    my (
-        $auser,         $aqbooksellerid,  $cost,          $aqbudgetid,
-        $biblionumber,  $startdate,       $periodicity,   $firstacquidate,
-        $dow,           $irregularity,    $numberpattern, $numberlength,
-        $weeklength,    $monthlength,     $add1,          $every1,
-        $whenmorethan1, $setto1,          $lastvalue1,    $add2,
-        $every2,        $whenmorethan2,   $setto2,        $lastvalue2,
-        $add3,          $every3,          $whenmorethan3, $setto3,
-        $lastvalue3,    $numberingmethod, $status,        $callnumber,
-        $notes,         $hemisphere
-    ) = @_;
-    my $dbh = C4::Context->dbh;
-
-    #save subscription
-    my $sth = $dbh->prepare(
-"insert into subscription (librarian,aqbooksellerid,cost,aqbudgetid,biblionumber,
-                                                        startdate,periodicity,firstacquidate,dow,irregularity,numberpattern,numberlength,weeklength,monthlength,
-                                                                add1,every1,whenmorethan1,setto1,lastvalue1,
-                                                                add2,every2,whenmorethan2,setto2,lastvalue2,
-                                                                add3,every3,whenmorethan3,setto3,lastvalue3,
-                                                                numberingmethod, status, callnumber, notes, hemisphere) values
-                                                          (?,?,?,?,?,?,?,?,?,?,?,
-                                                                                           ?,?,?,?,?,?,?,?,?,?,?,
-                                                                                           ?,?,?,?,?,?,?,?,?,?,?,?)"
-    );
-    $sth->execute(
-        $auser,         $aqbooksellerid,
-        $cost,          $aqbudgetid,
-        $biblionumber,  format_date_in_iso($startdate),
-        $periodicity,   format_date_in_iso($firstacquidate),
-        $dow,           $irregularity,
-        $numberpattern, $numberlength,
-        $weeklength,    $monthlength,
-        $add1,          $every1,
-        $whenmorethan1, $setto1,
-        $lastvalue1,    $add2,
-        $every2,        $whenmorethan2,
-        $setto2,        $lastvalue2,
-        $add3,          $every3,
-        $whenmorethan3, $setto3,
-        $lastvalue3,    $numberingmethod,
-        $status,        $callnumber,
-        $notes,         $hemisphere
-    );
-
-    #then create the 1st waited number
-    my $subscriptionid = $dbh->{'mysql_insertid'};
-    my $enddate        = GetExpirationDate($subscriptionid);
-
-    $sth =
-      $dbh->prepare(
-"insert into subscriptionhistory (biblionumber, subscriptionid, histstartdate, enddate, missinglist, recievedlist, opacnote, librariannote) values (?,?,?,?,?,?,?,?)"
-      );
-    $sth->execute(
-        $biblionumber, $subscriptionid,
-        format_date_in_iso($startdate),
-        format_date_in_iso($enddate),
-        "", "", "", $notes
-    );
-
-   # reread subscription to get a hash (for calculation of the 1st issue number)
-    $sth =
-      $dbh->prepare("select * from subscription where subscriptionid = ? ");
-    $sth->execute($subscriptionid);
-    my $val = $sth->fetchrow_hashref;
-
-    # calculate issue number
-    my $serialseq = GetSeq($val);
-    $sth =
-      $dbh->prepare(
-"insert into serial (serialseq,subscriptionid,biblionumber,status, planneddate) values (?,?,?,?,?)"
-      );
-    $sth->execute( $serialseq, $subscriptionid, $val->{'biblionumber'},
-        1, format_date_in_iso($startdate) );
-    return $subscriptionid;
-}
-
-=head2 old_modsubscription
-
-=over 4
-
-($subscriptionid) = &old_modsubscription($auser,$aqbooksellerid,$cost,$aqbudgetid,$biblionumber,
-                        $startdate,$periodicity,$firstacquidate,$dow,$irregularity,$numberpattern,$numberlength,$weeklength,$monthlength,
-                        $add1,$every1,$whenmorethan1,$setto1,$lastvalue1,
-                        $add2,$every2,$whenmorethan2,$setto2,$lastvalue2,
-                        $add3,$every3,$whenmorethan3,$setto3,$lastvalue3,
-                        $numberingmethod, $status, $callnumber, $notes, $hemisphere, $subscriptionid)
-
-this function is similar to the ModSubscription subroutine but has a few different
-values passed in 
-$firstacquidate - date of first serial issue to arrive
-$irregularity - the issues not expected separated by a '|'
-- eg. monthly issue but not expecting issue for june and july would have $irregularity of '6|7'
-$numberpattern - the number for an array of labels to reconstruct the javascript correctly in the 
-   subscription-add.tmpl file
-$callnumber - display the callnumber of the serial
-$hemisphere - either 2 = southern hemisphere or 1 = northern hemisphere - used for quarterly serials
-
-=back
-
-=cut
-
-sub old_modsubscription {
-    my (
-        $auser,        $aqbooksellerid, $cost,           $aqbudgetid,
-        $startdate,    $periodicity,    $firstacquidate, $dow,
-        $irregularity, $numberpattern,  $numberlength,   $weeklength,
-        $monthlength,  $add1,           $every1,         $whenmorethan1,
-        $setto1,       $lastvalue1,     $innerloop1,     $add2,
-        $every2,       $whenmorethan2,  $setto2,         $lastvalue2,
-        $innerloop2,   $add3,           $every3,         $whenmorethan3,
-        $setto3,       $lastvalue3,     $innerloop3,     $numberingmethod,
-        $status,       $biblionumber,   $callnumber,     $notes,
-        $hemisphere,   $subscriptionid
-    ) = @_;
-    my $dbh = C4::Context->dbh;
-    my $sth = $dbh->prepare(
-"update subscription set librarian=?, aqbooksellerid=?,cost=?,aqbudgetid=?,startdate=?,
-                                                   periodicity=?,firstacquidate=?,dow=?,irregularity=?,numberpattern=?,numberlength=?,weeklength=?,monthlength=?,
-                                                  add1=?,every1=?,whenmorethan1=?,setto1=?,lastvalue1=?,innerloop1=?,
-                                                  add2=?,every2=?,whenmorethan2=?,setto2=?,lastvalue2=?,innerloop2=?,
-                                                  add3=?,every3=?,whenmorethan3=?,setto3=?,lastvalue3=?,innerloop3=?,
-                                                  numberingmethod=?, status=?, biblionumber=?, callnumber=?, notes=?, hemisphere=? where subscriptionid = ?"
-    );
-    $sth->execute(
-        $auser,        $aqbooksellerid, $cost,           $aqbudgetid,
-        $startdate,    $periodicity,    $firstacquidate, $dow,
-        $irregularity, $numberpattern,  $numberlength,   $weeklength,
-        $monthlength,  $add1,           $every1,         $whenmorethan1,
-        $setto1,       $lastvalue1,     $innerloop1,     $add2,
-        $every2,       $whenmorethan2,  $setto2,         $lastvalue2,
-        $innerloop2,   $add3,           $every3,         $whenmorethan3,
-        $setto3,       $lastvalue3,     $innerloop3,     $numberingmethod,
-        $status,       $biblionumber,   $callnumber,     $notes,
-        $hemisphere,   $subscriptionid
-    );
-    $sth->finish;
-
-    $sth =
-      $dbh->prepare("select * from subscription where subscriptionid = ? ");
-    $sth->execute($subscriptionid);
-    my $val = $sth->fetchrow_hashref;
-
-    # calculate issue number
-    my $serialseq = Get_Seq($val);
-    $sth =
-      $dbh->prepare("UPDATE serial SET serialseq = ? WHERE subscriptionid = ?");
-    $sth->execute( $serialseq, $subscriptionid );
-
-    my $enddate = subscriptionexpirationdate($subscriptionid);
-    $sth = $dbh->prepare("update subscriptionhistory set enddate=?");
-    $sth->execute( format_date_in_iso($enddate) );
-}
-
-=head2 old_getserials
-
-=over 4
-
-($totalissues,@serials) = &old_getserials($subscriptionid)
-
-this function get a hashref of serials and the total count of them
-
-return :
-$totalissues - number of serial lines
-the serials into a table. Each line of this table containts a ref to a hash which it containts
-serialid, serialseq, status,planneddate,notes,routingnotes  from tables : serial where status is not 2, 4, or 5
-
-=back
-
-=cut
-
-sub old_getserials {
-    my ($subscriptionid) = @_;
-    my $dbh = C4::Context->dbh;
-
-    # status = 2 is "arrived"
-    my $sth =
-      $dbh->prepare(
-"select serialid,serialseq, status, planneddate,notes,routingnotes from serial where subscriptionid = ? and status <>2 and status <>4 and status <>5"
-      );
-    $sth->execute($subscriptionid);
-    my @serials;
-    my $num = 1;
-    while ( my $line = $sth->fetchrow_hashref ) {
-        $line->{ "status" . $line->{status} } =
-          1;    # fills a "statusX" value, used for template status select list
-        $line->{"planneddate"} = format_date( $line->{"planneddate"} );
-        $line->{"num"}         = $num;
-        $num++;
-        push @serials, $line;
-    }
-    $sth = $dbh->prepare("select count(*) from serial where subscriptionid=?");
-    $sth->execute($subscriptionid);
-    my ($totalissues) = $sth->fetchrow;
-    return ( $totalissues, @serials );
 }
 
 =head2 GetNextDate

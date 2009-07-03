@@ -250,6 +250,7 @@ my $target_map = {
   './changelanguage.pl'         => 'INTRANET_CGI_DIR',
   './check_sysprefs.pl'         => 'NONE',
   './circ'                      => 'INTRANET_CGI_DIR',
+  './offline_circ'		=> 'INTRANET_CGI_DIR',
   './edithelp.pl'               => 'INTRANET_CGI_DIR',
   './etc'                       => { target => 'KOHA_CONF_DIR', trimdir => -1 },
   './etc/zebradb'               => { target => 'ZEBRA_CONF_DIR', trimdir => -1 },
@@ -540,6 +541,7 @@ WriteMakefile(
                             'Class::Factory::Util'             => 1.6,
                             'Class::Accessor'                  => 0.30,
                             'DBD::mysql'                       => 4.004,
+                            'DBD::SQLite2'                     => 0.33, # optional, used for offline circulation
                             'DBI'                              => 1.53,
                             'Data::Dumper'                     => 2.121,
                             'Data::ICal'                       => 0.13,

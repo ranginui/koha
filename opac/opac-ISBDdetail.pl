@@ -51,8 +51,9 @@ use C4::Biblio;
 use C4::Acquisition;
 use C4::Review;
 use C4::Serials;    # uses getsubscriptionfrom biblionumber
-use C4::Koha;       # use getitemtypeinfo
+use C4::Koha;
 use C4::Members;    # GetMember
+use C4::External::Amazon;
 
 my $query = CGI->new();
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
@@ -70,6 +71,22 @@ my $biblionumber = $query->param('biblionumber');
 my $marcflavour      = C4::Context->preference("marcflavour");
 my $record = GetMarcBiblio($biblionumber);
 
+# some useful variables for enhanced content;
+# in each case, we're grabbing the first value we find in
+# the record and normalizing it
+my $upc = GetNormalizedUPC($record,$marcflavour);
+my $ean = GetNormalizedEAN($record,$marcflavour);
+my $oclc = GetNormalizedOCLCNumber($record,$marcflavour);
+my $isbn = GetNormalizedISBN(undef,$record,$marcflavour);
+my $content_identifier_exists = 1 if ($isbn or $ean or $oclc or $upc);
+$template->param(
+    normalized_upc => $upc,
+    normalized_ean => $ean,
+    normalized_oclc => $oclc,
+    normalized_isbn => $isbn,
+	content_identifier_exists => $content_identifier_exists,
+);
+
 #coping with subscriptions
 my $subscriptionsnumber = CountSubscriptionFromBiblionumber($biblionumber);
 my $dbh = C4::Context->dbh;
@@ -79,13 +96,17 @@ my @subscriptions       =
 my @subs;
 foreach my $subscription (@subscriptions) {
     my %cell;
+	my $serials_to_display;
     $cell{subscriptionid}    = $subscription->{subscriptionid};
     $cell{subscriptionnotes} = $subscription->{notes};
     $cell{branchcode}        = $subscription->{branchcode};
 
     #get the three latest serials.
+	$serials_to_display = $subscription->{opacdisplaycount};
+	$serials_to_display = C4::Context->preference('OPACSerialIssueDisplayCount') unless $serials_to_display;
+	$cell{opacdisplaycount} = $serials_to_display;
     $cell{latestserials} =
-      GetLatestSerials( $subscription->{subscriptionid}, 3 );
+      GetLatestSerials( $subscription->{subscriptionid}, $serials_to_display );
     push @subs, \%cell;
 }
 
@@ -117,14 +138,9 @@ $template->param(
 
 ## Amazon.com stuff
 #not used unless preference set
-if ( C4::Context->preference("AmazonContent") == 1 ) {
-    use C4::Amazon;
-    $dat->{'amazonisbn'} = $dat->{'isbn'};
-    $dat->{'amazonisbn'} =~ s|-||g;
+if ( C4::Context->preference("OPACAmazonEnabled") == 1 ) {
 
-    $template->param( amazonisbn => $dat->{amazonisbn} );
-
-    my $amazon_details = &get_amazon_details( $dat->{amazonisbn}, $record, $marcflavour );
+    my $amazon_details = &get_amazon_details( $isbn, $record, $marcflavour );
 
     foreach my $result ( @{ $amazon_details->{Details} } ) {
         $template->param( item_description => $result->{ProductDescription} );

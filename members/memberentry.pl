@@ -38,6 +38,7 @@ use C4::Input;
 use C4::Log;
 use C4::Letters;
 use C4::Branch; # GetBranches
+use C4::Form::MessagingPreferences;
 
 use vars qw($debug);
 
@@ -69,7 +70,11 @@ my $destination    = $input->param('destination');
 my $cardnumber     = $input->param('cardnumber');
 my $check_member   = $input->param('check_member');
 my $name_city      = $input->param('name_city');
-my $nodouble       = $input->param('nodouble')||$op eq 'modify';
+my $nodouble       = $input->param('nodouble');
+$nodouble = 1 if $op eq 'modify'; # FIXME hack to represent fact that if we're
+                                  # modifying an existing patron, it ipso facto
+                                  # isn't a duplicate.  Marking FIXME because this
+                                  # script needs to be refactored.
 my $select_city    = $input->param('select_city');
 my $nok            = $input->param('nok');
 my $guarantorinfo  = $input->param('guarantorinfo');
@@ -111,6 +116,7 @@ $category_type="A" unless $category_type; # FIXME we should display a error mess
 # if a add or modify is requested => check validity of data.
 %data = %$borrower_data if ($borrower_data);
 
+# initialize %newdata
 my %newdata;	# comes from $input->param()
 if ($op eq 'insert' || $op eq 'modify' || $op eq 'save') {
     my @names= ($borrower_data && $op ne 'save') ? keys %$borrower_data : $input->param();
@@ -211,7 +217,7 @@ if ($op eq 'save' || $op eq 'insert'){
     }
   }
   if (C4::Context->preference("IndependantBranches")) {
-    if ($userenv && $userenv->{flags} != 1){
+    if ($userenv && $userenv->{flags} % 2 != 1){
       $debug and print STDERR "  $newdata{'branchcode'} : ".$userenv->{flags}.":".$userenv->{branch};
       unless (!$newdata{'branchcode'} || $userenv->{branch} eq $newdata{'branchcode'}){
         push @errors, "ERROR_branch";
@@ -242,6 +248,10 @@ if ($op eq 'modify' || $op eq 'insert' || $op eq 'save' ){
         my $arg2 = $newdata{'dateenrolled'} || C4::Dates->today('iso');
         $newdata{'dateexpiry'} = GetExpiryDate($newdata{'categorycode'},$arg2);
     }
+}
+
+if ( ( defined $input->param('SMSnumber') ) && ( $input->param('SMSnumber') ne $newdata{'mobile'} ) ) {
+    $newdata{smsalertnumber} = $input->param('SMSnumber');
 }
 
 ###  Error checks should happen before this line.
@@ -287,14 +297,20 @@ if ((!$nok) and $nodouble and ($op eq 'insert' or $op eq 'save')){
         if (C4::Context->preference('ExtendedPatronAttributes') and $input->param('setting_extended_patron_attributes')) {
             C4::Members::Attributes::SetBorrowerAttributes($borrowernumber, $extended_patron_attributes);
         }
+        if (C4::Context->preference('EnhancedMessagingPreferences') and $input->param('setting_messaging_prefs')) {
+            C4::Form::MessagingPreferences::handle_form_action($input, { borrowernumber => $borrowernumber }, $template);
+        }
 	} elsif ($op eq 'save'){ 
 		if ($NoUpdateLogin) {
 			delete $newdata{'password'};
 			delete $newdata{'userid'};
 		}
-		&ModMember(%newdata);    
+		&ModMember(%newdata);
         if (C4::Context->preference('ExtendedPatronAttributes') and $input->param('setting_extended_patron_attributes')) {
             C4::Members::Attributes::SetBorrowerAttributes($borrowernumber, $extended_patron_attributes);
+        }
+        if (C4::Context->preference('EnhancedMessagingPreferences') and $input->param('setting_messaging_prefs')) {
+            C4::Form::MessagingPreferences::handle_form_action($input, { borrowernumber => $borrowernumber }, $template);
         }
 	}
 	print scalar ($destination eq "circ") ? 
@@ -309,17 +325,17 @@ if ($delete){
 }
 
 if ($nok or !$nodouble){
-  $op="add" if ($op eq "insert");
-  $op="modify" if ($op eq "save");
-  %data=%newdata; 
-  $template->param( updtype => ($op eq 'add' ?'I':'M'));	# used to check for $op eq "insert"... but we just changed $op!
-  unless ($step){  
-    $template->param( step_1 => 1,step_2 => 1,step_3 => 1, step_4 => 1);
-  }  
+    $op="add" if ($op eq "insert");
+    $op="modify" if ($op eq "save");
+    %data=%newdata; 
+    $template->param( updtype => ($op eq 'add' ?'I':'M'));	# used to check for $op eq "insert"... but we just changed $op!
+    unless ($step){  
+        $template->param( step_1 => 1,step_2 => 1,step_3 => 1, step_4 => 1, step_5 => 1);
+    }  
 } 
 if (C4::Context->preference("IndependantBranches")) {
     my $userenv = C4::Context->userenv;
-    if ($userenv->{flags} != 1 && $data{branchcode}){
+    if ($userenv->{flags} % 2 != 1 && $data{branchcode}){
         unless ($userenv->{branch} eq $data{'branchcode'}){
             print $input->redirect("/cgi-bin/koha/members/members-home.pl");
             exit;
@@ -329,11 +345,11 @@ if (C4::Context->preference("IndependantBranches")) {
 if ($op eq 'add'){
     my $arg2 = $newdata{'dateenrolled'} || C4::Dates->today('iso');
     $data{'dateexpiry'} = GetExpiryDate($newdata{'categorycode'},$arg2);
-    $template->param( updtype => 'I', step_1=>1, step_2=>1, step_3=>1, step_4=>1);
+    $template->param( updtype => 'I', step_1=>1, step_2=>1, step_3=>1, step_4=>1, step_5 => 1);
 }
 if ($op eq "modify")  {
     $template->param( updtype => 'M',modify => 1 );
-    $template->param( step_1=>1, step_2=>1, step_3=>1, step_4=>1) unless $step;
+    $template->param( step_1=>1, step_2=>1, step_3=>1, step_4=>1, step_5 => 1) unless $step;
 }
 # my $cardnumber=$data{'cardnumber'};
 $data{'cardnumber'}=fixup_cardnumber($data{'cardnumber'}) if $op eq 'add';
@@ -463,7 +479,7 @@ my %select_branches;
 
 my $onlymine=(C4::Context->preference('IndependantBranches') && 
               C4::Context->userenv && 
-              C4::Context->userenv->{flags} !=1  && 
+              C4::Context->userenv->{flags} % 2 !=1  && 
               C4::Context->userenv->{branch}?1:0);
               
 my $branches=GetBranches($onlymine);
@@ -498,7 +514,7 @@ if (C4::Context->preference("memberofinstitution")){
         $org_labels{$organisation}=$organisations->{$organisation}->{'surname'};
     }
     $member_of_institution=1;
-    
+
     $CGIorganisations = CGI::scrolling_list( -id => 'organisations',
         -name     => 'organisations',
         -labels   => \%org_labels,
@@ -548,6 +564,16 @@ foreach (qw(dateenrolled dateexpiry dateofbirth)) {
 if (C4::Context->preference('ExtendedPatronAttributes')) {
     $template->param(ExtendedPatronAttributes => 1);
     patron_attributes_form($template, $borrowernumber);
+}
+
+if (C4::Context->preference('EnhancedMessagingPreferences')) {
+    if ($op eq 'add') {
+        C4::Form::MessagingPreferences::set_form_values({ categorycode => $categorycode }, $template);
+    } else {
+        C4::Form::MessagingPreferences::set_form_values({ borrowernumber => $borrowernumber }, $template);
+    }
+    $template->param(SMSSendDriver => C4::Context->preference("SMSSendDriver"));
+    $template->param(SMSnumber     => defined $data{'smsalertnumber'} ? $data{'smsalertnumber'} : $data{'mobile'});
 }
 
 $template->param( "showguarantor"  => ($category_type=~/A|I|S|X/) ? 0 : 1); # associate with step to know where you are
@@ -675,7 +701,3 @@ sub patron_attributes_form {
     $template->param(patron_attributes => \@attribute_loop);
 
 }
-
-# Local Variables:
-# tab-width: 8
-# End:

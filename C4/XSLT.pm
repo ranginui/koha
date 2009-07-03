@@ -17,16 +17,18 @@ package C4::XSLT;
 # Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA  02111-1307 USA
 
+use strict;
+use warnings;
+
 use C4::Context;
 use C4::Branch;
 use C4::Items;
 use C4::Koha;
 use C4::Biblio;
 use C4::Circulation;
+use Encode;
 use XML::LibXML;
 use XML::LibXSLT;
-
-use strict;
 
 use vars qw($VERSION @ISA @EXPORT);
 
@@ -52,8 +54,7 @@ C4::XSLT - Functions for displaying XSLT-generated content
 =cut
 
 sub transformMARCXML4XSLT {
-    my ($biblionumber, $orig_record) = @_;
-    my $record = $orig_record->clone(); # not updating original record; this may be unnecessarily paranoid
+    my ($biblionumber, $record) = @_;
     my $frameworkcode = GetFrameworkCode($biblionumber);
     my $tagslib = &GetMarcStructure(1,$frameworkcode);
     my @fields;
@@ -62,26 +63,24 @@ sub transformMARCXML4XSLT {
         @fields = $record->fields();
     };
     if ($@) { warn "PROBLEM WITH RECORD"; next; }
-    my $list_of_authvalues = getAuthorisedValues4MARCSubfields($frameworkcode);
-    for my $authvalue (@$list_of_authvalues) {
-        for my $field ( $record->field($authvalue->{tagfield}) ) {
-            my @newSubfields = ();
-            for my $subfield ( $field->subfields() ) {
-                my ($code,$data) = @$subfield;
-                unless ($code eq $authvalue->{tagsubfield}) {
-                    push ( @newSubfields, $code, $data );
-                } else {
-                    my $newvalue = GetAuthorisedValueDesc( $authvalue->{tagfield}, $code, $data, '', $tagslib );
-                    push ( @newSubfields, $code, $newvalue );
-                }
+    my $av = getAuthorisedValues4MARCSubfields($frameworkcode);
+    foreach my $tag ( keys %$av ) {
+        foreach my $field ( $record->field( $tag ) ) {
+            if ( $av->{ $tag } ) {
+                my @new_subfields = ();
+                for my $subfield ( $field->subfields() ) {
+                    my ( $letter, $value ) = @$subfield;
+                    $value = GetAuthorisedValueDesc( $tag, $letter, $value, '', $tagslib )
+                        if $av->{ $tag }->{ $letter };
+                    push( @new_subfields, $letter, $value );
+                } 
+                $field ->replace_with( MARC::Field->new(
+                    $tag,
+                    $field->indicator(1),
+                    $field->indicator(2),
+                    @new_subfields
+                ) );
             }
-            my $newField = MARC::Field->new(
-                $authvalue->{tagfield},
-                $field->indicator(1),
-                $field->indicator(2),
-                @newSubfields
-            );
-            $field->replace_with($newField);
         }
     }
     return $record;
@@ -89,7 +88,7 @@ sub transformMARCXML4XSLT {
 
 =head1 getAuthorisedValues4MARCSubfields
 
-=head2 returns an array of hash refs for authorised value tag/subfield combos for a given framework
+=head2 returns an ref of hash of ref of hash for tag -> letter controled bu authorised values
 
 =cut
 
@@ -100,7 +99,6 @@ my %authval_per_framework;
 sub getAuthorisedValues4MARCSubfields {
     my ($frameworkcode) = @_;
     unless ( $authval_per_framework{ $frameworkcode } ) {
-        my @results;
         my $dbh = C4::Context->dbh;
         my $sth = $dbh->prepare("SELECT DISTINCT tagfield, tagsubfield
                                  FROM marc_subfield_structure
@@ -108,10 +106,11 @@ sub getAuthorisedValues4MARCSubfields {
                                    AND authorised_value!=''
                                    AND frameworkcode=?");
         $sth->execute( $frameworkcode );
-        while ( my $result = $sth->fetchrow_hashref() ) {
-            push ( @results, $result );
+        my $av = { };
+        while ( my ( $tag, $letter ) = $sth->fetchrow() ) {
+            $av->{ $tag }->{ $letter } = 1;
         }
-        $authval_per_framework{ $frameworkcode } = \@results;
+        $authval_per_framework{ $frameworkcode } = $av;
     }
     return $authval_per_framework{ $frameworkcode };
 }
@@ -148,15 +147,14 @@ sub buildKohaItemsNamespace {
     my @items = C4::Items::GetItemsInfo($biblionumber);
     my $branches = GetBranches();
     my $itemtypes = GetItemTypes();
-
-    my $xml;
+    my $xml = '';
     for my $item (@items) {
         my $status;
 
         my ( $transfertwhen, $transfertfrom, $transfertto ) = C4::Circulation::GetTransfers($item->{itemnumber});
 
-        if ( $itemtypes->{ $item->{itype} }->{notforloan} == 1 || $item->{notforloan} || $item->{onloan} || $item->{wthdrawn} || $item->{itemlost} || $item->{damaged} ||
-             ($transfertwhen ne '') || $item->{itemnotforloan} ) {
+        if ( $itemtypes->{ $item->{itype} }->{notforloan} || $item->{notforloan} || $item->{onloan} || $item->{wthdrawn} || $item->{itemlost} || $item->{damaged} ||
+             (defined $transfertwhen && $transfertwhen ne '') || $item->{itemnotforloan} ) {
             if ( $item->{notforloan} < 0) {
                 $status = "On order";
             } 
@@ -175,18 +173,22 @@ sub buildKohaItemsNamespace {
             if ($item->{damaged}) {
                 $status = "Damaged"; 
             }
-            if ($transfertwhen ne '') {
+            if (defined $transfertwhen && $transfertwhen ne '') {
                 $status = 'In transit';
             }
         } else {
             $status = "available";
         }
-        $xml.="<item><homebranch>".$branches->{$item->{homebranch}}->{'branchname'}."</homebranch>".
+        my $homebranch = $branches->{$item->{homebranch}}->{'branchname'};
+        $xml.= "<item><homebranch>$homebranch</homebranch>".
 		"<status>$status</status>".
-		"<itemcallnumber>".$item->{'itemcallnumber'}."</itemcallnumber></item>";
+		(defined $item->{'itemcallnumber'} ? "<itemcallnumber>".$item->{'itemcallnumber'}."</itemcallnumber>" 
+                                           : "<itemcallnumber />")
+        . "</item>";
 
     }
-    return "<items xmlns='http://www.koha.org/items'>".$xml."</items>";
+    $xml = "<items xmlns=\"http://www.koha.org/items\">".$xml."</items>";
+    return $xml;
 }
 
 

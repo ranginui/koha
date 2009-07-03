@@ -1,31 +1,17 @@
 <!-- TMPL_INCLUDE NAME="doc-head-open.inc" -->
 <title>Koha &rsaquo; Circulation &rsaquo; Holds Queue</title>
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
-<script type="text/javascript" src="<!-- TMPL_VAR name="themelang" -->/lib/jquery/plugins/jquery.tablesorter.min.js"></script>
-<script type="text/JavaScript" language="JavaScript">
-//<![CDATA[
-//$.tablesorter.addParser({
-//    id: 'articles', 
-//    is: function(s) {return false;  }, 
-//    format: function(s) { return s.toLowerCase().replace(/^(the|an|a) /,''); }, 
-//    type: 'text' 
-//});
-//	 $(document).ready(function() {
-//		$.tablesorter.defaults.widgets = ['zebra']; 
-//		$("#holdst").tablesorter({<!-- TMPL_IF EXPR="dateformat eq 'metric'" -->
-//		dateFormat: 'uk',<!-- /TMPL_IF -->
-//		sortList: [[1,0]],
-//		headers: { 0: { sorter: 'articles' }}
-//		});
-//	 });
-//]]>
-</script>
+<style type="text/css"> p { margin-top: 0; }</style>
 </head>
 <body>
 <!-- TMPL_INCLUDE NAME="header.inc" -->
 <!-- TMPL_INCLUDE NAME="cat-search.inc" -->
 
-<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/circ/circulation-home.pl">Circulation</a><!-- TMPL_IF NAME="run_report" --> &rsaquo; <a href="/cgi-bin/koha/circ/view_holdsqueue.pl">Holds Queue</a> &rsaquo; Results<!-- TMPL_ELSE --> &rsaquo; Holds Queue<!-- /TMPL_IF --></div>
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a>
+&rsaquo; <a href="/cgi-bin/koha/circ/circulation-home.pl">Circulation</a>
+&rsaquo; <a href="/cgi-bin/koha/circ/view_holdsqueue.pl">Holds Queue</a>
+<!-- TMPL_IF NAME="run_report" --> &rsaquo; Results<!-- /TMPL_IF -->
+</div>
 
 <div id="doc" class="yui-t7">
    
@@ -36,37 +22,39 @@
 <h1>Holds Queue</h1>
 
 <!-- TMPL_IF NAME="run_report" -->
-
-
     <!-- TMPL_IF NAME="total" -->
-        <div class="results"><!-- TMPL_VAR NAME="total" --> items found for <!-- TMPL_VAR NAME="branch" --></div>
+        <div class="results"><!-- TMPL_VAR NAME="total" --> items found for
+            <!-- TMPL_IF NAME="branch" --><!-- TMPL_VAR NAME="branch" --><!-- TMPL_ELSE-->ALL libraries<!-- /TMPL_IF -->
+        </div>
     <!-- TMPL_ELSE-->
         <div class="dialog message">No items found.</div>
     <!-- /TMPL_IF -->
-
 
     <!-- TMPL_IF NAME="itemsloop" -->
 <table id="holdst">
 	<thead>
 	<tr>
         <th>Title</th>
-        <th>Author</th>
         <th>Collection</th>
-        <th>Shelving Location</th>
         <th>Call Number</th>
         <th>Barcode</th>
-        <th>Enumeration</th>
+		<th>Patron</th>
         <th>Send To</th>
         <th>Date</th>
     </tr>
 	</thead>
      <tbody><!-- TMPL_LOOP NAME="itemsloop"-->
         <tr>
-            <td><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber"-->"><!-- TMPL_VAR NAME="title"--></a></td>
-            <td><!-- TMPL_VAR NAME="author" --></td>
+            <td><p><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber"-->"><strong><!-- TMPL_VAR NAME="title" escape="html"--></strong></a></p> 
+			<p><strong><!-- TMPL_VAR NAME="author" --></strong>
+			<!-- TMPL_IF name="publishercode" --><!-- TMPL_VAR name="publishercode" --><!-- /TMPL_IF -->
+										<!-- TMPL_IF name="publicationyear" -->, <!-- TMPL_VAR name="publicationyear" -->
+										<!-- TMPL_ELSIF name="copyrightdate"-->, <!-- TMPL_VAR name="copyrightdate" --><!-- /TMPL_IF -->
+                                        <!-- TMPL_IF name="pages" -->: <!-- TMPL_VAR name="pages" --> <!-- /TMPL_IF -->
+                                        <!-- TMPL_IF name="size" --><!-- TMPL_VAR name="size" --><!-- /TMPL_IF --> <!-- TMPL_IF NAME="isbn" -->ISBN: <!-- TMPL_VAR NAME="isbn" --><!-- /TMPL_IF --></p>
+			</td>
             <td><!-- TMPL_VAR NAME="ccode" --></td>
-            <td><!-- TMPL_VAR NAME="location" --></td>
-            <td><!-- TMPL_VAR NAME="itemcallnumber"--></td>
+            <td><!-- TMPL_VAR NAME="location" --> <!-- TMPL_VAR NAME="itemcallnumber"--> <!-- TMPL_VAR NAME="enumchron" --></td>
             <td>
                 <!-- TMPL_IF NAME="item_level_request" -->
                     <!-- TMPL_VAR NAME="barcode" -->
@@ -74,7 +62,7 @@
                     <em>Any available copy</em>
                 <!-- /TMPL_IF -->
             </td>
-            <td><!-- TMPL_VAR NAME="enumchron" --></td>
+			<td><p><a href="/cgi-bin/koha/circ/circulation.pl?findborrower=<!-- TMPL_VAR NAME="cardnumber" -->#reserves"><!-- TMPL_VAR NAME="surname" -->, <!-- TMPL_VAR NAME="firstname" --> (<!-- TMPL_VAR NAME="cardnumber" -->)</a></p> <p><!-- TMPL_VAR NAME="phone" --></p></td>
             <td><!-- TMPL_VAR NAME="pickbranch" --></td>
             <td><!-- TMPL_VAR NAME="reservedate" --></td>
         </tr>
@@ -84,7 +72,7 @@
 	<!-- /TMPL_IF --> 
 	
 <!-- TMPL_UNLESS NAME="total" -->
-	<form name="f" action="/cgi-bin/koha/circ/view_holdsqueue.pl" method="post">
+<form name="f" action="/cgi-bin/koha/circ/view_holdsqueue.pl" method="post">
 	<fieldset class="rows">
 	<ol>
 	<li><label for="branchlimit">Library: </label><select name="branchlimit" id="branchlimit">
@@ -107,11 +95,11 @@
                 <!-- /TMPL_LOOP -->
             </select></li>
 			-->
-</ol></fieldset>
-<fieldset class="action">    <input type="submit" value="Submit" />
-    <input type="hidden" name="run_report" value="1" /></fieldset>
+    </ol></fieldset>
+    <fieldset class="action">    <input type="submit" value="Submit" />
+        <input type="hidden" name="run_report" value="1" /></fieldset>
 </form>
-	<!-- /TMPL_UNLESS -->
+<!-- /TMPL_UNLESS -->
 
 </div>
 </div>

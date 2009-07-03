@@ -14,9 +14,9 @@
         inFileUploadProgressTimer = true;
         $.getJSON("/cgi-bin/koha/tools/upload-file-progress.pl", function(json) {
             if (!fileUploadProgressTimerCanceled) {
-		var bgproperty = (parseInt(json.progress)*2-300)+"px 0px";
+				var bgproperty = (parseInt(json.progress)*2-300)+"px 0px";
                 $("#fileuploadprogress").css("background-position",bgproperty);
-		$("#fileuploadpercent").text(json.progress);
+				$("#fileuploadpercent").text(json.progress);
             }
             inFileUploadProgressTimer = false;
         });
@@ -24,6 +24,7 @@
     function ajaxFileUpload()
     {
         fileUploadProgressTimerCanceled = false;
+		$("#uploadpanel").show();
         $("#fileuploadstatus").show();
         fileUploadProgressTimer = setInterval("updateProgress()",500);
         $.ajaxFileUpload (
@@ -48,7 +49,9 @@
                         $("#fileuploadfailed").text("Upload failed -- database in maintenance state");
                     } else {
                          $("#uploadedfileid").val(data.fileid);
-                         $("#fileuploadprogress").text("100");
+                         $("#fileuploadprogress").css("background-position","0px 0px");
+						 $("#processfile").show();
+                        $("#fileuploadpercent").text("100");
                     }
                     fileUploadProgressTimerCanceled = true;
                     clearInterval(fileUploadProgressTimer);

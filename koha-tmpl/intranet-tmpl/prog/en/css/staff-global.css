@@ -86,7 +86,7 @@ strong em {
 	font-style : italic;
 }
 
-em {
+em, cite {
 	font-style : italic;
 }
 
@@ -844,6 +844,11 @@ fieldset.rows .inputnote {
 	background-position : center left;
 	background-repeat : no-repeat;
 }
+#z3950searcht table {
+	/* doesn't have desired effect in catalogue/results.tmpl - I'll leave this here for now but there do seem to be casscading CSS errors in this and other CSS fiels - RICKW 20081118 */
+	padding: 20px;
+	border: none;
+}
 #printbiblio button, #printbiblio a, #printmenuc .first-child {
 	padding-left : 34px;
 	background-image: url("../../img/toolbar-print.gif");
@@ -940,10 +945,12 @@ div.sysprefs div.hint {
 
 tr.highlight td {
 	background-color : #F6F6F6;
+	border-color : #BCBCBC;
 }
 
 tr.highlight th[scope=row] {
 	background-color : #DDDDDD;
+	border-color : #BCBCBC;
 }
 
 tr.confirm td, tr.highlight.confirm td {
@@ -1083,7 +1090,7 @@ td input.approve {
 .dialog input:hover {
  	background-color : #ffc;
  }
- 
+
 div.alert {
   background : #FFC url(../../img/alert-bg.gif) repeat-x left 0;
   text-align : center;
@@ -1098,6 +1105,12 @@ div.message {
   	border : 1px solid #bcbcbc;
   	text-align: center;
 	width : 55%;
+}
+
+div.message ul,
+div.message h5 {
+	padding-left : 25%;
+	text-align : left;
 }
 
 div.message ul+h4 {
@@ -1318,6 +1331,18 @@ overflow :  hidden;
 	float : right;
 }
 
+#searchheader form.fz3950 {
+	float : right;
+	font-size : 125%;
+	padding : 0 0 0 5em;
+}
+
+#searchheader form.fz3950bigrpad {
+	float : right;
+	font-size : 125%;
+	padding : 5px 25em 0 0;
+}
+
 #search-facets ul {
 	margin : 0;
 	padding : .3em;
@@ -1400,7 +1425,7 @@ input[type=submit], input[type=button] {
 	color: #333333;
 }
 
-input.submit {
+input.submit,button.submit {
 	border: 1px solid #999999;
 	border-top-color: #666;
 	border-left-color: #666;
@@ -1417,11 +1442,7 @@ input[type=submit]:active, input[type=button]:active {
 	border : 1px inset #999999;
 }
 
-input.submit:active {
-	border : 1px inset #999999;
-}
-
-input[type=reset], input[type=button], input.submit {
+input[type=reset], input[type=button], input.submit, button.submit {
 	border: 1px outset #999999;
 	border-top-color: #666;
 	border-left-color: #666;
@@ -1430,13 +1451,18 @@ input[type=reset], input[type=button], input.submit {
 	color: #333333;
 }
 
-input[type=reset]:active, input[type=button]:active, input.submit:active {
+input[type=reset]:active, input[type=button]:active, input.submit:active, button.submit:active {
 	border : 1px inset #999999;
 }
 
 ul li input.submit {
 	font-size : 87%;
 	padding : 2px;
+}
+
+input.warning {
+    background : #FFF url(../../img/famfamfam/silk/error.png) no-repeat 4px center;
+	padding : 0.25em 0.25em 0.25em 25px;
 }
 
 .searchhighlightblob {
@@ -1621,7 +1647,14 @@ label.permissioncode {
 span.permissiondesc {
 	font-weight : normal;
 }
-/* autocomplete additions */
+#mainuserblock {
+	border : 1px solid #E8E8E8;
+	margin-top : .5em;
+	padding : .5em;
+}
+
+
+/* borrower autocomplete */
 #borrowerautocomplete { width: 450px; text-align:left;} /* z-index needed on top instances for ie & sf absolute inside relative issue */
 .autocomplete .yui-ac-highlight ,
 .autocomplete .yui-ac-highlight .sample-result,
@@ -1630,8 +1663,28 @@ span.permissiondesc {
 .autocomplete .sample-query { color:#000; }
 #findborrower { position:static; width:auto; }
 #yborrowercontainer { text-align:left;width:335px; }
-#mainuserblock {
-	border : 1px solid #E8E8E8;
-	margin-top : .5em;
-	padding : .5em;
+
+/* patron attribues autocomplete for overdues report (pattrodue) */
+.pattrodue-autocomplete .pattrodue-result { color: black; }
+.pattrodue-autocomplete .yui-ac-highlight .pattrodue-result { color: white; }
+.pattrodue-input { position:static; width:auto; }
+.pattrodue-container { text-align:left; width:400px; }
+
+.labeledmarc-table {
+	border: 0;
 }
+
+.labeledmarc-label {
+	border: 0;
+	padding: 5;
+	font-size: 11pt;
+	color: darkblue;
+}
+
+.labeledmarc-value {
+	border: 0;
+	padding: 5;
+	font-size: 10pt;
+	color: black;
+}
+

@@ -17,6 +17,7 @@
 
 
 use strict;
+use warnings;
 use CGI;
 use C4::Koha;
 use C4::Biblio;
@@ -48,6 +49,12 @@ my @results;
 
 my $num = 1;
 my $marcflavour = C4::Context->preference('marcflavour');
+if (C4::Context->preference('TagsEnabled')) {
+	$template->param(TagsEnabled => 1);
+	foreach (qw(TagsShowOnList TagsInputOnList)) {
+		C4::Context->preference($_) and $template->param($_ => 1);
+	}
+}
 
 
 foreach my $biblionumber ( @bibs ) {
@@ -61,19 +68,26 @@ foreach my $biblionumber ( @bibs ) {
     my $marcseriesarray  = GetMarcSeries  ($record,$marcflavour);
     my $marcurlsarray    = GetMarcUrls    ($record,$marcflavour);
     my @items            = &GetItemsInfo( $biblionumber, 'opac' );
+
+    my $hasauthors = 0;
+    if($dat->{'author'} || @$marcauthorsarray) {
+      $hasauthors = 1;
+    }
 	
     my $shelflocations =GetKohaAuthorisedValues('items.location',$dat->{'frameworkcode'});
     my $collections =  GetKohaAuthorisedValues('items.ccode',$dat->{'frameworkcode'} );
 
 	for my $itm (@items) {
+	    if ($itm->{'location'}){
 	    $itm->{'location_description'} = $shelflocations->{$itm->{'location'} };
+		}
 	}
 	# COinS format FIXME: for books Only
         my $coins_format;
         my $fmt = substr $record->leader(), 6,2;
         my $fmts;
         $fmts->{'am'} = 'book';
-        $dat->{ocoins_format} => $fmts->{$fmt};
+        $dat->{ocoins_format} = $fmts->{$fmt};
 
     if ( $num % 2 == 1 ) {
         $dat->{'even'} = 1;
@@ -87,6 +101,7 @@ foreach my $biblionumber ( @bibs ) {
     $dat->{MARCAUTHORS}    = $marcauthorsarray;
     $dat->{MARCSERIES}  = $marcseriesarray;
     $dat->{MARCURLS}    = $marcurlsarray;
+    $dat->{HASAUTHORS}  = $hasauthors;
 
     if ( C4::Context->preference("BiblioDefaultView") eq "normal" ) {
         $dat->{dest} = "opac-detail.pl";

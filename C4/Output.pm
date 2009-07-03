@@ -26,6 +26,7 @@ package C4::Output;
 # templates.
 
 use strict;
+use warnings;
 
 use C4::Context;
 use C4::Languages qw(getTranslatedLanguages get_bidi regex_lang_subtags language_get_description accept_language );
@@ -38,17 +39,17 @@ BEGIN {
     $VERSION = 3.03;
     require Exporter;
     @ISA    = qw(Exporter);
-	@EXPORT_OK = qw(&output_ajax_with_http_headers &is_ajax); # More stuff should go here instead
+	@EXPORT_OK = qw(&is_ajax ajax_fail); # More stuff should go here instead
 	%EXPORT_TAGS = ( all =>[qw(&themelanguage &gettemplate setlanguagecookie pagination_bar
-								&output_ajax_with_http_headers &output_html_with_http_headers)],
-					ajax =>[qw(&output_ajax_with_http_headers is_ajax)],
-					html =>[qw(&output_html_with_http_headers)]
+								&output_with_http_headers &output_html_with_http_headers)],
+					ajax =>[qw(&output_with_http_headers is_ajax)],
+					html =>[qw(&output_with_http_headers &output_html_with_http_headers)]
 				);
     push @EXPORT, qw(
         &themelanguage &gettemplate setlanguagecookie pagination_bar
     );
     push @EXPORT, qw(
-        &output_html_with_http_headers
+        &output_html_with_http_headers &output_with_http_headers
     );
 }
 
@@ -80,7 +81,6 @@ sub gettemplate {
     }
     my $path = C4::Context->preference('intranet_includes') || 'includes';
     my ( $theme, $lang ) = themelanguage( $htdocs, $tmplbase, $interface, $query );
-    my $opacstylesheet = C4::Context->preference('opacstylesheet');
 
     # if the template doesn't exist, load the English one as a last resort
     my $filename = "$htdocs/$theme/$lang/modules/$tmplbase";
@@ -93,20 +93,17 @@ sub gettemplate {
         die_on_bad_params => 1,
         global_vars       => 1,
         case_sensitive    => 1,
-	    loop_context_vars => 1,		# enable: __first__, __last__, __inner__, __odd__, __counter__ 
+        loop_context_vars => 1, # enable: __first__, __last__, __inner__, __odd__, __counter__ 
         path              => ["$htdocs/$theme/$lang/$path"]
     );
     my $themelang=( $interface ne 'intranet' ? '/opac-tmpl' : '/intranet-tmpl' )
           . "/$theme/$lang";
     $template->param(
         themelang => $themelang,
-        yuipath => (C4::Context->preference("yuipath") eq "local"?"$themelang/lib/yui":C4::Context->preference("yuipath")),
+        yuipath   => (C4::Context->preference("yuipath") eq "local"?"$themelang/lib/yui":C4::Context->preference("yuipath")),
         interface => ( $interface ne 'intranet' ? '/opac-tmpl' : '/intranet-tmpl' ),
-        theme => $theme,
-        opacstylesheet      => $opacstylesheet,
-        opaccolorstylesheet => C4::Context->preference('opaccolorstylesheet'),
-        opacsmallimage      => C4::Context->preference('opacsmallimage'),
-        lang                => $lang
+        theme     => $theme,
+        lang      => $lang
     );
 
     # Bidirectionality
@@ -351,48 +348,61 @@ sub pagination_bar {
     return $pagination_bar;
 }
 
-=item output_html_with_http_headers
+=item output_with_http_headers
 
-   &output_html_with_http_headers($query, $cookie, $html[, $content_type])
+   &output_with_http_headers($query, $cookie, $data, $content_type[, $status])
 
-Outputs the HTML page $html with the appropriate HTTP headers,
-with the authentication cookie $cookie and a Content-Type that
-corresponds to the HTML page $html.
+Outputs $data with the appropriate HTTP headers,
+the authentication cookie $cookie and a Content-Type specified in
+$content_type.
 
-If the optional C<$content_type> parameter is called, set the
-response's Content-Type to that value instead of "text/html".
+If applicable, $cookie can be undef, and it will not be sent.
+
+$content_type is one of the following: 'html', 'js', 'json', 'xml', 'rss', or 'atom'.
+
+$status is an HTTP status message, like '403 Authentication Required'. It defaults to '200 OK'.
 
 =cut
 
-sub output_html_with_http_headers ($$$;$) {
-    my $query = shift;
-    my $cookie = shift;
-    my $html = shift;
-    my $content_type = @_ ? shift : "text/html";
-    $content_type = "text/html" unless $content_type =~ m!/!; # very basic sanity check
-    print $query->header(
-        -type    => $content_type,
-        -charset => 'UTF-8',
-        -cookie  => $cookie,
-        -Pragma => 'no-cache',
-        -'Cache-Control' => 'no-cache',
-    ), $html;
+sub output_with_http_headers($$$$;$) {
+    my ( $query, $cookie, $data, $content_type, $status ) = @_;
+    $status ||= '200 OK';
+
+    my %content_type_map = (
+        'html' => 'text/html',
+        'js'   => 'text/javascript',
+        'json' => 'application/json',
+        'xml'  => 'text/xml',
+        # NOTE: not using application/atom+xml or application/rss+xml because of
+        # Internet Explorer 6; see bug 2078.
+        'rss'  => 'text/xml',
+        'atom' => 'text/xml'
+    );
+
+    die "Unknown content type '$content_type'" if ( !defined( $content_type_map{$content_type} ) );
+    my $options = {
+        type    => $content_type_map{$content_type},
+        status  => $status,
+        charset => 'UTF-8',
+        Pragma          => 'no-cache',
+        'Cache-Control' => 'no-cache',
+    };
+    $options->{cookie} = $cookie if $cookie;
+    if ($content_type eq 'html') {  # guaranteed to be one of the content_type_map keys, else we'd have died
+        $options->{'Content-Style-Type' } = 'text/css';
+        $options->{'Content-Script-Type'} = 'text/javascript';
+    }
+    print $query->header($options), $data;
 }
 
-sub output_ajax_with_http_headers ($$) {
-    my ($query, $js) = @_;
-    print $query->header(
-        -type    => 'text/javascript',
-        -charset => 'UTF-8',
-        -Pragma  => 'no-cache',
-        -'Cache-Control' => 'no-cache',
-		-expires =>'-1d',
-    ), $js;
+sub output_html_with_http_headers ($$$) {
+    my ( $query, $cookie, $data ) = @_;
+    output_with_http_headers( $query, $cookie, $data, 'html' );
 }
 
 sub is_ajax () {
-	my $x_req = $ENV{HTTP_X_REQUESTED_WITH};
-	return ($x_req and $x_req =~ /XMLHttpRequest/i) ? 1 : 0;
+    my $x_req = $ENV{HTTP_X_REQUESTED_WITH};
+    return ( $x_req and $x_req =~ /XMLHttpRequest/i ) ? 1 : 0;
 }
 
 END { }    # module clean-up code here (global destructor)

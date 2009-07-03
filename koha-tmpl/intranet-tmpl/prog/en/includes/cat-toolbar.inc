@@ -3,6 +3,23 @@
 	<script type="text/javascript">
 	//<![CDATA[
 	
+	/* this function open a popup to search on z3950 server.  */
+	function PopupZ3950() {
+		var strQuery = GetZ3950Terms();
+		if(strQuery){
+			window.open("/cgi-bin/koha/cataloguing/z3950_search.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->"+strQuery,"z3950search",'width=740,height=450,location=yes,toolbar=no,scrollbars=yes,resize=yes');
+		} 
+	}
+
+	/* provide Z3950 search points */
+	function GetZ3950Terms(){
+		var strQuery="&frameworkcode=";
+		<!-- TMPL_LOOP NAME='z3950_search_params' -->
+			strQuery += "&" + "<!-- TMPL_VAR NAME="name" -->" + "=" + "<!-- TMPL_VAR NAME="encvalue" -->";
+		<!-- /TMPL_LOOP -->
+		return strQuery;
+	}
+
 	function addToShelf() {	window.open('/cgi-bin/koha/virtualshelves/addbybiblionumber.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->','Add_to_virtualshelf','width=500,height=400,toolbar=false,scrollbars=yes');
 	}
 	function printBiblio() {window.open('/cgi-bin/koha/catalogue/detailprint.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->','Print_Biblio','width=700,height=500,toolbar=false,scrollbars=yes');
@@ -44,12 +61,14 @@ function confirm_items_deletion() {
 	    $("#duplicatebiblio").parent().remove();
 		$("#deletebiblio").parent().remove();
 		$("#newitem").parent().remove();
+		$("#newsub").parent().remove();
 	    $("#editmenuc").empty();
 		$("#newmenuc").empty();
 		$("#addtoshelfc").empty();
 		$("#printbiblioc").empty();
 		$("#export").remove();
 		$("#addtoshelfc").before("<li id=\"savemenuc\"><\/li>");
+		$("#z3950searchc").empty();
 	    yuiToolbar();
 	 });
 
@@ -58,7 +77,8 @@ function confirm_items_deletion() {
 	function yuiToolbar() {
 		var newmenu = [
 			{text: _("New Record"), url: "/cgi-bin/koha/cataloguing/addbiblio.pl" },
-			{text: _("New Item"), url: "/cgi-bin/koha/cataloguing/additem.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->#additema" }
+			{text: _("New Item"), url: "/cgi-bin/koha/cataloguing/additem.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->#additema" },
+			{text: _("New Subscription"), url: "/cgi-bin/koha/serials/subscription-add.pl?biblionumber_for_new_subscription=<!-- TMPL_VAR NAME="biblionumber" -->"},
 		];
 	
 	    var editmenu = [
@@ -101,6 +121,14 @@ function confirm_items_deletion() {
 	        container: "newmenuc"
 	    });
 		
+		new YAHOO.widget.Button({
+			id: "z3950search", 
+			type: "button", 
+			label: _("z39.50 Search"), 
+			container: "z3950searchc",
+			onclick: {fn:function(){PopupZ3950()}}
+		});
+
 		var addtoshelfButton = new YAHOO.widget.Button({
                                             id: "addtoshelf", 
                                             type: "button", 
@@ -125,10 +153,13 @@ function confirm_items_deletion() {
 	//]]>
 	</script>
 	
+<form method="post" name="f" id="f" action="/cgi-bin/koha/cataloguing/addbiblio.pl" onsubmit="return Check();">
+
 <ul class="toolbar">
 	<!-- TMPL_IF NAME="CAN_user_editcatalogue" -->
 	<li id="newmenuc"><a id="newbiblio" href="/cgi-bin/koha/cataloguing/addbiblio.pl">New Record</a></li>
 	<li><a id="newitem" href="/cgi-bin/koha/cataloguing/additem.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->">New Item</a></li>
+	<li><a id="newsub" href="/cgi-bin/koha/serials/subscription-add.pl?biblionumber_for_new_subscription=<!-- TMPL_VAR NAME="biblionumber" -->">New Subscription</a></li>
 	<li id="editmenuc"><a id="editbiblio" href="/cgi-bin/koha/cataloguing/addbiblio.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->&amp;frameworkcode=<!--TMPL_VAR Name="current_framework" -->&amp;op=">Edit Record</a></li>
 	<li><a id="edititems" href="/cgi-bin/koha/cataloguing/additem.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->">Edit Items</a></li>
 	<li><a id="duplicatebiblio" href="/cgi-bin/koha/cataloguing/addbiblio.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->&amp;frameworkcode=<!--TMPL_VAR Name="current_framework" -->&amp;op=duplicate">Duplicate Record</a></li>
@@ -140,4 +171,8 @@ function confirm_items_deletion() {
         <!-- TMPL_UNLESS name="bi_notforloan" -->
 	<!-- TMPL_UNLESS NAME="norequests" --><li><a id="placehold" href="/cgi-bin/koha/reserve/request.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->">Place Hold</a></li><!-- /TMPL_UNLESS --><!-- /TMPL_UNLESS -->
 	<!-- /TMPL_IF -->
-</ul></div>
+	<li id="z3950searchc"><input type="button" id="z3950search" value="z39.50 Search" onclick="PopupZ3950(); return false;" /></li>
+    </ul>
+</form>
+</div>
+

@@ -3,6 +3,7 @@
 # Mostly copied from search.pl, see POD there
 use strict;            # always use
 use warnings;
+
 ## STEP 1. Load things that are used in both search page and
 # results page and decide which template to load, operations 
 # to perform, etc.
@@ -147,7 +148,7 @@ my $advanced_search_types = C4::Context->preference("AdvancedSearchTypes");
 if (!$advanced_search_types or $advanced_search_types eq 'itemtypes') {
 	foreach my $thisitemtype ( sort {$itemtypes->{$a}->{'description'} cmp $itemtypes->{$b}->{'description'} } keys %$itemtypes ) {
     my %row =(  number=>$cnt++,
-		ccl => $itype_or_itemtype,
+				ccl => $itype_or_itemtype,
                 code => $thisitemtype,
                 selected => $selected,
                 description => $itemtypes->{$thisitemtype}->{'description'},
@@ -162,8 +163,8 @@ if (!$advanced_search_types or $advanced_search_types eq 'itemtypes') {
     my $advsearchtypes = GetAuthorisedValues($advanced_search_types);
 	for my $thisitemtype (@$advsearchtypes) {
 		my %row =(
-		number=>$cnt++,
-		ccl => $advanced_search_types,
+				number=>$cnt++,
+				ccl => $advanced_search_types,
                 code => $thisitemtype->{authorised_value},
                 selected => $selected,
                 description => $thisitemtype->{'lib'},
@@ -180,7 +181,7 @@ if (!$advanced_search_types or $advanced_search_types eq 'itemtypes') {
 # $template->param(itypeloop=>\@itype_loop,);
 
 # The following should only be loaded if we're bringing up the advanced search template
-if ( $template_type eq 'advsearch' ) {
+if ( $template_type && $template_type eq 'advsearch' ) {
 
     # load the servers (used for searching -- to do federated searching, etc.)
     my $primary_servers_loop;# = displayPrimaryServers();
@@ -281,7 +282,8 @@ my @operators;
 
 # indexes are query qualifiers, like 'title', 'author', etc. They
 # can be single or multiple parameters separated by comma: kw,right-Truncation 
-my @indexes = exists($params->{'idx'}) ? split("\0",$params->{'idx'}) : ();
+my @indexes;
+@indexes = split("\0",$params->{'idx'}) if $params->{'idx'};
 
 # if a simple index (only one)  display the index used in the top search box
 if ($indexes[0] && !$indexes[1]) {
@@ -379,6 +381,7 @@ my $total = 0; # the total results for the whole set
 my $facets; # this object stores the faceted results that display on the left-hand of the results page
 my @results_array;
 my $results_hashref;
+my @coins;
 
 if ($tag) {
 	my $taglist = get_tags({term=>$tag, approved=>1});
@@ -415,7 +418,7 @@ if ($@ || $error) {
 my @sup_results_array;
 for (my $i=0;$i<=@servers;$i++) {
     my $server = $servers[$i];
-    if ($server =~/biblioserver/) { # this is the local bibliographic server
+    if ($server && $server =~/biblioserver/) { # this is the local bibliographic server
         $hits = $results_hashref->{$server}->{"hits"};
         my $page = $cgi->param('page') || 0;
         my @newresults;
@@ -441,18 +444,12 @@ for (my $i=0;$i<=@servers;$i++) {
 			}
 		}
 		foreach (@newresults) {
-            		$_->{'coins'} = GetCOinSBiblio($_->{'biblionumber'});
-			my $clean = $_->{isbn} or next;
-			unless (
-				$clean =~ /\b(\d{13})\b/ or
-				$clean =~ /\b(\d{10})\b/ or 
-				$clean =~ /\b(\d{9}X)\b/i
-			) {
-				next;
-			}
-			$_ ->{'clean_isbn'} = $1;
+		    $_->{coins} = GetCOinSBiblio($_->{'biblionumber'});
 		}
-        $total = $total + $results_hashref->{$server}->{"hits"};
+      
+	if ($results_hashref->{$server}->{"hits"}){
+	    $total = $total + $results_hashref->{$server}->{"hits"};
+	}
         ## If there's just one result, redirect to the detail page
         if ($total == 1) {         
             my $biblionumber=$newresults[0]->{biblionumber};
@@ -533,7 +530,7 @@ for (my $i=0;$i<=@servers;$i++) {
         }
     } # end of the if local
     # asynchronously search the authority server
-    elsif ($server =~/authorityserver/) { # this is the local authority server
+    elsif ($server && $server =~/authorityserver/) { # this is the local authority server
         my @inner_sup_results_array;
         for my $sup_record ( @{$results_hashref->{$server}->{"RECORDS"}} ) {
             my $marc_record_object = MARC::Record->new_from_usmarc($sup_record);
@@ -613,11 +610,6 @@ if ( C4::Context->preference("kohaspsuggest") ) {
 }
 
 # VI. BUILD THE TEMPLATE
-# NOTE: not using application/atom+xml or application/rss+xml beccause of Internet Explorer 6;
-# see bug 2078.
-my $content_type = ($cgi->param('format') && $cgi->param('format') =~ /rss|atom/) ? "application/xml" :
-                   "text/html";
-
 # Build drop-down list for 'Add To:' menu...
 my $session = get_session($cgi->cookie("CGISESSID"));
 my @addpubshelves;
@@ -638,4 +630,19 @@ if (defined $barshelves) {
 	$template->param( addbarshelvesloop => $barshelves);
 }
 
-output_html_with_http_headers $cgi, $cookie, $template->output, $content_type;
+my $content_type;
+
+if ($cgi->param('format') && $cgi->param('format') =~ /rss/) {
+    $content_type = 'rss'
+} elsif ($cgi->param('format') && $cgi->param('format') =~ /atom/) {
+    $content_type = 'atom'
+} else {
+    $content_type = 'html'
+}
+
+# If GoogleIndicTransliteration system preference is On Set paramter to load Google's javascript in OPAC search screens 
+if (C4::Context->preference('GoogleIndicTransliteration')) {
+        $template->param('GoogleIndicTransliteration' => 1);
+}
+
+output_with_http_headers $cgi, $cookie, $template->output, $content_type;
