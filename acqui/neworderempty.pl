@@ -148,6 +148,7 @@ my @itemtypesloop;
 foreach my $thisitemtype (sort keys %$itemtypes) {
     push @itemtypesloop, { itemtype => $itemtypes->{$thisitemtype}->{'itemtype'} , desc =>  $itemtypes->{$thisitemtype}->{'description'} } ;
 }
+@itemtypesloop = sort {$a->{desc} cmp $b->{desc}} @itemtypesloop;
 
 # build branches list
 my $onlymine=C4::Context->preference('IndependantBranches') && 
