@@ -28,6 +28,8 @@ my $dbh   = C4::Context->dbh;
 
 my $template = Koha::Templates->new('opac','modules/opac-main.tt');
 
+# checkauthorisation($template);
+
 # my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
 #    {
 #        template_name   => "opac-main.tmpl",
