@@ -1271,8 +1271,8 @@ s/\[(.?.?.?.?)$tagsubf(.*?)]/$1$subfieldvalue$2\[$1$tagsubf$2]/g;
             foreach my $code ( keys %subfieldstosearch ) {
                 $item->{$code} = $field->subfield( $subfieldstosearch{$code} );
             }
-			my $hbranch     = C4::Context->preference('HomeOrHoldingBranch') eq 'homebranch' ? 'homebranch'    : 'holdingbranch';
-			my $otherbranch = C4::Context->preference('HomeOrHoldingBranch') eq 'homebranch' ? 'holdingbranch' : 'homebranch';
+	    my $hbranch     = C4::Context->preference('HomeOrHoldingBranch') eq 'homebranch' ? 'homebranch'    : 'holdingbranch';
+	    my $otherbranch = C4::Context->preference('HomeOrHoldingBranch') eq 'homebranch' ? 'holdingbranch' : 'homebranch';
             # set item's branch name, use HomeOrHoldingBranch syspref first, fall back to the other one
             if ($item->{$hbranch}) {
                 $item->{'branchname'} = $branches{$item->{$hbranch}};
@@ -1280,9 +1280,10 @@ s/\[(.?.?.?.?)$tagsubf(.*?)]/$1$subfieldvalue$2\[$1$tagsubf$2]/g;
             elsif ($item->{$otherbranch}) {	# Last resort
                 $item->{'branchname'} = $branches{$item->{$otherbranch}}; 
             }
-
-			my $prefix = $item->{$hbranch} . '--' . $item->{location} . $item->{itype} . $item->{itemcallnumber};
+	    my $prefix = $item->{$hbranch} . '--' . $item->{location} . $item->{itype} . $item->{itemcallnumber};
 # For each grouping of items (onloan, available, unavailable), we build a key to store relevant info about that item
+	    use Data::Dumper;
+	    warn Dumper $item;
             if ( $item->{onloan} ) {
                 $onloan_count++;
 				my $key = $prefix . $item->{onloan} . $item->{barcode};
@@ -1307,6 +1308,7 @@ s/\[(.?.?.?.?)$tagsubf(.*?)]/$1$subfieldvalue$2\[$1$tagsubf$2]/g;
                 # item is on order
                 if ( $item->{notforloan} == -1 ) {
                     $ordered_count++;
+		    $can_place_holds = 1;
                 }
 
                 # is item in transit?
@@ -1396,8 +1398,7 @@ s/\[(.?.?.?.?)$tagsubf(.*?)]/$1$subfieldvalue$2\[$1$tagsubf$2]/g;
         }
 
         # last check for norequest : if itemtype is notforloan, it can't be reserved either, whatever the items
-        $can_place_holds = 0
-          if $itemtypes{ $oldbiblio->{itemtype} }->{notforloan};
+        $can_place_holds = 0 if ($itemtypes{ $oldbiblio->{itemtype} }->{notforloan});
         $oldbiblio->{norequests} = 1 unless $can_place_holds;
         $oldbiblio->{itemsplural}          = 1 if $items_count > 1;
         $oldbiblio->{items_count}          = $items_count;
