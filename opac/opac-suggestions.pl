@@ -84,6 +84,8 @@ if ( $op eq "add_confirm" ) {
     $place           = '';
     $isbn            = '';
     $op              = 'else';
+    
+    print $input->redirect('/cgi-bin/koha/opac-suggestions.pl');
 }
 
 if ( $op eq "delete_confirm" ) {

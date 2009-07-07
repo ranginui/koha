@@ -331,15 +331,17 @@ Insert a new suggestion on database with value given on input arg.
 
 sub NewSuggestion {
     my ($borrowernumber,$title,$author,$publishercode,$note,$copyrightdate,$volumedesc,$publicationyear,$place,$isbn,$biblionumber,$reason) = @_;
-    my $dbh = C4::Context->dbh;
-    my $query = qq |
-        INSERT INTO suggestions
-            (status,suggestedby,title,author,publishercode,note,copyrightdate,
-            volumedesc,publicationyear,place,isbn,biblionumber,reason)
-        VALUES ('ASKED',?,?,?,?,?,?,?,?,?,?,?,?)
-    |;
-    my $sth = $dbh->prepare($query);
-    $sth->execute($borrowernumber,$title,$author,$publishercode,$note,$copyrightdate,$volumedesc,$publicationyear,$place,$isbn,$biblionumber,$reason);
+    if ($title) {
+        my $dbh = C4::Context->dbh;
+        my $query = qq |
+            INSERT INTO suggestions
+                (status,suggestedby,title,author,publishercode,note,copyrightdate,
+                volumedesc,publicationyear,place,isbn,biblionumber,reason)
+            VALUES ('ASKED',?,?,?,?,?,?,?,?,?,?,?,?)
+        |;
+        my $sth = $dbh->prepare($query);
+        $sth->execute($borrowernumber,$title,$author,$publishercode,$note,$copyrightdate,$volumedesc,$publicationyear,$place,$isbn,$biblionumber,$reason);
+    }
 }
 
 =head2 ModStatus
