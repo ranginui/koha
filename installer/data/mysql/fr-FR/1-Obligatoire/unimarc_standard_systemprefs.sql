@@ -250,3 +250,4 @@ INSERT INTO systempreferences (variable,value,explanation,options,type)VALUES('v
 INSERT INTO systempreferences (variable,value,explanation,options,type)VALUES('viewMARC','1','Autoriser l''affichage de la vue MARC des notices bibliographiques','','YesNo');
 INSERT INTO systempreferences (variable,value,explanation,options,type)VALUES('FilterBeforeOverdueReport','0','Ne pas lancer le rapport sur les retards tant qu''il n''y a pas de filtre','','YesNo');
 INSERT INTO systempreferences (variable,value, options, explanation, type) VALUES('ReservesControlBranch','PatronLibrary','ItemHomeLibrary|PatronLibrary','Site de controle pour les reservations','Choice');
+INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('AWSPrivateKey','','See:  http://aws.amazon.com','','free');
