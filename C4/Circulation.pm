@@ -1014,6 +1014,17 @@ sub AddIssue {
             my $loanlength = GetLoanLength( $borrower->{'categorycode'}, $itype, $branch );
             $datedue = CalcDateDue( C4::Dates->new( $issuedate, 'iso' ), $loanlength, $branch, $borrower );
 
+            # if ReturnBeforeExpiry ON the datedue can't be after borrower expirydate
+            if ( C4::Context->preference('ReturnBeforeExpiry') && $datedue->output('iso') gt $borrower->{dateexpiry} ) {
+                $datedue = C4::Dates->new( $borrower->{dateexpiry}, 'iso' );
+            }
+
+			# if ceilingDueDate ON the datedue can't be after the ceiling date
+			if ( C4::Context->preference('ceilingDueDate')
+			 && ( C4::Context->preference('ceilingDueDate') =~ C4::Dates->regexp('syspref') )
+			 && $datedue->output gt C4::Context->preference('ceilingDueDate') ) {
+				$datedue = C4::Dates->new( C4::Context->preference('ceilingDueDate') );
+			}
         }
         $sth->execute(
             $borrower->{'borrowernumber'},      # borrowernumber

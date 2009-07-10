@@ -63,7 +63,7 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
 );
 
 # budget
-my $borrower= GetMember($loggedinuser);
+my $borrower= GetMember(borrowernumber=>$loggedinuser);
 my ( $flags, $homebranch )= ($borrower->{'flags'},$borrower->{'branchcode'});
 
 my @results = GetBookFunds($homebranch);
@@ -111,7 +111,7 @@ for ( my $i = 0 ; $i < $count ; $i++ ) {
 # suggestions
 my $status           = $query->param('status') || "ASKED";
 my $suggestion       = CountSuggestion($status);
-my $suggestions_loop = &SearchSuggestion( '', '', '', '', $status, '' );
+my $suggestions_loop = &SearchSuggestion( {STATUS=> $status} );
 
 $template->param(
     classlist        => $classlist,

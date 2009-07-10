@@ -178,7 +178,6 @@ sub get_syndetics_reviews {
         }
 
         my $content = $response->content;
-       
         eval { 
             my $doc = $parser->parse_string($content);
 

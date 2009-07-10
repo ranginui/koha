@@ -22,6 +22,9 @@ INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('borrowerRelationship', '', 'Liste les relations entre les garants et leurs garantis (separées par | ou ,)', 'Père|Mère|grand-parent|Tuteur légal|Autre\r\n', 'free');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('BorrowersLog', '0', 'Activer ce paramètre pour enregistrer les actions sur les lecteurs', '', 'YesNo');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('BorrowersTitles', '', 'Liste les titres de politesse (séparés par | ou ,)', 'M|Mme|Mlle', 'free');
+INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('casAuthentication', '0', 'Active ou désactive l''authentification par CAS', '', 'YesNo');
+INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('casLogout', '0', 'Est-ce qu''une déconnexion de Koha doit aussi provoquer la déconnexion de l''utilisateur de CAS ?', '', 'YesNo');
+INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('casServerUrl', 'https://localhost:8443/cas', 'L''URL du serveur CAS', '', 'Free');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('CataloguingLog', '0', 'Activer ce paramètre pour enregistrer les actions sur le catalogage', '', 'YesNo');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('checkdigit','none','If ON, enable checks on patron cardnumber: none or \"Katipo\" style checks','none|katipo','Choice');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('dateformat', 'us', 'Ce paramètre définit le format d''affichage des dates (us mm/jj/aaaa, metric jj/mm/aaaa, ISO aaaa/mm/jj)', 'metric|us|iso', 'Choice');
@@ -222,6 +225,7 @@ INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES
 INSERT INTO `systempreferences` ( `variable` , `value` , `options` , `explanation` , `type` ) VALUES ( 'UseBranchTransferLimits', '0', '', 'If ON, Koha will will use the rules defined in branch_transfer_limits to decide if an item transfer should be allowed.', 'YesNo');
 INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES('AllowHoldPolicyOverride', '0', "Autorise le personnel á outrepasser la politique de réservation au moment d'une réservation",NULL,'YesNo');
 INSERT INTO `systempreferences` ( `variable` , `value` , `options` , `explanation` , `type` ) VALUES ('BranchTransferLimitsType', 'ccode', 'itemtype|ccode', 'When using branch transfer limits, choose whether to limit by itemtype or collection code.', 'Choice');
+INSERT INTO `systempreferences` ( `variable` , `value` , `options` , `explanation` , `type` ) VALUES ( 'AllowNotForLoanOverride', '0', '', 'If ON, Koha will allow the librarian to loan a not for loan item.', 'YesNo');
 INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('SyndeticsClientCode', '0', 'Client Code for using Syndetics Solutions content','','free');
 INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('SyndeticsEnabled', '0', 'Turn on Syndetics Enhanced Content','','YesNo');
 INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('SyndeticsCoverImages', '0', 'Display Cover Images from Syndetics','','YesNo');
@@ -245,9 +249,11 @@ INSERT INTO systempreferences (variable,value,explanation,options,type)VALUES('L
 INSERT INTO systempreferences (variable,value,explanation,options,type)VALUES('LibraryThingForLibrariesTabbedView','0','Put LibraryThingForLibraries Content in Tabs.','','YesNo');
 INSERT INTO `systempreferences` ( `variable` , `value` , `options` , `explanation` , `type` ) VALUES ( 'AllowNotForLoanOverride', '0', '', 'If ON, Koha will allow the librarian to loan a not for loan item.', 'YesNo');
 INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES('RenewalPeriodBase', 'date_due', 'Permet de déterminer si la période de renouvellement doit être calculée sur la date de retour ou sur le jour du renouvellement','date_due|now','Choice');
+INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('opacSerialDefaultTab', 'serialcollection', 'Ce paramètre définit l''onglet par défaut pour l''affichage des périodiques dans l''OPAC. Si la préférence est sur holdings, mais qu''aucun exemplaire n''est présent, les états de collection seront tout de même affichés par défaut.', 'holdings|serialcollection', 'Choice');
 INSERT INTO systempreferences (variable,value,explanation,options,type)VALUES('viewISBD','1','Autoriser l''affichage de la vue ISBD des notices bibliographiques','','YesNo');
 INSERT INTO systempreferences (variable,value,explanation,options,type)VALUES('viewLabeledMARC','0','Autoriser l''affichage MARC labellis des notices bibliographiques','','YesNo');
 INSERT INTO systempreferences (variable,value,explanation,options,type)VALUES('viewMARC','1','Autoriser l''affichage de la vue MARC des notices bibliographiques','','YesNo');
 INSERT INTO systempreferences (variable,value,explanation,options,type)VALUES('FilterBeforeOverdueReport','0','Ne pas lancer le rapport sur les retards tant qu''il n''y a pas de filtre','','YesNo');
+INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('EnableOpacSearchHistory', '1', 'Active ou désactive l''historique de recherche dans l''OPAC.', '', 'YesNo');
 INSERT INTO systempreferences (variable,value, options, explanation, type) VALUES('ReservesControlBranch','PatronLibrary','ItemHomeLibrary|PatronLibrary','Site de controle pour les reservations','Choice');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('AWSPrivateKey','','See:  http://aws.amazon.com','','free');

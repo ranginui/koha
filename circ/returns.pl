@@ -177,6 +177,9 @@ if ($dotransfer){
 # actually return book and prepare item table.....
 if ($barcode) {
     $barcode = barcodedecode($barcode) if C4::Context->preference('itemBarcodeInputFilter');
+#
+# save the return
+#
     $itemnumber = GetItemnumberFromBarcode($barcode);
 
     ( $returned, $messages, $issueinformation, $borrower ) =
@@ -204,14 +207,19 @@ if ($barcode) {
     );
 
     if ($returned) {
-        my $duedate = $issueinformation->{'date_due'};
-        $returneditems{0}      = $barcode;
-        $riborrowernumber{0}   = $borrower->{'borrowernumber'};
-        $riduedate{0}          = $duedate;
+        $returneditems{0}    = $barcode;
+        $riborrowernumber{0} = $borrower->{'borrowernumber'};
+        $riduedate{0}        = $issueinformation->{'date_due'};
         $input{borrowernumber} = $borrower->{'borrowernumber'};
         $input{duedate}        = $duedate;
         $input{return_overdue} = 1 if ($duedate and $duedate lt $today->output('iso'));
         push( @inputloop, \%input );
+
+        # check if the branch is the same as homebranch
+        # if not, we want to put a message
+        if ( $biblio->{'homebranch'} ne $userenv_branch ) {
+            $template->param( homebranch => $biblio->{'homebranch'} );
+        }
     }
     elsif ( !$messages->{'BadBarcode'} ) {
         $input{duedate}   = 0;

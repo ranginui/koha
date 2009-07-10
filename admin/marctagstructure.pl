@@ -139,6 +139,17 @@ if ($op eq 'add_form') {
 			frameworkcode => $frameworkcode,
     );  # FIXME: move checkboxes to presentation layer
 													# END $OP eq ADD_FORM
+################## DISABLESUBFIELDS ##############################
+} elsif ($op eq 'disablesubfields') {
+	my $tagfield = $input->param('tagfield');
+	if( $tagfield =~ /^\d{3}$/ ){
+		$sth=$dbh->prepare("UPDATE marc_subfield_structure SET tab = '-1' WHERE tagfield = ? AND frameworkcode = ? ");
+		$sth->execute($tagfield, $frameworkcode);
+	}else{
+		exit -1;
+	}
+	print $input->redirect("/cgi-bin/koha/admin/marctagstructure.pl?searchfield=$tagfield&frameworkcode=$frameworkcode");
+
 ################## ADD_VALIDATE ##################################
 # called by add_form, used to insert/modify data in DB
 } elsif ($op eq 'add_validate') {

@@ -449,6 +449,10 @@ a .term {
 	background-image: url(../../images/send.gif);
 }
 
+#toolbar a.download {
+	background-image: url(../../images/download.gif);
+}
+
 a.send {
 	background-image: url(../../images/send.gif);
 	background-position : 0px center;

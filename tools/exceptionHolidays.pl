@@ -25,6 +25,10 @@ my $calendardate = sprintf("%04d-%02d-%02d", $year, $month, $day);
 my $isodate = C4::Dates->new($calendardate, 'iso');
 $calendardate = $isodate->output('syspref');
 
+my $calendardate = sprintf("%04d-%02d-%02d", $year, $month, $day);
+my $isodate = C4::Dates->new($calendardate, 'iso');
+$calendardate = $isodate->output('syspref');
+
 my $calendar = C4::Calendar->new(branchcode => $branchcode);
 
 $title || ($title = '');

@@ -63,6 +63,7 @@ BEGIN {
         GetItemsInfo
         get_itemnumbers_of
         GetItemnumberFromBarcode
+        GetLastAcquisitions
     );
 }
 
@@ -1008,7 +1009,7 @@ sub GetLostItems {
 
 =over 4
 
-$itemlist = GetItemsForInventory($minlocation, $maxlocation, $location, $itemtype $datelastseen, $branch, $offset, $size);
+$itemlist = GetItemsForInventory($minlocation, $maxlocation, $location, $itemtype $datelastseen, $branch, $offset, $size, $statushash);
 
 =back
 
@@ -1022,10 +1023,12 @@ The required minlocation & maxlocation parameters are used to specify a range of
 the datelastseen can be used to specify that you want to see items not seen since a past date only.
 offset & size can be used to retrieve only a part of the whole listing (defaut behaviour)
 
+$statushash requires a hashref that has the authorized values fieldname (intems.notforloan, etc...) as keys, and an arrayref of statuscodes we are searching for as values.
+
 =cut
 
 sub GetItemsForInventory {
-    my ( $minlocation, $maxlocation,$location, $itemtype, $ignoreissued, $datelastseen, $branch, $offset, $size ) = @_;
+    my ( $minlocation, $maxlocation,$location, $itemtype, $ignoreissued, $datelastseen, $branch, $offset, $size, $statushash ) = @_;
     my $dbh = C4::Context->dbh;
     my ( @bind_params, @where_strings );
 
@@ -1061,16 +1064,22 @@ END_SQL
         push @where_strings, 'items.homebranch = ?';
         push @bind_params, $branch;
     }
-    
-    if ( $itemtype ) {
-        push @where_strings, 'biblioitems.itemtype = ?';
-        push @bind_params, $itemtype;
-    }
     if ( $ignoreissued) {
         $query .= "LEFT JOIN issues ON items.itemnumber = issues.itemnumber ";
         push @where_strings, 'issues.date_due IS NULL';
     }
-
+    if ($statushash){
+        for my $authvfield (keys %$statushash){
+            if ( scalar @{$statushash->{$authvfield}} > 0 ){
+                my $joinedvals = join ',', @{$statushash->{$authvfield}};
+                push @where_strings, "$authvfield in (" . $joinedvals . ")";
+            }
+        }
+    }
+    if ( $itemtype ) {
+        push @where_strings, 'biblioitems.itemtype = ?';
+        push @bind_params, $itemtype;
+    }
     if ( @where_strings ) {
         $query .= 'WHERE ';
         $query .= join ' AND ', @where_strings;
@@ -2258,6 +2267,60 @@ sub  _parse_unlinked_item_subfields_from_xml {
         }
     }
     return $unlinked_subfields;
+}
+
+=head2 GetLastAcquisitions
+
+=over 4
+
+my $lastacq = GetLastAcquisitions({'branches' => ('branch1','branch2'), 'itemtypes' => ('BK','BD')}, 10);
+
+=back
+
+=cut
+
+sub  GetLastAcquisitions {
+	my ($data,$max) = @_;
+
+	my $itemtype = C4::Context->preference('item-level_itypes') ? 'itype' : 'itemtype';
+	
+	my $number_of_branches = @{$data->{branches}};
+	my $number_of_itemtypes   = @{$data->{itemtypes}};
+	
+	
+	my @where = ('WHERE 1 '); 
+	$number_of_branches and push @where
+	   , 'AND holdingbranch IN (' 
+	   , join(',', ('?') x $number_of_branches )
+	   , ')'
+	 ;
+	
+	$number_of_itemtypes and push @where
+	   , "AND $itemtype IN (" 
+	   , join(',', ('?') x $number_of_itemtypes )
+	   , ')'
+	 ;
+
+	my $query = "SELECT biblio.biblionumber as biblionumber, title, dateaccessioned
+				 FROM items RIGHT JOIN biblio ON (items.biblionumber=biblio.biblionumber) 
+			            RIGHT JOIN biblioitems ON (items.biblioitemnumber=biblioitems.biblioitemnumber)
+			            @where
+			            GROUP BY biblio.biblionumber 
+			            ORDER BY dateaccessioned DESC LIMIT $max";
+
+	my $dbh = C4::Context->dbh;
+	my $sth = $dbh->prepare($query);
+    
+    $sth->execute((@{$data->{branches}}, @{$data->{itemtypes}}));
+	
+	my @results;
+	while( my $row = $sth->fetchrow_hashref){
+		push @results, {date => $row->{dateaccessioned} 
+						, biblionumber => $row->{biblionumber}
+						, title => $row->{title}};
+	}
+	
+	return @results;
 }
 
 1;

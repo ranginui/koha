@@ -52,17 +52,12 @@ BEGIN {
 
 	# to get something
 	push @EXPORT, qw(
-	    &Get
 		&GetBiblio
 		&GetBiblioData
 		&GetBiblioItemData
 		&GetBiblioItemInfosOf
 		&GetBiblioItemByBiblioNumber
 		&GetBiblioFromItemNumber
-		
-		GetFieldMapping
-		SetFieldMapping
-		DeleteFieldMapping
 		
 		&GetISBDView
 
@@ -467,115 +462,6 @@ sub LinkBibHeadingsToAuthorities {
 
     }
     return $num_headings_changed;
-}
-
-=head2 Get
-
-=over 4
-
-my $values = Get($field, $record, $frameworkcode);
-
-=back
-
-Get MARC fields from a keyword defined in fieldmapping table.
-
-=cut
-
-sub Get {
-    my ($field, $record, $frameworkcode) = @_;
-    my $dbh = C4::Context->dbh;
-    
-    my $sth = $dbh->prepare('SELECT fieldcode, subfieldcode FROM fieldmapping WHERE frameworkcode = ? AND field = ?');
-    $sth->execute($frameworkcode, $field);
-    
-    my @result = ();
-    
-    while(my $row = $sth->fetchrow_hashref){
-        foreach my $field ($record->field($row->{fieldcode})){
-            if( ($row->{subfieldcode} ne "" && $field->subfield($row->{subfieldcode}))){
-                foreach my $subfield ($field->subfield($row->{subfieldcode})){
-                    push @result, { 'subfield' => $subfield };
-                }
-                
-            }elsif($row->{subfieldcode} eq "") {
-                push @result, {'subfield' => $field->as_string()};
-            }
-        }
-    }
-    
-    return @result;
-}
-
-=head2 SetFieldMapping
-
-=over 4
-
-SetFieldMapping($framework, $field, $fieldcode, $subfieldcode);
-
-=back
-
-Set a Field to MARC mapping value, if it already exists we don't add a new one.
-
-=cut
-
-sub SetFieldMapping {
-    my ($framework, $field, $fieldcode, $subfieldcode) = @_;
-    my $dbh = C4::Context->dbh;
-    
-    my $sth = $dbh->prepare('SELECT * FROM fieldmapping WHERE fieldcode = ? AND subfieldcode = ? AND frameworkcode = ? AND field = ?');
-    $sth->execute($fieldcode, $subfieldcode, $framework, $field);
-    if(not $sth->fetchrow_hashref){
-        my @args;
-        $sth = $dbh->prepare('INSERT INTO fieldmapping (fieldcode, subfieldcode, frameworkcode, field) VALUES(?,?,?,?)');
-        
-        $sth->execute($fieldcode, $subfieldcode, $framework, $field);
-    }
-}
-
-=head2 DeleteFieldMapping
-
-=over 4
-
-DeleteFieldMapping($id);
-
-=back
-
-Delete a field mapping from an $id.
-
-=cut
-
-sub DeleteFieldMapping{
-    my ($id) = @_;
-    my $dbh = C4::Context->dbh;
-    
-    my $sth = $dbh->prepare('DELETE FROM fieldmapping WHERE id = ?');
-    $sth->execute($id);
-}
-
-=head2 GetFieldMapping
-
-=over 4
-
-GetFieldMapping($frameworkcode);
-
-=back
-
-Get all field mappings for a specified frameworkcode
-
-=cut
-
-sub GetFieldMapping {
-    my ($framework) = @_;
-    my $dbh = C4::Context->dbh;
-    
-    my $sth = $dbh->prepare('SELECT * FROM fieldmapping where frameworkcode = ?');
-    $sth->execute($framework);
-    
-    my @return;
-    while(my $row = $sth->fetchrow_hashref){
-        push @return, $row;
-    }
-    return \@return;
 }
 
 =head2 GetBiblioData
@@ -1125,7 +1011,7 @@ sub GetXmlBiblio {
       $dbh->prepare("SELECT marcxml FROM biblioitems WHERE biblionumber=? ");
     $sth->execute($biblionumber);
     my ($marcxml) = $sth->fetchrow;
-    return Normalize_String($marcxml);
+    return $marcxml;
 }
 
 =head2 GetCOinSBiblio
@@ -1386,10 +1272,10 @@ sub GetMarcSubjects {
         my $counter = 0;
         my @link_loop;
         # if there is an authority link, build the link with an= subfield9
-        my $subfield9 = $field->subfield('9');
+	my $f9found = 0;
         for my $subject_subfield (@subfields ) {
-            # don't load unimarc subfields 3,4,5
-            next if (($marcflavour eq "UNIMARC") and ($subject_subfield->[0] =~ /3|4|5/ ) );
+            # don't load unimarc subfields 2,3,4,5
+            next if (($marcflavour eq "UNIMARC") and ($subject_subfield->[0] =~ /2|3|4|5/ ) );
             # don't load MARC21 subfields 2 (FIXME: any more subfields??)
             next if (($marcflavour eq "MARC21")  and ($subject_subfield->[0] =~ /2/ ) );
             my $code = $subject_subfield->[0];
@@ -1397,10 +1283,13 @@ sub GetMarcSubjects {
             my $linkvalue = $value;
             $linkvalue =~ s/(\(|\))//g;
             my $operator = " and " unless $counter==0;
-            if ($subfield9) {
-                @link_loop = ({'limit' => 'an' ,link => "$subfield9" });
+            if ($code eq 9) {
+		$f9found = 1;
+                @link_loop = ({'limit' => 'an' ,link => "$linkvalue" });
             } else {
-                push @link_loop, {'limit' => 'su', link => $linkvalue, operator => $operator };
+		if (not $f9found) {
+			push @link_loop, {'limit' => 'su', link => $linkvalue, operator => $operator };
+		}
             }
             my $separator = C4::Context->preference("authoritysep") unless $counter==0;
             # ignore $9
@@ -3386,7 +3275,7 @@ sub ModBiblioMarc {
     $sth =
       $dbh->prepare(
         "UPDATE biblioitems SET marc=?,marcxml=? WHERE biblionumber=?");
-    $sth->execute( $record->as_usmarc(), Normalize_String($record->as_xml_record($encoding)),
+    $sth->execute( $record->as_usmarc(), $record->as_xml_record($encoding),
         $biblionumber );
     $sth->finish;
     ModZebra($biblionumber,"specialUpdate","biblioserver",$oldRecord,$record);

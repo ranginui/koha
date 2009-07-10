@@ -1770,7 +1770,24 @@ CREATE TABLE saved_reports (
    `date_run` datetime default NULL,
    PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-		   
+
+
+--
+-- Table structure for table `search_history`
+--
+
+DROP TABLE IF EXISTS `search_history`;
+CREATE TABLE IF NOT EXISTS `search_history` (
+  `userid` int(11) NOT NULL,
+  `sessionid` varchar(32) NOT NULL,
+  `query_desc` varchar(255) NOT NULL,
+  `query_cgi` varchar(255) NOT NULL,
+  `total` int(11) NOT NULL,
+  `time` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  KEY `userid` (`userid`),
+  KEY `sessionid` (`sessionid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Opac search history results';
+
 		   
 --
 -- Table structure for table `serial`
@@ -2369,21 +2386,6 @@ CREATE TABLE `item_circulation_alert_preferences` (
   PRIMARY KEY  (`id`),
   KEY `branchcode` (`branchcode`,`categorycode`,`item_type`, `notification`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Table structure for table `fieldmapping`
---
-
-DROP TABLE IF EXISTS `fieldmapping`;
-CREATE TABLE `fieldmapping` (
-  `id` int(11) NOT NULL auto_increment,
-  `field` varchar(255) NOT NULL,
-  `frameworkcode` char(4) NOT NULL default '',
-  `fieldcode` char(3) NOT NULL,
-  `subfieldcode` char(1) NOT NULL,
-  PRIMARY KEY  (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

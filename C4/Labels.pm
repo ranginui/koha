@@ -856,7 +856,7 @@ sub GetPatronCardItems {
     $sth->execute($batch_id);
     my $cardno = 1;
     while ( my $data = $sth->fetchrow_hashref ) {
-        my $patron_data = GetMember( $data->{'borrowernumber'} );
+        my $patron_data = GetMember( borrowernumber=>$data->{'borrowernumber'} );
         $patron_data->{'branchname'} = GetBranchName( $patron_data->{'branchcode'} );
         $patron_data->{'cardno'} = $cardno;
         $patron_data->{'cardid'} = $data->{'cardid'};

@@ -2,7 +2,8 @@
 use HTML::Template::Pro;
 use strict;
 
-use C4::Record;
+use C4::Record qw(changeEncoding);
+use C4::Ris;
 use C4::Auth;
 use C4::Output;
 use C4::Biblio;
@@ -45,9 +46,15 @@ if ($op eq "export") {
 			elsif ($format =~ /utf8/) {
 				#default
 			}
+			elsif ($format =~ /ris/) {
+				$marc = marc2ris(MARC::Record->new_from_usmarc($marc));
+			}
+			elsif ($format =~ /bibtex/) {
+				$marc = C4::Record::marc2bibtex(GetMarcBiblio($biblionumber), $biblionumber);
+			}
 			print $query->header(
 				-type => 'application/octet-stream',
-                -attachment=>"bib-$biblionumber.$format");
+				-attachment=>"bib-$biblionumber.$format");
 			print $marc;
 		}
 	}

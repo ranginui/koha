@@ -46,12 +46,13 @@ function confirm_deletion() {
 
 function confirm_items_deletion() {
         var count = <!-- TMPL_VAR NAME="count" -->;
-        if(count > 0)
+        if(count > 0){
             if(confirm(_('Are you sure you want to delete the ' + count + ' attached items? '))){
                 window.location="/cgi-bin/koha/cataloguing/additem.pl?op=delallitems&amp;biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->";
             }else{
                 return false;
             }
+		}
 }
 
 	// prepare DOM for YUI Toolbar
@@ -84,9 +85,14 @@ function confirm_items_deletion() {
 	    var editmenu = [
 	        { text: _("Edit Record"), url: "/cgi-bin/koha/cataloguing/addbiblio.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->&amp;frameworkcode=&amp;op=" },
 	        { text: _("Edit Items"), url: "/cgi-bin/koha/cataloguing/additem.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->" },
+	        { text: _("Attach Item"), url: "/cgi-bin/koha/cataloguing/moveitem.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->" },
 	        { text: _("Edit as New (Duplicate)"), url: "/cgi-bin/koha/cataloguing/addbiblio.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->&amp;frameworkcode=&amp;op=duplicate" },
 			{ text: _("Delete Record"), onclick: {fn: confirm_deletion }<!-- TMPL_IF NAME="count" -->,id:'disabled'<!-- /TMPL_IF --> },
+<<<<<<< HEAD:koha-tmpl/intranet-tmpl/prog/en/includes/cat-toolbar.inc
             { text: _("Delete all Items"), onclick: {fn: confirm_items_deletion }<!-- TMPL_UNLESS NAME="count" -->,id:'disabled'<!-- /TMPL_IF --> }
+=======
+            { text: _("Delete all Items"), onclick: {fn: confirm_items_deletion } }
+>>>>>>> Merge am123_dev sur Biblibre_head:koha-tmpl/intranet-tmpl/prog/en/includes/cat-toolbar.inc
 	    ];
 		
 		var savemenu = [

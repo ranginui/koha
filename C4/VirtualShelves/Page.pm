@@ -291,7 +291,9 @@ foreach my $element (sort { lc($shelflist->{$a}->{'shelfname'}) cmp lc($shelflis
 		$shelflist->{$element}->{'mine'} = 1;
 	} 
 	my $member = GetMember($owner,'borrowernumber');
-	$shelflist->{$element}->{ownername} = defined($member) ? $member->{firstname} . " " . $member->{surname} : '';
+	# As C4::GetMember does not return valid data if the borrownumber is 0 (because it does not exist in the database),
+	# we test if it is the case before getting borrower informations
+	if ($owner != 0) { $shelflist->{$element}->{ownername} = defined($member) ? $member->{firstname} . " " . $member->{surname} : ''; }
 	$numberCanManage++ if $canmanage;	# possibly outmoded
 	if ($shelflist->{$element}->{'category'} eq '1') {
 		push (@shelveslooppriv, $shelflist->{$element});

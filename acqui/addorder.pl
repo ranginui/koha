@@ -116,7 +116,7 @@ use strict;
 use CGI;
 use C4::Auth;			# get_template_and_user
 use C4::Acquisition;	# NewOrder DelOrder ModOrder
-use C4::Suggestions;	# ModStatus
+use C4::Suggestions;	# ModSuggestion
 use C4::Biblio;			# AddBiblio TransformKohaToMarc
 use C4::Output;
 
@@ -192,7 +192,7 @@ if ( $quantity ne '0' ) {
 
         # change suggestion status if applicable
         if ($suggestionid) {
-            ModStatus( $suggestionid, 'ORDERED', '', $biblionumber );
+            ModSuggestion( {suggestionid=>$suggestionid, STATUS=>'ORDERED', biblionumber=>$biblionumber} );
         }
     }
     # if we already have $ordnum, then it's an ordermodif

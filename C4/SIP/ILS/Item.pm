@@ -92,7 +92,7 @@ sub new {
     $item->{'id'} = $item->{'barcode'};
 	# check if its on issue and if so get the borrower
 	my $issue = GetItemIssue($item->{'itemnumber'});
-	my $borrower = GetMember($issue->{'borrowernumber'},'borrowernumber');
+	my $borrower = GetMember(borrowernumber=>$issue->{'borrowernumber'});
 	$item->{patron} = $borrower->{'cardnumber'};
 	my @reserves = (@{ GetReservesFromBiblionumber($item->{biblionumber}) });
 	$item->{hold_queue} = [ sort priority_sort @reserves ];
@@ -258,7 +258,7 @@ sub available {
 sub _barcode_to_borrowernumber ($) {
     my $known = shift;
     (defined($known)) or return undef;
-    my $member = GetMember($known,'cardnumber') or return undef;
+    my $member = GetMember(cardnumber=>$known) or return undef;
     return $member->{borrowernumber};
 }
 sub barcode_is_borrowernumber ($$$) {    # because hold_queue only has borrowernumber...

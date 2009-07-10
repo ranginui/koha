@@ -10,6 +10,7 @@
 
 
 <script type="text/javascript" src="<!-- TMPL_VAR name="themelang" -->/lib/jquery/plugins/jquery.checkboxes.pack.js"></script>
+<script type="text/javascript" src="<!-- TMPL_VAR name="themelang" -->/lib/jquery/plugins/jquery.dropshadow-min.js"></script>
 <script type="text/javascript">
 //<![CDATA[
 
@@ -147,6 +148,10 @@ $(document).ready(function(){
 
 	<!-- TMPL_IF NAME="TagsEnabled" -->
         $(".tagbutton").click(KOHA.Tags.add_tag_button);
+        $(".tagbutton").click(function() {
+	    $("#newtag" + $(this).attr("title")).attr('value' , '');
+	});
+
 	    <!-- TMPL_IF NAME="TagsInputOnList" -->
 	    <!-- TMPL_IF NAME="loggedinusername" -->
             $("#tagsel_tag").click(function(){

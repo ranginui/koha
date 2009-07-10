@@ -44,7 +44,7 @@ my ($template, $loggedinuser, $cookie)
 
 my $borrowernumber=$input->param('borrowernumber');
 #get borrower details
-my $data=GetMember($borrowernumber,'borrowernumber');
+my $data=GetMember(borrowernumber=>$borrowernumber);
 
 if ( $data->{'category_type'} eq 'C') {
    my  ( $catcodes, $labels ) =  GetborCatFromCatType( 'A', 'WHERE category_type = ?' );

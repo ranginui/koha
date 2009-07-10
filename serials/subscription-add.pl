@@ -210,6 +210,9 @@ if ($op eq 'addsubscription') {
 	my $staffdisplaycount = $query->param('staffdisplaycount');
 	my $opacdisplaycount = $query->param('opacdisplaycount');
     my $location = $query->param('location');
+    my $startdate       = format_date_in_iso($query->param('startdate'));
+    my $enddate       = format_date_in_iso($query->param('enddate'));
+    my $firstacquidate  = format_date_in_iso($query->param('firstacquidate'));    
 	my $subscriptionid = NewSubscription($auser,$branchcode,$aqbooksellerid,$cost,$aqbudgetid,$biblionumber,
 					$startdate,$periodicity,$dow,$numberlength,$weeklength,$monthlength,
 					$add1,$every1,$whenmorethan1,$setto1,$lastvalue1,$innerloop1,
@@ -217,7 +220,7 @@ if ($op eq 'addsubscription') {
 					$add3,$every3,$whenmorethan3,$setto3,$lastvalue3,$innerloop3,
 					$numberingmethod, $status, $notes,$letter,$firstacquidate,join(",",@irregularity),
                     $numberpattern, $callnumber, $hemisphere,($manualhistory?$manualhistory:0),$internalnotes,
-                    $serialsadditems,$staffdisplaycount,$opacdisplaycount,$graceperiod,$location
+                    $serialsadditems,$staffdisplaycount,$opacdisplaycount,$graceperiod,$location,$enddate
 				);
 
     print $query->redirect("/cgi-bin/koha/serials/subscription-detail.pl?subscriptionid=$subscriptionid");
@@ -232,9 +235,11 @@ if ($op eq 'addsubscription') {
     my $biblionumber = $query->param('biblionumber');
     my $aqbudgetid = $query->param('aqbudgetid');
     my $startdate = format_date_in_iso($query->param('startdate'));
+    my $enddate = format_date_in_iso($query->param('enddate'));
     my $nextacquidate = $query->param('nextacquidate') ?
                             format_date_in_iso($query->param('nextacquidate')):
                             format_date_in_iso($query->param('startdate'));
+    my $enddate = format_date_in_iso($query->param('enddate'));
     my $periodicity = $query->param('periodicity');
     my $dow = $query->param('dow');
     my $sublength = $query->param('sublength');
@@ -274,7 +279,6 @@ if ($op eq 'addsubscription') {
     my $hemisphere = $query->param('hemisphere');
     my $letter = $query->param('letter');
     my $manualhistory = $query->param('manualhist');
-    my $enddate = $query->param('enddate');
     my $serialsadditems = $query->param('serialsadditems');
     # subscription history
     my $histenddate = format_date_in_iso($query->param('histenddate'));
@@ -309,7 +313,7 @@ if ($op eq 'addsubscription') {
             $whenmorethan3,   $setto3,       $lastvalue3,     $innerloop3,
             $numberingmethod, $status,       $biblionumber,   $callnumber,
             $notes,           $letter,       $hemisphere,     $manualhistory,$internalnotes,
-            $serialsadditems, $subscriptionid,$staffdisplaycount,$opacdisplaycount,$graceperiod,$location
+            $serialsadditems, $staffdisplaycount,$opacdisplaycount,$graceperiod,$location,$enddate,$subscriptionid
         );
     }
     print $query->redirect("/cgi-bin/koha/serials/subscription-detail.pl?subscriptionid=$subscriptionid");

@@ -46,7 +46,7 @@ BEGIN {
 					html =>[qw(&output_with_http_headers &output_html_with_http_headers)]
 				);
     push @EXPORT, qw(
-        &themelanguage &gettemplate setlanguagecookie pagination_bar
+        &themelanguage &gettemplate setlanguagecookie getlanguagecookie pagination_bar
     );
     push @EXPORT, qw(
         &output_html_with_http_headers &output_with_http_headers
@@ -141,7 +141,7 @@ sub themelanguage {
               getTranslatedLanguages($interface,'prog') )
       if $http_accept_language;
     # But, if there's a cookie set, obey it
-    $lang = $query->cookie('KohaOpacLanguage') if (defined $query && $query->cookie('KohaOpacLanguage'));
+    $lang = $query->cookie('KohaOpacLanguage') if (defined $query and $query->cookie('KohaOpacLanguage'));
     # Fall back to English
     my @languages;
     if ($interface eq 'intranet') {
@@ -200,6 +200,20 @@ sub setlanguagecookie {
         -uri    => $uri,
         -cookie => $cookie
     );
+}
+
+sub getlanguagecookie {
+    my ($query) = @_;
+    my $lang;
+    if ($query->cookie('KohaOpacLanguage')){
+        $lang = $query->cookie('KohaOpacLanguage') ;
+    }else{
+        $lang = $ENV{HTTP_ACCEPT_LANGUAGE};
+        
+    }
+    $lang = substr($lang, 0, 2);
+
+    return $lang;
 }
 
 =item pagination_bar
@@ -392,6 +406,9 @@ sub output_with_http_headers($$$$;$) {
         $options->{'Content-Style-Type' } = 'text/css';
         $options->{'Content-Script-Type'} = 'text/javascript';
     }
+    # remove SUDOC specific NSB NSE
+    $data =~ s/\x{C2}\x{98}|\x{C2}\x{9C}/ /g;
+    $data =~ s/\x{C2}\x{88}|\x{C2}\x{89}/ /g;
     print $query->header($options), $data;
 }
 

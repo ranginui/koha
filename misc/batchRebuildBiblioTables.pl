@@ -61,23 +61,28 @@ $sth->execute;
 while (my ($biblionumber)= $sth->fetchrow) {
     #now, parse the record, extract the item fields, and store them in somewhere else.
     my $record = GetMarcBiblio($biblionumber);
-    my @fields = $record->field($tagfield);
-    my @items;
-    my $nbitems=0;
-    print ".";
-    my $timeneeded = gettimeofday - $starttime;
-    print "$i in $timeneeded s\n" unless ($i % 50);
-    $i++;
-    foreach my $field (@fields) {
-        my $item = MARC::Record->new();
-        $item->append_fields($field);
-        push @items,$item;
-        $record->delete_field($field);
-        $nbitems++;
+    if (defined $record){
+			my @fields = $record->field($tagfield);
+			my @items;
+			my $nbitems=0;
+			print ".";
+			my $timeneeded = gettimeofday - $starttime;
+			print "$i in $timeneeded s\n" unless ($i % 50);
+			$i++;
+			foreach my $field (@fields) {
+				my $item = MARC::Record->new();
+				$item->append_fields($field);
+				push @items,$item;
+				$record->delete_field($field);
+				$nbitems++;
+			}
+		#     print "$biblionumber\n";
+			my $frameworkcode = GetFrameworkCode($biblionumber);
+			localNEWmodbiblio($dbh,$record,$biblionumber,$frameworkcode) unless $test_parameter;
     }
-#     print "$biblionumber\n";
-    my $frameworkcode = GetFrameworkCode($biblionumber);
-    localNEWmodbiblio($dbh,$record,$biblionumber,$frameworkcode) unless $test_parameter;
+    else {
+	    print STDERR "problem on biblio $biblionumber you might want to delete it\n";
+    }
 }
 # $dbh->do("unlock tables");
 my $timeneeded = time() - $starttime;

@@ -15,5 +15,7 @@ INSERT INTO permissions (module_bit, code, description) VALUES
    (13, 'import_patrons', 'Import patron data'),
    (13, 'delete_anonymize_patrons', 'Delete old borrowers and anonymize circulation history (deletes borrower reading history)'),
    (13, 'batch_upload_patron_images', 'Upload patron images in batch or one at a time'),
-   (13, 'schedule_tasks', 'Schedule tasks to run')
+   (13, 'schedule_tasks', 'Schedule tasks to run'),
+   (13, 'batchmod', 'Perform batch modification of items'),
+   (13, 'batchdel', 'Perform batch deletion of items')
 ;

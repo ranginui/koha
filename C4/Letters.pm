@@ -428,7 +428,7 @@ sub SendAlerts {
             ) if C4::Context->preference("LetterLog");
         }
         warn
-"sending to From $userenv->{emailaddress} subj $innerletter->{title} Mess $innerletter->{content}";
+"sending to $databookseller->{bookselleremail} " . ($databookseller->{contemail} ? "," . $databookseller->{contemail} : "") . " From $userenv->{emailaddress} subj $innerletter->{title} Mess $innerletter->{content}";
     }    
    # send an "account details" notice to a newly created user 
     elsif ( $type eq 'members' ) {

@@ -444,6 +444,7 @@ sub save_report {
 "INSERT INTO saved_sql (borrowernumber,date_created,last_modified,savedsql,report_name,type,notes)  VALUES (?,now(),now(),?,?,?,?)";
     my $sth = $dbh->prepare($query);
     $sth->execute( $borrowernumber, $sql, $name, $type, $notes );
+    $sth->finish();
 }
 
 sub update_sql {
@@ -517,7 +518,6 @@ sub get_saved_reports {
     ORDER by date_created";
     my $sth   = $dbh->prepare($query);
     $sth->execute();
-    
     my $result = $sth->fetchall_arrayref({});
     foreach (@$result){
         $_->{date_created} = format_date($_->{date_created}); 

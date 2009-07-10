@@ -295,7 +295,31 @@
     <!-- TMPL_IF NAME="OPACAmazonEnabled" --><!-- TMPL_IF NAME="OPACAmazonReviews" --><li><a href="/cgi-bin/koha/opac-detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->#amazonreviews">Amazon Reviews</a></li><!-- /TMPL_IF --><!-- /TMPL_IF -->
     <!-- TMPL_IF NAME="Babeltheque" --><li><a href="/cgi-bin/koha/opac-detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->#babeltheque">Babelthèque</a></li><!-- /TMPL_IF -->
 
+    <!-- TMPL_IF NAME="serialcollection" -->
+    <li<!-- TMPL_IF NAME="defaultserialcollection" --> class="ui-tabs-selected"<!-- /TMPL_IF -->><a href="/cgi-bin/koha/opac-detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->#serialcollection">Serial Collection</a></li>
+    <!-- /TMPL_IF -->
 </ul>
+
+<!-- TMPL_IF NAME="serialcollection" -->
+<div id="serialcollection">
+    <table id="serialcollectiont">
+	<thead>
+	    <tr>
+		<th>Branch</th>
+		<th>Serial collection</th>
+	    </tr>
+	</thead>
+	<tbody>
+	<!-- TMPL_LOOP NAME="serialcollections" -->
+	    <tr>
+		<td><!-- TMPL_VAR NAME="branch" --></td>
+		<td><!-- TMPL_VAR NAME="text" --></td>
+	    </tr>
+	<!-- /TMPL_LOOP -->
+	</tbody>
+    </table>
+</div>
+<!-- /TMPL_IF -->
 
 <div id="holdings">
 <!-- TMPL_IF name="count" -->
@@ -432,12 +456,14 @@
 <!-- /TMPL_IF-->
 <!-- /TMPL_IF-->
 <!-- TMPL_IF NAME="SyndeticsEnabled" -->
-<!-- TMPL_IF NAME="SyndeticsSummary" -->
-<!-- TMPL_IF NAME="SYNDETICS_SUMMARY" -->
+<!-- TMPL_IF NAME="SyndeticsSummary" --><!-- TMPL_IF NAME="SyndeticsSUMMARYExists" -->
+<!-- TMPL_LOOP NAME="SYNDETICS_SUMMARY" -->
+    <!-- TMPL_IF NAME="a" -->
     <h4>Enhanced Descriptions from Syndetics:</h4>
-    <p><!-- TMPL_VAR NAME="SYNDETICS_SUMMARY" --></p>
-<!-- /TMPL_IF -->
-<!-- /TMPL_IF -->
+    <p><!-- TMPL_VAR NAME="a" --></p>
+    <!-- /TMPL_IF -->
+<!-- /TMPL_LOOP -->
+<!-- /TMPL_IF --><!-- /TMPL_IF -->
 <!-- /TMPL_IF -->
 
 <!-- TMPL_IF name="MARCNOTES" -->
@@ -747,12 +773,16 @@
         <form method="get" action="/cgi-bin/koha/opac-export.pl">
         <label for="format">Save Record:</label>
         <select name="format" id="format">
-        <option value="">-- Choose Format --</option>
-        <option value="mods">MODS (XML)</option>
-        <option value="dc">Dublin Core (XML)</option>
-        <option value="marcxml">MARCXML</option>
-        <option value="marc8">MARC (non-Unicode/MARC-8)</option>
-        <option value="utf8">MARC (Unicode/UTF-8)</option>    </select><input type="hidden" name="op" value="export" /><input type="hidden" name="bib" value="<!-- TMPL_VAR NAME="biblionumber" -->" />
+	    <option value="">-- Choose Format --</option>
+	    <option value="mods">MODS (XML)</option>
+	    <option value="dc">Dublin Core (XML)</option>
+	    <option value="marcxml">MARCXML</option>
+	    <option value="marc8">MARC (non-Unicode/MARC-8)</option>
+	    <option value="utf8">MARC (Unicode/UTF-8)</option>    
+	    <option value="ris">RIS</option>    
+	    <option value="bibtex">BibTex</option>    
+	</select>
+	<input type="hidden" name="op" value="export" /><input type="hidden" name="bib" value="<!-- TMPL_VAR NAME="biblionumber" -->" />
 <input type="submit" name="save" value="Go" /></form>
         </div>
 

@@ -66,6 +66,25 @@ my ($template, $borrowernumber, $cookie)
 my $dbh = C4::Context->dbh;
 
 if($do_it){
+	
+	my $periodicities = {
+		16 => 'Without periodicity'
+		, 48 => 'Unknown'
+		, 32 => 'Irregular'
+		, 12 => '2/day'
+		, 1 => 'daily (n/week)'
+		, 2 => '1/week'
+		, 3 => '1/2 weeks'
+		, 4 => '1/3 weeks'
+		, 5 => '1/month'
+		, 6 => '1/2 months (6/year)'
+		, 7 => '1/3 months (1/quarter)'
+		, 8 => '1/quarter (seasonal)'
+		, 9 => '2/years'
+		, 10 => '1/year'
+		, 11 => '1/2 years'
+	};
+	
     my $where = "WHERE 1 ";
     my @args;
     # if a specific branchcode was selected
@@ -95,6 +114,7 @@ if($do_it){
     my @datas;
 
     while(my $row = $sth->fetchrow_hashref){
+    	$row->{'periodicity'} = $periodicities->{$row->{'periodicity'}};
         $row->{'enddate'} = format_date(GetExpirationDate($row->{'subscriptionid'}));
         $row->{'startdate'} = format_date($row->{'startdate'});
         push @datas, $row if ($expired || (not $expired && not HasSubscriptionExpired($row->{subscriptionid})) );
@@ -114,6 +134,7 @@ if($do_it){
         print "Subscription id".$sep;
         print "Branch".$sep;
         print "Callnumber".$sep;
+        print "Periodicity".$sep;
         print "Subscription Begin".$sep;
         print "Subscription End\n";
         
@@ -123,6 +144,7 @@ if($do_it){
             print $item->{subscriptionid}.$sep;
             print $item->{branchcode}.$sep;
             print $item->{callnumber}.$sep;
+            print $item->{periodicity}.$sep;
             print $item->{startdate}.$sep;
             print $item->{enddate}."\n";
         }

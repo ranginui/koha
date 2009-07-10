@@ -366,7 +366,6 @@ use CGI qw/:standard -oldstyle_urls/;
 use C4::Context;
 use C4::Biblio;
 
-
 =head1 NAME
 
 C4::OAI::Repository - Handles OAI-PMH requests for a Koha database.

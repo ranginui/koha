@@ -21,7 +21,6 @@ require Exporter;
 use C4::Context;
 use C4::Biblio;    # GetMarcFromKohaField, GetBiblioData
 use C4::Koha;      # getFacets
-use Lingua::Stem;
 use C4::Search::PazPar2;
 use XML::Simple;
 use C4::Dates qw(format_date);
@@ -57,6 +56,7 @@ This module provides searching functions for Koha's bibliographic databases
 @EXPORT = qw(
   &FindDuplicate
   &SimpleSearch
+  &GetDistinctValues
   &searchResults
   &getRecords
   &buildQuery
@@ -64,6 +64,55 @@ This module provides searching functions for Koha's bibliographic databases
 );
 
 # make all your functions, whether exported or not;
+
+=head2 GetDistinctValues($field);
+
+C<$field> is a reference to the fields array
+
+=cut
+
+sub GetDistinctValues {
+    my ($fieldname,$string)=@_;
+    # returns a reference to a hash of references to branches...
+    if ($fieldname=~/\./){
+			my ($table,$column)=split /\./, $fieldname;
+			my $dbh = C4::Context->dbh;
+			warn "select DISTINCT($column) as value, count(*) as cnt from $table group by lib order by $column ";
+			my $sth = $dbh->prepare("select DISTINCT($column) as value, count(*) as cnt from $table ".($string?" where $column like \"$string%\"":"")."group by value order by $column ");
+			$sth->execute;
+			my $elements=$sth->fetchall_arrayref({});
+			return $elements;
+   }
+   else {
+		$string||= qq("");
+		my @servers=qw<biblioserver authorityserver>;
+		my (@zconns,@results);
+        for ( my $i = 0 ; $i < @servers ; $i++ ) {
+        	$zconns[$i] = C4::Context->Zconn( $servers[$i], 1 );
+			$results[$i] =
+                      $zconns[$i]->scan(
+                        ZOOM::Query::CCL2RPN->new( qq"$fieldname $string", $zconns[$i])
+                      );
+		}
+		# The big moment: asynchronously retrieve results from all servers
+		my @elements;
+		while ( ( my $i = ZOOM::event( \@zconns ) ) != 0 ) {
+			my $ev = $zconns[ $i - 1 ]->last_event();
+			if ( $ev == ZOOM::Event::ZEND ) {
+				next unless $results[ $i - 1 ];
+				my $size = $results[ $i - 1 ]->size();
+				if ( $size > 0 ) {
+                      for (my $j=0;$j<$size;$j++){
+						my %hashscan;
+						@hashscan{qw(value cnt)}=$results[ $i - 1 ]->display_term($j);
+						push @elements, \%hashscan;
+					  }
+				}
+			}
+		}
+		return \@elements;
+   }
+}
 
 =head2 FindDuplicate
 
@@ -531,17 +580,8 @@ sub getRecords {
 
                             # if it's a branch, label by the name, not the code,
                             if ( $link_value =~ /branch/ ) {
-								if (defined $branches 
-									&& ref($branches) eq "HASH" 
-									&& defined $branches->{$one_facet} 
-									&& ref ($branches->{$one_facet}) eq "HASH")
-								{
-                                	$facet_label_value =
-                                  		$branches->{$one_facet}->{'branchname'};
-								}
-								else {
-									$facet_label_value = "*";
-								}
+                                $facet_label_value =
+                                  $branches->{$one_facet}->{'branchname'};
                             }
 
                 # but we're down with the whole label being in the link's title.
@@ -719,8 +759,10 @@ sub _detect_truncation {
 
 # STEMMING
 sub _build_stemmed_operand {
-    my ($operand) = @_;
+    my ($operand, $lang) = @_;
     my $stemmed_operand;
+    
+    require Lingua::Stem::Snowball;
 
     # If operand contains a digit, it is almost certainly an identifier, and should
     # not be stemmed.  This is particularly relevant for ISBNs and ISSNs, which
@@ -728,21 +770,14 @@ sub _build_stemmed_operand {
     # "014100018X" to "x ", which for a MARC21 database would bring up irrelevant
     # results (e.g., "23 x 29 cm." from the 300$c).  Bug 2098.
     return $operand if $operand =~ /\d/;
+    
+    my $stemmer = Lingua::Stem::Snowball->new( lang => $lang,
+                                               encoding => "UTF-8" );
 
-# FIXME: the locale should be set based on the user's language and/or search choice
-    my $stemmer = Lingua::Stem->new( -locale => 'EN-US' );
-
-# FIXME: these should be stored in the db so the librarian can modify the behavior
-    $stemmer->add_exceptions(
-        {
-            'and' => 'and',
-            'or'  => 'or',
-            'not' => 'not',
-        }
-    );
     my @words = split( / /, $operand );
-    my $stems = $stemmer->stem(@words);
-    for my $stem (@$stems) {
+    
+    for my $word (@words) {
+        my $stem = $stemmer->stem($word);
         $stemmed_operand .= "$stem";
         $stemmed_operand .= "?"
           unless ( $stem =~ /(and$|or$|not$)/ ) || ( length($stem) < 3 );
@@ -830,7 +865,7 @@ See verbose embedded documentation.
 =cut
 
 sub buildQuery {
-    my ( $operators, $operands, $indexes, $limits, $sort_by, $scan ) = @_;
+    my ( $operators, $operands, $indexes, $limits, $sort_by, $scan, $lang ) = @_;
 
     warn "---------\nEnter buildQuery\n---------" if $DEBUG;
 
@@ -1021,7 +1056,7 @@ sub buildQuery {
 
                 # Handle Stemming
                 my $stemmed_operand;
-                $stemmed_operand = _build_stemmed_operand($operand)
+                $stemmed_operand = _build_stemmed_operand($operand, $lang)
                   if $stemming;
                 warn "STEMMED OPERAND: >$stemmed_operand<" if $DEBUG;
 

@@ -252,7 +252,7 @@ warn "query ".$query  if $DEBUG;
                     } else {
                         push(@breeding_loop,{'server'=>$servername[$k],'title'=>join(': ',$oConnection[$k]->error_x()),'breedingid'=>-1,'biblionumber'=>-1});
                     } # $rec
-                }
+                }    # upto 20 results
             }    #$numresults
         }
     }    # if $k !=0

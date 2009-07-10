@@ -18,7 +18,7 @@ sub methods : Test( 1 ) {
                       GetSuggestionByStatus
                       CountSuggestion
                       NewSuggestion
-                      ModStatus
+                      ModSuggestion
                       ConnectSuggestionAndBiblio
                       DelSuggestion
                 );

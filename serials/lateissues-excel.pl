@@ -31,7 +31,6 @@ my @serialid = $query->param('serialid');
 my $op = $query->param('op');
 my $serialidcount = @serialid;
 
-my %supplierlist = GetSuppliersWithLateIssues;
 my @select_supplier;
 
 my @loop1;

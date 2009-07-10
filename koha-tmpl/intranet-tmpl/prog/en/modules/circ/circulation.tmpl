@@ -197,6 +197,13 @@ $.tablesorter.addParser({
         <!-- TMPL_IF NAME="NOTSAMEBRANCH" -->
             <li>This item belongs to <!-- TMPL_VAR NAME="itemhomebranch" --> and cannot be issued from this location.</li>
         <!-- /TMPL_IF -->
+
+        <!-- TMPL_IF NAME="USERBLOCKEDREMAINING" -->
+            <li>The patron is blocked because of <!-- TMPL_VAR NAME="USERBLOCKEDREMAINING" --> remaining overdue documents.</li>
+        <!-- /TMPL_IF -->
+        <!-- TMPL_IF NAME="USERBLOCKEDOVERDUE" -->
+            <li>The patron is blocked for <!-- TMPL_VAR NAME="USERBLOCKEDOVERDUE" --> more day(s) because of overdue returns</li>
+        <!-- /TMPL_IF -->
         </ul>
 
     <!-- TMPL_IF NAME="memberofinstution" -->

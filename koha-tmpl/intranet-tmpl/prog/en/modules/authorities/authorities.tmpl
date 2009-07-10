@@ -41,7 +41,7 @@ function AreMandatoriesNotOk(){
     <!-- TMPL_LOOP NAME='BIG_LOOP' -->
     	<!-- TMPL_LOOP NAME='innerloop' -->
 			<!-- TMPL_IF NAME="mandatory" -->
-        		mandatoriesfields.push(new Array("<!-- TMPL_VAR NAME="tag" -->","<!-- TMPL_VAR NAME="index" --><!-- TMPL_VAR NAME="random" -->","<!-- TMPL_VAR NAME="index" -->"));
+        		mandatoriesfields.push(new Array("<!-- TMPL_VAR NAME="tag" -->","<!-- TMPL_VAR NAME="index" -->"));
             <!-- /TMPL_IF -->
     		<!-- TMPL_LOOP NAME='subfield_loop'-->
     			<!-- TMPL_IF NAME='mandatory'-->mandatories.push("<!-- TMPL_VAR NAME='id' -->");

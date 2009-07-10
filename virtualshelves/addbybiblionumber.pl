@@ -61,6 +61,20 @@ use C4::Output;
 use C4::VirtualShelves qw/:DEFAULT GetRecentShelves/;
 use C4::Circulation;
 use C4::Auth;
+#splits incoming biblionumber(s) to array and adds each to shelf.
+sub AddBibliosToShelf {
+    my ($shelfnumber,@biblionumber)=@_;
+
+    # multiple bibs might come in as '/' delimited string (from where, i don't see), or as array.
+    if (scalar(@biblionumber) == 1) {
+        @biblionumber = (split /\//,$biblionumber[0]);
+    }
+    for my $bib (@biblionumber){
+        AddToShelfFromBiblio($bib, $shelfnumber);
+    }
+}
+
+
 
 #use it only to debug !
 use CGI::Carp qw/fatalsToBrowser/;
@@ -72,12 +86,15 @@ my $query           = new CGI;
 my $biblionumber    = $query->param('biblionumber');
 
 # If set, then multiple item case.
+my @biblionumber   = $query->param('biblionumber');
 my $biblionumbers   = $query->param('biblionumbers');
 
 my $shelfnumber     = $query->param('shelfnumber');
 my $newvirtualshelf = $query->param('newvirtualshelf');
 my $category        = $query->param('category');
-my $sortfield		= $query->param('sortfield');
+my $sortfield	    = $query->param('sortfield');
+my $confirmed       = $query->param('confirmed') || 0;
+
 
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
     {
@@ -99,12 +116,36 @@ if ($biblionumbers) {
 $shelfnumber = AddShelf( $newvirtualshelf, $loggedinuser, $category, $sortfield )
   if $newvirtualshelf;
 if ( $shelfnumber || ( $shelfnumber == -1 ) ) {    # the shelf already exist.
-    foreach my $biblionumber (@biblionumbers) {
-        AddToShelfFromBiblio( $biblionumber, $shelfnumber );
+
+    if ($confirmed == 1) {
+	AddBibliosToShelf($shelfnumber,@biblionumber);
+	print
+    "Content-Type: text/html\n\n<html><body onload=\"window.opener.location.reload(true);window.close()\"></body></html>";
+	exit;
+    } else {
+	my ( $singleshelf, $singleshelfname, $singlecategory ) = GetShelf( $query->param('shelfnumber') );
+	my @biblios;
+        for my $bib (@biblionumber) {
+	    my $data = GetBiblioData( $bib );
+            push(@biblios,
+                        { biblionumber => $bib,
+                          title        => $data->{'title'},
+                          author       => $data->{'author'},
+                        } );
+        }
+
+       	$template->param
+        (
+         biblionumber => \@biblionumber,
+         biblios      => \@biblios,
+         multiple     => (scalar(@biblionumber) > 1),
+         singleshelf  => 1,
+         shelfname    => $singleshelfname,
+         shelfnumber  => $singleshelf,
+         total        => scalar(@biblionumber),
+         confirm      => 1,
+        );
     }
-    print
-"Content-Type: text/html\n\n<html><body onload=\"window.close()\"></body></html>";
-    exit;
 }
 else {    # this shelf doesn't already exist.
     my $limit = 10;
@@ -163,5 +204,6 @@ else {    # this shelf doesn't already exist.
           );
     }
     
-    output_html_with_http_headers $query, $cookie, $template->output;
 }
+
+    output_html_with_http_headers $query, $cookie, $template->output;

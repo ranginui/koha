@@ -76,7 +76,11 @@ use C4::Koha;    # GetAuthorisedValue
 use C4::Dates qw(format_date);
 
 
-my $input           = new CGI;
+my $input           = new CGI->new;
+my $status          = $input->param('status');
+my $suggestedbyme   = $input->param('suggestedbyme');
+my $op              = $input->param('op') || "aorr_confirm";
+
 my $title           = $input->param('title');
 my $author          = $input->param('author');
 my $note            = $input->param('note');
@@ -86,9 +90,6 @@ my $volumedesc      = $input->param('volumedesc');
 my $publicationyear = $input->param('publicationyear');
 my $place           = $input->param('place');
 my $isbn            = $input->param('isbn');
-my $status          = $input->param('status');
-my $suggestedbyme   = $input->param('suggestedbyme');
-my $op              = $input->param('op') || "aorr_confirm";
 
 my $dbh = C4::Context->dbh;
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
@@ -153,14 +154,14 @@ elsif ( $op eq "delete_confirm" ) {
 }
 
 my $reasonsloop = GetAuthorisedValues("SUGGEST");
-my $pending_suggestions = &SearchSuggestion("", "", "", "", 'ASKED', "", $branchcode);
-map { $_->{'reasonsloop'} = $reasonsloop; $_->{'date'} = format_date($_->{'date'}) } @$pending_suggestions;
-my $accepted_suggestions = &GetSuggestionByStatus('ACCEPTED', $branchcode);
-map { $_->{'reasonsloop'} = $reasonsloop; $_->{'date'} = format_date($_->{'date'}) } @$accepted_suggestions;
-my $rejected_suggestions = &GetSuggestionByStatus('REJECTED', $branchcode);
-map { $_->{'reasonsloop'} = $reasonsloop; $_->{'date'} = format_date($_->{'date'}) } @$rejected_suggestions;
-
 # FIXME: BAD use of map in VOID context.
+
+my $pending_suggestions = &SearchSuggestion( {STATUS=>'ASKED',branchcode=>$branchcode} );
+map{$_->{'reasonsloop'}=$reasonsloop;$_->{'date'}=format_date($_->{'date'})} @$pending_suggestions;
+my $accepted_suggestions = &GetSuggestionByStatus({STATUS=>'ACCEPTED',branchcode=>$branchcode});
+map{$_->{'reasonsloop'}=$reasonsloop;$_->{'date'}=format_date($_->{'date'})} @$accepted_suggestions;
+my $rejected_suggestions = &GetSuggestionByStatus({STATUS=>'REJECTED',branchcode=>$branchcode});
+map{$_->{'reasonsloop'}=$reasonsloop;$_->{'date'}=format_date($_->{'date'})} @$rejected_suggestions;
 
 my @allsuggestions;
 push @allsuggestions,

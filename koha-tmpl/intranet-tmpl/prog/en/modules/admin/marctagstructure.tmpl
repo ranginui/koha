@@ -96,7 +96,6 @@ $(document).ready(function() {
 	
 	<form action="<!-- TMPL_VAR NAME="script_name" -->" method="get"><input type="submit" value="No, Do Not Delete" class="deny" /></form></div>
 <!-- /TMPL_IF -->
-
 <!-- TMPL_IF NAME="delete_confirmed" -->
 
     <div class="dialog message"><h3>Tag Deleted</h3>
@@ -162,6 +161,7 @@ $(document).ready(function() {
         <th>Subfields</th>
         <th>Edit</th>
         <th>Delete</th>
+        <th>Disable</th>
 	</tr>
 
     <!-- TMPL_IF NAME="select_display" -->
@@ -198,6 +198,14 @@ $(document).ready(function() {
         <td><a href="<!-- TMPL_VAR NAME="subfield_link" -->">Subfields</a></td>
         <td><a href="<!-- TMPL_VAR NAME="edit" -->">Edit</a></td>
         <td><a href="<!-- TMPL_VAR NAME="delete" -->">Delete</a></td>
+        <td>
+        	<form method="POST">
+        		<input type="hidden" name="tagfield" value="<!-- TMPL_VAR NAME="tagfield" -->" />
+        		<input type="hidden" name="frameworkcode" value="<!-- TMPL_VAR NAME="frameworkcode" -->" />
+        		<input type="hidden" name="op" value="disablesubfields" />
+	        	<input type="submit" onclick="javascript:if(confirm('Do you really want to disable all subfields?')) submit();" value="Disable subfields" />
+        	</form>
+        </td>
     </tr>
     <!-- /TMPL_LOOP -->
     <!--/TMPL_IF -->

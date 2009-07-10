@@ -644,10 +644,6 @@ if ( C4::Context->preference("memberofinstitution") ) {
     );
 }
 
-# Computes full borrower address
-my (undef, $roadttype_hashref) = &GetRoadTypes();
-my $address = $borrower->{'streetnumber'}.' '.$roadttype_hashref->{$borrower->{'streettype'}}.' '.$borrower->{'address'};
-
 $template->param(
     issued_itemtypes_count_loop => \@issued_itemtypes_count_loop,
     findborrower                => $findborrower,
@@ -663,7 +659,7 @@ $template->param(
     expiry            => format_date($borrower->{'dateexpiry'}),
     categorycode      => $borrower->{'categorycode'},
     categoryname      => $borrower->{description},
-    address           => $address,
+    address           => $borrower->{'address'},
     address2          => $borrower->{'address2'},
     email             => $borrower->{'email'},
     emailpro          => $borrower->{'emailpro'},

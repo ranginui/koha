@@ -2210,17 +2210,9 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
 
 $DBversion = "3.01.00.041";
 if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
-    $dbh->do("
-        CREATE TABLE `fieldmapping` (
-          `id` int(11) NOT NULL auto_increment,
-          `field` varchar(255) NOT NULL,
-          `frameworkcode` char(4) NOT NULL default '',
-          `fieldcode` char(3) NOT NULL,
-          `subfieldcode` char(1) NOT NULL,
-          PRIMARY KEY  (`id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-             ");
-    SetVersion ($DBversion);
+    $dbh->do("INSERT INTO permissions (module_bit, code, description) VALUES ( 13, 'batchmod', 'Perform batch modification of items')");
+    $dbh->do("INSERT INTO permissions (module_bit, code, description) VALUES ( 13, 'batchdel', 'Perform batch deletion of items')");
+    print "Upgrade to $DBversion done (added permissions for batch modification and deletion)\n";
 }
 
 =item DropAllForeignKeys($table)

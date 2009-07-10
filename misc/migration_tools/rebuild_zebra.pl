@@ -518,9 +518,14 @@ sub do_indexing {
     my $zebra_config  = C4::Context->zebraconfig($zebra_server)->{'config'};
     my $zebra_db_dir  = C4::Context->zebraconfig($zebra_server)->{'directory'};
 
-    system("zebraidx -c $zebra_config $zebraidx_log_opt -g $record_format -d $zebra_db_name init") if $reset_index;
-    system("zebraidx -c $zebra_config $zebraidx_log_opt $noshadow -g $record_format -d $zebra_db_name $op $record_dir");
-    system("zebraidx -c $zebra_config $zebraidx_log_opt -g $record_format -d $zebra_db_name commit") unless $noshadow;
+    if ( $reset_index ) {
+	die "$!" if -1 == system("zebraidx -c $zebra_config $zebraidx_log_opt -g $record_format -d $zebra_db_name init")
+    }
+
+    die "$!" if -1 == system("zebraidx -c $zebra_config $zebraidx_log_opt $noshadow -g $record_format -d $zebra_db_name $op $record_dir");
+    unless ($noshadow) {
+	die "$!" if -1 == system("zebraidx -c $zebra_config $zebraidx_log_opt -g $record_format -d $zebra_db_name commit");
+    }
 
 }
 
