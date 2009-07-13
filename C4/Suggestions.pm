@@ -25,6 +25,7 @@ use Mail::Sendmail;
 use C4::Context;
 use C4::Output;
 use C4::Dates qw<format_date>;
+use List::MoreUtils;
 use base 'Exporter';  # parent would be better there
 our $VERSION = 3.01;
 our @EXPORT  = qw<
@@ -129,7 +130,7 @@ sub SearchSuggestion  {
 			} 
 	    } 
 	} 
-    foreach my $field (grep {qw<
+    foreach my $field (grep {my $fieldname=$_; any {$fieldname eq $_ }qw<
 	STATUS branchcode itemtype suggestedby managedby acceptedby
 	bookfundid biblionumber
 	>} keys %$suggestion
