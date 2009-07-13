@@ -211,8 +211,8 @@ if ($barcode) {
         $riborrowernumber{0} = $borrower->{'borrowernumber'};
         $riduedate{0}        = $issueinformation->{'date_due'};
         $input{borrowernumber} = $borrower->{'borrowernumber'};
-        $input{duedate}        = $duedate;
-        $input{return_overdue} = 1 if ($duedate and $duedate lt $today->output('iso'));
+        $input{duedate}        = $riduedate{0};
+        $input{return_overdue} = 1 if ($riduedate{0} and $riduedate{0} lt $today->output('iso'));
         push( @inputloop, \%input );
 
         # check if the branch is the same as homebranch
