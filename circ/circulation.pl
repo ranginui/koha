@@ -284,7 +284,7 @@ if ($barcode) {
   delete $question->{'DEBT'} if ($debt_confirmed);
   foreach my $impossible ( keys %$error ) {
             if ($impossible eq "NOT_FOR_LOAN_CAN_FORCE"){
-                $$question{$impossible}=$$error{$impossible},
+                $$question{$impossible}=$$error{$impossible};
             } else {
             $template->param(
                 $impossible => $$error{$impossible},
@@ -292,6 +292,7 @@ if ($barcode) {
             );
             $blocker = 1;
         }
+	}
     if( !$blocker ){
         my $confirm_required = 0;
     	unless($issueconfirmed){
