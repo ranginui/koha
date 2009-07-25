@@ -18,6 +18,8 @@ package C4::Context;
 
 use strict;
 use warnings;
+use Koha::Schema;
+
 use vars qw($VERSION $AUTOLOAD $context @context_stack);
 
 BEGIN {
@@ -190,6 +192,27 @@ $context = undef;        # Initially, no context is set
     returns the kohaversion stored in kohaversion.pl file
 
 =cut
+
+sub schema {
+    my $self = shift;
+    my $db_driver;
+    if ($context->config("db_scheme")){
+        $db_driver=db_scheme2dbi($context->config("db_scheme"));
+    }
+    else {
+        $db_driver="mysql";
+    }
+
+    my $db_name   = $context->config("database");
+    my $db_host   = $context->config("hostname");
+    my $db_port   = $context->config("port") || '';
+    my $db_user   = $context->config("user");
+    my $db_passwd = $context->config("pass");
+    my $schema = Koha::Schema->connect( "DBI:$db_driver:dbname=$db_name;host=$db_host;port=$db_port",
+	$db_user, $db_passwd);
+    return $schema;
+}
+    
 
 sub KOHAVERSION {
     my $cgidir = C4::Context->intranetdir;

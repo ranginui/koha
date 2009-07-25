@@ -17,15 +17,19 @@
 
 # wrriten 15/10/2002 by finlay@katipo.oc.nz
 # script to display borrowers account details in the opac
+# Edited by chrisc@catalyst.net.nz
 
 use strict;
 use CGI;
 use C4::Members;
+use C4::Context;
 use C4::Circulation;
 use C4::Auth;
 use C4::Output;
 use C4::Dates qw/format_date/;
+use DBIx::Class::ResultClass::HashRefInflator;
 use warnings;
+
 
 my $query = new CGI;
 my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
@@ -40,9 +44,16 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
 );
 
 # get borrower information ....
-my $borr = GetMemberDetails( $borrowernumber );
+# my $borr = GetMemberDetails( $borrowernumber );
+my $context = C4::Context->new;
+my $schema = $context->schema;
+my $rs = $schema->resultset('Borrowers')->search({ borrowernumber => $borrowernumber });
+$rs->result_class('DBIx::Class::ResultClass::HashRefInflator');
+my $borr = $rs->first;
+use Data::Dumper;
+warn Dumper $borr;
 my @bordat;
-$bordat[0] = $borr;
+push @bordat,$borr;
 
 $template->param( BORROWER_INFO => \@bordat );
 
