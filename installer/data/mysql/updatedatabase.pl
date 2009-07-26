@@ -2503,12 +2503,13 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     print "Upgrade to $DBversion done (added AWSPrivateKey syspref - note that if you use enhanced content from Amazon, this should be set right away.)";
 }
 
-$DBversion = '3.01.00.045';
+$DBversion = '3.01.00.042';
 if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
-    $dbh->do("INSERT INTO systempreferences (variable,value,options,explanation,type)VALUES('HidePatronName', '0', '', 'If this is switched on, patrons cardnumbers will be shown instead of their name on the holds and catalogue screens', 'YesNo')");
+    $dbh->do("INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('OPACFineNoRenewals','100','Fine Limit above which user canmot renew books via OPAC','','Integer')");
     SetVersion ($DBversion);
-    print "Upgrade to $DBversion done (added a preference to hide the patrons name in the staff catalog)";
+    print "Upgrade to $DBversion done (added OPACFineNoRenewals syspref)\n";
 }
+
 =item DropAllForeignKeys($table)
 
   Drop all foreign keys of the table $table
