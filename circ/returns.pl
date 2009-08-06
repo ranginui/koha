@@ -136,22 +136,21 @@ if ( $query->param('WT-itemNumber') ) {
 }
 
 if ( $query->param('resbarcode') ) {
-    my $item               = $query->param('itemnumber');
-    my $borrowernumber     = $query->param('borrowernumber');
-    my $resbarcode         = $query->param('resbarcode');
+    my $item           = $query->param('itemnumber');
+    my $borrowernumber = $query->param('borrowernumber');
+    my $resbarcode     = $query->param('resbarcode');
+    my $reservenumber = $query->param('reservenumber');
     my $diffBranchReturned = $query->param('diffBranch');
     my $iteminfo           = GetBiblioFromItemNumber($item);
 
     # fix up item type for display
     $iteminfo->{'itemtype'} = C4::Context->preference('item-level_itypes') ? $iteminfo->{'itype'} : $iteminfo->{'itemtype'};
-    my $diffBranchSend = ( $userenv_branch ne $diffBranchReturned ) ? $diffBranchReturned : undef;
-
-    # diffBranchSend tells ModReserveAffect whether document is expected in this library or not,
-    # i.e., whether to apply waiting status
-    ModReserveAffect( $item, $borrowernumber, $diffBranchSend );
-
-    #   check if we have other reserves for this document, if we have a return send the message of transfer
-    my ( $reservemessages, $nextreservinfo ) = GetOtherReserves($item);
+    my $diffBranchSend = ($userenv_branch ne $diffBranchReturned) ? $diffBranchReturned : undef;
+# diffBranchSend tells ModReserveAffect whether document is expected in this library or not,
+# i.e., whether to apply waiting status
+    ModReserveAffect( $item, $borrowernumber, $diffBranchSend, $reservenumber );
+#   check if we have other reserves for this document, if we have a return send the message of transfer
+    my ( $messages, $nextreservinfo ) = GetOtherReserves($item);
 
     my ($borr) = GetMemberDetails( $nextreservinfo, 0 );
     my $name = $borr->{'surname'} . ", " . $borr->{'title'} . " " . $borr->{'firstname'};
@@ -387,7 +386,8 @@ if ( $messages->{'ResFound'} ) {
             debarred       => $debarred,
             gonenoaddress  => $borr->{'gonenoaddress'},
             barcode        => $barcode,
-            destbranch     => $reserve->{'branchcode'},
+            reservenumber  => $reserve->{'reservenumber'},
+            destbranch	   => $reserve->{'branchcode'},
             borrowernumber => $reserve->{'borrowernumber'},
             itemnumber     => $reserve->{'itemnumber'},
             reservenotes   => $reserve->{'reservenotes'},

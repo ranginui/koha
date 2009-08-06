@@ -332,7 +332,8 @@ foreach my $biblioNum (@biblionumbers) {
         }
     }
 
-    $biblioLoopIter{itemTypeDescription} = $itemTypes->{ $biblioData->{itemtype} }{description};
+    $biblioLoopIter{itemtype} = $biblioData->{itemtype};
+    $biblioLoopIter{itemTypeDescription} = $itemTypes->{$biblioData->{itemtype}}{description};
 
     $biblioLoopIter{itemLoop} = [];
     my $numCopiesAvailable = 0;
@@ -366,9 +367,8 @@ foreach my $biblioNum (@biblionumbers) {
         }
 
         # checking reserve
-        my ( $reservedate, $reservedfor, $expectedAt ) = GetReservesFromItemnumber($itemNum);
-        my $ItemBorrowerReserveInfo = GetMemberDetails( $reservedfor, 0 );
-
+        my ($reservedate,$reservedfor,$expectedAt) = GetReservesFromItemnumber($itemNum);
+        my $ItemBorrowerReserveInfo = GetMemberDetails( $reservedfor, 0);
         if ( defined $reservedate ) {
             $itemLoopIter->{backgroundcolor}           = 'reserved';
             $itemLoopIter->{reservedate}               = format_date($reservedate);
@@ -376,6 +376,8 @@ foreach my $biblioNum (@biblionumbers) {
             $itemLoopIter->{ReservedForSurname}        = $ItemBorrowerReserveInfo->{'surname'};
             $itemLoopIter->{ReservedForFirstname}      = $ItemBorrowerReserveInfo->{'firstname'};
             $itemLoopIter->{ExpectedAtLibrary}         = $expectedAt;
+            $itemLoopIter->{ReservedForThisBorrower}   = ( $reservedfor eq $borrowernumber );
+            warn "ReservedForThisBorrower: " . $itemLoopIter->{ReservedForThisBorrower};
         }
 
         $itemLoopIter->{notforloan}     = $itemInfo->{notforloan};
@@ -438,8 +440,9 @@ foreach my $biblioNum (@biblionumbers) {
         $biblioLoopIter{bib_available} = 1;
         $biblioLoopIter{holdable}      = 1;
     }
-    if ( $biblioLoopIter{already_reserved} ) {
+    if ( $biblioLoopIter{already_reserved} && !CanHoldMultipleItems($biblioLoopIter{itemtype}) ) {
         $biblioLoopIter{holdable} = undef;
+        warn "Already_Reserved";
     }
     if ( not CanBookBeReserved( $borrowernumber, $biblioNum ) ) {
         $template->param( message => 1 );
