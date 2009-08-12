@@ -331,6 +331,23 @@ for my $row ( @big_array ) {
     $row_data{'nomod'} = $row->{'nomod'};
     push(@item_value_loop,\%row_data);
 }
+if ( C4::Context->preference("SortByLoggedInBranch")){
+    # Sort by homebranch of item, then by dateaccessioned
+    my $branchname = C4::Context->userenv?C4::Context->userenv->{"branchname"}:"insecure";
+    @item_value_loop = sort { 
+	branch_first($branchname) ||
+	  $a->{item_value}->[7]->{'field'} cmp $b->{item_value}->[7]->{'field'}
+    } 
+    @item_value_loop;
+}
+
+sub branch_first {
+    my $branchcode = shift;
+    if ($a->{item_value}->[5]->{'field'} eq $branchcode) { return -1; }
+    elsif ($b->{item_value}->[5]->{'field'} eq $branchcode) { return 1; }
+    else { return $a->{item_value}->[5]->{'field'} cmp $b->{item_value}->[5]->{'field'} }
+}  
+
 foreach my $subfield_code (sort keys(%witness)) {
     my %header_value;
     $header_value{header_value} = $witness{$subfield_code};

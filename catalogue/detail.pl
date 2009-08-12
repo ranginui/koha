@@ -184,6 +184,19 @@ foreach my $item (@items) {
     push @itemloop, $item;
 }
 
+if ( C4::Context->preference("SortByLoggedInBranch")){
+    # Sort by homebranch of item, then by dateaccessioned
+    my $branchcode = C4::Context->userenv?C4::Context->userenv->{"branch"}:"insecure";
+    @itemloop = sort { branch_first($branchcode) || $a->{dateaccessioned} cmp $b->{dateaccessioned} } @itemloop;
+}
+
+sub branch_first {
+    my $branchcode = shift;
+    if ($a->{homebranch} eq $branchcode) { return -1; }
+    elsif ($b->{homebranch} eq $branchcode) { return 1; }
+    else { return $a->{homebranch} cmp $b->{homebranch} }	
+}
+
 $template->param( norequests => $norequests );
 $template->param(
 	MARCNOTES   => $marcnotesarray,
@@ -275,3 +288,4 @@ if (C4::Context->preference('OPACBaseURL')){
 }
 
 output_html_with_http_headers $query, $cookie, $template->output;
+
