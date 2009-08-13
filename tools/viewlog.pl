@@ -153,9 +153,9 @@ if ($do_it) {
             src      => $src,
         );
 	    #module   => 'fix this', #this seems unused in actual code
-	foreach my $module (@modules) {
-		$template->param($module  => 1);
-	}
+	    foreach my $module (@modules) {
+		  $template->param($module  => 1);
+	    }
 
         output_html_with_http_headers $input, $cookie, $template->output;
     } else {
@@ -168,10 +168,10 @@ if ($do_it) {
         my $sep = C4::Context->preference("delimiter");
         foreach my $line (@$results) {
             #next unless $modules[0] eq "catalogue";
-		foreach (qw(timestamp firstname surname action info title author)) {
-			print $line->{$_} . $sep;
-		}	
-	}
+	    	foreach (qw(timestamp firstname surname action info title author)) {
+			    print $line->{$_} . $sep;
+	    	}	
+	    }
     }
 	exit;
 } else {
@@ -185,5 +185,4 @@ if ($do_it) {
 		info => ""
 	);
 	output_html_with_http_headers $input, $cookie, $template->output;
-}
 }
