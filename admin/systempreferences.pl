@@ -228,6 +228,7 @@ $tabsysprefs{OPACAmazonEnabled}      = "EnhancedContent";
 $tabsysprefs{AmazonCoverImages}      = "EnhancedContent";
 $tabsysprefs{OPACAmazonCoverImages}  = "EnhancedContent";
 $tabsysprefs{AWSAccessKeyID}         = "EnhancedContent";
+$tabsysprefs{AWSPrivateKey}          = "EnhancedContent";
 $tabsysprefs{AmazonLocale}           = "EnhancedContent";
 $tabsysprefs{AmazonAssocTag}         = "EnhancedContent";
 $tabsysprefs{AmazonSimilarItems}     = "EnhancedContent";
