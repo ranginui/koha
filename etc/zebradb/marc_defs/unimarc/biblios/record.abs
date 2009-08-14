@@ -318,6 +318,7 @@ melm 646        Subject,Subject:p
 ######################
 
 melm 676$a		Dewey-classification:w,Dewey-classification:s
+melm 686$a		Subject,Subject:p
 
 #############"# item information (based on 995) ###############
 melm 995$2		lost,lost:n,item
