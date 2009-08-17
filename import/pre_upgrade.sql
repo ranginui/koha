@@ -1,0 +1,16 @@
+select * from issues where returndate is null into outfile '/tmp/issues';
+select * from issues where returndate is not null into outfile '/tmp/old_issues';
+truncate issues;
+truncate statistics;
+truncate oldissues;
+truncate biblio;
+truncate biblioitems;
+truncate items;
+truncate branchtransfers;
+truncate marc_biblio;
+truncate marc_blob_subfield;
+truncate marc_breeding;
+truncate marc_subfield_structure;
+truncate marc_subfield_table;
+truncate marc_tag_structure;
+truncate marc_word;

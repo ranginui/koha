@@ -1,0 +1,19 @@
+The file is marc.tgz .. untar and ungzip, will be called marc_records
+
+Create a zebra db, and index the files
+sudo su - koha
+
+zebraidx -c /home/chrisc/koha-dev/etc/zebradb/zebra-biblios.cfg -g iso2709 -d biblios init
+zebraidx -c /home/chrisc/koha-dev/etc/zebradb/zebra-biblios.cfg -g iso2709 -d biblios update /home/chrisc/marc_records
+
+run hlt_import_hlt-import.pl need to do it in chunks of 1000 isbns
+
+load resulting marc in the staging interface, and merge
+
+do the same issn
+
+
+
+
+
+
