@@ -618,6 +618,9 @@ BRECORD: while ( my $bib = $sth->fetchrow_hashref() ) {
 		    if ($dewey eq '791.43'){
 			$dewey = "Movie";
 		    }
+		    if ($dewey eq '791.45'){
+			$dewey = "TV";
+		    }
 		    $dewey.= " " . uc substr($clean_title,0,4);
 		}
 		elsif ( exists $six{$itemtype}){
