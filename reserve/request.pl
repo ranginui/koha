@@ -478,7 +478,7 @@ foreach my $biblionumber (@biblionumbers) {
         
         #     get borrowers reserve info
         my $reserveborrowerinfo = GetMemberDetails( $res->{'borrowernumber'}, 0);
-        if (C4::Context->preference('HidePatronNameForHolds')){
+        if (C4::Context->preference('HidePatronName')){
 	    $reserve{'hidename'} = 1;
 	    $reserve{'cardnumber'} = $reserveborrowerinfo->{'cardnumber'};
 	}

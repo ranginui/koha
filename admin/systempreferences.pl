@@ -201,7 +201,7 @@ $tabsysprefs{AutoEmailOpacUser}            = "Patrons";
 $tabsysprefs{AutoEmailPrimaryAddress}      = "Patrons";
 $tabsysprefs{EnhancedMessagingPreferences} = "Patrons";
 $tabsysprefs{'SMSSendDriver'}              = 'Patrons';
-$tabsysprefs{HidePatronNameForHolds}       = "Patrons";
+$tabsysprefs{HidePatronName}               = "Patrons";
 
 
 # I18N/L10N
