@@ -575,6 +575,10 @@ BRECORD: while ( my $bib = $sth->fetchrow_hashref() ) {
 	    $clean_title =~ s/^and //i;
 	    $clean_title =~ s/\W//g;
 #	    if ($dewey){
+	    if ($classification eq 'Pb-Romance' || $classification eq 'PB-Romance' ||
+		$classification eq 'PbRomance' || $classification eq 'PBRomace'){
+		    $itemtype='BFR';
+		 }
 		if (exists $one{$itemtype}){
 		    if ($author){
 			$dewey = uc substr($clean_author,0,4);
@@ -649,6 +653,7 @@ BRECORD: while ( my $bib = $sth->fetchrow_hashref() ) {
 		    }			
 		}			
 #	    }
+	    
 	    print "$title\t$itemtype\t$dewey\n";
             $item_mrc->add_subfields( 'o' => $dewey ) if $dewey;
 
