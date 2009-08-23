@@ -224,6 +224,12 @@ sub AddItem {
     _set_derived_columns_for_add($item);
     $item->{'more_subfields_xml'} = _get_unlinked_subfields_xml($unlinked_item_subfields);
     # FIXME - checks here
+    unless ( $item->{itype} ) {  # default to biblioitem.itemtype if no itype
+        my $itype_sth = $dbh->prepare("SELECT itemtype FROM biblioitems WHERE biblionumber = ?");
+        $itype_sth->execute( $item->{'biblionumber'} );
+        ( $item->{'itype'} ) = $itype_sth->fetchrow_array;
+    }
+
 	my ( $itemnumber, $error ) = _koha_new_item( $item, $item->{barcode} );
     $item->{'itemnumber'} = $itemnumber;
 
@@ -927,23 +933,24 @@ sub GetLostItems {
 
     my $query   = "
         SELECT *
-        FROM   items, biblio, authorised_values
+        FROM   items
+            LEFT JOIN biblio ON (items.biblionumber = biblio.biblionumber)
+            LEFT JOIN biblioitems ON (items.biblionumber = biblioitems.biblionumber)
+            LEFT JOIN authorised_values ON (items.itemlost = authorised_values.authorised_value)
         WHERE
-        		items.biblionumber = biblio.biblionumber
-        		AND items.itemlost = authorised_values.authorised_value
-        		AND authorised_values.category = 'LOST'
+        	authorised_values.category = 'LOST'
           	AND itemlost IS NOT NULL
          	AND itemlost <> 0
-          
     ";
     my @query_parameters;
     foreach my $key (keys %$where) {
         $query .= " AND $key LIKE ?";
         push @query_parameters, "%$where->{$key}%";
     }
-    if ( defined $orderby ) {
-        $query .= ' ORDER BY ?';
-        push @query_parameters, $orderby;
+    my @ordervalues = qw/title author homebranch itype barcode price replacementprice lib datelastseen location/;
+    
+    if ( defined $orderby && grep($orderby, @ordervalues)) {
+        $query .= ' ORDER BY '.$orderby;
     }
 
     my $sth = $dbh->prepare($query);
@@ -1228,7 +1235,7 @@ sub GetItemsInfo {
     $sth->execute($biblionumber);
     my $i = 0;
     my @results;
-    my ( $date_due, $count_reserves, $serial );
+    my $serial;
 
     my $isth    = $dbh->prepare(
         "SELECT issues.*,borrowers.cardnumber,borrowers.surname,borrowers.firstname,borrowers.branchcode as bcode
@@ -1238,6 +1245,7 @@ sub GetItemsInfo {
 	my $ssth = $dbh->prepare("SELECT serialseq,publisheddate from serialitems left join serial on serialitems.serialid=serial.serialid where serialitems.itemnumber=? "); 
 	while ( my $data = $sth->fetchrow_hashref ) {
         my $datedue = '';
+        my $count_reserves;
         $isth->execute( $data->{'itemnumber'} );
         if ( my $idata = $isth->fetchrow_hashref ) {
             $data->{borrowernumber} = $idata->{borrowernumber};
@@ -1247,7 +1255,7 @@ sub GetItemsInfo {
             $datedue                = $idata->{'date_due'};
         if (C4::Context->preference("IndependantBranches")){
         my $userenv = C4::Context->userenv;
-        if ( ($userenv) && ( $userenv->{flags} != 1 ) ) { 
+        if ( ($userenv) && ( $userenv->{flags} % 2 != 1 ) ) { 
             $data->{'NOTSAMEBRANCH'} = 1 if ($idata->{'bcode'} ne $userenv->{branch});
         }
         }
@@ -1260,9 +1268,10 @@ sub GetItemsInfo {
 		if ( $datedue eq '' ) {
             my ( $restype, $reserves ) =
               C4::Reserves::CheckReserves( $data->{'itemnumber'} );
-            if ($restype) {
-                $count_reserves = $restype;
-            }
+# Previous conditional check with if ($restype) is not needed because a true
+# result for one item will result in subsequent items defaulting to this true
+# value.
+            $count_reserves = $restype;
         }
         $isth->finish;
         $ssth->finish;
@@ -1465,7 +1474,7 @@ sub get_item_authorised_values {
   authorised values for a biblio.
 
   parameters: listref of authorised values, such as comes from
-    get_item_ahtorised_values or
+    get_item_authorised_values or
     from C4::Biblio::get_biblio_authorised_values
 
   returns: listref of hashrefs for each image. Each hashref looks like
@@ -1805,20 +1814,8 @@ C<items.wthdrawn>
 
 sub _set_defaults_for_add {
     my $item = shift;
-
-    # if dateaccessioned is provided, use it. Otherwise, set to NOW()
-    if (!(exists $item->{'dateaccessioned'}) || 
-         ($item->{'dateaccessioned'} eq '')) {
-        # FIXME add check for invalid date
-        my $today = C4::Dates->new();    
-        $item->{'dateaccessioned'} =  $today->output("iso"); #TODO: check time issues
-    }
-
-    # various item status fields cannot be null
-    $item->{'notforloan'} = 0 unless exists $item->{'notforloan'} and defined $item->{'notforloan'} and $item->{'notforloan'} ne '';
-    $item->{'damaged'}    = 0 unless exists $item->{'damaged'}    and defined $item->{'damaged'}    and $item->{'damaged'} ne '';
-    $item->{'itemlost'}   = 0 unless exists $item->{'itemlost'}   and defined $item->{'itemlost'}   and $item->{'itemlost'} ne '';
-    $item->{'wthdrawn'}   = 0 unless exists $item->{'wthdrawn'}   and defined $item->{'wthdrawn'}   and $item->{'wthdrawn'} ne '';
+    $item->{dateaccessioned} ||= C4::Dates->new->output('iso');
+    $item->{$_} ||= 0 for (qw( notforloan damaged itemlost wthdrawn));
 }
 
 =head2 _koha_new_item

@@ -18,6 +18,7 @@
 # Suite 330, Boston, MA  02111-1307 USA
 
 use strict;
+use warnings;
 
 # standard or CPAN modules used
 use CGI;
@@ -27,7 +28,6 @@ use MARC::File::USMARC;
 # Koha modules used
 use C4::Context;
 use C4::Auth;
-use C4::Input;
 use C4::Output;
 use C4::Biblio;
 use C4::ImportBatch;
@@ -38,10 +38,10 @@ use C4::Labels qw(add_batch);
 my $script_name = "/cgi-bin/koha/tools/manage-marc-import.pl";
 
 my $input = new CGI;
-my $op = $input->param('op');
+my $op = $input->param('op') || '';
 my $completedJobID = $input->param('completedJobID');
 my $runinbackground = $input->param('runinbackground');
-my $import_batch_id = $input->param('import_batch_id');
+my $import_batch_id = $input->param('import_batch_id') || '';
 
 # record list displays
 my $offset = $input->param('offset') || 0;
@@ -75,7 +75,7 @@ if ($op) {
 
 if ($op eq "") {
     # displaying a list
-    if ($import_batch_id eq "") {
+    if ($import_batch_id eq '') {
         import_batches_list($template, $offset, $results_per_page);
     } else {
         import_biblios_list($template, $import_batch_id, $offset, $results_per_page);
@@ -95,7 +95,12 @@ if ($op eq "") {
     }
     import_biblios_list($template, $import_batch_id, $offset, $results_per_page);
 } elsif ($op eq "clean-batch") {
-    ;
+    CleanBatch($import_batch_id);
+    import_batches_list($template, $offset, $results_per_page);
+    $template->param( 
+        did_clean       => 1,
+        import_batch_id => $import_batch_id,
+    );
 } elsif ($op eq "redo-matching") {
     my $new_matcher_id = $input->param('new_matcher_id');
     my $current_matcher_id = $input->param('current_matcher_id');
@@ -118,7 +123,7 @@ sub redo_matching {
     my $old_overlay_action = GetImportBatchOverlayAction($import_batch_id);
     my $old_nomatch_action = GetImportBatchNoMatchAction($import_batch_id);
     my $old_item_action = GetImportBatchItemAction($import_batch_id);
-    return if $new_matcher_id == $current_matcher_id and 
+    return if $new_matcher_id eq $current_matcher_id and 
               $old_overlay_action eq $overlay_action and 
               $old_nomatch_action eq $nomatch_action and 
               $old_item_action eq $item_action;
@@ -136,7 +141,7 @@ sub redo_matching {
         $template->param('changed_item_action' => 1);
     }
 
-    if ($new_matcher_id == $current_matcher_id) {
+    if ($new_matcher_id eq $current_matcher_id) {
         return;
     } 
 
@@ -179,7 +184,8 @@ sub import_batches_list {
             upload_timestamp => $batch->{'upload_timestamp'},
             import_status => $batch->{'import_status'},
             file_name => $batch->{'file_name'},
-            comments => $batch->{'comments'}
+            comments => $batch->{'comments'},
+            can_clean => ($batch->{'import_status'} ne 'cleaned') ? 1 : 0,
         };
     }
     $template->param(batch_list => \@list); 
@@ -323,7 +329,14 @@ sub import_biblios_list {
         $citation .= ", " if $biblio->{'issn'} and $biblio->{'isbn'};
         $citation .= $biblio->{'issn'} if $biblio->{'issn'};
         $citation .= ")" if $biblio->{'issn'} or $biblio->{'isbn'};
+
         my $match = GetImportRecordMatches($biblio->{'import_record_id'}, 1);
+        my $match_citation = '';
+        if ($#$match > -1) {
+            $match_citation .= $match->[0]->{'title'} if defined($match->[0]->{'title'});
+            $match_citation .= ' ' . $match->[0]->{'author'} if defined($match->[0]->{'author'});
+        }
+
         push @list,
           { import_record_id         => $biblio->{'import_record_id'},
             final_match_biblionumber => $biblio->{'matched_biblionumber'},
@@ -332,7 +345,7 @@ sub import_biblios_list {
             record_sequence          => $biblio->{'record_sequence'},
             overlay_status           => $biblio->{'overlay_status'},
             match_biblionumber       => $#$match > -1 ? $match->[0]->{'biblionumber'} : 0,
-            match_citation           => $#$match > -1 ? $match->[0]->{'title'} . ' ' . $match->[0]->{'author'} : '',
+            match_citation           => $match_citation,
             match_score              => $#$match > -1 ? $match->[0]->{'score'} : 0,
           };
     }
@@ -366,6 +379,9 @@ sub batch_info {
     $template->param(upload_timestamp => $batch->{'upload_timestamp'});
     $template->param(num_biblios => $batch->{'num_biblios'});
     $template->param(num_items => $batch->{'num_biblios'});
+    if ($batch->{'import_status'} ne 'cleaned') {
+        $template->param(can_clean => 1);
+    }
     if ($batch->{'num_biblios'} > 0) {
         if ($batch->{'import_status'} eq 'staged' or $batch->{'import_status'} eq 'reverted') {
             $template->param(can_commit => 1);
@@ -390,7 +406,7 @@ sub add_matcher_list {
     my @matchers = C4::Matcher::GetMatcherList();
     if (defined $current_matcher_id) {
         for (my $i = 0; $i <= $#matchers; $i++) {
-            if ($matchers[$i]->{'matcher_id'} == $current_matcher_id) {
+            if ($matchers[$i]->{'matcher_id'} eq $current_matcher_id) {
                 $matchers[$i]->{'selected'} = 1;
             }
         }

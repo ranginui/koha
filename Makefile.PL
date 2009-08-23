@@ -250,6 +250,7 @@ my $target_map = {
   './changelanguage.pl'         => 'INTRANET_CGI_DIR',
   './check_sysprefs.pl'         => 'NONE',
   './circ'                      => 'INTRANET_CGI_DIR',
+  './offline_circ'		=> 'INTRANET_CGI_DIR',
   './edithelp.pl'               => 'INTRANET_CGI_DIR',
   './etc'                       => { target => 'KOHA_CONF_DIR', trimdir => -1 },
   './etc/zebradb'               => { target => 'ZEBRA_CONF_DIR', trimdir => -1 },
@@ -540,7 +541,7 @@ WriteMakefile(
                             'Class::Factory::Util'             => 1.6,
                             'Class::Accessor'                  => 0.30,
                             'DBD::mysql'                       => 4.004,
-                            'DBD::SQLite'                      => 1.13, # optional, used for offline circulation
+                            'DBD::SQLite2'                     => 0.33, # optional, used for offline circulation
                             'DBI'                              => 1.53,
                             'Data::Dumper'                     => 2.121,
                             'Data::ICal'                       => 0.13,
@@ -548,6 +549,7 @@ WriteMakefile(
                             'Date::ICal'                       => 1.72,
                             'Date::Manip'                      => 5.44,
                             'Digest::MD5'                      => 2.36,
+                            'Digest::SHA'                      => 5.43,
                             'Email::Date'                      => 1.103,
                             'File::Temp'                       => 0.16,
                             'GD'                               => 2.39,    #optional
@@ -557,7 +559,9 @@ WriteMakefile(
                             'HTML::Template::Pro'              => 0.69,
                             'HTML::Scrubber'                   => 0.08,
                             'HTTP::Cookies'                    => 1.39,
+                            'HTTP::OAI'                        => 3.20,
                             'HTTP::Request::Common'            => 1.26,
+                            'IPC::Cmd'                         => 0.46,
                             'JSON'                             => 2.07, # Needed by admin/item_circulation_alerts.pl
                             'LWP::Simple'                      => 1.41,
                             'LWP::UserAgent'                   => 2.033,
@@ -596,10 +600,12 @@ WriteMakefile(
                             'Time::HiRes'                      => 1.86,
                             'Time::localtime'                  => 1.02,
                             'Unicode::Normalize'               => 0.32,
+                            'URI::Escape'                      => 1.36,
                             'XML::Dumper'                      => 0.81,
                             'XML::LibXML'                      => 1.59,
                             'XML::LibXSLT'                     => 1.59,
                             'XML::SAX::ParserFactory'          => 1.01,
+                            'XML::SAX::Writer'                 => 0.44,
                             'XML::Simple'                      => 2.14,
                             'XML::RSS'                         => 1.31,
                             'YAML::Syck'                       => 0.71,
@@ -1415,7 +1421,7 @@ sub install {
     # installation and uninstallation targets.
 
 # If installation is on Win32, we need to do permissions different from *nix
-    if ( $^O =~ /darwin|linux|cygwin|freebsd/ ) { # this value needs to be verified for each platform and modified accordingly
+    if ( $^O =~ /darwin|linux|cygwin|freebsd|solaris/ ) { # this value needs to be verified for each platform and modified accordingly
 	    foreach my $key (sort keys %$target_directories) {
 		    $install .= qq(
 KOHA_INST_$key = blib/$key

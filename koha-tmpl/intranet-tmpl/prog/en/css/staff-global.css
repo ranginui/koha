@@ -407,6 +407,9 @@ a.yuimenuitemlabel-disabled, #disabled a {
 a.yuimenuitemlabel-disabled:hover, #disabled a:hover {
 	color : #999;
 }
+a.highlight_toggle {
+    display : none;
+}
 
 ul.toolbar li {
 	display : inline;
@@ -844,6 +847,11 @@ fieldset.rows .inputnote {
 	background-position : center left;
 	background-repeat : no-repeat;
 }
+#z3950searcht table {
+	/* doesn't have desired effect in catalogue/results.tmpl - I'll leave this here for now but there do seem to be casscading CSS errors in this and other CSS fiels - RICKW 20081118 */
+	padding: 20px;
+	border: none;
+}
 #printbiblio button, #printbiblio a, #printmenuc .first-child {
 	padding-left : 34px;
 	background-image: url("../../img/toolbar-print.gif");
@@ -940,10 +948,12 @@ div.sysprefs div.hint {
 
 tr.highlight td {
 	background-color : #F6F6F6;
+	border-color : #BCBCBC;
 }
 
 tr.highlight th[scope=row] {
 	background-color : #DDDDDD;
+	border-color : #BCBCBC;
 }
 
 tr.confirm td, tr.highlight.confirm td {
@@ -1198,9 +1208,7 @@ h1#logo {
 }
 h1#logo {
 	background:transparent url(../../img/koha-logo-medium.gif) no-repeat scroll 0%;
-	border: 0;
 	margin:0.75em .3em 0.75em .7em;
-	padding:0;
 }
 
 *html h1#logo {
@@ -1236,12 +1244,17 @@ h1#logo a {
 	font-size :  200%;
 }
 
-.email {
-font-size :  87%;
-width : 15em;
-margin: 0;
-padding: 0;
-overflow :  hidden;
+li.email a {
+	display:block;
+	overflow:hidden;
+	width:13em;
+}
+li.email {
+	background: #FFF url(../../img/elipsis.gif) right bottom no-repeat;
+	font-size :  87%;
+	overflow:hidden;
+	padding :0 10px 0 0;
+	width:13em;
 }
 
 .empty {
@@ -1280,7 +1293,30 @@ overflow :  hidden;
 }
 
 #searchresults ul li {
+	font-size : 90%;
 	list-style : url(../../img/item-bullet.gif);
+	padding : .2em 0;
+        clear : left;
+}
+
+#searchresults span.status {
+	clear : left;
+	color : #900;
+	display : block;
+}
+
+#searchresults span.unavailable {
+	clear : left;
+	display : block;
+}
+
+#searchresults .availability strong {
+	display : block;
+}
+
+#searchresults ul li img {
+	float : left;
+	margin : 3px 5px 3px -5px;
 }
 
 #searchresults table td {
@@ -1299,6 +1335,18 @@ overflow :  hidden;
 
 #searchheader form {
 	float : right;
+}
+
+#searchheader form.fz3950 {
+	float : right;
+	font-size : 125%;
+	padding : 0 0 0 5em;
+}
+
+#searchheader form.fz3950bigrpad {
+	float : right;
+	font-size : 125%;
+	padding : 5px 25em 0 0;
 }
 
 #search-facets ul {
@@ -1605,7 +1653,14 @@ label.permissioncode {
 span.permissiondesc {
 	font-weight : normal;
 }
-/* autocomplete additions */
+#mainuserblock {
+	border : 1px solid #E8E8E8;
+	margin-top : .5em;
+	padding : .5em;
+}
+
+
+/* borrower autocomplete */
 #borrowerautocomplete { width: 450px; text-align:left;} /* z-index needed on top instances for ie & sf absolute inside relative issue */
 .autocomplete .yui-ac-highlight ,
 .autocomplete .yui-ac-highlight .sample-result,
@@ -1614,8 +1669,28 @@ span.permissiondesc {
 .autocomplete .sample-query { color:#000; }
 #findborrower { position:static; width:auto; }
 #yborrowercontainer { text-align:left;width:335px; }
-#mainuserblock {
-	border : 1px solid #E8E8E8;
-	margin-top : .5em;
-	padding : .5em;
+
+/* patron attribues autocomplete for overdues report (pattrodue) */
+.pattrodue-autocomplete .pattrodue-result { color: black; }
+.pattrodue-autocomplete .yui-ac-highlight .pattrodue-result { color: white; }
+.pattrodue-input { position:static; width:auto; }
+.pattrodue-container { text-align:left; width:400px; }
+
+.labeledmarc-table {
+	border: 0;
 }
+
+.labeledmarc-label {
+	border: 0;
+	padding: 5;
+	font-size: 11pt;
+	color: darkblue;
+}
+
+.labeledmarc-value {
+	border: 0;
+	padding: 5;
+	font-size: 10pt;
+	color: black;
+}
+

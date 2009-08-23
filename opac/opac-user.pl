@@ -35,10 +35,10 @@ use C4::Branch; # GetBranches
 my $query = new CGI;
 
 BEGIN {
-	if (C4::Context->preference('BakerTaylorEnabled')) {
-		require C4::External::BakerTaylor;
-		import C4::External::BakerTaylor qw(&image_url &link_url);
-	}
+    if (C4::Context->preference('BakerTaylorEnabled')) {
+        require C4::External::BakerTaylor;
+        import C4::External::BakerTaylor qw(&image_url &link_url);
+    }
 }
 
 my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
@@ -58,10 +58,10 @@ my $patronupdate = $query->param('patronupdate');
 # get borrower information ....
 my ( $borr ) = GetMemberDetails( $borrowernumber );
 
-$borr->{'dateenrolled'} = format_date( $borr->{'dateenrolled'} );
-$borr->{'expiry'}       = format_date( $borr->{'expiry'} );
-$borr->{'dateofbirth'}  = format_date( $borr->{'dateofbirth'} );
-$borr->{'ethnicity'}    = fixEthnicity( $borr->{'ethnicity'} );
+for (qw(dateenrolled dateexpiry dateofbirth)) {
+    ($borr->{$_}) and $borr->{$_} = format_date($borr->{$_});
+}
+$borr->{'ethnicity'} = fixEthnicity( $borr->{'ethnicity'} );
 
 if ( $borr->{'debarred'} || $borr->{'gonenoaddress'} || $borr->{'lost'} ) {
     $borr->{'flagged'} = 1;
@@ -100,7 +100,7 @@ my @overdues;
 my @issuedat;
 my $itemtypes = GetItemTypes();
 foreach my $issue ( @issue_list ) {
-	if($count%2 eq 0){ $issue->{'toggle'} = 1; } else { $issue->{'toggle'} = 0; }
+    if($count%2 eq 0){ $issue->{'toggle'} = 1; } else { $issue->{'toggle'} = 0; }
     # check for reserves
     my ( $restype, $res ) = CheckReserves( $issue->{'itemnumber'} );
     if ( $restype ) {
@@ -126,9 +126,10 @@ foreach my $issue ( @issue_list ) {
 
     # check if item is renewable
     my ($status,$renewerror) = CanBookBeRenewed( $borrowernumber, $issue->{'itemnumber'} );
-	($issue->{'renewcount'},$issue->{'renewsallowed'},$issue->{'renewsleft'}) = GetRenewCount($borrowernumber, $issue->{'itemnumber'});
-
-    $issue->{'status'} = $status;
+    ($issue->{'renewcount'},$issue->{'renewsallowed'},$issue->{'renewsleft'}) = GetRenewCount($borrowernumber, $issue->{'itemnumber'});
+    $issue->{'status'} = $status && C4::Context->preference("OpacRenewalAllowed");
+    $issue->{'too_many'} = 1 if $renewerror and $renewerror eq 'too_many';
+    $issue->{'on_reserve'} = 1 if $renewerror and $renewerror eq 'on_reserve';
 
     if ( $issue->{'overdue'} ) {
         push @overdues, $issue;
@@ -147,23 +148,9 @@ foreach my $issue ( @issue_list ) {
     $issue->{date_due} = format_date($issue->{date_due});
     push @issuedat, $issue;
     $count++;
-	
-		# XISBN Stuff
-	my $xisbn=$issue->{'isbn'};
-	$xisbn =~ /(\d*[X]*)/;
-	$issue->{amazonisbn} = $1;		# FIXME: so it is OK if the ISBN = 'XXXXX' ?
-	my ($clean, $amazonisbn);
-	$amazonisbn = $1;
-	# these might be overkill, but they are better than the regexp above.
-	if (
-		$amazonisbn =~ /\b(\d{13})\b/ or
-		$amazonisbn =~ /\b(\d{10})\b/ or 
-		$amazonisbn =~ /\b(\d{9}X)\b/i
-	) {
-		$clean = $1;
-		$issue->{clean_isbn} = $1;
-	}
-	
+    
+    my $isbn = GetNormalizedISBN($issue->{'isbn'});
+    $issue->{normalized_isbn} = $isbn;
 }
 
 $template->param( ISSUES       => \@issuedat );
@@ -184,7 +171,7 @@ for my $branch_hash (sort keys %$branches ) {
         selected => $selected
       };
 }
-$template->param( branchloop => \@branch_loop, "mylibraryfirst"=>C4::Context->preference("SearchMyLibraryFirst"));
+$template->param( branchloop => \@branch_loop );
 
 # now the reserved items....
 my @reserves  = GetReservesFromBorrowernumber( $borrowernumber );
@@ -196,9 +183,9 @@ foreach my $res (@reserves) {
     $res->{'branch'} = $branches->{ $res->{'branchcode'} }->{'branchname'};
     my $biblioData = GetBiblioData($res->{'biblionumber'});
     $res->{'reserves_title'} = $biblioData->{'title'};
-	if ($OPACDisplayRequestPriority) {
-		$res->{'priority'} = '' if $res->{'priority'} eq '0';
-	}
+    if ($OPACDisplayRequestPriority) {
+        $res->{'priority'} = '' if $res->{'priority'} eq '0';
+    }
 }
 
 # use Data::Dumper;
@@ -225,9 +212,9 @@ foreach my $res (@reserves) {
             $res->{'wait'}= 1; 
             $res->{'holdingbranch'}=$item->{'holdingbranch'};
             $res->{'biblionumber'}=$item->{'biblionumber'};
-            $res->{'barcodenumber'}	= $item->{'barcode'};
+            $res->{'barcodenumber'} = $item->{'barcode'};
             $res->{'wbrcode'} = $res->{'branchcode'};
-            $res->{'itemnumber'}	= $res->{'itemnumber'};
+            $res->{'itemnumber'}    = $res->{'itemnumber'};
             $res->{'wbrname'} = $branches->{$res->{'branchcode'}}->{'branchname'};
             if($res->{'holdingbranch'} eq $res->{'wbrcode'}){
                 $res->{'atdestination'} = 1;
@@ -257,27 +244,28 @@ foreach ( @$alerts ) {
 }
 
 if (C4::Context->preference('BakerTaylorEnabled')) {
-	$template->param(
-		BakerTaylorEnabled  => 1,
-		BakerTaylorImageURL => &image_url(),
-		BakerTaylorLinkURL  => &link_url(),
-		BakerTaylorBookstoreURL => C4::Context->preference('BakerTaylorBookstoreURL'),
-	);
+    $template->param(
+        BakerTaylorEnabled  => 1,
+        BakerTaylorImageURL => &image_url(),
+        BakerTaylorLinkURL  => &link_url(),
+        BakerTaylorBookstoreURL => C4::Context->preference('BakerTaylorBookstoreURL'),
+    );
 }
 
-if (C4::Context->preference("AmazonContent"     ) or 
-	C4::Context->preference("GoogleJackets"     ) or
-	C4::Context->preference("BakerTaylorEnabled")   ) {
-		$template->param(JacketImages=>1);
+if (C4::Context->preference("OPACAmazonCoverImages") or 
+    C4::Context->preference("GoogleJackets") or
+    C4::Context->preference("BakerTaylorEnabled") or
+	C4::Context->preference("SyndeticsCoverImages")) {
+        $template->param(JacketImages=>1);
 }
 
 $template->param(
     waiting_count      => $wcount,
     textmessaging      => $borr->{textmessaging},
-	patronupdate => $patronupdate,
-	OpacRenewalAllowed => C4::Context->preference("OpacRenewalAllowed"),
-	userview => 1,
-	dateformat    => C4::Context->preference("dateformat"),
+    patronupdate => $patronupdate,
+    OpacRenewalAllowed => C4::Context->preference("OpacRenewalAllowed"),
+    userview => 1,
+    dateformat    => C4::Context->preference("dateformat"),
 );
 
 output_html_with_http_headers $query, $cookie, $template->output;

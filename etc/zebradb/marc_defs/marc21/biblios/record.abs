@@ -52,10 +52,11 @@ melm 015        BNB-card-number,BGF-number,Number-db,Number-natl-biblio,Identifi
 melm 017        Number-legal-deposit,Identifier-standard
 melm 018        Identifier-standard
 melm 020$a      ISBN:w,Identifier-standard:w
-melm 020        ISBN,Identifier-standard
-melm 022$a      ISSN:w,ISBN:w
-melm 022        ISSN,Identifier-standard
+melm 020        Identifier-standard
+melm 022$a      ISSN:w,Identifier-standard:w
+melm 022        Identifier-standard
 melm 023        Identifier-standard
+melm 024$a      Identifier-other
 melm 024        Identifier-standard
 melm 025        Identifier-standard
 melm 027        Report-number,Identifier-standard
@@ -139,14 +140,17 @@ melm 490$a      Title-series:w,Title-series:p
 melm 490        Title,Title-series
 melm 490$9      Koha-Auth-Number
 
+melm 500        Note:w,Note:p
 melm 502        Material-type
 melm 505$r      Author
 melm 505$t      Title
 melm 505        Note:w,Note:p
 melm 510        Indexed-by
 melm 520        Abstract:w,Abstract:p
+melm 521$a      lex:n
 #melm 533$d     pubdate,pubdate:s
 #melm 541$d     Date-of-acquisition,Date-of-acquisition:s
+melm 590        Note:w,Note:p
 
 melm 600$a      Name-and-title,Name,Personal-name,Subject-name-personal,Subject
 melm 600$t      Name-and-title,Title,Subject
@@ -288,4 +292,4 @@ melm 952$v      replacementprice
 melm 952$w      replacementpricedate
 #melm 952$x
 melm 952$y      itype:w
-#melm 952$z
+melm 952$z      Note:w,Note:p

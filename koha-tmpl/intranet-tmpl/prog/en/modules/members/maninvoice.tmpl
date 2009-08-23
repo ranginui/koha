@@ -1,6 +1,13 @@
 <!-- TMPL_INCLUDE NAME="doc-head-open.inc" -->
 <title>Koha &rsaquo; Borrowers &rsaquo; Create Manual Invoice</title>
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function(){
+	$("fieldset.rows input").keydown(function(e){ return checkEnter(e); });
+});
+//]]>
+</script>
 </head>
 <body>
 <!-- TMPL_INCLUDE NAME="header.inc" -->
@@ -43,7 +50,7 @@
 </select></li>
 	<li><label for="barcode">Barcode: </label><input type="text" name="barcode" id="barcode" /></li>
 	<li><label for="desc">Description: </label><input type="text" name="desc" id="desc" size="50" /></li>
-	<li><label for="amount">Amount: </label><input type="text" name="amount" id="amount" /></li>
+	<li><label for="amount">Amount: </label><input type="text" name="amount" id="amount" /> Example: 5.00</li>
 	</ol></fieldset>
 <fieldset class="action"><input type="submit" name="add" value="Save" /> <a class="cancel" href="/cgi-bin/koha/members/boraccount.pl?borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->">Cancel</a></fieldset>
 </form>

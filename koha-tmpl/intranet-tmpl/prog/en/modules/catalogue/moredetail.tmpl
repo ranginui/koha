@@ -26,7 +26,7 @@
         <li><span class="label">Item type:</span> <!-- TMPL_VAR NAME="itemtypename" -->&nbsp;</li>
         <!-- /TMPL_UNLESS -->
         <!-- deprecated? <li><span class="label">Loan length:</span> <!-- TMPL_VAR NAME="loanlength" -->&nbsp;</li> -->
-        <li><span class="label">Rental charge:</span>$<!-- TMPL_VAR NAME="rentalcharge" -->&nbsp;</li>
+        <li><span class="label">Rental charge:</span><!-- TMPL_VAR NAME="rentalcharge" -->&nbsp;</li>
         <li><span class="label">ISBN:</span> <!-- TMPL_VAR NAME="isbn" -->&nbsp;</li>
         <li><span class="label">Publisher:</span><!-- TMPL_VAR NAME="place" --> <!-- TMPL_VAR NAME="publishercode" ESCAPE="html" --> <!-- TMPL_VAR NAME="publicationyear" -->&nbsp;</li>
         <!-- TMPL_IF NAME="volumeddesc" --><li><span class="label">Volume:</span> <!-- TMPL_VAR NAME="volumeddesc" --></li><!-- /TMPL_IF -->
@@ -62,7 +62,7 @@
             
             <ol class="bibliodetails">
             <li><span class="label">Current Location:</span> <!-- TMPL_VAR NAME="holdingbranchname" -->&nbsp;</li>
-            <li><span class="label">Checkout Status:</span> <!-- TMPL_IF NAME="issue" -->Checked out to <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->"><!-- TMPL_VAR NAME="cardnumber" --></a>, Due back on <!-- TMPL_VAR NAME="onloan" --><!-- TMPL_ELSE -->Not Checked out <!-- /TMPL_IF --></li>
+            <li><span class="label">Checkout Status:</span> <!-- TMPL_IF NAME="issue" -->Checked out to <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->"><!-- TMPL_VAR NAME="cardnumber" --></a>, Due back on <!-- TMPL_VAR NAME="datedue" --><!-- TMPL_ELSE -->Not Checked out <!-- /TMPL_IF --></li>
             <li><span class="label">Lost Status:</span>
                 <!-- TMPL_IF NAME="CAN_user_circulate" -->
                     <form action="updateitem.pl" method="post">

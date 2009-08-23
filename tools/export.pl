@@ -18,7 +18,7 @@
 
 
 use strict;
-
+use warnings;
 use C4::Auth;
 use C4::Output;  # contains gettemplate
 use C4::Biblio;  # GetMarcBiblio GetXmlBiblio
@@ -27,7 +27,7 @@ use C4::Koha;    # GetItemTypes
 use C4::Branch;  # GetBranches
 
 my $query = new CGI;
-my $op=$query->param("op");
+my $op=$query->param("op") || '';
 my $filename=$query->param("filename");
 my $dbh=C4::Context->dbh;
 my $marcflavour = C4::Context->preference("marcflavour");
@@ -47,10 +47,10 @@ my ($template, $loggedinuser, $cookie)
 
 	my $limit_ind_branch=(C4::Context->preference('IndependantBranches') &&
               C4::Context->userenv &&
-              C4::Context->userenv->{flags} !=1  &&
+              C4::Context->userenv->{flags} % 2 !=1  &&
               C4::Context->userenv->{branch}?1:0);
 	my $branches = GetBranches($limit_ind_branch);    
-    my $branch                = $query->param("branch");
+    my $branch                = $query->param("branch") || '';
 	if ( C4::Context->preference("IndependantBranches") ) {
     	$branch = C4::Context->userenv->{'branch'};
 	}
@@ -127,8 +127,12 @@ if ($op eq "export") {
     $sth->execute(@sql_params);
     
     while (my ($biblionumber) = $sth->fetchrow) {
-        my $record = GetMarcBiblio($biblionumber);
-
+        my $record = eval{ GetMarcBiblio($biblionumber); };
+        # FIXME: decide how to handle records GetMarcBiblio can't parse or retrieve
+        if ($@) {
+            next;
+        }
+        next if not defined $record;
         if ( $dont_export_items || $strip_nonlocal_items || $limit_ind_branch) {
             my ( $homebranchfield, $homebranchsubfield ) =
                 GetMarcFromKohaField( 'items.homebranch', '' );
@@ -145,6 +149,8 @@ if ($op eq "export") {
                 /^(\d*)(\w)?$/;
                 my $field = $1;
                 my $subfield = $2;
+                # skip if this record doesn't have this field
+                next if not defined $record->field($field);
                 if( $subfield ) {
                     $record->field($field)->delete_subfields($subfield);
                 }

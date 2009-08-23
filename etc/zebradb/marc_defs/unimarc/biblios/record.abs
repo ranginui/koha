@@ -107,15 +107,15 @@ melm 712    Author,Author-name-corporate,Author-name-conference,Corporate-name,C
 
 ############## TITLE ##################
 # main Title
-melm 200$a		Title:w,Title:p,Title:s
+melm 200$a		Title:w,Title:p,Title:s,Title-cover:w,Title-cover:p,Title-cover:s
 # Title 2
 melm 200$c		Title:w,Title:p
 # // Title
 melm 200$d		Title:w,Title:p
 # subTitle
-melm 200$e		Title:w,Title:p
+melm 200$e		Title:w,Title:p,Title-cover:w,Title-cover:p
 # part title
-melm 200$i		title:w,title:p
+melm 200$i		title:w,title:p,Title-cover:w,Title-cover:p
 
 melm 205        Title,Title:p
 
@@ -126,7 +126,7 @@ melm 207    Printed-music,Printed-music:p
 
 melm 210$a    pl,pl:p
 melm 210$c    Publisher,Publisher:p
-melm 210$d    pubdate:n,pubdate:s
+melm 210$d    pubdate:n,pubdate:y,pubdate:s
 
 melm 215        Extent
 
@@ -207,6 +207,7 @@ melm 440$t    Title,Title:p
 melm 441$t    Title,Title:p
 melm 445$t    Title,Title:p
 melm 461$t    Title,Title-host:w,title-host:p
+melm 464$t    Title,Title-host:w,title-host:p,Title:p
 
 melm 400$d    pubdate:n
 melm 401$d    pubdate:n
@@ -319,16 +320,16 @@ melm 646        Subject,Subject:p
 melm 676$a		Dewey-classification:w,Dewey-classification:s
 
 #############"# item information (based on 995) ###############
-melm 995$2		lost,lost:n
-melm 995$a		homebranch,Host-item
-melm 995$b		homebranch,Host-item
-melm 995$c		holdingbranch,Record-Source
-melm 995$d		holdingbranch,Record-Source
-melm 995$e      location
-melm 995$f		barcode
-melm 995$j		LC-card-number:s
-melm 995$k      Call-Number,Local-Classification,lcn,Call-Number:p,Local-Classification:p,lcn:p
-melm 995$s      popularity:n,popularity:s
-melm 995$n      onloan:d,onloan:n,onloan:s
-melm 995$u      Note,Note:p
+melm 995$2		lost,lost:n,item
+melm 995$a		homebranch,Host-item,item
+melm 995$b		homebranch,Host-item,item
+melm 995$c		holdingbranch,Record-Source,item
+melm 995$d		holdingbranch,Record-Source,item
+melm 995$e      location,item
+melm 995$f		barcode,item
+melm 995$j		LC-card-number:s,item
+melm 995$k      Call-Number,Local-Classification,lcn,Call-Number:p,Local-Classification:p,lcn:p,item
+melm 995$s      popularity:n,popularity:s,item
+melm 995$n      onloan:d,onloan:n,onloan:s,onloan:w,item
+melm 995$u      Note,Note:p,item
 melm  995       item   # just to index every subfield

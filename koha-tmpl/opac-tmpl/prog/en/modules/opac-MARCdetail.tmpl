@@ -1,5 +1,13 @@
 <!-- TMPL_INCLUDE NAME="doc-head-open.inc" --><!-- TMPL_IF NAME="LibraryNameTitle" --><!-- TMPL_VAR NAME="LibraryNameTitle" --><!-- TMPL_ELSE -->Koha Online<!-- /TMPL_IF --> Catalog &rsaquo;  MARC Details for Record No. <!-- TMPL_VAR name="biblionumber" -->
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
+<!-- TMPL_IF NAME="XSLTDetailsDisplay" --><script type="text/javascript">
+    var GB_ROOT_DIR = "/intranet-tmpl/prog/en/lib/greybox/";
+</script>
+<script type="text/javascript" src="/intranet-tmpl/prog/en/lib/greybox/AJS.js"></script>
+<script type="text/javascript" src="/intranet-tmpl/prog/en/lib/greybox/AJS_fx.js"></script>
+<script type="text/javascript" src="/intranet-tmpl/prog/en/lib/greybox/gb_scripts.js"></script>
+<link href="/intranet-tmpl/prog/en/lib/greybox/gb_styles.css" rel="stylesheet" type="text/css" />
+<!-- /TMPL_IF -->
 </head>
 <body>
 <!-- TMPL_IF NAME="OpacNav" --><div id="doc3" class="yui-t1"><!-- TMPL_ELSE --><div id="doc3" class="yui-t7"><!-- /TMPL_IF -->
@@ -11,7 +19,19 @@
 <div class="container"><div class="yui-g">
 <div id="toolbar">
 <ul>
-	<!-- TMPL_UNLESS NAME="norequests" --><!-- TMPL_IF NAME="opacuserlogin" --><!-- TMPL_IF NAME="RequestOnOpac" --><li><a class="link reserve" href="/cgi-bin/koha/opac-reserve.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->">Place Hold</a></li><!-- /TMPL_IF --><!-- /TMPL_IF --><!-- /TMPL_UNLESS -->
+	<!-- TMPL_UNLESS NAME="norequests" -->
+		<!-- TMPL_IF NAME="opacuserlogin" -->
+			<!-- TMPL_IF NAME="RequestOnOpac" -->
+				<!-- TMPL_IF NAME="AllowOnShelfHolds" -->
+					<li><a class="link reserve" href="/cgi-bin/koha/opac-reserve.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->">Place Hold</a></li>
+				<!-- TMPL_ELSE -->
+					<!-- TMPL_IF NAME="ItemsIssued" -->
+						<li><a class="link reserve" href="/cgi-bin/koha/opac-reserve.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->">Place Hold</a></li>
+					<!-- /TMPL_IF -->
+				<!-- /TMPL_IF -->
+			<!-- /TMPL_IF -->
+		<!-- /TMPL_IF -->
+	<!-- /TMPL_UNLESS -->
 	<li><a class="link print" href="/cgi-bin/koha/opac-detailprint.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->" onclick="Dopop('opac-detailprint.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->'); return false;">Print</a></li>
 	<!-- TMPL_IF name="virtualshelves" --><!-- TMPL_IF NAME="opacuserlogin" --><!-- TMPL_IF NAME="loggedinusername" --><li><a class="link addtoshelf" href="/cgi-bin/koha/opac-addbybiblionumber.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->" onclick="Dopop('opac-addbybiblionumber.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->'); return false;">Save to Your Lists</a></li><!-- /TMPL_IF --><!-- /TMPL_IF --><!-- /TMPL_IF -->
 	<!-- TMPL_IF NAME="opacbookbag" --><li><a class="link addtocart" href="#" onclick="addRecord('<!-- TMPL_VAR NAME="biblionumber" -->'); return false;">Add to Your Cart</a></li><!-- /TMPL_IF -->
@@ -22,7 +42,16 @@
     <div class="yui-g" style="margin-top : 1em;">
 	<h1 style="float:left;margin: 0 1em 1em 0;">MARC View</h1>
 	<div id="views">
-	<span class="view"><a id="Normalview" href="/cgi-bin/koha/opac-detail.pl?biblionumber=<!-- TMPL_VAR name="biblionumber" -->">Normal View</a></span> <span class="view"><span id="MARCview">MARC View</span></span> <!-- TMPL_IF NAME="ISBD" --><span class="view"><a id="ISBDview"  href="/cgi-bin/koha/opac-ISBDdetail.pl?biblionumber=<!-- TMPL_VAR name="biblionumber" -->">ISBD View</a></span><!-- /TMPL_IF -->
+	<span class="view"><a id="Normalview" href="/cgi-bin/koha/opac-detail.pl?biblionumber=<!-- TMPL_VAR name="biblionumber" -->">Normal View</a></span> 
+
+<!-- TMPL_IF NAME="XSLTDetailsDisplay" -->
+<span class="view"><a id="MARCviewPop" href="/cgi-bin/koha/opac-showmarc.pl?id=<!-- TMPL_VAR NAME="biblionumber" -->" title="MARC" rel="gb_page_center[600,500]">MARC View</a></span>
+        <span class="view"><span id="MARCview">Expanded MARC View</a></span></span>
+<!-- TMPL_ELSE -->
+<span class="view"><span id="MARCview">MARC View</span>
+<!-- /TMPL_IF -->
+
+ <!-- TMPL_IF NAME="ISBD" --><span class="view"><a id="ISBDview"  href="/cgi-bin/koha/opac-ISBDdetail.pl?biblionumber=<!-- TMPL_VAR name="biblionumber" -->">ISBD View</a></span><!-- /TMPL_IF -->
 </div>
     <h1 style="clear:both;"><!-- TMPL_VAR NAME="bibliotitle" --> (Record no. <!-- TMPL_VAR NAME="biblionumber" -->)</h1>
 	<table id="marc">

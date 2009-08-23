@@ -279,13 +279,13 @@ sub transferbook {
 
     # if using Branch Transfer Limits
     if ( C4::Context->preference("UseBranchTransferLimits") == 1 ) {
-        if ( C4::Context->preference("item-level_itypes") ) {
+        if ( C4::Context->preference("item-level_itypes") && C4::Context->preference("BranchTransferLimitsType") eq 'itemtype' ) {
             if ( ! IsBranchTransferAllowed( $tbr, $fbr, $biblio->{'itype'} ) ) {
                 $messages->{'NotAllowed'} = $tbr . "::" . $biblio->{'itype'};
                 $dotransfer = 0;
             }
-        } elsif ( ! IsBranchTransferAllowed( $tbr, $fbr, $biblio->{'itemtype'} ) ) {
-            $messages->{'NotAllowed'} = $tbr . "::" . $biblio->{'itemtype'};
+        } elsif ( ! IsBranchTransferAllowed( $tbr, $fbr, $biblio->{ C4::Context->preference("BranchTransferLimitsType") } ) ) {
+            $messages->{'NotAllowed'} = $tbr . "::" . $biblio->{ C4::Context->preference("BranchTransferLimitsType") };
             $dotransfer = 0;
     	}
     }
@@ -669,10 +669,28 @@ sub CanBookBeIssued {
 	$item->{'itemtype'}=$item->{'itype'}; 
     my $dbh             = C4::Context->dbh;
 
+    # MANDATORY CHECKS - unless item exists, nothing else matters
+    unless ( $item->{barcode} ) {
+        $issuingimpossible{UNKNOWN_BARCODE} = 1;
+    }
+	return ( \%issuingimpossible, \%needsconfirmation ) if %issuingimpossible;
+
     #
     # DUE DATE is OK ? -- should already have checked.
     #
-    #$issuingimpossible{INVALID_DATE} = 1 unless ($duedate);
+    unless ( $duedate ) {
+        my $issuedate = strftime( "%Y-%m-%d", localtime );
+        my $branch = (C4::Context->preference('CircControl') eq 'PickupLibrary') ? C4::Context->userenv->{'branch'} :
+                     (C4::Context->preference('CircControl') eq 'PatronLibrary') ? $borrower->{'branchcode'}        :
+                     $item->{'homebranch'};     # fallback to item's homebranch
+        my $itype = ( C4::Context->preference('item-level_itypes') ) ? $item->{'itype'} : $biblioitem->{'itemtype'};
+        my $loanlength = GetLoanLength( $borrower->{'categorycode'}, $itype, $branch );
+        $duedate = CalcDateDue( C4::Dates->new( $issuedate, 'iso' ), $loanlength, $branch, $borrower );
+
+        # Offline circ calls AddIssue directly, doesn't run through here
+        #  So issuingimpossible should be ok.
+    }
+    $issuingimpossible{INVALID_DATE} = $duedate->output('syspref') unless ( $duedate && $duedate->output('iso') ge C4::Dates->today('iso') );
 
     #
     # BORROWER STATUS
@@ -726,35 +744,49 @@ sub CanBookBeIssued {
     # JB34 CHECKS IF BORROWERS DONT HAVE ISSUE TOO MANY BOOKS
     #
 	my $toomany = TooMany( $borrower, $item->{biblionumber}, $item );
-    $needsconfirmation{TOO_MANY} = $toomany if $toomany;
+    # if TooMany return / 0, then the user has no permission to check out this book
+    if ($toomany =~ /\/ 0/) {
+        $needsconfirmation{PATRON_CANT} = 1;
+    } else {
+        $needsconfirmation{TOO_MANY} = $toomany if $toomany;
+    }
 
     #
     # ITEM CHECKING
     #
-    unless ( $item->{barcode} ) {
-        $issuingimpossible{UNKNOWN_BARCODE} = 1;
-    }
     if (   $item->{'notforloan'}
         && $item->{'notforloan'} > 0 )
     {
-        $issuingimpossible{NOT_FOR_LOAN} = 1;
+        if(!C4::Context->preference("AllowNotForLoanOverride")){
+            $issuingimpossible{NOT_FOR_LOAN} = 1;
+        }else{
+            $needsconfirmation{NOT_FOR_LOAN_FORCING} = 1;
+        }
     }
-	elsif ( !$item->{'notforloan'} ){
-		# we have to check itemtypes.notforloan also
-		if (C4::Context->preference('item-level_itypes')){
-			# this should probably be a subroutine
-			my $sth = $dbh->prepare("SELECT notforloan FROM itemtypes WHERE itemtype = ?");
-			$sth->execute($item->{'itemtype'});
-			my $notforloan=$sth->fetchrow_hashref();
-			$sth->finish();
-			if ($notforloan->{'notforloan'} == 1){
-				$issuingimpossible{NOT_FOR_LOAN} = 1;				
-			}
-		}
-		elsif ($biblioitem->{'notforloan'} == 1){
-			$issuingimpossible{NOT_FOR_LOAN} = 1;
-		}
-	}
+    elsif ( !$item->{'notforloan'} ){
+        # we have to check itemtypes.notforloan also
+        if (C4::Context->preference('item-level_itypes')){
+            # this should probably be a subroutine
+            my $sth = $dbh->prepare("SELECT notforloan FROM itemtypes WHERE itemtype = ?");
+            $sth->execute($item->{'itemtype'});
+            my $notforloan=$sth->fetchrow_hashref();
+            $sth->finish();
+            if ($notforloan->{'notforloan'}) {
+                if (!C4::Context->preference("AllowNotForLoanOverride")) {
+                    $issuingimpossible{NOT_FOR_LOAN} = 1;
+                } else {
+                    $needsconfirmation{NOT_FOR_LOAN_FORCING} = 1;
+                }
+            }
+        }
+        elsif ($biblioitem->{'notforloan'} == 1){
+            if (!C4::Context->preference("AllowNotForLoanOverride")) {
+                $issuingimpossible{NOT_FOR_LOAN} = 1;
+            } else {
+                $needsconfirmation{NOT_FOR_LOAN_FORCING} = 1;
+            }
+        }
+    }
     if ( $item->{'wthdrawn'} && $item->{'wthdrawn'} == 1 )
     {
         $issuingimpossible{WTHDRAWN} = 1;
@@ -766,7 +798,7 @@ sub CanBookBeIssued {
     }
     if ( C4::Context->preference("IndependantBranches") ) {
         my $userenv = C4::Context->userenv;
-        if ( ($userenv) && ( $userenv->{flags} != 1 ) ) {
+        if ( ($userenv) && ( $userenv->{flags} % 2 != 1 ) ) {
             $issuingimpossible{NOTSAMEBRANCH} = 1
               if ( $item->{C4::Context->preference("HomeOrHoldingBranch")} ne $userenv->{branch} );
         }
@@ -821,12 +853,6 @@ sub CanBookBeIssued {
 "$res->{'reservedate'} : $resborrower->{'firstname'} $resborrower->{'surname'} ($resborrower->{'cardnumber'})";
         }
     }
-    if ( C4::Context->preference("LibraryName") eq "Horowhenua Library Trust" ) {
-        if ( $borrower->{'categorycode'} eq 'W' ) {
-            my %emptyhash;
-            return ( \%emptyhash, \%needsconfirmation );
-        }
-	}
 	return ( \%issuingimpossible, \%needsconfirmation );
 }
 
@@ -974,12 +1000,8 @@ sub AddIssue {
         unless ($datedue) {
             my $itype = ( C4::Context->preference('item-level_itypes') ) ? $biblio->{'itype'} : $biblio->{'itemtype'};
             my $loanlength = GetLoanLength( $borrower->{'categorycode'}, $itype, $branch );
-            $datedue = CalcDateDue( C4::Dates->new( $issuedate, 'iso' ), $loanlength, $branch );
+            $datedue = CalcDateDue( C4::Dates->new( $issuedate, 'iso' ), $loanlength, $branch, $borrower );
 
-            # if ReturnBeforeExpiry ON the datedue can't be after borrower expirydate
-            if ( C4::Context->preference('ReturnBeforeExpiry') && $datedue->output('iso') gt $borrower->{dateexpiry} ) {
-                $datedue = C4::Dates->new( $borrower->{dateexpiry}, 'iso' );
-            }
         }
         $sth->execute(
             $borrower->{'borrowernumber'},      # borrowernumber
@@ -1037,7 +1059,7 @@ sub AddIssue {
         }
     }
 
-    logaction("CIRCULATION", "ISSUE", $borrower->{'borrowernumber'}, $biblio->{'biblionumber'}) 
+    logaction("CIRCULATION", "ISSUE", $borrower->{'borrowernumber'}, $biblio->{'biblionumber'})
         if C4::Context->preference("IssueLog");
   }
   return ($datedue);	# not necessarily the same as when it came in!
@@ -1107,7 +1129,7 @@ sub GetLoanLength {
 
 =head2 GetIssuingRule
 
-FIXME - This is a copy-paste of GetLoanLength 
+FIXME - This is a copy-paste of GetLoanLength
 as a stop-gap.  Do not wish to change API for GetLoanLength 
 this close to release, however, Overdues::GetIssuingRules is broken.
 
@@ -1339,7 +1361,8 @@ C<&AddReturn> returns a list of four items:
 
 C<$doreturn> is true iff the return succeeded.
 
-C<$messages> is a reference-to-hash giving the reason for failure:
+C<$messages> is a reference-to-hash giving feedback on the operation.
+The keys of the hash are:
 
 =over 4
 
@@ -1361,6 +1384,12 @@ the book's home branch.
 
 This book has been withdrawn/cancelled. The value should be ignored.
 
+=item C<Wrongbranch>
+
+This book has was returned to the wrong branch.  The value is a hashref
+so that C<$messages->{Wrongbranch}->{Wrongbranch}> and C<$messages->{Wrongbranch}->{Rightbranch}>
+contain the branchcode of the incorrect and correct return library, respectively.
+
 =item C<ResFound>
 
 The item was reserved. The value is a reference-to-hash whose keys are
@@ -1370,6 +1399,9 @@ either C<Waiting>, C<Reserved>, or 0.
 
 =back
 
+C<$iteminformation> is a reference-to-hash, giving information about the
+returned item from the issues table.
+
 C<$borrower> is a reference-to-hash, giving information about the
 patron who last borrowed the book.
 
@@ -1377,187 +1409,181 @@ patron who last borrowed the book.
 
 sub AddReturn {
     my ( $barcode, $branch, $exemptfine, $dropbox ) = @_;
-    my $dbh      = C4::Context->dbh;
+    if ($branch and not GetBranchDetail($branch)) {
+        warn "AddReturn error: branch '$branch' not found.  Reverting to " . C4::Context->userenv->{'branch'};
+        undef $branch;
+    }
+    $branch = C4::Context->userenv->{'branch'} unless $branch;  # we trust userenv to be a safe fallback/default
     my $messages;
-    my $doreturn = 1;
     my $borrower;
+    my $biblio;
+    my $doreturn       = 1;
     my $validTransfert = 0;
-    my $reserveDone = 0;
     
     # get information on item
-    my $iteminformation = GetItemIssue( GetItemnumberFromBarcode($barcode));
-    my $biblio = GetBiblioItemData($iteminformation->{'biblioitemnumber'});
-#     use Data::Dumper;warn Data::Dumper::Dumper($iteminformation);  
-    unless ($iteminformation->{'itemnumber'} ) {
-        $messages->{'BadBarcode'} = $barcode;
-        $doreturn = 0;
+    my $itemnumber = GetItemnumberFromBarcode( $barcode );
+    unless ($itemnumber) {
+        return (0, { BadBarcode => $barcode }); # no barcode means no item or borrower.  bail out.
+    }
+    my $issue  = GetItemIssue($itemnumber);
+#   warn Dumper($iteminformation);
+    if ($issue and $issue->{borrowernumber}) {
+        $borrower = C4::Members::GetMemberDetails($issue->{borrowernumber})
+            or die "Data inconsistency: barcode $barcode (itemnumber:$itemnumber) claims to be issued to non-existant borrowernumber '$issue->{borrowernumber}'\n"
+                . Dumper($issue) . "\n";
     } else {
-        # find the borrower
-        if ( ( not $iteminformation->{borrowernumber} ) && $doreturn ) {
-            $messages->{'NotIssued'} = $barcode;
-            # even though item is not on loan, it may still
-            # be transferred; therefore, get current branch information
-            my $curr_iteminfo = GetItem($iteminformation->{'itemnumber'});
-            $iteminformation->{'homebranch'} = $curr_iteminfo->{'homebranch'};
-            $iteminformation->{'holdingbranch'} = $curr_iteminfo->{'holdingbranch'};
-            $doreturn = 0;
-        }
-    
-        # check if the book is in a permanent collection....
-        my $hbr      = $iteminformation->{C4::Context->preference("HomeOrHoldingBranch")};
-        my $branches = GetBranches();
-		# FIXME -- This 'PE' attribute is largely undocumented.  afaict, there's no user interface that reflects this functionality.
-        if ( $hbr && $branches->{$hbr}->{'PE'} ) {
-            $messages->{'IsPermanent'} = $hbr;
-        }
-		
-		    # if independent branches are on and returning to different branch, refuse the return
-        if ($hbr ne C4::Context->userenv->{'branch'} && C4::Context->preference("IndependantBranches")){
-			  $messages->{'Wrongbranch'} = 1;
-			  $doreturn=0;
-		    }
-			
-        # check that the book has been cancelled
-        if ( $iteminformation->{'wthdrawn'} ) {
-            $messages->{'wthdrawn'} = 1;
-            $doreturn = 0;
-        }
-    
-    #     new op dev : if the book returned in an other branch update the holding branch
-    
-    # update issues, thereby returning book (should push this out into another subroutine
-        $borrower = C4::Members::GetMemberDetails( $iteminformation->{borrowernumber}, 0 );
-    
+        $messages->{'NotIssued'} = $barcode;
+        # even though item is not on loan, it may still be transferred;  therefore, get current branch info
+        $doreturn = 0;
+        # No issue, no borrowernumber.  ONLY if $doreturn, *might* you have a $borrower later.
+    }
+
+    my $item = GetItem($itemnumber) or die "GetItem($itemnumber) failed";
+        # full item data, but no borrowernumber or checkout info (no issue)
+        # we know GetItem should work because GetItemnumberFromBarcode worked
+    my $hbr = $item->{C4::Context->preference("HomeOrHoldingBranch")} || '';
+        # item must be from items table -- issues table has branchcode and issuingbranch, not homebranch nor holdingbranch
+
+    my $borrowernumber = $borrower->{'borrowernumber'} || undef;    # we don't know if we had a borrower or not
+
+    # check if the book is in a permanent collection....
+    # FIXME -- This 'PE' attribute is largely undocumented.  afaict, there's no user interface that reflects this functionality.
+    if ( $hbr ) {
+        my $branches = GetBranches();    # a potentially expensive call for a non-feature.
+        $branches->{$hbr}->{PE} and $messages->{'IsPermanent'} = $hbr;
+    }
+
+    # if indy branches and returning to different branch, refuse the return
+    if ($hbr ne $branch && C4::Context->preference("IndependantBranches")){
+        $messages->{'Wrongbranch'} = {
+            Wrongbranch => $branch,
+            Rightbranch => $hbr,
+        };
+        $doreturn = 0;  # Could we bail here?
+    }
+
+    if ( $item->{'wthdrawn'} ) { # book has been cancelled
+        $messages->{'wthdrawn'} = 1;
+        $doreturn = 0;
+    }
+
     # case of a return of document (deal with issues and holdingbranch)
-    
-        if ($doreturn) {
-			my $circControlBranch;
-			if($dropbox) {
-				# don't allow dropbox mode to create an invalid entry in issues (issuedate > returndate) FIXME: actually checks eq, not gt
-				undef($dropbox) if ( $iteminformation->{'issuedate'} eq C4::Dates->today('iso') );
-				if (C4::Context->preference('CircControl') eq 'ItemHomeBranch' ) {
-					$circControlBranch = $iteminformation->{homebranch};
-				} elsif ( C4::Context->preference('CircControl') eq 'PatronLibrary') {
-					$circControlBranch = $borrower->{branchcode};
-				} else { # CircControl must be PickupLibrary.
-					$circControlBranch = $iteminformation->{holdingbranch};
-					# FIXME - is this right ? are we sure that the holdingbranch is still the pickup branch?
-				}
-			}
-            MarkIssueReturned($borrower->{'borrowernumber'}, $iteminformation->{'itemnumber'},$circControlBranch);
-            $messages->{'WasReturned'} = 1;    # FIXME is the "= 1" right?
-        }
-    
-    # continue to deal with returns cases, but not only if we have an issue
-    
-        # the holdingbranch is updated if the document is returned in an other location .
-        if ( $iteminformation->{'holdingbranch'} ne C4::Context->userenv->{'branch'} ) {
-		        UpdateHoldingbranch(C4::Context->userenv->{'branch'},$iteminformation->{'itemnumber'});	
-		        #         	reload iteminformation holdingbranch with the userenv value
-		        $iteminformation->{'holdingbranch'} = C4::Context->userenv->{'branch'};
-        }
-        ModDateLastSeen( $iteminformation->{'itemnumber'} );
-        ModItem({ onloan => undef }, $biblio->{'biblionumber'}, $iteminformation->{'itemnumber'});
-		    
-		    if ($iteminformation->{borrowernumber}){
-			  ($borrower) = C4::Members::GetMemberDetails( $iteminformation->{borrowernumber}, 0 );
-        }       
-        # fix up the accounts.....
-        if ( $iteminformation->{'itemlost'} ) {
-            $messages->{'WasLost'} = 1;
-        }
-    
-    # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-    #     check if we have a transfer for this document
-        my ($datesent,$frombranch,$tobranch) = GetTransfers( $iteminformation->{'itemnumber'} );
-    
-    #     if we have a transfer to do, we update the line of transfers with the datearrived
-        if ($datesent) {
-            if ( $tobranch eq C4::Context->userenv->{'branch'} ) {
-                    my $sth =
-                    $dbh->prepare(
-                            "UPDATE branchtransfers SET datearrived = now() WHERE itemnumber= ? AND datearrived IS NULL"
-                    );
-                    $sth->execute( $iteminformation->{'itemnumber'} );
-                    $sth->finish;
-    #         now we check if there is a reservation with the validate of transfer if we have one, we can         set it with the status 'W'
-            C4::Reserves::ModReserveStatus( $iteminformation->{'itemnumber'},'W' );
+    if ($doreturn) {
+        $borrower or warn "AddReturn without current borrower";
+        my $circControlBranch;
+        if ($dropbox) {
+            # don't allow dropbox mode to create an invalid entry in issues (issuedate > returndate) FIXME: actually checks eq, not gt
+            undef($dropbox) if ( $item->{'issuedate'} eq C4::Dates->today('iso') );
+            if (C4::Context->preference('CircControl') eq 'ItemHomeBranch') {
+                $circControlBranch = $item->{homebranch};
+            } elsif (C4::Context->preference('CircControl') eq 'PatronLibrary') {
+                $circControlBranch = $borrower->{branchcode};
+            } else { # CircControl must be PickupLibrary.
+                $circControlBranch = $item->{holdingbranch};
+                # FIXME - is this right ? are we sure that the holdingbranch is still the pickup branch?
             }
-        else {
-            $messages->{'WrongTransfer'} = $tobranch;
-            $messages->{'WrongTransferItem'} = $iteminformation->{'itemnumber'};
+        }
+
+        if ($borrowernumber) {
+            MarkIssueReturned($borrowernumber, $item->{'itemnumber'}, $circControlBranch);
+            $messages->{'WasReturned'} = 1;    # FIXME is the "= 1" right?  This could be the borrower hash.
+        }
+
+        # the holdingbranch is updated if the document is returned to another location.
+        if ($item->{'holdingbranch'} ne $branch) {
+            UpdateHoldingbranch($branch, $item->{'itemnumber'});
+            $item->{'holdingbranch'} = $branch; # update item data holdingbranch too
+        }
+        ModDateLastSeen( $item->{'itemnumber'} );
+        ModItem({ onloan => undef }, $issue->{'biblionumber'}, $item->{'itemnumber'});
+    }
+
+    # check if we have a transfer for this document
+    my ($datesent,$frombranch,$tobranch) = GetTransfers( $item->{'itemnumber'} );
+
+    # if we have a transfer to do, we update the line of transfers with the datearrived
+    if ($datesent) {
+        if ( $tobranch eq $branch ) {
+            my $sth = C4::Context->dbh->prepare(
+                "UPDATE branchtransfers SET datearrived = now() WHERE itemnumber= ? AND datearrived IS NULL"
+            );
+            $sth->execute( $item->{'itemnumber'} );
+            # if we have a reservation with valid transfer, we can set it's status to 'W'
+            C4::Reserves::ModReserveStatus($item->{'itemnumber'}, 'W');
+        } else {
+            $messages->{'WrongTransfer'}     = $tobranch;
+            $messages->{'WrongTransferItem'} = $item->{'itemnumber'};
         }
         $validTransfert = 1;
-        }
-    
-    # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
-        # fix up the accounts.....
-        if ($iteminformation->{'itemlost'}) {
-                FixAccountForLostAndReturned($iteminformation, $borrower);
-                $messages->{'WasLost'} = 1;
-        }
-        # fix up the overdues in accounts...
-        FixOverduesOnReturn( $borrower->{'borrowernumber'},
-            $iteminformation->{'itemnumber'}, $exemptfine, $dropbox );
-    
-    # find reserves.....
-    #     if we don't have a reserve with the status W, we launch the Checkreserves routine
-        my ( $resfound, $resrec ) =
-        C4::Reserves::CheckReserves( $iteminformation->{'itemnumber'} );
-        if ($resfound) {
-            $resrec->{'ResFound'}   = $resfound;
-            $messages->{'ResFound'} = $resrec;
-            $reserveDone = 1;
-        }
-    
-        # update stats?
-        # Record the fact that this book was returned.
-        UpdateStats(
-            $branch, 'return', '0', '',
-            $iteminformation->{'itemnumber'},
-            $biblio->{'itemtype'},
-            $borrower->{'borrowernumber'}
-        );
+    }
 
-        # Send a check-in slip.
-        my $circulation_alert = 'C4::ItemCirculationAlertPreference';
-        my %conditions = (
-            branchcode   => $branch,
-            categorycode => $borrower->{categorycode},
-            item_type    => $iteminformation->{itype},
-            notification => 'CHECKIN',
-        );
-        if ($doreturn && $circulation_alert->is_enabled_for(\%conditions)) {
-            SendCirculationAlert({
-                type     => 'CHECKIN',
-                item     => $iteminformation,
-                borrower => $borrower,
-                branch   => $branch,
-            });
-        }
-        
-        logaction("CIRCULATION", "RETURN", $iteminformation->{borrowernumber}, $iteminformation->{'biblionumber'}) 
-            if C4::Context->preference("ReturnLog");
-        
-        #adding message if holdingbranch is non equal a userenv branch to return the document to homebranch
-        #we check, if we don't have reserv or transfert for this document, if not, return it to homebranch .
-        
-        if ( ( $branch ne $iteminformation->{'homebranch'}) and not $messages->{'WrongTransfer'} and ($validTransfert ne 1) and ($reserveDone ne 1) ){
-			if (C4::Context->preference("AutomaticItemReturn") == 1) {
-				ModItemTransfer($iteminformation->{'itemnumber'}, C4::Context->userenv->{'branch'}, $iteminformation->{'homebranch'});
-				$messages->{'WasTransfered'} = 1;
-			} elsif ( C4::Context->preference("UseBranchTransferLimits") == 1 
-					&& ! IsTransferAllowed( $branch, $iteminformation->{'homebranch'}, $iteminformation->{'itemtype'} )
-				) {
-				ModItemTransfer($iteminformation->{'itemnumber'}, C4::Context->userenv->{'branch'}, $iteminformation->{'homebranch'});
-                                $messages->{'WasTransfered'} = 1;
-			}
-			else {
-				$messages->{'NeedsTransfer'} = 1;
-			}
+    # fix up the accounts.....
+    if ($item->{'itemlost'}) {
+        _FixAccountForLostAndReturned($item->{'itemnumber'}, $borrowernumber, $barcode);    # can tolerate undef $borrowernumber
+        $messages->{'WasLost'} = 1;
+    }
+
+    # fix up the overdues in accounts...
+    if ($borrowernumber) {
+        my $fix = _FixOverduesOnReturn($borrowernumber, $item->{itemnumber}, $exemptfine, $dropbox);
+        defined($fix) or warn "_FixOverduesOnReturn($borrowernumber, $item->{itemnumber}...) failed!";  # zero is OK, check defined
+    }
+
+    # find reserves.....
+    # if we don't have a reserve with the status W, we launch the Checkreserves routine
+    my ($resfound, $resrec) = C4::Reserves::CheckReserves( $item->{'itemnumber'} );
+    if ($resfound) {
+          $resrec->{'ResFound'} = $resfound;
+        $messages->{'ResFound'} = $resrec;
+    }
+
+    # update stats?
+    # Record the fact that this book was returned.
+    UpdateStats(
+        $branch, 'return', '0', '',
+        $item->{'itemnumber'},
+        $biblio->{'itemtype'},
+        $borrowernumber
+    );
+
+    # Send a check-in slip. # NOTE: borrower may be undef.  probably shouldn't try to send messages then.
+    my $circulation_alert = 'C4::ItemCirculationAlertPreference';
+    my %conditions = (
+        branchcode   => $branch,
+        categorycode => $borrower->{categorycode},
+        item_type    => $item->{itype},
+        notification => 'CHECKIN',
+    );
+    if ($doreturn && $circulation_alert->is_enabled_for(\%conditions)) {
+        SendCirculationAlert({
+            type     => 'CHECKIN',
+            item     => $item,
+            borrower => $borrower,
+            branch   => $branch,
+        });
+    }
+    
+    logaction("CIRCULATION", "RETURN", $borrowernumber, $item->{'biblionumber'})
+        if C4::Context->preference("ReturnLog");
+    
+    # FIXME: make this comment intelligible.
+    #adding message if holdingbranch is non equal a userenv branch to return the document to homebranch
+    #we check, if we don't have reserv or transfert for this document, if not, return it to homebranch .
+
+    if ($doreturn and ($branch ne $item->{homebranch}) and not ($messages->{WrongTransfer} or $validTransfert or $messages->{ResFound}) ){
+        if ( C4::Context->preference("AutomaticItemReturn"    ) or
+            (C4::Context->preference("UseBranchTransferLimits") and
+             ! IsBranchTransferAllowed($branch, $item->{homebranch}, $item->{C4::Context->preference("BranchTransferLimitsType")} )
+           )) {
+            warn sprintf "about to call ModItemTransfer(%s, %s, %s)", $item->{'itemnumber'}, C4::Context->userenv->{'branch'}, $item->{'homebranch'};
+            warn "item: " . Dumper($item);
+            ModItemTransfer($item->{'itemnumber'}, C4::Context->userenv->{'branch'}, $item->{'homebranch'});
+            $messages->{'WasTransfered'} = 1;
+        } else {
+            $messages->{'NeedsTransfer'} = 1;   # TODO: instead of 1, specify branchcode that the transfer SHOULD go to, $item->{homebranch}
         }
     }
-    return ( $doreturn, $messages, $iteminformation, $borrower );
+    return ( $doreturn, $messages, $issue, $borrower );
 }
 
 =head2 MarkIssueReturned
@@ -1615,9 +1641,9 @@ sub MarkIssueReturned {
     $sth_del->execute($borrowernumber, $itemnumber);
 }
 
-=head2 FixOverduesOnReturn
+=head2 _FixOverduesOnReturn
 
-    &FixOverduesOnReturn($brn,$itm, $exemptfine, $dropboxmode);
+    &_FixOverduesOnReturn($brn,$itm, $exemptfine, $dropboxmode);
 
 C<$brn> borrowernumber
 
@@ -1626,193 +1652,172 @@ C<$itm> itemnumber
 C<$exemptfine> BOOL -- remove overdue charge associated with this issue. 
 C<$dropboxmode> BOOL -- remove lastincrement on overdue charge associated with this issue.
 
-internal function, called only by AddReturn
+Internal function, called only by AddReturn
 
 =cut
 
-sub FixOverduesOnReturn {
-    my ( $borrowernumber, $item, $exemptfine, $dropbox ) = @_;
+sub _FixOverduesOnReturn {
+    my ($borrowernumber, $item);
+    unless ($borrowernumber = shift) {
+        warn "_FixOverduesOnReturn() not supplied valid borrowernumber";
+        return;
+    }
+    unless ($item = shift) {
+        warn "_FixOverduesOnReturn() not supplied valid itemnumber";
+        return;
+    }
+    my ($exemptfine, $dropbox) = @_;
     my $dbh = C4::Context->dbh;
 
     # check for overdue fine
-    my $sth =
-      $dbh->prepare(
+    my $sth = $dbh->prepare(
 "SELECT * FROM accountlines WHERE (borrowernumber = ?) AND (itemnumber = ?) AND (accounttype='FU' OR accounttype='O')"
-      );
+    );
     $sth->execute( $borrowernumber, $item );
 
     # alter fine to show that the book has been returned
-   my $data; 
-	if ($data = $sth->fetchrow_hashref) {
-        my $uquery;
-		my @bind = ($borrowernumber,$item ,$data->{'accountno'});
-		if ($exemptfine) {
-			$uquery = "update accountlines set accounttype='FFOR', amountoutstanding=0";
-			if (C4::Context->preference("FinesLog")) {
-		    	&logaction("FINES", 'MODIFY',$borrowernumber,"Overdue forgiven: item $item");
-			}
-		} elsif ($dropbox && $data->{lastincrement}) {
-			my $outstanding = $data->{amountoutstanding} - $data->{lastincrement} ;
-			my $amt = $data->{amount} - $data->{lastincrement} ;
-			if (C4::Context->preference("FinesLog")) {
-		    	&logaction("FINES", 'MODIFY',$borrowernumber,"Dropbox adjustment $amt, item $item");
-			}
-			 $uquery = "update accountlines set accounttype='F' ";
-			 if($outstanding  >= 0 && $amt >=0) {
-			 	$uquery .= ", amount = ? , amountoutstanding=? ";
-				unshift @bind, ($amt, $outstanding) ;
-			}
-		} else {
-			$uquery = "update accountlines set accounttype='F' ";
-		}
-	 	$uquery .= " where (borrowernumber = ?) and (itemnumber = ?) and (accountno = ?)";
-        my $usth = $dbh->prepare($uquery);
-        $usth->execute(@bind);
-        $usth->finish();
-    }
+    my $data = $sth->fetchrow_hashref;
+    return 0 unless $data;    # no warning, there's just nothing to fix
 
-    $sth->finish();
-    return;
+    my $uquery;
+    my @bind = ($borrowernumber, $item, $data->{'accountno'});
+    if ($exemptfine) {
+        $uquery = "update accountlines set accounttype='FFOR', amountoutstanding=0";
+        if (C4::Context->preference("FinesLog")) {
+            &logaction("FINES", 'MODIFY',$borrowernumber,"Overdue forgiven: item $item");
+        }
+    } elsif ($dropbox && $data->{lastincrement}) {
+        my $outstanding = $data->{amountoutstanding} - $data->{lastincrement} ;
+        my $amt = $data->{amount} - $data->{lastincrement} ;
+        if (C4::Context->preference("FinesLog")) {
+            &logaction("FINES", 'MODIFY',$borrowernumber,"Dropbox adjustment $amt, item $item");
+        }
+         $uquery = "update accountlines set accounttype='F' ";
+         if($outstanding  >= 0 && $amt >=0) {
+            $uquery .= ", amount = ? , amountoutstanding=? ";
+            unshift @bind, ($amt, $outstanding) ;
+        }
+    } else {
+        $uquery = "update accountlines set accounttype='F' ";
+    }
+    $uquery .= " where (borrowernumber = ?) and (itemnumber = ?) and (accountno = ?)";
+    my $usth = $dbh->prepare($uquery);
+    return $usth->execute(@bind);
 }
 
-=head2 FixAccountForLostAndReturned
+=head2 _FixAccountForLostAndReturned
 
-	&FixAccountForLostAndReturned($iteminfo,$borrower);
+	&_FixAccountForLostAndReturned($itemnumber, [$borrowernumber, $barcode]);
 
-Calculates the charge for a book lost and returned (Not exported & used only once)
+Calculates the charge for a book lost and returned.
 
-C<$iteminfo> is a hashref to iteminfo. Only {itemnumber} is used.
+Internal function, not exported, called only by AddReturn.
 
-C<$borrower> is a hashref to borrower. Only {borrowernumber is used.
-
-Internal function, called by AddReturn
+FIXME: This function reflects how inscrutable fines logic is.  Fix both.
+FIXME: Give a positive return value on success.  It might be the $borrowernumber who received credit, or the amount forgiven.
 
 =cut
 
-sub FixAccountForLostAndReturned {
-	my ($iteminfo, $borrower) = @_;
-	my $dbh = C4::Context->dbh;
-	my $itm = $iteminfo->{'itemnumber'};
-	# check for charge made for lost book
-	my $sth = $dbh->prepare("SELECT * FROM accountlines WHERE (itemnumber = ?) AND (accounttype='L' OR accounttype='Rep') ORDER BY date DESC");
-	$sth->execute($itm);
-	if (my $data = $sth->fetchrow_hashref) {
-	# writeoff this amount
-		my $offset;
-		my $amount = $data->{'amount'};
-		my $acctno = $data->{'accountno'};
-		my $amountleft;
-		if ($data->{'amountoutstanding'} == $amount) {
-		$offset = $data->{'amount'};
-		$amountleft = 0;
-		} else {
-		$offset = $amount - $data->{'amountoutstanding'};
-		$amountleft = $data->{'amountoutstanding'} - $amount;
-		}
-		my $usth = $dbh->prepare("UPDATE accountlines SET accounttype = 'LR',amountoutstanding='0'
-			WHERE (borrowernumber = ?)
-			AND (itemnumber = ?) AND (accountno = ?) ");
-		$usth->execute($data->{'borrowernumber'},$itm,$acctno);
-		$usth->finish;
-	#check if any credit is left if so writeoff other accounts
-		my $nextaccntno = getnextacctno($data->{'borrowernumber'});
-		if ($amountleft < 0){
-		$amountleft*=-1;
-		}
-		if ($amountleft > 0){
-		my $msth = $dbh->prepare("SELECT * FROM accountlines WHERE (borrowernumber = ?)
-							AND (amountoutstanding >0) ORDER BY date");
-		$msth->execute($data->{'borrowernumber'});
-	# offset transactions
-		my $newamtos;
-		my $accdata;
-		while (($accdata=$msth->fetchrow_hashref) and ($amountleft>0)){
-			if ($accdata->{'amountoutstanding'} < $amountleft) {
-			$newamtos = 0;
-			$amountleft -= $accdata->{'amountoutstanding'};
-			}  else {
-			$newamtos = $accdata->{'amountoutstanding'} - $amountleft;
-			$amountleft = 0;
-			}
-			my $thisacct = $accdata->{'accountno'};
-			my $usth = $dbh->prepare("UPDATE accountlines SET amountoutstanding= ?
-					WHERE (borrowernumber = ?)
-					AND (accountno=?)");
-			$usth->execute($newamtos,$data->{'borrowernumber'},'$thisacct');
-			$usth->finish;
-			$usth = $dbh->prepare("INSERT INTO accountoffsets
-				(borrowernumber, accountno, offsetaccount,  offsetamount)
-				VALUES
-				(?,?,?,?)");
-			$usth->execute($data->{'borrowernumber'},$accdata->{'accountno'},$nextaccntno,$newamtos);
-			$usth->finish;
-		}
-		$msth->finish;
-		}
-		if ($amountleft > 0){
-			$amountleft*=-1;
-		}
-		my $desc="Item Returned ".$iteminfo->{'barcode'};
-		$usth = $dbh->prepare("INSERT INTO accountlines
-			(borrowernumber,accountno,date,amount,description,accounttype,amountoutstanding)
-			VALUES (?,?,now(),?,?,'CR',?)");
-		$usth->execute($data->{'borrowernumber'},$nextaccntno,0-$amount,$desc,$amountleft);
-		$usth->finish;
-		$usth = $dbh->prepare("INSERT INTO accountoffsets
-			(borrowernumber, accountno, offsetaccount,  offsetamount)
-			VALUES (?,?,?,?)");
-		$usth->execute($borrower->{'borrowernumber'},$data->{'accountno'},$nextaccntno,$offset);
-		$usth->finish;
-        ModItem({ paidfor => '' }, undef, $itm);
-	}
-	$sth->finish;
-	return;
+sub _FixAccountForLostAndReturned {
+    my $itemnumber     = shift or return;
+    my $borrowernumber = @_ ? shift : undef;
+    my $item_id        = @_ ? shift : $itemnumber;  # Send the barcode if you want that logged in the description
+    my $dbh = C4::Context->dbh;
+    # check for charge made for lost book
+    my $sth = $dbh->prepare("SELECT * FROM accountlines WHERE (itemnumber = ?) AND (accounttype='L' OR accounttype='Rep') ORDER BY date DESC");
+    $sth->execute($itemnumber);
+    my $data = $sth->fetchrow_hashref;
+    $data or return;    # bail if there is nothing to do
+
+    # writeoff this amount
+    my $offset;
+    my $amount = $data->{'amount'};
+    my $acctno = $data->{'accountno'};
+    my $amountleft;                                             # Starts off undef/zero.
+    if ($data->{'amountoutstanding'} == $amount) {
+        $offset     = $data->{'amount'};
+        $amountleft = 0;                                        # Hey, it's zero here, too.
+    } else {
+        $offset     = $amount - $data->{'amountoutstanding'};   # Um, isn't this the same as ZERO?  We just tested those two things are ==
+        $amountleft = $data->{'amountoutstanding'} - $amount;   # Um, isn't this the same as ZERO?  We just tested those two things are ==
+    }
+    my $usth = $dbh->prepare("UPDATE accountlines SET accounttype = 'LR',amountoutstanding='0'
+        WHERE (borrowernumber = ?)
+        AND (itemnumber = ?) AND (accountno = ?) ");
+    $usth->execute($data->{'borrowernumber'},$itemnumber,$acctno);      # We might be adjusting an account for some OTHER borrowernumber now.  Not the one we passed in.  
+    #check if any credit is left if so writeoff other accounts
+    my $nextaccntno = getnextacctno($data->{'borrowernumber'});
+    $amountleft *= -1 if ($amountleft < 0);
+    if ($amountleft > 0) {
+        my $msth = $dbh->prepare("SELECT * FROM accountlines WHERE (borrowernumber = ?)
+                            AND (amountoutstanding >0) ORDER BY date");     # might want to order by amountoustanding ASC (pay smallest first)
+        $msth->execute($data->{'borrowernumber'});
+        # offset transactions
+        my $newamtos;
+        my $accdata;
+        while (($accdata=$msth->fetchrow_hashref) and ($amountleft>0)){
+            if ($accdata->{'amountoutstanding'} < $amountleft) {
+                $newamtos = 0;
+                $amountleft -= $accdata->{'amountoutstanding'};
+            }  else {
+                $newamtos = $accdata->{'amountoutstanding'} - $amountleft;
+                $amountleft = 0;
+            }
+            my $thisacct = $accdata->{'accountno'};
+            # FIXME: move prepares outside while loop!
+            my $usth = $dbh->prepare("UPDATE accountlines SET amountoutstanding= ?
+                    WHERE (borrowernumber = ?)
+                    AND (accountno=?)");
+            $usth->execute($newamtos,$data->{'borrowernumber'},'$thisacct');    # FIXME: '$thisacct' is a string literal!
+            $usth = $dbh->prepare("INSERT INTO accountoffsets
+                (borrowernumber, accountno, offsetaccount,  offsetamount)
+                VALUES
+                (?,?,?,?)");
+            $usth->execute($data->{'borrowernumber'},$accdata->{'accountno'},$nextaccntno,$newamtos);
+        }
+        $msth->finish;  # $msth might actually have data left
+    }
+    $amountleft *= -1 if ($amountleft > 0);
+    my $desc = "Item Returned " . $item_id;
+    $usth = $dbh->prepare("INSERT INTO accountlines
+        (borrowernumber,accountno,date,amount,description,accounttype,amountoutstanding)
+        VALUES (?,?,now(),?,?,'CR',?)");
+    $usth->execute($data->{'borrowernumber'},$nextaccntno,0-$amount,$desc,$amountleft);
+    if ($borrowernumber) {
+        # FIXME: same as query above.  use 1 sth for both
+        $usth = $dbh->prepare("INSERT INTO accountoffsets
+            (borrowernumber, accountno, offsetaccount,  offsetamount)
+            VALUES (?,?,?,?)");
+        $usth->execute($borrowernumber, $data->{'accountno'}, $nextaccntno, $offset);
+    }
+    ModItem({ paidfor => '' }, undef, $itemnumber);
+    return;
 }
 
 =head2 GetItemIssue
 
-$issues = &GetItemIssue($itemnumber);
+$issue = &GetItemIssue($itemnumber);
 
-Returns patrons currently having a book. nothing if item is not issued atm
+Returns patron currently having a book, or undef if not checked out.
 
-C<$itemnumber> is the itemnumber
+C<$itemnumber> is the itemnumber.
 
-Returns an array of hashes
-
-FIXME: Though the above says that this function returns nothing if the
-item is not issued, this actually returns a hasref that looks like
-this:
-    {
-      itemnumber => 1,
-      overdue    => 1
-    }
-
+C<$issue> is a hashref of the row from the issues table.
 
 =cut
 
 sub GetItemIssue {
-    my ( $itemnumber) = @_;
+    my ($itemnumber) = @_;
     return unless $itemnumber;
-    my $dbh = C4::Context->dbh;
-    my @GetItemIssues;
-    
-    # get today date
-    my $today = POSIX::strftime("%Y%m%d", localtime);
-
-    my $sth = $dbh->prepare(
-        "SELECT * FROM issues 
+    my $sth = C4::Context->dbh->prepare(
+        "SELECT *
+        FROM issues 
         LEFT JOIN items ON issues.itemnumber=items.itemnumber
-    WHERE
-    issues.itemnumber=?");
+        WHERE issues.itemnumber=?");
     $sth->execute($itemnumber);
     my $data = $sth->fetchrow_hashref;
-    my $datedue = $data->{'date_due'};
-    $datedue =~ s/-//g;
-    if ( $datedue < $today ) {
-        $data->{'overdue'} = 1;
-    }
-    $data->{'itemnumber'} = $itemnumber; # fill itemnumber, in case item is not on issue
-    $sth->finish;
+    return unless $data;
+    $data->{'overdue'} = ($data->{'date_due'} lt C4::Dates->today('iso')) ? 1 : 0;
     return ($data);
 }
 
@@ -1845,23 +1850,20 @@ $issues = &GetItemIssues($itemnumber, $history);
 Returns patrons that have issued a book
 
 C<$itemnumber> is the itemnumber
-C<$history> is 0 if you want actuel "issuer" (if it exist) and 1 if you want issues history
+C<$history> is false if you just want the current "issuer" (if any)
+and true if you want issues history from old_issues also.
 
-Returns an array of hashes
+Returns reference to an array of hashes
 
 =cut
 
 sub GetItemIssues {
-    my ( $itemnumber,$history ) = @_;
-    my $dbh = C4::Context->dbh;
-    my @GetItemIssues;
+    my ( $itemnumber, $history ) = @_;
     
-    # get today date
-    my $today = POSIX::strftime("%Y%m%d", localtime);
-
+    my $today = C4::Dates->today('iso');  # get today date
     my $sql = "SELECT * FROM issues 
               JOIN borrowers USING (borrowernumber)
-              JOIN items USING (itemnumber)
+              JOIN items     USING (itemnumber)
               WHERE issues.itemnumber = ? ";
     if ($history) {
         $sql .= "UNION ALL
@@ -1871,23 +1873,17 @@ sub GetItemIssues {
                  WHERE old_issues.itemnumber = ? ";
     }
     $sql .= "ORDER BY date_due DESC";
-    my $sth = $dbh->prepare($sql);
+    my $sth = C4::Context->dbh->prepare($sql);
     if ($history) {
         $sth->execute($itemnumber, $itemnumber);
     } else {
         $sth->execute($itemnumber);
     }
-    while ( my $data = $sth->fetchrow_hashref ) {
-        my $datedue = $data->{'date_due'};
-        $datedue =~ s/-//g;
-        if ( $datedue < $today ) {
-            $data->{'overdue'} = 1;
-        }
-        my $itemnumber = $data->{'itemnumber'};
-        push @GetItemIssues, $data;
+    my $results = $sth->fetchall_arrayref({});
+    foreach (@$results) {
+        $_->{'overdue'} = ($_->{'date_due'} lt $today) ? 1 : 0;
     }
-    $sth->finish;
-    return ( \@GetItemIssues );
+    return $results;
 }
 
 =head2 GetBiblioIssues
@@ -2059,7 +2055,8 @@ has the item.
 
 C<$itemnumber> is the number of the item to renew.
 
-C<$branch> is the library branch.  Defaults to the homebranch of the ITEM.
+C<$branch> is the library where the renewal took place (if any).
+           The library that controls the circ policies for the renewal is retrieved from the issues record.
 
 C<$datedue> can be a C4::Dates object used to set the due date.
 
@@ -2072,33 +2069,13 @@ from the book's item type.
 =cut
 
 sub AddRenewal {
-	my $borrowernumber = shift or return undef;
-	my     $itemnumber = shift or return undef;
+    my $borrowernumber  = shift or return undef;
+    my $itemnumber      = shift or return undef;
+    my $branch          = shift;
+    my $datedue         = shift;
+    my $lastreneweddate = shift || C4::Dates->new()->output('iso');
     my $item   = GetItem($itemnumber) or return undef;
     my $biblio = GetBiblioFromItemNumber($itemnumber) or return undef;
-    my $branch  = (@_) ? shift : $item->{homebranch};	# opac-renew doesn't send branch
-    my $datedue = shift;
-    my $lastreneweddate = shift;
-
-    # If the due date wasn't specified, calculate it by adding the
-    # book's loan length to today's date.
-    unless ($datedue && $datedue->output('iso')) {
-
-        my $borrower = C4::Members::GetMemberDetails( $borrowernumber, 0 ) or return undef;
-        my $loanlength = GetLoanLength(
-            $borrower->{'categorycode'},
-             (C4::Context->preference('item-level_itypes')) ? $biblio->{'itype'} : $biblio->{'itemtype'} ,
-			$item->{homebranch}			# item's homebranch determines loanlength OR do we want the branch specified by the AddRenewal argument?
-        );
-		#FIXME -- use circControl?
-		$datedue =  CalcDateDue(C4::Dates->new(),$loanlength,$branch);	# this branch is the transactional branch.
-								# The question of whether to use item's homebranch calendar is open.
-    }
-
-    # $lastreneweddate defaults to today.
-    unless (defined $lastreneweddate) {
-        $lastreneweddate = strftime( "%Y-%m-%d", localtime );
-    }
 
     my $dbh = C4::Context->dbh;
     # Find the issues record for this book
@@ -2110,6 +2087,26 @@ sub AddRenewal {
     $sth->execute( $borrowernumber, $itemnumber );
     my $issuedata = $sth->fetchrow_hashref;
     $sth->finish;
+    if($datedue && ! $datedue->output('iso')){
+        warn "Invalid date passed to AddRenewal.";
+        return undef;
+    }
+    # If the due date wasn't specified, calculate it by adding the
+    # book's loan length to today's date or the current due date
+    # based on the value of the RenewalPeriodBase syspref.
+    unless ($datedue) {
+
+        my $borrower = C4::Members::GetMemberDetails( $borrowernumber, 0 ) or return undef;
+        my $loanlength = GetLoanLength(
+                    $borrower->{'categorycode'},
+                    (C4::Context->preference('item-level_itypes')) ? $biblio->{'itype'} : $biblio->{'itemtype'} ,
+			        $issuedata->{'branchcode'}  );   # that's the circ control branch.
+
+        $datedue = (C4::Context->preference('RenewalPeriodBase') eq 'date_due') ?
+                                        C4::Dates->new($issuedata->{date_due}, 'iso') :
+                                        C4::Dates->new();
+        $datedue =  CalcDateDue($datedue,$loanlength,$issuedata->{'branchcode'},$borrower);
+    }
 
     # Update the issues record to have the new due date, and a new count
     # of how many times it has been renewed.
@@ -2123,7 +2120,7 @@ sub AddRenewal {
 
     # Update the renewal count on the item, and tell zebra to reindex
     $renews = $biblio->{'renewals'} + 1;
-    ModItem({ renewals => $renews }, $biblio->{'biblionumber'}, $itemnumber);
+    ModItem({ renewals => $renews, onloan => $datedue->output('iso') }, $biblio->{'biblionumber'}, $itemnumber);
 
     # Charge a new rental fee, if applicable?
     my ( $charge, $type ) = GetIssuingCharges( $itemnumber, $borrowernumber );
@@ -2482,17 +2479,34 @@ C<$loanlength>  = loan length prior to adjustment
 =cut
 
 sub CalcDateDue { 
-	my ($startdate,$loanlength,$branch) = @_;
+	my ($startdate,$loanlength,$branch,$borrower) = @_;
+	my $datedue;
+
 	if(C4::Context->preference('useDaysMode') eq 'Days') {  # ignoring calendar
-		my $datedue = time + ($loanlength) * 86400;
+		my $timedue = time + ($loanlength) * 86400;
 	#FIXME - assumes now even though we take a startdate 
-		my @datearr  = localtime($datedue);
-		return C4::Dates->new( sprintf("%04d-%02d-%02d", 1900 + $datearr[5], $datearr[4] + 1, $datearr[3]), 'iso');
+		my @datearr  = localtime($timedue);
+		$datedue = C4::Dates->new( sprintf("%04d-%02d-%02d", 1900 + $datearr[5], $datearr[4] + 1, $datearr[3]), 'iso');
 	} else {
 		my $calendar = C4::Calendar->new(  branchcode => $branch );
-		my $datedue = $calendar->addDate($startdate, $loanlength);
-		return $datedue;
+		$datedue = $calendar->addDate($startdate, $loanlength);
 	}
+
+	# if ReturnBeforeExpiry ON the datedue can't be after borrower expirydate
+	if ( C4::Context->preference('ReturnBeforeExpiry') && $datedue->output('iso') gt $borrower->{dateexpiry} ) {
+	    $datedue = C4::Dates->new( $borrower->{dateexpiry}, 'iso' );
+	}
+
+	# if ceilingDueDate ON the datedue can't be after the ceiling date
+	if ( C4::Context->preference('ceilingDueDate')
+             && ( C4::Context->preference('ceilingDueDate') =~ C4::Dates->regexp('syspref') ) ) {
+            my $ceilingDate = C4::Dates->new( C4::Context->preference('ceilingDueDate') );
+            if ( $datedue->output( 'iso' ) gt $ceilingDate->output( 'iso' ) ) {
+                $datedue = $ceilingDate;
+            }
+	}
+
+	return $datedue;
 }
 
 =head2 CheckValidDatedue
@@ -2630,19 +2644,22 @@ return $exist;
 
 =head2 IsBranchTransferAllowed
 
-$allowed = IsBranchTransferAllowed( $toBranch, $fromBranch, $itemtype );
+$allowed = IsBranchTransferAllowed( $toBranch, $fromBranch, $code );
+
+Code is either an itemtype or collection doe depending on the pref BranchTransferLimitsType
 
 =cut
 
 sub IsBranchTransferAllowed {
-	my ( $toBranch, $fromBranch, $itemtype ) = @_;
-    
+	my ( $toBranch, $fromBranch, $code ) = @_;
+
 	if ( $toBranch eq $fromBranch ) { return 1; } ## Short circuit for speed.
         
+	my $limitType = C4::Context->preference("BranchTransferLimitsType");   
 	my $dbh = C4::Context->dbh;
             
-	my $sth = $dbh->prepare('SELECT * FROM branch_transfer_limits WHERE toBranch = ? AND fromBranch = ? AND itemtype = ?');
-	$sth->execute( $toBranch, $fromBranch, $itemtype );
+	my $sth = $dbh->prepare("SELECT * FROM branch_transfer_limits WHERE toBranch = ? AND fromBranch = ? AND $limitType = ?");
+	$sth->execute( $toBranch, $fromBranch, $code );
 	my $limit = $sth->fetchrow_hashref();
                         
 	## If a row is found, then that combination is not allowed, if no matching row is found, then the combination *is allowed*
@@ -2655,17 +2672,21 @@ sub IsBranchTransferAllowed {
 
 =head2 CreateBranchTransferLimit
 
-CreateBranchTransferLimit( $toBranch, $fromBranch, $itemtype );
+CreateBranchTransferLimit( $toBranch, $fromBranch, $code );
+
+$code is either itemtype or collection code depending on what the pref BranchTransferLimitsType is set to.
 
 =cut
 
 sub CreateBranchTransferLimit {
-   my ( $toBranch, $fromBranch, $itemtype ) = @_;
+   my ( $toBranch, $fromBranch, $code ) = @_;
+
+   my $limitType = C4::Context->preference("BranchTransferLimitsType");
    
    my $dbh = C4::Context->dbh;
    
-   my $sth = $dbh->prepare("INSERT INTO branch_transfer_limits ( itemtype, toBranch, fromBranch ) VALUES ( ?, ?, ? )");
-   $sth->execute( $itemtype, $toBranch, $fromBranch );
+   my $sth = $dbh->prepare("INSERT INTO branch_transfer_limits ( $limitType, toBranch, fromBranch ) VALUES ( ?, ?, ? )");
+   $sth->execute( $code, $toBranch, $fromBranch );
 }
 
 =head2 DeleteBranchTransferLimits

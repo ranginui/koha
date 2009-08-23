@@ -37,6 +37,10 @@ BEGIN {
         &insert_day_month_holiday
         &insert_single_holiday
         &insert_exception_holiday
+	&ModWeekdayholiday
+        &ModDaymonthholiday
+        &ModSingleholiday
+        &ModExceptionholiday
         &delete_holiday
         &isHoliday
         &addDate
@@ -104,7 +108,9 @@ sub _init {
     while (my $row = $repeatable->fetchrow_hashref) {
         my $key = $row->{month} . "/" . $row->{day};
         $day_month_holidays{$key}{title}       = $row->{title};
-        $day_month_holidays{$key}{description} = $row->{description}
+        $day_month_holidays{$key}{description} = $row->{description};
+        $day_month_holidays{$key}{day} = sprintf("%02d", $row->{day});
+        $day_month_holidays{$key}{month} = sprintf("%02d", $row->{month});
     }
     $self->{'day_month_holidays'} = \%day_month_holidays;
 
@@ -117,6 +123,8 @@ sub _init {
     while (my ($day, $month, $year, $title, $description) = $special->fetchrow) {
         $exception_holidays{"$year/$month/$day"}{title} = $title;
         $exception_holidays{"$year/$month/$day"}{description} = $description;
+        $exception_holidays{"$year/$month/$day"}{date} = 
+		sprintf("%04d-%02d-%02d", $year, $month, $day);
     }
     $self->{'exception_holidays'} = \%exception_holidays;
 
@@ -125,6 +133,8 @@ sub _init {
     while (my ($day, $month, $year, $title, $description) = $special->fetchrow) {
         $single_holidays{"$year/$month/$day"}{title} = $title;
         $single_holidays{"$year/$month/$day"}{description} = $description;
+        $single_holidays{"$year/$month/$day"}{date} = 
+		sprintf("%04d-%02d-%02d", $year, $month, $day);
     }
     $self->{'single_holidays'} = \%single_holidays;
     return $self;
@@ -313,6 +323,133 @@ sub insert_exception_holiday {
     my $isexception = 1;
     my $insertException = $dbh->prepare("insert into special_holidays (id,branchcode,day,month,year,isexception,title,description) values ('', ?,?,?,?,?,?,?)");
 	$insertException->execute( $self->{branchcode}, $options{day},$options{month},$options{year}, $isexception, $options{title}, $options{description});
+    $self->{'exception_holidays'}->{"$options{year}/$options{month}/$options{day}"}{title} = $options{title};
+    $self->{'exception_holidays'}->{"$options{year}/$options{month}/$options{day}"}{description} = $options{description};
+    return $self;
+}
+
+=item ModWeekdayholiday
+
+    ModWeekdayholiday(weekday =>$weekday,
+                      title => $title,
+                      description => $description)
+
+Modifies the title and description of a weekday for $self->{branchcode}.
+
+C<$weekday> Is the title to update for the holiday.
+
+C<$description> Is the description to update for the holiday.
+
+=cut
+
+sub ModWeekdayholiday {
+    my $self = shift @_;
+    my %options = @_;
+
+    my $dbh = C4::Context->dbh();
+    my $updateHoliday = $dbh->prepare("UPDATE repeatable_holidays SET title = ?, description = ? WHERE branchcode = ? AND weekday = ?");
+    $updateHoliday->execute( $options{title},$options{description},$self->{branchcode},$options{weekday}); 
+    $self->{'week_days_holidays'}->{$options{weekday}}{title} = $options{title};
+    $self->{'week_days_holidays'}->{$options{weekday}}{description} = $options{description};
+    return $self;
+}
+
+=item ModDaymonthholiday
+
+    ModDaymonthholiday(day => $day,
+                       month => $month,
+                       title => $title,
+                       description => $description);
+
+Modifies the title and description for a day/month holiday for $self->{branchcode}.
+
+C<$day> The day of the month for the update.
+
+C<$month> The month to be used for the update.
+
+C<$title> The title to be updated for the holiday.
+
+C<$description> The description to be update for the holiday.
+
+=cut
+
+sub ModDaymonthholiday {
+    my $self = shift @_;
+    my %options = @_;
+
+    my $dbh = C4::Context->dbh();
+    my $updateHoliday = $dbh->prepare("UPDATE repeatable_holidays SET title = ?, description = ? WHERE month = ? AND day = ? AND branchcode = ?");
+       $updateHoliday->execute( $options{title},$options{description},$options{month},$options{day},$self->{branchcode}); 
+    $self->{'day_month_holidays'}->{"$options{month}/$options{day}"}{title} = $options{title};
+    $self->{'day_month_holidays'}->{"$options{month}/$options{day}"}{description} = $options{description};
+    return $self;
+}
+
+=item ModSingleholiday
+
+    ModSingleholiday(day => $day,
+                     month => $month,
+                     year => $year,
+                     title => $title,
+                     description => $description);
+
+Modifies the title and description for a single holiday for $self->{branchcode}.
+
+C<$day> Is the day of the month to make the update.
+
+C<$month> Is the month to make the update.
+
+C<$year> Is the year to make the update.
+
+C<$title> Is the title to update for the holiday formed by $year/$month/$day.
+
+C<$description> Is the description to update for the holiday formed by $year/$month/$day.
+
+=cut
+
+sub ModSingleholiday {
+    my $self = shift @_;
+    my %options = @_;
+
+    my $dbh = C4::Context->dbh();
+    my $isexception = 0;
+    my $updateHoliday = $dbh->prepare("UPDATE special_holidays SET title = ?, description = ? WHERE day = ? AND month = ? AND year = ? AND branchcode = ? AND isexception = ?");
+      $updateHoliday->execute($options{title},$options{description},$options{day},$options{month},$options{year},$self->{branchcode},$isexception);    
+    $self->{'single_holidays'}->{"$options{year}/$options{month}/$options{day}"}{title} = $options{title};
+    $self->{'single_holidays'}->{"$options{year}/$options{month}/$options{day}"}{description} = $options{description};
+    return $self;
+}
+
+=item ModExceptionholiday
+
+    ModExceptionholiday(day => $day,
+                        month => $month,
+                        year => $year,
+                        title => $title,
+                        description => $description);
+
+Modifies the title and description for an exception holiday for $self->{branchcode}.
+
+C<$day> Is the day of the month for the holiday.
+
+C<$month> Is the month for the holiday.
+
+C<$year> Is the year for the holiday.
+
+C<$title> Is the title to be modified for the holiday formed by $year/$month/$day.
+
+C<$description> Is the description to be modified for the holiday formed by $year/$month/$day.
+
+=cut
+
+sub ModExceptionholiday {
+    my $self = shift @_;
+    my %options = @_;
+
+    my $dbh = C4::Context->dbh();
+    my $isexception = 1;
+    my $updateHoliday = $dbh->prepare("UPDATE special_holidays SET title = ?, description = ? WHERE day = ? AND month = ? AND year = ? AND branchcode = ? AND isexception = ?");
+    $updateHoliday->execute($options{title},$options{description},$options{day},$options{month},$options{year},$self->{branchcode},$isexception);    
     $self->{'exception_holidays'}->{"$options{year}/$options{month}/$options{day}"}{title} = $options{title};
     $self->{'exception_holidays'}->{"$options{year}/$options{month}/$options{day}"}{description} = $options{description};
     return $self;

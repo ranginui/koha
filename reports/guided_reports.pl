@@ -18,7 +18,9 @@
 # Suite 330, Boston, MA  02111-1307 USA
 
 use strict;
+# use warnings;  # FIXME
 use CGI;
+use Text::CSV;
 use C4::Reports::Guided;
 use C4::Auth;
 use C4::Output;
@@ -27,17 +29,17 @@ use C4::Debug;
 
 =head1 NAME
 
-Script to control the guided report creation
+guided_reports.pl
 
 =head1 DESCRIPTION
 
+Script to control the guided report creation
 
 =over2
 
 =cut
 
 my $input = new CGI;
-my $referer = $input->referer();
 
 my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
     {
@@ -50,43 +52,31 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
     }
 );
 
+    my @errors = ();
 my $phase = $input->param('phase');
-my $no_html = 0; # this will be set if we dont want to print out an html::template
-
 if ( !$phase ) {
     $template->param( 'start' => 1 );
-
     # show welcome page
 }
-
 elsif ( $phase eq 'Build new' ) {
-
     # build a new report
     $template->param( 'build1' => 1 );
-
-    # get report areas
-    my $areas = get_report_areas();
-    $template->param( 'areas' => $areas );
-
+    $template->param( 'areas' => get_report_areas() );
 }
-
-elsif ( $phase eq 'Used saved' ) {
-
+elsif ( $phase eq 'Use saved' ) {
     # use a saved report
     # get list of reports and display them
     $template->param( 'saved1' => 1 );
-    my $reports = get_saved_reports();
-    $template->param( 'savedreports' => $reports );
+    $template->param( 'savedreports' => get_saved_reports() ); 
 }
 
 elsif ( $phase eq 'Delete Saved') {
 	
 	# delete a report from the saved reports list
-	$no_html = 1;
 	my $id = $input->param('reports');
 	delete_report($id);
-    print $input->redirect("/cgi-bin/koha/reports/guided_reports.pl?phase=Used%20saved");
-	
+    print $input->redirect("/cgi-bin/koha/reports/guided_reports.pl?phase=Use%20saved");
+	exit;
 }		
 
 elsif ( $phase eq 'Show SQL'){
@@ -96,7 +86,47 @@ elsif ( $phase eq 'Show SQL'){
 	$template->param(
 		'sql' => $sql,
 		'showsql' => 1,
-		);
+    );
+}
+
+elsif ( $phase eq 'Edit SQL'){
+	
+    my $id = $input->param('reports');
+    my ($sql,$type,$reportname,$notes) = get_saved_report($id);
+    $template->param(
+	    'sql'        => $sql,
+	    'reportname' => $reportname,
+        'notes'      => $notes,
+        'id'         => $id,
+	    'editsql'    => 1,
+    );
+}
+
+elsif ( $phase eq 'Update SQL'){
+    my $id         = $input->param('id');
+    my $sql        = $input->param('sql');
+    my $reportname = $input->param('reportname');
+    my $notes      = $input->param('notes');
+    my @errors;
+    if ($sql =~ /;?\W?(UPDATE|DELETE|DROP|INSERT|SHOW|CREATE)\W/i) {
+        push @errors, {sqlerr => $1};
+    }
+    elsif ($sql !~ /^(SELECT)/i) {
+        push @errors, {queryerr => 1};
+    }
+    if (@errors) {
+        $template->param(
+            'errors'    => \@errors,
+            'sql'       => $sql,
+        );
+    }
+    else {
+        update_sql( $id, $sql, $reportname, $notes );
+        $template->param(
+            'save_successful'       => 1,
+        );
+    }
+    
 }
 
 elsif ($phase eq 'retrieve results') {
@@ -108,23 +138,17 @@ elsif ($phase eq 'retrieve results') {
 		'results' => $results,
 		'name' => $name,
 		'notes' => $notes,
-		);
-	
+    );
 }
 
 elsif ( $phase eq 'Report on this Area' ) {
 
     # they have choosen a new report and the area to report on
-    # get area
-    my $area = $input->param('areas');
     $template->param(
         'build2' => 1,
-        'area'   => $area
+        'area'   => $input->param('areas'),
+        'types'  => get_report_types(),
     );
-
-    # get report types
-    my $types = get_report_types();
-    $template->param( 'types' => $types );
 }
 
 elsif ( $phase eq 'Choose this type' ) {
@@ -137,11 +161,8 @@ elsif ( $phase eq 'Choose this type' ) {
         'build3' => 1,
         'area'   => $area,
         'type'   => $type,
+        columns  => get_columns($area,$input),
     );
-
-    # get columns
-    my $columns = get_columns($area,$input);
-    $template->param( 'columns' => $columns );
 }
 
 elsif ( $phase eq 'Choose these columns' ) {
@@ -152,16 +173,14 @@ elsif ( $phase eq 'Choose these columns' ) {
     my $type    = $input->param('type');
     my @columns = $input->param('columns');
     my $column  = join( ',', @columns );
-	my $definitions = get_from_dictionary($area);
     $template->param(
         'build4' => 1,
         'area'   => $area,
         'type'   => $type,
         'column' => $column,
+        definitions => get_from_dictionary($area),
+        criteria    => get_criteria($area,$input),
     );
-    my $criteria = get_criteria($area,$input);
-    $template->param( 'criteria' => $criteria,
-	'definitions' => $definitions);
 }
 
 elsif ( $phase eq 'Choose these criteria' ) {
@@ -174,13 +193,11 @@ elsif ( $phase eq 'Choose these criteria' ) {
 	my $query_criteria;
     foreach my $crit (@criteria) {
         my $value = $input->param( $crit . "_value" );
-        if ($value) {
-            if ($value =~ C4::Dates->regexp(C4::Context->preference('dateformat'))) { 
-                my $date = C4::Dates->new($value);
-                $value = $date->output("iso");
-            }
-            $query_criteria .= " AND $crit='$value'";
+        ($value) or next;
+        if ($value =~ C4::Dates->regexp('syspref')) { 
+            $value = C4::Dates->new($value)->output("iso");
         }
+        $query_criteria .= " AND $crit='$value'";
     }
 
     $template->param(
@@ -200,25 +217,8 @@ elsif ( $phase eq 'Choose these criteria' ) {
     # need to do something about the order of the order :)
 	# we also want to use the %columns hash to get the plain english names
     foreach my $col (@columns) {
-        my %total;
-        $total{'name'} = $col;
-        my @selects;
-        my %select1;
-        $select1{'value'} = 'sum';
-        push @selects, \%select1;
-        my %select2;
-        $select2{'value'} = 'min';
-        push @selects, \%select2;
-        my %select3;
-        $select3{'value'} = 'max';
-        push @selects, \%select3;
-        my %select4;
-        $select4{'value'} = 'avg';
-        push @selects, \%select4;
-        my %select5;
-        $select5{'value'} = 'count';
-        push @selects, \%select5;
-
+        my %total = (name => $col);
+        my @selects = map {+{ value => $_ }} (qw(sum min max avg count));
         $total{'select'} = \@selects;
         push @total_by, \%total;
     }
@@ -246,7 +246,7 @@ elsif ( $phase eq 'Choose These Operations' ) {
         'column'         => $column,
         'criteriastring' => $criteria,
         'totals'         => $totals,
-        'definition'    => $definition,
+        'definition'     => $definition,
     );
 
     # get columns
@@ -256,15 +256,8 @@ elsif ( $phase eq 'Choose These Operations' ) {
     # build structue for use by tmpl_loop to choose columns to order by
     # need to do something about the order of the order :)
     foreach my $col (@columns) {
-        my %order;
-        $order{'name'} = $col;
-        my @selects;
-        my %select1;
-        $select1{'value'} = 'asc';
-        push @selects, \%select1;
-        my %select2;
-        $select2{'value'} = 'desc';
-        push @selects, \%select2;
+        my %order = (name => $col);
+        my @selects = map {+{ value => $_ }} (qw(asc desc));
         $order{'select'} = \@selects;
         push @order_by, \%order;
     }
@@ -325,19 +318,14 @@ elsif ( $phase eq 'Save Report' ) {
     my $name = $input->param('reportname');
     my $type = $input->param('types');
     my $notes = $input->param('notes');
-    my @errors = ();
-    my $error = {};
     if ($sql =~ /;?\W?(UPDATE|DELETE|DROP|INSERT|SHOW|CREATE)\W/i) {
-        $error->{'sqlerr'} = $1;
-        push @errors, $error;
+        push @errors, {sqlerr => $1};
     }
     elsif ($sql !~ /^(SELECT)/i) {
-        $error->{'queryerr'} = 1;
-        push @errors, $error;
+        push @errors, {queryerr => 1};
     }
     if (@errors) {
         $template->param(
-            'save_successful'       => 1,
             'errors'    => \@errors,
             'sql'       => $sql,
             'reportname'=> $name,
@@ -346,111 +334,122 @@ elsif ( $phase eq 'Save Report' ) {
         );
     }
     else {
-        save_report( $sql, $name, $type, $notes );
+        save_report( $borrowernumber, $sql, $name, $type, $notes );
         $template->param(
             'save_successful'       => 1,
         );
     }
 }
 
-# This condition is not used currently
-#elsif ( $phase eq 'Execute' ) {
-#    # run the sql, and output results in a template	
-#    my $sql     = $input->param('sql');
-#    my $type    = $input->param('type');
-#    my ($results, $total, $errors) = execute_query($sql, $type);
-#    $template->param(
-#        'results' => $results,
-#        'sql' => $sql,
-#        'execute' => 1,
-#    );
-#}
-
 elsif ($phase eq 'Run this report'){
     # execute a saved report
-    # FIXME The default limit should not be hardcoded...
-    my $limit = 20;
-    my $offset;
+    my $limit  = 20;    # page size. # TODO: move to DB or syspref?
+    my $offset = 0;
     my $report = $input->param('reports');
     # offset algorithm
     if ($input->param('page')) {
-        $offset = ($input->param('page') - 1) * 20;
-    }
-    else {
-        $offset = 0;
+        $offset = ($input->param('page') - 1) * $limit;
     }
     my ($sql,$type,$name,$notes) = get_saved_report($report);
-    my ($results, $total, $errors) = execute_query($sql, $type, $offset, $limit);
+    unless ($sql) {
+        push @errors, {no_sql_for_id=>$report};   
+    } 
+    my @rows = ();
+    my ($sth, $errors) = execute_query($sql, $offset, $limit);
+    my $total = select_2_select_count_value($sql) || 0;
+    unless ($sth) {
+        die "execute_query failed to return sth for report $report: $sql";
+    } else {
+        my $headref = $sth->{NAME} || [];
+        my @headers = map { +{ cell => $_ } } @$headref;
+        $template->param(header_row => \@headers);
+        while (my $row = $sth->fetchrow_arrayref()) {
+            my @cells = map { +{ cell => $_ } } @$row;
+            push @rows, { cells => \@cells };
+        }
+    }
+
     my $totpages = int($total/$limit) + (($total % $limit) > 0 ? 1 : 0);
     my $url = "/cgi-bin/koha/reports/guided_reports.pl?reports=$report&phase=Run%20this%20report";
     $template->param(
-        'results'       => $results,
-        'sql'           => $sql,
-        'execute'       => 1,
-        'name'          => $name,
-        'notes'         => $notes,
-        'pagination_bar' => pagination_bar($url, $totpages, $input->param('page'), "page"),
-        'errors'        => $errors,
+        'results' => \@rows,
+        'sql'     => $sql,
+        'execute' => 1,
+        'name'    => $name,
+        'notes'   => $notes,
+        'errors'  => $errors,
+        'pagination_bar'  => pagination_bar($url, $totpages, $input->param('page')),
+        'unlimited_total' => $total,
     );
 }	
 
 elsif ($phase eq 'Export'){
     binmode STDOUT, ':utf8';
 
-	# export results to tab separated text
-	my $sql = $input->param('sql');
-        my $format = $input->param('format');
-	my ($results, $total, $errors) = execute_query($sql,1,0,0,$format);
-        if (!@$errors) {
-            $no_html=1;
-            print $input->header(       -type => 'application/octet-stream',
-                                        -attachment=>'reportresults.csv'
-                                );
-	    print $results;
+	# export results to tab separated text or CSV
+	my $sql    = $input->param('sql');  # FIXME: use sql from saved report ID#, not new user-supplied SQL!
+    my $format = $input->param('format');
+	my ($sth, $q_errors) = execute_query($sql);
+    unless ($q_errors and @$q_errors) {
+        print $input->header(       -type => 'application/octet-stream',
+                                    -attachment=>"reportresults.$format"
+                            );
+        if ($format eq 'tab') {
+            print join("\t", header_cell_values($sth)), "\n";
+            while (my $row = $sth->fetchrow_arrayref()) {
+                print join("\t", @$row), "\n";
+            }
         } else {
-            $template->param(
-                'results'       => $results,
-                'sql'           => $sql,
-                'execute'       => 1,
-                'name'          => 'Error exporting report!',
-                'notes'         => '',
-                'pagination_bar' => '',
-                'errors'        => $errors,
-            );
+            my $csv = Text::CSV->new({binary => 1});
+            $csv or die "Text::CSV->new({binary => 1}) FAILED: " . Text::CSV->error_diag();
+            if ($csv->combine(header_cell_values($sth))) {
+                print $csv->string(), "\n";
+            } else {
+                push @$q_errors, { combine => 'HEADER ROW: ' . $csv->error_diag() } ;
+            }
+            while (my $row = $sth->fetchrow_arrayref()) {
+                if ($csv->combine(@$row)) {
+                    print $csv->string(), "\n"; 
+                } else {
+                    push @$q_errors, { combine => $csv->error_diag() } ;
+                }
+            }
         }
+        foreach my $err (@$q_errors, @errors) {
+            print "# ERROR: " . (map {$_ . ": " . $err->{$_}} keys %$err) . "\n";
+        }   # here we print all the non-fatal errors at the end.  Not super smooth, but better than nothing.
+        exit;
+    }
+    $template->param(
+        'sql'           => $sql,
+        'execute'       => 1,
+        'name'          => 'Error exporting report!',
+        'notes'         => '',
+        'errors'        => $q_errors,
+    );
 }
 
 elsif ($phase eq 'Create report from SQL') {
 	# allow the user to paste in sql
-        if ($input->param('sql')) {
-            $template->param(
-                'sql'           => $input->param('sql'),
-                'reportname'    => $input->param('reportname'),
-                'notes'         => $input->param('notes'),
-            );
-        }
+    if ($input->param('sql')) {
+        $template->param(
+            'sql'           => $input->param('sql'),
+            'reportname'    => $input->param('reportname'),
+            'notes'         => $input->param('notes'),
+        );
+    }
 	$template->param('create' => 1);
-	my $types = get_report_types();
-        if (my $type = $input->param('type')) {
-            for my $i ( 0 .. $#{@$types}) {
-                @$types[$i]->{'selected'} = 1 if @$types[$i]->{'id'} eq $type;
-            }
-        }
-	$template->param( 'types' => $types ); 
 }
 
 elsif ($phase eq 'Create Compound Report'){
-	my $reports = get_saved_reports();  
-	$template->param( 'savedreports' => $reports,
+	$template->param( 'savedreports' => get_saved_reports(),
 		'compound' => 1,
 	);
 }
 
 elsif ($phase eq 'Save Compound'){
-    my $master = $input->param('master');
+    my $master    = $input->param('master');
 	my $subreport = $input->param('subreport');
-#	my $compound_report = create_compound($master,$subreport);
-#	my $results = run_compound($compound_report);
 	my ($mastertables,$subtables) = create_compound($master,$subreport);
 	$template->param( 'save_compound' => 1,
 		master=>$mastertables,
@@ -458,12 +457,23 @@ elsif ($phase eq 'Save Compound'){
 	);
 }
 
+# pass $sth, get back an array of names for the column headers
+sub header_cell_values {
+    my $sth = shift or return ();
+    return @{$sth->{NAME}};
+}
 
-$template->param(   'referer' => $referer,
+# pass $sth, get back a TMPL_LOOP-able set of names for the column headers
+sub header_cell_loop {
+    my @headers = map { +{ cell => $_ } } header_cell_values (shift);
+    return \@headers;
+}
+
+foreach (1..6) {
+    $template->param('build' . $_) and $template->param(buildx => $_) and last;
+}
+$template->param(   'referer' => $input->referer(),
                     'DHTMLcalendar_dateformat' => C4::Dates->DHTMLcalendar(),
                 );
 
-
-if (!$no_html){
-	output_html_with_http_headers $input, $cookie, $template->output;
-}
+output_html_with_http_headers $input, $cookie, $template->output;

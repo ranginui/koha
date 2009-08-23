@@ -18,6 +18,8 @@ package C4::ImportBatch;
 # Suite 330, Boston, MA  02111-1307 USA
 
 use strict;
+use warnings;
+
 use C4::Context;
 use C4::Koha;
 use C4::Biblio;
@@ -43,6 +45,7 @@ BEGIN {
     BatchFindBibDuplicates
     BatchCommitBibRecords
     BatchRevertBibRecords
+    CleanBatch
 
     GetAllImportBatches
     GetImportBatchRangeDesc
@@ -698,6 +701,29 @@ sub BatchRevertItems {
     return $num_items_deleted;
 }
 
+=head2 CleanBatch
+
+=over 4
+
+CleanBatch($batch_id)
+
+=back
+
+Deletes all staged records from the import batch
+and sets the status of the batch to 'cleaned'.  Note
+that deleting a stage record does *not* affect
+any record that has been committed to the database.
+
+=cut
+
+sub CleanBatch {
+    my $batch_id = shift;
+    return unless defined $batch_id;
+
+    C4::Context->dbh->do('DELETE FROM import_records WHERE import_batch_id = ?', {}, $batch_id);
+    SetImportBatchStatus($batch_id, 'cleaned');
+}
+
 =head2 GetAllImportBatches
 
 =over 4
@@ -1252,10 +1278,7 @@ sub _add_biblio_fields {
     my ($title, $author, $isbn, $issn) = _parse_biblio_fields($marc_record);
     my $dbh = C4::Context->dbh;
     # FIXME no controlnumber, originalsource
-    # FIXME 2 - should regularize normalization of ISBN wherever it is done
-    $isbn =~ s/\(.*$//;
-    $isbn =~ tr/ -_//;  
-    $isbn = uc $isbn;
+    $isbn = C4::Koha::_isbn_cleanup($isbn); # FIXME C4::Koha::_isbn_cleanup should be made public
     my $sth = $dbh->prepare("INSERT INTO import_biblios (import_record_id, title, author, isbn, issn) VALUES (?, ?, ?, ?, ?)");
     $sth->execute($import_record_id, $title, $author, $isbn, $issn);
     $sth->finish();

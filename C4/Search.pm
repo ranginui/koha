@@ -19,7 +19,7 @@ use strict;
 # use warnings; # FIXME
 require Exporter;
 use C4::Context;
-use C4::Biblio;    # GetMarcFromKohaField
+use C4::Biblio;    # GetMarcFromKohaField, GetBiblioData
 use C4::Koha;      # getFacets
 use Lingua::Stem;
 use C4::Search::PazPar2;
@@ -27,6 +27,7 @@ use XML::Simple;
 use C4::Dates qw(format_date);
 use C4::XSLT;
 use C4::Branch;
+use URI::Escape;
 
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $DEBUG);
 
@@ -54,43 +55,15 @@ This module provides searching functions for Koha's bibliographic databases
 
 @ISA    = qw(Exporter);
 @EXPORT = qw(
-  &findseealso
   &FindDuplicate
   &SimpleSearch
   &searchResults
   &getRecords
   &buildQuery
   &NZgetRecords
-  &ModBiblios
 );
 
 # make all your functions, whether exported or not;
-
-=head2 findseealso($dbh,$fields);
-
-C<$dbh> is a link to the DB handler.
-
-use C4::Context;
-my $dbh =C4::Context->dbh;
-
-C<$fields> is a reference to the fields array
-
-This function modifies the @$fields array and adds related fields to search on.
-
-FIXME: this function is probably deprecated in Koha 3
-
-=cut
-
-sub findseealso {
-    my ( $dbh, $fields ) = @_;
-    my $tagslib = GetMarcStructure(1);
-    for ( my $i = 0 ; $i <= $#{$fields} ; $i++ ) {
-        my ($tag)      = substr( @$fields[$i], 1, 3 );
-        my ($subfield) = substr( @$fields[$i], 4, 1 );
-        @$fields[$i] .= ',' . $tagslib->{$tag}->{$subfield}->{seealso}
-          if ( $tagslib->{$tag}->{$subfield}->{seealso} );
-    }
-}
 
 =head2 FindDuplicate
 
@@ -202,7 +175,6 @@ for my $i (0..$hits) {
     my $biblio = TransformMarcToKoha(C4::Context->dbh,$marcrecord,'');
 
     #build the hash for the template.
-    $resultsloop{highlight}       = ($i % 2)?(1):(0);
     $resultsloop{title}           = $biblio->{'title'};
     $resultsloop{subtitle}        = $biblio->{'subtitle'};
     $resultsloop{biblionumber}    = $biblio->{'biblionumber'};
@@ -225,7 +197,7 @@ sub SimpleSearch {
         my $search_result =
           (      $result->{hits}
               && $result->{hits} > 0 ? $result->{'RECORDS'} : [] );
-        return ( undef, $search_result, scalar($search_result) );
+        return ( undef, $search_result, scalar($result->{hits}) );
     }
     else {
         # FIXME hardcoded value. See catalog/search.pl & opac-search.pl too.
@@ -332,8 +304,7 @@ sub getRecords {
     my $facets_info    = ();
     my $facets         = getFacets();
 
-    my @facets_loop
-      ;    # stores the ref to array of hashes for template facets loop
+    my @facets_loop;    # stores the ref to array of hashes for template facets loop
 
     ### LOOP THROUGH THE SERVERS
     for ( my $i = 0 ; $i < @servers ; $i++ ) {
@@ -348,40 +319,21 @@ sub getRecords {
 
         # Check if we've got a query_type defined, if so, use it
         eval {
-            if ($query_type)
-            {
-                if ( $query_type =~ /^ccl/ ) {
-                    $query_to_use =~
-                      s/\:/\=/g;    # change : to = last minute (FIXME)
-                    $results[$i] =
-                      $zconns[$i]->search(
-                        new ZOOM::Query::CCL2RPN( $query_to_use, $zconns[$i] )
-                      );
+            if ($query_type) {
+                if ($query_type =~ /^ccl/) {
+                    $query_to_use =~ s/\:/\=/g;    # change : to = last minute (FIXME)
+                    $results[$i] = $zconns[$i]->search(new ZOOM::Query::CCL2RPN($query_to_use, $zconns[$i]));
+                } elsif ($query_type =~ /^cql/) {
+                    $results[$i] = $zconns[$i]->search(new ZOOM::Query::CQL($query_to_use, $zconns[$i]));
+                } elsif ($query_type =~ /^pqf/) {
+                    $results[$i] = $zconns[$i]->search(new ZOOM::Query::PQF($query_to_use, $zconns[$i]));
+                } else {
+                    warn "Unknown query_type '$query_type'.  Results undetermined.";
                 }
-                elsif ( $query_type =~ /^cql/ ) {
-                    $results[$i] =
-                      $zconns[$i]->search(
-                        new ZOOM::Query::CQL( $query_to_use, $zconns[$i] ) );
-                }
-                elsif ( $query_type =~ /^pqf/ ) {
-                    $results[$i] =
-                      $zconns[$i]->search(
-                        new ZOOM::Query::PQF( $query_to_use, $zconns[$i] ) );
-                }
-            }
-            else {
-                if ($scan) {
-                    $results[$i] =
-                      $zconns[$i]->scan(
-                        new ZOOM::Query::CCL2RPN( $query_to_use, $zconns[$i] )
-                      );
-                }
-                else {
-                    $results[$i] =
-                      $zconns[$i]->search(
-                        new ZOOM::Query::CCL2RPN( $query_to_use, $zconns[$i] )
-                      );
-                }
+            } elsif ($scan) {
+                    $results[$i] = $zconns[$i]->scan(  new ZOOM::Query::CCL2RPN($query_to_use, $zconns[$i]));
+            } else {
+                    $results[$i] = $zconns[$i]->search(new ZOOM::Query::CCL2RPN($query_to_use, $zconns[$i]));
             }
         };
         if ($@) {
@@ -427,6 +379,9 @@ sub getRecords {
             }
             elsif ( $sort eq "title_za" ) {
                 $sort_by .= "1=4 >i ";
+            }
+            else {
+                warn "Ignoring unrecognized sort '$sort' requested" if $sort_by;
             }
         }
         if ($sort_by) {
@@ -498,34 +453,20 @@ sub getRecords {
                     #warn $servers[$i-1]."\n".$record; #.$facet_record->title();
                         if ($facet_record) {
                             for ( my $k = 0 ; $k <= @$facets ; $k++ ) {
-
-                                if ( $facets->[$k] ) {
-                                    my @fields;
-                                    for my $tag ( @{ $facets->[$k]->{'tags'} } )
-                                    {
-                                        push @fields,
-                                          $facet_record->field($tag);
+                                ($facets->[$k]) or next;
+                                my @fields = map {$facet_record->field($_)} @{$facets->[$k]->{'tags'}} ;
+                                for my $field (@fields) {
+                                    my @subfields = $field->subfields();
+                                    for my $subfield (@subfields) {
+                                        my ( $code, $data ) = @$subfield;
+                                        ($code eq $facets->[$k]->{'subfield'}) or next;
+                                        $facets_counter->{ $facets->[$k]->{'link_value'} }->{$data}++;
                                     }
-                                    for my $field (@fields) {
-                                        my @subfields = $field->subfields();
-                                        for my $subfield (@subfields) {
-                                            my ( $code, $data ) = @$subfield;
-                                            if ( $code eq
-                                                $facets->[$k]->{'subfield'} )
-                                            {
-                                                $facets_counter->{ $facets->[$k]
-                                                      ->{'link_value'} }
-                                                  ->{$data}++;
-                                            }
-                                        }
-                                    }
-                                    $facets_info->{ $facets->[$k]
-                                          ->{'link_value'} }->{'label_value'} =
-                                      $facets->[$k]->{'label_value'};
-                                    $facets_info->{ $facets->[$k]
-                                          ->{'link_value'} }->{'expanded'} =
-                                      $facets->[$k]->{'expanded'};
                                 }
+                                $facets_info->{ $facets->[$k]->{'link_value'} }->{'label_value'} =
+                                    $facets->[$k]->{'label_value'};
+                                $facets_info->{ $facets->[$k]->{'link_value'} }->{'expanded'} =
+                                    $facets->[$k]->{'expanded'};
                             }
                         }
                     }
@@ -540,15 +481,15 @@ sub getRecords {
             if ( $servers[ $i - 1 ] =~ /biblioserver/ ) {
                 for my $link_value (
                     sort { $facets_counter->{$b} <=> $facets_counter->{$a} }
-                    keys %$facets_counter )
+                        keys %$facets_counter )
                 {
                     my $expandable;
                     my $number_of_facets;
                     my @this_facets_array;
                     for my $one_facet (
                         sort {
-                            $facets_counter->{$link_value}
-                              ->{$b} <=> $facets_counter->{$link_value}->{$a}
+                             $facets_counter->{$link_value}->{$b}
+                         <=> $facets_counter->{$link_value}->{$a}
                         } keys %{ $facets_counter->{$link_value} }
                       )
                     {
@@ -574,21 +515,14 @@ sub getRecords {
                                   $branches->{$one_facet}->{'branchname'};
                             }
 
-                # but we're down with the whole label being in the link's title.
-                            my $facet_title_value = $one_facet;
-
-                            push @this_facets_array,
-                              (
-                                {
-                                    facet_count =>
-                                      $facets_counter->{$link_value}
-                                      ->{$one_facet},
-                                    facet_label_value => $facet_label_value,
-                                    facet_title_value => $facet_title_value,
-                                    facet_link_value  => $facet_link_value,
-                                    type_link_value   => $link_value,
-                                },
-                              );
+                            # but we're down with the whole label being in the link's title.
+                            push @this_facets_array, {
+                                facet_count       => $facets_counter->{$link_value}->{$one_facet},
+                                facet_label_value => $facet_label_value,
+                                facet_title_value => $one_facet,
+                                facet_link_value  => $facet_link_value,
+                                type_link_value   => $link_value,
+                            };
                         }
                     }
 
@@ -598,17 +532,14 @@ sub getRecords {
                           if ( ( $number_of_facets > 6 )
                             && ( $expanded_facet ne $link_value ) );
                     }
-                    push @facets_loop,
-                      (
-                        {
-                            type_link_value => $link_value,
-                            type_id         => $link_value . "_id",
-                            "type_label_" . $facets_info->{$link_value}->{'label_value'} => 1, 
-                            facets     => \@this_facets_array,
-                            expandable => $expandable,
-                            expand     => $link_value,
-                        }
-                      ) unless ( ($facets_info->{$link_value}->{'label_value'} =~ /Libraries/) and (C4::Context->preference('singleBranchMode')) );
+                    push @facets_loop, {
+                        type_link_value => $link_value,
+                        type_id         => $link_value . "_id",
+                        "type_label_" . $facets_info->{$link_value}->{'label_value'} => 1, 
+                        facets     => \@this_facets_array,
+                        expandable => $expandable,
+                        expand     => $link_value,
+                    } unless ( ($facets_info->{$link_value}->{'label_value'} =~ /Libraries/) and (C4::Context->preference('singleBranchMode')) );
                 }
             }
         }
@@ -626,7 +557,7 @@ sub pazGetRecords {
     my $paz = C4::Search::PazPar2->new(C4::Context->config('pazpar2url'));
     $paz->init();
     $paz->search($simple_query);
-    sleep 1;
+    sleep 1;   # FIXME: WHY?
 
     # do results
     my $results_hashref = {};
@@ -701,19 +632,16 @@ sub _remove_stopwords {
 #       we use IsAlpha unicode definition, to deal correctly with diacritics.
 #       otherwise, a French word like "leçon" woudl be split into "le" "çon", "le"
 #       is a stopword, we'd get "çon" and wouldn't find anything...
-        foreach ( keys %{ C4::Context->stopwords } ) {
-            next if ( $_ =~ /(and|or|not)/ );    # don't remove operators
-            if ( $operand =~
-                /(\P{IsAlpha}$_\P{IsAlpha}|^$_\P{IsAlpha}|\P{IsAlpha}$_$|^$_$)/ )
-            {
-                $operand =~ s/\P{IsAlpha}$_\P{IsAlpha}/ /gi;
-                $operand =~ s/^$_\P{IsAlpha}/ /gi;
-                $operand =~ s/\P{IsAlpha}$_$/ /gi;
-				$operand =~ s/$1//gi;
-                push @stopwords_removed, $_;
-            }
-        }
-    }
+		foreach ( keys %{ C4::Context->stopwords } ) {
+			next if ( $_ =~ /(and|or|not)/ );    # don't remove operators
+			if ( my ($matched) = ($operand =~
+				/(\P{IsAlnum}\Q$_\E\P{IsAlnum}|^\Q$_\E\P{IsAlnum}|\P{IsAlnum}\Q$_\E$|^\Q$_\E$)/gi) )
+			{
+				$operand =~ s/\Q$matched\E/ /gi;
+				push @stopwords_removed, $_;
+			}
+		}
+	}
     return ( $operand, \@stopwords_removed );
 }
 
@@ -865,11 +793,11 @@ sub buildQuery {
     warn "---------\nEnter buildQuery\n---------" if $DEBUG;
 
     # dereference
-    my @operators = @$operators if $operators;
-    my @indexes   = @$indexes   if $indexes;
-    my @operands  = @$operands  if $operands;
-    my @limits    = @$limits    if $limits;
-    my @sort_by   = @$sort_by   if $sort_by;
+    my @operators = $operators ? @$operators : ();
+    my @indexes   = $indexes   ? @$indexes   : ();
+    my @operands  = $operands  ? @$operands  : ();
+    my @limits    = $limits    ? @$limits    : ();
+    my @sort_by   = $sort_by   ? @$sort_by   : ();
 
     my $stemming         = C4::Context->preference("QueryStemming")        || 0;
     my $auto_truncation  = C4::Context->preference("QueryAutoTruncate")    || 0;
@@ -901,13 +829,13 @@ sub buildQuery {
 # for handling ccl, cql, pqf queries in diagnostic mode, skip the rest of the steps
 # DIAGNOSTIC ONLY!!
     if ( $query =~ /^ccl=/ ) {
-        return ( undef, $', $', $', $', '', '', '', '', 'ccl' );
+        return ( undef, $', $', "q=ccl=$'", $', '', '', '', '', 'ccl' );
     }
     if ( $query =~ /^cql=/ ) {
-        return ( undef, $', $', $', $', '', '', '', '', 'cql' );
+        return ( undef, $', $', "q=cql=$'", $', '', '', '', '', 'cql' );
     }
     if ( $query =~ /^pqf=/ ) {
-        return ( undef, $', $', $', $', '', '', '', '', 'pqf' );
+        return ( undef, $', $', "q=pqf=$'", $', '', '', '', '', 'pqf' );
     }
 
     # pass nested queries directly
@@ -981,6 +909,16 @@ sub buildQuery {
                 # Some helpful index variants
                 my $index_plus       = $index . $struct_attr . ":" if $index;
                 my $index_plus_comma = $index . $struct_attr . "," if $index;
+                if ($auto_truncation){
+#					FIXME Auto Truncation is only valid for LTR languages
+#					use C4::Output;
+#					use C4::Languages qw(regex_lang_subtags get_bidi);
+#    				$lang = $query->cookie('KohaOpacLanguage') if (defined $query && $query->cookie('KohaOpacLanguage'));
+#				    my $current_lang = regex_lang_subtags($lang);
+#				    my $bidi;
+#				    $bidi = get_bidi($current_lang->{script}) if $current_lang->{script};
+					$index_plus_comma .= "rtrn:";
+				}
 
                 # Remove Stopwords
                 if ($remove_stopwords) {
@@ -1010,29 +948,23 @@ sub buildQuery {
                     $indexes_set = 1;
                     undef $weight_fields;
                     my $previous_truncation_operand;
-                    if ( scalar(@$nontruncated) > 0 ) {
+                    if (scalar @$nontruncated) {
                         $truncated_operand .= "$index_plus @$nontruncated ";
                         $previous_truncation_operand = 1;
                     }
-                    if ( scalar(@$righttruncated) > 0 ) {
-                        $truncated_operand .= "and "
-                          if $previous_truncation_operand;
-                        $truncated_operand .=
-                          "$index_plus_comma" . "rtrn:@$righttruncated ";
+                    if (scalar @$righttruncated) {
+                        $truncated_operand .= "and " if $previous_truncation_operand;
+                        $truncated_operand .= $index_plus_comma . "rtrn:@$righttruncated ";
                         $previous_truncation_operand = 1;
                     }
-                    if ( scalar(@$lefttruncated) > 0 ) {
-                        $truncated_operand .= "and "
-                          if $previous_truncation_operand;
-                        $truncated_operand .=
-                          "$index_plus_comma" . "ltrn:@$lefttruncated ";
+                    if (scalar @$lefttruncated) {
+                        $truncated_operand .= "and " if $previous_truncation_operand;
+                        $truncated_operand .= $index_plus_comma . "ltrn:@$lefttruncated ";
                         $previous_truncation_operand = 1;
                     }
-                    if ( scalar(@$rightlefttruncated) > 0 ) {
-                        $truncated_operand .= "and "
-                          if $previous_truncation_operand;
-                        $truncated_operand .=
-                          "$index_plus_comma" . "rltrn:@$rightlefttruncated ";
+                    if (scalar @$rightlefttruncated) {
+                        $truncated_operand .= "and " if $previous_truncation_operand;
+                        $truncated_operand .= $index_plus_comma . "rltrn:@$rightlefttruncated ";
                         $previous_truncation_operand = 1;
                     }
                 }
@@ -1041,18 +973,19 @@ sub buildQuery {
 
                 # Handle Stemming
                 my $stemmed_operand;
-                $stemmed_operand = _build_stemmed_operand($operand)
-                  if $stemming;
+                $stemmed_operand = _build_stemmed_operand($operand) if $stemming;
+
                 warn "STEMMED OPERAND: >$stemmed_operand<" if $DEBUG;
 
                 # Handle Field Weighting
                 my $weighted_operand;
-                $weighted_operand =
-                  _build_weighted_query( $operand, $stemmed_operand, $index )
-                  if $weight_fields;
+                if ($weight_fields) {
+                    $weighted_operand = _build_weighted_query( $operand, $stemmed_operand, $index );
+                    $operand = $weighted_operand;
+                    $indexes_set = 1;
+                }
+
                 warn "FIELD WEIGHTED OPERAND: >$weighted_operand<" if $DEBUG;
-                $operand = $weighted_operand if $weight_fields;
-                $indexes_set = 1 if $weight_fields;
 
                 # If there's a previous operand, we need to add an operator
                 if ($previous_operand) {
@@ -1152,15 +1085,15 @@ sub buildQuery {
     $query =~ s/:/=/g;
     $limit =~ s/:/=/g;
     for ( $query, $query_desc, $limit, $limit_desc ) {
-        $_ =~ s/  / /g;    # remove extra spaces
-        $_ =~ s/^ //g;     # remove any beginning spaces
-        $_ =~ s/ $//g;     # remove any ending spaces
-        $_ =~ s/==/=/g;    # remove double == from query
+        s/  / /g;    # remove extra spaces
+        s/^ //g;     # remove any beginning spaces
+        s/ $//g;     # remove any ending spaces
+        s/==/=/g;    # remove double == from query
     }
     $query_cgi =~ s/^&//; # remove unnecessary & from beginning of the query cgi
 
     for ($query_cgi,$simple_query) {
-        $_ =~ s/"//g;
+        s/"//g;
     }
     # append the limit to the query
     $query .= " " . $limit;
@@ -1193,23 +1126,13 @@ Format results in a form suitable for passing to the template
 sub searchResults {
     my ( $searchdesc, $hits, $results_per_page, $offset, $scan, @marcresults ) = @_;
     my $dbh = C4::Context->dbh;
-    my $even = 1;
     my @newresults;
-
-    # add search-term highlighting via <span>s on the search terms
-    my $span_terms_hashref;
-    for my $span_term ( split( / /, $searchdesc ) ) {
-        $span_term =~ s/(.*=|\)|\(|\+|\.|\*)//g;
-        $span_terms_hashref->{$span_term}++;
-    }
 
     #Build branchnames hash
     #find branchname
     #get branch information.....
     my %branches;
-    my $bsth =
-      $dbh->prepare("SELECT branchcode,branchname FROM branches")
-      ;    # FIXME : use C4::Koha::GetBranches
+    my $bsth =$dbh->prepare("SELECT branchcode,branchname FROM branches"); # FIXME : use C4::Branch::GetBranches
     $bsth->execute();
     while ( my $bdata = $bsth->fetchrow_hashref ) {
         $branches{ $bdata->{'branchcode'} } = $bdata->{'branchname'};
@@ -1263,6 +1186,7 @@ sub searchResults {
         $times = $hits;	 # FIXME: if $hits is undefined, why do we want to equal it?
     }
 
+	my $marcflavour = C4::Context->preference("marcflavour");
     # loop through all of the records we've retrieved
     for ( my $i = $offset ; $i <= $times - 1 ; $i++ ) {
         my $marcrecord = MARC::File::USMARC::decode( $marcresults[$i] );
@@ -1274,9 +1198,14 @@ sub searchResults {
         $oldbiblio->{imageurl} = getitemtypeimagelocation( 'opac', $itemtypes{ $oldbiblio->{itemtype} }->{imageurl} );
 
         $oldbiblio->{'authorised_value_images'}  = C4::Items::get_authorised_value_images( C4::Biblio::get_biblio_authorised_values( $oldbiblio->{'biblionumber'}, $marcrecord ) );
-        (my $aisbn) = $oldbiblio->{isbn} =~ /([\d-]*[X]*)/;
-        $aisbn =~ s/-//g;
-        $oldbiblio->{amazonisbn} = $aisbn;
+		$oldbiblio->{normalized_upc}  = GetNormalizedUPC(       $marcrecord,$marcflavour);
+		$oldbiblio->{normalized_ean}  = GetNormalizedEAN(       $marcrecord,$marcflavour);
+		$oldbiblio->{normalized_oclc} = GetNormalizedOCLCNumber($marcrecord,$marcflavour);
+		$oldbiblio->{normalized_isbn} = GetNormalizedISBN(undef,$marcrecord,$marcflavour);
+		$oldbiblio->{content_identifier_exists} = 1 if ($oldbiblio->{normalized_isbn} or $oldbiblio->{normalized_oclc} or $oldbiblio->{normalized_ean} or $oldbiblio->{normalized_upc});
+
+		# edition information, if any
+        $oldbiblio->{edition} = $oldbiblio->{editionstatement};
 		$oldbiblio->{description} = $itemtypes{ $oldbiblio->{itemtype} }->{description};
  # Build summary if there is one (the summary is defined in the itemtypes table)
  # FIXME: is this used anywhere, I think it can be commented out? -- JF
@@ -1304,47 +1233,6 @@ s/\[(.?.?.?.?)$tagsubf(.*?)]/$1$subfieldvalue$2\[$1$tagsubf$2]/g;
             $summary =~ s/\n/<br\/>/g;
             $oldbiblio->{summary} = $summary;
         }
-
-        # save an author with no <span> tag, for the <a href=search.pl?q=<!--tmpl_var name="author"-->> link
-        $oldbiblio->{'author_nospan'} = $oldbiblio->{'author'};
-        $oldbiblio->{'title_nospan'} = $oldbiblio->{'title'};
-        # Add search-term highlighting to the whole record where they match using <span>s
-        if (C4::Context->preference("OpacHighlightedWords")){
-            my $searchhighlightblob;
-            for my $highlight_field ( $marcrecord->fields ) {
-    
-    # FIXME: need to skip title, subtitle, author, etc., as they are handled below
-                next if $highlight_field->tag() =~ /(^00)/;    # skip fixed fields
-                for my $subfield ($highlight_field->subfields()) {
-                    my $match;
-                    next if $subfield->[0] eq '9';
-                    my $field = $subfield->[1];
-                    for my $term ( keys %$span_terms_hashref ) {
-                        if ( ( $field =~ /$term/i ) && (( length($term) > 3 ) || ($field =~ / $term /i)) ) {
-                            $field =~ s/$term/<span class=\"term\">$&<\/span>/gi;
-                        $match++;
-                        }
-                    }
-                    $searchhighlightblob .= $field . " ... " if $match;
-                }
-    
-            }
-            $searchhighlightblob = ' ... '.$searchhighlightblob if $searchhighlightblob;
-            $oldbiblio->{'searchhighlightblob'} = $searchhighlightblob;
-        }
-
-        # Add search-term highlighting to the title, subtitle, etc. fields
-        for my $term ( keys %$span_terms_hashref ) {
-            my $old_term = $term;
-            if ( length($term) > 3 ) {
-                $term =~ s/(.*=|\)|\(|\+|\.|\?|\[|\]|\\|\*)//g;
-				foreach(qw(title subtitle author publishercode place pages notes size)) {
-                	$oldbiblio->{$_} =~ s/$term/<span class=\"term\">$&<\/span>/gi;
-				}
-            }
-        }
-
-        ($i % 2) and $oldbiblio->{'toggle'} = 1;
 
         # Pull out the items fields
         my @fields = $marcrecord->field($itemtag);
@@ -1397,7 +1285,7 @@ s/\[(.?.?.?.?)$tagsubf(.*?)]/$1$subfieldvalue$2\[$1$tagsubf$2]/g;
 # For each grouping of items (onloan, available, unavailable), we build a key to store relevant info about that item
             if ( $item->{onloan} ) {
                 $onloan_count++;
-				my $key = $prefix . $item->{due_date};
+				my $key = $prefix . $item->{onloan} . $item->{barcode};
 				$onloan_items->{$key}->{due_date} = format_date($item->{onloan});
 				$onloan_items->{$key}->{count}++ if $item->{$hbranch};
 				$onloan_items->{$key}->{branchname} = $item->{branchname};
@@ -1503,8 +1391,8 @@ s/\[(.?.?.?.?)$tagsubf(.*?)]/$1$subfieldvalue$2\[$1$tagsubf$2]/g;
 
         # XSLT processing of some stuff
         if (C4::Context->preference("XSLTResultsDisplay") && !$scan) {
-            my $newxmlrecord = XSLTParse4Display($oldbiblio->{biblionumber}, $marcrecord, C4::Context->config('opachtdocs')."/prog/en/xslt/MARC21slim2OPACResults.xsl");
-            $oldbiblio->{XSLTResultsRecord} = $newxmlrecord;
+            $oldbiblio->{XSLTResultsRecord} = XSLTParse4Display(
+                $oldbiblio->{biblionumber}, $marcrecord, 'Results' );
         }
 
         # last check for norequest : if itemtype is notforloan, it can't be reserved either, whatever the items
@@ -1527,8 +1415,6 @@ s/\[(.?.?.?.?)$tagsubf(.*?)]/$1$subfieldvalue$2\[$1$tagsubf$2]/g;
         $oldbiblio->{damagedcount}         = $itemdamaged_count;
         $oldbiblio->{intransitcount}       = $item_in_transit_count;
         $oldbiblio->{orderedcount}         = $ordered_count;
-        $oldbiblio->{isbn} =~
-          s/-//g;    # deleting - in isbn to enable amazon content
         push( @newresults, $oldbiblio );
     }
     return @newresults;
@@ -1715,16 +1601,15 @@ sub NZanalyse {
         $left = 'subject'          if $left =~ '^su$';
         $left = 'koha-Auth-Number' if $left =~ '^an$';
         $left = 'keyword'          if $left =~ '^kw$';
+        $left = 'itemtype'         if $left =~ '^mc$'; # Fix for Bug 2599 - Search limits not working for NoZebra 
         warn "handling leaf... left:$left operator:$operator right:$right" if $DEBUG;
+        my $dbh = C4::Context->dbh;
         if ( $operator && $left ne 'keyword' ) {
-
             #do a specific search
-            my $dbh = C4::Context->dbh;
             $operator = 'LIKE' if $operator eq '=' and $right =~ /%/;
-            my $sth =
-              $dbh->prepare(
+            my $sth = $dbh->prepare(
 "SELECT biblionumbers,value FROM nozebra WHERE server=? AND indexname=? AND value $operator ?"
-              );
+            );
             warn "$left / $operator / $right\n" if $DEBUG;
 
             # split each word, query the DB and build the biblionumbers result
@@ -1752,20 +1637,16 @@ sub NZanalyse {
                 if ($results) {
                     warn "NZAND" if $DEBUG;
                     $results = NZoperatorAND($biblionumbers,$results);
-                }
-                else {
+                } else {
                     $results = $biblionumbers;
                 }
             }
         }
         else {
-
       #do a complete search (all indexes), if index='kw' do complete search too.
-            my $dbh = C4::Context->dbh;
-            my $sth =
-              $dbh->prepare(
+            my $sth = $dbh->prepare(
 "SELECT biblionumbers FROM nozebra WHERE server=? AND value LIKE ?"
-              );
+            );
 
             # split each word, query the DB and build the biblionumbers result
             foreach ( split / /, $string ) {
@@ -1878,7 +1759,7 @@ sub NZorder {
             my $popularity = $sth->fetchrow || 0;
 
 # hint : the key is popularity.title because we can have
-# many results with the same popularity. In this cas, sub-ordering is done by title
+# many results with the same popularity. In this case, sub-ordering is done by title
 # we also have biblionumber to avoid bug for 2 biblios with the same title & popularity
 # (un-frequent, I agree, but we won't forget anything that way ;-)
             $popularity{ sprintf( "%10d", $popularity ) . $title
@@ -2137,129 +2018,95 @@ sub NZorder {
     }
 }
 
-=head2 ModBiblios
+=head2 enabled_staff_search_views
 
-($countchanged,$listunchanged) = ModBiblios($listbiblios, $tagsubfield,$initvalue,$targetvalue,$test);
+%hash = enabled_staff_search_views()
 
-this function changes all the values $initvalue in subfield $tag$subfield in any record in $listbiblios
-test parameter if set donot perform change to records in database.
+This function returns a hash that contains three flags obtained from the system
+preferences, used to determine whether a particular staff search results view
+is enabled.
 
 =over 2
 
-=item C<input arg:>
-
-    * $listbiblios is an array ref to marcrecords to be changed
-    * $tagsubfield is the reference of the subfield to change.
-    * $initvalue is the value to search the record for
-    * $targetvalue is the value to set the subfield to
-    * $test is to be set only not to perform changes in database.
-
 =item C<Output arg:>
-    * $countchanged counts all the changes performed.
-    * $listunchanged contains the list of all the biblionumbers of records unchanged.
+
+    * $hash{can_view_MARC} is true only if the MARC view is enabled
+    * $hash{can_view_ISBD} is true only if the ISBD view is enabled
+    * $hash{can_view_labeledMARC} is true only if the Labeled MARC view is enabled
 
 =item C<usage in the script:>
 
 =back
 
-my ($countchanged, $listunchanged) = EditBiblios($results->{RECORD}, $tagsubfield,$initvalue,$targetvalue);;
-#If one wants to display unchanged records, you should get biblios foreach @$listunchanged 
-$template->param(countchanged => $countchanged, loopunchanged=>$listunchanged);
+$template->param ( C4::Search::enabled_staff_search_views );
 
 =cut
 
-sub ModBiblios {
-    my ( $listbiblios, $tagsubfield, $initvalue, $targetvalue, $test ) = @_;
-    my $countmatched;
-    my @unmatched;
-    my ( $tag, $subfield ) = ( $1, $2 )
-      if ( $tagsubfield =~ /^(\d{1,3})([a-z0-9A-Z@])?$/ );
-    if ( ( length($tag) < 3 ) && $subfield =~ /0-9/ ) {
-        $tag = $tag . $subfield;
-        undef $subfield;
-    }
-    my ( $bntag,   $bnsubf )   = GetMarcFromKohaField('biblio.biblionumber', '');
-    my ( $itemtag, $itemsubf ) = GetMarcFromKohaField('items.itemnumber', '');
-    if ($tag eq $itemtag) {
-        # do not allow the embedded item tag to be 
-        # edited from here
-        warn "Attempting to edit item tag via C4::Search::ModBiblios -- not allowed";
-        return (0, []);
-    }
-    foreach my $usmarc (@$listbiblios) {
-        my $record;
-        $record = eval { MARC::Record->new_from_usmarc($usmarc) };
-        my $biblionumber;
-        if ($@) {
-
-            # usmarc is not a valid usmarc May be a biblionumber
-            # FIXME - sorry, please let's figure out whether
-            #         this function is to be passed a list of
-            #         record numbers or a list of MARC::Record
-            #         objects.  The former is probably better
-            #         because the MARC records supplied by Zebra
-            #         may be not current.
-            $record       = GetMarcBiblio($usmarc);
-            $biblionumber = $usmarc;
-        }
-        else {
-            if ( $bntag >= 010 ) {
-                $biblionumber = $record->subfield( $bntag, $bnsubf );
-            }
-            else {
-                $biblionumber = $record->field($bntag)->data;
-            }
-        }
-
-        #GetBiblionumber is to be written.
-        #Could be replaced by TransformMarcToKoha (But Would be longer)
-        if ( $record->field($tag) ) {
-            my $modify = 0;
-            foreach my $field ( $record->field($tag) ) {
-                if ($subfield) {
-                    if (
-                        $field->delete_subfield(
-                            'code'  => $subfield,
-                            'match' => qr($initvalue)
-                        )
-                      )
-                    {
-                        $countmatched++;
-                        $modify = 1;
-                        $field->update( $subfield, $targetvalue )
-                          if ($targetvalue);
-                    }
-                }
-                else {
-                    if ( $tag >= 010 ) {
-                        if ( $field->delete_field($field) ) {
-                            $countmatched++;
-                            $modify = 1;
-                        }
-                    }
-                    else {
-                        $field->data = $targetvalue
-                          if ( $field->data =~ qr($initvalue) );
-                    }
-                }
-            }
-
-            #       warn $record->as_formatted;
-            if ($modify) {
-                ModBiblio( $record, $biblionumber,
-                    GetFrameworkCode($biblionumber) )
-                  unless ($test);
-            }
-            else {
-                push @unmatched, $biblionumber;
-            }
-        }
-        else {
-            push @unmatched, $biblionumber;
-        }
-    }
-    return ( $countmatched, \@unmatched );
+sub enabled_staff_search_views
+{
+	return (
+		can_view_MARC			=> C4::Context->preference('viewMARC'),			# 1 if the staff search allows the MARC view
+		can_view_ISBD			=> C4::Context->preference('viewISBD'),			# 1 if the staff search allows the ISBD view
+		can_view_labeledMARC	=> C4::Context->preference('viewLabeledMARC'),	# 1 if the staff search allows the Labeled MARC view
+	);
 }
+
+
+=head2 z3950_search_args
+
+$arrayref = z3950_search_args($matchpoints)
+
+This function returns an array reference that contains the search parameters to be
+passed to the Z39.50 search script (z3950_search.pl). The array elements
+are hash refs whose keys are name, value and encvalue, and whose values are the
+name of a search parameter, the value of that search parameter and the URL encoded
+value of that parameter.
+
+The search parameter names are lccn, isbn, issn, title, author, dewey and subject.
+
+The search parameter values are obtained from the bibliographic record whose
+data is in a hash reference in $matchpoints, as returned by Biblio::GetBiblioData().
+
+If $matchpoints is a scalar, it is assumed to be an unnamed query descriptor, e.g.
+a general purpose search argument. In this case, the returned array contains only
+entry: the key is 'title' and the value and encvalue are derived from $matchpoints.
+
+If a search parameter value is undefined or empty, it is not included in the returned
+array.
+
+The returned array reference may be passed directly to the template parameters.
+
+=over 2
+
+=item C<Output arg:>
+
+    * $array containing hash refs as described above
+
+=item C<usage in the script:>
+
+=back
+
+$data = Biblio::GetBiblioData($bibno);
+$template->param ( MYLOOP => C4::Search::z3950_search_args($data) )
+
+*OR*
+
+$template->param ( MYLOOP => C4::Search::z3950_search_args($searchscalar) )
+
+=cut
+
+sub z3950_search_args {
+    my $bibrec = shift;
+    $bibrec = { title => $bibrec } if !ref $bibrec;
+    my $array = [];
+    for my $field (qw/ lccn isbn issn title author dewey subject /)
+    {
+        my $encvalue = URI::Escape::uri_escape_utf8($bibrec->{$field});
+        push @$array, { name=>$field, value=>$bibrec->{$field}, encvalue=>$encvalue } if defined $bibrec->{$field};
+    }
+    return $array;
+}
+
 
 END { }    # module clean-up code here (global destructor)
 

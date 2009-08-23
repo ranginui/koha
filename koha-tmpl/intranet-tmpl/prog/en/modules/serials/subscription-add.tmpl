@@ -3,6 +3,13 @@
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
 <!-- TMPL_INCLUDE NAME="calendar.inc" -->
 
+<style type="text/css">
+fieldset.rows li.radio { width: 100%; } /* override staff-global.css */
+.yui-u li p label.widelabel {
+    width: 300px;  /* not enough for IE7 apparently */
+    /* height: 2.4em; background-color: pink; */
+}
+</style>
 <script type="text/javascript">
 //<![CDATA[
 
@@ -103,6 +110,7 @@ IrregularPattern.prototype.update = function() {
 		var summary_str = '';
 		this.numskipped = 0;
         if(document.f.irregularity_select) {
+            //$("#irregularity_select option:selected").each(...); //jquery can combine both conditionals and the for loop
             for( var i in document.f.irregularity_select.options ) {
                 if( document.f.irregularity_select.options[i].selected ) {
                     this.skipped[cnt] = document.f.irregularity_select.options[i].value ;
@@ -136,8 +144,8 @@ function reset_pattern() {
     document.getElementById("irregularity").innerHTML = '';
 	init_pattern();
 	reset_num_pattern();
-
 }
+
 // common pre defined number patterns
 function reset_num_pattern() {
 var patternchoice = document.getElementById("numberpattern").value;
@@ -395,7 +403,6 @@ function set_num_pattern_from_template_vars() {
 }
 
 // a pre check with more options to see if 'number' and '1/day' are chosen
-<!-- 
 function moreoptions_daily_check(x) {
     var periodicity = document.f.periodicity.value;
     var errortext='';
@@ -414,8 +421,6 @@ function moreoptions_daily_check(x) {
         moreoptions(x);
     }
 }
--->
-
 
 // to dispaly the more options section
 function moreoptions(x,y,z){
@@ -512,8 +517,7 @@ var textbox = '';
         textbox += "<td>" + irregular_issues.firstissue.getFullYear() + "<\/td><\/tr>\n";
         textbox +="<tr><th scope=\"row\">"+text[6]+"<\/th>";
         textbox +="<td><input type='text' name='whenmorethan2temp' id='whenmorethan2temp' size='4' onkeyup='moreoptionsupdate(this,1)'><\/td>\n";
-                textbox +="<\/tr><\/table>\n";
-
+        textbox +="<\/tr><\/table>\n";
     }
     document.getElementById("more_options").innerHTML = textbox;
 }
@@ -732,7 +736,7 @@ function display_example(expected){
     var whenmorethan3 = parseInt(document.f.whenmorethan3.value);
     var setto2 = parseInt(document.f.setto2.value);
     var setto3 = parseInt(document.f.setto3.value);
-    var displaytext = _("Based on the information entered, the Numbering Pattern will look like this: <br \/><ul class=\"numpattern_preview\">");
+    var displaytext = _("Based on the information entered, the Numbering Pattern will look like this: ") + "<br \/><ul class=\"numpattern_preview\">";
     if(startfrom3>0){
         var count=startfrom3-1;
         var count2=startfrom2;
@@ -912,7 +916,7 @@ function Check(f) {
 }
 
 $(document).ready(function() {
-init_pattern();
+    init_pattern();
 <!-- TMPL_IF name="mod" -->
     set_num_pattern_from_template_vars();
     <!-- TMPL_IF name="hemisphere" -->
@@ -923,8 +927,8 @@ init_pattern();
 <!-- TMPL_IF name="irregularity" -->
     irregularity_check();
 <!-- /TMPL_IF -->
-$('#numberpattern').change( function() { 
-    reset_num_pattern(); 
+    $('#numberpattern').change( function() { 
+        reset_num_pattern(); 
     });
 });
 //]]>
@@ -957,9 +961,7 @@ $('#numberpattern').change( function() {
 	<legend>Subscription details</legend>
 	<ol>
         <li><span class="label">Subscription #</span> <!--TMPL_VAR name="subscriptionid"--></li>
-        <li>
-            <span class="label">Librarian: </span>            <!-- TMPL_VAR name="loggedinusername" -->
-        </li>
+        <li><span class="label">Librarian: </span> <!-- TMPL_VAR name="loggedinusername" --></li>
         <li>
             <label for="aqbooksellerid">Vendor: </label>
             <input type="text" name="aqbooksellerid" id="aqbooksellerid" value="<!-- TMPL_VAR name="aqbooksellerid" -->" size="8" /> (<input type="text" name="aqbooksellername" value="<!-- TMPL_VAR name="aqbooksellername" -->" disabled="disabled" readonly="readonly" />) <div class="inputnote"><a href="#" onclick="FindAcqui(f)">Search for a vendor</a></div>
@@ -975,14 +977,18 @@ $('#numberpattern').change( function() {
         </li>
         <li class="radio">
             <!-- TMPL_IF name="serialsadditems" -->
-                <p><input type="radio" id="serialsadditems-yes" name="serialsadditems" value="1" checked="checked" /><label for="serialsadditems-yes">create an item record when receiving this serial</label></p>
-                <p><input type="radio" id="serialsadditems-no" name="serialsadditems" value="0" /><label for="serialsadditems-no">do not create an item record when receiving this serial </label></p>
+                <p><input type="radio" id="serialsadditems-yes" name="serialsadditems" value="1" checked="checked" /><label class="widelabel" for="serialsadditems-yes">create an item record when receiving this serial</label></p>
+                <p><input type="radio" id="serialsadditems-no" name="serialsadditems" value="0" /><label class="widelabel" for="serialsadditems-no">do not create an item record when receiving this serial </label></p>
             <!-- TMPL_ELSE -->
-                <p><input type="radio" id="serialsadditems-yes" name="serialsadditems" value="1"/><label for="serialsadditems-yes">create an item record when receiving this serial</label></p>
-                <p><input type="radio" id="serialsadditems-no" name="serialsadditems" value="0" checked="checked" /><label for="serialsadditems-no">do not create an item record when receiving this serial</label></p>
+                <p><input type="radio" id="serialsadditems-yes" name="serialsadditems" value="1"/><label class="widelabel" for="serialsadditems-yes">create an item record when receiving this serial</label></p>
+                <p><input type="radio" id="serialsadditems-no" name="serialsadditems" value="0" checked="checked" /><label class="widelabel" for="serialsadditems-no">do not create an item record when receiving this serial</label></p>
             <!-- /TMPL_IF -->
         </li>
         <li>
+            <label for="location">Location:</label>
+            <input type="text" name="location" id="location" value="<!-- TMPL_VAR name="location" -->" size="30" />
+        </li>
+         <li>
             <label for="callnumber">Call Number:</label>
             <input type="text" name="callnumber" id="callnumber" value="<!-- TMPL_VAR name="callnumber" -->" size="20" />
         </li>
@@ -999,6 +1005,9 @@ $('#numberpattern').change( function() {
                 </select> (select a library)
             
         </li>
+        <li>
+    		<label for="graceperiod">Grace period:</label> <input type="text" name="graceperiod" id="graceperiod" value="<!-- TMPL_VAR name="graceperiod" -->" /> day(s)
+	    </li>
         <li>
             <label for="notes">Public note:</label>
             <textarea name="notes" id="notes" cols="30" rows="2"><!-- TMPL_VAR name="notes" --></textarea>
@@ -1026,6 +1035,17 @@ $('#numberpattern').change( function() {
 				<div class="hint">To notify patrons of new serial issues, you must <a href="/cgi-bin/koha/tools/letter.pl">define a notice</a>.</div>
 				<!-- /TMPL_IF -->
         </li>
+		<li class="radio">
+			<label for="staffdisplaycount">Staff and Public Display</label>
+			<p>
+			 <label class="widelabel" for="staffdisplaycount">Number of issues to display to staff: </label>
+			 <input type="text" name="staffdisplaycount" id="staffdisplaycount" value="<!-- TMPL_VAR NAME="staffdisplaycount" -->" size="4"/>
+			</p>
+			<p>
+			<label class="widelabel" for="opacdisplaycount">Number of issues to display to the public: </label>
+			<input type="text" name="opacdisplaycount" id="opacdisplaycount" value="<!-- TMPL_VAR NAME="opacdisplaycount" -->" size="4"/>
+			</p>
+		</li>
 	</ol>
 
             <div style="float:left;clear:left;margin:1em;"><strong>Note:</strong>
@@ -1045,11 +1065,11 @@ $('#numberpattern').change( function() {
 	<legend>Serials planning</legend>
     <ol>
         <li>
-           <label for="firstacquidate"> First issue publication date:</label>
+           <label for="acqui_date"> First issue publication date:</label>
                 <!-- TMPL_UNLESS NAME="mod" --><img src="<!-- TMPL_VAR Name="themelang" -->/lib/calendar/cal.gif" id="acqui_button" style="cursor: pointer;" alt="Show Calendar" title="Show Calendar" /><!-- /TMPL_UNLESS -->
-                <input type="text" name="firstacquidate" value="<!-- TMPL_VAR name="firstacquidate" -->"  size="13" maxlength="10" id="acqui_date" <!-- TMPL_IF NAME="mod" -->disabled="true"<!-- /TMPL_IF --> style="border-width: 0px;"  />
+                <input type="text" name="firstacquidate" value="<!-- TMPL_VAR name="firstacquidate" -->"  size="13" maxlength="10" id="acqui_date" <!-- TMPL_IF NAME="mod" -->disabled="disabled"<!-- /TMPL_IF --> style="border-width: 0px;"  />
         </li>
-           <!-- TMPL_IF NAME="mod" --><li><label for="nextacquidate"> Next issue publication date:</label>
+           <!-- TMPL_IF NAME="mod" --><li><label for="next_acqui_date"> Next issue publication date:</label>
                 <img src="<!-- TMPL_VAR Name="themelang" -->/lib/calendar/cal.gif" id="next_acqui_button" style="cursor: pointer;" alt="Show Calendar" title="Show Calendar" />
                 <input type="text" name="nextacquidate" value="<!-- TMPL_VAR name="nextacquidate" -->" size="13" maxlength="10" id="next_acqui_date" style="border-width: 0px;"  />
                 </li><!-- /TMPL_IF -->
@@ -1230,7 +1250,7 @@ $('#numberpattern').change( function() {
                 <li id="irregularity"></li>
    	           <li id="displayexample"></li>
         <li>
-           <label for="startdate" class="required"> Subscription start date:</label>
+           <label for="beginning_date" class="required"> Subscription start date:</label>
             
                 <img src="<!-- TMPL_VAR Name="themelang" -->/lib/calendar/cal.gif" id="button1" style="cursor: pointer;" alt="Show Calendar" title="Show Calendar" />
                 <input type="text" name="startdate" value="<!-- TMPL_VAR name="startdate" -->" size="13" maxlength="10" id="beginning_date" style="border-width: 0px;" />
@@ -1242,8 +1262,6 @@ $('#numberpattern').change( function() {
                         button       : "button1",
                         align        : "Tl"
                     });
-                </script>
-                <script type="text/javascript">
                     Calendar.setup({
                         inputField   : "beginning_date",
                         ifFormat     : "<!-- TMPL_VAR NAME="DHTMLcalendar_dateformat" -->",

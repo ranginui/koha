@@ -21,6 +21,11 @@ package C4::Languages;
 
 use strict; 
 #use warnings;   #FIXME: turn off warnings before release
+
+use Memoize;
+use DB_File;
+use MLDBM qw( DB_File Storable );
+
 use Carp;
 use C4::Context;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $DEBUG);
@@ -62,6 +67,10 @@ Returns a reference to an array of hashes:
  }
 
 =cut
+
+my $filename="/tmp/translated";
+tie my %disk_cache => "MLDBM", $filename, O_CREAT | O_RDWR, 0644;
+memoize 'getTranslatedLanguages', SCALAR_CACHE => [HASH => \%disk_cache];
 
 sub getFrameworkLanguages {
     # get a hash with all language codes, names, and locale names
@@ -108,7 +117,6 @@ sub getTranslatedLanguages {
     my $htdocs;
     my $all_languages = getAllLanguages();
     my @languages;
-    my $lang;
     my @enabled_languages;
  
     if ($interface && $interface eq 'opac' ) {
@@ -116,13 +124,11 @@ sub getTranslatedLanguages {
         $htdocs = C4::Context->config('opachtdocs');
         if ( $theme and -d "$htdocs/$theme" ) {
             (@languages) = _get_language_dirs($htdocs,$theme);
-            return _build_languages_arrayref($all_languages,\@languages,$current_language,\@enabled_languages);
         }
         else {
             for my $theme ( _get_themes('opac') ) {
                 push @languages, _get_language_dirs($htdocs,$theme);
             }
-            return _build_languages_arrayref($all_languages,\@languages,$current_language,\@enabled_languages);
         }
     }
     elsif ($interface && $interface eq 'intranet' ) {
@@ -130,13 +136,11 @@ sub getTranslatedLanguages {
         $htdocs = C4::Context->config('intrahtdocs');
         if ( $theme and -d "$htdocs/$theme" ) {
             @languages = _get_language_dirs($htdocs,$theme);
-            return _build_languages_arrayref($all_languages,\@languages,$current_language,\@enabled_languages);
         }
         else {
             foreach my $theme ( _get_themes('intranet') ) {
                 push @languages, _get_language_dirs($htdocs,$theme);
             }
-            return _build_languages_arrayref($all_languages,\@languages,$current_language,\@enabled_languages);
         }
     }
     else {
@@ -152,8 +156,8 @@ sub getTranslatedLanguages {
         my %seen;
         $seen{$_}++ for @languages;
         @languages = keys %seen;
-        return _build_languages_arrayref($all_languages,\@languages,$current_language,\@enabled_languages);
     }
+    return _build_languages_arrayref($all_languages,\@languages,$current_language,\@enabled_languages);
 }
 
 =head2 getAllLanguages
@@ -273,7 +277,6 @@ sub _build_languages_arrayref {
         my @languages_loop; # the final reference to an array of hashrefs
         my @enabled_languages = @$enabled_languages;
         # how many languages are enabled, if one, take note, some contexts won't need to display it
-        my $one_language_enabled = 1 unless @enabled_languages > 1;
         my %seen_languages; # the language tags we've seen
         my %found_languages;
         my $language_groups;
@@ -318,7 +321,6 @@ sub _build_languages_arrayref {
                             plural => $track_language_groups->{$key} >1 ? 1 : 0,
                             current => $current_language_regex->{language} eq $key ? 1 : 0,
                             group_enabled => $enabled,
-                            one_language_enabled => $one_language_enabled,
                            };
         }
     return \@languages_loop;
@@ -450,7 +452,6 @@ sub accept_language {
     if ($clientPreferences) {
         # There should be no whitespace anways, but a cleanliness/sanity check
         $clientPreferences =~ s/\s//g;
-
         # Prepare the list of client-acceptable languages
         foreach my $tag (split(/,/, $clientPreferences)) {
             my ($language, $quality) = split(/\;/, $tag);
@@ -471,10 +472,11 @@ sub accept_language {
     my %supportedLanguages = ();
     my %secondaryLanguages = ();
     foreach my $language (@$supportedLanguages) {
-        # warn "Language supported: " . $language->{language_code};
-        $supportedLanguages{lc($language->{language_code})} = $language->{language_code};
-        if ($language->{language_code} =~ /^([^-]+)-?/) {
-            $secondaryLanguages{lc($1)} = $language->{language_code};
+        # warn "Language supported: " . $language->{language};
+        my $subtag = $language->{rfc4646_subtag};
+        $supportedLanguages{lc($subtag)} = $subtag;
+        if ( $subtag =~ /^([^-]+)-?/ ) {
+            $secondaryLanguages{lc($1)} = $subtag;
         }
     }
 

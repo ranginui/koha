@@ -133,21 +133,8 @@ my %select;
 
 # create itemtype arrayref for <select>.
 my @itemtypeloop;
-for my $itype ( keys(%$itemtypes)) {
+for my $itype ( sort {$itemtypes->{$a}->{description} cmp $itemtypes->{$b}->{description}} keys(%$itemtypes)) {
 	push @itemtypeloop, { code => $itype , description => $itemtypes->{$itype}->{description} } ;
-}
-
-my $branches=GetBranches();
-my @branchloop;
-foreach (keys %$branches) {
-	my $thisbranch = ''; # FIXME 
-	my %row = (
-		branchcode => $_,
-		selected => ($thisbranch eq $_ ? 1 : 0),
-		code => $branches->{$_}->{'branchcode'},
-		description => $branches->{$_}->{'branchname'},
-	);
-	push @branchloop, \%row;
 }
 
     # location list
@@ -157,7 +144,7 @@ foreach (sort keys %$locations) {
 }
     
 my @ccodes;
-foreach (keys %$ccodes) {
+foreach (sort {$ccodes->{$a} cmp $ccodes->{$b}} keys %$ccodes) {
 	push @ccodes, { code => $_, description => $ccodes->{$_} };
 }
 
@@ -178,7 +165,7 @@ $template->param(
 	itemtypeloop => \@itemtypeloop,
 	locationloop => \@locations,
 	   ccodeloop => \@ccodes,
-	  branchloop => \@branchloop,
+	  branchloop => GetBranchesLoop(C4::Context->userenv->{'branch'}),
 	hassort1=> $hassort1,
 	hassort2=> $hassort2,
 	Bsort1 => $Bsort1,
@@ -426,12 +413,12 @@ sub calculate {
     my $strcalc = "SELECT $linefield, $colfield, ";
         $strcalc .= ($process == 1) ? " COUNT(*) "                                 :
 					($process == 2) ? "(COUNT(DISTINCT borrowers.borrowernumber))" :
-        			($process == 3) ? "(COUNT(DISTINCT issues.itemnumber))"        : '';
+        			($process == 3) ? "(COUNT(DISTINCT statistics.itemnumber))"        : '';
 	if ($process == 4) {
 		my $rqbookcount = $dbh->prepare("SELECT count(*) FROM items");
 		$rqbookcount->execute;
 		my ($bookcount) = $rqbookcount->fetchrow;
-		$strcalc .= "100*(COUNT(DISTINCT issues.itemnumber))/ $bookcount " ;
+		$strcalc .= "100*(COUNT(DISTINCT statistics.itemnumber))/ $bookcount " ;
 	}
 	$strcalc .= "
         FROM statistics

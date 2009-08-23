@@ -890,7 +890,6 @@ sub _new_stopwords
     my $sth = $dbh->prepare("select word from stopwords");
     $sth->execute;
     while (my $stopword = $sth->fetchrow_array) {
-        my $retval = {};
         $stopwordlist->{$stopword} = uc($stopword);
     }
     $stopwordlist->{A} = "A" unless $stopwordlist;
@@ -901,18 +900,15 @@ sub _new_stopwords
 
   C4::Context->userenv;
 
-Builds a hash for user environment variables.
+Retrieves a hash for user environment variables.
 
 This hash shall be cached for future use: if you call
 C<C4::Context-E<gt>userenv> twice, you will get the same hash without real DB access
 
-set_userenv is called in Auth.pm
-
 =cut
 
 #'
-sub userenv
-{
+sub userenv {
     my $var = $context->{"activeuser"};
     return $context->{"userenv"}->{$var} if (defined $var and defined $context->{"userenv"}->{$var});
     # insecure=1 management
@@ -935,17 +931,14 @@ sub userenv
 
   C4::Context->set_userenv($usernum, $userid, $usercnum, $userfirstname, $usersurname, $userbranch, $userflags, $emailaddress);
 
-Informs a hash for user environment variables.
-
-This hash shall be cached for future use: if you call
-C<C4::Context-E<gt>userenv> twice, you will get the same hash without real DB access
+Establish a hash of user environment variables.
 
 set_userenv is called in Auth.pm
 
 =cut
 
 #'
-sub set_userenv{
+sub set_userenv {
     my ($usernum, $userid, $usercnum, $userfirstname, $usersurname, $userbranch, $branchname, $userflags, $emailaddress, $branchprinter)= @_;
     my $var=$context->{"activeuser"};
     my $cell = {
@@ -987,7 +980,7 @@ sub get_shelves_userenv () {
 
 =item _new_userenv
 
-  C4::Context->_new_userenv($session);
+  C4::Context->_new_userenv($session);  # FIXME: This calling style is wrong for what looks like an _internal function
 
 Builds a hash for user environment variables.
 
@@ -1001,7 +994,7 @@ _new_userenv is called in Auth.pm
 #'
 sub _new_userenv
 {
-    shift;
+    shift;  # Useless except it compensates for bad calling style
     my ($sessionID)= @_;
      $context->{"activeuser"}=$sessionID;
 }

@@ -14,7 +14,7 @@
 		line.removeChild(ButtonPlus);
 	}
 	$(document).ready(function() {
-		$("input[@name='q']:eq(0)").focus();
+		$("input[name=q]:eq(0)").focus();
 	});
 </script>
 </head>
@@ -85,7 +85,7 @@
 <!-- ITEMTYPE LIMITS -->
     <div id="itemtypelist">
 	<fieldset>
-     <legend>Limit type to: match any of the following:</legend>
+     <legend>Limit to any of the following:</legend>
     <table>
         <tr>
       <!--TMPL_LOOP Name="itemtypeloop"-->
@@ -207,7 +207,7 @@
 <!-- TYPE LIMITS -->
     <fieldset>
 
-    <legend>Limit type to: match any of the following</legend>
+    <legend>Limit to any of the following</legend>
     <table class="itemtypes">
             <tr>
             <td><input type="checkbox" id="mc-bks" name="limit" value="mc:t" />
@@ -263,7 +263,7 @@
     <!-- <input type="hidden" name="limit" value="branch: MAIN" /> -->
         </p>
         <!-- TMPL_IF NAME="searchdomainloop" -->
-    <p>OR<p> <!-- should addjs to grey out group pulldown if a library is selected. -->
+    <p>OR</p> <!-- should addjs to grey out group pulldown if a library is selected. -->
     <p>
         <label for="categoryloop">Groups of Libraries</label><select name="multibranchlimit" id="categoryloop">
         <option value=""> -- none -- </option>

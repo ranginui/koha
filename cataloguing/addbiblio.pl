@@ -168,7 +168,7 @@ sub build_authorized_values_list ($$$$$$$) {
         #Use GetBranches($onlymine)
         my $onlymine=C4::Context->preference('IndependantBranches') && 
                 C4::Context->userenv && 
-                C4::Context->userenv->{flags}!=1 && 
+                C4::Context->userenv->{flags} % 2 == 0 && 
                 C4::Context->userenv->{branch};
         my $branches = GetBranches($onlymine);
         my @branchloop;
@@ -308,6 +308,9 @@ sub create_input {
         $value =~ s/YYYY/$year/g;
         $value =~ s/MM/$month/g;
         $value =~ s/DD/$day/g;
+        my $username=(C4::Context->userenv?C4::Context->userenv->{'surname'}:"superlibrarian");    
+        $value=~s/user/$username/g;
+    
     }
     my $dbh = C4::Context->dbh;
 
@@ -382,7 +385,7 @@ sub create_input {
                     maxlength=\"$max_length\"
                     \/>
                     <a href=\"#\" class=\"buttonDot\"
-                        onclick=\"Dopop('/cgi-bin/koha/authorities/auth_finder.pl?authtypecode=".$tagslib->{$tag}->{$subfield}->{authtypecode}."&amp;index=$subfield_data{id}','$subfield_data{id}'); return false;\" title=\"Tag Editor\">...</a>
+                        onclick=\"openAuth(this.parentNode.getElementsByTagName('input')[1].id,'".$tagslib->{$tag}->{$subfield}->{authtypecode}."'); return false;\" tabindex=\"1\" title=\"Tag Editor\">...</a>
             ";
       } else {
         $subfield_data{marc_value} =
@@ -395,9 +398,8 @@ sub create_input {
                     size=\"67\"
                     maxlength=\"$max_length\"
                     readonly=\"readonly\"
-                    \/>
-                    <a href=\"#\" class=\"buttonDot\"
-                        onclick=\"Dopop('/cgi-bin/koha/authorities/auth_finder.pl?authtypecode=".$tagslib->{$tag}->{$subfield}->{authtypecode}."&amp;index=$subfield_data{id}','$subfield_data{id}'); return false;\" title=\"Tag Editor\">...</a>
+                    \/><a href=\"#\" class=\"buttonDot\"
+                        onclick=\"openAuth(this.parentNode.getElementsByTagName('input')[1].id,'".$tagslib->{$tag}->{$subfield}->{authtypecode}."'); return false;\" tabindex=\"1\" title=\"Tag Editor\">...</a>
             ";
       }
     # it's a plugin field
@@ -427,7 +429,7 @@ sub create_input {
                             size=\"67\"
                             maxlength=\"$max_length\"
                             onblur=\"Blur$function_name($index_tag); \" \/>
-                            <a href=\"#\" class=\"buttonDot\" onclick=\"Clic$function_name('$subfield_data{id}'); return false;\" title=\"Tag Editor\">...</a>
+                            <a href=\"#\" class=\"buttonDot\" onclick=\"Clic$function_name('$subfield_data{id}'); return false;\" tabindex=\"1\" title=\"Tag Editor\">...</a>
                     $javascript";
         } else {
             warn "Plugin Failed: $plugin";
@@ -663,7 +665,7 @@ sub build_tabs ($$$$$) {
                             fixedfield    => $tag < 10?1:0,
                             random        => CreateKey,
                         );
-                        if ($tag >= 010){ # no indicator for theses tag
+                        if ($tag >= 10){ # no indicator for 00x tags
                            $tag_data{indicator1} = format_indicator($field->indicator(1)),
                            $tag_data{indicator2} = format_indicator($field->indicator(2)),
                         }
@@ -780,6 +782,10 @@ AND (authtypecode IS NOT NULL AND authtypecode<>\"\")|);
          my $authtypedata=GetAuthType($data->{authtypecode});
          next unless $authtypedata;
          my $marcrecordauth=MARC::Record->new();
+		if (C4::Context->preference('marcflavour') eq 'MARC21') {
+			$marcrecordauth->leader('     nz  a22     o  4500');
+			SetMarcUnicodeFlag($marcrecordauth, 'MARC21');
+			}
          my $authfield=MARC::Field->new($authtypedata->{auth_tag_to_report},'','',"a"=>"".$field->subfield('a'));
          map { $authfield->add_subfields($_->[0]=>$_->[1]) if ($_->[0]=~/[A-z]/ && $_->[0] ne "a" )}  $field->subfields();
          $marcrecordauth->insert_fields_ordered($authfield);
@@ -790,9 +796,15 @@ AND (authtypecode IS NOT NULL AND authtypecode<>\"\")|);
          # FIXME: AddAuthority() instead should simply explicitly require that the MARC::Record
          # use UTF-8, but as of 2008-08-05, did not want to introduce that kind
          # of change to a core API just before the 3.0 release.
-         if (C4::Context->preference('marcflavour') eq 'MARC21') {
-            SetMarcUnicodeFlag($marcrecordauth, 'MARC21');
-         }
+
+				if (C4::Context->preference('marcflavour') eq 'MARC21') {
+					$marcrecordauth->insert_fields_ordered(MARC::Field->new('667','','','a'=>"Machine generated authority record."));
+					my $cite = $record->author() . ", " .  $record->title_proper() . ", " . $record->publication_date() . " "; 
+					$cite =~ s/^[\s\,]*//;
+					$cite =~ s/[\s\,]*$//;
+					$cite = "Work cat.: (" . C4::Context->preference('MARCOrgCode') . ")". $record->subfield('999','c') . ": " . $cite;
+					$marcrecordauth->insert_fields_ordered(MARC::Field->new('670','','','a'=>$cite));
+				}
 
 #          warn "AUTH RECORD ADDED : ".$marcrecordauth->as_formatted;
 

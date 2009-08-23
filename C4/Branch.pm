@@ -35,13 +35,14 @@ if  ($usecache) {
 
 BEGIN {
 	# set the version for version checking
-	$VERSION = 3.01;
+	$VERSION = 3.02;
 	@ISA    = qw(Exporter);
 	@EXPORT = qw(
 		&GetBranchCategory
 		&GetBranchName
 		&GetBranch
 		&GetBranches
+		&GetBranchesLoop
 		&GetBranchDetail
 		&get_branchinfos_of
 		&ModBranch
@@ -54,6 +55,7 @@ BEGIN {
 		&DelBranch
 		&DelBranchCategory
 	);
+	@EXPORT_OK = qw( &onlymine &mybranch );
 }
 
 =head1 NAME
@@ -73,33 +75,35 @@ The functions in this module deal with branches.
 =head2 GetBranches
 
   $branches = &GetBranches();
-  returns informations about ALL branches.
-  Create a branch selector with the following code
-  IndependantBranches Insensitive...
+
+  Returns informations about ALL branches, IndependantBranches Insensitive.
   GetBranchInfo() returns the same information without the problems of this function 
-  (namespace collision, mainly).  You should probably use that, and replace GetBranches()
-  with GetBranchInfo() where you see it in the code.
+  (namespace collision, mainly).
+  Create a branch selector with the following code.
   
 =head3 in PERL SCRIPT
 
-my $branches = GetBranches;
-my @branchloop;
-foreach my $thisbranch (keys %$branches) {
-    my $selected = 1 if $thisbranch eq $branch;
-    my %row =(value => $thisbranch,
-                selected => $selected,
-                branchname => $branches->{$thisbranch}->{'branchname'},
-            );
-    push @branchloop, \%row;
-}
+    my $branches = GetBranches;
+    my @branchloop;
+    foreach my $thisbranch (sort keys %$branches) {
+        my $selected = 1 if $thisbranch eq $branch;
+        my %row =(value => $thisbranch,
+                    selected => $selected,
+                    branchname => $branches->{$thisbranch}->{branchname},
+                );
+        push @branchloop, \%row;
+    }
 
 =head3 in TEMPLATE
-            <select name="branch">
-                <option value="">Default</option>
-            <!-- TMPL_LOOP name="branchloop" -->
-                <option value="<!-- TMPL_VAR name="value" -->" <!-- TMPL_IF name="selected" -->selected<!-- /TMPL_IF -->><!-- TMPL_VAR name="branchname" --></option>
-            <!-- /TMPL_LOOP -->
-            </select>
+
+    <select name="branch">
+        <option value="">Default</option>
+        <!-- TMPL_LOOP name="branchloop" -->
+        <option value="<!-- TMPL_VAR name="value" -->" <!-- TMPL_IF name="selected" -->selected<!-- /TMPL_IF -->><!-- TMPL_VAR name="branchname" --></option>
+        <!-- /TMPL_LOOP -->
+    </select>
+
+=head4 Note that you often will want to just use GetBranchesLoop, for exactly the example above.
 
 =cut
 
@@ -124,13 +128,14 @@ sub GetBranches {
         $query.=" ORDER BY branchname";
     $sth = $dbh->prepare($query);
     $sth->execute( @bind_parameters );
+
+    my $nsth = $dbh->prepare(
+        "SELECT categorycode FROM branchrelations WHERE branchcode = ?"
+    );  # prepare once, outside while loop
+
     while ( my $branch = $sth->fetchrow_hashref ) {
-        my $nsth =
-          $dbh->prepare(
-            "SELECT categorycode FROM branchrelations WHERE branchcode = ?");
         $nsth->execute( $branch->{'branchcode'} );
         while ( my ($cat) = $nsth->fetchrow_array ) {
-
             # FIXME - This seems wrong. It ought to be
             # $branch->{categorycodes}{$cat} = 1;
             # otherwise, there's a namespace collision if there's a
@@ -151,6 +156,35 @@ sub GetBranches {
     return ( \%branches );
 }
 
+sub onlymine {
+    return 
+    C4::Context->preference('IndependantBranches') &&
+    C4::Context->userenv                           &&
+    C4::Context->userenv->{flags} %2 != 1          &&
+    C4::Context->userenv->{branch}                 ;
+}
+
+# always returns a string for OK comparison via "eq" or "ne"
+sub mybranch {
+    C4::Context->userenv           or return '';
+    return C4::Context->userenv->{branch} || '';
+}
+
+sub GetBranchesLoop (;$$) {  # since this is what most pages want anyway
+    my $branch   = @_ ? shift : mybranch();     # optional first argument is branchcode of "my branch", if preselection is wanted.
+    my $onlymine = @_ ? shift : onlymine();
+    my $branches = GetBranches($onlymine);
+    my @loop;
+    foreach (sort { $branches->{$a}->{branchname} cmp $branches->{$b}->{branchname} } keys %$branches) {
+        push @loop, {
+            value => $_,
+            selected => ($_ eq $branch) ? 1 : 0, 
+            branchname => $branches->{$_}->{branchname},
+        };
+    }
+    return \@loop;
+}
+
 =head2 GetBranchName
 
 =cut
@@ -168,9 +202,9 @@ sub GetBranchName {
 
 =head2 ModBranch
 
-&ModBranch($newvalue);
+$error = &ModBranch($newvalue);
 
-This function modify an existing branches.
+This function modify an existing branch
 
 C<$newvalue> is a ref to an array wich is containt all the column from branches table.
 
@@ -184,33 +218,43 @@ sub ModBranch {
         my $query  = "
             INSERT INTO branches
             (branchcode,branchname,branchaddress1,
-            branchaddress2,branchaddress3,branchphone,
-            branchfax,branchemail,branchip,branchprinter)
-            VALUES (?,?,?,?,?,?,?,?,?,?)
+            branchaddress2,branchaddress3,branchzip,branchcity,
+            branchcountry,branchphone,branchfax,branchemail,
+            branchurl,branchip,branchprinter,branchnotes)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
         ";
         my $sth    = $dbh->prepare($query);
         $sth->execute(
             $data->{'branchcode'},       $data->{'branchname'},
             $data->{'branchaddress1'},   $data->{'branchaddress2'},
-            $data->{'branchaddress3'},   $data->{'branchphone'},
-            $data->{'branchfax'},        $data->{'branchemail'},
+            $data->{'branchaddress3'},   $data->{'branchzip'},
+            $data->{'branchcity'},       $data->{'branchcountry'},
+            $data->{'branchphone'},      $data->{'branchfax'},
+            $data->{'branchemail'},      $data->{'branchurl'},
             $data->{'branchip'},         $data->{'branchprinter'},
+            $data->{'branchnotes'},
         );
+        return 1 if $dbh->err;
     } else {
         my $query  = "
             UPDATE branches
             SET branchname=?,branchaddress1=?,
-                branchaddress2=?,branchaddress3=?,branchphone=?,
-                branchfax=?,branchemail=?,branchip=?,branchprinter=?
+                branchaddress2=?,branchaddress3=?,branchzip=?,
+                branchcity=?,branchcountry=?,branchphone=?,
+                branchfax=?,branchemail=?,branchurl=?,branchip=?,
+                branchprinter=?,branchnotes=?
             WHERE branchcode=?
         ";
         my $sth    = $dbh->prepare($query);
         $sth->execute(
             $data->{'branchname'},
             $data->{'branchaddress1'},   $data->{'branchaddress2'},
-            $data->{'branchaddress3'},   $data->{'branchphone'},
-            $data->{'branchfax'},        $data->{'branchemail'},
+            $data->{'branchaddress3'},   $data->{'branchzip'},
+            $data->{'branchcity'},       $data->{'branchcountry'},
+            $data->{'branchphone'},      $data->{'branchfax'},
+            $data->{'branchemail'},      $data->{'branchurl'},
             $data->{'branchip'},         $data->{'branchprinter'},
+            $data->{'branchnotes'},
             $data->{'branchcode'},
         );
     }
@@ -363,21 +407,18 @@ sub GetBranch ($$) {
 
 =head2 GetBranchDetail
 
-  $branchname = &GetBranchDetail($branchcode);
+    $branch = &GetBranchDetail($branchcode);
 
-Given the branch code, the function returns the corresponding
-branch name for a comprehensive information display
+Given the branch code, the function returns a
+hashref for the corresponding row in the branches table.
 
 =cut
 
 sub GetBranchDetail {
-    my ($branchcode) = @_;
-    my $dbh = C4::Context->dbh;
-    my $sth = $dbh->prepare("SELECT * FROM branches WHERE branchcode = ?");
+    my ($branchcode) = shift or return;
+    my $sth = C4::Context->dbh->prepare("SELECT * FROM branches WHERE branchcode = ?");
     $sth->execute($branchcode);
-    my $branchname = $sth->fetchrow_hashref();
-    $sth->finish();
-    return $branchname;
+    return $sth->fetchrow_hashref();
 }
 
 =head2 get_branchinfos_of

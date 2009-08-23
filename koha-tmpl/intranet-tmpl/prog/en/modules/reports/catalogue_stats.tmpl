@@ -62,6 +62,10 @@
 <!-- TMPL_ELSE -->
 
 	<form method="post" action="/cgi-bin/koha/reports/catalogue_stats.pl">
+	<input type="hidden" name="Filter" /> <input type="hidden" name="Filter" />
+	<!-- TMPL_UNLESS Name="haslccn" -->
+	<input type="hidden" name="Filter" /> <input type="hidden" name="Filter" />
+	<!-- /TMPL_UNLESS -->
 	<fieldset class="rows">
 	<legend>Catalog statistics</legend>
 	<table>
@@ -74,7 +78,6 @@
 			</tr>
 		</thead>
 		<tbody>
-				<input type="hidden" name="Filter" /> <input type="hidden" name="Filter" />
 			<!-- TMPL_IF Name="haslccn" -->
 					<tr>
 					<td>LoC Classification</td>
@@ -96,8 +99,6 @@
 					</td>
 					<td>&nbsp;</td>
 				</tr>
-				<!-- TMPL_ELSE -->
-				<input type="hidden" name="Filter" /> <input type="hidden" name="Filter" />
 			<!-- /TMPL_IF  -->
 			<!-- TMPL_IF Name="hascote" -->
 			  <tr>
@@ -125,9 +126,9 @@
 			<!-- /TMPL_IF -->
 			 <tr>
 				<td>Item Type</td>
-				<td><input type="radio" name="Line" value="itemtype" /></td>
-				<td><input type="radio" name="Column" value="itemtype" /></td>
-				<td><select name="Filter" id="itemtype">
+				<td><input type="radio" name="Line" value="<!-- TMPL_VAR NAME="item_itype" -->" /></td>
+				<td><input type="radio" name="Column" value="<!-- TMPL_VAR NAME="item_itype" -->" /></td>
+				<td><select name="Filter" id="<!-- TMPL_VAR NAME="item_itype" -->">
 					<option value=""> </option>
 					<!-- TMPL_LOOP NAME="CGIItemType" -->
 					<!-- TMPL_IF NAME="selected" -->
@@ -156,7 +157,7 @@
 				<td><select name="Filter" id="branch">
 					<option value=""> </option>
 					<!-- TMPL_LOOP NAME="CGIBranch" -->
-					<!-- TMPL_IF NAME="selected" --><option value="<!-- TMPL_VAR NAME="branchcode" -->" selected="selected"><!-- TMPL_VAR NAME="branchname" --></option><!-- TMPL_ELSE --><option value="<!-- TMPL_VAR NAME="branchcode" -->"><!-- TMPL_VAR NAME="branchname" --></option><!-- /TMPL_IF -->
+					<!-- TMPL_IF NAME="selected" --><option value="<!-- TMPL_VAR NAME="value" -->" selected="selected"><!-- TMPL_VAR NAME="branchname" --></option><!-- TMPL_ELSE --><option value="<!-- TMPL_VAR NAME="value" -->"><!-- TMPL_VAR NAME="branchname" --></option><!-- /TMPL_IF -->
 					<!-- /TMPL_LOOP -->
 					</select>
 				</td>
@@ -185,6 +186,17 @@
 					</select>
 				</td>
 			</tr>
+            <tr>
+                <td colspan="3">Filter barcode</td>
+                <td>
+                    <select name="Filter" id="like">
+                        <option value="1">like</option>
+                        <option value="0">not like</option>
+                    </select>
+                    <input type="text" name="Filter" id="barcode" />
+                    (use * to do a fuzzy search)
+                </td>
+            </tr>
 		</tbody>
 	</table><br /></fieldset>
 	

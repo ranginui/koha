@@ -19,6 +19,7 @@
 # Suite 330, Boston, MA  02111-1307 USA
 
 use strict;
+# use warnings;  # FIXME
 use C4::Auth;
 use CGI;
 use C4::Context;
@@ -51,8 +52,14 @@ my $cotedigits  = $input->param("cotedigits");
 my $output      = $input->param("output");
 my $basename    = $input->param("basename");
 my $mime        = $input->param("MIME");
-our $sep     = $input->param("sep");
+our $sep        = $input->param("sep");
 $sep = "\t" if ($sep eq 'tabulation');
+my $item_itype;
+if(C4::Context->preference('item-level_itypes')) {
+	$item_itype = "items\.itype"
+} else {
+	$item_itype = "itemtype";
+}
 
 my ($template, $borrowernumber, $cookie)
 	= get_template_and_user({template_name => $fullreportname,
@@ -133,31 +140,19 @@ if ($do_it) {
 # No need to test for data here.  If you don't have itemcallnumbers, you probably know it.
 # FIXME: Hardcoding to 5 chars on itemcallnum. 
 #
-	 my $hascote = 1;
-	 my $highcote = 5;
-	
+    my $hascote = 1;
+    my $highcote = 5;
+
 	$req = $dbh->prepare("select itemtype, description from itemtypes order by description");
 	$req->execute;
 	my $CGIitemtype = $req->fetchall_arrayref({});
 
 	my $authvals = GetKohaAuthorisedValues("items.ccode");
 	my @authvals;
-	foreach (keys %$authvals) {
+	foreach (sort {$authvals->{$a} cmp $authvals->{$b} || $a cmp $b} keys %$authvals) {
 		push @authvals, { code => $_, description => $authvals->{$_} };
 	}
 	
-
-	my $branches=GetBranches();
-	my @branchloop;
-	foreach (keys %$branches) {
-		my $thisbranch = ''; # FIXME: populate $thisbranch to preselect one
-		my %row = (branchcode => $_,
-			selected => ($thisbranch eq $_ ? 1 : 0),
-			branchname => $branches->{$_}->{'branchname'},
-		);
-		push @branchloop, \%row;
-	}
-
 	my $locations = GetKohaAuthorisedValues("items.location");
 	my @locations;
 	foreach (sort keys %$locations) {
@@ -170,11 +165,12 @@ if ($do_it) {
 					haslccn   => $haslccn,
 					hascote   => $hascote,
 					CGIItemType => $CGIitemtype,
-					CGIBranch    => \@branchloop,
+					CGIBranch    => GetBranchesLoop(C4::Context->userenv->{'branch'}),
 					locationloop => \@locations,
 					authvals     => \@authvals,
 					CGIextChoice => \@mime,
 					CGIsepChoice => GetDelimiterChoices,
+					item_itype => $item_itype
 					);
 
 }
@@ -192,8 +188,24 @@ sub calculate {
 	my @looprow;
 	my %globalline;
 	my $grantotal =0;
+    my $barcodelike   = @$filters[13];
+    my $barcodefilter = @$filters[14];
+    my $not;
+    
 # extract parameters
 	my $dbh = C4::Context->dbh;
+
+# if barcodefilter is empty set as %
+if($barcodefilter){
+    # Check if barcodefilter is "like" or "not like"
+    if(!$barcodelike){
+        $not = "not";
+    }
+    # Change * to %
+    $barcodefilter =~ s/\*/%/g;
+}else{
+    $barcodefilter = "%";
+}
 
 # Filters
 # Checking filters
@@ -233,7 +245,11 @@ sub calculate {
  	$linefilter[1] = @$filters[3] if ($line =~ /lccn/ )  ;
  	$linefilter[0] = @$filters[4] if ($line =~ /items\.itemcallnumber/ )  ;
  	$linefilter[1] = @$filters[5] if ($line =~ /items\.itemcallnumber/ )  ;
- 	$linefilter[0] = @$filters[6] if ($line =~ /itemtype/ )  ;
+	if (C4::Context->preference('item-level_itypes')) {
+ 		$linefilter[0] = @$filters[6] if ($line =~ /items\.itype/ )  ;
+	} else {
+ 		$linefilter[0] = @$filters[6] if ($line =~ /itemtype/ )  ;
+	}
  	$linefilter[0] = @$filters[7] if ($line =~ /publishercode/ ) ;
  	$linefilter[0] = @$filters[8] if ($line =~ /publicationyear/ ) ;
  	$linefilter[1] = @$filters[9] if ($line =~ /publicationyear/ ) ;
@@ -248,7 +264,11 @@ sub calculate {
  	$colfilter[1] = @$filters[3] if ($column =~ /lccn/ )  ;
  	$colfilter[0] = @$filters[4] if ($column =~ /items\.itemcallnumber/ )  ;
  	$colfilter[1] = @$filters[5] if ($column =~ /items\.itemcallnumber/ )  ;
- 	$colfilter[0] = @$filters[6] if ($column =~ /itemtype/ )  ;
+	if (C4::Context->preference('item-level_itypes')) {
+ 		$colfilter[0] = @$filters[6] if ($column =~ /items\.itype/ )  ;
+	} else {
+ 		$colfilter[0] = @$filters[6] if ($column =~ /itemtype/ )  ;
+	}
  	$colfilter[0] = @$filters[7] if ($column =~ /publishercode/ ) ;
  	$colfilter[0] = @$filters[8] if ($column =~ /publicationyear/ ) ;
  	$colfilter[1] = @$filters[9] if ($column =~ /publicationyear/ ) ;
@@ -269,7 +289,7 @@ sub calculate {
 	}
 
 	my $strsth;
-	$strsth .= "select distinctrow $linefield from biblioitems left join items on (items.biblioitemnumber = biblioitems.biblioitemnumber) where $line is not null ";
+	$strsth .= "select distinctrow $linefield from biblioitems left join items on (items.biblioitemnumber = biblioitems.biblioitemnumber) where barcode $not LIKE ? AND $line is not null ";
 	if ( @linefilter ) {
 		if ($linefilter[1]){
 			$strsth .= " and $line >= ? " ;
@@ -284,11 +304,11 @@ sub calculate {
 	
 	my $sth = $dbh->prepare( $strsth );
 	if (( @linefilter ) and ($linefilter[1])){
-		$sth->execute($linefilter[0],$linefilter[1]);
-	} elsif ($linefilter[0]) {
-		$sth->execute($linefilter[0]);
+		$sth->execute($barcodefilter,$linefilter[0],$linefilter[1]);
+	} elsif ($barcodefilter,$linefilter[0]) {
+		$sth->execute($barcodefilter,$linefilter[0]);
 	} else {
-		$sth->execute;
+		$sth->execute($barcodefilter);
 	}
  	while ( my ($celvalue) = $sth->fetchrow) {
  		my %cell;
@@ -318,7 +338,7 @@ sub calculate {
 	FROM   biblioitems
 	LEFT JOIN items
 		ON (items.biblioitemnumber = biblioitems.biblioitemnumber)
-	WHERE  $column IS NOT NULL ";
+	WHERE  barcode $not LIKE ? AND $column IS NOT NULL ";
 	if (( @colfilter ) and ($colfilter[1])) {
 		$strsth2 .= " and $column> ? and $column< ?";
 	}elsif ($colfilter[0]){
@@ -329,11 +349,11 @@ sub calculate {
 	$debug and print STDERR "SQL: $strsth2";
 	my $sth2 = $dbh->prepare( $strsth2 );
 	if ((@colfilter) and ($colfilter[1])) {
-		$sth2->execute($colfilter[0],$colfilter[1]);
+		$sth2->execute($barcodefilter,$colfilter[0],$colfilter[1]);
 	} elsif ($colfilter[0]){
-		$sth2->execute($colfilter[0]);
+		$sth2->execute($barcodefilter,$colfilter[0]);
 	} else {
-		$sth2->execute;
+		$sth2->execute($barcodefilter);
 	}
  	while (my ($celvalue) = $sth2->fetchrow) {
  		my %cell;
@@ -363,7 +383,7 @@ sub calculate {
 	}
 
 # preparing calculation
-	my $strcalc .= "SELECT $linefield, $colfield, count(*) FROM biblioitems LEFT JOIN  items ON (items.biblioitemnumber = biblioitems.biblioitemnumber) WHERE 1";
+	my $strcalc .= "SELECT $linefield, $colfield, count(*) FROM biblioitems LEFT JOIN  items ON (items.biblioitemnumber = biblioitems.biblioitemnumber) WHERE 1 AND barcode $not like ? ";
 	if (@$filters[0]){
 		@$filters[0]=~ s/\*/%/g;
 		$strcalc .= " AND dewey >" . @$filters[0];
@@ -393,7 +413,7 @@ sub calculate {
 	if (@$filters[6]){
 		@$filters[6]=~ s/\*/%/g;
 		$strcalc .= " AND " . 
-			(C4::Context::preference('Item-level_itypes') ? 'items.itype' : 'biblioitems.itemtype')
+			(C4::Context->preference('item-level_itypes') ? 'items.itype' : 'biblioitems.itemtype')
 			. " LIKE '" . @$filters[6] ."'";
 	}
 	
@@ -426,7 +446,7 @@ sub calculate {
 	$strcalc .= " group by $linefield, $colfield order by $linefield,$colfield";
 	$debug and warn "SQL: $strcalc";
 	my $dbcalc = $dbh->prepare($strcalc);
-	$dbcalc->execute;
+	$dbcalc->execute($barcodefilter);
 #	warn "filling table";
 	
 	my $emptycol; 

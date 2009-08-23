@@ -17,6 +17,7 @@
 
 
 use strict;
+use warnings;
 use CGI;
 my $input = new CGI;
 
@@ -81,4 +82,11 @@ if ($usecache){
     my $page = $template->output();
     $cache->set("koha:opacmain:$borrowernumber", $page, 300);
 }
-C4::Output::output_html_with_http_headers $input, $cookie, $template->output;
+
+# If GoogleIndicTransliteration system preference is On Set paramter to load Google's javascript in OPAC search screens 
+if (C4::Context->preference('GoogleIndicTransliteration')) {
+        $template->param('GoogleIndicTransliteration' => 1);
+}
+
+output_html_with_http_headers $input, $cookie, $template->output;
+

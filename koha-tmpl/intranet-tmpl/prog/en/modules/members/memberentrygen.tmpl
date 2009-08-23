@@ -276,45 +276,66 @@
     <fieldset class="rows">
         <legend>Guarantor Information</legend>
         <ol>
-        <!-- TMPL_IF NAME="guarantorid" -->
-        <li id="contact-details">
-        <!-- TMPL_ELSE -->
-        <li id="contact-details" style="display: none">
-        <!-- /TMPL_IF -->
-            <span class="label">Patron #:</span> <!-- TMPL_IF NAME="guarantorid" --> <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=<!-- TMPL_VAR NAME="guarantorid" -->" target="blank"><!-- TMPL_VAR NAME="guarantorid" --></a><!-- /TMPL_IF -->
-        </li>
-        <li>
-            <label for="contactname">Surname: </label>
-            <!-- TMPL_IF NAME="guarantorid" -->
-            <span><!-- TMPL_VAR NAME="contactname" --></span>
-            <input name="contactname" id="contactname" type="hidden" size="20" value="<!-- TMPL_VAR NAME="contactname" -->" />
-            <!-- TMPL_ELSE -->
-            <input name="contactname" id="contactname" type="text" size="20" value="<!-- TMPL_VAR NAME="contactname" -->" />
-            <!-- /TMPL_IF -->
-        </li>
-        <li>
-            <label for="contactfirstname">First name: </label>
-            <!-- TMPL_IF NAME="guarantorid" -->
-            <span><!-- TMPL_VAR NAME="contactfirstname" --></span>
-            <input name="contactfirstname" id="contactfirstname" type="hidden" size="20" value="<!-- TMPL_VAR NAME="contactfirstname" -->" />
-            <!-- TMPL_ELSE -->
-            <input name="contactfirstname" id="contactfirstname" type="text" size="20" value="<!-- TMPL_VAR NAME="contactfirstname" -->" />
-            <!-- /TMPL_IF -->
-        </li>
-        <!-- TMPL_IF name="relshiploop" -->
-        <li>
-            <label for="relationship">Relationship: </label>
-            <select name="relationship" id="relationship" >
-                <!-- TMPL_LOOP name="relshiploop" -->
-                <!-- TMPL_IF name="selected" -->
-                <option value="<!-- TMPL_VAR name="relationship" -->" selected="selected" ><!-- TMPL_VAR name="relationship" --></option>
-                <!-- TMPL_ELSE -->
-                <option value="<!-- TMPL_VAR name="relationship" -->"><!-- TMPL_VAR name="relationship" --></option>
-                <!-- /TMPL_IF -->
-                <!-- /TMPL_LOOP -->
-            </select>
-        </li>
-        <!-- /TMPL_IF -->
+<!--TMPL_IF Name="P"-->
+	        <!-- TMPL_IF NAME="guarantorid" -->
+	        <li id="contact-details">
+	        <!-- TMPL_ELSE -->
+	        <li id="contact-details" style="display: none">
+	        <!-- /TMPL_IF -->
+	            <span class="label">Organization #:</span> <!-- TMPL_IF NAME="guarantorid" --> <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=<!-- TMPL_VAR NAME="guarantorid" -->" target="blank"><!-- TMPL_VAR NAME="guarantorid" --></a><!-- /TMPL_IF -->
+	        </li>
+	        <li>
+	            <label for="contactname">Organization name: </label>
+	            <!-- TMPL_IF NAME="guarantorid" -->
+	            <span><!-- TMPL_VAR NAME="contactname" --></span>
+	            <input name="contactname" id="contactname" type="hidden" size="20" value="<!-- TMPL_VAR NAME="contactname" -->" />
+	            <!-- TMPL_ELSE -->
+	            <input name="contactname" id="contactname" type="text" size="20" value="<!-- TMPL_VAR NAME="contactname" -->" />
+	            <!-- /TMPL_IF -->
+	        </li>
+<!-- TMPL_ELSE -->
+ <!-- TMPL_IF NAME="C" -->
+ <!-- TMPL_IF NAME="guarantorid" -->
+ <li id="contact-details">
+ <!-- TMPL_ELSE -->
+ <li id="contact-details" style="display: none">
+ <!-- /TMPL_IF -->
+     <span class="label">Patron #:</span> <!-- TMPL_IF NAME="guarantorid" --> <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=<!-- TMPL_VAR NAME="guarantorid" -->" target="blank"><!-- TMPL_VAR NAME="guarantorid" --></a><!-- /TMPL_IF -->
+ </li>
+ <li>
+     <label for="contactname">Surname: </label>
+     <!-- TMPL_IF NAME="guarantorid" -->
+     <span><!-- TMPL_VAR NAME="contactname" --></span>
+     <input name="contactname" id="contactname" type="hidden" size="20" value="<!-- TMPL_VAR NAME="contactname" -->" />
+     <!-- TMPL_ELSE -->
+     <input name="contactname" id="contactname" type="text" size="20" value="<!-- TMPL_VAR NAME="contactname" -->" />
+     <!-- /TMPL_IF -->
+ </li>
+ <li>
+     <label for="contactfirstname">First name: </label>
+     <!-- TMPL_IF NAME="guarantorid" -->
+     <span><!-- TMPL_VAR NAME="contactfirstname" --></span>
+     <input name="contactfirstname" id="contactfirstname" type="hidden" size="20" value="<!-- TMPL_VAR NAME="contactfirstname" -->" />
+     <!-- TMPL_ELSE -->
+     <input name="contactfirstname" id="contactfirstname" type="text" size="20" value="<!-- TMPL_VAR NAME="contactfirstname" -->" />
+     <!-- /TMPL_IF -->
+ </li>
+ <!-- TMPL_IF name="relshiploop" -->
+ <li>
+     <label for="relationship">Relationship: </label>
+     <select name="relationship" id="relationship" >
+         <!-- TMPL_LOOP name="relshiploop" -->
+         <!-- TMPL_IF name="selected" -->
+         <option value="<!-- TMPL_VAR name="relationship" -->" selected="selected" ><!-- TMPL_VAR name="relationship" --></option>
+         <!-- TMPL_ELSE -->
+         <option value="<!-- TMPL_VAR name="relationship" -->"><!-- TMPL_VAR name="relationship" --></option>
+         <!-- /TMPL_IF -->
+         <!-- /TMPL_LOOP -->
+     </select>
+ </li>
+ <!-- /TMPL_IF -->
+ <!-- /TMPL_IF -->
+<!--/TMPL_IF -->
         <li>
             <span class="label">&nbsp;</span>
             <!-- TMPL_IF NAME="guarantorid" -->
@@ -390,7 +411,7 @@
       <!--TMPL_ELSE-->
         <label for="zipcode">
       <!-- /TMPL_IF-->
-      Zipcode: </label>
+      Zip/Postal code: </label>
       <input type="text" name="zipcode" id="zipcode" size="10" value="<!-- TMPL_VAR NAME="zipcode" -->" />
 	  <!-- TMPL_IF NAME="mandatoryzipcode" --><span class="required">Required</span><!-- /TMPL_IF -->
     </li>
@@ -398,19 +419,7 @@
 	</ol>
     </fieldset>
   <fieldset class="rows" id="memberentry_contact">
-    <legend>Contact</legend><ol>       
-<!--TMPL_IF Name="C"-->
-      <h2>Patron</h2>
-      <li> 
-        <!-- TMPL_IF NAME="mandatoryB_email" -->
-          <label for="B_email" class="required">
-        <!--TMPL_ELSE-->
-          <label for="B_email">
-        <!-- /TMPL_IF-->
-        Email (home): </label>
-        <input type="text" id="B_email" name="B_email" size="45" value="<!-- TMPL_VAR NAME="B_email" -->" />
-		<!-- TMPL_IF NAME="mandatoryB_email" --><span class="required">Required</span><!-- /TMPL_IF --> </li>
-<!--/TMPL_IF-->
+    <legend>Contact</legend><ol>
       <li>
       <!-- TMPL_IF NAME="mandatoryphone" --> 
       <label for="phone" class="required">
@@ -419,7 +428,8 @@
       <!-- /TMPL_IF-->
       Phone (home): </label>
       <input type="text" id="phone" name="phone" value="<!-- TMPL_VAR NAME="phone" -->" />
-	  <!-- TMPL_IF NAME="mandatoryphone" --><span class="required">Required</span><!-- /TMPL_IF -->
+	  <!-- TMPL_IF NAME="mandatoryphone" --><span class="required">Required</span><!-- /TMPL_IF --><strong><em>Shows on transit slips</em></strong>
+
     </li>
     <li>
       <!-- TMPL_IF NAME="mandatoryphonepro" -->
@@ -449,7 +459,8 @@
       <!-- /TMPL_IF-->
       Email (home): </label>
       <input type="text" id="email" name="email" size="45" value="<!-- TMPL_VAR NAME="email" -->" />  
-	  <!-- TMPL_IF NAME="mandatoryemail" --><span class="required">Required</span><!-- /TMPL_IF -->
+	  <!-- TMPL_IF NAME="mandatoryemail" --><span class="required">Required</span><!-- /TMPL_IF --><strong><em>Shows on transit slips</em></strong>
+
     </li>
     <li>
       <!-- TMPL_IF NAME="mandatoryemailpro" --> 
@@ -497,7 +508,7 @@
 				<!--TMPL_ELSE-->
 					<label for="B_city">
 				<!-- /TMPL_IF-->
-				City: </label>
+				City, State: </label>
 				<input type="text" id="B_city" name="B_city" size="20" value="<!-- TMPL_VAR NAME="B_city" -->" />
 	  <!-- TMPL_IF NAME="mandatoryB_city" --><span class="required">Required</span><!-- /TMPL_IF -->
 			</li>
@@ -507,8 +518,8 @@
 				<!--TMPL_ELSE-->
 					<label for="B_zipcode">
 				<!-- /TMPL_IF-->
-				Zipcode: </label>
-				<input type="text" id="B_zipcode" name="B_zipcode" maxlength="5" size="5" value="<!-- TMPL_VAR NAME="B_zipcode" -->" />
+				Zip/Postal code: </label>
+				<input type="text" id="B_zipcode" name="B_zipcode" maxlength="10" size="10" value="<!-- TMPL_VAR NAME="B_zipcode" -->" />
 	  <!-- TMPL_IF NAME="mandatoryB_zipcode" --><span class="required">Required</span><!-- /TMPL_IF -->
 			</li>
             <li>
@@ -545,16 +556,6 @@
 		<fieldset class="rows" id="memberentry_altaddress">       
 		    <legend>Alternate Contact</legend><ol>
 			<li>
-			    <!-- TMPL_IF NAME="mandatoryaltcontactfirstname" -->
-				<label for="altcontactfirstname" class="required">
-				<!-- TMPL_ELSE -->
-				<label for="altcontactfirstname">
-				<!-- /TMPL_IF -->
-				First name:</label>
-				<input type="text" name="altcontactfirstname" id="altcontactfirstname" value="<!-- TMPL_VAR NAME="altcontactfirstname" -->" />
-				<!-- TMPL_IF NAME="mandatoryaltcontactfirstname" --><span class="required">Required</span><!-- /TMPL_IF -->
-			</li>
-			<li>
 			    <!-- TMPL_IF NAME="mandatoryaltcontactsurname" -->
 				<label for="altcontactsurname" class="required">
 				<!-- TMPL_ELSE -->
@@ -565,12 +566,22 @@
 				<!-- TMPL_IF NAME="mandatoryaltcontactsurname" --><span class="required">Required</span><!-- /TMPL_IF -->
 			</li>
 			<li>
+			    <!-- TMPL_IF NAME="mandatoryaltcontactfirstname" -->
+				<label for="altcontactfirstname" class="required">
+				<!-- TMPL_ELSE -->
+				<label for="altcontactfirstname">
+				<!-- /TMPL_IF -->
+				First name:</label>
+				<input type="text" name="altcontactfirstname" id="altcontactfirstname" value="<!-- TMPL_VAR NAME="altcontactfirstname" -->" />
+				<!-- TMPL_IF NAME="mandatoryaltcontactfirstname" --><span class="required">Required</span><!-- /TMPL_IF -->
+			</li>
+			<li>
 			    <!-- TMPL_IF NAME="mandatoryaltcontactaddress1" -->
 				<label for="altcontactaddress1" class="required">
 				<!-- TMPL_ELSE -->
 				<label for="altcontactaddress1">
 				<!-- /TMPL_IF -->
-				Address line 1:</label>
+				Address:</label>
 				<input type="text" name="altcontactaddress1" id="altcontactaddress1" value="<!-- TMPL_VAR NAME="altcontactaddress1" -->" size="40" />
 				<!-- TMPL_IF NAME="mandatoryaltcontactaddress1" --><span class="required">Required</span><!-- /TMPL_IF -->
 			</li>
@@ -580,7 +591,7 @@
 				<!-- TMPL_ELSE -->
 				<label for="altcontactaddress2">
 				<!-- /TMPL_IF -->
-				Address line 2:</label>
+				Address 2:</label>
 				<input type="text" name="altcontactaddress2" id="altcontactaddress2" value="<!-- TMPL_VAR NAME="altcontactaddress2" -->" size="40" />
 				<!-- TMPL_IF NAME="mandatoryaltcontactaddress2" --><span class="required">Required</span><!-- /TMPL_IF -->
 			</li>
@@ -600,7 +611,7 @@
 				<!-- TMPL_ELSE -->
 				<label for="altcontactzipcode">
 				<!-- /TMPL_IF -->
-				ZIP/Post code:</label>
+				Zip/Postal code:</label>
 				<input type="text" name="altcontactzipcode" id="altcontactzipcode" value="<!-- TMPL_VAR NAME="altcontactzipcode" -->" size="5" />
 				<!-- TMPL_IF NAME="mandatoryaltcontactzipcode" --><span class="required">Required</span><!-- /TMPL_IF -->
 			</li>
@@ -883,7 +894,7 @@
             </td>
             <td>
                 <input type="hidden" id="<!-- TMPL_VAR NAME="form_id" -->_code" name="<!-- TMPL_VAR NAME="form_id" -->_code"
-                       value="<!-- TMPL_VAR NAME="code" -->" />
+                       value="<!-- TMPL_VAR NAME="code" ESCAPE="HTML" -->" />
                 <!-- TMPL_IF NAME="use_dropdown" -->
                     <select id="<!-- TMPL_VAR NAME="form_id" -->" name="<!-- TMPL_VAR NAME="form_id" -->">
                         <option value="" />
@@ -919,6 +930,65 @@
     </table>
   </fieldset>
 <!-- /TMPL_IF--><!-- /TMPL_IF --><!-- /TMPL_UNLESS -->
+
+<!-- TMPL_IF NAME="step_5" --><!-- TMPL_IF NAME="EnhancedMessagingPreferences" -->
+  <fieldset class="rows" id="memberentry_messaging_prefs">
+    <!-- TMPL_IF NAME="opadd" -->
+    <!-- handle changing prefs if creating new patron and changing
+         the patron category
+    -->
+    <script language="javascript" type="text/javascript">//<![CDATA[
+       $(document).ready(function(){
+            var message_prefs_dirty = false;
+            $('#memberentry_messaging_prefs > *').change(function() {
+                message_prefs_dirty = true;
+            });
+            $('#categorycode').change(function() {
+                var categorycode = $(this).val();
+                if (message_prefs_dirty) {
+                    if (!confirm('Change messaging preferences to default for this category?')) {
+                        return;
+                    }
+                }
+                $.getJSON('/cgi-bin/koha/members/default_messageprefs.pl?categorycode=' + categorycode,
+                    function(data) {
+                        $.each(data.messaging_preferences, function(i, item) {
+                            var attrid = item.message_attribute_id;
+                            var transports = ['email', 'rss', 'sms'];
+                            $.each(transports, function(j, transport) {
+                                if (item['transport-' + transport] != ' ') {
+                                    $('#' + transport + attrid).attr('checked', item['transport-' + transport]);
+                                } else {
+                                    $('#' + transport + attrid).removeAttr('checked');
+                                }
+                            });
+                            if (item.digest && item.digest != ' ') {
+                                $('#digest' + attrid).attr('checked', item.digest);
+                            } else {
+                                $('#digest' + attrid).removeAttr('checked');
+                            }
+                            if (item.takes_days == '1') {
+                                $('[name=' + attrid + '-DAYS]').val('' + item.days_in_advance);
+                            }
+                        });
+                        message_prefs_dirty = false;
+                    }
+                );
+            });
+        });
+    //]]>
+    </script>
+    <!-- /TMPL_IF -->
+    <input type="hidden" name="setting_messaging_prefs" value="1" />
+    <legend>Patron messaging preferences</legend>
+    <!-- TMPL_INCLUDE NAME="messaging-preference-form.inc" -->
+    <!-- TMPL_IF NAME="SMSSendDriver" -->
+        <p><label for="SMSnumber">SMS number:</label> 
+          <input type="text" id="SMSnumber" name="SMSnumber" value="<!-- TMPL_VAR NAME="SMSnumber"  -->" />
+        </p>
+    <!-- /TMPL_IF -->
+  </fieldset>
+<!-- /TMPL_IF --> <!-- /TMPL_IF -->
 
     <fieldset class="action">
         <input type="submit" name="save" onclick="return check_form_borrowers();" value="Save" />

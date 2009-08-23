@@ -272,7 +272,7 @@ sub GetBookFundBreakdown {
 
     while ( my $data = $sth->fetchrow_hashref ) {
         my $left = $data->{'tleft'};
-        if ( (!$left && (!$data->{'datereceived'}||$data->{'datereceived'} eq '0000-00-00') ) || $left eq '' ) {
+        if ( !$left || $left eq '' ) {
             $left = $data->{'quantity'};
         }
         if ( $left && $left > 0 ) {
@@ -315,11 +315,13 @@ sub NewBookFund{
 
 =head3 ModBookFund
 
-&ModBookFund($bookfundname,$bookfundid,$current_branch, $branchcode) =
-this function update the bookfundname and the branchcode on aqbookfund table on database.
+&ModBookFund($bookfundname,$bookfundid,$current_branch, $branchcode)
+
+This function updates the bookfundname and the branchcode in the aqbookfund table.
 
 =cut
 
+# FIXME: use placeholders,  ->prepare(), ->execute()
 
 sub ModBookFund {
     my ($bookfundname,$bookfundid,$current_branch, $branchcode) = @_;
@@ -348,8 +350,6 @@ sub ModBookFund {
         $sth->execute($branchcode, $bookfundid) ;
     }
 }
-
-
 
 #-------------------------------------------------------------#
 

@@ -18,12 +18,16 @@ package C4::Letters;
 # Suite 330, Boston, MA  02111-1307 USA
 
 use strict;
+use warnings;
+
 use MIME::Lite;
 use Mail::Sendmail;
 use C4::Members;
 use C4::Log;
 use C4::SMS;
+use C4::Debug;
 use Encode;
+use Carp;
 
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
@@ -52,11 +56,9 @@ C4::Letters - Give functions for Letters management
 
   Letters are managed through "alerts" sent by Koha on some events. All "alert" related functions are in this module too.
 
-=cut
+=head2 GetLetters([$category])
 
-=head2 GetLetters
-
-  $letters = &getletters($category);
+  $letters = &GetLetters($category);
   returns informations about letters.
   if needed, $category filters for letters given category
   Create a letter selector with the following code
@@ -74,33 +76,33 @@ foreach my $thisletter (keys %$letters) {
     );
     push @letterloop, \%row;
 }
+$template->param(LETTERLOOP => \@letterloop);
 
 =head3 in TEMPLATE
 
     <select name="letter">
         <option value="">Default</option>
-    <!-- TMPL_LOOP name="letterloop" -->
+    <!-- TMPL_LOOP name="LETTERLOOP" -->
         <option value="<!-- TMPL_VAR name="value" -->" <!-- TMPL_IF name="selected" -->selected<!-- /TMPL_IF -->><!-- TMPL_VAR name="lettername" --></option>
     <!-- /TMPL_LOOP -->
     </select>
 
 =cut
 
-sub GetLetters {
+sub GetLetters (;$) {
 
     # returns a reference to a hash of references to ALL letters...
     my $cat = shift;
     my %letters;
     my $dbh = C4::Context->dbh;
-    $dbh->quote($cat);
     my $sth;
-    if ( $cat ne "" ) {
+    if (defined $cat) {
         my $query = "SELECT * FROM letter WHERE module = ? ORDER BY name";
         $sth = $dbh->prepare($query);
         $sth->execute($cat);
     }
     else {
-        my $query = " SELECT * FROM letter ORDER BY name";
+        my $query = "SELECT * FROM letter ORDER BY name";
         $sth = $dbh->prepare($query);
         $sth->execute;
     }
@@ -110,7 +112,7 @@ sub GetLetters {
     return \%letters;
 }
 
-sub getletter {
+sub getletter ($$) {
     my ( $module, $code ) = @_;
     my $dbh = C4::Context->dbh;
     my $sth = $dbh->prepare("select * from letter where module=? and code=?");
@@ -119,18 +121,18 @@ sub getletter {
     return $line;
 }
 
-=head2 addalert
+=head2 addalert ($borrowernumber, $type, $externalid)
 
     parameters : 
     - $borrowernumber : the number of the borrower subscribing to the alert
     - $type : the type of alert.
-    - externalid : the primary key of the object to put alert on. For issues, the alert is made on subscriptionid.
+    - $externalid : the primary key of the object to put alert on. For issues, the alert is made on subscriptionid.
     
     create an alert and return the alertid (primary key)
 
 =cut
 
-sub addalert {
+sub addalert ($$$) {
     my ( $borrowernumber, $type, $externalid ) = @_;
     my $dbh = C4::Context->dbh;
     my $sth =
@@ -143,7 +145,7 @@ sub addalert {
     return $alertid;
 }
 
-=head2 delalert
+=head2 delalert ($alertid)
 
     parameters :
     - alertid : the alert id
@@ -151,31 +153,29 @@ sub addalert {
     
 =cut
 
-sub delalert {
-    my ($alertid) = @_;
-
-    #warn "ALERTID : $alertid";
-    my $dbh = C4::Context->dbh;
-    my $sth = $dbh->prepare("delete from alert where alertid=?");
+sub delalert ($) {
+    my $alertid = shift or die "delalert() called without valid argument (alertid)";    # it's gonna die anyway.
+    $debug and warn "delalert: deleting alertid $alertid";
+    my $sth = C4::Context->dbh->prepare("delete from alert where alertid=?");
     $sth->execute($alertid);
 }
 
-=head2 getalert
+=head2 getalert ([$borrowernumber], [$type], [$externalid])
 
     parameters :
     - $borrowernumber : the number of the borrower subscribing to the alert
     - $type : the type of alert.
-    - externalid : the primary key of the object to put alert on. For issues, the alert is made on subscriptionid.
+    - $externalid : the primary key of the object to put alert on. For issues, the alert is made on subscriptionid.
     all parameters NON mandatory. If a parameter is omitted, the query is done without the corresponding parameter. For example, without $externalid, returns all alerts for a borrower on a topic.
 
 =cut
 
-sub getalert {
+sub getalert (;$$$) {
     my ( $borrowernumber, $type, $externalid ) = @_;
     my $dbh   = C4::Context->dbh;
     my $query = "SELECT * FROM alert WHERE";
     my @bind;
-    if ($borrowernumber =~ /^\d+$/) {
+    if ($borrowernumber and $borrowernumber =~ /^\d+$/) {
         $query .= " borrowernumber=? AND ";
         push @bind, $borrowernumber;
     }
@@ -190,14 +190,10 @@ sub getalert {
     $query =~ s/ AND $//;
     my $sth = $dbh->prepare($query);
     $sth->execute(@bind);
-    my @result;
-    while ( my $line = $sth->fetchrow_hashref ) {
-        push @result, $line;
-    }
-    return \@result;
+    return $sth->fetchall_arrayref({});
 }
 
-=head2 findrelatedto
+=head2 findrelatedto($type, $externalid)
 
 	parameters :
 	- $type : the type of alert
@@ -205,26 +201,24 @@ sub getalert {
 	
 	In the table alert, a "id" is stored in the externalid field. This "id" is related to another table, depending on the type of the alert.
 	When type=issue, the id is related to a subscriptionid and this sub returns the name of the biblio.
-	When type=virtual, the id is related to a virtual shelf and this sub returns the name of the sub
 
 =cut
+    
+# outmoded POD:
+# When type=virtual, the id is related to a virtual shelf and this sub returns the name of the sub
 
-sub findrelatedto {
-    my ( $type, $externalid ) = @_;
-    my $dbh = C4::Context->dbh;
-    my $sth;
-    if ( $type eq 'issue' ) {
-        $sth =
-          $dbh->prepare(
-"select title as result from subscription left join biblio on subscription.biblionumber=biblio.biblionumber where subscriptionid=?"
-          );
+sub findrelatedto ($$) {
+    my $type       = shift or return undef;
+    my $externalid = shift or return undef;
+    my $q = ($type eq 'issue'   ) ?
+"select title as result from subscription left join biblio on subscription.biblionumber=biblio.biblionumber where subscriptionid=?" :
+            ($type eq 'borrower') ?
+"select concat(firstname,' ',surname) from borrowers where borrowernumber=?" : undef;
+    unless ($q) {
+        warn "findrelatedto(): Illegal type '$type'";
+        return undef;
     }
-    if ( $type eq 'borrower' ) {
-        $sth =
-          $dbh->prepare(
-"select concat(firstname,' ',surname) from borrowers where borrowernumber=?"
-          );
-    }
+    my $sth = C4::Context->dbh->prepare($q);
     $sth->execute($externalid);
     my ($result) = $sth->fetchrow;
     return $result;
@@ -406,18 +400,26 @@ sub SendAlerts {
 
         # ... then send mail
         if (   $databookseller->{bookselleremail}
-            || $databookseller->{contemail} )
-        {
+            || $databookseller->{contemail} ) {
+            my $mail_to = $databookseller->{bookselleremail};
+            if ($databookseller->{contemail}) {
+                if (!$mail_to) {
+                    $mail_to = $databookseller->{contemail};
+                } else {
+                    $mail_to .= q|,|;
+                    $mail_to .= $databookseller->{contemail};
+                }
+            }
+            my $mail_subj = $innerletter->{title};
+            my $mail_msg  = $innerletter->{content};
+            $mail_msg  ||= q{};
+            $mail_subj ||= q{};
+
             my %mail = (
-                To => $databookseller->{bookselleremail}
-                  . (
-                    $databookseller->{contemail}
-                    ? "," . $databookseller->{contemail}
-                    : ""
-                  ),
+                To => $mail_to,
                 From    => $userenv->{emailaddress},
-                Subject => "" . $innerletter->{title},
-                Message => "" . $innerletter->{content},
+                Subject => $mail_subj,
+                Message => $mail_msg,
                 'Content-Type' => 'text/plain; charset="utf8"',
             );
             sendmail(%mail);
@@ -455,7 +457,7 @@ sub SendAlerts {
     }
 }
 
-=head2 parseletter
+=head2 parseletter($letter, $table, $pk)
 
     parameters :
     - $letter : a hash to letter fields (title & content useful)
@@ -466,45 +468,64 @@ sub SendAlerts {
 
 =cut
 
+our %handles = ();
+our %columns = ();
+
+sub parseletter_sth {
+    my $table = shift;
+    unless ($table) {
+        carp "ERROR: parseletter_sth() called without argument (table)";
+        return;
+    }
+    # check cache first
+    (defined $handles{$table}) and return $handles{$table};
+    my $query = 
+    ($table eq 'biblio'       ) ? "SELECT * FROM $table WHERE   biblionumber = ?"                      :
+    ($table eq 'biblioitems'  ) ? "SELECT * FROM $table WHERE   biblionumber = ?"                      :
+    ($table eq 'items'        ) ? "SELECT * FROM $table WHERE     itemnumber = ?"                      :
+    ($table eq 'reserves'     ) ? "SELECT * FROM $table WHERE borrowernumber = ? and biblionumber = ?" :
+    ($table eq 'borrowers'    ) ? "SELECT * FROM $table WHERE borrowernumber = ?"                      :
+    ($table eq 'branches'     ) ? "SELECT * FROM $table WHERE     branchcode = ?"                      :
+    ($table eq 'aqbooksellers') ? "SELECT * FROM $table WHERE             id = ?"                      : undef ;
+    unless ($query) {
+        warn "ERROR: No parseletter_sth query for table '$table'";
+        return;     # nothing to get
+    }
+    unless ($handles{$table} = C4::Context->dbh->prepare($query)) {
+        warn "ERROR: Failed to prepare query: '$query'";
+        return;
+    }
+    return $handles{$table};    # now cache is populated for that $table
+}
+
 sub parseletter {
     my ( $letter, $table, $pk, $pk2 ) = @_;
-
-    # 	warn "Parseletter : ($letter,$table,$pk)";
-    my $dbh = C4::Context->dbh;
-    my $sth;
-    if ( $table eq 'biblio' ) {
-        $sth = $dbh->prepare("select * from biblio where biblionumber=?");
-    } elsif ( $table eq 'biblioitems' ) {
-        $sth = $dbh->prepare("select * from biblioitems where biblionumber=?");
-    } elsif ( $table eq 'items' ) {
-        $sth = $dbh->prepare("select * from items where itemnumber=?");
-    } elsif ( $table eq 'reserves' ) {
-        $sth = $dbh->prepare("select * from reserves where borrowernumber = ? and biblionumber=?");
-    } elsif ( $table eq 'borrowers' ) {
-        $sth = $dbh->prepare("select * from borrowers where borrowernumber=?");
-    } elsif ( $table eq 'branches' ) {
-        $sth = $dbh->prepare("select * from branches where branchcode=?");
-    } elsif ( $table eq 'aqbooksellers' ) {
-        $sth = $dbh->prepare("select * from aqbooksellers where id=?");
+    unless ($letter) {
+        carp "ERROR: parseletter() 1st argument 'letter' empty";
+        return;
     }
-
+    # 	warn "Parseletter : ($letter, $table, $pk ...)";
+    my $sth = parseletter_sth($table);
+    unless ($sth) {
+        warn "parseletter_sth('$table') failed to return a valid sth.  No substitution will be done for that table.";
+        return;
+    }
     if ( $pk2 ) {
         $sth->execute($pk, $pk2);
     } else {
         $sth->execute($pk);
     }
 
-    # store the result in an hash
     my $values = $sth->fetchrow_hashref;
 
     # and get all fields from the table
-    $sth = $dbh->prepare("show columns from $table");
-    $sth->execute;
-    while ( ( my $field ) = $sth->fetchrow_array ) {
+    my $columns = C4::Context->dbh->prepare("SHOW COLUMNS FROM $table");
+    $columns->execute;
+    while ( ( my $field ) = $columns->fetchrow_array ) {
         my $replacefield = "<<$table.$field>>";
         my $replacedby   = $values->{$field} || '';
-        $letter->{title}   =~ s/$replacefield/$replacedby/g;
-        $letter->{content} =~ s/$replacefield/$replacedby/g;
+        ($letter->{title}  ) and $letter->{title}   =~ s/$replacefield/$replacedby/g;
+        ($letter->{content}) and $letter->{content} =~ s/$replacefield/$replacedby/g;
     }
 }
 
@@ -524,8 +545,8 @@ return true on success
 
 =cut
 
-sub EnqueueLetter {
-    my $params = shift;
+sub EnqueueLetter ($) {
+    my $params = shift or return undef;
 
     return unless exists $params->{'letter'};
     return unless exists $params->{'borrowernumber'};
@@ -565,15 +586,13 @@ ENDSQL
     return $result;
 }
 
-=head2 SendQueuedMessages
+=head2 SendQueuedMessages ([$hashref]) 
 
 =over 4
 
-SendQueuedMessages()
-
 sends all of the 'pending' items in the message queue.
 
-my $sent = SendQueuedMessages( { verbose => 1 } )
+my $sent = SendQueuedMessages( { verbose => 1 } );
 
 returns number of messages sent.
 
@@ -581,7 +600,7 @@ returns number of messages sent.
 
 =cut
 
-sub SendQueuedMessages {
+sub SendQueuedMessages (;$) {
     my $params = shift;
 
     my $unsent_messages = _get_unsent_messages();
@@ -590,13 +609,13 @@ sub SendQueuedMessages {
         warn sprintf( 'sending %s message to patron: %s',
                       $message->{'message_transport_type'},
                       $message->{'borrowernumber'} || 'Admin' )
-          if $params->{'verbose'};
+          if $params->{'verbose'} or $debug;
         # This is just begging for subclassing
-        next MESSAGE if ( lc( $message->{'message_transport_type'} eq 'rss' ) );
+        next MESSAGE if ( lc($message->{'message_transport_type'}) eq 'rss' );
         if ( lc( $message->{'message_transport_type'} ) eq 'email' ) {
             _send_message_by_email( $message );
         }
-        if ( lc( $message->{'message_transport_type'} ) eq 'sms' ) {
+        elsif ( lc( $message->{'message_transport_type'} ) eq 'sms' ) {
             _send_message_by_sms( $message );
         }
     }
@@ -627,7 +646,7 @@ sub GetRSSMessages {
                                    borrowernumber         => $params->{'borrowernumber'}, } );
 }
 
-=head2 GetQueuedMessages
+=head2 GetQueuedMessages ([$hashref])
 
 =over 4
 
@@ -669,8 +688,7 @@ ENDSQL
 
     my $sth = $dbh->prepare( $statement );
     my $result = $sth->execute( @query_params );
-    my $messages = $sth->fetchall_arrayref({});
-    return $messages;
+    return $sth->fetchall_arrayref({});
 }
 
 =head2 _add_attachements
@@ -718,17 +736,17 @@ sub _add_attachments {
 
 }
 
-sub _get_unsent_messages {
+sub _get_unsent_messages (;$) {
     my $params = shift;
 
     my $dbh = C4::Context->dbh();
     my $statement = << 'ENDSQL';
 SELECT message_id, borrowernumber, subject, content, message_transport_type, status, time_queued, from_address, to_address, content_type
-FROM message_queue
-WHERE status = 'pending'
+  FROM message_queue
+ WHERE status = ?
 ENDSQL
 
-    my @query_params;
+    my @query_params = ('pending');
     if ( ref $params ) {
         if ( $params->{'message_transport_type'} ) {
             $statement .= ' AND message_transport_type = ? ';
@@ -743,73 +761,78 @@ ENDSQL
             push @query_params, $params->{'limit'};
         }
     }
-    
+    $debug and warn "_get_unsent_messages SQL: $statement";
+    $debug and warn "_get_unsent_messages params: " . join(',',@query_params);
     my $sth = $dbh->prepare( $statement );
     my $result = $sth->execute( @query_params );
-    my $unsent_messages = $sth->fetchall_arrayref({});
-    return $unsent_messages;
+    return $sth->fetchall_arrayref({});
 }
 
-sub _send_message_by_email {
-    my $message = shift;
+sub _send_message_by_email ($) {
+    my $message = shift or return;
 
-    my $member = C4::Members::GetMember( $message->{'borrowernumber'} );
-    return unless $message->{'to_address'} or $member->{'email'};
+    my $to_address = $message->{to_address};
+    unless ($to_address) {
+        my $member = C4::Members::GetMember( $message->{'borrowernumber'} );
+        unless ($member) {
+            warn "FAIL: No 'to_address' and INVALID borrowernumber ($message->{borrowernumber})";
+            _set_message_status( { message_id => $message->{'message_id'},
+                                   status     => 'failed' } );
+            return;
+        }
+        unless ($to_address = $member->{email}) {   # assigment, not comparison
+            # warn "FAIL: No 'to_address' and no email for " . ($member->{surname} ||'') . ", borrowernumber ($message->{borrowernumber})";
+            # warning too verbose for this more common case?
+            _set_message_status( { message_id => $message->{'message_id'},
+                                   status     => 'failed' } );
+            return;
+        }
+    }
 
 	my $content = encode('utf8', $message->{'content'});
     my %sendmail_params = (
-        To   => $message->{'to_address'}   || $member->{'email'},
+        To   => $to_address,
         From => $message->{'from_address'} || C4::Context->preference('KohaAdminEmailAddress'),
         Subject => $message->{'subject'},
-		charset => 'utf8',
+        charset => 'utf8',
         Message => $content,
+        'content-type' => $message->{'content_type'} || 'text/plain; charset="UTF-8"',
     );
-    if ($message->{'content_type'}) {
-        $sendmail_params{'content-type'} = $message->{'content_type'};
-    }else{
-        $sendmail_params{'content-type'} = 'text/plain; charset="UTF-8"';
-    }
     
     my $success = sendmail( %sendmail_params );
 
     if ( $success ) {
-        # warn "OK. Log says:\n", $Mail::Sendmail::log;
+        # warn "Sendmail OK. Log says: " .  $Mail::Sendmail::log;
         _set_message_status( { message_id => $message->{'message_id'},
                                status     => 'sent' } );
         return $success;
     } else {
-        # warn $Mail::Sendmail::error;
+        # warn "Mail::Sendmail::error - " . $Mail::Sendmail::error;
+        # warn "Mail::Sendmail::log   - " . $Mail::Sendmail::log;
         _set_message_status( { message_id => $message->{'message_id'},
                                status     => 'failed' } );
         return;
     }
 }
 
-sub _send_message_by_sms {
-    my $message = shift;
-
+sub _send_message_by_sms ($) {
+    my $message = shift or return undef;
     my $member = C4::Members::GetMember( $message->{'borrowernumber'} );
     return unless $member->{'smsalertnumber'};
 
     my $success = C4::SMS->send_sms( { destination => $member->{'smsalertnumber'},
                                        message     => $message->{'content'},
                                      } );
-    if ( $success ) {
-        _set_message_status( { message_id => $message->{'message_id'},
-                               status     => 'sent' } );
-        return $success;
-    } else {
-        _set_message_status( { message_id => $message->{'message_id'},
-                               status     => 'failed' } );
-        return;
-    }
+    _set_message_status( { message_id => $message->{'message_id'},
+                           status     => ($success ? 'sent' : 'failed') } );
+    return $success;
 }
 
-sub _set_message_status {
-    my $params = shift;
+sub _set_message_status ($) {
+    my $params = shift or return undef;
 
     foreach my $required_parameter ( qw( message_id status ) ) {
-        return unless exists $params->{ $required_parameter };
+        return undef unless exists $params->{ $required_parameter };
     }
 
     my $dbh = C4::Context->dbh();

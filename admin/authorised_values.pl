@@ -44,23 +44,27 @@ sub AuthorizedValuesForCategory ($) {
 
 my $input = new CGI;
 my $id          = $input->param('id');
+my $op          = $input->param('op')     || '';
 my $offset      = $input->param('offset') || 0;
 my $searchfield = $input->param('searchfield');
 $searchfield = '' unless defined $searchfield;
-$searchfield=~ s/\,//g;
+$searchfield =~ s/\,//g;
 my $script_name = "/cgi-bin/koha/admin/authorised_values.pl";
 my $dbh = C4::Context->dbh;
+
+# my $subpermission = C4::Context->preference('GranularPermissions') ? 
+#     { editcatalogue => ... } :
+#     {    parameters => 1   } ;
 
 my ($template, $borrowernumber, $cookie)= get_template_and_user({
     template_name => "admin/authorised_values.tmpl",
     authnotrequired => 0,
-    flagsrequired => {parameters => 1},
+    flagsrequired => {parameters => 1},     # soon $subpermission
     query => $input,
     type => "intranet",
     debug => 1,
 });
 my $pagesize = 20;
-my $op = $input->param('op') || '';
 
 $template->param(  script_name => $script_name,
                  ($op||'else') => 1 );
@@ -90,7 +94,8 @@ if ($op eq 'add_form') {
                          authorised_value => $data->{'authorised_value'},
                          lib              => $data->{'lib'},
                          id               => $data->{'id'},
-                         imagesets        => C4::Koha::getImageSets( checked => $data->{'imageurl'} )
+                         imagesets        => C4::Koha::getImageSets( checked => $data->{'imageurl'} ),
+                         offset           => $offset,
                      );
                           
 ################## ADD_VALIDATE ##################################
@@ -123,7 +128,7 @@ if ($op eq 'add_form') {
             my $lib = $input->param('lib');
             undef $lib if ($lib eq ""); # to insert NULL instead of a blank string
             $sth->execute($new_category, $new_authorised_value, $lib, $imageurl, $id);          
-            print "Content-Type: text/html\n\n<META HTTP-EQUIV=Refresh CONTENT=\"0; URL=authorised_values.pl?searchfield=".$new_category."\"></html>";
+            print "Content-Type: text/html\n\n<META HTTP-EQUIV=Refresh CONTENT=\"0; URL=authorised_values.pl?searchfield=".$new_category."&offset=$offset\"></html>";
             exit;
         }
     }
@@ -139,7 +144,7 @@ if ($op eq 'add_form') {
     	    my $lib = $input->param('lib');
     	    undef $lib if ($lib eq ""); # to insert NULL instead of a blank string
     	    $sth->execute($id, $new_category, $new_authorised_value, $lib, $imageurl );
-    	    print "Content-Type: text/html\n\n<META HTTP-EQUIV=Refresh CONTENT=\"0; URL=authorised_values.pl?searchfield=".$input->param('category')."\"></html>";
+    	    print "Content-Type: text/html\n\n<META HTTP-EQUIV=Refresh CONTENT=\"0; URL=authorised_values.pl?searchfield=".$input->param('category')."&offset=$offset\"></html>";
     	    exit;
         }
     }
@@ -170,7 +175,7 @@ if ($op eq 'add_form') {
 	my $id = $input->param('id');
 	my $sth=$dbh->prepare("delete from authorised_values where id=?");
 	$sth->execute($id);
-	print "Content-Type: text/html\n\n<META HTTP-EQUIV=Refresh CONTENT=\"0; URL=authorised_values.pl?searchfield=$searchfield\"></html>";
+	print "Content-Type: text/html\n\n<META HTTP-EQUIV=Refresh CONTENT=\"0; URL=authorised_values.pl?searchfield=$searchfield&offset=$offset\"></html>";
 	exit;
 													# END $OP eq DELETE_CONFIRMED
 ################## DEFAULT ##################################
@@ -218,8 +223,8 @@ sub default_form {
 		$row_data{authorised_value} = $results->[$i]{'authorised_value'};
 		$row_data{lib}              = $results->[$i]{'lib'};
 		$row_data{imageurl}         = getitemtypeimagelocation( 'intranet', $results->[$i]{'imageurl'} );
-		$row_data{edit}             = "$script_name?op=add_form&amp;id=".$results->[$i]{'id'};
-		$row_data{delete}           = "$script_name?op=delete_confirm&amp;searchfield=$searchfield&amp;id=".$results->[$i]{'id'};
+		$row_data{edit}             = "$script_name?op=add_form&amp;id=".$results->[$i]{'id'}."&amp;offset=$offset";
+		$row_data{delete}           = "$script_name?op=delete_confirm&amp;searchfield=$searchfield&amp;id=".$results->[$i]{'id'}."&amp;offset=$offset";
 		push(@loop_data, \%row_data);
 	}
 
@@ -232,14 +237,12 @@ sub default_form {
 		$template->param(isprevpage => $offset,
 						prevpage=> $prevpage,
 						searchfield => $searchfield,
-						script_name => $script_name,
 		 );
 	}
 	if ($offset+$pagesize<$count) {
 		my $nextpage =$offset+$pagesize;
 		$template->param(nextpage =>$nextpage,
 						searchfield => $searchfield,
-						script_name => $script_name,
 		);
 	}
 }

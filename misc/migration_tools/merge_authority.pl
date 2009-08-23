@@ -27,7 +27,7 @@ GetOptions(
     'b' => \$batch, 
 );
 
-if ($version || ($mergefrom eq '')) {
+if ($version || ($mergefrom eq '' && !$batch)) {
     print <<EOF
 Script to merge an authority into another
 parameters :
@@ -49,7 +49,6 @@ die;
 }#/'
 
 my $dbh = C4::Context->dbh;
-# my @subf = $subfields =~ /(##\d\d\d##.)/g;
 
 $|=1; # flushes output
 my $authfrom = GetAuthority($mergefrom);
@@ -58,7 +57,7 @@ my $authto = GetAuthority($mergeto);
 my $authtypecodefrom = GetAuthTypeCode($mergefrom);
 my $authtypecodeto = GetAuthTypeCode($mergeto);
 
-unless ($noconfirm) {
+unless ($noconfirm || $batch) {
     print "************\n";
     print "You will merge authority : $mergefrom ($authtypecodefrom)\n".$authfrom->as_formatted;
     print "\n*************\n";
@@ -77,17 +76,18 @@ print "Merging\n" unless $noconfirm;
 if ($batch) {
   my @authlist;
   my $cgidir = C4::Context->intranetdir ."/cgi-bin";
-  unless (opendir(DIR, "$cgidir/localfile/modified_authorities")) {
+  unless (opendir(DIR, "$cgidir/tmp/modified_authorities")) {
     $cgidir = C4::Context->intranetdir;
-    opendir(DIR, "$cgidir/localfile/modified_authorities") || die "can't opendir $cgidir/localfile/modified_authorities: $!";
+    opendir(DIR, "$cgidir/tmp/modified_authorities") || die "can't opendir $cgidir/tmp/modified_authorities: $!";
   } 
   while (my $authid = readdir(DIR)) {
     if ($authid =~ /\.authid$/) {
       $authid =~ s/\.authid$//;
       print "managing $authid\n" if $verbose;
-      my $MARCauth = GetAuthority($authid);
+      my $MARCauth = GetAuthority($authid) ;
+      next unless ($MARCauth);
       merge($authid,$MARCauth,$authid,$MARCauth) if ($MARCauth);
-      unlink $cgidir.'/localfile/modified_authorities/'.$authid.'.authid';
+      unlink $cgidir.'/tmp/modified_authorities/'.$authid.'.authid';
     }
   }
   closedir DIR;

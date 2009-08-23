@@ -55,6 +55,7 @@ use C4::Biblio;
 use C4::Items;
 use C4::Acquisition;
 use C4::Serials;    #uses getsubscriptionsfrombiblionumber GetSubscriptionsFromBiblionumber
+use C4::Search;		# enabled_staff_search_views
 
 
 my $query        = new CGI;
@@ -126,7 +127,7 @@ for ( my $tabloop = 0 ; $tabloop <= 10 ; $tabloop++ ) {
 
     # deal with leader
     unless ( $tagslib->{'000'}->{'@'}->{tab} ne $tabloop )
-    {    #  or ($tagslib->{'000'}->{'@'}->{hidden}==(-7|-4|-3|-2|2|3|5|8))) {
+    {    #  or ($tagslib->{'000'}->{'@'}->{hidden} =~ /-7|-4|-3|-2|2|3|5|8/ )) {
         my %subfield_data;
         $subfield_data{marc_lib}      = $tagslib->{'000'}->{'@'}->{lib};
         $subfield_data{marc_value}    = $record->leader();
@@ -148,7 +149,7 @@ for ( my $tabloop = 0 ; $tabloop <= 10 ; $tabloop++ ) {
             next
               if (
                 $tagslib->{ $fields[$x_i]->tag() }->{'@'}->{tab} ne $tabloop );
-            next if ( $tagslib->{ $fields[$x_i]->tag() }->{'@'}->{hidden}==(-7|-4|-3|-2|2|3|5|8));
+            next if ( $tagslib->{ $fields[$x_i]->tag() }->{'@'}->{hidden} =~ /-7|-4|-3|-2|2|3|5|8/);
             my %subfield_data;
             $subfield_data{marc_lib} =
               $tagslib->{ $fields[$x_i]->tag() }->{'@'}->{lib};
@@ -169,7 +170,7 @@ for ( my $tabloop = 0 ; $tabloop <= 10 ; $tabloop++ ) {
                     ne $tabloop );
                 next
                   if ( $tagslib->{ $fields[$x_i]->tag() }->{ $subf[$i][0] }
-                    ->{hidden}==(-7|-4|-3|-2|2|3|5|8));
+                    ->{hidden} =~ /-7|-4|-3|-2|2|3|5|8/);
                 my %subfield_data;
                 $subfield_data{short_desc} = $tagslib->{ $fields[$x_i]->tag() }->{ $subf[$i][0] }->{lib};
                 $subfield_data{long_desc} =
@@ -247,6 +248,7 @@ my @fields = $record->fields();
 my %witness
   ; #---- stores the list of subfields used at least once, with the "meaning" of the code
 my @big_array;
+my $norequests = 1;
 foreach my $field (@fields) {
     next if ( $field->tag() < 10 );
     my @subf = $field->subfields;
@@ -255,16 +257,18 @@ foreach my $field (@fields) {
     # loop through each subfield
     for my $i ( 0 .. $#subf ) {
         next if ( $tagslib->{ $field->tag() }->{ $subf[$i][0] }->{tab} ne 10 );
-        next if ( $tagslib->{ $field->tag() }->{ $subf[$i][0] }->{hidden}==(-7|-4|-3|-2|2|3|5|8));
+        next if ( $tagslib->{ $field->tag() }->{ $subf[$i][0] }->{hidden} =~ /-7|-4|-3|-2|2|3|5|8/);
         $witness{ $subf[$i][0] } =
         $tagslib->{ $field->tag() }->{ $subf[$i][0] }->{lib};
         $this_row{ $subf[$i][0] } = GetAuthorisedValueDesc( $field->tag(),
                         $subf[$i][0], $subf[$i][1], '', $tagslib) || $subf[$i][1];
+        $norequests = 0 if $subf[$i][1] ==0 and $tagslib->{ $field->tag() }->{ $subf[$i][0] }->{kohafield} eq 'items.notforloan';
     }
     if (%this_row) {
         push( @big_array, \%this_row );
     }
 }
+
 my ($holdingbrtagf,$holdingbrtagsubf) = &GetMarcFromKohaField("items.holdingbranch",$frameworkcode);
 @big_array = sort {$a->{$holdingbrtagsubf} cmp $b->{$holdingbrtagsubf}} @big_array;
 
@@ -306,12 +310,15 @@ if ($subscriptionscount) {
 }
 
 $template->param (
+    norequests              => $norequests, 
     item_loop               => \@item_value_loop,
     item_header_loop        => \@header_value_loop,
     biblionumber            => $biblionumber,
     popup                   => $popup,
     hide_marc               => C4::Context->preference('hide_marc'),
 	marcview => 1,
+	z3950_search_params		=> C4::Search::z3950_search_args($biblio),
+	C4::Search::enabled_staff_search_views,
 );
 
 output_html_with_http_headers $query, $cookie, $template->output;

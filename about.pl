@@ -84,7 +84,7 @@ Class::Factory::Util
 Class::Accessor
 Compress::Zlib
 DBD::mysql
-DBD::SQLite
+DBD::SQLite2
 DBI
 Data::Dumper
 Data::ICal
@@ -92,6 +92,7 @@ Date::Calc
 Date::ICal
 Date::Manip
 Digest::MD5
+Digest::SHA
 Email::Date
 File::Temp
 GD
@@ -100,8 +101,10 @@ Getopt::Long
 Getopt::Std
 HTML::Template::Pro
 HTTP::Cookies
+HTTP::OAI
 HTTP::Request::Common
 HTML::Scrubber
+IPC::Cmd
 JSON
 LWP::Simple
 LWP::UserAgent
@@ -144,6 +147,7 @@ XML::Dumper
 XML::LibXML
 XML::LibXSLT
 XML::SAX::ParserFactory
+XML::SAX::Writer
 XML::Simple
 XML::RSS
 YAML::Syck

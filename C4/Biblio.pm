@@ -24,6 +24,7 @@ use MARC::Record;
 use MARC::File::USMARC;
 use MARC::File::XML;
 use ZOOM;
+use POSIX qw(strftime);
 
 use C4::Koha;
 use C4::Dates qw/format_date/;
@@ -31,6 +32,7 @@ use C4::Log; # logaction
 use C4::ClassSource;
 use C4::Charset;
 require C4::Heading;
+require C4::Serials;
 
 use vars qw($VERSION @ISA @EXPORT);
 
@@ -54,6 +56,8 @@ BEGIN {
 		&GetBiblioItemInfosOf
 		&GetBiblioItemByBiblioNumber
 		&GetBiblioFromItemNumber
+		
+		&GetISBDView
 
 		&GetMarcNotes
 		&GetMarcSubjects
@@ -63,6 +67,7 @@ BEGIN {
 		GetMarcUrls
 		&GetUsedMarcStructure
 		&GetXmlBiblio
+		&GetCOinSBiblio
 
 		&GetAuthorisedValueDesc
 		&GetMarcStructure
@@ -70,6 +75,8 @@ BEGIN {
 		&GetFrameworkCode
 		&GetPublisherNameFromIsbn
 		&TransformKohaToMarc
+		
+		&CountItemsIssued
 	);
 
 	# To modify something
@@ -231,10 +238,9 @@ sub AddBiblio {
     _koha_marc_update_biblioitem_cn_sort($record, $olddata, $frameworkcode);
     
     # now add the record
-    $biblionumber = ModBiblioMarc( $record, $biblionumber, $frameworkcode ) unless $defer_marc_save;
+    ModBiblioMarc( $record, $biblionumber, $frameworkcode ) unless $defer_marc_save;
       
     logaction("CATALOGUING", "ADD", $biblionumber, "biblio") if C4::Context->preference("CataloguingLog");
-
     return ( $biblionumber, $biblioitemnumber );
 }
 
@@ -374,6 +380,12 @@ sub DelBiblio {
 
     return $error if $error;
 
+    # We delete attached subscriptions
+    my $subscriptions = &C4::Serials::GetFullSubscriptionsFromBiblionumber($biblionumber);
+    foreach my $subscription (@$subscriptions){
+        &C4::Serials::DelSubscription($subscription->{subscriptionid});
+    }
+    
     # Delete in Zebra. Be careful NOT to move this line after _koha_delete_biblio
     # for at least 2 reasons :
     # - we need to read the biblio if NoZebra is set (to remove it from the indexes
@@ -612,6 +624,138 @@ sub GetBiblioFromItemNumber {
     return ($data);
 }
 
+=head2 GetISBDView 
+
+=over 4
+
+$isbd = &GetISBDView($biblionumber);
+
+Return the ISBD view which can be included in opac and intranet
+
+=back
+
+=cut
+
+sub GetISBDView {
+    my $biblionumber    = shift;
+    my $record          = GetMarcBiblio($biblionumber);
+    my $itemtype        = &GetFrameworkCode($biblionumber);
+    my ($holdingbrtagf,$holdingbrtagsubf) = &GetMarcFromKohaField("items.holdingbranch",$itemtype);
+    my $tagslib      = &GetMarcStructure( 1, $itemtype );
+    
+    my $ISBD = C4::Context->preference('ISBD');
+    my $bloc = $ISBD;
+    my $res;
+    my $blocres;
+    
+    foreach my $isbdfield ( split (/#/, $bloc) ) {
+
+        #         $isbdfield= /(.?.?.?)/;
+        $isbdfield =~ /(\d\d\d)([^\|])?\|(.*)\|(.*)\|(.*)/;
+        my $fieldvalue    = $1 || 0;
+        my $subfvalue     = $2 || "";
+        my $textbefore    = $3;
+        my $analysestring = $4;
+        my $textafter     = $5;
+    
+        #         warn "==> $1 / $2 / $3 / $4";
+        #         my $fieldvalue=substr($isbdfield,0,3);
+        if ( $fieldvalue > 0 ) {
+            my $hasputtextbefore = 0;
+            my @fieldslist = $record->field($fieldvalue);
+            @fieldslist = sort {$a->subfield($holdingbrtagsubf) cmp $b->subfield($holdingbrtagsubf)} @fieldslist if ($fieldvalue eq $holdingbrtagf);
+    
+            #         warn "ERROR IN ISBD DEFINITION at : $isbdfield" unless $fieldvalue;
+            #             warn "FV : $fieldvalue";
+            if ($subfvalue ne ""){
+              foreach my $field ( @fieldslist ) {
+                foreach my $subfield ($field->subfield($subfvalue)){ 
+                  my $calculated = $analysestring;
+                  my $tag        = $field->tag();
+                  if ( $tag < 10 ) {
+                  }
+                  else {
+                    my $subfieldvalue =
+                    GetAuthorisedValueDesc( $tag, $subfvalue,
+                      $subfield, '', $tagslib );
+                    my $tagsubf = $tag . $subfvalue;
+                    $calculated =~
+                          s/\{(.?.?.?.?)$tagsubf(.*?)\}/$1$subfieldvalue$2\{$1$tagsubf$2\}/g;
+                    $calculated =~s#/cgi-bin/koha/[^/]+/([^.]*.pl\?.*)$#opac-$1#g;
+                
+                    # field builded, store the result
+                    if ( $calculated && !$hasputtextbefore )
+                    {    # put textbefore if not done
+                    $blocres .= $textbefore;
+                    $hasputtextbefore = 1;
+                    }
+                
+                    # remove punctuation at start
+                    $calculated =~ s/^( |;|:|\.|-)*//g;
+                    $blocres .= $calculated;
+                                
+                  }
+                }
+              }
+              $blocres .= $textafter if $hasputtextbefore;
+            } else {    
+            foreach my $field ( @fieldslist ) {
+              my $calculated = $analysestring;
+              my $tag        = $field->tag();
+              if ( $tag < 10 ) {
+              }
+              else {
+                my @subf = $field->subfields;
+                for my $i ( 0 .. $#subf ) {
+                my $valuecode   = $subf[$i][1];
+                my $subfieldcode  = $subf[$i][0];
+                my $subfieldvalue =
+                GetAuthorisedValueDesc( $tag, $subf[$i][0],
+                  $subf[$i][1], '', $tagslib );
+                my $tagsubf = $tag . $subfieldcode;
+    
+                $calculated =~ s/                  # replace all {{}} codes by the value code.
+                                  \{\{$tagsubf\}\} # catch the {{actualcode}}
+                                /
+                                  $valuecode     # replace by the value code
+                               /gx;
+    
+                $calculated =~
+            s/\{(.?.?.?.?)$tagsubf(.*?)\}/$1$subfieldvalue$2\{$1$tagsubf$2\}/g;
+            $calculated =~s#/cgi-bin/koha/[^/]+/([^.]*.pl\?.*)$#opac-$1#g;
+                }
+    
+                # field builded, store the result
+                if ( $calculated && !$hasputtextbefore )
+                {    # put textbefore if not done
+                $blocres .= $textbefore;
+                $hasputtextbefore = 1;
+                }
+    
+                # remove punctuation at start
+                $calculated =~ s/^( |;|:|\.|-)*//g;
+                $blocres .= $calculated;
+              }
+            }
+            $blocres .= $textafter if $hasputtextbefore;
+            }       
+        }
+        else {
+            $blocres .= $isbdfield;
+        }
+    }
+    $res .= $blocres;
+    
+    $res =~ s/\{(.*?)\}//g;
+    $res =~ s/\\n/\n/g;
+    $res =~ s/\n/<br\/>/g;
+    
+    # remove empty ()
+    $res =~ s/\(\)//g;
+   
+    return $res;
+}
+
 =head2 GetBiblio
 
 =over 4
@@ -689,23 +833,17 @@ sub GetMarcStructure {
         return $marc_structure_cache->{$forlibrarian}->{$frameworkcode};
     }
 
-    my $sth;
-    my $libfield = ( $forlibrarian eq 1 ) ? 'liblibrarian' : 'libopac';
-
-    # check that framework exists
-    $sth =
-      $dbh->prepare(
+    my $sth = $dbh->prepare(
         "SELECT COUNT(*) FROM marc_tag_structure WHERE frameworkcode=?");
     $sth->execute($frameworkcode);
     my ($total) = $sth->fetchrow;
     $frameworkcode = "" unless ( $total > 0 );
-    $sth =
-      $dbh->prepare(
+    $sth = $dbh->prepare(
         "SELECT tagfield,liblibrarian,libopac,mandatory,repeatable 
         FROM marc_tag_structure 
         WHERE frameworkcode=? 
         ORDER BY tagfield"
-      );
+    );
     $sth->execute($frameworkcode);
     my ( $liblibrarian, $libopac, $tag, $res, $tab, $mandatory, $repeatable );
 
@@ -719,13 +857,12 @@ sub GetMarcStructure {
         $res->{$tag}->{repeatable} = $repeatable;
     }
 
-    $sth =
-      $dbh->prepare(
-            "SELECT tagfield,tagsubfield,liblibrarian,libopac,tab,mandatory,repeatable,authorised_value,authtypecode,value_builder,kohafield,seealso,hidden,isurl,link,defaultvalue 
-                FROM marc_subfield_structure 
-            WHERE frameworkcode=? 
-                ORDER BY tagfield,tagsubfield
-            "
+    $sth = $dbh->prepare(
+        "SELECT tagfield,tagsubfield,liblibrarian,libopac,tab,mandatory,repeatable,authorised_value,authtypecode,value_builder,kohafield,seealso,hidden,isurl,link,defaultvalue 
+         FROM   marc_subfield_structure 
+         WHERE  frameworkcode=? 
+         ORDER BY tagfield,tagsubfield
+        "
     );
     
     $sth->execute($frameworkcode);
@@ -744,7 +881,7 @@ sub GetMarcStructure {
     while (
         (
             $tag,          $subfield,      $liblibrarian,
-            ,              $libopac,       $tab,
+            $libopac,      $tab,
             $mandatory,    $repeatable,    $authorised_value,
             $authtypecode, $value_builder, $kohafield,
             $seealso,      $hidden,        $isurl,
@@ -776,7 +913,7 @@ sub GetMarcStructure {
 
 =head2 GetUsedMarcStructure
 
-    the same function as GetMarcStructure expcet it just take field
+    the same function as GetMarcStructure except it just takes field
     in tab 0-9. (used field)
     
     my $results = GetUsedMarcStructure($frameworkcode);
@@ -790,20 +927,16 @@ sub GetMarcStructure {
 
 sub GetUsedMarcStructure($){
     my $frameworkcode = shift || '';
-    my $dbh           = C4::Context->dbh;
     my $query         = qq/
         SELECT *
         FROM   marc_subfield_structure
         WHERE   tab > -1 
             AND frameworkcode = ?
+        ORDER BY tagfield, tagsubfield
     /;
-    my @results;
-    my $sth = $dbh->prepare($query);
+    my $sth = C4::Context->dbh->prepare($query);
     $sth->execute($frameworkcode);
-    while (my $row = $sth->fetchrow_hashref){
-        push @results,$row;
-    }
-    return \@results;
+    return $sth->fetchall_arrayref({});
 }
 
 =head2 GetMarcFromKohaField
@@ -883,6 +1016,128 @@ sub GetXmlBiblio {
     $sth->execute($biblionumber);
     my ($marcxml) = $sth->fetchrow;
     return $marcxml;
+}
+
+=head2 GetCOinSBiblio
+
+=over 4
+
+my $coins = GetCOinSBiblio($biblionumber);
+
+Returns the COinS(a span) which can be included in a biblio record
+
+=back
+
+=cut
+
+sub GetCOinSBiblio {
+    my ( $biblionumber ) = @_;
+    my $record = GetMarcBiblio($biblionumber);
+
+    # get the coin format
+    my $pos7 = substr $record->leader(), 7,1;
+    my $pos6 = substr $record->leader(), 6,1;
+    my $mtx;
+    my $genre;
+    my ($aulast, $aufirst) = ('','');
+    my $oauthors  = '';
+    my $title     = '';
+    my $subtitle  = '';
+    my $pubyear   = '';
+    my $isbn      = '';
+    my $issn      = '';
+    my $publisher = '';
+
+    if ( C4::Context->preference("marcflavour") eq "UNIMARC" ){
+        my $fmts6;
+        my $fmts7;
+        %$fmts6 = (
+                    'a' => 'book',
+                    'b' => 'manuscript',
+                    'c' => 'book',
+                    'd' => 'manuscript',
+                    'e' => 'map',
+                    'f' => 'map',
+                    'g' => 'film',
+                    'i' => 'audioRecording',
+                    'j' => 'audioRecording',
+                    'k' => 'artwork',
+                    'l' => 'document',
+                    'm' => 'computerProgram',
+                    'r' => 'document',
+
+                );
+        %$fmts7 = (
+                    'a' => 'journalArticle',
+                    's' => 'journal',
+                );
+
+        $genre =  $fmts6->{$pos6} ? $fmts6->{$pos6} : 'book' ;
+
+        if( $genre eq 'book' ){
+            $genre =  $fmts7->{$pos7} if $fmts7->{$pos7};
+        }
+
+        ##### We must transform mtx to a valable mtx and document type ####
+        if( $genre eq 'book' ){
+            $mtx = 'book';
+        }elsif( $genre eq 'journal' ){
+            $mtx = 'journal';
+        }elsif( $genre eq 'journalArticle' ){
+            $mtx = 'journal';
+            $genre = 'article';
+        }else{
+            $mtx = 'dc';
+        }
+
+        $genre = ($mtx eq 'dc') ? "&amp;rft.type=$genre" : "&amp;rft.genre=$genre";
+
+        # Setting datas
+        $aulast     = $record->subfield('700','a');
+        $aufirst    = $record->subfield('700','b');
+        $oauthors   = "&amp;rft.au=$aufirst $aulast";
+        # others authors
+        if($record->field('200')){
+            for my $au ($record->field('200')->subfield('g')){
+                $oauthors .= "&amp;rft.au=$au";
+            }
+        }
+        $title      = ( $mtx eq 'dc' ) ? "&amp;rft.title=".$record->subfield('200','a') :
+                                         "&amp;rft.title=".$record->subfield('200','a')."&amp;rft.btitle=".$record->subfield('200','a');
+        $pubyear    = $record->subfield('210','d');
+        $publisher  = $record->subfield('210','c');
+        $isbn       = $record->subfield('010','a');
+        $issn       = $record->subfield('011','a');
+    }else{
+        # MARC21 need some improve
+        my $fmts;
+        $mtx = 'book';
+        $genre = "&amp;rft.genre=book";
+
+        # Setting datas
+        if ($record->field('100')) {
+            $oauthors .= "&amp;rft.au=".$record->subfield('100','a');
+        }
+        # others authors
+        if($record->field('700')){
+            for my $au ($record->field('700')->subfield('a')){
+                $oauthors .= "&amp;rft.au=$au";
+            }
+        }
+        $title      = "&amp;rft.btitle=".$record->subfield('245','a');
+        $subtitle   = $record->subfield('245', 'b') || '';
+        $title .= $subtitle;
+        $pubyear    = $record->subfield('260', 'c') || '';
+        $publisher  = $record->subfield('260', 'b') || '';
+        $isbn       = $record->subfield('020', 'a') || '';
+        $issn       = $record->subfield('022', 'a') || '';
+
+    }
+    my $coins_value = "ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3A$mtx$genre$title&amp;rft.isbn=$isbn&amp;rft.issn=$issn&amp;rft.aulast=$aulast&amp;rft.aufirst=$aufirst$oauthors&amp;rft.pub=$publisher&amp;rft.date=$pubyear";
+    $coins_value =~ s/(\ |&[^a])/\+/g;
+    #<!-- TMPL_VAR NAME="ocoins_format" -->&amp;rft.au=<!-- TMPL_VAR NAME="author" -->&amp;rft.btitle=<!-- TMPL_VAR NAME="title" -->&amp;rft.date=<!-- TMPL_VAR NAME="publicationyear" -->&amp;rft.pages=<!-- TMPL_VAR NAME="pages" -->&amp;rft.isbn=<!-- TMPL_VAR NAME=amazonisbn -->&amp;rft.aucorp=&amp;rft.place=<!-- TMPL_VAR NAME="place" -->&amp;rft.pub=<!-- TMPL_VAR NAME="publishercode" -->&amp;rft.edition=<!-- TMPL_VAR NAME="edition" -->&amp;rft.series=<!-- TMPL_VAR NAME="series" -->&amp;rft.genre="
+
+    return $coins_value;
 }
 
 =head2 GetAuthorisedValueDesc
@@ -1021,6 +1276,8 @@ sub GetMarcSubjects {
         for my $subject_subfield (@subfields ) {
             # don't load unimarc subfields 3,4,5
             next if (($marcflavour eq "UNIMARC") and ($subject_subfield->[0] =~ /3|4|5/ ) );
+            # don't load MARC21 subfields 2 (FIXME: any more subfields??)
+            next if (($marcflavour eq "MARC21")  and ($subject_subfield->[0] =~ /2/ ) );
             my $code = $subject_subfield->[0];
             my $value = $subject_subfield->[1];
             my $linkvalue = $value;
@@ -1060,7 +1317,7 @@ sub GetMarcAuthors {
     my ( $record, $marcflavour ) = @_;
     my ( $mintag, $maxtag );
     # tagslib useful for UNIMARC author reponsabilities
-    my $tagslib = &GetMarcStructure( 1, '' ); # FIXME : we don't have the framework available, we take the default framework. May be bugguy on some setups, will be usually correct.
+    my $tagslib = &GetMarcStructure( 1, '' ); # FIXME : we don't have the framework available, we take the default framework. May be buggy on some setups, will be usually correct.
     if ( $marcflavour eq "MARC21" ) {
         $mintag = "700";
         $maxtag = "720"; 
@@ -1125,44 +1382,48 @@ Assumes web resources (not uncommon in MARC21 to omit resource type ind)
 =cut
 
 sub GetMarcUrls {
-    my ($record, $marcflavour) = @_;
+    my ( $record, $marcflavour ) = @_;
+
     my @marcurls;
-    for my $field ($record->field('856')) {
+    for my $field ( $record->field('856') ) {
         my $marcurl;
-        my $url = $field->subfield('u');
         my @notes;
-        for my $note ( $field->subfield('z')) {
-            push @notes , {note => $note};
-        }        
-        if($marcflavour eq 'MARC21') {
-            my $s3 = $field->subfield('3');
-            my $link = $field->subfield('y');
-			unless($url =~ /^\w+:/) {
-				if($field->indicator(1) eq '7') {
-					$url = $field->subfield('2') . "://" . $url;
-				} elsif ($field->indicator(1) eq '1') {
-					$url = 'ftp://' . $url;
-				} else {  
-					#  properly, this should be if ind1=4,
-					#  however we will assume http protocol since we're building a link.
-					$url = 'http://' . $url;
-				}
-			}
-			# TODO handle ind 2 (relationship)
-        	$marcurl = {  MARCURL => $url,
-                      notes => \@notes,
-            };
-            $marcurl->{'linktext'} = $link || $s3 || C4::Context->preference('URLLinkText') || $url ;;
-            $marcurl->{'part'} = $s3 if($link);
-            $marcurl->{'toc'} = 1 if($s3 =~ /^[Tt]able/) ;
-        } else {
-            $marcurl->{'linktext'} = $field->subfield('z') || C4::Context->preference('URLLinkText') || $url;
-            $marcurl->{'MARCURL'} = $url ;
+        for my $note ( $field->subfield('z') ) {
+            push @notes, { note => $note };
         }
-        push @marcurls, $marcurl;    
+        my @urls = $field->subfield('u');
+        foreach my $url (@urls) {
+            if ( $marcflavour eq 'MARC21' ) {
+                my $s3   = $field->subfield('3');
+                my $link = $field->subfield('y');
+                unless ( $url =~ /^\w+:/ ) {
+                    if ( $field->indicator(1) eq '7' ) {
+                        $url = $field->subfield('2') . "://" . $url;
+                    } elsif ( $field->indicator(1) eq '1' ) {
+                        $url = 'ftp://' . $url;
+                    } else {
+                        #  properly, this should be if ind1=4,
+                        #  however we will assume http protocol since we're building a link.
+                        $url = 'http://' . $url;
+                    }
+                }
+                # TODO handle ind 2 (relationship)
+                $marcurl = {
+                    MARCURL => $url,
+                    notes   => \@notes,
+                };
+                $marcurl->{'linktext'} = $link || $s3 || C4::Context->preference('URLLinkText') || $url;
+                $marcurl->{'part'} = $s3 if ($link);
+                $marcurl->{'toc'} = 1 if ( defined($s3) && $s3 =~ /^[Tt]able/ );
+            } else {
+                $marcurl->{'linktext'} = $field->subfield('2') || C4::Context->preference('URLLinkText') || $url;
+                $marcurl->{'MARCURL'} = $url;
+            }
+            push @marcurls, $marcurl;
+        }
     }
     return \@marcurls;
-}  #end GetMarcUrls
+}
 
 =head2 GetMarcSeries
 
@@ -1296,18 +1557,15 @@ sub GetPublisherNameFromIsbn($){
 =cut
 
 sub TransformKohaToMarc {
-
     my ( $hash ) = @_;
-    my $dbh = C4::Context->dbh;
-    my $sth =
-    $dbh->prepare(
+    my $sth = C4::Context->dbh->prepare(
         "SELECT tagfield,tagsubfield FROM marc_subfield_structure WHERE frameworkcode=? AND kohafield=?"
     );
     my $record = MARC::Record->new();
+    SetMarcUnicodeFlag($record, C4::Context->preference("marcflavour"));
     foreach (keys %{$hash}) {
-        &TransformKohaToMarcOneField( $sth, $record, $_,
-            $hash->{$_}, '' );
-        }
+        &TransformKohaToMarcOneField( $sth, $record, $_, $hash->{$_}, '' );
+    }
     return $record;
 }
 
@@ -1366,6 +1624,7 @@ $auth_type contains :
 sub TransformHtmlToXml {
     my ( $tags, $subfields, $values, $indicator, $ind_tag, $auth_type ) = @_;
     my $xml = MARC::File::XML::header('UTF-8');
+    $xml .= "<record>\n";
     $auth_type = C4::Context->preference('marcflavour') unless $auth_type;
     MARC::File::XML->default_record_format($auth_type);
     # in UNIMARC, field 100 contains the encoding
@@ -1412,10 +1671,8 @@ sub TransformHtmlToXml {
                         warn "Indicator in @$tags[$i] is empty";
                         $ind2 = " ";
                     }
-                    $xml .=
-"<datafield tag=\"@$tags[$i]\" ind1=\"$ind1\" ind2=\"$ind2\">\n";
-                    $xml .=
-"<subfield code=\"@$subfields[$i]\">@$values[$i]</subfield>\n";
+                    $xml .= "<datafield tag=\"@$tags[$i]\" ind1=\"$ind1\" ind2=\"$ind2\">\n";
+                    $xml .= "<subfield code=\"@$subfields[$i]\">@$values[$i]</subfield>\n";
                     $first = 0;
                 }
                 else {
@@ -1433,17 +1690,16 @@ sub TransformHtmlToXml {
                         # rest of the fixed fields
                     }
                     elsif ( @$tags[$i] < 10 ) {
-                        $xml .=
-"<controlfield tag=\"@$tags[$i]\">@$values[$i]</controlfield>\n";
+                        $xml .= "<controlfield tag=\"@$tags[$i]\">@$values[$i]</controlfield>\n";
                         $first = 1;
                     }
                     else {
                         my $ind1 = substr( @$indicator[$j], 0, 1 );
                         my $ind2 = substr( @$indicator[$j], 1, 1 );
-                        $xml .=
-"<datafield tag=\"@$tags[$i]\" ind1=\"$ind1\" ind2=\"$ind2\">\n";
-                        $xml .=
-"<subfield code=\"@$subfields[$i]\">@$values[$i]</subfield>\n";
+                        $ind1 = " " if !defined($ind2) or $ind2 eq "";
+                        $ind2 = " " if !defined($ind2) or $ind2 eq "";
+                        $xml .= "<datafield tag=\"@$tags[$i]\" ind1=\"$ind1\" ind2=\"$ind2\">\n";
+                        $xml .= "<subfield code=\"@$subfields[$i]\">@$values[$i]</subfield>\n";
                         $first = 0;
                     }
                 }
@@ -1456,12 +1712,12 @@ sub TransformHtmlToXml {
                 if ($first) {
                     my $ind1 = substr( @$indicator[$j], 0, 1 );
                     my $ind2 = substr( @$indicator[$j], 1, 1 );
-                    $xml .=
-"<datafield tag=\"@$tags[$i]\" ind1=\"$ind1\" ind2=\"$ind2\">\n";
+                    $ind1 = " " if !defined($ind2) or $ind2 eq "";
+                    $ind2 = " " if !defined($ind2) or $ind2 eq "";
+                    $xml .= "<datafield tag=\"@$tags[$i]\" ind1=\"$ind1\" ind2=\"$ind2\">\n";
                     $first = 0;
                 }
-                $xml .=
-"<subfield code=\"@$subfields[$i]\">@$values[$i]</subfield>\n";
+                $xml .= "<subfield code=\"@$subfields[$i]\">@$values[$i]</subfield>\n";
             }
         }
         $prevtag = @$tags[$i];
@@ -1469,7 +1725,6 @@ sub TransformHtmlToXml {
     $xml .= "</datafield>\n" if @$tags > 0;
     if (C4::Context->preference('marcflavour') eq 'UNIMARC' and !$unimarc_and_100_exist) {
 #     warn "SETTING 100 for $auth_type";
-        use POSIX qw(strftime);
         my $string = strftime( "%Y%m%d", localtime(time) );
         # set 50 to position 26 is biblios, 13 if authorities
         my $pos=26;
@@ -1480,6 +1735,7 @@ sub TransformHtmlToXml {
         $xml .= "<subfield code=\"a\">$string</subfield>\n";
         $xml .= "</datafield>\n";
     }
+    $xml .= "</record>\n";
     $xml .= MARC::File::XML::footer();
     return $xml;
 }
@@ -1757,6 +2013,15 @@ more.
 
 =cut
 
+sub CountItemsIssued {
+  my ( $biblionumber )  = @_;
+  my $dbh = C4::Context->dbh;
+  my $sth = $dbh->prepare('SELECT COUNT(*) as issuedCount FROM items, issues WHERE items.itemnumber = issues.itemnumber AND items.biblionumber = ?');
+  $sth->execute( $biblionumber );
+  my $row = $sth->fetchrow_hashref();
+  return $row->{'issuedCount'};
+}
+
 sub _disambiguate {
     my ($table, $column) = @_;
     if ($column eq "cn_sort" or $column eq "cn_source") {
@@ -1917,10 +2182,14 @@ sub PrepareItemrecordDisplay {
                   $tagslib->{$tag}->{$subfield}->{repeatable};
                 $subfield_data{hidden} = "display:none"
                   if $tagslib->{$tag}->{$subfield}->{hidden};
-                my ( $x, $value );
-                ( $x, $value ) = _find_value( $tag, $subfield, $itemrecord )
-                  if ($itemrecord);
-                $value =~ s/"/&quot;/g;
+                  my ( $x, $value );
+                  if ($itemrecord) {
+                      ( $x, $value ) = _find_value( $tag, $subfield, $itemrecord );
+                  }
+                  if (!defined $value) {
+                      $value = q||;
+                  }
+                  $value =~ s/"/&quot;/g;
 
                 # search for itemcallnumber if applicable
                 if ( $tagslib->{$tag}->{$subfield}->{kohafield} eq
@@ -1966,7 +2235,7 @@ sub PrepareItemrecordDisplay {
                         "branches" )
                     {
                         if ( ( C4::Context->preference("IndependantBranches") )
-                            && ( C4::Context->userenv->{flags} != 1 ) )
+                            && ( C4::Context->userenv->{flags} % 2 != 1 ) )
                         {
                             my $sth =
                               $dbh->prepare(
@@ -3138,7 +3407,7 @@ sub set_service_options {
     biblionumber
     MARC::Record of the bib
 
-  returns: a hashref malling the authorised value to the value set for this biblionumber
+  returns: a hashref mapping the authorised value to the value set for this biblionumber
 
       $authorised_values = {
                              'Scent'     => 'flowery',

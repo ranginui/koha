@@ -66,7 +66,11 @@ function popup(subscriptionid) {
         <!-- TMPL_ELSE -->
             <li>Serial receipt does not create an item record.</li>
         <!-- /TMPL_IF -->
+        <li><span class="label">Grace period:</span> <!-- TMPL_VAR name="graceperiod" -->&nbsp;</li>
+        <!-- TMPL_IF name="location" --><li><span class="label">Location:</span> <!-- TMPL_VAR name="location" -->&nbsp;</li><!-- /TMPL_IF -->
         <!-- TMPL_IF name="callnumber" --><li><span class="label">Call Number:</span> <!-- TMPL_VAR name="callnumber" -->&nbsp;</li><!-- /TMPL_IF -->
+		<!-- TMPL_IF NAME="staffdisplaycount" --><li><span class="label">Number of issues to display to staff</span>:&nbsp;<!-- TMPL_VAR NAME="staffdisplaycount" -->&nbsp;</li><!-- /TMPL_IF -->
+		<!-- TMPL_IF NAME="opacdisplaycount" --><li><span class="label">Number of issues to display to the public</span>:&nbsp;<!-- TMPL_VAR NAME="opacdisplaycount" -->&nbsp;</li><!-- /TMPL_IF -->
         <!-- TMPL_IF name="letter" --><li><span class="label">Patron alert with:</span> <!-- TMPL_VAR name="letter" -->&nbsp;</li><!-- /TMPL_IF -->
         <!-- TMPL_IF name="notes" --><li><span class="label">Notes:</span> <!-- TMPL_VAR name="notes" --></li><!-- /TMPL_IF -->
         <!-- TMPL_IF name="internalnotes" --><li><span class="label">Management Notes:</span> <!-- TMPL_VAR name="internalnotes" --></li><!-- /TMPL_IF -->
@@ -173,7 +177,7 @@ function popup(subscriptionid) {
             <!--/TMPL_IF-->
             </tr>
             <tr><td><p>Rollover:</p></td>
-                <td align="center">&nbsp;</td>
+                <td align="center"><!--TMPL_VAR NAME="whenmorethan1"--></td>
             <!--TMPL_IF NAME="whenmorethan2"-->
                 <td align="center">&nbsp; 
                     <!--TMPL_VAR NAME="whenmorethan2"-->
@@ -289,6 +293,12 @@ function popup(subscriptionid) {
                         <!-- /TMPL_IF -->
                         <!--TMPL_IF name="status4" -->
                             Missing
+                        <!-- /TMPL_IF -->
+                        <!-- TMPL_IF name="status7" -->
+                            Claimed
+                             <!-- TMPL_IF name="claimdate" -->
+                             <!-- TMPL_VAR NAME="claimdate" -->
+                             <!-- /TMPL_IF -->
                         <!-- /TMPL_IF -->
                 </td>
             </tr>

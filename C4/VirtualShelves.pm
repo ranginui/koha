@@ -22,6 +22,8 @@ package C4::VirtualShelves;
 # Suite 330, Boston, MA  02111-1307 USA
 
 use strict;
+use warnings;
+
 use Carp;
 use C4::Context;
 use C4::Circulation;
@@ -264,8 +266,8 @@ sub GetShelfContents ($;$$$) {
 		($sortfield) = $sth2->fetchrow_array;
 	}
     my $query =
-       " SELECT vc.biblionumber, vc.shelfnumber, vc.dateadded,
-	   			biblio.*, biblioitems.itemtype, itemtypes.*
+       " SELECT vc.biblionumber, vc.shelfnumber, vc.dateadded, itemtypes.*,
+	   			biblio.*, biblioitems.itemtype, biblioitems.publicationyear
          FROM   virtualshelfcontents vc
 		 LEFT JOIN biblio      ON      vc.biblionumber =      biblio.biblionumber
 		 LEFT JOIN biblioitems ON  biblio.biblionumber = biblioitems.biblionumber

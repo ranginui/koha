@@ -27,6 +27,7 @@ use C4::Items;
 use C4::Dates qw/format_date format_date_in_iso/;
 use C4::Koha;
 use C4::Branch; # GetBranches
+use C4::Circulation;
 
 my $input = new CGI;
 my $minlocation=$input->param('minlocation') || '';
@@ -118,18 +119,17 @@ if ($uploadbarcodes && length($uploadbarcodes)>0){
 # 	warn "$date";
     my $strsth="select * from issues, items where items.itemnumber=issues.itemnumber and items.barcode =?";
     my $qonloan = $dbh->prepare($strsth);
-    $strsth="select * from items where items.barcode =? and issues.wthdrawn=1";
+    $strsth="select * from items where items.barcode =? and items.wthdrawn = 1";
     my $qwthdrawn = $dbh->prepare($strsth);
     my @errorloop;
     my $count=0;
     while (my $barcode=<$uploadbarcodes>){
-        chomp $barcode;
-# 		warn "$barcode";
+        $barcode =~ s/\r?\n$//;
         if ($qwthdrawn->execute($barcode) &&$qwthdrawn->rows){
             push @errorloop, {'barcode'=>$barcode,'ERR_WTHDRAWN'=>1};
         }else{
             my $item = GetItem('', $barcode);
-            if (defined $item){
+            if (defined $item && $item->{'itemnumber'}){
                 ModItem({ datelastseen => $date }, undef, $item->{'itemnumber'});
                 $count++;
                 $qonloan->execute($barcode);

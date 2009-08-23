@@ -31,6 +31,7 @@ binmode(STDOUT, ":utf8");
 
 my ( $input_marc_file, $number, $offset) = ('',0,0);
 my ($version, $delete, $test_parameter, $skip_marc8_conversion, $char_encoding, $verbose, $commit, $fk_off,$format);
+my ($sourcetag,$sourcesubfield,$idmapfl);
 
 $|=1;
 
@@ -47,6 +48,9 @@ GetOptions(
     'v:s' => \$verbose,
     'fk' => \$fk_off,
     'm:s' => \$format,
+    'x:s' => \$sourcetag,
+    'y:s' => \$sourcesubfield,
+    'idmap:s' => \$idmapfl,
 );
 
 if ($version || ($input_marc_file eq '')) {
@@ -69,6 +73,9 @@ Parameters:
   d      delete EVERYTHING related to biblio in koha-DB before import. Tables:
          biblio, biblioitems, titems
   m      format, MARCXML or ISO2709 (defaults to ISO2709)
+  x      source bib tag for reporting the source bib number
+  y      source subfield for reporting the source bib number
+  idmap  file for the koha bib and source id
   
 IMPORTANT: don't use this script before you've entered and checked your MARC 
            parameters tables twice (or more!). Otherwise, the import won't work 
@@ -81,6 +88,15 @@ SAMPLE:
 EOF
 ;#'
 exit;
+}
+
+if (defined $idmapfl) {
+  open(IDMAP,">$idmapfl") or die "cannot open $idmapfl \n";
+}
+
+if ((not defined $sourcesubfield) && (not defined $sourcetag)){
+  $sourcetag="910";
+  $sourcesubfield="a";
 }
 
 my $dbh = C4::Context->dbh;
@@ -148,6 +164,12 @@ RECORD: while (  ) {
     eval { $record = $batch->next() };
     if ( $@ ) {
         print "Bad MARC record: skipped\n";
+        # FIXME - because MARC::Batch->next() combines grabbing the next
+        # blob and parsing it into one operation, a correctable condition
+        # such as a MARC-8 record claiming that it's UTF-8 can't be recovered
+        # from because we don't have access to the original blob.  Note
+        # that the staging import can deal with this condition (via
+        # C4::Charset::MarcToUTF8Record) because it doesn't use MARC::Batch.
         next;
     }
     last unless ( $record );
@@ -172,6 +194,18 @@ RECORD: while (  ) {
             warn "ERROR: Adding biblio $biblionumber failed: $@\n";
             next RECORD;
         } 
+        if (defined $idmapfl) {
+          if ($sourcetag lt '010'){
+            if ($record->field($sourcetag)){
+              my $source = $record->field($sourcetag)->data();
+              printf(IDMAP "%s|%s\n",$source,$biblionumber);
+            }
+          } else {
+            my $source=$record->subfield($sourcetag,$sourcesubfield);
+            printf(IDMAP "%s|%s\n",$source,$biblionumber);
+          }
+       }
+       
         eval { ( $itemnumbers_ref, $errors_ref ) = AddItemBatchFromMarc( $record, $biblionumber, $biblioitemnumber, '' ); };
         if ( $@ ) {
             warn "ERROR: Adding items to bib $biblionumber failed: $@\n";

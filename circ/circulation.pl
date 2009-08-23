@@ -56,35 +56,31 @@ if (C4::Context->preference('usecache')){
 #
 my $query = new CGI;
 
-# new op dev the branch and the printer are now defined by the userenv
+my $sessionID = $query->cookie("CGISESSID") ;
+my $session = get_session($sessionID);
+
+# branch and printer are now defined by the userenv
 # but first we have to check if someone has tried to change them
 
 my $branch = $query->param('branch');
 if ($branch){
     # update our session so the userenv is updated
-    my $sessionID = $query->cookie("CGISESSID") ;
-    my $session = get_session($sessionID);
-    $session->param('branch',$branch);
-    my $branchname = GetBranchName($branch);
-    $session->param('branchname',$branchname);
+    $session->param('branch', $branch);
+    $session->param('branchname', GetBranchName($branch));
 }
 
 my $printer = $query->param('printer');
 if ($printer){
     # update our session so the userenv is updated
-  my $sessionID = $query->cookie("CGISESSID") ;
-  my $session = get_session($sessionID);
-  $session->param('branchprinter',$printer);
-
+    $session->param('branchprinter', $printer);
 }
+
 if (!C4::Context->userenv && !$branch){
-  my $sessionID = $query->cookie("CGISESSID") ;
-  my $session = get_session($sessionID);
-  if ($session->param('branch') eq 'NO_LIBRARY_SET'){
-    # no branch set we can't issue
-    print $query->redirect("/cgi-bin/koha/circ/selectbranchprinter.pl");
-    exit;
-  }
+    if ($session->param('branch') eq 'NO_LIBRARY_SET'){
+        # no branch set we can't issue
+        print $query->redirect("/cgi-bin/koha/circ/selectbranchprinter.pl");
+        exit;
+    }
 }
 
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user (
@@ -98,11 +94,10 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user (
 );
 
 my $branches = GetBranches();
-my $printers = GetPrinters();
 
-my @failedrenews = $query->param('failedrenew');
-my @renew_failed;
-for (@failedrenews) { $renew_failed[$_] = 1; } 
+my @failedrenews = $query->param('failedrenew');    # expected to be itemnumbers 
+my %renew_failed;
+for (@failedrenews) { $renew_failed{$_} = 1; }
 
 my $findborrower = $query->param('findborrower');
 $findborrower =~ s|,| |g;
@@ -113,22 +108,33 @@ $branch  = C4::Context->userenv->{'branch'};
 $printer = C4::Context->userenv->{'branchprinter'};
 
 
-# If Autolocated is not activated, we show the Circulation Parameters to chage settings of librarian
+# If AutoLocation is not activated, we show the Circulation Parameters to chage settings of librarian
 if (C4::Context->preference("AutoLocation") ne 1) { # FIXME: string comparison to number
     $template->param(ManualLocation => 1);
 }
 
 my $barcode        = $query->param('barcode') || '';
+$barcode =~  s/^\s*|\s*$//g; # remove leading/trailing whitespace
 
 $barcode = barcodedecode($barcode) if( $barcode && C4::Context->preference('itemBarcodeInputFilter'));
-my $stickyduedate  = $query->param('stickyduedate');
-my $duedatespec    = $query->param('duedatespec');
+my $stickyduedate  = $query->param('stickyduedate') || $session->param('stickyduedate');
+my $duedatespec    = $query->param('duedatespec')   || $session->param('stickyduedate');
 my $issueconfirmed = $query->param('issueconfirmed');
 my $cancelreserve  = $query->param('cancelreserve');
 my $organisation   = $query->param('organisations');
 my $print          = $query->param('print');
 my $newexpiry      = $query->param('dateexpiry');
 my $debt_confirmed = $query->param('debt_confirmed') || 0; # Don't show the debt error dialog twice
+
+# Check if stickyduedate is turned off
+if ( $barcode ) {
+    # was stickyduedate loaded from session?
+    if ( $stickyduedate && ! $query->param("stickyduedate") ) {
+        $session->clear( 'stickyduedate' );
+        $stickyduedate  = $query->param('stickyduedate');
+        $duedatespec    = $query->param('duedatespec');
+    }
+}
 
 #set up cookie.....
 # my $branchcookie;
@@ -169,7 +175,7 @@ if($duedatespec_allow){
         }
     }
 } else {
-    $datedue = $globalduedate if($globalduedate);
+    $datedue = $globalduedate if ($globalduedate);
 }
 
 my $todaysdate = C4::Dates->new->output('iso');
@@ -200,17 +206,18 @@ if ( $print eq 'yes' && $borrowernumber ne '' ) {
 my $borrowerslist;
 my $message;
 if ($findborrower) {
-    my ( $count, $borrowers ) =
-      SearchMember($findborrower, 'cardnumber', 'web' );
+    my ($count, $borrowers) = SearchMember($findborrower, 'cardnumber', 'web');
     my @borrowers = @$borrowers;
+    if (C4::Context->preference("AddPatronLists")) {
         $template->param(
-                "AddPatronLists_".C4::Context->preference("AddPatronLists")=> "1",
+            "AddPatronLists_".C4::Context->preference("AddPatronLists")=> "1",
         );
         if (C4::Context->preference("AddPatronLists")=~/code/){
-                my $categories=GetBorrowercategoryList;
-                $categories->[0]->{'first'}=1;
-                $template->param(categories=>$categories);
+            my $categories = GetBorrowercategoryList;
+            $categories->[0]->{'first'} = 1;
+            $template->param(categories=>$categories);
         }
+    }
     if ( $#borrowers == -1 ) {
         $query->param( 'findborrower', '' );
         $message = "'$findborrower'";
@@ -227,7 +234,6 @@ if ($findborrower) {
 
 # get the borrower information.....
 my $borrower;
-my @lines;
 if ($borrowernumber) {
     if (C4::Context->preference('usecache')){
 	$borrower=$memd->get("koha:circulation:$borrowernumber");
@@ -243,40 +249,38 @@ if ($borrowernumber) {
     my ( $od, $issue, $fines ) = GetMemberIssuesAndFines( $borrowernumber );
 
     # Warningdate is the date that the warning starts appearing
-    my ( $today_year,   $today_month,   $today_day )   = Today();
-    my ( $warning_year, $warning_month, $warning_day ) = split /-/,
-      $borrower->{'dateexpiry'};
-    my ( $enrol_year, $enrol_month, $enrol_day ) = split /-/,
-      $borrower->{'dateenrolled'};
+    my (  $today_year,   $today_month,   $today_day) = Today();
+    my ($warning_year, $warning_month, $warning_day) = split /-/, $borrower->{'dateexpiry'};
+    my (  $enrol_year,   $enrol_month,   $enrol_day) = split /-/, $borrower->{'dateenrolled'};
     # Renew day is calculated by adding the enrolment period to today
-    my ( $renew_year, $renew_month, $renew_day ) =
+    my (  $renew_year,   $renew_month,   $renew_day) =
       Add_Delta_YM( $enrol_year, $enrol_month, $enrol_day,
         0 , $borrower->{'enrolmentperiod'}) if ($enrol_year*$enrol_month*$enrol_day>0);
     # if the expiry date is before today ie they have expired
     if ( $warning_year*$warning_month*$warning_day==0 
-      || Date_to_Days( $today_year, $today_month, $today_day ) 
-         > Date_to_Days( $warning_year, $warning_month, $warning_day ) )
+        || Date_to_Days($today_year,     $today_month, $today_day  ) 
+         > Date_to_Days($warning_year, $warning_month, $warning_day) )
     {
         #borrowercard expired, no issues
         $template->param(
-      flagged => "1",
-            noissues       => "1",
-            expired => format_date($borrower->{dateexpiry}),
-            renewaldate   => format_date("$renew_year-$renew_month-$renew_day")
+            flagged  => "1",
+            noissues => "1",
+            expired     => format_date($borrower->{dateexpiry}),
+            renewaldate => format_date("$renew_year-$renew_month-$renew_day")
         );
     }
     # check for NotifyBorrowerDeparture
-  elsif ( C4::Context->preference('NotifyBorrowerDeparture') &&
-    Date_to_Days(Add_Delta_Days($warning_year,$warning_month,$warning_day,- C4::Context->preference('NotifyBorrowerDeparture'))) <
-    Date_to_Days( $today_year, $today_month, $today_day ) ) 
-  {
-    # borrower card soon to expire warn librarian
-    $template->param("warndeparture" => format_date($borrower->{dateexpiry}),
-      flagged       => "1",);
-    if ( C4::Context->preference('ReturnBeforeExpiry')){
-      $template->param("returnbeforeexpiry" => 1);
+    elsif ( C4::Context->preference('NotifyBorrowerDeparture') &&
+            Date_to_Days(Add_Delta_Days($warning_year,$warning_month,$warning_day,- C4::Context->preference('NotifyBorrowerDeparture'))) <
+            Date_to_Days( $today_year, $today_month, $today_day ) ) 
+    {
+        # borrower card soon to expire warn librarian
+        $template->param("warndeparture" => format_date($borrower->{dateexpiry}),
+        flagged       => "1",);
+        if (C4::Context->preference('ReturnBeforeExpiry')){
+            $template->param("returnbeforeexpiry" => 1);
+        }
     }
-  }
     $template->param(
         overduecount => $od,
         issuecount   => $issue,
@@ -371,7 +375,7 @@ if ($borrowernumber) {
         $getreserv{barcodereserv}  = $getiteminfo->{'barcode'};
         $getreserv{itemcallnumber} = $getiteminfo->{'itemcallnumber'};
         $getreserv{biblionumber}   = $getiteminfo->{'biblionumber'};
-        $getreserv{waitingat}    = GetBranchName( $num_res->{'branchcode'} );
+        $getreserv{waitingat}      = GetBranchName( $num_res->{'branchcode'} );
         #         check if we have a waiting status for reservations
         if ( $num_res->{'found'} eq 'W' ) {
             $getreserv{color}   = 'reserved';
@@ -383,7 +387,7 @@ if ($borrowernumber) {
         $getWaitingReserveInfo{author}       = $getiteminfo->{'author'};
         $getWaitingReserveInfo{reservedate}  = format_date( $num_res->{'reservedate'} );
         $getWaitingReserveInfo{waitingat}    = GetBranchName( $num_res->{'branchcode'} );
-      if($num_res->{'branchcode'} eq $branch){ $getWaitingReserveInfo{waitinghere} = 1; }
+        $getWaitingReserveInfo{waitinghere}  = 1 if $num_res->{'branchcode'} eq $branch;
         }
         #         check transfers with the itemnumber foud in th reservation loop
         if ($transfertwhen) {
@@ -391,14 +395,9 @@ if ($borrowernumber) {
             $getreserv{transfered} = 1;
             $getreserv{datesent}   = format_date($transfertwhen);
             $getreserv{frombranch} = GetBranchName($transfertfrom);
-        }
-
-        if ( ( $getiteminfo->{'holdingbranch'} ne $num_res->{'branchcode'} )
-            and not $transfertwhen )
-        {
+        } elsif ($getiteminfo->{'holdingbranch'} ne $num_res->{'branchcode'}) {
             $getreserv{nottransfered}   = 1;
-            $getreserv{nottransferedby} =
-              GetBranchName( $getiteminfo->{'holdingbranch'} );
+            $getreserv{nottransferedby} = GetBranchName( $getiteminfo->{'holdingbranch'} );
         }
 
 #         if we don't have a reserv on item, we put the biblio infos and the waiting position
@@ -410,7 +409,7 @@ if ($borrowernumber) {
             $getreserv{nottransfered}   = 0;
             $getreserv{itemtype}        = $getbibtype->{'description'};
             $getreserv{author}          = $getbibinfo->{'author'};
-          $getreserv{biblionumber}    = $num_res->{'biblionumber'};
+            $getreserv{biblionumber}    = $num_res->{'biblionumber'};
         }
         $getreserv{waitingposition} = $num_res->{'priority'};
         push( @reservloop, \%getreserv );
@@ -436,13 +435,8 @@ my $todaysissues = '';
 my $previssues   = '';
 my @todaysissues;
 my @previousissues;
-my $allowborrow;
 ## ADDED BY JF: new itemtype issuingrules counter stuff
-my $issued_itemtypes_loop;
 my $issued_itemtypes_count;
-my $issued_itemtypes_allowed_count;    # hashref with total allowed by itemtype
-my $issued_itemtypes_remaining;        # hashref with remaining
-my $issued_itemtypes_flags;            #hashref that stores flags
 my @issued_itemtypes_count_loop;
 
 if ($borrower) {
@@ -470,7 +464,7 @@ if ($borrower) {
         $it->{'dd'} = format_date($it->{'date_due'});
         $it->{'od'} = ( $it->{'date_due'} lt $todaysdate ) ? 1 : 0 ;
         ($it->{'author'} eq '') and $it->{'author'} = ' ';
-        $it->{'renew_failed'} = $renew_failed[$it->{'itemnumber'}];
+        $it->{'renew_failed'} = $renew_failed{$it->{'itemnumber'}};
         # ADDED BY JF: NEW ITEMTYPE COUNT DISPLAY
         $issued_itemtypes_count->{ $it->{'itemtype'} }++;
 
@@ -506,7 +500,6 @@ FROM issuingrules
   LEFT JOIN itemtypes ON (itemtypes.itemtype=issuingrules.itemtype)
   WHERE categorycode=?
 " );
-#my @issued_itemtypes_count;  # huh?
 $issueqty_sth->execute("*");	# This is a literal asterisk, not a wildcard.
 
 while ( my $data = $issueqty_sth->fetchrow_hashref() ) {
@@ -527,7 +520,6 @@ while ( my $data = $issueqty_sth->fetchrow_hashref() ) {
         push @issued_itemtypes_count_loop, $data;
     }
 }
-$issued_itemtypes_loop = \@issued_itemtypes_count_loop;
 
 #### / JF
 
@@ -559,9 +551,7 @@ if ($borrowerslist) {
 
 #title
 my $flags = $borrower->{'flags'};
-my $flag;
-
-foreach $flag ( sort keys %$flags ) {
+foreach my $flag ( sort keys %$flags ) {
     $template->param( flagged=> 1);
     $flags->{$flag}->{'message'} =~ s#\n#<br />#g;
     if ( $flags->{$flag}->{'noissues'} ) {
@@ -572,13 +562,13 @@ foreach $flag ( sort keys %$flags ) {
         if ( $flag eq 'GNA' ) {
             $template->param( gna => 'true' );
         }
-        if ( $flag eq 'LOST' ) {
+        elsif ( $flag eq 'LOST' ) {
             $template->param( lost => 'true' );
         }
-        if ( $flag eq 'DBARRED' ) {
+        elsif ( $flag eq 'DBARRED' ) {
             $template->param( dbarred => 'true' );
         }
-        if ( $flag eq 'CHARGES' ) {
+        elsif ( $flag eq 'CHARGES' ) {
             $template->param(
                 charges    => 'true',
                 chargesmsg => $flags->{'CHARGES'}->{'message'},
@@ -586,7 +576,7 @@ foreach $flag ( sort keys %$flags ) {
                 charges_is_blocker => 1
             );
         }
-        if ( $flag eq 'CREDITS' ) {
+        elsif ( $flag eq 'CREDITS' ) {
             $template->param(
                 credits    => 'true',
                 creditsmsg => $flags->{'CREDITS'}->{'message'}
@@ -602,13 +592,13 @@ foreach $flag ( sort keys %$flags ) {
                 chargesamount => $flags->{'CHARGES'}->{'amount'},
             );
         }
-        if ( $flag eq 'CREDITS' ) {
+        elsif ( $flag eq 'CREDITS' ) {
             $template->param(
                 credits    => 'true',
                 creditsmsg => $flags->{'CREDITS'}->{'message'}
             );
         }
-        if ( $flag eq 'ODUES' ) {
+        elsif ( $flag eq 'ODUES' ) {
             $template->param(
                 odues    => 'true',
                 flagged  => 1,
@@ -625,11 +615,11 @@ foreach $flag ( sort keys %$flags ) {
 #                     push @itemswaiting, $iteminformation;
 #                 }
 #             }
-            if ( $query->param('module') ne 'returns' ) {
+            if ( ! $query->param('module') or $query->param('module') ne 'returns' ) {
                 $template->param( nonreturns => 'true' );
             }
         }
-        if ( $flag eq 'NOTES' ) {
+        elsif ( $flag eq 'NOTES' ) {
             $template->param(
                 notes    => 'true',
                 flagged  => 1,
@@ -640,7 +630,7 @@ foreach $flag ( sort keys %$flags ) {
 }
 
 my $amountold = $borrower->{flags}->{'CHARGES'}->{'message'} || 0;
-my @temp = split( /\$/, $amountold );
+$amountold =~ s/^.*\$//;    # remove upto the $, if any
 
 if ( $borrower->{'category_type'} eq 'C') {
     my  ( $catcodes, $labels ) =  GetborCatFromCatType( 'A', 'WHERE category_type = ?' );
@@ -657,8 +647,7 @@ if ( C4::Context->preference("memberofinstitution") ) {
     my %org_labels;
     foreach my $organisation ( keys %$organisations ) {
         push @orgs, $organisation;
-        $org_labels{$organisation} =
-          $organisations->{$organisation}->{'surname'};
+        $org_labels{$organisation} = $organisations->{$organisation}->{'surname'};
     }
     $member_of_institution = 1;
     $CGIorganisations      = CGI::popup_menu(
@@ -669,10 +658,8 @@ if ( C4::Context->preference("memberofinstitution") ) {
     );
 }
 
-$amountold = $temp[1];
-
 $template->param(
-    issued_itemtypes_count_loop => $issued_itemtypes_loop,
+    issued_itemtypes_count_loop => \@issued_itemtypes_count_loop,
     findborrower                => $findborrower,
     borrower                    => $borrower,
     borrowernumber              => $borrowernumber,
@@ -710,6 +697,10 @@ $template->param(
     circview => 1,
 );
 
+# save stickyduedate to session
+if ($stickyduedate) {
+    $session->param( 'stickyduedate', $duedatespec );
+}
 
 #if ($branchcookie) {
 #$cookie=[$cookie, $branchcookie, $printercookie];

@@ -41,6 +41,7 @@ use CGI;
 use C4::Context;
 use C4::Auth;
 use C4::Output;
+use C4::Form::MessagingPreferences;
 
 sub StringSearch  {
 	my ($searchstring,$type)=@_;
@@ -106,6 +107,9 @@ if ($op eq 'add_form') {
 				category_type           => $data->{'category_type'},
 				"type_".$data->{'category_type'} => 1,
 				);
+    if (C4::Context->preference('EnhancedMessagingPreferences')) {
+        C4::Form::MessagingPreferences::set_form_values({ categorycode => $categorycode } , $template);
+    }
 													# END $OP eq ADD_FORM
 ################## ADD_VALIDATE ##################################
 # called by add_form, used to insert/modify data in DB
@@ -122,6 +126,10 @@ if ($op eq 'add_form') {
             $sth->execute(map { $input->param($_) } ('categorycode','description','enrolmentperiod','upperagelimit','dateofbirthrequired','enrolmentfee','reservefee','overduenoticerequired','category_type'));
             $sth->finish;
         }
+    if (C4::Context->preference('EnhancedMessagingPreferences')) {
+        C4::Form::MessagingPreferences::handle_form_action($input, 
+                                                           { categorycode => $input->param('categorycode') }, $template);
+    }
 	print "Content-Type: text/html\n\n<META HTTP-EQUIV=Refresh CONTENT=\"0; URL=categorie.pl\"></html>";
 	exit;
 
@@ -174,7 +182,6 @@ if ($op eq 'add_form') {
 	$template->param(else => 1);
 	my @loop;
 	my ($count,$results)=StringSearch($searchfield,'web');
-	my $toggle = 0;
 	for (my $i=0; $i < $count; $i++){
 		my %row = (categorycode => $results->[$i]{'categorycode'},
 				description => $results->[$i]{'description'},
@@ -186,17 +193,12 @@ if ($op eq 'add_form') {
 				issuelimit => $results->[$i]{'issuelimit'},
 				reservefee => sprintf("%.2f",$results->[$i]{'reservefee'}),
 				category_type => $results->[$i]{'category_type'},
-				"type_".$results->[$i]{'category_type'} => 1,
-				toggle => $toggle );
+				"type_".$results->[$i]{'category_type'} => 1);
+        if (C4::Context->preference('EnhancedMessagingPreferences')) {
+            my $brief_prefs = _get_brief_messaging_prefs($results->[$i]{'categorycode'});
+            $row{messaging_prefs} = $brief_prefs if @$brief_prefs;
+        }
 		push @loop, \%row;
-		if ( $toggle eq 0 )
-		{
-			$toggle = 1;
-		}
-		else
-		{
-			$toggle = 0;
-		}
 	}
 	$template->param(loop => \@loop);
 	# check that I (institution) and C (child) exists. otherwise => warning to the user
@@ -215,3 +217,23 @@ if ($op eq 'add_form') {
 } #---- END $OP eq DEFAULT
 output_html_with_http_headers $input, $cookie, $template->output;
 
+exit 0;
+
+sub _get_brief_messaging_prefs {
+    my $categorycode = shift;
+    my $messaging_options = C4::Members::Messaging::GetMessagingOptions();
+    my $results = [];
+    PREF: foreach my $option ( @$messaging_options ) {
+        my $pref = C4::Members::Messaging::GetMessagingPreferences( { categorycode => $categorycode,
+                                                                    message_name       => $option->{'message_name'} } );
+        next unless  @{$pref->{'transports'}};
+        my $brief_pref = { message_attribute_id => $option->{'message_attribute_id'},
+                           message_name => $option->{'message_name'},
+                         };
+        foreach my $transport ( @{$pref->{'transports'}} ) {
+            push @{ $brief_pref->{'transports'} }, { transport => $transport };
+        }
+        push @$results, $brief_pref;
+    }
+    return $results;
+}

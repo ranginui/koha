@@ -118,10 +118,8 @@ sub SearchAuthorities {
         for(my $i = 0 ; $i <= $#{$value} ; $i++)
         {
             if (@$value[$i]){
-                if (@$tags[$i] eq "mainmainentry") {
-                    $query .=" AND mainmainentry";
-                }elsif (@$tags[$i] eq "mainentry") {
-                    $query .=" AND mainentry";
+                if (@$tags[$i] =~/mainentry|mainmainentry/) {
+                    $query .= qq( AND @$tags[$i] );
                 } else {
                     $query .=" AND ";
                 }
@@ -216,14 +214,18 @@ sub SearchAuthorities {
         }
         
         my $dosearch;
-        my $and;
+        my $and=" \@and " ;
         my $q2;
         for(my $i = 0 ; $i <= $#{$value} ; $i++)
         {
             if (@$value[$i]){
             ##If mainentry search $a tag
                 if (@$tags[$i] eq "mainmainentry") {
+
+# FIXME: 'Heading-Main' index not yet defined in zebra
+#                $attr =" \@attr 1=Heading-Main "; 
                 $attr =" \@attr 1=Heading ";
+
                 }elsif (@$tags[$i] eq "mainentry") {
                 $attr =" \@attr 1=Heading ";
                 }else{
@@ -234,11 +236,10 @@ sub SearchAuthorities {
                 }elsif (@$operator[$i] eq "="){
                     $attr.=" \@attr 4=107 ";           #Number Exact match
                 }elsif (@$operator[$i] eq "start"){
-                    $attr.=" \@attr 4=1 \@attr 5=1 ";#Phrase, Right truncated
+                    $attr.=" \@attr 3=2 \@attr 4=1 \@attr 5=1 ";#Firstinfield Phrase, Right truncated
                 } else {
                     $attr .=" \@attr 5=1 \@attr 4=6 ";## Word list, right truncated, anywhere
                 }
-                $and .=" \@and " ;
                 $attr =$attr."\"".@$value[$i]."\"";
                 $q2 .=$attr;
             $dosearch=1;
@@ -404,7 +405,7 @@ sub GetAuthTypeCode {
   my $dbh=C4::Context->dbh;
   my $sth = $dbh->prepare("select authtypecode from auth_header where authid=?");
   $sth->execute($authid);
-  my ($authtypecode) = $sth->fetchrow;
+  my $authtypecode = $sth->fetchrow;
   return $authtypecode;
 }
  
@@ -522,11 +523,48 @@ sub AddAuthority {
 # pass the MARC::Record to this function, and it will create the records in the authority table
   my ($record,$authid,$authtypecode) = @_;
   my $dbh=C4::Context->dbh;
-  my $leader='         a              ';##Fixme correct leader as this one just adds utf8 to MARC21
+	my $leader='     nz  a22     o  4500';#Leader for incomplete MARC21 record
 
 # if authid empty => true add, find a new authid number
-  my $format= 'UNIMARCAUTH' if (uc(C4::Context->preference('marcflavour')) eq 'UNIMARC');
-  $format= 'MARC21' if (uc(C4::Context->preference('marcflavour')) ne 'UNIMARC');
+    my $format;
+    if (uc(C4::Context->preference('marcflavour')) eq 'UNIMARC') {
+        $format= 'UNIMARCAUTH';
+    }
+    else {
+        $format= 'MARC21';
+    }
+
+	if ($format eq "MARC21") {
+		if (!$record->leader) {
+			$record->leader($leader);
+		}
+		if (!$record->field('003')) {
+			$record->insert_fields_ordered(
+				MARC::Field->new('003',C4::Context->preference('MARCOrgCode'))
+			);
+		}
+		my $time=POSIX::strftime("%Y%m%d%H%M%S",localtime);
+		if (!$record->field('005')) {
+			$record->insert_fields_ordered(
+				MARC::Field->new('005',$time.".0")
+			);
+		}
+		my $date=POSIX::strftime("%y%m%d",localtime);
+		if (!$record->field('008')) {
+			$record->insert_fields_ordered(
+				MARC::Field->new('008',$date."|||a||||||           | |||     d")
+			);
+		}
+		if (!$record->field('040')) {
+		 $record->insert_fields_ordered(
+        MARC::Field->new('040','','',
+				'a' => C4::Context->preference('MARCOrgCode'),
+				'c' => C4::Context->preference('MARCOrgCode')
+				) 
+			);
+    }
+	}
+
   if (($format eq "UNIMARCAUTH") && (!$record->subfield('100','a'))){
         $record->leader("     nx  j22             ");
         my $date=POSIX::strftime("%Y%m%d",localtime);    
@@ -544,11 +582,14 @@ sub AddAuthority {
     # only need to do this fix when modifying an existing authority
     C4::AuthoritiesMarc::MARC21::fix_marc21_auth_type_location($record, $auth_type_tag, $auth_type_subfield);
   } 
-
-  unless ($record->field($auth_type_tag) && $record->subfield($auth_type_tag, $auth_type_subfield)) {
+  if (my $field=$record->field($auth_type_tag)){
+    $field->update($auth_type_subfield=>$authtypecode);
+  }
+  else {
     $record->add_fields($auth_type_tag,'','', $auth_type_subfield=>$authtypecode); 
   }
 
+  my $auth_exists=0;
   my $oldRecord;
   if (!$authid) {
     my $sth=$dbh->prepare("select max(authid) from auth_header");
@@ -560,19 +601,22 @@ sub AddAuthority {
         $record->delete_field($record->field('001'));
         $record->insert_fields_ordered(MARC::Field->new('001',$authid));
     }
-#     warn $record->as_formatted;
-    $sth=$dbh->prepare("insert into auth_header (authid,datecreated,authtypecode,marc,marcxml) values (?,now(),?,?,?)");
+  } else {
+    $auth_exists=$dbh->do(qq(select authid from auth_header where authid=?),undef,$authid);
+#     warn "auth_exists = $auth_exists";
+  }
+  if ($auth_exists>0){
+      $oldRecord=GetAuthority($authid);
+      $record->add_fields('001',$authid) unless ($record->field('001'));
+#       warn "\n\n\n enregistrement".$record->as_formatted;
+      my $sth=$dbh->prepare("update auth_header set authtypecode=?,marc=?,marcxml=? where authid=?");
+      $sth->execute($authtypecode,$record->as_usmarc,$record->as_xml_record($format),$authid) or die $sth->errstr;
+      $sth->finish;
+  }
+  else {
+    my $sth=$dbh->prepare("insert into auth_header (authid,datecreated,authtypecode,marc,marcxml) values (?,now(),?,?,?)");
     $sth->execute($authid,$authtypecode,$record->as_usmarc,$record->as_xml_record($format));
     $sth->finish;
-  }else{
-      if (C4::Context->preference('NoZebra')) {
-        $oldRecord = GetAuthority($authid);
-      }
-      $record->add_fields('001',$authid) unless ($record->field('001'));
-      my $sth=$dbh->prepare("update auth_header set marc=?,marcxml=? where authid=?");
-      $sth->execute($record->as_usmarc,$record->as_xml_record($format),$authid);
-      $sth->finish;
-      $dbh->do("unlock tables");
   }
   ModZebra($authid,'specialUpdate',"authorityserver",$oldRecord,$record);
   return ($authid);
@@ -610,7 +654,9 @@ sub ModAuthority {
 ### If a library thinks that updating all biblios is a long process and wishes to leave that to a cron job to use merge_authotities.p
 ### they should have a system preference "dontmerge=1" otherwise by default biblios will be updated
 ### the $merge flag is now depreceated and will be removed at code cleaning
-  if (C4::Context->preference('dontmerge') ){
+  if (C4::Context->preference('MergeAuthoritiesOnUpdate') ){
+      &merge($authid,$oldrecord,$authid,$record);
+  } else {
   # save the file in tmp/modified_authorities
       my $cgidir = C4::Context->intranetdir ."/cgi-bin";
       unless (opendir(DIR,"$cgidir")) {
@@ -622,8 +668,6 @@ sub ModAuthority {
       open AUTH, "> $filename";
       print AUTH $authid;
       close AUTH;
-  } else {
-      &merge($authid,$oldrecord,$authid,$record);
   }
   return $authid;
 }
@@ -642,23 +686,22 @@ returns xml form of record $authid
 sub GetAuthorityXML {
   # Returns MARC::XML of the authority passed in parameter.
   my ( $authid ) = @_;
-  my $format= 'UNIMARCAUTH' if (uc(C4::Context->preference('marcflavour')) eq 'UNIMARC');
-  $format= 'MARC21' if (uc(C4::Context->preference('marcflavour')) ne 'UNIMARC');
-  if ($format eq "MARC21") {
-    # for MARC21, call GetAuthority instead of
-    # getting the XML directly since we may
-    # need to fix up the location of the authority
-    # code -- note that this is reasonably safe
-    # because GetAuthorityXML is used only by the 
-    # indexing processes like zebraqueue_start.pl
-    my $record = GetAuthority($authid);
-    return $record->as_xml_record($format);
-  } else {
-    my $dbh=C4::Context->dbh;
-    my $sth = $dbh->prepare("select marcxml from auth_header where authid=? "  );
-    $sth->execute($authid);
-    my ($marcxml)=$sth->fetchrow;
-    return $marcxml;
+  if (uc(C4::Context->preference('marcflavour')) eq 'UNIMARC') {
+      my $dbh=C4::Context->dbh;
+      my $sth = $dbh->prepare("select marcxml from auth_header where authid=? "  );
+      $sth->execute($authid);
+      my ($marcxml)=$sth->fetchrow;
+      return $marcxml;
+  }
+  else { 
+      # for MARC21, call GetAuthority instead of
+      # getting the XML directly since we may
+      # need to fix up the location of the authority
+      # code -- note that this is reasonably safe
+      # because GetAuthorityXML is used only by the 
+      # indexing processes like zebraqueue_start.pl
+      my $record = GetAuthority($authid);
+      return $record->as_xml_record('MARC21');
   }
 }
 
@@ -679,8 +722,9 @@ sub GetAuthority {
     my $sth=$dbh->prepare("select authtypecode, marcxml from auth_header where authid=?");
     $sth->execute($authid);
     my ($authtypecode, $marcxml) = $sth->fetchrow;
-    my $record=MARC::Record->new_from_xml(StripNonXmlChars($marcxml),'UTF-8',
-        (C4::Context->preference("marcflavour") eq "UNIMARC"?"UNIMARCAUTH":C4::Context->preference("marcflavour")));
+    my $record=eval {MARC::Record->new_from_xml(StripNonXmlChars($marcxml),'UTF-8',
+        (C4::Context->preference("marcflavour") eq "UNIMARC"?"UNIMARCAUTH":C4::Context->preference("marcflavour")))};
+    return undef if ($@);
     $record->encoding('UTF-8');
     if (C4::Context->preference("marcflavour") eq "MARC21") {
       my ($auth_type_tag, $auth_type_subfield) = get_auth_type_location($authtypecode);
@@ -792,7 +836,12 @@ sub FindDuplicateAuthority {
 #     warn "record :".$record->as_formatted."  auth_tag_to_report :$auth_tag_to_report";
     # build a request for SearchAuthorities
     my $query='at='.$authtypecode.' ';
-    map {$query.= " and he=\"".$_->[1]."\"" if ($_->[0]=~/[A-z]/)}  $record->field($auth_tag_to_report)->subfields() if $record->field($auth_tag_to_report);
+    my $filtervalues=qr([\001-\040\!\'\"\`\#\$\%\&\*\+,\-\./:;<=>\?\@\(\)\{\[\]\}_\|\~]);
+    if ($record->field($auth_tag_to_report)) {
+      foreach ($record->field($auth_tag_to_report)->subfields()) {
+        $_->[1]=~s/$filtervalues/ /g; $query.= " and he,wrdl=\"".$_->[1]."\"" if ($_->[0]=~/[A-z]/);
+      }
+    }
     my ($error, $results, $total_hits)=SimpleSearch( $query, 0, 1, [ "authorityserver" ] );
     # there is at least 1 result => return the 1st one
     if (@$results>0) {
@@ -897,8 +946,10 @@ sub BuildSummary{
         $notes.= '<span class="note">'.$field->subfield('a')."</span>\n";
       }
       foreach my $field ($record->field('4..')) {
-        my $thesaurus = "thes. : ".$thesaurus{"$field->subfield('2')"}." : " if ($field->subfield('2'));
-        $see.= '<span class="UF">'.$thesaurus.$field->subfield('a')."</span> -- \n";
+        if ($field->subfield('2')) {
+            my $thesaurus = "thes. : ".$thesaurus{"$field->subfield('2')"}." : ";
+            $see.= '<span class="UF">'.$thesaurus.$field->subfield('a')."</span> -- \n";
+        }
       }
       # see :
       foreach my $field ($record->field('5..')) {
@@ -1148,20 +1199,21 @@ sub merge {
     my $dbh=C4::Context->dbh;
     my $authtypecodefrom = GetAuthTypeCode($mergefrom);
     my $authtypecodeto = GetAuthTypeCode($mergeto);
+#     warn "mergefrom : $authtypecodefrom $mergefrom mergeto : $authtypecodeto $mergeto ";
     # return if authority does not exist
-    my @X = $MARCfrom->fields();
-    return "error MARCFROM not a marcrecord ".Data::Dumper::Dumper($MARCfrom) if $#X == -1;
-    @X = $MARCto->fields();
-    return "error MARCTO not a marcrecord".Data::Dumper::Dumper($MARCto) if $#X == -1;
+    return "error MARCFROM not a marcrecord ".Data::Dumper::Dumper($MARCfrom) if scalar($MARCfrom->fields()) == 0;
+    return "error MARCTO not a marcrecord".Data::Dumper::Dumper($MARCto) if scalar($MARCto->fields()) == 0;
     # search the tag to report
     my $sth = $dbh->prepare("select auth_tag_to_report from auth_types where authtypecode=?");
     $sth->execute($authtypecodefrom);
-    my ($auth_tag_to_report) = $sth->fetchrow;
+    my ($auth_tag_to_report_from) = $sth->fetchrow;
+    $sth->execute($authtypecodeto);
+    my ($auth_tag_to_report_to) = $sth->fetchrow;
     
     my @record_to;
-    @record_to = $MARCto->field($auth_tag_to_report)->subfields() if $MARCto->field($auth_tag_to_report);
+    @record_to = $MARCto->field($auth_tag_to_report_to)->subfields() if $MARCto->field($auth_tag_to_report_to);
     my @record_from;
-    @record_from = $MARCfrom->field($auth_tag_to_report)->subfields() if $MARCfrom->field($auth_tag_to_report);
+    @record_from = $MARCfrom->field($auth_tag_to_report_from)->subfields() if $MARCfrom->field($auth_tag_to_report_from);
     
     my @reccache;
     # search all biblio tags using this authority.
@@ -1173,26 +1225,31 @@ sub merge {
         $rq->execute;
         while (my $biblionumbers=$rq->fetchrow){
             my @biblionumbers=split /;/,$biblionumbers;
-            map {
-                my $biblionumber=$1 if ($_=~/(\d+),.*/);
-                my $marc=GetMarcBiblio($biblionumber);        
-                push @reccache,$marc;        
-            } @biblionumbers;
+            foreach (@biblionumbers) {
+                if ($_=~/(\d+),.*/) {
+                    my $marc=GetMarcBiblio($1);
+                    push @reccache,$marc;
+                }
+            }
         }
     } else {
         #zebra connection  
         my $oConnection=C4::Context->Zconn("biblioserver",0);
+        $oConnection->option("preferredRecordSyntax"=>"XML");
         my $query;
         $query= "an=".$mergefrom;
         my $oResult = $oConnection->search(new ZOOM::Query::CCL2RPN( $query, $oConnection ));
-        my $count=$oResult->size() if  ($oResult);
+        my $count = 0;
+        if  ($oResult) {
+            $count=$oResult->size();
+        }
         my $z=0;
         while ( $z<$count ) {
             my $rec;
             $rec=$oResult->record($z);
             my $marcdata = $rec->raw();
             push @reccache, $marcdata;
-        $z++;
+            $z++;
         }
         $oConnection->destroy();    
     }
@@ -1216,30 +1273,43 @@ sub merge {
     # May be used as a template for a bulkedit field  
     foreach my $marcrecord(@reccache){
         my $update;           
-        $marcrecord= MARC::File::USMARC::decode($marcrecord) unless(C4::Context->preference('NoZebra'));
+        $marcrecord= MARC::Record->new_from_xml($marcrecord,"utf8",C4::Context->preference("marcflavour")) unless(C4::Context->preference('NoZebra'));
         foreach my $tagfield (@tags_using_authtype){
+#             warn "tagfield : $tagfield ";
             foreach my $field ($marcrecord->field($tagfield)){
                 my $auth_number=$field->subfield("9");
                 my $tag=$field->tag();          
                 if ($auth_number==$mergefrom) {
-                    my $field_to=MARC::Field->new(($tag_to?$tag_to:$tag),$field->indicator(1),$field->indicator(2),"9"=>$mergeto);
-                    foreach my $subfield (@record_to) {
-                        $field_to->add_subfields($subfield->[0] =>$subfield->[1]);
-                    }
-                    $marcrecord->delete_field($field);
-                    $marcrecord->insert_grouped_field($field_to);            
-                    $update=1;
+                my $field_to=MARC::Field->new(($tag_to?$tag_to:$tag),$field->indicator(1),$field->indicator(2),"9"=>$mergeto);
+                foreach my $subfield (@record_to) {
+                    $field_to->add_subfields($subfield->[0] =>$subfield->[1]);
+                }
+                $marcrecord->delete_field($field);
+                $marcrecord->insert_grouped_field($field_to);            
+                $update=1;
                 }
             }#for each tag
         }#foreach tagfield
-        my $oldbiblio = TransformMarcToKoha($dbh,$marcrecord,"") ;
+        my ($bibliotag,$bibliosubf) = GetMarcFromKohaField("biblio.biblionumber","") ;
+        my $biblionumber;
+        if ($bibliotag<10){
+            $biblionumber=$marcrecord->field($bibliotag)->data;
+        }
+        else {
+            $biblionumber=$marcrecord->subfield($bibliotag,$bibliosubf);
+        }
+        unless ($biblionumber){
+            warn "pas de numéro de notice bibliographique dans : ".$marcrecord->as_formatted;
+            next;
+        }
         if ($update==1){
-            &ModBiblio($marcrecord,$oldbiblio->{'biblionumber'},GetFrameworkCode($oldbiblio->{'biblionumber'})) ;
+            &ModBiblio($marcrecord,$biblionumber,GetFrameworkCode($biblionumber)) ;
             $counteditedbiblio++;
             warn $counteditedbiblio if (($counteditedbiblio % 10) and $ENV{DEBUG});
         }    
     }#foreach $marc
     return $counteditedbiblio;  
+  # now, find every other authority linked with this authority
   # now, find every other authority linked with this authority
 #   my $oConnection=C4::Context->Zconn("authorityserver");
 #   my $query;

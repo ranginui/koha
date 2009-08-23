@@ -253,6 +253,14 @@ td,th {
 	padding : 3px 5px;
 }
 
+td.place_on_type table,
+td.place_on_type table td {
+	border : 0;
+}
+td caption {
+	font-size : 105%;
+}
+
 th {
 	background-color:#EEE;
 	font-weight : bold;
@@ -346,8 +354,6 @@ p.availability {
 	
 }
 
-
-
 /* "problem" enhancement */
 .problem {
 	color : white;
@@ -356,7 +362,9 @@ p.availability {
 
 /* style for search terms in catalogsearch */
 .term {
-	color : blue;
+	/* color : blue; */
+    color : #990000;
+    background-color : #FFFFCC;
 }
 
 a .term {
@@ -409,6 +417,13 @@ a .term {
 	background-image:url(../../images/placereserve.gif);
 }
 
+.searchresults a.highlight_toggle {
+	background : transparent url(../../images/highlight.gif) -4px center no-repeat;
+	display: none;
+	font-weight: normal;
+	padding : 0 10px 0 21px;
+}
+
 #action a.addtoshelf, #toolbar a.addtoshelf {
 	background-image:url(../../images/addtoshelf.gif);
 }
@@ -419,6 +434,21 @@ a .term {
 
 #action a.print, #toolbar a.print {
 	background-image:url(../../images/print.gif);
+}
+
+#action a#furthersearches {
+	background : transparent url(../../images/menu-arrow.gif) no-repeat right center;
+	border : 1px solid #F3F3F3;
+	margin-left : 5px;
+	padding : 2px 26px 2px 10px;
+	text-decoration : none;
+}
+
+#action a#furthersearches:hover {
+	border-top : 1px solid #FFF;
+	border-left : 1px solid #FFF;
+	border-right : 1px solid #979797;
+	border-bottom : 1px solid #979797;
 }
 
 #toolbar a.brief {
@@ -439,6 +469,49 @@ a .term {
 
 #toolbar a.send {
 	background-image: url(../../images/send.gif);
+}
+.sendlist {
+	display : none;
+}
+a.send {
+	background-image: url(../../images/send.gif);
+	background-position : 0px center;
+	background-repeat : no-repeat;
+	text-decoration : none;
+	padding-left : 21px;
+	padding-right : 5px;
+}
+a.hold,
+#placehold input.submit {
+	background-image: url(../../images/placereserve.gif);
+	background-position : 9px center;
+	background-repeat : no-repeat;
+	text-decoration : none;
+	padding-left : 34px;
+}
+#placehold input.submit,
+#tagsel_span input.submit {
+	border : 0;
+	background-color: transparent;
+	font-size : 100%;
+	font-weight : bold;
+	padding-left : 31px;
+	color : #336699;
+	cursor : pointer;
+}
+#tagsel_span input.submit,
+#tagsel_tag {
+	background-image: url(../../images/tags.gif);
+	background-position : 9px center;
+	background-repeat : no-repeat;
+	padding-left : 24px;
+	text-decoration: none;
+}
+#tagsel_tag {
+	padding-left: 27px;
+}
+#placehold input.submit:hover,#tagsel_span input.submit:hover {
+	color: #990033;
 }
 #toolbar a.empty {
 	background-image: url(../../images/trash.gif);
@@ -470,6 +543,11 @@ body#advsearch #breadcrumbs {
 	line-height : 1px;
 	height : 1px;
 	padding : 0;	
+}
+
+body#advsearch #cartmenulink,
+body#advsearch #listsmenulink {
+	float : right;
 }
 
 #advsearch #branchloop,
@@ -760,6 +838,10 @@ a.cancel {
 	padding-left : 1em;
 }
 
+a.hidemytags {
+	padding-left : 2em;
+}
+
 .resultscontrol, .resultscontrol select {
 	font-size: 90%;
 }
@@ -768,7 +850,7 @@ a.cancel {
 	margin-top : 5px;
 }
 
-.cartlist input.submit {
+.cartlist input.submit, #tagsel_button {
 	background-color : #d8deb8;
 	background-image : none;
 	border-color : #bebf84;
@@ -846,7 +928,7 @@ td.resultscontrol img {
 	color:#006699;
 }
 
-.unavailable {
+.unavailable, .tagerror, .tagerror:visited {
 	color: #990033;
 }
 
@@ -1044,6 +1126,11 @@ float : right;
 width: 100%;
 }
 
+#translControl{
+float : left;
+padding-left : .4em;
+}
+
 .clearfix:after {
     content: "."; 
     display: block; 
@@ -1093,6 +1180,7 @@ width: 100%;
 .actions a.addtocart {
 	background : url("../../images/cart-small.gif") center left no-repeat;
 	padding-left : 13px;
+	display : none;
 }
 
 .actions a.addtoshelf {
@@ -1236,7 +1324,7 @@ div#changelanguage li.yuimenuitem a.yuimenuitemlabel {
 	padding : 0;
 }
 
-#cartDetails,#cartUpdate {
+#cartDetails,#cartUpdate,#holdDetails,#listsDetails {
 	background-color : #FFF;
 	border: 1px solid #739acf;
 	color : black;
@@ -1326,7 +1414,7 @@ div#menu li.active a:hover {
 	padding: 2px 2px 1px 2px;
 }
 
-#export,#further,#similars, .detailtagcell {
+#export,#further,.detailtagcell {
 	margin-top : .5em;
 	background-color : #F3F3F3;
 	border : 1px solid #E8E8E8;
@@ -1334,6 +1422,7 @@ div#menu li.active a:hover {
 	padding : 3px;
 	text-align : center;
 }
+#furtherm { margin-top : .5em; }
 
 #export label, .detailtagcell label {
 	display : block;
@@ -1354,28 +1443,6 @@ div#menu li.active a:hover {
 
 #further ul li {
 	list-style-image : url("../../images/further-bullet.gif");
-}
-
-#similars {
-	background-color : #FFF;
-    text-align : center;
-    font-size : 95%;
-    padding : 0 3px 3px 3px;
-}
-
-#similars ul {
-	margin : 0;
-	padding : 0;
-}
-
-#similars li {
-	list-style : none;
-	margin : 0;
-	padding : 0;
-}
-
-#similars li a {
-	display : block;
 }
 
 #amazonreviews h4 {
@@ -1695,6 +1762,7 @@ input.newshelf,a.newshelf {
 	border : 0;
 	color : #006699;
 	cursor : pointer;
+	font-size : 100%;
 	margin:0pt 0.5em;
 	padding-left : 15px;
 	text-decoration : none;
@@ -1734,9 +1802,37 @@ table#items th {
 #action {
 	margin-top: 0;
 }
+#similars h4 {
+	text-align : left;
+}
+#similars table,
+#similars td {
+	border : 0;
+	margin : 0;
+}
+#similars td {
+	width : 13em;
+}
+#similars a {
+	display : block;
+	font-weight : normal;
+}
+#furtherm a,
+#furtherm a:link,
+#furtherm a:visited {
+	color : #006699;
+}
+#furtherm h4 {
+	font-size : 106%;
+	margin : .1em .5em;
+}
+#furtherm .bd {
+	background-color : #F3F3F3;
+	border:1px solid #DDD;
+}
 .results_summary img {
 	margin : 0 5px;
-}
+ }
 span.no-image {
 	background-color : #FFF;
 	border: 1px solid #979797;
@@ -1772,4 +1868,8 @@ a.p1:active {
 	color : #AAA;
 	text-decoration : none;
 	font-weight : bold;
+}
+
+.copies_row > td:first-child {
+    border-left-style : none;
 }

@@ -341,7 +341,8 @@ CREATE TABLE `authorised_values` (
   `lib` varchar(80) default NULL,
   `imageurl` varchar(200) default NULL,
   PRIMARY KEY  (`id`),
-  KEY `name` (`category`)
+  KEY `name` (`category`),
+  KEY `lib` (`lib`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -388,7 +389,7 @@ CREATE TABLE `biblioitems` (
   `volume` mediumtext,
   `number` mediumtext,
   `itemtype` varchar(10) default NULL,
-  `isbn` varchar(14) default NULL,
+  `isbn` varchar(30) default NULL,
   `issn` varchar(9) default NULL,
   `publicationyear` text,
   `publishercode` varchar(255) default NULL,
@@ -568,12 +569,17 @@ CREATE TABLE `branches` (
   `branchaddress1` mediumtext,
   `branchaddress2` mediumtext,
   `branchaddress3` mediumtext,
+  `branchzip` varchar(25) default NULL,  
+  `branchcity` mediumtext,
+  `branchcountry` text,
   `branchphone` mediumtext,
   `branchfax` mediumtext,
   `branchemail` mediumtext,
+  `branchurl` mediumtext,
   `issuing` tinyint(4) default NULL,
   `branchip` varchar(15) default NULL,
   `branchprinter` varchar(100) default NULL,
+  `branchnotes` mediumtext,
   UNIQUE KEY `branchcode` (`branchcode`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -801,7 +807,7 @@ CREATE TABLE `deletedbiblioitems` (
   `volume` mediumtext,
   `number` mediumtext,
   `itemtype` varchar(10) default NULL,
-  `isbn` varchar(14) default NULL,
+  `isbn` varchar(30) default NULL,
   `issn` varchar(9) default NULL,
   `publicationyear` text,
   `publishercode` varchar(255) default NULL,
@@ -898,6 +904,7 @@ CREATE TABLE `deletedborrowers` (
   `altcontactaddress3` varchar(255) default NULL,
   `altcontactzipcode` varchar(50) default NULL,
   `altcontactphone` varchar(50) default NULL,
+  `smsalertnumber` varchar(50) default NULL,
   KEY `borrowernumber` (`borrowernumber`),
   KEY `cardnumber` (`cardnumber`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -1065,7 +1072,7 @@ CREATE TABLE `import_biblios` (
   `original_source` varchar(25) default NULL,
   `title` varchar(128) default NULL,
   `author` varchar(80) default NULL,
-  `isbn` varchar(14) default NULL,
+  `isbn` varchar(30) default NULL,
   `issn` varchar(9) default NULL,
   `has_items` tinyint(1) NOT NULL default 0,
   CONSTRAINT `import_biblios_ibfk_1` FOREIGN KEY (`import_record_id`) 
@@ -1221,7 +1228,7 @@ CREATE TABLE `itemtypes` (
 DROP TABLE IF EXISTS `labels`;
 CREATE TABLE `labels` (
   `labelid` int(11) NOT NULL auto_increment,
-  `batch_id` varchar(10) NOT NULL default 1,
+  `batch_id` int(10) NOT NULL default 1,
   `itemnumber` varchar(100) NOT NULL default '',
   `timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   PRIMARY KEY  (`labelid`)
@@ -1248,7 +1255,7 @@ CREATE TABLE `labels_conf` (
   `isbn` int(1) default '0',
   `startlabel` int(2) NOT NULL default '1',
   `printingtype` char(32) default 'BAR',
-  `formatstring` varchar(64) default NULL,
+  `formatstring` mediumtext default NULL,
   `layoutname` char(20) NOT NULL default 'TEST',
   `guidebox` int(1) default '0',
   `active` tinyint(1) default '1',
@@ -1891,10 +1898,14 @@ CREATE TABLE `subscription` (
   `distributedto` text,
   `internalnotes` longtext,
   `callnumber` text,
+  `location` varchar(80) NULL default '',
   `branchcode` varchar(10) NOT NULL default '',
   `hemisphere` tinyint(3) default 0,
   `lastbranch` varchar(10),
   `serialsadditems` tinyint(1) NOT NULL default '0',
+  `staffdisplaycount` VARCHAR(10) NULL,
+  `opacdisplaycount` VARCHAR(10) NULL,
+  `graceperiod` int(11) NOT NULL default '0',
   PRIMARY KEY  (`subscriptionid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -1948,7 +1959,7 @@ CREATE TABLE `suggestions` (
   `volumedesc` varchar(255) default NULL,
   `publicationyear` smallint(6) default 0,
   `place` varchar(255) default NULL,
-  `isbn` varchar(10) default NULL,
+  `isbn` varchar(30) default NULL,
   `mailoverseeing` smallint(1) default 0,
   `biblionumber` int(11) default NULL,
   `reason` text,
@@ -2112,7 +2123,7 @@ CREATE TABLE `z3950servers` (
 DROP TABLE IF EXISTS `zebraqueue`;
 CREATE TABLE `zebraqueue` (
   `id` int(11) NOT NULL auto_increment,
-  `biblio_auth_number` int(11) NOT NULL default '0',
+  `biblio_auth_number` bigint(20) unsigned NOT NULL default '0',
   `operation` char(20) NOT NULL default '',
   `server` char(20) NOT NULL default '',
   `done` int(11) NOT NULL default '0',
@@ -2303,15 +2314,18 @@ CREATE TABLE `message_transports` (
 DROP TABLE IF EXISTS `borrower_message_preferences`;
 CREATE TABLE `borrower_message_preferences` (
   `borrower_message_preference_id` int(11) NOT NULL auto_increment,
-  `borrowernumber` int(11) NOT NULL default '0',
+  `borrowernumber` int(11) default NULL,
+  `categorycode` varchar(10) default NULL,
   `message_attribute_id` int(11) default '0',
   `days_in_advance` int(11) default '0',
   `wants_digest` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`borrower_message_preference_id`),
   KEY `borrowernumber` (`borrowernumber`),
+  KEY `categorycode` (`categorycode`),
   KEY `message_attribute_id` (`message_attribute_id`),
   CONSTRAINT `borrower_message_preferences_ibfk_1` FOREIGN KEY (`borrowernumber`) REFERENCES `borrowers` (`borrowernumber`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `borrower_message_preferences_ibfk_2` FOREIGN KEY (`message_attribute_id`) REFERENCES `message_attributes` (`message_attribute_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `borrower_message_preferences_ibfk_2` FOREIGN KEY (`message_attribute_id`) REFERENCES `message_attributes` (`message_attribute_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `borrower_message_preferences_ibfk_3` FOREIGN KEY (`categorycode`) REFERENCES `categories` (`categorycode`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -2335,9 +2349,10 @@ CREATE TABLE `borrower_message_transport_preferences` (
 DROP TABLE IF EXISTS `branch_transfer_limits`;
 CREATE TABLE branch_transfer_limits (
     limitId int(8) NOT NULL auto_increment,
-    toBranch varchar(4) NOT NULL,
-    fromBranch varchar(4) NOT NULL,
-    itemtype varchar(4) NOT NULL,  
+    toBranch varchar(10) NOT NULL,
+    fromBranch varchar(10) NOT NULL,
+    itemtype varchar(10) NULL,
+    ccode varchar(10) NULL,  
     PRIMARY KEY  (limitId)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

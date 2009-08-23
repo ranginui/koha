@@ -13,7 +13,7 @@ BEGIN {
 	%EXPORT_TAGS = (
 		auth  => [qw(&api_auth)],
 		basic => [qw($datepat $textpat $login_test $sc_status_test
-						$instid $currency $server $username $password)],
+						$instid $instid2 $currency $server $username $password)],
 		user1 => [qw($user_barcode  $user_pin  $user_fullname  $user_homeaddr  $user_email
 						$user_phone  $user_birthday  $user_ptype  $user_inet)],
 		item1 => [qw($item_barcode  $item_title  $item_owner )],
@@ -24,6 +24,11 @@ BEGIN {
 	foreach my $tag (qw(user item)) {
 		my @tags = @{$EXPORT_TAGS{$tag.'1'}};	# fresh array avoids side affect in map
 		push @{$EXPORT_TAGS{$tag.'2'}}, map {s/($tag)\_/${1}2_/;$_} @tags;
+	}
+    # we've got item3_* also
+	foreach my $tag (qw(item)) {
+		my @tags = @{$EXPORT_TAGS{$tag.'1'}};	# fresh array avoids side affect in map
+		push @{$EXPORT_TAGS{$tag.'3'}}, map {s/($tag)\_/${1}3_/;$_} @tags;
 	}
 	# From perldoc Exporter
 	# Add all the other ":class" tags to the ":all" class, deleting duplicates
@@ -47,15 +52,17 @@ use Sip::Constants qw(:all);
 use C4::Auth qw(&check_api_auth);
 use C4::Context;
 
+# TODO: just read SIPconfig.xml and extract what we can....
 # 
 # Configuration parameters to run the test suite
 #
-our $instid   = 'CPL';	# 'UWOLS';
+our $instid   = 'CPL';  # branchcode
+our $instid2  = 'FPL';  # branchcode
 our $currency = 'USD';	# 'CAD';
 our $server   = 'localhost:6001'; 	# Address of the SIP server
 
-# SIP username and password to connect to the server.  See the
-# SIP config.xml for the correct values.
+# SIP username and password to connect to the server.
+# See SIPconfig.xml for the correct values.
 our $username = 'term1';
 our $password = 'term1';
 
@@ -69,7 +76,7 @@ our $user_fullname= 'Edna Acosta';
 our $user_homeaddr= '7896 Library Rd\.';
 our $user_email   = 'patron\@liblime\.com';
 our $user_phone   = '\(212\) 555-1212';
-our $user_birthday= '1980-04-24';
+our $user_birthday= '19800424';   # YYYYMMDD, ANSI X3.30
 our $user_ptype   = 'PT';
 our $user_inet    = 'Y';
 
@@ -80,7 +87,7 @@ our $user2_fullname= 'Jamie White';
 our $user2_homeaddr= '937 Library Rd\.';
 our $user2_email   = 'patron\@liblime\.com';
 our $user2_phone   = '\(212\) 555-1212';
-our $user2_birthday= '1950-04-22';
+our $user2_birthday= '19500422';    # YYYYMMDD, ANSI X3.30
 our $user2_ptype   = 'T';
 our $user2_inet    = 'Y';
 
@@ -93,6 +100,11 @@ our $item_owner   = 'CPL';
 our $item2_barcode = '502326000011';
 our $item2_title   = 'The biggest, smallest, fastest, tallest things you\'ve ever heard of /';
 our $item2_owner   = 'CPL';
+
+# A third valid item
+our $item3_barcode = '502326000240';
+our $item3_title   = 'The girl who owned a city /';
+our $item3_owner   = 'FPL';
 
 # An item with a diacritical in the title
 our $item_diacritic_barcode = '502326001030';

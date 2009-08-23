@@ -24,45 +24,44 @@ use CGI;
 use C4::Context;
 
 
-sub StringSearch  {
+sub string_search  {
 	my ($searchstring,$authtypecode)=@_;
 	my $dbh = C4::Context->dbh;
 	$searchstring=~ s/\'/\\\'/g;
 	my @data=split(' ',$searchstring);
-	my $count=@data;
 	my $sth=$dbh->prepare("Select * from auth_subfield_structure where (tagfield like ? and authtypecode=?) order by tagfield");
 	$sth->execute("$searchstring%",$authtypecode);
-	my @results;
-	my $cnt=0;
-	my $u=1;
-	while (my $data=$sth->fetchrow_hashref){
-		push(@results,$data);
-		$cnt ++;
-		$u++;
-	}
-	$sth->finish;
-	return ($cnt,\@results);
+	my $results = $sth->fetchall_arrayref({});
+	return (scalar(@$results), $results);
 }
 
-my $input = new CGI;
-my $tagfield=$input->param('tagfield');
-my $tagsubfield=$input->param('tagsubfield');
-my $authtypecode=$input->param('authtypecode');
-my $pkfield="tagfield";
-my $offset=$input->param('offset');
-my $script_name="/cgi-bin/koha/admin/auth_subfields_structure.pl";
+sub auth_subfield_structure_exists {
+	my ($authtypecode, $tagfield, $tagsubfield) = @_;
+	my $dbh  = C4::Context->dbh;
+	my $sql  = "select tagfield from auth_subfield_structure where authtypecode = ? and tagfield = ? and tagsubfield = ?";
+	my $rows = $dbh->selectall_arrayref($sql, {}, $authtypecode, $tagfield, $tagsubfield);
+	return @$rows > 0;
+}
 
-my ($template, $borrowernumber, $cookie)
-    = get_template_and_user({template_name => "admin/auth_subfields_structure.tmpl",
-			     query => $input,
-			     type => "intranet",
-			     authnotrequired => 0,
-			     flagsrequired => {parameters => 1},
-			     debug => 1,
-			     });
-my $pagesize=30;
-my $op = $input->param('op');
-$tagfield=~ s/\,//g;
+my $input        = new CGI;
+my $tagfield     = $input->param('tagfield');
+my $tagsubfield  = $input->param('tagsubfield');
+my $authtypecode = $input->param('authtypecode');
+my $offset       = $input->param('offset');
+my $op           = $input->param('op') || '';
+my $script_name  = "/cgi-bin/koha/admin/auth_subfields_structure.pl";
+
+my ($template, $borrowernumber, $cookie) = get_template_and_user(
+    {   template_name   => "admin/auth_subfields_structure.tmpl",
+        query           => $input,
+        type            => "intranet",
+        authnotrequired => 0,
+        flagsrequired   => { parameters => 1 },
+        debug           => 1,
+    }
+);
+my $pagesize = 30;
+$tagfield =~ s/\,//g;
 
 if ($op) {
 $template->param(script_name => $script_name,
@@ -76,11 +75,11 @@ $template->param(script_name => $script_name,
 						else              => 1); # we show only the TMPL_VAR names $op
 }
 
+my $dbh = C4::Context->dbh;
 ################## ADD_FORM ##################################
 # called by default. Used to create form to add or  modify a record
 if ($op eq 'add_form') {
 	my $data;
-	my $dbh = C4::Context->dbh;
 	my $more_subfields = $input->param("more_subfields")+1;
 	# builds kohafield tables
 	my @kohafields;
@@ -92,7 +91,6 @@ if ($op eq 'add_form') {
 	}
 	
 	# build authorised value list
-	$sth2->finish;
 	$sth2 = $dbh->prepare("select distinct category from authorised_values");
 	$sth2->execute;
 	my @authorised_values;
@@ -104,7 +102,6 @@ if ($op eq 'add_form') {
 	push (@authorised_values,"itemtypes");
     
     # build thesaurus categories list
-    $sth2->finish;
     $sth2 = $dbh->prepare("select authtypecode from auth_types");
     $sth2->execute;
     my @authtypes;
@@ -137,16 +134,10 @@ if ($op eq 'add_form') {
 	my $sth=$dbh->prepare("select * from auth_subfield_structure where tagfield=? and authtypecode=?"); # and tagsubfield='$tagsubfield'");
 	$sth->execute($tagfield,$authtypecode);
 	my @loop_data = ();
-	my $toggle=1;
 	my $i=0;
 	while ($data =$sth->fetchrow_hashref) {
 
 		my %row_data;  # get a fresh hash for the row data
-		if ($toggle eq 1){
-			$toggle=0;
-	  	} else {
-			$toggle=1;
-	  	}
 		$row_data{tab} = CGI::scrolling_list(-name=>'tab',
 					-id=>"tab$i",
                                         -values =>
@@ -253,7 +244,6 @@ if ($op eq 'add_form') {
 			-value => 1,
 			-label => '');
 		$row_data{row} = $i;
-		$row_data{toggle} = $toggle;
 		push(@loop_data, \%row_data);
 		$i++;
 	}
@@ -314,7 +304,10 @@ if ($op eq 'add_form') {
 					-size=>1,
 					-multiple=>0,
 					);
-		$row_data{tagsubfieldinput} = "<input type=\"text\" name=\"tagsubfield\" value=\"".$data->{'tagsubfield'}."\" size=\"1\" id=\"tagsubfield\" maxlength=\"1\" />";
+		$row_data{tagsubfieldinput} = 
+			"<label><input type=\"text\" name=\"tagsubfield\" value=\""
+			. $data->{'tagsubfield'}
+			. "\" size=\"1\" id=\"tagsubfield\" maxlength=\"1\" /></label>";
 		$row_data{tagsubfield} = $data->{'tagsubfield'};
 		$row_data{liblibrarian} = "";
 		$row_data{libopac} = "";
@@ -365,7 +358,6 @@ if ($op eq 'add_form') {
 		 			-tabindex=>'',
 					-multiple=>0,
 					);
-		$row_data{toggle} = $toggle;
 		$row_data{row} = $i;
 		push(@loop_data, \%row_data);
 	}
@@ -382,10 +374,13 @@ if ($op eq 'add_form') {
 ################## ADD_VALIDATE ##################################
 # called by add_form, used to insert/modify data in DB
 } elsif ($op eq 'add_validate') {
-	my $dbh = C4::Context->dbh;
 	$template->param(tagfield => "$input->param('tagfield')");
-	my $sth=$dbh->prepare("replace auth_subfield_structure (authtypecode,tagfield,tagsubfield,liblibrarian,libopac,repeatable,mandatory,kohafield,tab,seealso,authorised_value,frameworkcode,value_builder,hidden,isurl)
+#	my $sth=$dbh->prepare("replace auth_subfield_structure (authtypecode,tagfield,tagsubfield,liblibrarian,libopac,repeatable,mandatory,kohafield,tab,seealso,authorised_value,frameworkcode,value_builder,hidden,isurl)
+#									values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+	my $sth_insert = $dbh->prepare("insert into auth_subfield_structure (authtypecode,tagfield,tagsubfield,liblibrarian,libopac,repeatable,mandatory,kohafield,tab,seealso,authorised_value,frameworkcode,value_builder,hidden,isurl)
 									values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+	my $sth_update = $dbh->prepare("update auth_subfield_structure set authtypecode=?, tagfield=?, tagsubfield=?, liblibrarian=?, libopac=?, repeatable=?, mandatory=?, kohafield=?, tab=?, seealso=?, authorised_value=?, frameworkcode=?, value_builder=?, hidden=?, isurl=?
+									where authtypecode=? and tagfield=? and tagsubfield=?");
 	my @tagsubfield	= $input->param('tagsubfield');
 	my @liblibrarian	= $input->param('liblibrarian');
 	my @libopac		= $input->param('libopac');
@@ -418,26 +413,51 @@ if ($op eq 'add_form') {
 		my $isurl = $input->param("isurl$i")?1:0;
 		if ($liblibrarian) {
 			unless (C4::Context->config('demo') eq 1) {
-				$sth->execute($authtypecode,
-                              $tagfield,
-                              $tagsubfield,
-                              $liblibrarian,
-                              $libopac,
-                              $repeatable,
-                              $mandatory,
-                              $kohafield,
-                              $tab,
-                              $seealso,
-                              $authorised_value,
-                              $frameworkcode,
-                              $value_builder,
-                              $hidden,
-                              $isurl,
-					      );
+				if (auth_subfield_structure_exists($authtypecode, $tagfield, $tagsubfield)) {
+					$sth_update->execute(
+						$authtypecode,
+						$tagfield,
+						$tagsubfield,
+						$liblibrarian,
+						$libopac,
+						$repeatable,
+						$mandatory,
+						$kohafield,
+						$tab,
+						$seealso,
+						$authorised_value,
+						$frameworkcode,
+						$value_builder,
+						$hidden,
+						$isurl,
+						(
+							$authtypecode,
+							$tagfield,
+							$tagsubfield
+						),
+					);
+				} else {
+					$sth_insert->execute(
+						$authtypecode,
+						$tagfield,
+						$tagsubfield,
+						$liblibrarian,
+						$libopac,
+						$repeatable,
+						$mandatory,
+						$kohafield,
+						$tab,
+						$seealso,
+						$authorised_value,
+						$frameworkcode,
+						$value_builder,
+						$hidden,
+						$isurl,
+					);
+				}
 			}
 		}
 	}
-	$sth->finish;
 	print "Content-Type: text/html\n\n<META HTTP-EQUIV=Refresh CONTENT=\"0; URL=auth_subfields_structure.pl?tagfield=$tagfield&authtypecode=$authtypecode\"></html>";
 	exit;
 
@@ -445,11 +465,9 @@ if ($op eq 'add_form') {
 ################## DELETE_CONFIRM ##################################
 # called by default form, used to confirm deletion of data in DB
 } elsif ($op eq 'delete_confirm') {
-	my $dbh = C4::Context->dbh;
 	my $sth=$dbh->prepare("select * from auth_subfield_structure where tagfield=? and tagsubfield=? and authtypecode=?");
 	$sth->execute($tagfield,$tagsubfield,$authtypecode);
 	my $data=$sth->fetchrow_hashref;
-	$sth->finish;
 	$template->param(liblibrarian => $data->{'liblibrarian'},
 							tagsubfield => $data->{'tagsubfield'},
 							delete_link => $script_name,
@@ -461,11 +479,9 @@ if ($op eq 'add_form') {
 ################## DELETE_CONFIRMED ##################################
 # called by delete_confirm, used to effectively confirm deletion of data in DB
 } elsif ($op eq 'delete_confirmed') {
-	my $dbh = C4::Context->dbh;
 	unless (C4::Context->config('demo') eq 1) {
 		my $sth=$dbh->prepare("delete from auth_subfield_structure where tagfield=? and tagsubfield=? and authtypecode=?");
 		$sth->execute($tagfield,$tagsubfield,$authtypecode);
-		$sth->finish;
 	}
 	print "Content-Type: text/html\n\n<META HTTP-EQUIV=Refresh CONTENT=\"0; URL=auth_subfields_structure.pl?tagfield=$tagfield&authtypecode=$authtypecode\"></html>";
 	exit;
@@ -473,15 +489,9 @@ if ($op eq 'add_form') {
 													# END $OP eq DELETE_CONFIRMED
 ################## DEFAULT ##################################
 } else { # DEFAULT
-	my ($count,$results)=StringSearch($tagfield,$authtypecode);
-	my $toggle=1;
+	my ($count,$results)=string_search($tagfield,$authtypecode);
 	my @loop_data = ();
 	for (my $i=$offset; $i < ($offset+$pagesize<$count?$offset+$pagesize:$count); $i++){
-	  	if ($toggle eq 1){
-			$toggle=0;
-	  	} else {
-			$toggle=1;
-	  	}
 		my %row_data;  # get a fresh hash for the row data
 		$row_data{tagfield} = $results->[$i]{'tagfield'};
 		$row_data{tagsubfield} = $results->[$i]{'tagsubfield'};
@@ -497,7 +507,6 @@ if ($op eq 'add_form') {
 		$row_data{hidden}	= $results->[$i]{'hidden'} if($results->[$i]{'hidden'} gt "000") ;
 		$row_data{isurl}	= $results->[$i]{'isurl'};
 		$row_data{delete} = "$script_name?op=delete_confirm&amp;tagfield=$tagfield&amp;tagsubfield=".$results->[$i]{'tagsubfield'}."&amp;authtypecode=$authtypecode";
-		$row_data{toggle} = $toggle;
 		if ($row_data{tab} eq -1) {
 			$row_data{subfield_ignored} = 1;
 		}

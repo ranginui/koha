@@ -3,6 +3,10 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link rel="shortcut icon" href="<!-- TMPL_VAR NAME="themelang" -->/includes/favicon.ico" type="image/x-icon" />
 <link rel="stylesheet" type="text/css" href="<!-- TMPL_VAR NAME="themelang" -->/css/print.css" />
+<script language="javascript">
+        window.print();
+        window.close();
+</script>
 </head>
 <body>
 
@@ -10,47 +14,46 @@
 
 <h3><!-- TMPL_VAR name="LibraryName" --></h3>
 <!-- TMPL_IF NAME="branchname" --><!-- TMPL_VAR NAME="branchname" --><br /><!-- /TMPL_IF -->
-Issued To <a href="/cgi-bin/koha/circ/circulation.pl?findborrower=<!-- TMPL_VAR NAME="cardnumber">"><!-- TMPL_VAR NAME="cardnumber" --></a><br />
+Checked out to <a href="/cgi-bin/koha/circ/circulation.pl?findborrower=<!-- TMPL_VAR NAME="cardnumber">"><!-- TMPL_VAR NAME="cardnumber" --></a><br />
 
 <!-- TMPL_VAR NAME="todaysdate" --><br />
 
-<table>
-    <caption>Issues</caption>
-    <tr>
-        <th>Date Due</th>
-        <th>Title</th>
-        <th>Barcode</th>
-    </tr>
-
-    <!-- TMPL_loop name="issueloop" -->
-    <!-- TMPL_IF name="red" --><!-- TMPL_ELSE -->
-    <tr>
-        <td><!-- TMPL_VAR NAME="date_due" --></td>
-        <td><a href="/cgi-bin/koha/catalogue/detail.pl?item=<!-- TMPL_VAR NAME="itemnumber" -->&amp;biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->&amp;bi=<!-- TMPL_VAR NAME="biblioitemnumber" -->"><!-- TMPL_VAR NAME="title" escape="html" --></a></td>
-        <td><!-- TMPL_VAR NAME="barcode" --></td>
-    </tr>
+<!-- TMPL_IF name="quickslip" -->
+<h4>Checked Out Today</h4>
+<!-- TMPL_loop name="issueloop" -->
+<!-- TMPL_IF name="red" --><!-- TMPL_ELSE -->
+<!-- TMPL_IF name="today" -->
+<p><a href="/cgi-bin/koha/catalogue/detail.pl?item=<!-- TMPL_VAR NAME="itemnumber" -->&amp;biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->&amp;bi=<!-- TMPL_VAR NAME="biblioitemnumber" -->"><!-- TMPL_VAR NAME="title" escape="html" --></a><br />
+Barcode: <!-- TMPL_VAR NAME="barcode" --><br />
+Date due: <!-- TMPL_VAR NAME="date_due" --><br /></p>
+    <!-- /TMPL_IF -->
     <!-- /TMPL_IF -->
     <!-- /TMPL_LOOP -->
-</table>
 
-<!-- TMPL_IF NAME="overdues_exist" -->
-<table>
-    <caption>Overdues</caption>
-    <tr>
-        <th>Date Due</th>
-        <th>Title</th>
-        <th>Barcode</th>
-    </tr>
-    <!-- TMPL_LOOP NAME="issueloop" -->
-    <!-- TMPL_IF NAME="red" -->
-    <tr>
-        <td><!-- TMPL_VAR NAME="date_due" --></td>
-        <td><a href="/cgi-bin/koha/catalogue/detail.pl?item=<!-- TMPL_VAR NAME="itemnumber" -->&amp;biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->&amp;bi=<!-- TMPL_VAR NAME="biblioitemnumber" -->"><!-- TMPL_VAR NAME="title" escape="html" --></a></td>
-    <td><!-- TMPL_VAR NAME="barcode" --></td>
-    </tr>
+<!-- TMPL_ELSE -->
+<h4>Checked Out</h4>
+<!-- TMPL_loop name="issueloop" -->
+<!-- TMPL_IF name="red" --><!-- TMPL_ELSE -->
+<p><a href="/cgi-bin/koha/catalogue/detail.pl?item=<!-- TMPL_VAR NAME="itemnumber" -->&amp;biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->&amp;bi=<!-- TMPL_VAR NAME="biblioitemnumber" -->"><!-- TMPL_VAR NAME="title" escape="html" --></a><br />
+Barcode: <!-- TMPL_VAR NAME="barcode" --><br />
+Date due: <!-- TMPL_VAR NAME="date_due" --><br /></p>
     <!-- /TMPL_IF -->
     <!-- /TMPL_LOOP -->
-</table>
+
+<!-- /TMPL_IF -->
+
+<!-- TMPL_IF name="quickslip" -->
+<!-- TMPL_ELSE -->
+<!-- TMPL_IF name="overdues_exist" -->
+<h4>Overdues</h4>
+    <!-- TMPL_LOOP name="issueloop" -->
+    <!-- TMPL_IF name="red" -->
+<p><a href="/cgi-bin/koha/catalogue/detail.pl?item=<!-- TMPL_VAR NAME="itemnumber" -->&amp;biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->&amp;bi=<!-- TMPL_VAR NAME="biblioitemnumber" -->"><!-- TMPL_VAR NAME="title" escape="html" --></a><br />
+Barcode: <!-- TMPL_VAR NAME="barcode" --><br />
+Date due: <!-- TMPL_VAR NAME="date_due" --></p>
+<!-- /TMPL_IF -->
+<!-- /TMPL_LOOP -->
+<!-- /TMPL_IF -->
 <!-- /TMPL_IF -->
 
 <!-- TMPL_INCLUDE NAME="intranet-bottom.inc" -->

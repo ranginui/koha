@@ -17,6 +17,7 @@ use C4::Members;
 use C4::Biblio;
 use C4::Items;
 use C4::Serials;
+use URI::Escape;
 
 my $query = new CGI;
 my $subscriptionid = $query->param('subscriptionid');
@@ -70,7 +71,7 @@ if($ok){
 	if($routinglist[$i]->{'borrowernumber'} == $data->{'borrowernumber'}){
 	    ModReserve($routinglist[$i]->{'ranking'},$biblio,$routinglist[$i]->{'borrowernumber'},$branch);
         } else {
-        AddReserve($branch,$routinglist[$i]->{'borrowernumber'},$biblio,$const,\@bibitems,$routinglist[$i]->{'ranking'},$notes,$title);
+        AddReserve($branch,$routinglist[$i]->{'borrowernumber'},$biblio,$const,\@bibitems,$routinglist[$i]->{'ranking'},'',$notes,$title);
 	}
     }
     
@@ -100,7 +101,7 @@ my @results;
 my $data;
 for(my $i=0;$i<$routing;$i++){
     $data=GetMember($routinglist[$i]->{'borrowernumber'},'borrowernumber');
-    $data->{'location'}=$data->{'streetaddress'};
+    $data->{'location'}=$data->{'branchcode'};
     $data->{'name'}="$data->{'firstname'} $data->{'surname'}";
     $data->{'routingid'}=$routinglist[$i]->{'routingid'};
     $data->{'subscriptionid'}=$subscriptionid;
@@ -113,6 +114,7 @@ $routingnotes =~ s/\n/\<br \/\>/g;
 $template->param(
     title => $subs->{'bibliotitle'},
     issue => $issue,
+    issue_escaped => URI::Escape::uri_escape($issue),
     subscriptionid => $subscriptionid,
     memberloop => \@results,    
     routingnotes => $routingnotes,

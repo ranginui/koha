@@ -22,6 +22,7 @@ use strict;
 use C4::Context;
 use C4::Output;
 use URI::Split qw(uri_split);
+use Memoize;
 
 use vars qw($VERSION @ISA @EXPORT $DEBUG);
 
@@ -52,12 +53,18 @@ BEGIN {
 		&GetAuthorisedValueCategories
 		&GetKohaAuthorisedValues
 		&GetAuthValCode
-		&GetManagedTagSubfields
+		&GetNormalizedUPC
+		&GetNormalizedISBN
+		&GetNormalizedEAN
+		&GetNormalizedOCLCNumber
 
 		$DEBUG
 	);
 	$DEBUG = 0;
 }
+
+# expensive functions
+memoize('GetAuthorisedValues');
 
 =head1 NAME
 
@@ -243,7 +250,7 @@ build a HTML select with the following code :
 
 sub GetItemTypes {
 
-    # returns a reference to a hash of references to branches...
+    # returns a reference to a hash of references to itemtypes...
     my %itemtypes;
     my $dbh   = C4::Context->dbh;
     my $query = qq|
@@ -1065,49 +1072,6 @@ sub GetKohaAuthorisedValues {
   }
 }
 
-=head2 GetManagedTagSubfields
-
-=over 4
-
-$res = GetManagedTagSubfields();
-
-=back
-
-Returns a reference to a big hash of hash, with the Marc structure fro the given frameworkcode
-
-NOTE: This function is used only by the (incomplete) bulk editing feature.  Since
-that feature currently does not deal with items and biblioitems changes 
-correctly, those tags are specifically excluded from the list prepared
-by this function.
-
-For future reference, if a bulk item editing feature is implemented at some point, it
-needs some design thought -- for example, circulation status fields should not 
-be changed willy-nilly.
-
-=cut
-
-sub GetManagedTagSubfields{
-  my $dbh=C4::Context->dbh;
-  my $rq=$dbh->prepare(qq|
-SELECT 
-  DISTINCT CONCAT( marc_subfield_structure.tagfield, tagsubfield ) AS tagsubfield, 
-  marc_subfield_structure.liblibrarian as subfielddesc, 
-  marc_tag_structure.liblibrarian as tagdesc
-FROM marc_subfield_structure
-  LEFT JOIN marc_tag_structure 
-    ON marc_tag_structure.tagfield = marc_subfield_structure.tagfield
-    AND marc_tag_structure.frameworkcode = marc_subfield_structure.frameworkcode
-WHERE marc_subfield_structure.tab>=0
-AND marc_tag_structure.tagfield NOT IN (SELECT tagfield FROM marc_subfield_structure WHERE kohafield like 'items.%')
-AND marc_tag_structure.tagfield NOT IN (SELECT tagfield FROM marc_subfield_structure WHERE kohafield = 'biblioitems.itemtype')
-AND marc_subfield_structure.kohafield <> 'biblio.biblionumber'
-AND marc_subfield_structure.kohafield <>  'biblioitems.biblioitemnumber'
-ORDER BY marc_subfield_structure.tagfield, tagsubfield|);
-  $rq->execute;
-  my $data=$rq->fetchall_arrayref({});
-  return $data;
-}
-
 =head2 display_marc_indicators
 
 =over 4
@@ -1130,6 +1094,133 @@ sub display_marc_indicators {
         $indicators =~ s/ /#/g;
     }
     return $indicators;
+}
+
+sub GetNormalizedUPC {
+ my ($record,$marcflavour) = @_;
+    my (@fields,$upc);
+
+    if ($marcflavour eq 'MARC21') {
+        @fields = $record->field('024');
+        foreach my $field (@fields) {
+            my $indicator = $field->indicator(1);
+            my $upc = _normalize_match_point($field->subfield('a'));
+            if ($indicator == 1 and $upc ne '') {
+                return $upc;
+            }
+        }
+    }
+    else { # assume unimarc if not marc21
+        @fields = $record->field('072');
+        foreach my $field (@fields) {
+            my $upc = _normalize_match_point($field->subfield('a'));
+            if ($upc ne '') {
+                return $upc;
+            }
+        }
+    }
+}
+
+# Normalizes and returns the first valid ISBN found in the record
+sub GetNormalizedISBN {
+    my ($isbn,$record,$marcflavour) = @_;
+    my @fields;
+    if ($isbn) {
+        return _isbn_cleanup($isbn);
+    }
+    return undef unless $record;
+
+    if ($marcflavour eq 'MARC21') {
+        @fields = $record->field('020');
+        foreach my $field (@fields) {
+            $isbn = $field->subfield('a');
+            if ($isbn) {
+                return _isbn_cleanup($isbn);
+            } else {
+                return undef;
+            }
+        }
+    }
+    else { # assume unimarc if not marc21
+        @fields = $record->field('010');
+        foreach my $field (@fields) {
+            my $isbn = $field->subfield('a');
+            if ($isbn) {
+                return _isbn_cleanup($isbn);
+            } else {
+                return undef;
+            }
+        }
+    }
+
+}
+
+sub GetNormalizedEAN {
+    my ($record,$marcflavour) = @_;
+    my (@fields,$ean);
+
+    if ($marcflavour eq 'MARC21') {
+        @fields = $record->field('024');
+        foreach my $field (@fields) {
+            my $indicator = $field->indicator(1);
+            $ean = _normalize_match_point($field->subfield('a'));
+            if ($indicator == 3 and $ean ne '') {
+                return $ean;
+            }
+        }
+    }
+    else { # assume unimarc if not marc21
+        @fields = $record->field('073');
+        foreach my $field (@fields) {
+            $ean = _normalize_match_point($field->subfield('a'));
+            if ($ean ne '') {
+                return $ean;
+            }
+        }
+    }
+}
+sub GetNormalizedOCLCNumber {
+    my ($record,$marcflavour) = @_;
+    my (@fields,$oclc);
+
+    if ($marcflavour eq 'MARC21') {
+        @fields = $record->field('035');
+        foreach my $field (@fields) {
+            $oclc = $field->subfield('a');
+            if ($oclc =~ /OCoLC/) {
+                $oclc =~ s/\(OCoLC\)//;
+                return $oclc;
+            } else {
+                return undef;
+            }
+        }
+    }
+    else { # TODO: add UNIMARC fields
+    }
+}
+
+sub _normalize_match_point {
+    my $match_point = shift;
+    (my $normalized_match_point) = $match_point =~ /([\d-]*[X]*)/;
+    $normalized_match_point =~ s/-//g;
+
+    return $normalized_match_point;
+}
+
+sub _isbn_cleanup ($) {
+    my $normalized_isbn = shift;
+    $normalized_isbn =~ s/-//g;
+    $normalized_isbn =~/([0-9x]{1,})/i;
+    $normalized_isbn = $1;
+    if (
+        $normalized_isbn =~ /\b(\d{13})\b/ or
+        $normalized_isbn =~ /\b(\d{12})\b/i or
+        $normalized_isbn =~ /\b(\d{10})\b/ or
+        $normalized_isbn =~ /\b(\d{9}X)\b/i
+    ) { 
+        return $1;
+    }
+    return undef;
 }
 
 1;

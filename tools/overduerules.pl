@@ -43,6 +43,11 @@ sub blank_row {
     for my $rp (@rule_params) {
         for my $n (1 .. 3) {
             my $key   = "${rp}${n}-$category_code";
+            
+            if (utf8::is_utf8($key)) {
+              utf8::encode($key);
+            }
+            
             my $value = $input->param($key);
             if ($value) {
                 return 0;
@@ -182,17 +187,10 @@ my $letters = GetLetters("circulation");
 my $countletters = scalar $letters;
 
 my @line_loop;
-my $toggle = 1;
 
 for my $data (@categories) {
-    if ( $toggle eq 1 ) {
-        $toggle = 0;
-    } else {
-        $toggle = 1;
-    }
     my %row = (
         overduename => $data->{'categorycode'},
-        toggle      => $toggle,
         line        => $data->{'description'}
     );
     if (%temphash and not $input_saved){

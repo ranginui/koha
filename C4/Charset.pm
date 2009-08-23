@@ -18,6 +18,8 @@ package C4::Charset;
 # Suite 330, Boston, MA  02111-1307 USA
 
 use strict;
+use warnings;
+
 use MARC::Charset qw/marc8_to_utf8/;
 use Text::Iconv;
 
@@ -25,7 +27,7 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
 BEGIN {
     # set the version for version checking
-    $VERSION = 3.00;
+    $VERSION = 3.01;
     require Exporter;
     @ISA    = qw(Exporter);
     @EXPORT = qw(
@@ -153,7 +155,23 @@ sub MarcToUTF8Record {
         $marc =~ s/^\s+//;
         $marc =~ s/\s+$//;
         $marc_blob_is_utf8 = IsStringUTF8ish($marc);
-        $marc_record = MARC::Record->new_from_usmarc($marc);
+        eval {
+            $marc_record = MARC::Record->new_from_usmarc($marc);
+        };
+        if ($@) {
+            # if we fail the first time, one likely problem
+            # is that we have a MARC21 record that says that it's
+            # UTF-8 (Leader/09 = 'a') but contains non-UTF-8 characters.
+            # We'll try parsing it again.
+            substr($marc, 9, 1) = ' ';
+            eval {
+                $marc_record = MARC::Record->new_from_usmarc($marc);
+            };
+            if ($@) {
+                # it's hopeless; return an empty MARC::Record
+                return MARC::Record->new(), 'failed', ['could not parse MARC blob'];
+            }
+        }
     }
 
     # If we do not know the source encoding, try some guesses
@@ -228,7 +246,7 @@ any actual character conversion.
 
 sub SetMarcUnicodeFlag {
     my $marc_record = shift;
-    my $marc_flavour = shift;
+    my $marc_flavour = shift; # || C4::Context->preference("marcflavour");
 
     $marc_record->encoding('UTF-8');
     if ($marc_flavour eq 'MARC21') {
@@ -238,9 +256,17 @@ sub SetMarcUnicodeFlag {
     } elsif ($marc_flavour eq "UNIMARC") {
         if (my $field = $marc_record->field('100')) {
             my $sfa = $field->subfield('a');
-            substr($sfa, 26, 4) = '5050';
+            
+            my $subflength = 36;
+            # fix the length of the field
+            $sfa = substr $sfa, 0, $subflength if (length($sfa) > $subflength);
+            $sfa = sprintf( "%-*s", 35, $sfa ) if (length($sfa) < $subflength);
+            
+            substr($sfa, 26, 4) = '50  ';
             $field->update('a' => $sfa);
         }
+    } else {
+        warn "Unrecognized marcflavour: $marc_flavour";
     }
 }
 

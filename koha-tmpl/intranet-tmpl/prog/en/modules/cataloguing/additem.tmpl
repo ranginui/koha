@@ -23,6 +23,7 @@ function active(numlayer)
     }
 }
 function Check(f) {
+
     var total_errors=0;
 //	alert(f.field_value.length);
     for (i=0 ; i<f.field_value.length ; i++) {
@@ -45,9 +46,16 @@ function Check(f) {
         return false;
     }
 }
+function CheckMultipleAdd(f) {
+
+    if (!f || isNaN(f) || !parseInt(f) == f || f <= 0) { 
+	alert(_("Please enter a number of items to create.")); 
+	return false;	
+    }
+}
 function Dopop(link,i) {
     defaultvalue=document.forms[0].field_value[i].value;
-    newin=window.open(link+"&result="+defaultvalue,"value builder",'width=500,height=400,toolbar=false,scrollbars=yes');
+    newin=window.open(link+"&result="+defaultvalue,"valuebuilder",'width=500,height=400,toolbar=false,scrollbars=yes');
 }
 
 function confirm_deletion(biblionumber,itemnumber) {
@@ -133,24 +141,31 @@ function CreateKey(){
     return parseInt(Math.random() * 100000);
 }
 
-	 $(document).ready(function() {
+$(document).ready(function() {
     $("#cataloguing_additem_itemlist  tr").hover(
-      function () {
-        $(this).attr("class","highlight");
-      }, 
-      function () {
-        $(this).attr("class","");
-      }
+        function () {$(this).attr("class","highlight");},
+        function () {$(this).attr("class",""         );}
     );
-	 });
+});
 
+function set_to_today(id, force) {
+    if (! id) { alert("Bad id " + id + " sent to set_to_today()"); return 0; }
+    if ($("#" + id).val() == '' || $("#" + id).val() == '0000-00-00' || force) {
+        $("#" + id).val("<!-- TMPL_VAR NAME="today_iso" -->");
+    }
+}
 //]]>
 </script>
 <link type="text/css" rel="stylesheet" href="<!-- TMPL_VAR NAME="themelang" -->/css/addbiblio.css" />
 </head>
 <body>
 <!-- TMPL_INCLUDE NAME="header.inc" -->
-<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/cataloguing/addbooks.pl">Cataloging</a> &rsaquo; <a href="/cgi-bin/koha/cataloguing/addbiblio.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->">Edit <!-- TMPL_VAR name="title" escape="html" --> <!-- TMPL_IF NAME="author" --> by <!-- TMPL_VAR name="author" --><!-- /TMPL_IF --> (Record #<!-- TMPL_VAR NAME="biblionumber" -->)</a>  &rsaquo; Items</div>
+<div id="breadcrumbs">
+          <a href="/cgi-bin/koha/mainpage.pl">Home</a>
+ &rsaquo; <a href="/cgi-bin/koha/cataloguing/addbooks.pl">Cataloging</a>
+ &rsaquo; Edit <a href="/cgi-bin/koha/cataloguing/addbiblio.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->"><!-- TMPL_VAR name="title" escape="html" --> <!-- TMPL_IF NAME="author" --> by <!-- TMPL_VAR name="author" --><!-- /TMPL_IF --> (Record #<!-- TMPL_VAR NAME="biblionumber" -->)</a>
+ &rsaquo; <a href="/cgi-bin/koha/cataloguing/additem.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->">Items</a>
+</div>
 
 <div id="doc3" class="yui-t2">
    
@@ -162,6 +177,7 @@ function CreateKey(){
 <h1>Items for <!-- TMPL_VAR name="title" escape="html" --> <!-- TMPL_IF NAME="author" --> by <!-- TMPL_VAR name="author" --><!-- /TMPL_IF --> (Record #<!-- TMPL_VAR NAME="biblionumber" -->)</h1>
 
 <!-- TMPL_IF NAME="barcode_not_unique" --><div class="dialog alert"><strong>Error saving item</strong>: Barcode must be unique.</div><!-- /TMPL_IF -->
+<!-- TMPL_IF NAME="no_next_barcode" --><div class="dialog alert"><strong>Error saving items</strong>: Unable to automatically determine values for barcodes. No item has been inserted.</div><!-- /TMPL_IF -->
 <!-- TMPL_IF NAME="book_on_loan" --><div class="dialog alert"><strong>Cannot Delete</strong>: item is checked out.</div><!-- /TMPL_IF -->
 <!-- TMPL_IF NAME="book_reserved" --><div class="dialogalert"><strong>Cannot Delete</strong>: item has a waiting hold.</div><!-- /TMPL_IF -->
 
@@ -181,7 +197,9 @@ function CreateKey(){
                 <tr id="row<!-- TMPL_VAR NAME="itemnumber" -->">
                     <!-- TMPL_IF Name="nomod"--> <td colspan="2">&nbsp;</td><!--TMPL_ELSE--><td><a href="additem.pl?op=edititem&amp;biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->&amp;itemnumber=<!-- TMPL_VAR NAME="itemnumber" -->">Edit</a></td>
                     <td><a class="delete" href="/cgi-bin/koha/cataloguing/additem.pl?op=delitem&amp;biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->&amp;itemnumber=<!-- TMPL_VAR NAME="itemnumber" -->" onclick="confirm_deletion(<!-- TMPL_VAR NAME="biblionumber" -->,<!-- TMPL_VAR NAME="itemnumber" -->); return false;">Delete</a></td><!--/TMPL_IF-->
-                    <!-- TMPL_VAR NAME="item_value" -->
+                <!-- TMPL_LOOP NAME="item_value" -->
+                    <td><!-- TMPL_VAR ESCAPE=HTML NAME="field" --></td>
+                <!-- /TMPL_LOOP -->
                 </tr>
                 <!-- /TMPL_LOOP -->
         </table>
@@ -196,7 +214,7 @@ function CreateKey(){
     <!-- TMPL_IF name="opisadd" -->
         <h2 id="additema">Add Item</h2>
     <!-- TMPL_ELSE -->
-        <h2>Edit Item</h2>
+        <h2>Edit Item #<!-- TMPL_VAR NAME="itemnumber" --></h2>
     <!-- /TMPL_IF -->	
 	<fieldset class="rows">
 	<ol>
@@ -205,23 +223,36 @@ function CreateKey(){
    
                <label><!-- TMPL_VAR NAME="subfield" --> - <!-- TMPL_IF name="mandatory" --><b><!-- /TMPL_IF --><!-- TMPL_VAR NAME="marc_lib" --><!-- TMPL_IF name="mandatory" --> *</b><!-- /TMPL_IF --></label>
                 <!-- TMPL_VAR NAME="marc_value" -->
-                <input type="hidden" name="tag" value="<!-- TMPL_VAR NAME="tag" -->" />
-                <input type="hidden" name="subfield" value="<!-- TMPL_VAR NAME="subfield" -->" />
+                <input type="hidden" name="tag"       value="<!-- TMPL_VAR NAME="tag" -->" />
+                <input type="hidden" name="subfield"  value="<!-- TMPL_VAR NAME="subfield" -->" />
                 <input type="hidden" name="mandatory" value="<!-- TMPL_VAR NAME="mandatory" -->" />
                 <!-- TMPL_IF NAME="repeatable" -->
                     <span class="buttonPlus" onclick="CloneSubfield('subfield<!-- TMPL_VAR NAME='tag' --><!-- TMPL_VAR NAME='subfield' --><!-- TMPL_VAR name="random" -->')">+</span>
                 <!-- /TMPL_IF -->
    
             </div></li>
-        <!-- /tmpl_loop -->
-		</ol>
-		</fieldset>
+        <!-- /TMPL_LOOP -->
+    </ol>
+    </fieldset>
     <input type="hidden" name="indicator" value=" " />
     <input type="hidden" name="indicator" value=" " />
     <input type="hidden" name="itemnumber" value="<!-- TMPL_VAR NAME="itemnumber" -->" />
 
 <fieldset class="action">    <!-- TMPL_IF name="opisadd" -->
-    <input type="submit" value="Add item" onclick="return Check(this.form)" />
+    <input type="submit" name="phony_submit" value="phony_submit" id="phony_submit" style="display:none;" onclick="return false;" />
+    <!-- Note : We use here a false submit button because we have several submit buttons and we don't want the user to believe he validated the adding of multiple copies 
+		when pressing the enter key, while in fact it is the first submit button that is validated, in our case the "add (single) item" button. 
+		It is a bit tricky, but necessary in the sake of UI correctness. 
+    -->
+
+    <input type="submit" name="add_submit" value="Add item" onclick="return Check(this.form)" />
+    <input type="submit" name="add_duplicate_submit" value="Add &amp; Duplicate" onclick="return Check(this.form)" />
+    <input type="submit" name="add_multiple_copies" value="Add Multiple Copies" onclick="javascript:this.nextSibling.style.visibility='visible';document.f.number_of_copies.focus(); return false;" /><span id="add_multiple_copies_span" style="visibility:hidden">
+	<label for="number_of_copies">Number of copies to add : </label>
+	<input type="text" id="number_of_copies" name="number_of_copies" value="" size="2" />
+	<input type="submit" id="add_multiple_copies_submit" name="add_multiple_copies_submit" value="Add" onclick="javascript:return Check(this.form) &amp;&amp; CheckMultipleAdd(this.form.number_of_copies.value);" />
+    </span>
+
     <!-- TMPL_ELSE -->
     <input type="hidden" name="tag" value="<!-- TMPL_VAR NAME="itemtagfield" -->" />
     <input type="hidden" name="subfield" value="<!-- TMPL_VAR NAME="itemtagsubfield" -->" />

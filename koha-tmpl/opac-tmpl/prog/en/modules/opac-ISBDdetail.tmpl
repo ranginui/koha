@@ -7,6 +7,14 @@
 	}); 
 //]]>
 </script>
+<!-- TMPL_IF NAME="XSLTDetailsDisplay" --><script type="text/javascript">
+    var GB_ROOT_DIR = "/intranet-tmpl/prog/en/lib/greybox/";
+</script>
+<script type="text/javascript" src="/intranet-tmpl/prog/en/lib/greybox/AJS.js"></script>
+<script type="text/javascript" src="/intranet-tmpl/prog/en/lib/greybox/AJS_fx.js"></script>
+<script type="text/javascript" src="/intranet-tmpl/prog/en/lib/greybox/gb_scripts.js"></script>
+<link href="/intranet-tmpl/prog/en/lib/greybox/gb_styles.css" rel="stylesheet" type="text/css" />
+<!-- /TMPL_IF -->
 </head>
 <body>
 <!-- TMPL_IF NAME="OpacNav" --><div id="doc3" class="yui-t1"><!-- TMPL_ELSE --><div id="doc3" class="yui-t7"><!-- /TMPL_IF -->
@@ -21,7 +29,12 @@
 	
 	
      <h1 style="float:left;margin:0 1em 1em 0;">ISBD</h1> <div id="views">
-	 <span class="view"><a id="Normalview" href="/cgi-bin/koha/opac-detail.pl?biblionumber=<!-- TMPL_VAR name="biblionumber" -->">Normal View</a></span> <span class="view"><a id="MARCview" href="/cgi-bin/koha/opac-MARCdetail.pl?biblionumber=<!-- TMPL_VAR name="biblionumber" -->">MARC View</a></span> <span class="view"><span id="ISBDview">ISBD View</span></span>
+	 <span class="view"><a id="Normalview" href="/cgi-bin/koha/opac-detail.pl?biblionumber=<!-- TMPL_VAR name="biblionumber" -->">Normal View</a></span> <!-- TMPL_IF NAME="XSLTDetailsDisplay" -->
+<span class="view"><a id="MARCviewPop" href="/cgi-bin/koha/opac-showmarc.pl?id=<!-- TMPL_VAR NAME="biblionumber" -->" title="MARC" rel="gb_page_center[600,500]">MARC View</a></span>
+       <span class="view"><a id="MARCview" href="/cgi-bin/koha/opac-MARCdetail.pl?biblionumber=<!-- TMPL_VAR name="biblionumber" -->">Expanded MARC View</a></span>
+<!-- TMPL_ELSE -->
+<span class="view"><a id="MARCview" href="/cgi-bin/koha/opac-MARCdetail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->">MARC View</a></span>
+<!-- /TMPL_IF --> <span class="view"><span id="ISBDview">ISBD View</span></span>
 </div>
     <div id="isbdcontents"><!-- TMPL_VAR name="ISBD" --></div>
 	
@@ -31,7 +44,7 @@
 	            <a href="/cgi-bin/koha/opac-ISBDdetail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->#opac-isbd-subscriptions">Subscriptions</a>
 	    </li><!-- /TMPL_IF -->
 	<!-- TMPL_IF NAME="reviewson" --><li><a href="/cgi-bin/koha/opac-ISBDdetail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->#comments">Comments</a></li><!-- /TMPL_IF -->
-	 	<!-- TMPL_IF NAME="AmazonContent" --><li><a href="/cgi-bin/koha/opac-ISBDdetail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->#opac-isbd-amazonreviews">Amazon Reviews</a></li><!-- /TMPL_IF -->
+	 	<!-- TMPL_IF NAME="OPACAmazonEnabled" --><li><a href="/cgi-bin/koha/opac-ISBDdetail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->#opac-isbd-amazonreviews">Amazon Reviews</a></li><!-- /TMPL_IF -->
 	</ul>
 
 		<div id="opac-isbd-subscriptions">    <!-- TMPL_IF name="subscriptionsnumber" -->
@@ -40,7 +53,7 @@
 	        </h2>
 	        <!-- TMPL_LOOP Name="subscriptions" -->
 	            <h3>At library: <!-- TMPL_VAR name="branchcode" --> <!-- TMPL_VAR name="notes" --></h3>
-	            <p>Below is a list of the three latest issues :</p>
+	            <p>Below is a list of the <!-- TMPL_VAR NAME="opacdisplaycount" --> latest issues :</p>
 	            <!-- TMPL_IF name="subscriptionnotes"-->
 	                <p><!--TMPL_VAR Name="subscriptionnotes"--> </p>
 	            <!-- /TMPL_IF -->
@@ -108,13 +121,13 @@
 
 	<!-- /TMPL_IF -->
 
-	<!-- TMPL_IF NAME="AmazonContent" -->
+	<!-- TMPL_IF NAME="OPACAmazonEnabled" -->
 	<!-- Amazon Reviews -->
 	<div id="opac-isbd-amazonreviews">
 
 	    <!-- TMPL_LOOP NAME="BIBLIO_RESULTS" -->
-	    <!-- TMPL_IF NAME="isbn" -->
-	        <h4><a href="http://www.amazon.com/gp/customer-reviews/write-a-review.html/002-2970817-7876066?%5Fencoding=UTF8&asin=<!-- TMPL_VAR NAME="isbn" -->&amp;store=books">Add your own review</a></h4>
+	    <!-- TMPL_IF NAME="normalized_isbn" -->
+	        <h4><a href="http://www.amazon.com/gp/customer-reviews/write-a-review.html/002-2970817-7876066?%5Fencoding=UTF8&asin=<!-- TMPL_VAR NAME="normalized_isbn" -->&amp;store=books">Add your own review</a></h4>
 	    <!-- /TMPL_IF -->
 	    <!-- /TMPL_LOOP --><br/>
 
@@ -148,11 +161,18 @@
 
 <!-- TMPL_UNLESS NAME="norequests" -->
     <!-- TMPL_UNLESS name="bi_notforloan" -->
-        <!-- TMPL_IF NAME="opacuserlogin" --><!-- TMPL_IF NAME="RequestOnOpac" -->
-            <li><a class="reserve" href="/cgi-bin/koha/opac-reserve.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->">
-            Place Hold
-            </a></li>
-        <!-- /TMPL_IF --><!-- /TMPL_IF -->
+        <!-- TMPL_IF NAME="opacuserlogin" -->
+		<!-- TMPL_IF NAME="RequestOnOpac" -->
+			<!-- TMPL_IF NAME="AllowOnShelfHolds" -->
+				<li><a class="reserve" href="/cgi-bin/koha/opac-reserve.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->">Place Hold</a></li>
+			<!-- TMPL_ELSE -->
+				<!-- TMPL_IF NAME="ItemsIssued" -->
+					<li><a class="reserve" href="/cgi-bin/koha/opac-reserve.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->">Place Hold</a></li>
+				<!-- /TMPL_IF -->
+			<!-- /TMPL_IF -->
+
+        	<!-- /TMPL_IF -->
+	<!-- /TMPL_IF -->
     <!-- /TMPL_UNLESS -->
 <!-- /TMPL_UNLESS -->
         <li><a class="print" href="/cgi-bin/koha/opac-detailprint.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->" onclick="Dopop('opac-detailprint.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->'); return false;">

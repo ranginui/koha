@@ -6,7 +6,7 @@
 <!-- /TMPL_IF --></title>
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
 <script type="text/javascript" src="<!-- TMPL_VAR name="themelang" -->/lib/jquery/plugins/jquery.tablesorter.min.js"></script>
-<script type="text/javascript" src="<!-- TMPL_VAR name="themelang" -->/lib/jquery/plugins/jquery.checkboxes.pack.js"></script>
+<script type="text/javascript" src="<!-- TMPL_VAR name="themelang" -->/lib/jquery/plugins/jquery.checkboxes.min.js"></script>
 <script type="text/JavaScript" language="JavaScript">
 //<![CDATA[
 $.tablesorter.addParser({
@@ -15,12 +15,13 @@ $.tablesorter.addParser({
     format: function(s) { return s.toLowerCase().replace(/^(the|an|a) /,''); },
     type: 'text'
 });
+<!-- TMPL_UNLESS NAME="borrowernumber" --><!-- TMPL_UNLESS NAME="CGIselectborrower" -->window.onload=function(){ $('#findborrower').focus(); };<!-- /TMPL_UNLESS --><!-- /TMPL_UNLESS -->
 	 $(document).ready(function() {
  		$('#patronlists > ul').tabs();
 		$.tablesorter.defaults.widgets = ['zebra'];
 		$("#issuest").tablesorter({<!-- TMPL_IF EXPR="dateformat eq 'metric'" -->
 		dateFormat: 'uk',<!-- /TMPL_IF -->
-		headers: { 1: { sorter: 'articles' },4:{sorter:false},5: { sorter: false },6:{sorter:false}}
+		headers: { 1: { sorter: 'articles' },5: { sorter: false },6:{sorter:false}}
 		});
 		$("#issuest").bind("sortEnd",function() {
         	$("#previous").parents("tr").remove();  // 'previous checkouts' header chokes table sorter
@@ -87,7 +88,7 @@ $.tablesorter.addParser({
 
 <ul>
 <!-- TMPL_IF NAME="DEBT" -->
-    <li>The patron has a debt of $<!-- TMPL_VAR name="DEBT" --></li>
+    <li>The patron has a debt of <!-- TMPL_VAR name="DEBT" --></li>
 <!-- /TMPL_IF -->
 
 <!-- TMPL_IF NAME="RENEW_ISSUE" -->
@@ -108,6 +109,14 @@ $.tablesorter.addParser({
 
 <!-- TMPL_IF NAME="TOO_MANY" -->
     <li>Too many checked out (already checked out / max : <!-- TMPL_VAR name="TOO_MANY" -->)</li>
+<!-- /TMPL_IF -->
+
+<!-- TMPL_IF NAME="PATRON_CANT" -->
+    <li>This patron can't check out this item per library circulation policy</i>
+<!-- /TMPL_IF -->
+
+<!-- TMPL_IF NAME="NOT_FOR_LOAN_FORCING" -->
+    <li>Item is normally not for loan.  Check out anyway?</li>
 <!-- /TMPL_IF -->
 </ul>
 
@@ -139,6 +148,8 @@ $.tablesorter.addParser({
 
 <form method="get" action="/cgi-bin/koha/circ/circulation.pl">
     <input type="hidden" name="borrowernumber" value="<!-- TMPL_VAR NAME="borrowernumber" -->" />
+    <input type="hidden" name="duedatespec" value="<!-- TMPL_VAR NAME="duedatespec" -->" />
+    <input type="hidden" name="stickyduedate" value="<!-- TMPL_VAR NAME="stickyduedate" -->" />
     <input type="submit" class="deny" value="No, Don't Check Out (N)" accesskey="n" />
 </form>
 
@@ -227,6 +238,8 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
 
     <input type="hidden" name="branch" value="<!-- TMPL_VAR NAME="branch" -->" />
     <input type="hidden" name="printer" value="<!-- TMPL_VAR NAME="printer" -->" />
+    <input type="hidden" name="duedatespec" value="<!-- TMPL_VAR NAME="duedatespec" -->" />
+    <input type="hidden" name="stickyduedate" value="<!-- TMPL_VAR NAME="stickyduedate" -->" />
 
 <ol>    <li>
     <label for="borrowernumber">Select a patron: </label>
@@ -269,7 +282,7 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
                           }
                      };
                      function refocus(calendar) {
-                        document.getElementById('barcode').focus();
+                        $('#barcode').focus();
                         calendar.hide();
                      };
 				//#TODO - ADD syspref (AllowPostDatedCheckouts).
@@ -360,7 +373,7 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
                 <!-- TMPL_ELSE -->
 			        <li>
                 <!-- /TMPL_IF -->
-            <span class="circ-hlt">Fines:</span> Patron has  <a href="/cgi-bin/koha/members/boraccount.pl?borrowernumber=<!-- TMPL_VAR name="borrowernumber" -->">Outstanding fines<!-- TMPL_IF NAME="chargesamount" --> of $<!-- TMPL_VAR NAME="chargesamount" --><!-- /TMPL_IF --></a>.
+            <span class="circ-hlt">Fines:</span> Patron has  <a href="/cgi-bin/koha/members/boraccount.pl?borrowernumber=<!-- TMPL_VAR name="borrowernumber" -->">Outstanding fines<!-- TMPL_IF NAME="chargesamount" --> of <!-- TMPL_VAR NAME="chargesamount" --><!-- /TMPL_IF --></a>.
                 <!-- TMPL_IF NAME="charges_is_blocker" -->
                     Checkouts are blocked because fine balance is over the limit.
                 <!-- /TMPL_IF -->
@@ -480,7 +493,7 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
 			On Hold
 		<!-- /TMPL_IF -->
                 <!-- TMPL_IF NAME="renew_error_too_many" -->
-			Too Many Renewals
+			Not Renewable
                 <!-- /TMPL_IF -->
             <!-- TMPL_IF NAME="can_confirm" -->
                 </span>
@@ -541,7 +554,7 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
 			On Hold
 		<!-- /TMPL_IF -->
                 <!-- TMPL_IF NAME="renew_error_too_many" -->
-			Too Many Renewals
+			Not Renewable
                 <!-- /TMPL_IF -->
             <!-- TMPL_IF NAME="can_confirm" -->
                 </span>

@@ -202,7 +202,10 @@ sub create_input {
         }
         my $plugin = $cgidir . "/" . $tagslib->{$tag}->{$subfield}->{'value_builder'};
         do $plugin || die "Plugin Failed: ".$plugin;
-        my $extended_param = plugin_parameters( $dbh, $rec, $tagslib, $subfield_data{id}, $tabloop );
+        my $extended_param;
+        eval{
+            $extended_param = plugin_parameters( $dbh, $rec, $tagslib, $subfield_data{id}, $tabloop );
+        };
         my ( $function_name, $javascript ) = plugin_javascript( $dbh, $rec, $tagslib, $subfield_data{id}, $tabloop );
 #         my ( $function_name, $javascript,$extended_param );
         
@@ -431,7 +434,7 @@ sub build_tabs ($$$$$) {
                             fixedfield    => ($tag < 10)?(1):(0),
                             random        => CreateKey,
                         );
-                        if ($tag >= 010){ # no indicator for theses tag
+                        if ($tag >= 10){ # no indicator for theses tag
                             $tag_data{indicator1} = format_indicator($field->indicator(1)),
                             $tag_data{indicator2} = format_indicator($field->indicator(2)),
                         }

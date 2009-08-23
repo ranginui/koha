@@ -32,8 +32,9 @@ use C4::Branch;
 use C4::Reserves;
 use C4::Members;
 use C4::Serials;
-use C4::XISBN qw(get_xisbns get_biblionumber_from_isbn get_biblio_from_xisbn);
-use C4::Amazon;
+use C4::XISBN qw(get_xisbns get_biblionumber_from_isbn);
+use C4::External::Amazon;
+use C4::Search;		# enabled_staff_search_views
 
 # use Smart::Comments;
 
@@ -54,6 +55,21 @@ my $fw = GetFrameworkCode($biblionumber);
 ## get notes and subjects from MARC record
 my $marcflavour      = C4::Context->preference("marcflavour");
 my $record           = GetMarcBiblio($biblionumber);
+
+# some useful variables for enhanced content;
+# in each case, we're grabbing the first value we find in
+# the record and normalizing it
+my $upc = GetNormalizedUPC($record,$marcflavour);
+my $ean = GetNormalizedEAN($record,$marcflavour);
+my $oclc = GetNormalizedOCLCNumber($record,$marcflavour);
+my $isbn = GetNormalizedISBN(undef,$record,$marcflavour);
+
+$template->param(
+    normalized_upc => $upc,
+    normalized_ean => $ean,
+    normalized_oclc => $oclc,
+    normalized_isbn => $isbn,
+);
 
 unless (defined($record)) {
     print $query->redirect("/cgi-bin/koha/errors/404.pl");
@@ -83,13 +99,17 @@ my @subs;
 $dat->{'serial'}=1 if $subscriptionsnumber;
 foreach my $subscription (@subscriptions) {
     my %cell;
+	my $serials_to_display;
     $cell{subscriptionid}    = $subscription->{subscriptionid};
     $cell{subscriptionnotes} = $subscription->{notes};
 	$cell{branchcode}        = $subscription->{branchcode};
 	$cell{hasalert}          = $subscription->{hasalert};
     #get the three latest serials.
+	$serials_to_display = $subscription->{staffdisplaycount};
+	$serials_to_display = C4::Context->preference('StaffSerialIssueDisplayCount') unless $serials_to_display;
+	$cell{staffdisplaycount} = $serials_to_display;
     $cell{latestserials} =
-      GetLatestSerials( $subscription->{subscriptionid}, 3 );
+      GetLatestSerials( $subscription->{subscriptionid}, $serials_to_display );
     push @subs, \%cell;
 }
 
@@ -128,7 +148,7 @@ foreach my $item (@items) {
     $item->{'location'} = $shelflocations->{$shelfcode} if ( defined( $shelfcode ) && defined($shelflocations) && exists( $shelflocations->{$shelfcode} ) );
     my $ccode = $item->{'ccode'};
     $item->{'ccode'} = $collections->{$ccode} if ( defined( $ccode ) && defined($collections) && exists( $collections->{$ccode} ) );
-    foreach (qw(ccode enumchron copynumber)) {
+    foreach (qw(ccode enumchron copynumber uri)) {
         $itemfields{$_} = 1 if ( $item->{$_} );
     }
 
@@ -164,6 +184,19 @@ foreach my $item (@items) {
     push @itemloop, $item;
 }
 
+if ( C4::Context->preference("SortByLoggedInBranch")){
+    # Sort by homebranch of item, then by dateaccessioned
+    my $branchcode = C4::Context->userenv?C4::Context->userenv->{"branch"}:"insecure";
+    @itemloop = sort { branch_first($branchcode) || $a->{dateaccessioned} cmp $b->{dateaccessioned} } @itemloop;
+}
+
+sub branch_first {
+    my $branchcode = shift;
+    if ($a->{homebranch} eq $branchcode) { return -1; }
+    elsif ($b->{homebranch} eq $branchcode) { return 1; }
+    else { return $a->{homebranch} cmp $b->{homebranch} }	
+}
+
 $template->param( norequests => $norequests );
 $template->param(
 	MARCNOTES   => $marcnotesarray,
@@ -174,14 +207,20 @@ $template->param(
 	subtitle    => $subtitle,
 	itemdata_ccode      => $itemfields{ccode},
 	itemdata_enumchron  => $itemfields{enumchron},
+	itemdata_uri        => $itemfields{uri},
 	itemdata_copynumber => $itemfields{copynumber},
 	volinfo				=> $itemfields{enumchron} || $dat->{'serial'} ,
+	z3950_search_params	=> C4::Search::z3950_search_args($dat),
+	C4::Search::enabled_staff_search_views,
 );
 
 my @results = ( $dat, );
 foreach ( keys %{$dat} ) {
     $template->param( "$_" => defined $dat->{$_} ? $dat->{$_} : '' );
 }
+
+# does not work: my %views_enabled = map { $_ => 1 } $template->query(loop => 'EnableViews');
+# method query not found?!?!
 
 $template->param(
     itemloop        => \@itemloop,
@@ -195,39 +234,58 @@ $template->param(
 # $debug and $template->param(debug_display => 1);
 
 # XISBN Stuff
-my $xisbn=$dat->{'isbn'};
-$xisbn =~ /(\d*[X]*)/ if ( $xisbn );
-$template->param(amazonisbn => $1);		# FIXME: so it is OK if the ISBN = 'XXXXX' ?
 if (C4::Context->preference("FRBRizeEditions")==1) {
     eval {
         $template->param(
-            xisbn => $xisbn,
-            XISBNS => get_xisbns($xisbn)
+            XISBNS => get_xisbns($isbn)
         );
     };
     if ($@) { warn "XISBN Failed $@"; }
 }
-if ( C4::Context->preference("AmazonContent") == 1 ) {
-    my $similar_products_exist;
-    my $amazon_details = &get_amazon_details( $xisbn, $record, $marcflavour );
-    my $item_attributes = \%{$amazon_details->{Items}->{Item}->{ItemAttributes}};
-    my $customer_reviews = \@{$amazon_details->{Items}->{Item}->{CustomerReviews}->{Review}};
-    my @similar_products;
-    for my $similar_product (@{$amazon_details->{Items}->{Item}->{SimilarProducts}->{SimilarProduct}}) {
-        # do we have any of these isbns in our collection?
-        my $similar_biblionumbers = get_biblionumber_from_isbn($similar_product->{ASIN});
-        # verify that there is at least one similar item
-		if (scalar(@$similar_biblionumbers)){            
-			$similar_products_exist++ if ($similar_biblionumbers && $similar_biblionumbers->[0]);
-            push @similar_products, +{ similar_biblionumbers => $similar_biblionumbers, title => $similar_product->{Title}, ASIN => $similar_product->{ASIN}  };
-        }
+if ( C4::Context->preference("AmazonEnabled") == 1 ) {
+    $template->param( AmazonTld => get_amazon_tld() );
+    my $amazon_reviews  = C4::Context->preference("AmazonReviews");
+    my $amazon_similars = C4::Context->preference("AmazonSimilarItems");
+    my @services;
+    if ( $amazon_reviews ) {
+        $template->param( AmazonReviews => 1 );
+        push( @services, 'EditorialReview' );
     }
-    my $editorial_reviews = \@{$amazon_details->{Items}->{Item}->{EditorialReviews}->{EditorialReview}};
-    my $average_rating = $amazon_details->{Items}->{Item}->{CustomerReviews}->{AverageRating};
-    $template->param( AmazonSimilarItems => $similar_products_exist );
-    $template->param( amazon_average_rating => $average_rating * 20);
-    $template->param( AMAZON_CUSTOMER_REVIEWS    => $customer_reviews );
-    $template->param( AMAZON_SIMILAR_PRODUCTS => \@similar_products );
-    $template->param( AMAZON_EDITORIAL_REVIEWS    => $editorial_reviews );
+    if ( $amazon_similars ) {
+        $template->param( AmazonSimilarItems => 1 );
+        push( @services, 'Similarities' );
+    }
+    my $amazon_details = &get_amazon_details( $isbn, $record, $marcflavour, \@services );
+    if ( $amazon_similars ) {
+        my $similar_products_exist;
+        my @similar_products;
+        for my $similar_product (@{$amazon_details->{Items}->{Item}->[0]->{SimilarProducts}->{SimilarProduct}}) {
+            # do we have any of these isbns in our collection?
+            my $similar_biblionumbers = get_biblionumber_from_isbn($similar_product->{ASIN});
+            # verify that there is at least one similar item
+		    if (scalar(@$similar_biblionumbers)){            
+			    $similar_products_exist++ if ($similar_biblionumbers && $similar_biblionumbers->[0]);
+                push @similar_products, +{ similar_biblionumbers => $similar_biblionumbers, title => $similar_product->{Title}, ASIN => $similar_product->{ASIN}  };
+            }
+        }
+        $template->param( AmazonSimilarItems       => $similar_products_exist );
+        $template->param( AMAZON_SIMILAR_PRODUCTS  => \@similar_products      );
+    }
+    if ( $amazon_reviews ) {
+        my $item = $amazon_details->{Items}->{Item}->[0];
+        my $editorial_reviews = \@{ $item->{EditorialReviews}->{EditorialReview} };
+        #my $customer_reviews  = \@{$amazon_details->{Items}->{Item}->[0]->{CustomerReviews}->{Review}};
+        #my $average_rating = $amazon_details->{Items}->{Item}->[0]->{CustomerReviews}->{AverageRating} || 0;
+        #$template->param( amazon_average_rating    => $average_rating * 20    );
+        #$template->param( AMAZON_CUSTOMER_REVIEWS  => $customer_reviews       );
+        $template->param( AMAZON_EDITORIAL_REVIEWS => $editorial_reviews      );
+    }
 }
+
+# Get OPAC URL
+if (C4::Context->preference('OPACBaseURL')){
+     $template->param( OpacUrl => C4::Context->preference('OPACBaseURL') );
+}
+
 output_html_with_http_headers $query, $cookie, $template->output;
+
