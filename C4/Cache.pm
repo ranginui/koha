@@ -1,4 +1,4 @@
-package Koha::Cache;
+package C4::Cache;
 
 # Copyright 2009 Chris Cormack and The Koha Dev Team
 #
@@ -6,7 +6,7 @@ package Koha::Cache;
 #
 # Koha is free software; you can redistribute it and/or modify it under the
 # terms of the GNU General Public License as published by the Free Software
-# Foundation; either version 2 of the License, or (at your option) any later
+# Foundation; either version 3 of the License, or (at your option) any later
 # version.
 #
 # Koha is distributed in the hope that it will be useful, but WITHOUT ANY
@@ -19,11 +19,11 @@ package Koha::Cache;
 
 =head1 NAME
 
-    Koha::Cache - Handling caching of html and Objects for Koha
+    C4::Cache - Handling caching of html and Objects for Koha
 
 =head1 SYNOPSIS
 
-  use Koha::Cache (cache_type => $cache_type, %params );
+  use C4::Cache (cache_type => $cache_type, %params );
 
 
 =head1 DESCRIPTION
@@ -46,8 +46,8 @@ use Carp;
 
 use base qw(Class::Accessor);
 
-use Koha::Cache::Memcached;
-use Koha::Cache::FastMemcached;
+use C4::Cache::Memcached;
+use C4::Cache::FastMemcached;
 
 __PACKAGE__->mk_ro_accessors( qw( cache ) );
 
@@ -68,7 +68,7 @@ sub new {
 
 =head1 SEE ALSO
   
-  Koha::Cache::Memcached
+  C4::Cache::Memcached
 
 =head1 AUTHOR
 

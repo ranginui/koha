@@ -1,4 +1,4 @@
-package Koha::Cache::Memcached;
+package Koha::Cache::FastMemcached;
 
 # Copyright 2009 Chris Cormack and The Koha Dev Team                                                                                           
 #                                                                                                                                              
@@ -6,7 +6,7 @@ package Koha::Cache::Memcached;
 #                                                                                                                                              
 # Koha is free software; you can redistribute it and/or modify it under the                                                                    
 # terms of the GNU General Public License as published by the Free Software                                                                    
-# Foundation; either version 2 of the License, or (at your option) any later                                                                   
+# Foundation; either version 3 of the License, or (at your option) any later                                                                   
 # version.                                                                                                                                     
 #                                                                                                                                              
 # Koha is distributed in the hope that it will be useful, but WITHOUT ANY                                                                      
@@ -21,9 +21,12 @@ use strict;
 use warnings;
 use Carp;
 
-use Cache::Memcached;
+use Cache::Memcached::Fast;
+use IO::Compress::Gzip;
+use IO::Uncompress::Gunzip;
+use Storable;
 
-use base qw(Koha::Cache);
+use base qw(C4::Cache);
 
 sub _cache_handle {
     my $class  = shift;
@@ -31,9 +34,25 @@ sub _cache_handle {
 
     my @servers = split /,/, $params->{'cache_servers'};
 
-    return Cache::Memcached->new(
-        servers   => \@servers,
-        namespace => $params->{'namespace'} || 'KOHA',
+    return Cache::Memcached::Fast->new(
+        {
+            servers            => \@servers,
+            namespace          => $params->{'namespace'} || 'KOHA',
+            connect_timeout    => $params->{'connect_timeout'} || 2,
+            io_timeout         => $params->{'io_timeout'} || 2,
+            close_on_error     => 1,
+            compress_threshold => 100_000,
+            compress_ratio     => 0.9,
+            compress_methods =>
+              [ \&IO::Compress::Gzip::gzip, \&IO::Uncompress::Gunzip::gunzip ],
+            max_failures      => 3,
+            failure_timeout   => 2,
+            ketama_points     => 150,
+            nowait            => 1,
+            hash_namespace    => 1,
+            serialize_methods => [ \&Storable::freeze, \&Storable::thaw ],
+            utf8              => 1,
+        }
     );
 }
 
@@ -71,6 +90,6 @@ __END__
                                                                                   
 =head1 NAME                                                                     
                                                                                 
-  Koha::Cache::Memcached - memcached subclass of Koha::Cache                
+  C4::Cache::FastMemcached - memcached::fast subclass of C4::Cache                
                                                                                   
 =cut

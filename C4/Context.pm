@@ -79,16 +79,6 @@ BEGIN {
 		}
     }  	# else there is no browser to send fatals to!	
 $VERSION = '3.00.00.036';
-#    $usecache = C4::Context->preference("usecache");
-$usecache=1;
-    if ($usecache) {
-	require Koha::Cache;
-	Koha::Cache->import();
-	$cache = Koha::Cache->new ( {'cache_type' => 'FastMemcached',
-	                         'cache_servers' => '127.0.0.1:11211'
-				 }
-	);
-    }
 }
 
 use DBI;
@@ -346,7 +336,17 @@ sub new {
     $self->{"userenv"} = undef;        # User env
     $self->{"activeuser"} = undef;        # current active user
     $self->{"shelves"} = undef;
-
+my $usecache=1;
+if ($usecache){
+ #   if (preference('usecache')){
+	require C4::Cache;
+	C4::Cache->import();
+	$cache = C4::Cache->new ( {'cache_type' => 'FastMemcached',   ## fix me these need to come from a syspref
+	                         'cache_servers' => '127.0.0.1:11211'
+				 }
+	);
+         $self->{"cache"} = $cache;
+    }
     bless $self, $class;
     return $self;
 }
@@ -492,10 +492,6 @@ sub preference {
     if (exists $sysprefs{$var}) {
         return $sysprefs{$var};
     }
-    if ($usecache) {
-	$sysprefs{$var} = $cache->get_from_cache("Koha:preference:$var");
-	return $sysprefs{$var};
-    }
     my $dbh = C4::Context->dbh or return 0;
     my $sql = <<'END_SQL';
     SELECT    value
@@ -504,9 +500,6 @@ sub preference {
       LIMIT    1
 END_SQL
     $sysprefs{$var} = $dbh->selectrow_array( $sql, {}, $var );
-    if ($usecache) {
-	$cache->set_in_cache("Koha:preference:$var", $sysprefs{$var});
-    }
     return $sysprefs{$var};
 }
 
