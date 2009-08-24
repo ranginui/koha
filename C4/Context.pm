@@ -77,6 +77,8 @@ BEGIN {
 		if ($ENV{KOHA_BACKTRACES}) {
 			$main::SIG{__DIE__} = \&CGI::Carp::confess;
 		}
+
+
     }  	# else there is no browser to send fatals to!	
 $VERSION = '3.00.00.036';
 }
@@ -87,6 +89,14 @@ use XML::Simple;
 use C4::Boolean;
 use C4::Debug;
 use POSIX ();
+
+use Memoize::Memcached
+      memcached => {
+        servers => [ '127.0.0.1:11211' ],
+      };
+
+#memoize_memcached('preference');
+#memoize_memcached('config');
 
 =head1 NAME
 

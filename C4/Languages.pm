@@ -22,9 +22,15 @@ package C4::Languages;
 use strict; 
 #use warnings;   #FIXME: turn off warnings before release
 
-use Memoize;
-use DB_File;
-use MLDBM qw( DB_File Storable );
+use Memoize::Memcached
+      memcached => {
+        servers    => [ C4::Context->config('memcached_servers') ],
+        key_prefix => C4::Context->config('memcached_namespace'),
+      };
+
+memoize_memcached('getTranslatedLanguages', expire_time => 60);
+memoize_memcached('getFrameworkLanguages' , expire_time => 30);
+memoize_memcached('getAllLanguages',        expire_time => 120);
 
 use Carp;
 use C4::Context;
@@ -68,9 +74,6 @@ Returns a reference to an array of hashes:
 
 =cut
 
-my $filename="/tmp/translated";
-tie my %disk_cache => "MLDBM", $filename, O_CREAT | O_RDWR, 0644;
-memoize 'getTranslatedLanguages', SCALAR_CACHE => [HASH => \%disk_cache];
 
 sub getFrameworkLanguages {
     # get a hash with all language codes, names, and locale names
