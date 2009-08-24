@@ -2,7 +2,7 @@ package C4::Languages;
 
 # Copyright 2006 (C) LibLime
 # Joshua Ferraro <jmf@liblime.com>
-#
+# Portions Copyright 2009 Chris Cormack and the Koha Dev Team
 # This file is part of Koha.
 #
 # Koha is free software; you can redistribute it and/or modify it under the
@@ -24,6 +24,23 @@ use strict;
 use Carp;
 use C4::Context;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $DEBUG);
+
+eval {
+    my $servers = C4::Context->config('memcached_servers');
+    if ($servers) {
+        require Memoize::Memcached;
+        import Memoize::Memcached qw(memoize_memcached);
+ 
+        my $memcached = {
+            servers    => [ $servers ],
+            key_prefix => C4::Context->config('memcached_namespace') || 'koha',
+        };
+
+        memoize_memcached('getTranslatedLanguages', memcached => $memcached, expire_time => 600); #cache for 10 minutes
+        memoize_memcached('getFrameworkLanguages' , memcached => $memcached, expire_time => 600);
+        memoize_memcached('getAllLanguages',        memcached => $memcached, expire_time => 600);
+    }
+};
 
 BEGIN {
     $VERSION = 3.00;
