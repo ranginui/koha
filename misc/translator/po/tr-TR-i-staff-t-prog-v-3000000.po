@@ -4,13 +4,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Koha 3.0.2\n"
 "POT-Creation-Date: 2009-05-18 19:44+1200\n"
-"PO-Revision-Date: 2009-06-17 09:42+1200\n"
-"Last-Translator: Selma Aslan <selmaslan@yahoo.co.uk>\n"
+"PO-Revision-Date: 2009-08-15 23:27+1300\n"
+"Last-Translator: Asir DOGANER <adoganer@gmail.com>\n"
 "Language-Team: Koha Translation Team\n"
+"Language: tr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8-bit\n"
-"X-Generator: Pootle 1.1.0\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Pootle 1.2.0\n"
 
 #. For the first occurrence,
 #. SCRIPT
@@ -850,7 +852,7 @@ msgstr "%s kayıt(lar)"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/results.tmpl:80
 #, c-format
 msgid "%s result(s) found"
-msgstr "%s sonuç(lar) bulundu"
+msgstr "%s sonuç bulundu"
 
 #. %1$s: TMPL_VAR name=total
 #. %2$s: TMPL_VAR name=breeding_count
@@ -859,7 +861,7 @@ msgstr "%s sonuç(lar) bulundu"
 #, c-format
 msgid ""
 "%s result(s) found in catalog, <a1>%s result(s) found in reservoir</a> %s"
-msgstr "katalogda %s sonuç bulundu, <a1>%s sonuçlar havuzda bulundu</a> %s"
+msgstr "katalogda %s sonuç bulundu, <a1>havuzda %s sonuç bulundu</a> %s"
 
 #. %1$s: TMPL_VAR name=count
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/parcels.tmpl:20
@@ -1321,7 +1323,7 @@ msgstr "&nbsp;/koha-tmpl/intranet-tmpl/prog/en/modules/help"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/results.tmpl:80
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/results.tmpl:88
 msgid "&nbsp;with limit(s):"
-msgstr "&nbsp;sınırlama(lar) ile:"
+msgstr "&nbsp;ile sınırlanan(lar):"
 
 #. For the first occurrence,
 #. %1$s: TMPL_VAR name=limit_desc
@@ -1329,7 +1331,7 @@ msgstr "&nbsp;sınırlama(lar) ile:"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/results.tmpl:36
 #, c-format
 msgid "&nbsp;with limit(s):&nbsp;'%s'"
-msgstr "&nbsp;sınırlama(lar) ile:&nbsp;'%s'"
+msgstr "&nbsp;ile sınırlanan(lar):&nbsp;'%s'"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/branchoverdues.tmpl:95
 #, c-format
@@ -1561,7 +1563,7 @@ msgstr "&rsaquo; Katalog istatistikleri &rsaquo; Sonuçlar"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:4
 #, c-format
 msgid "&rsaquo; Checking out to %s, %s (%s)"
-msgstr "&rsaquo; %s %s (%s) adlı kullanıcıya ödünç veriliyor"
+msgstr "&rsaquo; %s %s (%s) ödünç veriliyor"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/issues_stats.tmpl:13
 msgid "&rsaquo; Checkout statistics"
@@ -2718,7 +2720,7 @@ msgstr "07- ISO 10586 (Gürcüce seti)"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_100.tmpl:464
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_100.tmpl:545
 msgid "07- ISO ISO 10586 (Georgian set)"
-msgstr "07- ISO ISO 10586 (Gürcü alfabesi )"
+msgstr "07- ISO ISO 10586 (Gürcüce)"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/marc21_field_008_authorities.tmpl:48
 msgid "07- Romanization scheme"
@@ -3941,7 +3943,7 @@ msgstr "<a1>%s %s</a> &rsaquo;"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reserve/request.tmpl:145
 #, c-format
 msgid "<a1>%s %s</a>'s"
-msgstr "<a1>%s %s</a> için"
+msgstr "<a1>%s %s</a> ile ilgili"
 
 #. %1$s: TMPL_VAR name=riborsurname
 #. %2$s: TMPL_VAR name=ribortitle
@@ -4137,7 +4139,14 @@ msgstr "<a1>Rapor Hazırla</a> &rsaquo; 6 Adımdan %s.:"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:61
 #, c-format
 msgid "<a1>Checkouts</a> &rsaquo; %s %s"
-msgstr "<a1>Ödünç Alınanlar</a> &rsaquo; %s %s"
+msgstr ""
+"<a1>Ödünç Alınanlar</a> &rsaquo; %s %s33333333333333333333333333333333333333"
+"3333333333333333333333333333333333333333333333333333333333333333333333333333"
+"3333333333333333333333333333333333333333333333333333333333333333333333333333"
+"3333333333333333333333333333333333333333333333333333333333333333333333333333"
+"3333333333333333333333333333333333333333333333333333333333333333333333333333"
+"3333333333333333333333333333333333333333333333333333333333333333333333333333"
+"333333333333333333333"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/cities.tmpl:57
 #, c-format
@@ -4545,7 +4554,7 @@ msgstr ""
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/boraccount.tmpl:9
 #, c-format
 msgid "<a1>Home</a> &rsaquo; <a2>Patrons</a> &rsaquo; Account for %s %s"
-msgstr "<a1>Ana Sayfa</a> &rsaquo; <a2>Kullanıcılar</a> &rsaquo; %s %s hesabı"
+msgstr "<a1>Ana Sayfa</a> &rsaquo; <a2>Kullanıcılar</a> &rsaquo; %s %s Hesabı"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/deletemem.tmpl:9
 #, c-format
@@ -4574,7 +4583,7 @@ msgstr ""
 #, c-format
 msgid "<a1>Home</a> &rsaquo; <a2>Patrons</a> &rsaquo; Pay Fines for %s %s"
 msgstr ""
-"<a1>Ana Sayfa</a> &rsaquo; <a2>Kullanıcılar</a> &rsaquo; %s %s için Ceza Öde"
+"<a1>Ana Sayfa</a> &rsaquo; <a2>Kullanıcılar</a> &rsaquo; %s %s Ceza Ödemesi"
 
 #. %1$s: TMPL_VAR name=firstname
 #. %2$s: TMPL_VAR name=surname
@@ -4582,8 +4591,7 @@ msgstr ""
 #, c-format
 msgid "<a1>Home</a> &rsaquo; <a2>Patrons</a> &rsaquo; Reading Record for %s %s"
 msgstr ""
-"<a1>Ana Sayfa</a> &rsaquo; <a2>Kullanıcılar</a> &rsaquo; %s %s için Okuma "
-"Kaydı"
+"<a1>Ana Sayfa</a> &rsaquo; <a2>Kullanıcılar</a> &rsaquo; %s %s Okuma Kaydı"
 
 #. %1$s: TMPL_VAR name=surname
 #. %2$s: TMPL_VAR name=firstname
@@ -4972,7 +4980,7 @@ msgid ""
 "Profiles"
 msgstr ""
 "<a1>Ana Sayfa</a> &rsaquo; <a2>Araçlar</a> &rsaquo; <a3>Etiketler</a> "
-"&rsaquo; <a4>Yazıcı Profilleri"
+"&rsaquo; Yazıcı Profilleri"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/inventory.tmpl:35
 #, c-format
@@ -7671,7 +7679,7 @@ msgstr "Otorite MARC Çerçevesi: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/auth_tag_structure.tmpl:88
 msgid "Authority MARC framework for"
-msgstr "... için otorite MARC Çerçevesi:"
+msgstr "Otorite MARC Çerçevesi için"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/auth_subfields_structure.tmpl:30
 msgid "Authority MARC subfield structure"
@@ -8514,7 +8522,7 @@ msgstr ""
 "<a6>E</a> <a7>F</a> <a8>G</a> <a9>H</a> <a10>I</a> <a11>İ</a> <a12>J</a> "
 "<a13>K</a> <a14>L</a> <a15>M</a> <a16>N</a> <a17>O</a> <a18>Ö</a> <a19>P</a> "
 "<a20>Q</a> <a21>R</a> <a22>S</a> <a23>Ş</a> <a24>T</a> <a25>U</a> "
-"<a26>Ü</a> <a27>V</a> <a28>W</a> <a29>X</a> <a30>Y</a> <a31>Z</a>"
+"<a26>Ü</a>"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/tools/picture-upload.tmpl:24
 msgid "Browse for the file from the Koha interface"
@@ -9608,7 +9616,7 @@ msgstr "İade al"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:256
 #, c-format
 msgid "Checking out to %s %s (%s)"
-msgstr "%s %s (%s) adlı kullanıcıya ödünç veriliyor"
+msgstr "%s %s (%s) ödünç veriliyor"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/issues_stats.tmpl:142
 msgid "Checkout"
@@ -10870,7 +10878,7 @@ msgstr "Alan kodunun silinmesini onayla"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/authtypes.tmpl:104
 msgid "Confirm Deletion of authority structure definition for"
-msgstr "… için otorite yapı tanımının Silinmesini Onayla"
+msgstr "için otorite yapı tanımının Silinmesini Onayla"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/branches.tmpl:288
 msgid "Confirm delete:"
@@ -12788,7 +12796,7 @@ msgstr "HATA: <em>Başlangış tarihi</em> geçerli bir değer değildir (\"%s\"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tags/review.tmpl:248
 #, c-format
 msgid "ERROR: <em>Date to</em> is not a legal value (\"%s\")."
-msgstr "HATA: <em>Bitiş tarihi</em> geçerli bir değer değildir (\"%\")."
+msgstr "HATA: <em>Bitiş tarihi</em> geçerli bir değer değildir (\"%s\")."
 
 #. %1$s: TMPL_VAR name=failed_ok
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tags/review.tmpl:249
@@ -12822,7 +12830,7 @@ msgstr "HATA: %s barkodlu bir materyal bulunamadı. "
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tags/review.tmpl:252
 #, c-format
 msgid "ERROR: No match for borrowernumber (%s)."
-msgstr "HATA: (%) üyeno  ile eşleşen yok."
+msgstr "HATA: (%s) üyeno  ile eşleşen yok."
 
 #. %1$s: TMPL_VAR name=approver
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tags/review.tmpl:251
@@ -12830,7 +12838,7 @@ msgstr "HATA: (%) üyeno  ile eşleşen yok."
 msgid ""
 "ERROR: No match for user (%s). FILTER REQUIRES BORROWERNUMBER (not name)."
 msgstr ""
-"HATA: (%) kullanıcısı ile eşleşen yok. SÜZGEÇ ÜYENO GEREKTİRİYOR (ad değil)."
+"HATA: (%s) kullanıcısı ile eşleşen yok. SÜZGEÇ ÜYENO GEREKTİRİYOR (ad değil)."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/virtualshelves/shelves.tmpl:80
 msgid "ERROR: No shelfnumber given."
@@ -17449,7 +17457,7 @@ msgid ""
 "<a1>noItemTypeImages system preference</a>"
 msgstr ""
 "Materyal türü görüntüleri iptal edilmiştir. Etkinleştirmek için <a1> "
-"noItemTypeImages system prefence (MateryalTuruGoruntusuYok)<a2>  kapatın"
+"noItemTypeImages system prefence (MateryalTuruGoruntusuYok)</a>  kapatın"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/moredetail.tmpl:26
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/moredetail.tmpl:49
@@ -21820,7 +21828,7 @@ msgstr "Sonuç yok"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/serials/result.tmpl:55
 #, c-format
 msgid "No results found for <b>%s</b>"
-msgstr "%s için bulunan sonuç Yok "
+msgstr "%s için sonuç bulunamadı"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/dictionary.tmpl:72
 msgid "No results in Authorities"
@@ -27692,7 +27700,7 @@ msgstr "Son 50 Materyal Gösteriliyor | <a1>Tüm Materyalleri Göster</a> "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/facets.inc:6
 msgid "Showing only"
-msgstr "Sadece Gösteriyor"
+msgstr "Yalnız"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_124g.tmpl:53
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_124g.tmpl:55
@@ -40126,9 +40134,8 @@ msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_126a.tmpl:206
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_126a.tmpl:208
-#, fuzzy
 msgid "microgroove/fine"
-msgstr "mikrobaskı "
+msgstr "plak çizilmesi/para cezası"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_121a.tmpl:219
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_121a.tmpl:221
@@ -42084,9 +42091,8 @@ msgstr "baskı"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_130.tmpl:282
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_130.tmpl:284
-#, fuzzy
 msgid "printing master"
-msgstr ""
+msgstr "baskı kalıbı"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_115b.tmpl:110
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_115b.tmpl:112

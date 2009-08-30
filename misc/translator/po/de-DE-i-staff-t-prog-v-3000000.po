@@ -2,13 +2,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Improved German Koha Translation\n"
 "POT-Creation-Date: 2009-05-18 19:44+1200\n"
-"PO-Revision-Date: 2009-06-18 01:02+1200\n"
+"PO-Revision-Date: 2009-08-13 21:11+1300\n"
 "Last-Translator: Katrin Fischer <katrin.fischer@bsz-bw.de>\n"
 "Language-Team: Katrin Fischer <caitlin.83@web.de>\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Pootle 1.1.0\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Pootle 1.2.0\n"
 "X-Poedit-Language: German\n"
 "X-Poedit-Country: Germany\n"
 "X-Poedit-SourceCharset: utf-8\n"
@@ -410,7 +412,7 @@ msgstr "%s %s (%s)"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/pay.tmpl:84
 #, c-format
 msgid "%s %s has no outstanding fines."
-msgstr "%s %s hat keine Schulden."
+msgstr "%s %s hat keine offenen Gebühren."
 
 #. %1$s: TMPL_VAR name=bibliotitle
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/serials/subscription-add.tmpl:2
@@ -614,7 +616,7 @@ msgstr "%s Vormerkungen"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:95
 #, c-format
 msgid "%s Overdues"
-msgstr "%s Überfällige"
+msgstr "%s (über)fällige Exemplare"
 
 #. %1$s: TMPL_VAR name=op_count
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tags/review.tmpl:241
@@ -1327,7 +1329,7 @@ msgstr "&nbsp;/koha-tmpl/intranet-tmpl/prog/en/modules/help"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/results.tmpl:80
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/results.tmpl:88
 msgid "&nbsp;with limit(s):"
-msgstr "&nbsp;mit Beschränkung(en):"
+msgstr "&nbsp;mit Einschränkung(en):"
 
 #. For the first occurrence,
 #. %1$s: TMPL_VAR name=limit_desc
@@ -1335,7 +1337,7 @@ msgstr "&nbsp;mit Beschränkung(en):"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/results.tmpl:36
 #, c-format
 msgid "&nbsp;with limit(s):&nbsp;'%s'"
-msgstr "&nbsp;mit Beschränkung(en):&nbsp;'%s'"
+msgstr "&nbsp;mit Einschränkung(en):&nbsp;'%s'"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/branchoverdues.tmpl:95
 #, c-format
@@ -1476,7 +1478,7 @@ msgstr "&rsaquo; <a1>Exemplare</a>"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/itemslost.tmpl:9
 #, c-format
 msgid "&rsaquo; <a1>Lost Items</a> &rsaquo; Results"
-msgstr "&rsaquo; <a1>Vermißte Medien</a> &rsaquo; Ergebnisse"
+msgstr "&rsaquo; <a1>Vermisste Medien</a> &rsaquo; Ergebnisse"
 
 #. %1$s: TMPL_VAR name=import_batch_id
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/manage-marc-import.tmpl:21
@@ -1671,7 +1673,7 @@ msgstr "&rsaquo; Medientypen"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/itemslost.tmpl:9
 msgid "&rsaquo; Lost Items"
-msgstr "&rsaquo; vermißte Exemplare"
+msgstr "&rsaquo; vermisste Exemplare"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/manage-marc-import.tmpl:25
 msgid "&rsaquo; Manage Staged MARC Records"
@@ -1915,7 +1917,7 @@ msgstr "(<a1>ändern</a>)"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/moredetail.tmpl:146
 #, c-format
 msgid "(<a1>View item's checkout history</a>)"
-msgstr "(<a1>Ausleihverlauf des Mediums anzeigen</a>)"
+msgstr "(<a1>Ausleihverlauf des Exemplars anzeigen</a>)"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_127.tmpl:12
 msgid "(Complete with 0 on the left)"
@@ -1987,7 +1989,7 @@ msgstr "(Indonesisch)"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/results.tmpl:362
 msgid "(Lost)"
-msgstr "(vermißt)"
+msgstr "(Vermisst)"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/memberentrygen.tmpl:915
 msgid "(Password:"
@@ -2350,7 +2352,7 @@ msgstr ""
 #. SCRIPT
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reserve/request.tmpl:76
 msgid "- Please select an item to place a hold\\n"
-msgstr "- Bitte wählen Sie ein Medium, das reserviert werden soll\\n"
+msgstr "- Bitte wählen Sie das Exemplar, das bestellt werden soll\n"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_leader.tmpl:190
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_leader.tmpl:192
@@ -2362,14 +2364,13 @@ msgstr "- Hierarchische Beziehung nicht definiert"
 msgid ""
 "- This patron had already placed a hold on this item\\n Please cancel the "
 "previous hold first \\n"
-msgstr ""
-"- Dieser Benutzer hat dieses Medium schon reserviert\n"
-"Bitte löschen Sie zuerst die frühere Vormerkung."
+msgstr "- Dieser Benutzer hat dieses Exemplar bereits bestellt. Bitte löschen Sie "
+"zuerst die ältere Vormerkung. \n"
 
 #. SCRIPT
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reserve/request.tmpl:76
 msgid "- You may only place a hold on one item at a time\\n"
-msgstr "- Sie können pro Medium nur eine Reservierung aufs mal vornehmen\\n"
+msgstr "- Sie können ein Exemplar nur jeweils einmal vormerken.\n"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/export.tmpl:40
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/export.tmpl:54
@@ -2535,7 +2536,7 @@ msgid ""
 "available. If you have any questions, please email us at %s Thank you, %s"
 msgstr ""
 ". Wir freuen uns Ihnen mitteilen zu können, dass Ihr Anschaffungsvorschlag "
-"nun bestellt wurde. Das Medium sollte also demnächst zu Verfügung stehen. "
+"nun bestellt wurde. Der Titel sollte also demnächst zu Verfügung stehen. "
 "Wenn dem so ist, werden wir Sie wieder per Email informieren. Falls Sie "
 "Fragen haben, senden Sie uns bitte eine Email an %s. Mit freundlichen "
 "Grüßen, %s"
@@ -3387,7 +3388,7 @@ msgstr "31- Index"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/marc21_field_008_authorities.tmpl:561
 msgid "31- Record update in process"
-msgstr "31- Der Datensatz wird gerade erneuert"
+msgstr "31- Datensatz wird aktualisiert"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/marc21_field_008.tmpl:404
 msgid "32 Undefined"
@@ -4698,7 +4699,7 @@ msgstr ""
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/serials/claims.tmpl:30
 #, c-format
 msgid "<a1>Home</a> &rsaquo; <a2>Serials</a> &rsaquo; Claims"
-msgstr "<a1>Start</a> &rsaquo; <a2>Zeitschriften</a> &rsaquo; Anträge"
+msgstr "<a1>Start</a> &rsaquo; <a2>Zeitschriften</a> &rsaquo; Reklamationen"
 
 #. %1$s: TMPL_VAR name=subscriptionid
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/serials/subscription-detail.tmpl:44
@@ -4721,7 +4722,7 @@ msgid ""
 "<a1>Home</a> &rsaquo; <a2>Serials</a> &rsaquo; Serial Collection information "
 "for <i>%s</i>"
 msgstr ""
-"<a1>Start</a> &rsaquo; <a2>Zeitschriften</a> &rsaquo; Serieninformationen "
+"<a1>Start</a> &rsaquo; <a2>Zeitschriften</a> &rsaquo; Bestandsinformationen "
 "für <i>%s</i>"
 
 #. %1$s: TMPL_VAR name=bibliotitle
@@ -4729,7 +4730,8 @@ msgstr ""
 #, c-format
 msgid "<a1>Home</a> &rsaquo; <a2>Serials</a> &rsaquo; Serial Edition <i>%s</i>"
 msgstr ""
-"<a1>Start</a> &rsaquo; <a2>Zeitschriften</a> &rsaquo; Serienausgabe <i>%s</i>"
+"<a1>Start</a> &rsaquo; <a2>Zeitschriften</a> &rsaquo; Zeitschriftenausgabe "
+"<i>%s</i>"
 
 #. %1$s: TMPL_VAR name=bibliotitle
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/serials/serial-issues.tmpl:9
@@ -4738,7 +4740,7 @@ msgid ""
 "<a1>Home</a> &rsaquo; <a2>Serials</a> &rsaquo; Subscription information for "
 "<i>%s</i>"
 msgstr ""
-"<a1>Start</a> &rsaquo; <a2>Zeitschriften</a> &rsaquo; Abonnementsinformation "
+"<a1>Start</a> &rsaquo; <a2>Zeitschriften</a> &rsaquo; Abonnementinformation "
 "für <i>%s</i>"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/manage-marc-import.tmpl:19
@@ -5083,7 +5085,7 @@ msgstr "<a1>MARC Links</a> &rsaquo; Verbinde %s.%s mit einem MARC-Unterfeld"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/manage-marc-import.tmpl:282
 #, c-format
 msgid "<a1>Manage staged MARC records</a>."
-msgstr "<a1>Zwischengespeicherte MARC-Sätze managen</a>."
+msgstr "<a1>Bereitgestellte MARC-Datensätze verwalten</a>."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/cat_issues_top.tmpl:17
 #, c-format
@@ -5487,7 +5489,7 @@ msgstr ""
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/serials/routing-preview.tmpl:29
 #, c-format
 msgid "<b>Serial Title:</b> %s"
-msgstr "<b>Reihentitel:</b> %s"
+msgstr "<b>Zeitschriftentitel:</b> %s"
 
 #. %1$s: TMPL_VAR name=title
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/serials/routing-preview-slip.tmpl:17
@@ -5615,7 +5617,7 @@ msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/tools/letter.tmpl:46
 msgid "<em>Get there:</em> More &gt; Serials &gt; New Subscription"
-msgstr "<em>Ziel: </em>Weiter &gt; Zeitschriften &gt; Neue Abonnemente"
+msgstr "<em>Ziel: </em>Weiter &gt; Zeitschriften &gt; Neues Abonnement"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/tools/overduerules.tmpl:26
 msgid "<em>Get there:</em> More &gt; Tools &gt; Notices"
@@ -5797,8 +5799,7 @@ msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/cataloguing/additem.tmpl:7
 msgid "A confirmation will appear with the item information"
-msgstr ""
-"Eine Bestätigung wird zusammen mit der Information zum Medium aufscheinen"
+msgstr "Eine Bestätigung wird zusammen mit der Exemplarinformation erscheinen"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/labels/label-home.tmpl:17
 msgid ""
@@ -6333,7 +6334,7 @@ msgstr "<i>%s</i> hinzufügen"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/serials/subscription-add.tmpl:3
 msgid "Add A New Serial Subscription"
-msgstr "Eine neue Subskription für eine Reihe hinzufügen"
+msgstr "Neues Zeitschriftenabonnement hinzufügen"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/authorised_values.tmpl:111
 msgid "Add Authorized Value"
@@ -6661,7 +6662,7 @@ msgstr "Normdatensatz (%s) hinzufügen"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/cataloguing/additem.tmpl:3
 msgid "Adding item details"
-msgstr "Details für das Medium"
+msgstr "Exemplardetails hinzufügen"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/detailprint.tmpl:16
 msgid "Additional Author:"
@@ -7044,7 +7045,7 @@ msgid ""
 "alone, it will rank the list statically, selecting the top-ranking available "
 "location to be added to the picklist."
 msgstr ""
-"Erlaubt der Bibliothek eine Reihe von Standortcodes zu definieren. -- wenn "
+"Erlaubt der Bibliothek eine Liste von Standortcodes zu definieren. -- wenn "
 "diese Option allein verwendet wird, erfolgt das Ranking statisch und es wird "
 "der Standort ausgewählt, der in der Liste am weitesten vorne steht."
 
@@ -7172,8 +7173,7 @@ msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/reserve/request.tmpl:14
 msgid "An item is available for an item level hold if"
-msgstr ""
-"Ein Exemplar steht für eine Vormerkung auf Exemplarebene zur Verfügung, wenn"
+msgstr "Ein Exemplar kann auf Exemplarebene vorgemerkt werden, wenn"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/reports/catalogue_out.tmpl:13
 msgid "And your results will be sorted by Library code"
@@ -7214,7 +7214,7 @@ msgstr "Anousak Anthony Souphavanh"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/subtypes_unimarc.inc:136
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/subtypes_unimarc.inc:172
 msgid "Any"
-msgstr "Irgendein"
+msgstr "Irgendeines"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/serials_stats.tmpl:80
 msgid "Any Branch"
@@ -7781,12 +7781,11 @@ msgstr ""
 "Zum Beispiel: Falls Ihre Koha Installation von mehreren Bibliotheken genutzt "
 "wird und falls Sie MARC21 anwenden, möchten Sie vermutlich das 850a Marc-"
 "Unterfeld auf die Kennungen dieser Bibliotheken begrenzen. In diesem Fall "
-"können Sie eine neue Kategorie normierter Werte definieren (vielleicht \"INST"
-"\") und die Kennungen als normierte Werte für diese Kategorie eingeben. Wenn "
-"das 850a Unterfeld in Ihrer MARC-Felder-Struktur mit der INST-Autoritäten-"
-"Kategorie verlinkt ist, müssen die Katalogisierer einen Wert aus der Liste "
-"wählen, die Sie hier definiert haben, und können keinen anderen Wert "
-"eingeben."
+"können Sie eine neue Kategorie normierter Werte definieren (vielleicht "
+"\"INST\") und die Kennungen als normierte Werte für diese Kategorie eingeben. "
+"Wenn das 850a Unterfeld in Ihrer MARC-Felder-Struktur mit der INST-Kategorie "
+"verlinkt ist, müssen die Katalogisierer einen Wert aus der Liste wählen, "
+"die Sie hier definiert haben, und können keinen anderen Wert eingeben."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/auth_tag_structure.tmpl:121
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/authorised_values.tmpl:55
@@ -8716,7 +8715,7 @@ msgid ""
 "By changing the priority number a patron can be moved up or down on the list "
 "of holds"
 msgstr ""
-"In dem man die Priorität hoch oder runter setzt, kann ein Benutzer auf der "
+"Indem man die Priorität hoch oder runter setzt, kann ein Benutzer auf der "
 "Liste der Vormerkungen nach vorne oder nach hinten verschoben werden."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/reports/acquisitions_stats.tmpl:11
@@ -8943,7 +8942,9 @@ msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reserve/request.tmpl:269
 msgid "Can't be cancelled when item is in transit"
-msgstr "Kann nicht gelöscht werden, wenn das Medium auf dem Transport ist"
+msgstr ""
+"Bestellung kann nicht storniert werden, während das Exemplar im "
+"Transportstatus ist."
 
 #. For the first occurrence,
 #. SCRIPT
@@ -9095,7 +9096,7 @@ msgstr "Kann nicht gelöscht werden: Kategorie %s ist in Gebrauch"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reserve/request.tmpl:130
 msgid "Cannot Place Hold"
-msgstr "Kann nicht vormerken"
+msgstr "Vormerkung nicht möglich."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/classsources.tmpl:242
 msgid "Cannot delete filing rule"
@@ -9155,7 +9156,7 @@ msgstr "Ausweisnummer"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/memberentrygen.tmpl:117
 msgid "Cardnumber already in use."
-msgstr "Ausweisnummer bereits in Gebrauch"
+msgstr "Es gibt bereits einen Benutzer mit dieser Ausweisnummer."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/advsearch.tmpl:169
 msgid "Cassette recording"
@@ -9289,7 +9290,7 @@ msgstr "Kategorie gelöscht"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/branches.tmpl:273
 msgid "Category Type:"
-msgstr "Kategorientyp:"
+msgstr "Kategorie:"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/branches.tmpl:144
 msgid ""
@@ -9307,7 +9308,7 @@ msgstr "Kategoriecode"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/branches.tmpl:256
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/branches.tmpl:260
 msgid "Category code:"
-msgstr "Kategoriecode"
+msgstr "Kategoriecode:"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/categorie.tmpl:216
 msgid "Category name"
@@ -9319,7 +9320,7 @@ msgstr "Satellitenkategorie für Fernerkundung:"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/categorie.tmpl:124
 msgid "Category type:"
-msgstr "Kategorietyp"
+msgstr "Typ:"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/memberentrygen.tmpl:674
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:287
@@ -9583,7 +9584,7 @@ msgstr "Rückgabedatum von:"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/cleanborrowers.tmpl:119
 #, c-format
 msgid "Check-out history for %s patrons will be anonymized"
-msgstr "Ausleihverlauf für %s Kunden wird anonymisiert"
+msgstr "Ausleih-Historie für %s Kunden wird anonymisiert"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/z3950servers.tmpl:295
 msgid "Checked"
@@ -9686,7 +9687,7 @@ msgstr "Ausleihen werden blockiert, da das Gebührenlimit überschritten ist."
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/issues_by_borrower_category.tmpl:20
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/issues_by_borrower_category.tmpl:57
 msgid "Checkouts by patron category"
-msgstr "Ausleihen per Kundenkategorien"
+msgstr "Ausleihen je Benutzertyp"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/admin-home.tmpl:68
 msgid ""
@@ -9757,7 +9758,7 @@ msgstr "Wählen Sie 'Benutzer' beim 'Statistik-Assistenten'"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/reports/manager.tmpl:9
 msgid "Choose 'Checkouts by patron category' under 'Other'"
-msgstr "Wählen Sie 'Ausleihen per Kundenkategorien' bei 'Anderes'"
+msgstr "Wählen Sie 'Ausleihen je Benutzertyp' bei 'Anderes'"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/reports/issues_stats.tmpl:8
 msgid "Choose 'Circulation' under 'Statistics Wizards'"
@@ -10339,7 +10340,7 @@ msgstr "Klavichord"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/cleanborrowers.tmpl:44
 msgid "Clean Patron Records"
-msgstr "Kundensätze reinigen"
+msgstr "Benutzerdatensätze bereinigen"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/authorities/searchresultlist-auth.tmpl:63
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/memberentrygen.tmpl:920
@@ -10364,8 +10365,8 @@ msgstr "Feld löschen"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/cataloguing/additem.tmpl:7
 msgid "Click 'Add Item' after entering the data for your item"
 msgstr ""
-"Klicken Sie auf 'Medium hinzufügen', wenn Sie Ihre Daten für Ihr Medium "
-"eingegeben haben."
+"Klicken Sie auf 'Exemplar hinzufügen', wenn Sie die Daten für das Exemplar "
+"eingegeben haben"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbudget.tmpl:21
 msgid "Click 'Add budget' next to the fund you want to edit"
@@ -10935,7 +10936,7 @@ msgstr "Löschen bestätigen:"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/branches.tmpl:126
 #, c-format
 msgid "Confirm deletion of %s (%s)?"
-msgstr "Löschuen von %s (%s) bestätigen?"
+msgstr "Löschen von %s (%s) bestätigen?"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/classsources.tmpl:221
 msgid "Confirm deletion of classification source"
@@ -12280,7 +12281,7 @@ msgstr "Ausgewählte löschen"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/cleanborrowers.tmpl:52
 msgid "Delete some old patrons/Anonymize some check-out history"
-msgstr "Einige alte Kunden löschen/Einige Ausleiverläufe anonymisieren"
+msgstr "Alte Benutzer löschen / Ausleihhistorie anonymisieren"
 
 #. INPUT type=submit
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/categorie.tmpl:172
@@ -13250,7 +13251,7 @@ msgid ""
 "you'd like to mark as received"
 msgstr ""
 "Suchen Sie entweder nach dem Titel oder der ISBN oder klicken Sie auf "
-"'Bestellung erhalten' neben dem Medium, das Sie als eingetroffen markieren "
+"'Bestellung erhalten' neben dem Exemplar, das Sie als eingetroffen markieren "
 "wollen"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/marc21_field_007.tmpl:19
@@ -13426,8 +13427,8 @@ msgid ""
 "Enter a 'Barcode' if searching for a single item; if not leave this field "
 "blank"
 msgstr ""
-"Geben Sie einen 'Barcode' ein, wenn Sie nach einem einzelnen Medium suchen; "
-"wenn nicht, lassen Sie dieses Feld leer"
+"Geben Sie einen 'Barcode' ein, wenn Sie nach einem einzelnen Exemplar "
+"suchen; wenn nicht, lassen Sie dieses Feld leer"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/classsources.tmpl:14
 msgid "Enter a 'Classification source code'"
@@ -13589,7 +13590,7 @@ msgstr "Geben Sie Informationen bezüglich Ihrer Bibliotheksregelungen ein"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:200
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/returns.tmpl:283
 msgid "Enter item barcode:"
-msgstr "Barcode des Mediums:"
+msgstr "Exemplarbarcode eingeben:"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reserve/request.tmpl:114
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/cat-search.inc:50
@@ -14302,7 +14303,7 @@ msgstr "Mahngebühr"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/smart-rules.tmpl:70
 msgid "Fine Charging Interval"
-msgstr "Zeitraum zwischen Gebührenerhebung"
+msgstr "Gebührenintervall"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/smart-rules.tmpl:68
 msgid "Fine Days"
@@ -14310,7 +14311,7 @@ msgstr "Gebührentage"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/smart-rules.tmpl:69
 msgid "Fine Grace Period"
-msgstr "Gnadenfrist vor Gebührenerhebung"
+msgstr "Gnadenfrist"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/member.tmpl:63
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/viewlog.tmpl:43
@@ -14479,9 +14480,9 @@ msgid ""
 "either commas or tabs."
 msgstr ""
 "Es braucht eine Datei DATALINK.TXT oder eine IDLINK.TXT  für jede "
-"Bildergruppe. Diese enthält die Kartennummer des Kunden und den Dateinamen "
-"des zugehörigen Bildes. Je ein Kunde pro Zeile, getrennt durch Kommas oder "
-"Tabulatoren. Anführungszeichen um die Felder werden ignoriert."
+"Bildergruppe. Diese enthält die Kartennummer des Benutzers und den "
+"Dateinamen des zugehörigen Bildes. Je ein Benutzer pro Zeile, getrennt durch "
+"Kommas oder Tabulatoren. Anführungszeichen um die Felder werden ignoriert."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/acqui/orderreceive.tmpl:7
 msgid "For each item you will need to check the following:"
@@ -14516,11 +14517,11 @@ msgid ""
 "out from the 'Main Library' branch. An item transferred on that computer "
 "will be recorded as transferred from the 'Main Library' branch."
 msgstr ""
-"Zum Beispiel: Wenn Ihre Heimatabteilung auf 'Haupbibliothek' eingestellt "
-"ist, werden alle Medien, die an Ihrem Terminal an einen Benutzer ausgeliehen "
-"werden, von Koha angesehen als bei der 'Hauptbibliothek' ausgeliehen. Ein "
-"Medium, das an jenem Computer übertragen werden, werden als von der "
-"'Hauptbibliothek' aus übertragen gespeichert werden."
+"Beispiel: Wenn Ihre Heimatbibliothek auf \"Hauptbibliothek\" eingestellt ist, "
+"werden alle Bücher die an Ihrem Computer verbucht werden, als in der "
+"\"Hauptbibliothek\" ausgeliehen betrachtet.. Ein Exemplar, dass an diesem "
+"Computer in den Transportstatus gesetzt wird, wird aus der \"Hauptbibliothek\" "
+"verschickt."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/reports/dictionary.tmpl:28
 msgid ""
@@ -14815,8 +14816,7 @@ msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/cataloguing/additem.tmpl:7
 msgid "From here you can edit the item or add another item"
-msgstr ""
-"Von hier aus können Sie das Medium bearbeiten und neue Medien hinzufügen"
+msgstr "Von hier aus können Sie Exemplare bearbeiten oder neu hinizufügen."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/reserve/request.tmpl:11
 msgid ""
@@ -15826,7 +15826,7 @@ msgstr "Wie wird Koha konfiguriert?"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/cataloguing/addbooks.tmpl:3
 msgid "How to edit a bibliographic record?"
-msgstr "Wie wird ein bibliographicher Datensatz geändert?"
+msgstr "Wie wird ein bibliographischer Datensatz geändert?"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/serials/claims.tmpl:8
 msgid "How to lodge a Claim?"
@@ -16607,10 +16607,10 @@ msgid ""
 "chose to &quot;Forgive All Debts&quot; by using the Check box. By usiing "
 "this check box, no charges will be placed against the patrons account."
 msgstr ""
-"Falls Sie wissen, dass alle Exemplare mit Bussen oder Schulden verbunden "
-"sind, können Sie &quot;Alle Schulden vergeben&quot;, indem Sie die "
-"Auswahlbox betätigen. Wenn Sie diese Auswahlbox betätigen, werden die "
-"Nutzerkonten nicht mit Kosten belastet."
+"Wenn Sie wissen, dass alle Exemplare mit Gebühren belastet sind, können Sie "
+"sich entscheiden alle Gebühren zu erlassen, indem Sie die entsprechende Box "
+"ankreuzen. Wenn Sie diese Box verwenden, werden keien Gebühren auf das "
+"Benutzerkonto gebucht."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/tools/picture-upload.tmpl:31
 msgid ""
@@ -16644,16 +16644,16 @@ msgid ""
 "If you want Koha to trigger an action (send a letter or debar member), a "
 "delay value is required."
 msgstr ""
-"Wenn Sie wollen, dass Koha eine Aktion (einen Brief schicken oder einen "
-"Benutzer sperren) auslöst, dann wird ein Karenzwert benötigt."
+"Wenn Sie wollen, dass Koha eine Aktion (eine Benachrichtigung schicken oder "
+"einen Benutzer sperren) auslöst, dann wird ein Karenzwert benötigt."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/tools/overduerules.tmpl:38
 msgid ""
 "If you want Koha to trigger an action (send a letter or debar member), a "
 "delay value is required. No delays means no actions will be performed."
 msgstr ""
-"Wenn Sie wollen, dass Koha eine Aktion (einen Brief schicken oder einen "
-"Benutzer sperren) auslöst, dann wird ein Karenzwert benötigt. Ohne "
+"Wenn Sie wollen, dass Koha eine Aktion (eine Benachrichtigung schicken oder "
+"einen Benutzer sperren) auslöst, dann wird ein Karenzwert benötigt. Ohne "
 "Karenzwert wird keine Aktion gestartet."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/serials/subscription-add.tmpl:16
@@ -17165,7 +17165,7 @@ msgstr "Rechnung / Code"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/stats_screen.tmpl:94
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/stats_screen.tmpl:125
 msgid "Invoice Amount"
-msgstr "Rechnungsbetrag"
+msgstr "Gebührensumme"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/supplier.tmpl:198
 msgid "Invoice Item Price Includes GST:"
@@ -17437,7 +17437,7 @@ msgstr "Exemplar Details"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/moredetail.tmpl:45
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/returns.tmpl:333
 msgid "Item Information"
-msgstr "Exemplar Information"
+msgstr "Exemplarinformation"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/inventory.tmpl:81
 msgid "Item Location (items.location) is"
@@ -17510,11 +17510,12 @@ msgstr "Exemplar ist"
 msgid "Item is already at destination library."
 msgstr "Exemplar ist bereits in der Zielbibliothek."
 
+# Meldung, wenn vorgemerktes Buch an falschen Benutzer ausgeliehen werden soll
 #. %1$s: TMPL_VAR name=RESERVE_WAITING
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:91
 #, c-format
 msgid "Item is consigned for %s"
-msgstr "Exemplar ist versandt für %s"
+msgstr "Exemplar ist bereitgestellt für %s"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:90
 msgid "Item is currently checked out to this patron. Renew?"
@@ -17536,7 +17537,7 @@ msgstr "Exemplar ist vorgemerkt für %s"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:138
 msgid "Item is restricted"
-msgstr "Medium ist eingeschränkt"
+msgstr "Exemplar ist gesperrt"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/returns.tmpl:264
 msgid "Item is withdrawn."
@@ -17628,7 +17629,7 @@ msgstr "Exemplar abholbereit in <b> %s</b>"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/returns.tmpl:261
 msgid "Item was lost, now found."
-msgstr "Exemplar vermißt, aber nicht vorhanden"
+msgstr "Exemplar war vermisst, wurde jetzt gefunden."
 
 #. %1$s: TMPL_VAR name=firstname
 #. %2$s: TMPL_VAR name=surname
@@ -17690,7 +17691,7 @@ msgstr "Medien im Erwerbungsvorgang"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/reports-home.tmpl:46
 msgid "Items lost"
-msgstr "Vermißte Exemplare"
+msgstr "Vermisste Exemplare"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/reports/catalogue_out.tmpl:3
 msgid "Items not checked out"
@@ -18319,7 +18320,7 @@ msgstr "Koha &rsaquo; Berichte &rsaquo; Medien ohne Ausleihen"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/itemslost.tmpl:2
 msgid "Koha &rsaquo; Reports &rsaquo; Lost Items"
-msgstr "Koha &rsaquo; Reports &rsaquo; Vermißte Medien"
+msgstr "Koha &rsaquo; Reports &rsaquo; Vermisste Medien"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/cat_issues_top.tmpl:2
 msgid "Koha &rsaquo; Reports &rsaquo; Most-Circulated Items"
@@ -18512,7 +18513,7 @@ msgstr "Koha &rsaquo; Tools &rsaquo; MARC Export"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/manage-marc-import.tmpl:2
 msgid "Koha &rsaquo; Tools &rsaquo; Manage Staged MARC Records"
-msgstr "Koha &rsaquo; Tools &rsaquo;Zwischengespeicherte MARC-Sätze verwalten"
+msgstr "Koha &rsaquo; Tools &rsaquo;Bereitgestellte MARC-Datensätze verwalten"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/koha-news.tmpl:2
 msgid "Koha &rsaquo; Tools &rsaquo; News"
@@ -19690,7 +19691,7 @@ msgstr "Login &raquo;"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/memberentrygen.tmpl:114
 msgid "Login/password already exists."
-msgstr "Login/Passwort ist bereits vorhanden."
+msgstr "Login/Passwort wird bereits verwendet."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/viewlog.tmpl:2
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/viewlog.tmpl:10
@@ -19716,13 +19717,13 @@ msgstr "Nach vorhandenen Sätzen im Katalog sehen?"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/moredetail.tmpl:58
 msgid "Lost"
-msgstr "Vermißt"
+msgstr "Vermisst"
 
 #. %1$s: TMPL_VAR name=itemlostcount
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/addbooks.tmpl:93
 #, c-format
 msgid "Lost (%s)"
-msgstr "Vermißt (%s)"
+msgstr "Vermisst (%s)"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/overdue.tmpl:68
 msgid "Lost Card"
@@ -19739,22 +19740,22 @@ msgstr "Verloren-Code"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/maninvoice.tmpl:38
 msgid "Lost Item"
-msgstr "Vermißtes Medium"
+msgstr "Vermisstes Exemplar"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/reports/itemslost.tmpl:3
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/itemslost.tmpl:17
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/reports-menu.inc:31
 msgid "Lost Items"
-msgstr "Vermißte Medien"
+msgstr "Vermisste Exemplare"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/moredetail.tmpl:66
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/itemslost.tmpl:102
 msgid "Lost Status:"
-msgstr "Vermißtstatus"
+msgstr "Vermisst-Status:"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:282
 msgid "Lost:"
-msgstr "Vermißt:"
+msgstr "Vermisst:"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/about.tmpl:200
 msgid "M&#257;ori"
@@ -20088,7 +20089,7 @@ msgstr "Benutzerfotos verwalten"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/manage-marc-import.tmpl:35
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/tools/manage-marc-import.tmpl:3
 msgid "Manage Staged MARC Records"
-msgstr "Zwischengespeicherte MARC-Sätze managen"
+msgstr "Bereitgestellte MARC-Datensätze verwalten"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/admin-home.tmpl:22
 msgid ""
@@ -21895,7 +21896,7 @@ msgstr "Keine Bestellungen"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:360
 msgid "No outstanding charges"
-msgstr "Keine offenen Schulden"
+msgstr "Keine offenen Gebühren"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:161
 msgid "No patron matched"
@@ -22197,7 +22198,7 @@ msgstr "Nicht präzisiert (Schlagzeug)"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_100.tmpl:589
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_100.tmpl:591
 msgid "Non required value"
-msgstr "Nicht verlangter Wert"
+msgstr "fakultativer Wert"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/marc21_leader_book.tmpl:262
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/marc21_leader_book.tmpl:264
@@ -22480,9 +22481,9 @@ msgid ""
 "Note that the Surname (or Last Name) is required for each patron as a "
 "default setting. You can define which fields, if any, should be required."
 msgstr ""
-"Beachten Sie, dass der Nachname (oder Übername) für jeden Benutzer zwingend "
-"verlangt ist. Sie können festlegen, welche Felder (wenn überhaupt) notwendig "
-"sind."
+"Beachten Sie, dass der Nachname (oder Familienname) für jeden Benutzer "
+"zwingend verlangt ist. Sie können festlegen, ob und welche Felder "
+"Pflichtfelder sind."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/bull/statecollection.tmpl:26
 msgid ""
@@ -22756,7 +22757,7 @@ msgstr "Anzahl der angezeigten Medien"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/readingrec.tmpl:32
 msgid "Number of Renewals"
-msgstr "Anzahl Erneuerungen:"
+msgstr "Anzahl Verlängerungen:"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/labels/label-create-template.tmpl:54
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/labels/label-edit-template.tmpl:56
@@ -23395,7 +23396,7 @@ msgstr "Nur die Formate PNG, JPEG, XPM werden unterstützt."
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reserve/request.tmpl:367
 #, c-format
 msgid "Only item <a1>"
-msgstr "Einziges Medium <a1>"
+msgstr "Nur Exemplar <a1>"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/advsearch.tmpl:255
 msgid "Only items currently available"
@@ -23709,15 +23710,15 @@ msgstr "Auslöser für Fristüberschreitungsnachrichten/-status"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/categorie.tmpl:30
 msgid "Overdue Notice Required"
-msgstr "Hinweis bei Fristüberschreitung notwendig"
+msgstr "Mahnschreiben erforderlich"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/categorie.tmpl:31
 msgid ""
 "Overdue Notice Required lets you bypass generating overdue notices for this "
 "user type."
 msgstr ""
-"Über 'Hinweis zur Fristüberschreitung notwendig' können Sie die Erstellung "
-"von Mahnschreiben für diesen Benutzertyp umgehen."
+"Über 'Mahnschreiben erforderlich' können Sie die Erstellung von "
+"Mahnschreiben für diesen Benutzertyp umgehen."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/circ/branchoverdues.tmpl:3
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation-home.tmpl:39
@@ -23726,7 +23727,7 @@ msgstr "Mahngebühren"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/categorie.tmpl:114
 msgid "Overdue notice required:"
-msgstr "Hinweis zur Fristüberschreitung notwendig:"
+msgstr "Mahnschreiben erforderlich:"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/tools-home.tmpl:51
 msgid "Overdue notice/status triggers"
@@ -24186,7 +24187,7 @@ msgstr "Benutzerkonto wurde verlängert bis %s"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:285
 #, c-format
 msgid "Patron's account is restricted <a1>Lift restriction</a>"
-msgstr "Benutzerkonto ist beschränkt <a1>Beschränkung aufheben</a>"
+msgstr "Benutzerkonto ist gesperrt <a1>Sperrung aufheben</a>"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:279
 msgid "Patron's address in doubt"
@@ -24220,8 +24221,8 @@ msgid ""
 "Patron's card has expired. Patron's card expired on %s <a1>Renew</a> or "
 "<a2>Edit Details</a>"
 msgstr ""
-"Der Benutzerausweis ist abgelaufen. Das Ablaufdatum war am %s <a1>Erneuern</"
-"a> oder <a2>Details bearbeiten</a>"
+"Der Benutzerausweis ist abgelaufen. Das Ablaufdatum war am %s "
+"<a1>Verlängern</a> oder <a2>Details bearbeiten</a>"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:143
 msgid "Patron's card is expired"
@@ -24240,7 +24241,7 @@ msgid ""
 "<a2>Edit Details</a>"
 msgstr ""
 "Der Benutzerausweis wird in Kürze ablaufen. Ablaufdatum ist am %s "
-"<a1>Erneuern</a> oder <a2> Angaben bearbeiten</a>"
+"<a1>Verlängern</a> oder <a2> Angaben bearbeiten</a>"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/deletemem.tmpl:23
 msgid "Patron's record has guaranteed accounts attached."
@@ -25892,7 +25893,7 @@ msgstr "Alle verlängern"
 #. INPUT type=submit name=renew_checked
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:468
 msgid "Renew Checked Items"
-msgstr "Geprüfte Medien verlängern"
+msgstr "Markierte Exemplare verlängern"
 
 #. For the first occurrence,
 #. SCRIPT
@@ -25921,7 +25922,7 @@ msgstr "verlängerbar"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/issues_stats.tmpl:143
 msgid "Renewal"
-msgstr "Erneuerung"
+msgstr "Verlängerung"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:402
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:394
@@ -26154,7 +26155,7 @@ msgstr "benötigt"
 #. LABEL
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/serials/checkexpiration.tmpl:55
 msgid "Required field"
-msgstr "Benötigtes Feld"
+msgstr "Pflichtfeld"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/matching-rules.tmpl:326
 #, c-format
@@ -26207,7 +26208,7 @@ msgstr "Wiederherstellen"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:285
 msgid "Restricted:"
-msgstr "Eingeschränkt:"
+msgstr "Sperre:"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/checkmarc.tmpl:23
 msgid "Result"
@@ -26274,7 +26275,7 @@ msgstr "Ergebnisse %s bis %s von %s im Katalog"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/subject.tmpl:22
 #, c-format
 msgid "Results <b>%s</b> through <b>%s of %s</b> records."
-msgstr "Ergenisse <b>%s</b> bis <b>%s von %s </b> Sätzen."
+msgstr "Ergebnisse <b>%s</b> bis <b>%s von %s </b> Sätzen."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/results.tmpl:2
 msgid "Results of Search"
@@ -27163,7 +27164,7 @@ msgstr "Sebastiaan Durand"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/overduerules.tmpl:77
 msgid "Second"
-msgstr "Sekunde"
+msgstr "Zweiter"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_123d.tmpl:50
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_123e.tmpl:50
@@ -28408,7 +28409,7 @@ msgstr "Status"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/moredetail.tmpl:56
 msgid "Statuses"
-msgstr "Stati"
+msgstr "Status"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/reports/dictionary.tmpl:9
 msgid "Step 1 of 4 Name"
@@ -28664,7 +28665,7 @@ msgstr "Sachschlagwort"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/maint/catmaintain.tmpl:28
 msgid "Subject Heading Global Update"
-msgstr "Globale Erneuerung Sachschlagwort"
+msgstr "Globales Update für Hauptansetzung"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/z3950_search.tmpl:60
 msgid "Subject Heading:"
@@ -30404,8 +30405,8 @@ msgid ""
 "The fields 'branchcode' and 'categorycode' are <b>required</b> and <b>must "
 "match</b> valid entries in your database."
 msgstr ""
-"Die Felder 'branchcode' und 'categorycode' sind <b>erfodert</b> und "
-"<b>müssen</b> zu passsenden Einträgen in Ihrer Datenbank passen."
+"Die Felder 'branchcode' und 'categorycode' sind <b>Pflichtfelder</b> und "
+"<b>müssen</b> zu gültigen Einträgen in Ihrer Datenbank passen."
 
 #. %1$s: TMPL_VAR name=sort_rule
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/classsources.tmpl:243
@@ -30556,11 +30557,11 @@ msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/authorised_values.tmpl:186
 msgid "The list of status to describe a damaged item"
-msgstr "Die Liste der Stati, die beschädigte Medien beschreiben"
+msgstr "Die Liste der Status, die beschädigte Medien beschreiben"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/authorised_values.tmpl:189
 msgid "The list of status to describe a lost item"
-msgstr "Die Liste der Stati, die verlorene Medien beschreiben"
+msgstr "Die Liste der Status, die verlorene Medien beschreiben"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/tools/viewlog.tmpl:5
 msgid ""
@@ -30648,7 +30649,7 @@ msgstr "Der Benutzer hat Gebühren in Höhe von € %s"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/messaging.tmpl:51
 msgid "The patron settings have been updated"
-msgstr "Die Benutzereinstellunen wurden aktualisiert"
+msgstr "Die Benutzereinstellungen wurden aktualisiert"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/koha2marclinks.tmpl:7
 msgid ""
@@ -31091,11 +31092,11 @@ msgstr "Thesen"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/overduerules.tmpl:77
 msgid "Third"
-msgstr "Dritte"
+msgstr "Dritter"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/branchoverdues.tmpl:84
 msgid "Third overdue"
-msgstr "Dritte Überziehung"
+msgstr "Dritte Mahnung"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/checkmarc.tmpl:7
 msgid ""
@@ -32251,9 +32252,8 @@ msgid ""
 "To order an item you need to establish whether a biblio already exists for "
 "it, and either add an item, or set up a new biblio and then add the item."
 msgstr ""
-"Um ein Exemplar zu bestellen müssen Sie feststellen, ob ein "
-"bibliographischer Datensatz dafür bereits besteht und entwender ein Exemplar "
-"zufügen oder einen neuen bibliographische Datensatz einrichten und dann das "
+"Um ein Exemplar zu bestellen muss entweder bereits ein Titelsatz dafür "
+"vorhanden sein, oder Sie müssen einen neuen Titelsatz erstellen und dann das "
 "Exemplar hinzufügen."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/acqui/booksellers.tmpl:12
@@ -33062,7 +33062,7 @@ msgstr "Unautorisierter Benutzer <a1>klicken Sie um abzumelden</a>"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/detail.tmpl:215
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reserve/request.tmpl:260
 msgid "Unavailable (lost or missing)"
-msgstr "Nicht verfügbar (verloren oder vermißt)"
+msgstr "Nicht verfügbar (vermisst oder verschwunden)"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:306
 msgid "Undefined"
@@ -35908,11 +35908,11 @@ msgstr "Autobiographie"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/advsearch.tmpl:255
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/facets.inc:6
 msgid "available"
-msgstr "zur Verfügung"
+msgstr "Verfügbar"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/results.tmpl:298
 msgid "available:"
-msgstr "zur Verfügung:"
+msgstr "Verfügbar:"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_120.tmpl:420
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_120.tmpl:422
@@ -40129,7 +40129,7 @@ msgstr "localhost"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/borrowers_stats.tmpl:91
 msgid "lost"
-msgstr "vermißt"
+msgstr "vermisst"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_121b.tmpl:38
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_121b.tmpl:40
