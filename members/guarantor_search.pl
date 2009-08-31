@@ -61,11 +61,11 @@ my $background = 0;
 if ($member ne ''){
 	if(length($member) == 1)
 	{
-		($count,$results)=SearchMember($member,$orderby,"simple",'A');
+		($count,$results)=SearchMember($member,$orderby,"simple");
 	}
 	else
 	{
-		($count,$results)=SearchMember($member,$orderby,"advanced",'A');
+		($count,$results)=SearchMember($member,$orderby,"advanced");
 	}
 	for (my $i=0; $i < $count; $i++){
 	#find out stats
@@ -79,7 +79,8 @@ if ($member ne ''){
 		surname => $results->[$i]{'surname'},
 		firstname => $results->[$i]{'firstname'},
 		categorycode => $results->[$i]{'categorycode'},
-		streetnumber => $results->[$i]{'streetnumber'},
+		category => $results->[$i]{'description'},
+    streetnumber => $results->[$i]{'streetnumber'},
 		address => $results->[$i]{'address'},
 		city => $results->[$i]{'city'},
 		zipcode => $results->[$i]{'zipcode'},
