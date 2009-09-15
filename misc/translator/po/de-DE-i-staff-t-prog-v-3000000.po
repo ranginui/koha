@@ -2,13 +2,13 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Improved German Koha Translation\n"
 "POT-Creation-Date: 2009-09-15 17:08+1200\n"
-"PO-Revision-Date: 2009-08-13 21:11+1300\n"
+"PO-Revision-Date: 2009-09-15 21:04+1300\n"
 "Last-Translator: Katrin Fischer <katrin.fischer@bsz-bw.de>\n"
 "Language-Team: Katrin Fischer <caitlin.83@web.de>\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: de\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Pootle 1.2.0\n"
 "X-Poedit-Language: German\n"
@@ -590,9 +590,9 @@ msgstr "%s Vorlage"
 
 #. %1$s: TMPL_VAR name=countreserv
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:506
-#, fuzzy, c-format
+#, c-format
 msgid "%s Hold(s)"
-msgstr "%s Vormerkungen"
+msgstr "%s Vormerkung(en)"
 
 #. %1$s: TMPL_VAR name=op_count
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tags/review.tmpl:168
@@ -689,9 +689,9 @@ msgstr "%s Medien"
 
 #. %1$s: TMPL_VAR name=total
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/view_holdsqueue.tmpl:26
-#, fuzzy, c-format
+#, c-format
 msgid "%s items found for"
-msgstr "%s Exemplare gefunden für %s"
+msgstr "%s Exemplar(e) gefunden für"
 
 #. %1$s: TMPL_VAR name=Number
 #. %2$s: TMPL_VAR name=date
@@ -1290,9 +1290,9 @@ msgid "&nbsp;with limit(s):&nbsp;'%s'"
 msgstr "&nbsp;mit Einschränkung(en):&nbsp;'%s'"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/branchoverdues.tmpl:95
-#, fuzzy, c-format
+#, c-format
 msgid "&nbsp;|&nbsp; <a1>Phone</a> &nbsp;|&nbsp; <a2>Notice</a>"
-msgstr "&nbsp;|&nbsp; <a1>Telefon</a> &nbsp;|&nbsp; <a2>Hinweis</a>"
+msgstr "&nbsp;|&nbsp; <a1>Telefon</a> &nbsp;|&nbsp; <a2>Benachrichtigung</a>"
 
 #. %1$s: TMPL_VAR name=test_term
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tags/review.tmpl:288
@@ -1461,9 +1461,8 @@ msgid "&rsaquo; Add filing rule"
 msgstr "&rsaquo; Füge Einordnungsregel ein"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbookfund.tmpl:45
-#, fuzzy
 msgid "&rsaquo; Add fund"
-msgstr "&rsaquo; Benachrichtigung hinzufügen"
+msgstr "&rsaquo; Fund hinzufügen"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/letter.tmpl:2
 msgid "&rsaquo; Add notice"
@@ -1545,14 +1544,12 @@ msgstr "&rsaquo; Löschung bestätigen"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/authtypes.tmpl:6
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/authtypes.tmpl:62
-#, fuzzy
 msgid "&rsaquo; Confirm Deletion of Authority Type"
-msgstr "Normdatentypen &rsaquo; Löschen des Normdatentyps bestätigen"
+msgstr "&rsaquo; Löschen des Normdatentyps bestätigen"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/cities.tmpl:30
-#, fuzzy
 msgid "&rsaquo; Confirm Deletion of City"
-msgstr "Städte &rsaquo; Löschung der Stadt bestätigen"
+msgstr "&rsaquo; Löschen der Stadt bestätigen"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/classsources.tmpl:101
 msgid "&rsaquo; Confirm deletion of classification source"
@@ -1936,62 +1933,52 @@ msgid "(In transit)"
 msgstr "(unterwegs)"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/pendingreserves.tmpl:208
-#, fuzzy
 msgid ""
 "(Inclusive, default is two days ago to today, set other date ranges as "
 "needed. )"
 msgstr ""
-"(Inklusive, Standard ist gestern vor zehn Jahren, setzen Sie das "
-"Anfangsdatum auf heute, wenn erforderlich)"
+"(inklusive, voreingestellt ist zwei Tage vor dem heutigen Datum, verwenden "
+"Sie andere Datumsbereiche wenn erforderlich)"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/about.tmpl:255
 msgid "(Indonesian)"
 msgstr "(Indonesisch)"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/about.tmpl:84
-#, fuzzy
 msgid "(Kaitiaki from 2004 to present)"
-msgstr "Pate Eyler (Kaitiaki von 2002 bis 2004)"
+msgstr "(Kaitiaki von 2004 bis heute)"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/about.tmpl:81
-#, fuzzy
 msgid "(Koha 1.x Release Manager, Koha 3.2 Translation Manager)"
-msgstr ", USA (Koha 3.0 Release Manager, 3.2 Release Manager)"
+msgstr "(Koha 1.x Release Manager, Koha 3.2 Translation Manager)"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/about.tmpl:88
-#, fuzzy
 msgid "(Koha 2.0 Release Maintainer)"
-msgstr ", Neuseeland (Koha 1.0 und 1.2 Release Manager)"
+msgstr "(Koha 2.0 Release Maintainer)"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/about.tmpl:87
-#, fuzzy
 msgid "(Koha 2.0 Release Manager, Koha 2.2 Release Manager/Maintainer)"
-msgstr ", USA (Koha 3.0 Release Manager, 3.2 Release Manager)"
+msgstr "(Koha 2.0 Release Manager, Koha 2.2 Release Manager/Maintainer)"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/about.tmpl:85
-#, fuzzy
 msgid "(Koha 3.0 Release Maintainer)"
-msgstr ", USA (Koha 3.0 Release Manager, 3.2 Release Manager)"
+msgstr "(Koha 3.0 Release Maintainer)"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/about.tmpl:83
-#, fuzzy
 msgid "(Koha 3.0 Release Manager &amp; Translation Manager)"
-msgstr ", USA (Koha 3.0 Release Manager, 3.2 Release Manager)"
+msgstr "(Koha 3.0 Release Manager &amp; Translation Manager)"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/about.tmpl:80
-#, fuzzy
 msgid "(Koha 3.2 Release Manager)"
-msgstr ", Neuseeland (Koha 1.0 und 1.2 Release Manager)"
+msgstr "(Koha 3.2 Release Manager)"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/about.tmpl:82
-#, fuzzy
 msgid "(Koha 3.x Documentation Manager)"
-msgstr "Stephen Hedges (früher Documentations-Manager)"
+msgstr "(Koha 3.x Documentation Manager)"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/about.tmpl:86
-#, fuzzy
 msgid "(Koha 3.x Interface Design)"
-msgstr ", Ohio, USA (Schnittstellendesign)"
+msgstr "(Koha 3.x Interface Design)"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/results.tmpl:488
 msgid "(Lost)"
@@ -2067,7 +2054,7 @@ msgstr "(borrowernumber: %s; surname: %s)."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/smart-rules.tmpl:208
 msgid "(default if none is defined)"
-msgstr ""
+msgstr "(Voreinstellung, wenn nichts anderes definiert)"
 
 #. %1$s: TMPL_VAR name=suggestionid
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/neworderempty.tmpl:91
@@ -2263,7 +2250,7 @@ msgstr ", verpflichtend"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/about.tmpl:187
 msgid ", Maryland, USA"
-msgstr ""
+msgstr ", Maryland, USA"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/about.tmpl:66
 msgid ", New Zealand, and Rosalie Blake, Head of Libraries, (Koha 1.0)"
@@ -2275,7 +2262,7 @@ msgstr ", OH, USA (Koha 3.0 Betatester)"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/about.tmpl:186
 msgid ", Ohio, USA"
-msgstr ""
+msgstr ", Ohio, USA"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/about.tmpl:67
 msgid ", Ohio, USA (MARC sponsorship, documentation, template maintenance)"
@@ -2297,12 +2284,11 @@ msgstr ", Siehe %s"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/about.tmpl:185
 msgid ", USA"
-msgstr ""
+msgstr ", USA"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/about.tmpl:189
-#, fuzzy
 msgid ", United Kingdom"
-msgstr "London, Vereinigtes Königreich"
+msgstr ", Vereinigtes Königreich"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/about.tmpl:74
 msgid ", Wellington, New Zealand (Corporate Serials sponsorship)"
@@ -2323,9 +2309,9 @@ msgstr ", von %s"
 
 #. %1$s: TMPL_VAR name=author
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/acceptorreject.tmpl:149
-#, fuzzy, c-format
+#, c-format
 msgid ", by <a1>%s</a>"
-msgstr "Von <a1>%s</a>"
+msgstr ", von <a1>%s</a>"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/systempreferences.tmpl:175
 msgid ", or"
