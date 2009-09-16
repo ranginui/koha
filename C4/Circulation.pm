@@ -2585,6 +2585,22 @@ sub DeleteBranchTransferLimits {
     $sth->execute($branch);
 }
 
+sub GetOfflineOperations {
+	my $dbh = C4::Context->dbh;
+	my $sth = $dbh->prepare("SELECT * FROM pending_offline_operations");
+	$sth->execute();
+	my $results = $sth->fetchall_arrayref({});
+	$sth->finish;
+	return $results;
+}
+
+sub AddOfflineOperation {
+	my $dbh = C4::Context->dbh;
+	my $sth = $dbh->prepare("INSERT INTO pending_offline_operations VALUES(?,?,?,?,?)");
+	$sth->execute( @_ );
+}
+
+
 1;
 
 __END__

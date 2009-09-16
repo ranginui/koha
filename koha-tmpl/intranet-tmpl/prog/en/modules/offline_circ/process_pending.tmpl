@@ -1,0 +1,50 @@
+<!-- TMPL_INCLUDE NAME="doc-head-open.inc" -->
+<title>Koha &rsaquo; Circulation &rsaquo; Process Pending Offline Operations</title>
+<!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
+<script type="text/javascript" src="<!-- TMPL_VAR name="themelang" -->/lib/jquery/plugins/jquery.tablesorter.min.js"></script>
+<script type="text/JavaScript" language="JavaScript">
+//<![CDATA[
+$(document).ready(function() {
+$("#operations").tablesorter({
+            widgets : ['zebra'],
+            sortList: [[0,0]]
+        });
+}
+//]]>
+</script>
+</head>
+<body>
+<!-- TMPL_INCLUDE NAME="header.inc" -->
+<!-- TMPL_INCLUDE NAME="circ-search.inc" -->
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/circ/circulation-home.pl">Circulation</a> &rsaquo; Process Pending Offline Operations</div>
+
+<div id="doc" class="yui-t7">
+   
+	<div id="bd">
+
+	<h2>Process Pending Offline Operations</h2>
+
+	<table id="operations">
+		<tr>
+			<th>Branch</th>
+			<th>Date</th>
+			<th>Action</th>
+			<th>Biblio Title</th>
+			<th>Barcode</th>
+			<th>Borrower</th>
+		</tr>
+		<!-- TMPL_LOOP NAME="operations" -->
+		<tr>
+			<td><!-- TMPL_VAR NAME="branch" --></td>
+			<td><!-- TMPL_VAR NAME="timestamp" --></td>
+			<td><!-- TMPL_VAR NAME="action" --></td>
+			<td><!-- TMPL_VAR NAME="bibliotitle" --></td>
+			<td><!-- TMPL_VAR NAME="barcode" --></td>
+			<td><!-- TMPL_VAR NAME="borrower" --></td>
+		</tr>
+		<!-- /TMPL_LOOP -->
+	</table>
+
+</div>
+<!-- TMPL_INCLUDE NAME="intranet-bottom.inc" -->
