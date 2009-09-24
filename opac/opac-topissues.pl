@@ -19,6 +19,8 @@
 # Suite 330, Boston, MA  02111-1307 USA
 
 use strict;
+use warnings;
+
 use CGI;
 use C4::Auth;
 use C4::Context;
@@ -52,14 +54,14 @@ my ($template, $borrowernumber, $cookie)
 my $dbh = C4::Context->dbh;
 # Displaying results
 my $limit = $input->param('limit') || 10;
-my $branch = $input->param('branch');
-my $itemtype = $input->param('itemtype');
+my $branch = $input->param('branch') || '';
+my $itemtype = $input->param('itemtype') || '';
 my $timeLimit = $input->param('timeLimit') || 3;
-my $whereclause;
+my $whereclause = '';
 $whereclause .= 'items.homebranch='.$dbh->quote($branch)." AND " if ($branch);
 $whereclause .= 'biblioitems.itemtype='.$dbh->quote($itemtype)." AND " if $itemtype;
 $whereclause .= ' TO_DAYS(NOW()) - TO_DAYS(biblio.datecreated) <= '.($timeLimit*30).' AND ' if $timeLimit < 999;
-$whereclause =~ s/ AND $//;
+$whereclause =~ s/ AND $// if $whereclause;
 $whereclause = " WHERE ".$whereclause if $whereclause;
 
 my $query = "SELECT datecreated, biblio.biblionumber, title, 
@@ -84,37 +86,29 @@ while (my $line= $sth->fetchrow_hashref) {
     push @results, $line;
 }
 
-if($timeLimit eq 999){ $timeLimit = 0 };
+my $timeLimitFinite = $timeLimit;
+if($timeLimit eq 999){ $timeLimitFinite = 0 };
 
 $template->param(do_it => 1,
                 limit => $limit,
-                branch => $branches->{$branch}->{branchname},
-                itemtype => $itemtypes->{$itemtype}->{description},
+                branch => $branches->{$branch}->{branchname} || 'all locations',
+                itemtype => $itemtypes->{$itemtype}->{description} || 'item types',
                 timeLimit => $timeLimit,
+                timeLimitFinite => $timeLimit,
                 results_loop => \@results,
                 );
 
-# load the branches		## again??
-$branches = GetBranches();
-my @branch_loop;
-for my $branch_hash (sort keys %$branches ) {
-    my $selected=(C4::Context->userenv && ($branch_hash eq C4::Context->userenv->{branch})) if (C4::Context->preference('SearchMyLibraryFirst'));
-    push @branch_loop,
-      {
-        value      => "$branch_hash",
-        branchname => $branches->{$branch_hash}->{'branchname'},
-        selected => $selected
-      };
-}
-$template->param( branchloop => \@branch_loop, "mylibraryfirst"=>C4::Context->preference("SearchMyLibraryFirst"));
+$template->param( branchloop => GetBranchesLoop(C4::Context->userenv->{'branch'}));
 
 #doctype
 $itemtypes = GetItemTypes;
 my @itemtypeloop;
-foreach my $thisitemtype (keys %$itemtypes) {
+foreach my $thisitemtype (sort {$itemtypes->{$a}->{'description'} cmp $itemtypes->{$b}->{'description'}} keys %$itemtypes) {
+        my $selected = 1 if $thisitemtype eq $itemtype;
         my %row =(value => $thisitemtype,
                     description => $itemtypes->{$thisitemtype}->{'description'},
-                        );
+                    selected => $selected,
+                 );
         push @itemtypeloop, \%row;
 }
 

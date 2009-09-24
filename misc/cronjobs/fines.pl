@@ -105,12 +105,14 @@ if($output_dir){
     $fldir = $output_dir if( -d $output_dir );
 } else {
     $fldir = $ENV{TMPDIR} || "/tmp";
-    warn "Could not write to $output_dir ... does not exist!";
+}
+if (!-d $fldir) {
+    warn "Could not write to $fldir ... does not exist!";
 }
 $filename = $dbname;
 $filename =~ s/\W//;
 $filename = $fldir . '/'. $filename . '_' .  $today_iso . ".log";
-print "writing to $filename\n";
+print "writing to $filename\n" if $verbose;
 open (FILE, ">$filename") or die "Cannot write file $filename: $!";
 print FILE join $delim, (@borrower_fields, @item_fields, @other_fields);
 print FILE "\n";

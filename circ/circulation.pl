@@ -106,6 +106,10 @@ if (C4::Context->preference("AutoLocation") ne 1) { # FIXME: string comparison t
     $template->param(ManualLocation => 1);
 }
 
+if (C4::Context->preference("DisplayClearScreenButton")) {
+    $template->param(DisplayClearScreenButton => 1);
+}
+
 my $barcode        = $query->param('barcode') || '';
 $barcode =~  s/^\s*|\s*$//g; # remove leading/trailing whitespace
 
@@ -421,13 +425,14 @@ my @previousissues;
 ## ADDED BY JF: new itemtype issuingrules counter stuff
 my $issued_itemtypes_count;
 my @issued_itemtypes_count_loop;
+my $totalprice = 0;
 
 if ($borrower) {
 # get each issue of the borrower & separate them in todayissues & previous issues
     my ($issueslist) = GetPendingIssues($borrower->{'borrowernumber'});
-
     # split in 2 arrays for today & previous
     foreach my $it ( @$issueslist ) {
+        my $itemtypeinfo = getitemtypeinfo( (C4::Context->preference('item-level_itypes')) ? $it->{'itype'} : $it->{'itemtype'} );
         # set itemtype per item-level_itype syspref - FIXME this is an ugly hack
         $it->{'itemtype'} = ( C4::Context->preference( 'item-level_itypes' ) ) ? $it->{'itype'} : $it->{'itemtype'};
 
@@ -443,8 +448,13 @@ if ($borrower) {
 		$it->{'can_renew'} = $can_renew;
 		$it->{'can_confirm'} = !$can_renew && !$restype;
 		$it->{'renew_error'} = $restype;
+	    $it->{'checkoutdate'} = C4::Dates->new($it->{'issuedate'},'iso')->output('syspref');
 
+	    $totalprice += $it->{'replacementprice'};
+		$it->{'itemtype'} = $itemtypeinfo->{'description'};
+		$it->{'itemtype_image'} = $itemtypeinfo->{'imageurl'};
         $it->{'dd'} = format_date($it->{'date_due'});
+        $it->{'issuedate'} = format_date($it->{'issuedate'});
         $it->{'od'} = ( $it->{'date_due'} lt $todaysdate ) ? 1 : 0 ;
         ($it->{'author'} eq '') and $it->{'author'} = ' ';
         $it->{'renew_failed'} = $renew_failed{$it->{'itemnumber'}};
@@ -615,6 +625,8 @@ foreach my $flag ( sort keys %$flags ) {
 my $amountold = $borrower->{flags}->{'CHARGES'}->{'message'} || 0;
 $amountold =~ s/^.*\$//;    # remove upto the $, if any
 
+my ( $total, $accts, $numaccts) = GetMemberAccountRecords( $borrowernumber );
+
 if ( $borrower->{'category_type'} eq 'C') {
     my  ( $catcodes, $labels ) =  GetborCatFromCatType( 'A', 'WHERE category_type = ?' );
     my $cnt = scalar(@$catcodes);
@@ -643,6 +655,9 @@ if ( C4::Context->preference("memberofinstitution") ) {
 
 $template->param(
     issued_itemtypes_count_loop => \@issued_itemtypes_count_loop,
+    lib_messages_loop		=> GetMessages( $borrowernumber, 'L', $branch ),
+    bor_messages_loop		=> GetMessages( $borrowernumber, 'B', $branch ),
+    all_messages_del		=> C4::Context->preference('AllowAllMessageDeletion'),
     findborrower                => $findborrower,
     borrower                    => $borrower,
     borrowernumber              => $borrowernumber,
@@ -663,6 +678,7 @@ $template->param(
     borrowernotes     => $borrower->{'borrowernotes'},
     city              => $borrower->{'city'},
     zipcode	          => $borrower->{'zipcode'},
+    country	          => $borrower->{'country'},
     phone             => $borrower->{'phone'} || $borrower->{'mobile'},
     cardnumber        => $borrower->{'cardnumber'},
     amountold         => $amountold,
@@ -671,6 +687,8 @@ $template->param(
     duedatespec       => $duedatespec,
     message           => $message,
     CGIselectborrower => $CGIselectborrower,
+	totalprice => sprintf("%.2f", $totalprice),
+    totaldue        => sprintf("%.2f", $total),
     todayissues       => \@todaysissues,
     previssues        => \@previousissues,
     inprocess         => $inprocess,
@@ -692,6 +710,17 @@ if ($stickyduedate) {
 my ($picture, $dberror) = GetPatronImage($borrower->{'cardnumber'});
 $template->param( picture => 1 ) if $picture;
 
+# get authorised values with type of BOR_NOTES
+my @canned_notes;
+my $dbh = C4::Context->dbh;
+my $sth = $dbh->prepare('SELECT * FROM authorised_values WHERE category = "BOR_NOTES"');
+$sth->execute();
+while ( my $row = $sth->fetchrow_hashref() ) {
+  push @canned_notes, $row;
+}
+if ( scalar( @canned_notes ) ) {
+  $template->param( canned_bor_notes_loop => \@canned_notes );
+}
 
 $template->param(
     debt_confirmed            => $debt_confirmed,

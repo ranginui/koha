@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 
 use strict;
+use warnings;
 use CGI;
 use C4::Auth;
 use C4::Serials;
@@ -44,7 +45,10 @@ foreach (keys %$letters){
 }
 
 my $letter=((scalar(@letters)>1) || ($letters[0]->{name}||$letters[0]->{code}));
-my ($count2, @missingissues) = GetLateOrMissingIssues($supplierid,$serialid,$order) if $supplierid;
+my ($count2, @missingissues);
+if ($supplierid) {
+    ($count2, @missingissues) = GetLateOrMissingIssues($supplierid,$serialid,$order);
+}
 
 my $CGIsupplier=CGI::scrolling_list( -name     => 'supplierid',
 			-id        => 'supplierid',
@@ -58,21 +62,21 @@ my ($singlesupplier,@supplierinfo);
 if($supplierid){
    (@supplierinfo)=GetBookSeller($supplierid);
 } else { # set up supplierid for the claim links out of main table if all suppliers is chosen
-   for(my $i=0; $i<@missingissues;$i++){
-       $missingissues[$i]->{'supplierid'} = getsupplierbyserialid($missingissues[$i]->{'serialid'});
+   for my $mi (@missingissues){
+       $mi->{supplierid} = getsupplierbyserialid($mi->{serialid});
    }
 }
 
 my $preview=0;
-if($op eq 'preview'){
+if($op && $op eq 'preview'){
     $preview = 1;
-}
-
-if ($op eq "send_alert"){
-  my @serialnums=$input->param("serialid");
-  SendAlerts('claimissues',\@serialnums,$input->param("letter_code"));
-  my $cntupdate=UpdateClaimdateIssues(\@serialnums);
-  ### $cntupdate SHOULD be equal to scalar(@$serialnums)
+} else {
+    my @serialnums=$input->param('serialid');
+    if (@serialnums) { # i.e. they have been flagged to generate claims
+        SendAlerts('claimissues',\@serialnums,$input->param("letter_code"));
+        my $cntupdate=UpdateClaimdateIssues(\@serialnums);
+        ### $cntupdate SHOULD be equal to scalar(@$serialnums)  TODO so what do we do about it??
+    }
 }
 
 $template->param('letters'=>\@letters,'letter'=>$letter);

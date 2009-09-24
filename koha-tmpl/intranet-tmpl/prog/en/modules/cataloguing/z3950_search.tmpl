@@ -2,7 +2,7 @@
 <title>Koha &rsaquo; Z39.50 Search Results</title>
 <!-- TMPL_INCLUDE NAME="greybox.inc" -->
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
-<script type="text/javascript" src="<!-- TMPL_VAR name="themelang" -->/lib/jquery/plugins/jquery.checkboxes.pack.js"></script>
+<script type="text/javascript" src="<!-- TMPL_VAR name="themelang" -->/lib/jquery/plugins/jquery.checkboxes.min.js"></script>
 <script type="text/javascript" src="<!-- TMPL_VAR name="themelang" -->/lib/jquery/plugins/jquery.tablesorter.min.js"></script>
 <script type="text/javascript">
 //<![CDATA[
@@ -36,7 +36,7 @@ $(document).ready(function(){
 //]]>
 </script>
    <style type="text/css">
-   #custom-doc { width:54.92em;*width:53.55em;min-width:720px; margin:auto; text-align:left; }
+	   #custom-doc { width:53em;*width:51.72em;min-width:689px; margin:auto; text-align:left; }
    </style>
 </head>
 <body>
@@ -104,7 +104,11 @@ $(document).ready(function(){
     <tbody><!-- TMPL_LOOP name="breeding_loop" -->
         <!-- TMPL_IF NAME="breedingid" -->
 		
+	<!-- TMPL_UNLESS NAME="__odd__" -->
+	<tr class="highlight">
+	<!-- TMPL_ELSE -->
         <tr>
+	<!-- /TMPL_UNLESS -->
             <td><!-- TMPL_VAR name="server" --></td>
             <td><!-- TMPL_VAR NAME="title" escape="html" --></td>
             <td><!-- TMPL_VAR NAME="author" --></td>
@@ -112,8 +116,9 @@ $(document).ready(function(){
             <td><!-- TMPL_VAR NAME="edition" --></td>
             <td><!-- TMPL_VAR NAME="isbn" --></td>
             <td><!-- TMPL_VAR NAME="lccn" --></td>
-            <td><a href="/cgi-bin/koha/catalogue/showmarc.pl?importid=<!-- TMPL_VAR NAME="breedingid" -->" title="MARC" rel="gb_page_center[600,500]">MARC</a></td><td><a href="/cgi-bin/koha/catalogue/showmarc.pl?viewas=card&amp;importid=<!-- TMPL_VAR NAME="breedingid" -->" title="MARC" rel="gb_page_center[600,500]">Card</a></td>
-			<td><a href="javascript:Import(<!-- TMPL_VAR NAME="breedingid" -->,<!-- TMPL_VAR NAME="biblionumber" -->)">Import</a></td> 
+            <td><a href="/cgi-bin/koha/catalogue/showmarc.pl?importid=<!-- TMPL_VAR NAME="breedingid" -->" title="MARC" rel="gb_page_center[600,500]">MARC</a></td>
+            <td><a href="/cgi-bin/koha/catalogue/showmarc.pl?viewas=card&amp;importid=<!-- TMPL_VAR NAME="breedingid" -->" title="MARC" rel="gb_page_center[600,500]">Card</a></td>
+            <td><a href="javascript:Import(<!-- TMPL_VAR NAME="breedingid" -->,<!-- TMPL_VAR NAME="biblionumber" -->)">Import</a></td> 
         </tr>
         <!-- /TMPL_IF -->
     <!-- /TMPL_LOOP --></tbody>

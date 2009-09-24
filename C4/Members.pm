@@ -75,6 +75,11 @@ BEGIN {
 		&GetBorrowersWithIssuesHistoryOlderThan
 
 		&GetExpiryDate
+
+		&AddMessage
+		&DeleteMessage
+		&GetMessages
+		&GetMessagesCount
 	);
 
 	#Modify data
@@ -93,7 +98,7 @@ BEGIN {
 		&AddMember
 		&add_member_orgs
 		&MoveMemberToDeleted
-		&ExtendMemberSubscriptionTo 
+		&ExtendMemberSubscriptionTo
 	);
 
 	#Check data
@@ -677,6 +682,7 @@ sub AddMember {
       . ",address="     . $dbh->quote( $data{'address'} )
       . ",address2="    . $dbh->quote( $data{'address2'} )
       . ",zipcode="     . $dbh->quote( $data{'zipcode'} )
+      . ",country="     . $dbh->quote( $data{'country'} )
       . ",city="        . $dbh->quote( $data{'city'} )
       . ",phone="       . $dbh->quote( $data{'phone'} )
       . ",email="       . $dbh->quote( $data{'email'} )
@@ -693,7 +699,9 @@ sub AddMember {
       . ",dateexpiry="  . $dbh->quote( $data{'dateexpiry'} )
       . ",contactnote=" . $dbh->quote( $data{'contactnote'} )
       . ",B_address="   . $dbh->quote( $data{'B_address'} )
+      . ",B_address2="   . $dbh->quote( $data{'B_address2'} )
       . ",B_zipcode="   . $dbh->quote( $data{'B_zipcode'} )
+      . ",B_country="   . $dbh->quote( $data{'B_country'} )
       . ",B_city="      . $dbh->quote( $data{'B_city'} )
       . ",B_phone="     . $dbh->quote( $data{'B_phone'} )
       . ",B_email="     . $dbh->quote( $data{'B_email'} )
@@ -720,6 +728,7 @@ sub AddMember {
       . ",altcontactaddress2="  . $dbh->quote( $data{'altcontactaddress2'} ) 
       . ",altcontactaddress3="  . $dbh->quote( $data{'altcontactaddress3'} ) 
       . ",altcontactzipcode="   . $dbh->quote( $data{'altcontactzipcode'} ) 
+      . ",altcontactcountry="   . $dbh->quote( $data{'altcontactcountry'} ) 
       . ",altcontactphone="     . $dbh->quote( $data{'altcontactphone'} ) ;
     $debug and print STDERR "AddMember SQL: ($query)\n";
     my $sth = $dbh->prepare($query);
@@ -1129,9 +1138,9 @@ sub GetMemberAccountRecords {
 	        $data->{title} = $biblio->{title};
         $acctlines[$numlines] = $data;
         $numlines++;
-        $total += int(100 * $data->{'amountoutstanding'}); # convert float to integer to avoid round-off errors
+        $total += int(1000 * $data->{'amountoutstanding'}); # convert float to integer to avoid round-off errors
     }
-    $total /= 100;
+    $total /= 1000;
     $sth->finish;
     return ( $total, \@acctlines,$numlines);
 }
@@ -2043,6 +2052,141 @@ sub DebarMember {
     return ModMember( borrowernumber => $borrowernumber,
                       debarred       => 1 );
     
+}
+
+=head2 AddMessage
+
+=over 4
+
+AddMessage( $borrowernumber, $message_type, $message, $branchcode );
+
+Adds a message to the messages table for the given borrower.
+
+Returns:
+  True on success
+  False on failure
+
+=back
+
+=cut
+
+sub AddMessage {
+    my ( $borrowernumber, $message_type, $message, $branchcode ) = @_;
+
+    my $dbh  = C4::Context->dbh;
+
+    if ( ! ( $borrowernumber && $message_type && $message && $branchcode ) ) {
+      return;
+    }
+
+    my $query = "INSERT INTO messages ( borrowernumber, branchcode, message_type, message ) VALUES ( ?, ?, ?, ? )";
+    my $sth = $dbh->prepare($query);
+    $sth->execute( $borrowernumber, $branchcode, $message_type, $message );
+
+    return 1;
+}
+
+=head2 GetMessages
+
+=over 4
+
+GetMessages( $borrowernumber, $type );
+
+$type is message type, B for borrower, or L for Librarian.
+Empty type returns all messages of any type.
+
+Returns all messages for the given borrowernumber
+
+=back
+
+=cut
+
+sub GetMessages {
+    my ( $borrowernumber, $type, $branchcode ) = @_;
+
+    if ( ! $type ) {
+      $type = '%';
+    }
+
+    my $dbh  = C4::Context->dbh;
+
+    my $query = "SELECT
+                  branches.branchname,
+                  messages.*,
+                  DATE_FORMAT( message_date, '%m/%d/%Y' ) AS message_date_formatted,
+                  messages.branchcode LIKE '$branchcode' AS can_delete
+                  FROM messages, branches
+                  WHERE borrowernumber = ?
+                  AND message_type LIKE ?
+                  AND messages.branchcode = branches.branchcode
+                  ORDER BY message_date DESC";
+    my $sth = $dbh->prepare($query);
+    $sth->execute( $borrowernumber, $type ) ;
+    my @results;
+
+    while ( my $data = $sth->fetchrow_hashref ) {
+        push @results, $data;
+    }
+    return \@results;
+
+}
+
+=head2 GetMessages
+
+=over 4
+
+GetMessagesCount( $borrowernumber, $type );
+
+$type is message type, B for borrower, or L for Librarian.
+Empty type returns all messages of any type.
+
+Returns the number of messages for the given borrowernumber
+
+=back
+
+=cut
+
+sub GetMessagesCount {
+    my ( $borrowernumber, $type, $branchcode ) = @_;
+
+    if ( ! $type ) {
+      $type = '%';
+    }
+
+    my $dbh  = C4::Context->dbh;
+
+    my $query = "SELECT COUNT(*) as MsgCount FROM messages WHERE borrowernumber = ? AND message_type LIKE ?";
+    my $sth = $dbh->prepare($query);
+    $sth->execute( $borrowernumber, $type ) ;
+    my @results;
+
+    my $data = $sth->fetchrow_hashref;
+    my $count = $data->{'MsgCount'};
+
+    return $count;
+}
+
+
+
+=head2 DeleteMessage
+
+=over 4
+
+DeleteMessage( $message_id );
+
+=back
+
+=cut
+
+sub DeleteMessage {
+    my ( $message_id ) = @_;
+
+    my $dbh = C4::Context->dbh;
+
+    my $query = "DELETE FROM messages WHERE message_id = ?";
+    my $sth = $dbh->prepare($query);
+    $sth->execute( $message_id );
+
 }
 
 END { }    # module clean-up code here (global destructor)

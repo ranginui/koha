@@ -19,6 +19,7 @@ package C4::Items;
 
 use strict;
 
+use Carp;
 use C4::Context;
 use C4::Koha;
 use C4::Biblio;
@@ -62,6 +63,8 @@ BEGIN {
         GetItemsInfo
         get_itemnumbers_of
         GetItemnumberFromBarcode
+
+        CartToShelf
     );
 }
 
@@ -152,6 +155,34 @@ sub GetItem {
 	}
     return $data;
 }    # sub GetItem
+
+=head2 CartToShelf
+
+=over 4
+
+CartToShelf($itemnumber);
+
+=back
+
+Set the current shelving location of the item record
+to its stored permanent shelving location.  This is
+primarily used to indicate when an item whose current
+location is a special processing ('PROC') or shelving cart
+('CART') location is back in the stacks.
+
+=cut
+
+sub CartToShelf {
+    my ( $itemnumber ) = @_;
+
+    unless ( $itemnumber ) {
+        croak "FAILED CartToShelf() - no itemnumber supplied";
+    }
+
+    my $item = GetItem($itemnumber);
+    $item->{location} = $item->{permanent_location};
+    ModItem($item, undef, $itemnumber);
+}
 
 =head2 AddItemFromMarc
 
@@ -1474,7 +1505,7 @@ sub get_item_authorised_values {
   authorised values for a biblio.
 
   parameters: listref of authorised values, such as comes from
-    get_item_ahtorised_values or
+    get_item_authorised_values or
     from C4::Biblio::get_biblio_authorised_values
 
   returns: listref of hashrefs for each image. Each hashref looks like
@@ -1727,6 +1758,9 @@ sub _do_column_fixes_for_mod {
     if (exists $item->{'wthdrawn'} and
         (not defined $item->{'wthdrawn'} or $item->{'wthdrawn'} eq '')) {
         $item->{'wthdrawn'} = 0;
+    }
+    if (exists $item->{'location'} && !exists $item->{'permanent_location'}) {
+        $item->{'permanent_location'} = $item->{'location'};
     }
 }
 

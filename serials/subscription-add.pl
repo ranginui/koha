@@ -41,7 +41,7 @@ my ($subscriptionid,$auser,$branchcode,$librarian,$cost,$aqbooksellerid, $aqbook
 	$add1,$every1,$whenmorethan1,$setto1,$lastvalue1,$innerloop1,
 	$add2,$every2,$whenmorethan2,$setto2,$lastvalue2,$innerloop2,
 	$add3,$every3,$whenmorethan3,$setto3,$lastvalue3,$innerloop3,
-	$numberingmethod, $status, $biblionumber, 
+	$numberingmethod, $status, $biblionumber,
 	$bibliotitle, $callnumber, $notes, $hemisphere, $letter, $manualhistory,$serialsadditems, $location);
 
 	my @budgets;
@@ -59,7 +59,7 @@ my ($template, $loggedinuser, $cookie)
 my $sub_on;
 my @subscription_types = (
             'issues', 'weeks', 'months'
-        ); 
+        );
 my @sub_type_data;
 
 my $subs;
@@ -74,7 +74,7 @@ if ($op eq 'mod' || $op eq 'dup' || $op eq 'modsubscription') {
     if ($subs->{'cannotedit'} && $op eq 'mod'){
       warn "Attempt to modify subscription $subscriptionid by ".C4::Context->userenv->{'id'}." not allowed";
       print $query->redirect("/cgi-bin/koha/serials/subscription-detail.pl?subscriptionid=$subscriptionid");
-    } 
+    }
     $firstissuedate = $subs->{firstacquidate};  # in iso format.
     for (qw(startdate firstacquidate histstartdate enddate histenddate)) {
         next unless defined $subs->{$_};
@@ -82,7 +82,7 @@ if ($op eq 'mod' || $op eq 'dup' || $op eq 'modsubscription') {
          if ($subs->{$_} eq '0000-00-00') {
             $subs->{$_} = ''
     	} else {
-            $subs->{$_} = format_date($subs->{$_});  
+            $subs->{$_} = format_date($subs->{$_});
         }
 	  }
     $subs->{'letter'}='' unless($subs->{'letter'});
@@ -93,32 +93,19 @@ if ($op eq 'mod' || $op eq 'dup' || $op eq 'modsubscription') {
     $nextexpected->{'isfirstissue'} = $nextexpected->{planneddate}->output('iso') eq $firstissuedate ;
     $subs->{nextacquidate} = $nextexpected->{planneddate}->output()  if($op eq 'mod');
     unless($op eq 'modsubscription') {
-        if($subs->{numberlength} > 0){
-            $sublength = $subs->{numberlength};
-            $sub_on = $subscription_types[0];
-        } elsif ($subs->{weeklength}>0){
-            $sublength = $subs->{weeklength};
-            $sub_on = $subscription_types[1];
-        } else {
-            $sublength = $subs->{monthlength};
-            $sub_on = $subscription_types[2];
-        }
-        while (@subscription_types) {
-            my $sub_type = shift @subscription_types;
-            my %row = ( 'name' => $sub_type );
-            if ( $sub_on eq $sub_type ) {
-                $row{'selected'} = ' selected';
-            } else {
-                $row{'selected'} = '';
-            }
-            push( @sub_type_data, \%row );
-        }
-    
+		foreach my $length_unit qw(numberlength weeklength monthlength){
+			if ($subs->{$length_unit}){
+				$sublength=$subs->{$length_unit};
+				$sub_on=$length_unit;
+				last;
+			}
+		}
+
         $template->param($subs);
         $template->param("dow".$subs->{'dow'} => 1) if defined $subs->{'dow'};
         $template->param(
                     $op => 1,
-                    subtype => \@sub_type_data,
+                    "subtype_$sub_on" => 1,
                     sublength =>$sublength,
                     history => ($op eq 'mod' && $subs->{manualhistory} == 1 ),
                     "periodicity".$subs->{'periodicity'} => 1,
@@ -128,9 +115,9 @@ if ($op eq 'mod' || $op eq 'dup' || $op eq 'modsubscription') {
     }
 }
 
-my $onlymine=C4::Context->preference('IndependantBranches') && 
-             C4::Context->userenv && 
-             C4::Context->userenv->{flags} % 2 !=1 && 
+my $onlymine=C4::Context->preference('IndependantBranches') &&
+             C4::Context->userenv &&
+             C4::Context->userenv->{flags} % 2 !=1 &&
              C4::Context->userenv->{branch};
 my $branches = GetBranches($onlymine);
 my @branchloop;
@@ -157,9 +144,9 @@ if ($op eq 'addsubscription') {
     my $branchcode      = $query->param('branchcode');
     my $aqbooksellerid  = $query->param('aqbooksellerid');
     my $cost            = $query->param('cost');
-    my $aqbudgetid      = $query->param('aqbudgetid'); 
+    my $aqbudgetid      = $query->param('aqbudgetid');
     my $startdate       = $query->param('startdate');
-    my $firstacquidate  = $query->param('firstacquidate');    
+    my $firstacquidate  = $query->param('firstacquidate');
     my $periodicity     = $query->param('periodicity');
     my $dow             = $query->param('dow');
     my @irregularity    = $query->param('irregularity_select');
@@ -294,7 +281,7 @@ if ($op eq 'addsubscription') {
         # if we have not received any issues yet, then we also must change the firstacquidate for the subs.
         $firstissuedate = $nextacquidate if($nextexpected->{isfirstissue});
     }
-    
+
     if ($history_only) {
         ModSubscriptionHistory ($subscriptionid,$histstartdate,$histenddate,$recievedlist,$missinglist,$opacnote,$librariannote);
     } else {
@@ -324,7 +311,7 @@ if ($op eq 'addsubscription') {
 	     $row{'selected'} = '';
            }
            push( @sub_type_data, \%row );
-        }    
+        }
     $template->param(subtype => \@sub_type_data,
 	);
 
@@ -352,5 +339,5 @@ sub letter_loop {
         };
     }
     $template->param(letterloop => \@letterloop) if @letterloop;
+    return;
 }
-

@@ -100,27 +100,29 @@ $tabsysprefs{dontmerge}             = "Authorities";
 $tabsysprefs{BiblioAddsAuthorities} = "Authorities";
 
 # Cataloguing
-$tabsysprefs{advancedMARCeditor}          = "Cataloguing";
-$tabsysprefs{autoBarcode}                 = "Cataloguing";
-$tabsysprefs{hide_marc}                   = "Cataloguing";
-$tabsysprefs{IntranetBiblioDefaultView}   = "Cataloguing";
-$tabsysprefs{ISBD}                        = "Cataloguing";
-$tabsysprefs{itemcallnumber}              = "Cataloguing";
-$tabsysprefs{LabelMARCView}               = "Cataloguing";
-$tabsysprefs{marc}                        = "Cataloguing";
-$tabsysprefs{marcflavour}                 = "Cataloguing";
-$tabsysprefs{MARCOrgCode}                 = "Cataloguing";
-$tabsysprefs{z3950AuthorAuthFields}       = "Cataloguing";
-$tabsysprefs{z3950NormalizeAuthor}        = "Cataloguing";
-$tabsysprefs{Stemming}                    = "Cataloguing";
-$tabsysprefs{WeightFields}                = "Cataloguing";
-$tabsysprefs{NoZebra}                     = "Cataloguing";
-$tabsysprefs{NoZebraIndexes}              = "Cataloguing";
-$tabsysprefs{ReceiveBackIssues}           = "Cataloguing";
-$tabsysprefs{DefaultClassificationSource} = "Cataloguing";
-$tabsysprefs{RoutingSerials}              = "Cataloguing";
-$tabsysprefs{'item-level_itypes'}         = "Cataloguing";
-$tabsysprefs{OpacSuppression}             = "Cataloguing";
+$tabsysprefs{advancedMARCeditor}          = "Cataloging";
+$tabsysprefs{autoBarcode}                 = "Cataloging";
+$tabsysprefs{hide_marc}                   = "Cataloging";
+$tabsysprefs{IntranetBiblioDefaultView}   = "Cataloging";
+$tabsysprefs{ISBD}                        = "Cataloging";
+$tabsysprefs{itemcallnumber}              = "Cataloging";
+$tabsysprefs{LabelMARCView}               = "Cataloging";
+$tabsysprefs{marc}                        = "Cataloging";
+$tabsysprefs{marcflavour}                 = "Cataloging";
+$tabsysprefs{MARCOrgCode}                 = "Cataloging";
+$tabsysprefs{z3950AuthorAuthFields}       = "Cataloging";
+$tabsysprefs{z3950NormalizeAuthor}        = "Cataloging";
+$tabsysprefs{Stemming}                    = "Cataloging";
+$tabsysprefs{WeightFields}                = "Cataloging";
+$tabsysprefs{NoZebra}                     = "Cataloging";
+$tabsysprefs{NoZebraIndexes}              = "Cataloging";
+$tabsysprefs{ReceiveBackIssues}           = "Cataloging";
+$tabsysprefs{DefaultClassificationSource} = "Cataloging";
+$tabsysprefs{RoutingSerials}              = "Cataloging";
+$tabsysprefs{'item-level_itypes'}         = "Cataloging";
+$tabsysprefs{OpacSuppression}             = "Cataloging";
+$tabsysprefs{SpineLabelFormat}            = "Cataloging";
+$tabsysprefs{SpineLabelAutoPrint}         = "Cataloging";
 
 # Circulation
 $tabsysprefs{maxoutstanding}                 = "Circulation";
@@ -147,6 +149,7 @@ $tabsysprefs{globalDueDate}                  = "Circulation";
 $tabsysprefs{holdCancelLength}               = "Circulation";
 $tabsysprefs{itemBarcodeInputFilter}         = "Circulation";
 $tabsysprefs{WebBasedSelfCheck}              = "Circulation";
+$tabsysprefs{ShowPatronImageInWebBasedSelfCheck} = "Circulation";
 $tabsysprefs{CircControl}                    = "Circulation";
 $tabsysprefs{finesCalendar}                  = "Circulation";
 $tabsysprefs{previousIssuesDefaultSortOrder} = "Circulation";
@@ -162,6 +165,13 @@ $tabsysprefs{BranchTransferLimitsType}       = "Circulation";
 $tabsysprefs{AllowNotForLoanOverride}        = "Circulation";
 $tabsysprefs{RenewalPeriodBase}              = "Circulation";
 $tabsysprefs{FilterBeforeOverdueReport}      = "Circulation";
+$tabsysprefs{AllowHoldDateInFuture}          = "Circulation";
+$tabsysprefs{OPACFineNoRenewals}             = "Circulation";
+$tabsysprefs{InProcessingToShelvingCart}     = "Circulation";
+$tabsysprefs{NewItemsDefaultLocation}        = "Circulation";
+$tabsysprefs{ReturnToShelvingCart}           = "Circulation";
+$tabsysprefs{DisplayClearScreenButton}       = "Circulation";
+$tabsysprefs{AllowAllMessageDeletion}        = "Circulation";
 
 # Staff Client
 $tabsysprefs{TemplateEncoding}        = "StaffClient";
@@ -198,6 +208,8 @@ $tabsysprefs{AutoEmailOpacUser}            = "Patrons";
 $tabsysprefs{AutoEmailPrimaryAddress}      = "Patrons";
 $tabsysprefs{EnhancedMessagingPreferences} = "Patrons";
 $tabsysprefs{'SMSSendDriver'}              = 'Patrons';
+$tabsysprefs{HidePatronName}               = "Patrons";
+
 
 # I18N/L10N
 $tabsysprefs{dateformat}    = "I18N/L10N";
@@ -228,6 +240,7 @@ $tabsysprefs{OPACAmazonEnabled}      = "EnhancedContent";
 $tabsysprefs{AmazonCoverImages}      = "EnhancedContent";
 $tabsysprefs{OPACAmazonCoverImages}  = "EnhancedContent";
 $tabsysprefs{AWSAccessKeyID}         = "EnhancedContent";
+$tabsysprefs{AWSPrivateKey}          = "EnhancedContent";
 $tabsysprefs{AmazonLocale}           = "EnhancedContent";
 $tabsysprefs{AmazonAssocTag}         = "EnhancedContent";
 $tabsysprefs{AmazonSimilarItems}     = "EnhancedContent";
@@ -303,8 +316,13 @@ $tabsysprefs{OPACUserCSS}                = "OPAC";
 $tabsysprefs{OPACHighlightedWords}       = "OPAC";
 $tabsysprefs{OPACViewOthersSuggestions}  = "OPAC";
 $tabsysprefs{URLLinkText}                = "OPAC";
+$tabsysprefs{OPACSearchForTitleIn}       = "OPAC";
 $tabsysprefs{OPACShelfBrowser}           = "OPAC";
 $tabsysprefs{OPACDisplayRequestPriority} = "OPAC";
+$tabsysprefs{OPACAllowHoldDateInFuture}  = "OPAC";
+$tabsysprefs{OPACPatronDetails}  = "OPAC";
+$tabsysprefs{OPACFinesTab}  = "OPAC";
+$tabsysprefs{DisplayOPACiconsXSLT}	 = "OPAC";
 
 # OPAC
 $tabsysprefs{SearchMyLibraryFirst} = "OPAC";

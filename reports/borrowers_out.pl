@@ -18,6 +18,8 @@
 # Suite 330, Boston, MA  02111-1307 USA
 
 use strict;
+use warnings;
+
 use CGI;
 use C4::Auth;
 use C4::Context;
@@ -47,7 +49,7 @@ my @filters = $input->param("Filter");
 my $output = $input->param("output");
 my $basename = $input->param("basename");
 my $mime = $input->param("MIME");
-our $sep     = $input->param("sep");
+our $sep     = $input->param("sep") || '';
 $sep = "\t" if ($sep eq 'tabulation');
 my ($template, $borrowernumber, $cookie)
     = get_template_and_user({template_name => $fullreportname,
@@ -88,9 +90,10 @@ if ($do_it) {
             my $x = $line->{loopcell};
             print $line->{rowtitle}.$sep;
             foreach my $cell (@$x) {
-                print $cell->{value}.$sep;
+                my $cellvalue = defined $cell->{value} ? $cell->{value}.$sep : ''.$sep;
+                print $cellvalue;
             }
-            print $line->{totalrow};
+#            print $line->{totalrow};
             print "\n";
         }
 # footer
@@ -172,7 +175,7 @@ sub calculate {
     my $colfield;
     my $colorder;
     if ($column){
-        $column = "borrowers.".$column if $column=~/categorycode/;
+        $column = "borrowers.".$column if $column=~/categorycode/ || $column=~/branchcode/;
         my @colfilter ;
         $colfilter[0] = @$filters[0] if ($column =~ /category/ )  ;
     # 	$colfilter[0] = @$filters[11] if ($column =~ /sort2/ ) ;
@@ -183,14 +186,14 @@ sub calculate {
         $colorder .= $column;
         
         my $strsth2;
-        $strsth2 .= "select distinctrow $colfield FROM borrowers LEFT JOIN `old_issues` ON issues.borrowernumber=borrowers.borrowernumber";
+        $strsth2 .= "select distinctrow $colfield FROM borrowers LEFT JOIN `old_issues` ON old_issues.borrowernumber=borrowers.borrowernumber";
         if ($colfilter[0]) {
             $colfilter[0] =~ s/\*/%/g;
             $strsth2 .= " and $column LIKE '$colfilter[0]' " ;
         }
         $strsth2 .=" group by $colfield";
         $strsth2 .=" order by $colorder";
-        warn "". $strsth2;
+        # warn "". $strsth2;
         
         my $sth2 = $dbh->prepare( $strsth2 );
         $sth2->execute;
@@ -208,16 +211,16 @@ sub calculate {
     
     my $i=0;
 #	my @totalcol;
-    my $hilighted=-1;
     
     #Initialization of cell values.....
     my @table;
     
 #	warn "init table";
-    for (my $i=1;$i<=$line;$i++) {
-        foreach my $col ( @loopcol ) {
-#			warn " init table : $row->{rowtitle} / $col->{coltitle} ";
-            $table[$i]->{($col->{coltitle})?$col->{coltitle}:"Global"}=0;
+    if($line) {
+        for (my $i=1;$i<=$line;$i++) {
+            foreach my $col ( @loopcol ) {
+                $table[$i]->{($col->{coltitle})?$col->{coltitle}:"Global"}=0;
+            }
         }
     }
 
@@ -234,7 +237,7 @@ sub calculate {
     $strcalc .= " AND borrowers.categorycode like '" . @$filters[0] ."'" if ( @$filters[0] );
     if (@$filters[1]){
         my $strqueryfilter="SELECT DISTINCT borrowernumber FROM old_issues where old_issues.timestamp> @$filters[1] ";
-        my $queryfilter = $dbh->prepare("SELECT DISTINCT borrowernumber FROM old_issues where old_issues.timestamp> ".format_date_in_iso(@$filters[1]));
+#        my $queryfilter = $dbh->prepare("SELECT DISTINCT borrowernumber FROM old_issues where old_issues.timestamp> ".format_date_in_iso(@$filters[1]));
         $strcalc .= " AND borrowers.borrowernumber not in ($strqueryfilter)";
         
 # 		$queryfilter->execute(@$filters[1]);
@@ -243,8 +246,8 @@ sub calculate {
 # 		}
     } else {
         my $strqueryfilter="SELECT DISTINCT borrowernumber FROM old_issues ";
-        my $queryfilter = $dbh->prepare("SELECT DISTINCT borrowernumber FROM old_issues ");
-        $queryfilter->execute;
+#        my $queryfilter = $dbh->prepare("SELECT DISTINCT borrowernumber FROM old_issues ");
+#        $queryfilter->execute;
         $strcalc .= " AND borrowers.borrowernumber not in ($strqueryfilter)";
 # 		while (my ($borrowernumber)=$queryfilter->fetchrow){
 # 			$strcalc .= " AND borrowers.borrowernumber <> $borrowernumber ";
@@ -254,11 +257,13 @@ sub calculate {
     $strcalc .= ", $colfield" if ($column);
     $strcalc .= " order by $colfield " if ($colfield);
     my $max;
-    if (@loopcol) {
-        $max = $line*@loopcol;
-    } else { $max=$line;}
-    $strcalc .= " LIMIT 0,$max" if ($line);
-    warn "SQL :". $strcalc;
+    if ($line) {
+        if (@loopcol) {
+            $max = $line*@loopcol;
+        } else { $max=$line;}
+        $strcalc .= " LIMIT 0,$max";
+     } 
+#    warn "SQL :". $strcalc;
     
     my $dbcalc = $dbh->prepare($strcalc);
     $dbcalc->execute;
@@ -294,9 +299,7 @@ sub calculate {
         }
         push @looprow,{ 'rowtitle' => $i ,
                         'loopcell' => \@loopcell,
-                        'hilighted' => ($hilighted >0),
                     };
-        $hilighted = -$hilighted;
     }
     
             
@@ -316,3 +319,4 @@ sub calculate {
 }
 
 1;
+__END__

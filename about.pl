@@ -80,6 +80,7 @@ Date::Calc
 Date::ICal
 Date::Manip
 Digest::MD5
+Digest::SHA
 Email::Date
 File::Temp
 GD
@@ -91,6 +92,7 @@ HTTP::Cookies
 HTTP::OAI
 HTTP::Request::Common
 HTML::Scrubber
+IPC::Cmd
 JSON
 LWP::Simple
 LWP::UserAgent

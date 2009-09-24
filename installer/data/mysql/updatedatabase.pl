@@ -2467,6 +2467,214 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     print "Upgrade to $DBversion done (added FilterBeforeOverdueReport syspref and new index on authorised_values)\n";
 }
 
+$DBversion = "3.01.00.038";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    # update branches table
+    # 
+    $dbh->do("ALTER TABLE branches ADD `branchzip` varchar(25) default NULL AFTER `branchaddress3`");
+    $dbh->do("ALTER TABLE branches ADD `branchcity` mediumtext AFTER `branchzip`");
+    $dbh->do("ALTER TABLE branches ADD `branchcountry` text AFTER `branchcity`");
+    $dbh->do("ALTER TABLE branches ADD `branchurl` mediumtext AFTER `branchemail`");
+    $dbh->do("ALTER TABLE branches ADD `branchnotes` mediumtext AFTER `branchprinter`");
+    print "Upgrade to $DBversion done (add ZIP, city, country, URL, and notes column to branches)\n";
+    SetVersion ($DBversion);
+}
+
+$DBversion = '3.01.00.039';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("INSERT INTO systempreferences (variable,value,options,explanation,type)VALUES('SpineLabelFormat', '<itemcallnumber><copynumber>', '30|10', 'This preference defines the format for the quick spine label printer. Just list the fields you would like to see in the order you would like to see them, surrounded by <>, for example <itemcallnumber>.', 'Textarea')");
+    $dbh->do("INSERT INTO systempreferences (variable,value,options,explanation,type)VALUES('SpineLabelAutoPrint', '0', '', 'If this setting is turned on, a print dialog will automatically pop up for the quick spine label printer.', 'YesNo')");
+    SetVersion ($DBversion);
+    print "Upgrade to $DBversion done (added SpineLabelFormat and SpineLabelAutoPrint sysprefs)\n";
+}
+
+$DBversion = '3.01.00.040';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("INSERT INTO systempreferences (variable,value,explanation,options,type)VALUES('AllowHoldDateInFuture','0','If set a date field is displayed on the Hold screen of the Staff Interface, allowing the hold date to be set in the future.','','YesNo')");
+    $dbh->do("INSERT INTO systempreferences (variable,value,explanation,options,type)VALUES('OPACAllowHoldDateInFuture','0','If set, along with the AllowHoldDateInFuture system preference, OPAC users can set the date of a hold to be in the future.','','YesNo')");
+    SetVersion ($DBversion);
+    print "Upgrade to $DBversion done (AllowHoldDateInFuture and OPACAllowHoldDateInFuture sysprefs)\n";
+}
+
+$DBversion = '3.01.00.041';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('AWSPrivateKey','','See:  http://aws.amazon.com.  Note that this is required after 2009/08/15 in order to retrieve any enhanced content other than book covers from Amazon.','','free')");
+    SetVersion ($DBversion);
+    print "Upgrade to $DBversion done (added AWSPrivateKey syspref - note that if you use enhanced content from Amazon, this should be set right away.)\n";
+}
+
+$DBversion = '3.01.00.042';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('OPACFineNoRenewals','99999','Fine Limit above which user canmot renew books via OPAC','','Integer')");
+    SetVersion ($DBversion);
+    print "Upgrade to $DBversion done (added OPACFineNoRenewals syspref)\n";
+}
+
+$DBversion = '3.01.00.043';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do('ALTER TABLE items ADD COLUMN permanent_location VARCHAR(80) DEFAULT NULL AFTER location');
+    $dbh->do('UPDATE items SET permanent_location = location');
+    $dbh->do("INSERT INTO `systempreferences` ( `variable` , `value` , `options` , `explanation` , `type` ) VALUES ( 'NewItemsDefaultLocation', '', '', 'If set, all new items will have a location of the given Location Code ( Authorized Value type LOC )', '')");
+    $dbh->do("INSERT INTO `systempreferences` ( `variable` , `value` , `options` , `explanation` , `type` ) VALUES ( 'InProcessingToShelvingCart', '0', '', 'If set, when any item with a location code of PROC is ''checked in'', it''s location code will be changed to CART.', 'YesNo')");
+    $dbh->do("INSERT INTO `systempreferences` ( `variable` , `value` , `options` , `explanation` , `type` ) VALUES ( 'ReturnToShelvingCart', '0', '', 'If set, when any item is ''checked in'', it''s location code will be changed to CART.', 'YesNo')");
+    SetVersion ($DBversion);
+    print "Upgrade to $DBversion done (amended Item added NewItemsDefaultLocation, InProcessingToShelvingCart, ReturnToShelvingCart sysprefs)\n";
+}
+
+$DBversion = '3.01.00.044';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("INSERT INTO systempreferences (variable,value,explanation,options,type)VALUES( 'DisplayClearScreenButton', '0', 'If set to yes, a clear screen button will appear on the circulation page.', 'If set to yes, a clear screen button will appear on the circulation page.', 'YesNo')");
+    SetVersion ($DBversion);
+    print "Upgrade to $DBversion done (added DisplayClearScreenButton system preference)\n";
+}
+
+$DBversion = '3.01.00.045';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("INSERT INTO systempreferences (variable,value,options,explanation,type)VALUES('HidePatronName', '0', '', 'If this is switched on, patron''s cardnumber will be shown instead of their name on the holds and catalog screens', 'YesNo')");
+    SetVersion ($DBversion);
+    print "Upgrade to $DBversion done (added a preference to hide the patrons name in the staff catalog)";
+}
+
+$DBversion = "3.01.00.046";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    # update borrowers table
+    # 
+    $dbh->do("ALTER TABLE borrowers ADD `country` text AFTER zipcode");
+    $dbh->do("ALTER TABLE borrowers ADD `B_country` text AFTER B_zipcode");
+    $dbh->do("ALTER TABLE deletedborrowers ADD `country` text AFTER zipcode");
+    $dbh->do("ALTER TABLE deletedborrowers ADD `B_country` text AFTER B_zipcode");
+    print "Upgrade to $DBversion done (add country and B_country to borrowers)\n";
+    SetVersion ($DBversion);
+}
+
+$DBversion = '3.01.00.047';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("ALTER TABLE items MODIFY itemcallnumber varchar(255);");
+    $dbh->do("ALTER TABLE deleteditems MODIFY itemcallnumber varchar(255);");
+    $dbh->do("ALTER TABLE tmp_holdsqueue MODIFY itemcallnumber varchar(255);");
+    SetVersion ($DBversion);
+    print " Upgrade to $DBversion done (bug 2761: change max length of itemcallnumber to 255 from 30)\n";
+}
+
+$DBversion = '3.01.00.048';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("UPDATE userflags SET flagdesc='View Catalog (Librarian Interface)' WHERE bit=2;");
+    $dbh->do("UPDATE userflags SET flagdesc='Edit Catalog (Modify bibliographic/holdings data)' WHERE bit=9;");
+    $dbh->do("UPDATE userflags SET flagdesc='Allow to edit authorities' WHERE bit=14;");
+    $dbh->do("UPDATE userflags SET flagdesc='Allow to access to the reports module' WHERE bit=16;");
+    $dbh->do("UPDATE userflags SET flagdesc='Allow to manage serials subscriptions' WHERE bit=15;");
+    SetVersion ($DBversion);
+    print " Upgrade to $DBversion done (bug 2611: fix spelling/capitalization in permission flag descriptions)\n";
+}
+
+$DBversion = '3.01.00.049';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("UPDATE permissions SET description = 'Perform inventory (stocktaking) of your catalog' WHERE code = 'inventory';");
+     SetVersion ($DBversion);
+    print "Upgrade to $DBversion done (bug 2611: changed catalogue to catalog per the standard)\n";
+}
+
+$DBversion = '3.01.00.050';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES ('OPACSearchForTitleIn','<li class=\"yuimenuitem\">\n<a target=\"_blank\" class=\"yuimenuitemlabel\" href=\"http://worldcat.org/search?q=TITLE\">Other Libraries (WorldCat)</a></li>\n<li class=\"yuimenuitem\">\n<a class=\"yuimenuitemlabel\" href=\"http://www.scholar.google.com/scholar?q=TITLE\" target=\"_blank\">Other Databases (Google Scholar)</a></li>\n<li class=\"yuimenuitem\">\n<a class=\"yuimenuitemlabel\" href=\"http://www.bookfinder.com/search/?author=AUTHOR&amp;title=TITLE&amp;st=xl&amp;ac=qr\" target=\"_blank\">Online Stores (Bookfinder.com)</a></li>','Enter the HTML that will appear in the ''Search for this title in'' box on the detail page in the OPAC.  Enter TITLE, AUTHOR, or ISBN in place of their respective variables in the URL.  Leave blank to disable ''More Searches'' menu.','70|10','Textarea');");
+    SetVersion ($DBversion);
+    print "Upgrade to $DBversion done (bug 1934: Add OPACSearchForTitleIn syspref)\n";
+}
+
+$DBversion = '3.01.00.051';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("UPDATE systempreferences SET explanation='Fine limit above which user cannot renew books via OPAC' WHERE variable='OPACFineNoRenewals';");
+    $dbh->do("UPDATE systempreferences SET explanation='If set to ON, a clear screen button will appear on the circulation page.' WHERE variable='DisplayClearScreenButton';");
+    SetVersion ($DBversion);
+    print "Upgrade to $DBversion done (fixed typos in new sysprefs)\n";
+}
+
+$DBversion = '3.01.00.052';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do('ALTER TABLE deleteditems ADD COLUMN permanent_location VARCHAR(80) DEFAULT NULL AFTER location');
+    SetVersion ($DBversion);
+    print "Upgrade to $DBversion done (bug 3481: add permanent_location column to deleteditems)\n";
+}
+
+$DBversion = '3.01.00.053';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    my $upgrade_script = C4::Context->config("intranetdir") . "/installer/data/mysql/labels_upgrade.pl";
+    system("perl $upgrade_script");
+    print "Upgrade to $DBversion done (Migrated labels tables and data to new schema.) NOTE: All existing label batches have been assigned to the first branch in the list of branches. This is ONLY true of migrated label batches.\n";
+    SetVersion ($DBversion);
+}
+
+$DBversion = '3.01.00.054';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("ALTER TABLE borrowers ADD `B_address2` text AFTER B_address");
+    $dbh->do("ALTER TABLE borrowers ADD `altcontactcountry` text AFTER altcontactzipcode");
+    $dbh->do("ALTER TABLE deletedborrowers ADD `B_address2` text AFTER B_address");
+    $dbh->do("ALTER TABLE deletedborrowers ADD `altcontactcountry` text AFTER altcontactzipcode");
+    SetVersion ($DBversion);
+    print "Upgrade to $DBversion done (bug 1600, bug 3454: add altcontactcountry and B_address2 to borrowers and deletedborrowers)\n";
+}
+
+$DBversion = '3.01.00.055';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do(qq|UPDATE systempreferences set explanation='Enter the HTML that will appear in the ''Search for this title in'' box on the detail page in the OPAC.  Enter {TITLE}, {AUTHOR}, or {ISBN} in place of their respective variables in the URL. Leave blank to disable ''More Searches'' menu.', value='<li><a  href="http://worldcat.org/search?q={TITLE}" target="_blank">Other Libraries (WorldCat)</a></li>\n<li><a href="http://www.scholar.google.com/scholar?q={TITLE}" target="_blank">Other Databases (Google Scholar)</a></li>\n<li><a href="http://www.bookfinder.com/search/?author={AUTHOR}&amp;title={TITLE}&amp;st=xl&amp;ac=qr" target="_blank">Online Stores (Bookfinder.com)</a></li>' WHERE variable='OPACSearchForTitleIn'|);
+    SetVersion ($DBversion);
+    print "Upgrade to $DBversion done (changed OPACSearchForTitleIn per requests in bug 1934)\n";
+}
+
+$DBversion = '3.01.00.056';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES ('OPACPatronDetails','1','If OFF the patron details tab in the OPAC is disabled.','','YesNo');");
+    SetVersion ($DBversion);
+    print "Upgrade to $DBversion done (Bug 1172 : Add OPACPatronDetails syspref)\n";
+}
+
+$DBversion = '3.01.00.057';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES ('OPACFinesTab','1','If OFF the patron fines tab in the OPAC is disabled.','','YesNo');");
+    SetVersion ($DBversion);
+    print "Upgrade to $DBversion done (Bug 2576 : Add OPACFinesTab syspref)\n";
+}
+
+$DBversion = '3.01.00.058';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("ALTER TABLE `language_subtag_registry` ADD `id` INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY;");
+    $dbh->do("ALTER TABLE `language_rfc4646_to_iso639` ADD `id` INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY;");
+    $dbh->do("ALTER TABLE `language_descriptions` ADD `id` INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY;");
+    SetVersion ($DBversion);
+    print "Upgrade to $DBversion done (Added primary keys to language tables)\n";
+}
+
+$DBversion = '3.01.00.059';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("INSERT INTO systempreferences (variable,value,options,explanation,type)VALUES('DisplayOPACiconsXSLT', '1', '', 'If ON, displays the format, audience, type icons in XSLT MARC21 results and display pages.', 'YesNo')");
+    SetVersion ($DBversion);
+    print "Upgrade to $DBversion done (added DisplayOPACiconsXSLT sysprefs)\n";
+}
+
+$DBversion = '3.01.00.060';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES('AllowAllMessageDeletion','0','Allow any Library to delete any message','','YesNo');");
+    $dbh->do('DROP TABLE IF EXISTS messages');
+    $dbh->do("CREATE TABLE messages ( `message_id` int(11) NOT NULL auto_increment,
+        `borrowernumber` int(11) NOT NULL,
+        `branchcode` varchar(4) default NULL,
+        `message_type` varchar(1) NOT NULL,
+        `message` text NOT NULL,
+        `message_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (`message_id`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8");
+
+	print "Upgrade to $DBversion done ( Added AllowAllMessageDeletion syspref and messages table )\n";
+    SetVersion ($DBversion);
+}
+
+$DBversion = '3.01.00.061';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("INSERT INTO systempreferences (variable,value,explanation,options,type)VALUES('ShowPatronImageInWebBasedSelfCheck', '0', 'If ON, displays patron image when a patron uses web-based self-checkout', '', 'YesNo')");
+	print "Upgrade to $DBversion done ( Added ShowPatronImageInWebBasedSelfCheck system preference )\n";
+    SetVersion ($DBversion);
+}
+
 =item DropAllForeignKeys($table)
 
   Drop all foreign keys of the table $table

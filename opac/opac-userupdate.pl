@@ -18,6 +18,7 @@
 # Suite 330, Boston, MA  02111-1307 USA
 
 use strict;
+use warnings;
 
 use CGI;
 use Mail::Sendmail;
@@ -52,13 +53,12 @@ my $lib = GetBranchDetail($borr->{'branchcode'});
 # handle the new information....
 # collect the form values and send an email.
 my @fields = (
-    'surname',       'firstname',    'phone',
-    'fax', 'address','address2','city','zipcode','phone','mobile','fax','phonepro', 'emailaddress','B_streetaddress','B_city','B_zipcode','dateofbirth','sex'
+    'surname','firstname','othernames','streetaddress','city','zipcode','country','phone','mobile','fax','phonepro', 'emailaddress','emailpro','B_streetnumber','B_streetaddress','B_city','B_zipcode','B_country','B_phone','B_email','dateofbirth','sex'
 );
 my $update;
 my $updateemailaddress = $lib->{'branchemail'};
 $updateemailaddress = C4::Context->preference('KohaAdminEmailAddress') unless( $updateemailaddress =~ /\w+@\w+/);
-if ( $updateemailaddress eq '' ) {
+if ( !$updateemailaddress || $updateemailaddress eq '' ) {
     warn
 "KohaAdminEmailAddress system preference not set.  Couldn't send patron update information for $borr->{'firstname'} $borr->{'surname'} (#$borrowernumber)\n";
     my ($template) = get_template_and_user(
@@ -73,15 +73,14 @@ if ( $updateemailaddress eq '' ) {
     );
 
     $template->param(
-        errormessage => 'KohaAdminEmailAddress system preference
-    is not set.  Please visit the library to update your user record'
+        noadminemail => 1,
     );
 
     output_html_with_http_headers $query, $cookie, $template->output;
     exit;
 }
 
-if ( $query->{'modify'} ) {
+if ( $query->param('modify') ) {
 
     # get all the fields:
     my $message = <<"EOF";
@@ -90,9 +89,40 @@ Borrower $borr->{'cardnumber'}
 has requested to change her/his personal details.
 Please check these new details and make the changes:
 EOF
+
+    my $streetnumber = $borr->{'streetnumber'} || '';
+    my $address = $borr->{'address'} || '';
+    my $address2 = $borr->{'address2'} || '';
+    my $B_streetnumber = $borr->{'B_streetnumber'} || '';
+    my $B_address = $borr->{'B_address'} || '';
+    my $B_address2 = $borr->{'B_address2'} || '';
+
     foreach my $field (@fields) {
-        my $newfield = $query->param($field);
-        $message .= "$field : $borr->{$field}  -->  $newfield\n";
+        my $newfield = $query->param($field) || '';
+        my $borrowerfield = '';
+        if($borr->{$field}) {
+            $borrowerfield = $borr->{$field};
+        }
+        
+        # reconstruct the address
+        if($field eq "streetaddress") {
+            $borrowerfield = "$streetnumber $address, $address2";
+        }
+        
+        # reconstruct the alternate address
+        if($field eq "B_streetaddress") {
+            $borrowerfield = "$B_streetnumber $B_address, $B_address2";
+        }
+        
+        if($field eq "dateofbirth") {
+           $borrowerfield  = format_date( $borr->{'dateofbirth'} ) || '';
+        }
+
+        if($borrowerfield eq $newfield) {
+            $message .= "$field : $borrowerfield  -->  $newfield\n";
+        } else {
+            $message .= uc($field) . " : $borrowerfield  -->  $newfield\n";
+        }
     }
     $message .= "\n\nThanks,\nKoha\n\n";
     my %mail = (

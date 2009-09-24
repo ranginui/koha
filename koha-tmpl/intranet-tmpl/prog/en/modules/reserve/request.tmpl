@@ -5,6 +5,7 @@
     <title>Koha &rsaquo; Circulation &rsaquo; Holds &rsaquo; Confirm Holds</title>
 <!-- /TMPL_UNLESS -->
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
+<!-- TMPL_INCLUDE NAME="calendar.inc" -->
 <script type="text/javascript">
     // <![CDATA[
 var patron_homebranch = "<!-- TMPL_VAR NAME="borrower_branchname" ESCAPE="JS" -->";
@@ -108,14 +109,14 @@ function checkMultiHold() {
     });
  	$("#requestany").click(function() {
 		if(this.checked){
-		$("input[@name=checkitem]").each(function() {
+		$("input[name=checkitem]").each(function() {
 			$(this).attr("checked","");
 		});
 		}
 	});
- 	$("input[@name=checkitem]").click(function() {
+ 	$("input[name=checkitem]").click(function() {
 		onechecked = 0;
-		$("input[@name=checkitem]").each(function() {
+		$("input[name=checkitem]").each(function() {
 			if(this.checked){
 				onechecked = 1;
 			}
@@ -148,7 +149,7 @@ function checkMultiHold() {
 	<div class="yui-b">
 <!-- TMPL_IF NAME="noitems" -->
 <div class="dialog alert">            
-<strong>Cannot reserve:</strong> this record has no items attached.                            
+<strong>Cannot place hold:</strong> this record has no items attached.
 </div>
 <!-- TMPL_ELSE -->
   <!-- TMPL_IF NAME="messagetransfert" -->
@@ -281,6 +282,37 @@ function checkMultiHold() {
             <label for="pickup">Pickup at:</label>
             <!-- TMPL_VAR NAME="CGIbranch" -->
         </li>
+	<!-- TMPL_IF NAME="reserve_in_future" -->
+	<li>
+	    <label for="reserve_date">Hold starts on date:</label>
+	    <input name="reserve_date" id="reserve_date" size="10" readonly="readonly">
+	    <img src="<!-- TMPL_VAR NAME="themelang" -->/lib/calendar/cal.gif" alt="Show Calendar" border="0" id="CalendarReserveDate" style="cursor: pointer;" />
+	    <script language="JavaScript" type="text/javascript">
+		//<![CDATA[
+		function validate1(date) {
+			var today = new Date();
+			if ( (date > today) ||
+                    ( date.getDate() == today.getDate() &&
+                      date.getMonth() == today.getMonth() &&
+                      date.getFullYear() == today.getFullYear() ) ) {
+				return false;
+			} else {
+				return true;
+			}
+		};
+		Calendar.setup(
+			{
+				inputField : "reserve_date",
+				ifFormat : "<!-- TMPL_VAR NAME="DHTMLcalendar_dateformat" -->",
+				button : "CalendarReserveDate",
+				disableFunc : validate1,
+				dateStatusFunc : validate1,
+			}
+		);
+		//]]>
+	    </script>
+	</li>
+	<!-- /TMPL_IF -->
 
         <!-- TMPL_UNLESS NAME="multi_hold" -->
           <li> <label for="requestany">Place a hold on the next available copy </label>
@@ -341,7 +373,7 @@ function checkMultiHold() {
             </td>
             <!-- TMPL_IF NAME="item-level_itypes" -->
                 <td>
-                    <img src="<!-- TMPL_VAR name="imageurl" -->" alt="<!-- TMPL_VAR NAME="itypename" -->" title="<!-- TMPL_VAR NAME="itypename" -->" />
+                    <img src="<!-- TMPL_VAR name="imageurl" -->" alt="" /> <br /> <!-- TMPL_VAR NAME="itypename" -->
                 </td>
             <!-- /TMPL_IF -->
 
@@ -505,7 +537,7 @@ function checkMultiHold() {
         <th>Details</th>
       </tr>
   <!-- TMPL_LOOP Name="reserveloop" -->
-      <tr>
+  <!-- TMPL_UNLESS Name="__odd__" --><tr class="highlight"><!-- TMPL_ELSE --><tr><!-- /TMPL_UNLESS -->
         <td>
           <input type="hidden" name="borrowernumber" value="<!-- TMPL_VAR NAME="borrowernumber" -->" />
           <input type="hidden" name="biblionumber" value="<!-- TMPL_VAR NAME="biblionumber" -->" />
@@ -520,7 +552,13 @@ function checkMultiHold() {
           </select>
         </td>
         <td>
-          <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->" ><!-- TMPL_VAR NAME="firstname" --> <!-- TMPL_VAR NAME="surname" --></a>
+          <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->" >
+	  <!-- TMPL_IF NAME="hidename" -->
+	      <!-- TMPL_VAR NAME="cardnumber" -->
+	  <!-- TMPL_ELSE -->
+	      <!-- TMPL_VAR NAME="firstname" --> <!-- TMPL_VAR NAME="surname" -->
+	  <!-- /TMPL_IF -->
+	  </a>
         </td>
         <td><!-- TMPL_VAR NAME="notes" --></td>
         <td><!-- TMPL_VAR NAME="date" --></td>
@@ -539,9 +577,9 @@ function checkMultiHold() {
           <select name="pickup">
       <!-- TMPL_LOOP Name="branchloop" -->
         <!-- TMPL_IF Name="selected" -->
-            <option value="<!-- TMPL_VAR NAME="branch" -->" selected="selected">
+            <option value="<!-- TMPL_VAR NAME="value" -->" selected="selected">
         <!-- TMPL_ELSE -->
-            <option value="<!-- TMPL_VAR NAME="branch" -->">
+            <option value="<!-- TMPL_VAR NAME="value" -->">
         <!-- /TMPL_IF -->
               <!-- TMPL_VAR NAME="branchname" -->
             </option>

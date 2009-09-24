@@ -175,7 +175,6 @@ for my $i (0..$hits) {
     my $biblio = TransformMarcToKoha(C4::Context->dbh,$marcrecord,'');
 
     #build the hash for the template.
-    $resultsloop{highlight}       = ($i % 2)?(1):(0);
     $resultsloop{title}           = $biblio->{'title'};
     $resultsloop{subtitle}        = $biblio->{'subtitle'};
     $resultsloop{biblionumber}    = $biblio->{'biblionumber'};
@@ -320,40 +319,21 @@ sub getRecords {
 
         # Check if we've got a query_type defined, if so, use it
         eval {
-            if ($query_type)
-            {
-                if ( $query_type =~ /^ccl/ ) {
-                    $query_to_use =~
-                      s/\:/\=/g;    # change : to = last minute (FIXME)
-                    $results[$i] =
-                      $zconns[$i]->search(
-                        new ZOOM::Query::CCL2RPN( $query_to_use, $zconns[$i] )
-                      );
+            if ($query_type) {
+                if ($query_type =~ /^ccl/) {
+                    $query_to_use =~ s/\:/\=/g;    # change : to = last minute (FIXME)
+                    $results[$i] = $zconns[$i]->search(new ZOOM::Query::CCL2RPN($query_to_use, $zconns[$i]));
+                } elsif ($query_type =~ /^cql/) {
+                    $results[$i] = $zconns[$i]->search(new ZOOM::Query::CQL($query_to_use, $zconns[$i]));
+                } elsif ($query_type =~ /^pqf/) {
+                    $results[$i] = $zconns[$i]->search(new ZOOM::Query::PQF($query_to_use, $zconns[$i]));
+                } else {
+                    warn "Unknown query_type '$query_type'.  Results undetermined.";
                 }
-                elsif ( $query_type =~ /^cql/ ) {
-                    $results[$i] =
-                      $zconns[$i]->search(
-                        new ZOOM::Query::CQL( $query_to_use, $zconns[$i] ) );
-                }
-                elsif ( $query_type =~ /^pqf/ ) {
-                    $results[$i] =
-                      $zconns[$i]->search(
-                        new ZOOM::Query::PQF( $query_to_use, $zconns[$i] ) );
-                }
-            }
-            else {
-                if ($scan) {
-                    $results[$i] =
-                      $zconns[$i]->scan(
-                        new ZOOM::Query::CCL2RPN( $query_to_use, $zconns[$i] )
-                      );
-                }
-                else {
-                    $results[$i] =
-                      $zconns[$i]->search(
-                        new ZOOM::Query::CCL2RPN( $query_to_use, $zconns[$i] )
-                      );
-                }
+            } elsif ($scan) {
+                    $results[$i] = $zconns[$i]->scan(  new ZOOM::Query::CCL2RPN($query_to_use, $zconns[$i]));
+            } else {
+                    $results[$i] = $zconns[$i]->search(new ZOOM::Query::CCL2RPN($query_to_use, $zconns[$i]));
             }
         };
         if ($@) {
@@ -501,15 +481,15 @@ sub getRecords {
             if ( $servers[ $i - 1 ] =~ /biblioserver/ ) {
                 for my $link_value (
                     sort { $facets_counter->{$b} <=> $facets_counter->{$a} }
-                    keys %$facets_counter )
+                        keys %$facets_counter )
                 {
                     my $expandable;
                     my $number_of_facets;
                     my @this_facets_array;
                     for my $one_facet (
                         sort {
-                            $facets_counter->{$link_value}
-                              ->{$b} <=> $facets_counter->{$link_value}->{$a}
+                             $facets_counter->{$link_value}->{$b}
+                         <=> $facets_counter->{$link_value}->{$a}
                         } keys %{ $facets_counter->{$link_value} }
                       )
                     {
@@ -535,21 +515,14 @@ sub getRecords {
                                   $branches->{$one_facet}->{'branchname'};
                             }
 
-                # but we're down with the whole label being in the link's title.
-                            my $facet_title_value = $one_facet;
-
-                            push @this_facets_array,
-                              (
-                                {
-                                    facet_count =>
-                                      $facets_counter->{$link_value}
-                                      ->{$one_facet},
-                                    facet_label_value => $facet_label_value,
-                                    facet_title_value => $facet_title_value,
-                                    facet_link_value  => $facet_link_value,
-                                    type_link_value   => $link_value,
-                                },
-                              );
+                            # but we're down with the whole label being in the link's title.
+                            push @this_facets_array, {
+                                facet_count       => $facets_counter->{$link_value}->{$one_facet},
+                                facet_label_value => $facet_label_value,
+                                facet_title_value => $one_facet,
+                                facet_link_value  => $facet_link_value,
+                                type_link_value   => $link_value,
+                            };
                         }
                     }
 
@@ -559,17 +532,14 @@ sub getRecords {
                           if ( ( $number_of_facets > 6 )
                             && ( $expanded_facet ne $link_value ) );
                     }
-                    push @facets_loop,
-                      (
-                        {
-                            type_link_value => $link_value,
-                            type_id         => $link_value . "_id",
-                            "type_label_" . $facets_info->{$link_value}->{'label_value'} => 1, 
-                            facets     => \@this_facets_array,
-                            expandable => $expandable,
-                            expand     => $link_value,
-                        }
-                      ) unless ( ($facets_info->{$link_value}->{'label_value'} =~ /Libraries/) and (C4::Context->preference('singleBranchMode')) );
+                    push @facets_loop, {
+                        type_link_value => $link_value,
+                        type_id         => $link_value . "_id",
+                        "type_label_" . $facets_info->{$link_value}->{'label_value'} => 1, 
+                        facets     => \@this_facets_array,
+                        expandable => $expandable,
+                        expand     => $link_value,
+                    } unless ( ($facets_info->{$link_value}->{'label_value'} =~ /Libraries/) and (C4::Context->preference('singleBranchMode')) );
                 }
             }
         }
@@ -662,19 +632,16 @@ sub _remove_stopwords {
 #       we use IsAlpha unicode definition, to deal correctly with diacritics.
 #       otherwise, a French word like "leçon" woudl be split into "le" "çon", "le"
 #       is a stopword, we'd get "çon" and wouldn't find anything...
-        foreach ( keys %{ C4::Context->stopwords } ) {
-            next if ( $_ =~ /(and|or|not)/ );    # don't remove operators
-            if ( $operand =~
-                /(\P{IsAlpha}$_\P{IsAlpha}|^$_\P{IsAlpha}|\P{IsAlpha}$_$|^$_$)/ )
-            {
-                $operand =~ s/\P{IsAlpha}$_\P{IsAlpha}/ /gi;
-                $operand =~ s/^$_\P{IsAlpha}/ /gi;
-                $operand =~ s/\P{IsAlpha}$_$/ /gi;
-				$operand =~ s/$1//gi;
-                push @stopwords_removed, $_;
-            }
-        }
-    }
+		foreach ( keys %{ C4::Context->stopwords } ) {
+			next if ( $_ =~ /(and|or|not)/ );    # don't remove operators
+			if ( my ($matched) = ($operand =~
+				/(\P{IsAlnum}\Q$_\E\P{IsAlnum}|^\Q$_\E\P{IsAlnum}|\P{IsAlnum}\Q$_\E$|^\Q$_\E$)/gi) )
+			{
+				$operand =~ s/\Q$matched\E/ /gi;
+				push @stopwords_removed, $_;
+			}
+		}
+	}
     return ( $operand, \@stopwords_removed );
 }
 
@@ -826,11 +793,11 @@ sub buildQuery {
     warn "---------\nEnter buildQuery\n---------" if $DEBUG;
 
     # dereference
-    my @operators = @$operators if $operators;
-    my @indexes   = @$indexes   if $indexes;
-    my @operands  = @$operands  if $operands;
-    my @limits    = @$limits    if $limits;
-    my @sort_by   = @$sort_by   if $sort_by;
+    my @operators = $operators ? @$operators : ();
+    my @indexes   = $indexes   ? @$indexes   : ();
+    my @operands  = $operands  ? @$operands  : ();
+    my @limits    = $limits    ? @$limits    : ();
+    my @sort_by   = $sort_by   ? @$sort_by   : ();
 
     my $stemming         = C4::Context->preference("QueryStemming")        || 0;
     my $auto_truncation  = C4::Context->preference("QueryAutoTruncate")    || 0;
@@ -981,29 +948,23 @@ sub buildQuery {
                     $indexes_set = 1;
                     undef $weight_fields;
                     my $previous_truncation_operand;
-                    if ( scalar(@$nontruncated) > 0 ) {
+                    if (scalar @$nontruncated) {
                         $truncated_operand .= "$index_plus @$nontruncated ";
                         $previous_truncation_operand = 1;
                     }
-                    if ( scalar(@$righttruncated) > 0 ) {
-                        $truncated_operand .= "and "
-                          if $previous_truncation_operand;
-                        $truncated_operand .=
-                          "$index_plus_comma" . "rtrn:@$righttruncated ";
+                    if (scalar @$righttruncated) {
+                        $truncated_operand .= "and " if $previous_truncation_operand;
+                        $truncated_operand .= $index_plus_comma . "rtrn:@$righttruncated ";
                         $previous_truncation_operand = 1;
                     }
-                    if ( scalar(@$lefttruncated) > 0 ) {
-                        $truncated_operand .= "and "
-                          if $previous_truncation_operand;
-                        $truncated_operand .=
-                          "$index_plus_comma" . "ltrn:@$lefttruncated ";
+                    if (scalar @$lefttruncated) {
+                        $truncated_operand .= "and " if $previous_truncation_operand;
+                        $truncated_operand .= $index_plus_comma . "ltrn:@$lefttruncated ";
                         $previous_truncation_operand = 1;
                     }
-                    if ( scalar(@$rightlefttruncated) > 0 ) {
-                        $truncated_operand .= "and "
-                          if $previous_truncation_operand;
-                        $truncated_operand .=
-                          "$index_plus_comma" . "rltrn:@$rightlefttruncated ";
+                    if (scalar @$rightlefttruncated) {
+                        $truncated_operand .= "and " if $previous_truncation_operand;
+                        $truncated_operand .= $index_plus_comma . "rltrn:@$rightlefttruncated ";
                         $previous_truncation_operand = 1;
                     }
                 }
@@ -1012,18 +973,19 @@ sub buildQuery {
 
                 # Handle Stemming
                 my $stemmed_operand;
-                $stemmed_operand = _build_stemmed_operand($operand)
-                  if $stemming;
+                $stemmed_operand = _build_stemmed_operand($operand) if $stemming;
+
                 warn "STEMMED OPERAND: >$stemmed_operand<" if $DEBUG;
 
                 # Handle Field Weighting
                 my $weighted_operand;
-                $weighted_operand =
-                  _build_weighted_query( $operand, $stemmed_operand, $index )
-                  if $weight_fields;
+                if ($weight_fields) {
+                    $weighted_operand = _build_weighted_query( $operand, $stemmed_operand, $index );
+                    $operand = $weighted_operand;
+                    $indexes_set = 1;
+                }
+
                 warn "FIELD WEIGHTED OPERAND: >$weighted_operand<" if $DEBUG;
-                $operand = $weighted_operand if $weight_fields;
-                $indexes_set = 1 if $weight_fields;
 
                 # If there's a previous operand, we need to add an operator
                 if ($previous_operand) {
@@ -1123,15 +1085,15 @@ sub buildQuery {
     $query =~ s/:/=/g;
     $limit =~ s/:/=/g;
     for ( $query, $query_desc, $limit, $limit_desc ) {
-        $_ =~ s/  / /g;    # remove extra spaces
-        $_ =~ s/^ //g;     # remove any beginning spaces
-        $_ =~ s/ $//g;     # remove any ending spaces
-        $_ =~ s/==/=/g;    # remove double == from query
+        s/  / /g;    # remove extra spaces
+        s/^ //g;     # remove any beginning spaces
+        s/ $//g;     # remove any ending spaces
+        s/==/=/g;    # remove double == from query
     }
     $query_cgi =~ s/^&//; # remove unnecessary & from beginning of the query cgi
 
     for ($query_cgi,$simple_query) {
-        $_ =~ s/"//g;
+        s/"//g;
     }
     # append the limit to the query
     $query .= " " . $limit;
@@ -1164,23 +1126,13 @@ Format results in a form suitable for passing to the template
 sub searchResults {
     my ( $searchdesc, $hits, $results_per_page, $offset, $scan, @marcresults ) = @_;
     my $dbh = C4::Context->dbh;
-    my $even = 1;
     my @newresults;
-
-    # add search-term highlighting via <span>s on the search terms
-    my $span_terms_hashref;
-    for my $span_term ( split( / /, $searchdesc ) ) {
-        $span_term =~ s/(.*=|\)|\(|\+|\.|\*)//g;
-        $span_terms_hashref->{$span_term}++;
-    }
 
     #Build branchnames hash
     #find branchname
     #get branch information.....
     my %branches;
-    my $bsth =
-      $dbh->prepare("SELECT branchcode,branchname FROM branches")
-      ;    # FIXME : use C4::Koha::GetBranches
+    my $bsth =$dbh->prepare("SELECT branchcode,branchname FROM branches"); # FIXME : use C4::Branch::GetBranches
     $bsth->execute();
     while ( my $bdata = $bsth->fetchrow_hashref ) {
         $branches{ $bdata->{'branchcode'} } = $bdata->{'branchname'};
@@ -1246,8 +1198,8 @@ sub searchResults {
         $oldbiblio->{imageurl} = getitemtypeimagelocation( 'opac', $itemtypes{ $oldbiblio->{itemtype} }->{imageurl} );
 
         $oldbiblio->{'authorised_value_images'}  = C4::Items::get_authorised_value_images( C4::Biblio::get_biblio_authorised_values( $oldbiblio->{'biblionumber'}, $marcrecord ) );
-		$oldbiblio->{normalized_upc} = GetNormalizedUPC($marcrecord,$marcflavour);
-		$oldbiblio->{normalized_ean} = GetNormalizedEAN($marcrecord,$marcflavour);
+		$oldbiblio->{normalized_upc}  = GetNormalizedUPC(       $marcrecord,$marcflavour);
+		$oldbiblio->{normalized_ean}  = GetNormalizedEAN(       $marcrecord,$marcflavour);
 		$oldbiblio->{normalized_oclc} = GetNormalizedOCLCNumber($marcrecord,$marcflavour);
 		$oldbiblio->{normalized_isbn} = GetNormalizedISBN(undef,$marcrecord,$marcflavour);
 		$oldbiblio->{content_identifier_exists} = 1 if ($oldbiblio->{normalized_isbn} or $oldbiblio->{normalized_oclc} or $oldbiblio->{normalized_ean} or $oldbiblio->{normalized_upc});
@@ -1281,48 +1233,6 @@ s/\[(.?.?.?.?)$tagsubf(.*?)]/$1$subfieldvalue$2\[$1$tagsubf$2]/g;
             $summary =~ s/\n/<br\/>/g;
             $oldbiblio->{summary} = $summary;
         }
-
-        # save an author with no <span> tag, for the <a href=search.pl?q=<!--tmpl_var name="author"-->> link
-        $oldbiblio->{'author_nospan'} = $oldbiblio->{'author'};
-        $oldbiblio->{'title_nospan'} = $oldbiblio->{'title'};
-        $oldbiblio->{'subtitle_nospan'} = $oldbiblio->{'subtitle'};
-        # Add search-term highlighting to the whole record where they match using <span>s
-        if (C4::Context->preference("OpacHighlightedWords")){
-            my $searchhighlightblob;
-            for my $highlight_field ( $marcrecord->fields ) {
-    
-    # FIXME: need to skip title, subtitle, author, etc., as they are handled below
-                next if $highlight_field->tag() =~ /(^00)/;    # skip fixed fields
-                for my $subfield ($highlight_field->subfields()) {
-                    my $match;
-                    next if $subfield->[0] eq '9';
-                    my $field = $subfield->[1];
-                    for my $term ( keys %$span_terms_hashref ) {
-                        if ( ( $field =~ /$term/i ) && (( length($term) > 3 ) || ($field =~ / $term /i)) ) {
-                            $field =~ s/$term/<span class=\"term\">$&<\/span>/gi;
-                        $match++;
-                        }
-                    }
-                    $searchhighlightblob .= $field . " ... " if $match;
-                }
-    
-            }
-            $searchhighlightblob = ' ... '.$searchhighlightblob if $searchhighlightblob;
-            $oldbiblio->{'searchhighlightblob'} = $searchhighlightblob;
-        }
-
-        # Add search-term highlighting to the title, subtitle, etc. fields
-        for my $term ( keys %$span_terms_hashref ) {
-            my $old_term = $term;
-            if ( length($term) > 3 ) {
-                $term =~ s/(.*=|\)|\(|\+|\.|\?|\[|\]|\\|\*)//g;
-				foreach(qw(title subtitle author publishercode place pages notes size)) {
-                	$oldbiblio->{$_} =~ s/$term/<span class=\"term\">$&<\/span>/gi;
-				}
-            }
-        }
-
-        ($i % 2) and $oldbiblio->{'toggle'} = 1;
 
         # Pull out the items fields
         my @fields = $marcrecord->field($itemtag);
@@ -1375,7 +1285,7 @@ s/\[(.?.?.?.?)$tagsubf(.*?)]/$1$subfieldvalue$2\[$1$tagsubf$2]/g;
 # For each grouping of items (onloan, available, unavailable), we build a key to store relevant info about that item
             if ( $item->{onloan} ) {
                 $onloan_count++;
-				my $key = $prefix . $item->{due_date};
+				my $key = $prefix . $item->{onloan} . $item->{barcode};
 				$onloan_items->{$key}->{due_date} = format_date($item->{onloan});
 				$onloan_items->{$key}->{count}++ if $item->{$hbranch};
 				$onloan_items->{$key}->{branchname} = $item->{branchname};
@@ -1691,16 +1601,15 @@ sub NZanalyse {
         $left = 'subject'          if $left =~ '^su$';
         $left = 'koha-Auth-Number' if $left =~ '^an$';
         $left = 'keyword'          if $left =~ '^kw$';
+        $left = 'itemtype'         if $left =~ '^mc$'; # Fix for Bug 2599 - Search limits not working for NoZebra 
         warn "handling leaf... left:$left operator:$operator right:$right" if $DEBUG;
+        my $dbh = C4::Context->dbh;
         if ( $operator && $left ne 'keyword' ) {
-
             #do a specific search
-            my $dbh = C4::Context->dbh;
             $operator = 'LIKE' if $operator eq '=' and $right =~ /%/;
-            my $sth =
-              $dbh->prepare(
+            my $sth = $dbh->prepare(
 "SELECT biblionumbers,value FROM nozebra WHERE server=? AND indexname=? AND value $operator ?"
-              );
+            );
             warn "$left / $operator / $right\n" if $DEBUG;
 
             # split each word, query the DB and build the biblionumbers result
@@ -1728,20 +1637,16 @@ sub NZanalyse {
                 if ($results) {
                     warn "NZAND" if $DEBUG;
                     $results = NZoperatorAND($biblionumbers,$results);
-                }
-                else {
+                } else {
                     $results = $biblionumbers;
                 }
             }
         }
         else {
-
       #do a complete search (all indexes), if index='kw' do complete search too.
-            my $dbh = C4::Context->dbh;
-            my $sth =
-              $dbh->prepare(
+            my $sth = $dbh->prepare(
 "SELECT biblionumbers FROM nozebra WHERE server=? AND value LIKE ?"
-              );
+            );
 
             # split each word, query the DB and build the biblionumbers result
             foreach ( split / /, $string ) {
@@ -1854,7 +1759,7 @@ sub NZorder {
             my $popularity = $sth->fetchrow || 0;
 
 # hint : the key is popularity.title because we can have
-# many results with the same popularity. In this cas, sub-ordering is done by title
+# many results with the same popularity. In this case, sub-ordering is done by title
 # we also have biblionumber to avoid bug for 2 biblios with the same title & popularity
 # (un-frequent, I agree, but we won't forget anything that way ;-)
             $popularity{ sprintf( "%10d", $popularity ) . $title

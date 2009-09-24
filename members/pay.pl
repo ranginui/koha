@@ -26,6 +26,8 @@
 =cut
 
 use strict;
+use warnings;
+
 use C4::Context;
 use C4::Auth;
 use C4::Output;
@@ -82,7 +84,7 @@ for ( my $i = 0 ; $i < @names ; $i++ ) {
         $check = 2;
     }
 }
-my $total = $input->param('total');
+my $total = $input->param('total') || '';
 if ( $check == 0 ) {
     if ( $total ne '' ) {
         recordpayment( $borrowernumber, $total );
@@ -155,6 +157,7 @@ $template->param( picture => 1 ) if $picture;
 	address2 => $data->{'address2'},
 	city => $data->{'city'},
 	zipcode => $data->{'zipcode'},
+	country => $data->{'country'},
 	phone => $data->{'phone'},
 	email => $data->{'email'},
 	branchcode => $data->{'branchcode'},
@@ -199,7 +202,7 @@ sub writeoff {
     undef $itemnum unless $itemnum; # if no item is attached to fine, make sure to store it as a NULL
     my $sth =
       $dbh->prepare(
-"Update accountlines set amountoutstanding=0 where (accounttype='Res' OR accounttype='FU' OR accounttype ='IP' OR accounttype='CH' OR accounttype='N' OR accounttype='F' OR accounttype='A' OR accounttype='M' OR accounttype='L' OR accounttype='RE' OR accounttype='RL') and accountno=? and borrowernumber=?"
+"Update accountlines set amountoutstanding=0 where accountno=? and borrowernumber=?"
       );
     $sth->execute( $accountnum, $borrowernumber );
     $sth->finish;

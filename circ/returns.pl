@@ -179,6 +179,23 @@ if ($barcode) {
     $barcode = barcodedecode($barcode) if C4::Context->preference('itemBarcodeInputFilter');
     $itemnumber = GetItemnumberFromBarcode($barcode);
 
+    if ( C4::Context->preference("InProcessingToShelvingCart") ) {
+        my $item = GetItem( $itemnumber );
+        if ( $item->{'location'} eq 'PROC' ) {
+            $item->{'location'} = 'CART';
+            ModItem( $item, $item->{'biblionumber'}, $item->{'itemnumber'} );
+        }
+    }
+
+    if ( C4::Context->preference("ReturnToShelvingCart") ) {
+        my $item = GetItem( $itemnumber );
+        $item->{'location'} = 'CART';
+        ModItem( $item, $item->{'biblionumber'}, $item->{'itemnumber'} );
+    }
+
+#
+# save the return
+#
     ( $returned, $messages, $issueinformation, $borrower ) =
       AddReturn( $barcode, $userenv_branch, $exemptfine, $dropboxmode);     # do the return
 
@@ -333,6 +350,7 @@ if ( $messages->{'ResFound'}) {
             destbranch	   => $reserve->{'branchcode'},
             borrowernumber => $reserve->{'borrowernumber'},
             itemnumber     => $reserve->{'itemnumber'},
+            reservenotes   => $reserve->{'reservenotes'},
         );
     } # else { ; }  # error?
 }

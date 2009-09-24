@@ -45,7 +45,7 @@ BEGIN {
 		&DelBranch
 		&DelBranchCategory
 	);
-	@EXPORT_OK = qw( &onlymine &mybranch );
+	@EXPORT_OK = qw( &onlymine &mybranch get_branch_code_from_name );
 }
 
 =head1 NAME
@@ -141,7 +141,7 @@ sub onlymine {
     return 
     C4::Context->preference('IndependantBranches') &&
     C4::Context->userenv                           &&
-    C4::Context->userenv->{flags}!=1               &&
+    C4::Context->userenv->{flags} %2 != 1          &&
     C4::Context->userenv->{branch}                 ;
 }
 
@@ -199,34 +199,43 @@ sub ModBranch {
         my $query  = "
             INSERT INTO branches
             (branchcode,branchname,branchaddress1,
-            branchaddress2,branchaddress3,branchphone,
-            branchfax,branchemail,branchip,branchprinter)
-            VALUES (?,?,?,?,?,?,?,?,?,?)
+            branchaddress2,branchaddress3,branchzip,branchcity,
+            branchcountry,branchphone,branchfax,branchemail,
+            branchurl,branchip,branchprinter,branchnotes)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
         ";
         my $sth    = $dbh->prepare($query);
         $sth->execute(
             $data->{'branchcode'},       $data->{'branchname'},
             $data->{'branchaddress1'},   $data->{'branchaddress2'},
-            $data->{'branchaddress3'},   $data->{'branchphone'},
-            $data->{'branchfax'},        $data->{'branchemail'},
+            $data->{'branchaddress3'},   $data->{'branchzip'},
+            $data->{'branchcity'},       $data->{'branchcountry'},
+            $data->{'branchphone'},      $data->{'branchfax'},
+            $data->{'branchemail'},      $data->{'branchurl'},
             $data->{'branchip'},         $data->{'branchprinter'},
+            $data->{'branchnotes'},
         );
         return 1 if $dbh->err;
     } else {
         my $query  = "
             UPDATE branches
             SET branchname=?,branchaddress1=?,
-                branchaddress2=?,branchaddress3=?,branchphone=?,
-                branchfax=?,branchemail=?,branchip=?,branchprinter=?
+                branchaddress2=?,branchaddress3=?,branchzip=?,
+                branchcity=?,branchcountry=?,branchphone=?,
+                branchfax=?,branchemail=?,branchurl=?,branchip=?,
+                branchprinter=?,branchnotes=?
             WHERE branchcode=?
         ";
         my $sth    = $dbh->prepare($query);
         $sth->execute(
             $data->{'branchname'},
             $data->{'branchaddress1'},   $data->{'branchaddress2'},
-            $data->{'branchaddress3'},   $data->{'branchphone'},
-            $data->{'branchfax'},        $data->{'branchemail'},
+            $data->{'branchaddress3'},   $data->{'branchzip'},
+            $data->{'branchcity'},       $data->{'branchcountry'},
+            $data->{'branchphone'},      $data->{'branchfax'},
+            $data->{'branchemail'},      $data->{'branchurl'},
             $data->{'branchip'},         $data->{'branchprinter'},
+            $data->{'branchnotes'},
             $data->{'branchcode'},
         );
     }
@@ -561,6 +570,15 @@ sub CheckBranchCategorycode {
     $sth->execute($categorycode);
     my ($total) = $sth->fetchrow_array;
     return $total;
+}
+
+sub get_branch_code_from_name {
+   my @branch_name = @_;
+   my $query = "SELECT branchcode FROM branches WHERE branchname=?;";
+   my $dbh = C4::Context->dbh();
+   my $sth = $dbh->prepare($query);
+   $sth->execute(@branch_name);
+   return $sth->fetchrow_array;
 }
 
 1;

@@ -35,6 +35,7 @@ use C4::Serials;
 use C4::XISBN qw(get_xisbns get_biblionumber_from_isbn);
 use C4::External::Amazon;
 use C4::Search;		# enabled_staff_search_views
+use C4::VirtualShelves;
 
 # use Smart::Comments;
 
@@ -148,13 +149,17 @@ foreach my $item (@items) {
     $item->{'location'} = $shelflocations->{$shelfcode} if ( defined( $shelfcode ) && defined($shelflocations) && exists( $shelflocations->{$shelfcode} ) );
     my $ccode = $item->{'ccode'};
     $item->{'ccode'} = $collections->{$ccode} if ( defined( $ccode ) && defined($collections) && exists( $collections->{$ccode} ) );
-    foreach (qw(ccode enumchron copynumber)) {
+    foreach (qw(ccode enumchron copynumber uri)) {
         $itemfields{$_} = 1 if ( $item->{$_} );
     }
 
     # checking for holds
     my ($reservedate,$reservedfor,$expectedAt) = GetReservesFromItemnumber($item->{itemnumber});
     my $ItemBorrowerReserveInfo = GetMemberDetails( $reservedfor, 0);
+    
+    if (C4::Context->preference('HidePatronName')){
+	$item->{'hidepatronname'} = 1;
+    }
 
     if ( defined $reservedate ) {
         $item->{backgroundcolor} = 'reserved';
@@ -162,7 +167,8 @@ foreach my $item (@items) {
         $item->{ReservedForBorrowernumber}     = $reservedfor;
         $item->{ReservedForSurname}     = $ItemBorrowerReserveInfo->{'surname'};
         $item->{ReservedForFirstname}   = $ItemBorrowerReserveInfo->{'firstname'};
-        $item->{ExpectedAtLibrary}     = $branches->{$expectedAt}{branchname};
+        $item->{ExpectedAtLibrary}      = $branches->{$expectedAt}{branchname};
+	$item->{cardnumber}             = $ItemBorrowerReserveInfo->{'cardnumber'};
     }
 
 	# Check the transit status
@@ -194,6 +200,7 @@ $template->param(
 	subtitle    => $subtitle,
 	itemdata_ccode      => $itemfields{ccode},
 	itemdata_enumchron  => $itemfields{enumchron},
+	itemdata_uri        => $itemfields{uri},
 	itemdata_copynumber => $itemfields{copynumber},
 	volinfo				=> $itemfields{enumchron} || $dat->{'serial'} ,
 	z3950_search_params	=> C4::Search::z3950_search_args($dat),
@@ -218,6 +225,12 @@ $template->param(
 );
 
 # $debug and $template->param(debug_display => 1);
+
+# Lists
+
+if (C4::Context->preference("virtualshelves") ) {
+   $template->param( 'GetShelves' => GetBibliosShelves( $biblionumber ) );
+}
 
 # XISBN Stuff
 if (C4::Context->preference("FRBRizeEditions")==1) {
@@ -267,4 +280,10 @@ if ( C4::Context->preference("AmazonEnabled") == 1 ) {
         $template->param( AMAZON_EDITORIAL_REVIEWS => $editorial_reviews      );
     }
 }
+
+# Get OPAC URL
+if (C4::Context->preference('OPACBaseURL')){
+     $template->param( OpacUrl => C4::Context->preference('OPACBaseURL') );
+}
+
 output_html_with_http_headers $query, $cookie, $template->output;

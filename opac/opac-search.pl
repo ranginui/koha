@@ -37,8 +37,9 @@ my $template_name;
 my $template_type = 'basic';
 my @params = $cgi->param("limit");
 
+my $format = $cgi->param("format") || '';
 my $build_grouped_results = C4::Context->preference('OPACGroupResults');
-if ($cgi->param("format") && $cgi->param("format") =~ /(rss|atom|opensearchdescription)/) {
+if ($format =~ /(rss|atom|opensearchdescription)/) {
 	$template_name = 'opac-opensearch.tmpl';
 }
 elsif ($build_grouped_results) {
@@ -60,24 +61,19 @@ else {
     }
 );
 
-if ($cgi->param("format") && $cgi->param("format") eq 'rss2') {
-	$template->param("rss2" => 1);
-}
-elsif ($cgi->param("format") && $cgi->param("format") eq 'atom') {
-	$template->param("atom" => 1);
+if ($format eq 'rss2' or $format eq 'opensearchdescription' or $format eq 'atom') {
+	$template->param($format => 1);
+    $template->param(timestamp => strftime("%Y-%m-%dT%H:%M:%S-00:00", gmtime)) if ($format eq 'atom'); 
     # FIXME - the timestamp is a hack - the biblio update timestamp should be used for each
     # entry, but not sure if that's worth an extra database query for each bib
-    $template->param(timestamp => strftime("%Y-%m-%dT%H:%M:%S-00:00", gmtime));
-}
-elsif ($cgi->param("format") && $cgi->param("format") eq 'opensearchdescription') {
-	$template->param("opensearchdescription" => 1);
 }
 if (C4::Context->preference("marcflavour") eq "UNIMARC" ) {
     $template->param('UNIMARC' => 1);
 }
-if (C4::Context->preference("marcflavour") eq "MARC21" ) {
+elsif (C4::Context->preference("marcflavour") eq "MARC21" ) {
     $template->param('usmarc' => 1);
 }
+$template->param( 'AllowOnShelfHolds' => C4::Context->preference('AllowOnShelfHolds') );
 
 if (C4::Context->preference('BakerTaylorEnabled')) {
 	$template->param(
@@ -119,22 +115,12 @@ if (C4::Context->preference('TagsEnabled')) {
 #}
 
 # load the branches
-my $mybranch = ( C4::Context->preference( 'SearchMyLibraryFirst' ) && C4::Context->userenv ) ? C4::Context->userenv->{branch} : '';
-my $branches = GetBranches();
-# FIXME: next line duplicates GetBranchesLoop(0,0);
-my @branch_loop = map {
-                    {
-                        value => $_,
-                        branchname => $branches->{$_}->{branchname},
-                        selected => ( $mybranch eq $_ ) ? 1 : 0
-                    }
-                } sort {
-                    $branches->{$a}->{branchname} cmp $branches->{$b}->{branchname}
-                } keys %$branches;
-
-my $categories = GetBranchCategories(undef,'searchdomain');
-
-$template->param(branchloop => \@branch_loop, searchdomainloop => $categories);
+my $mybranch = ( C4::Context->preference('SearchMyLibraryFirst') && C4::Context->userenv && C4::Context->userenv->{branch} ) ? C4::Context->userenv->{branch} : '';
+my $branches = GetBranches();   # used later in *getRecords, probably should be internalized by those functions after caching in C4::Branch is established
+$template->param(
+    branchloop       => GetBranchesLoop($mybranch, 0),
+    searchdomainloop => GetBranchCategories(undef,'searchdomain'),
+);
 
 # load the Type stuff
 my $itemtypes = GetItemTypes;
@@ -147,7 +133,7 @@ my $advanced_search_types = C4::Context->preference("AdvancedSearchTypes");
 
 if (!$advanced_search_types or $advanced_search_types eq 'itemtypes') {
 	foreach my $thisitemtype ( sort {$itemtypes->{$a}->{'description'} cmp $itemtypes->{$b}->{'description'} } keys %$itemtypes ) {
-    my %row =(  number=>$cnt++,
+        my %row =(  number=>$cnt++,
 				ccl => $itype_or_itemtype,
                 code => $thisitemtype,
                 selected => $selected,
@@ -155,13 +141,12 @@ if (!$advanced_search_types or $advanced_search_types eq 'itemtypes') {
                 count5 => $cnt % 4,
                 imageurl=> getitemtypeimagelocation( 'opac', $itemtypes->{$thisitemtype}->{'imageurl'} ),
             );
-    	$selected = 0 if ($selected) ;
+    	$selected = 0; # set to zero after first pass through
     	push @itemtypesloop, \%row;
 	}
-	$template->param(itemtypeloop => \@itemtypesloop);
 } else {
     my $advsearchtypes = GetAuthorisedValues($advanced_search_types);
-	for my $thisitemtype (@$advsearchtypes) {
+	for my $thisitemtype (sort {$a->{'lib'} cmp $b->{'lib'}} @$advsearchtypes) {
 		my %row =(
 				number=>$cnt++,
 				ccl => $advanced_search_types,
@@ -173,8 +158,8 @@ if (!$advanced_search_types or $advanced_search_types eq 'itemtypes') {
             );
 		push @itemtypesloop, \%row;
 	}
-	$template->param(itemtypeloop => \@itemtypesloop);
 }
+$template->param(itemtypeloop => \@itemtypesloop);
 
 # # load the itypes (Called item types in the template -- just authorized values for searching)
 # my ($itypecount,@itype_loop) = GetCcodes();
@@ -199,7 +184,7 @@ if ( $template_type && $template_type eq 'advsearch' ) {
     # shouldn't appear on the first one, scan indexes should, adding a new
     # box should only appear on the last, etc.
     my @search_boxes_array;
-    my $search_boxes_count = C4::Context->preference("OPACAdvSearchInputCount") || 3; # FIXME: should be a syspref
+    my $search_boxes_count = C4::Context->preference("OPACAdvSearchInputCount") || 3;
     for (my $i=1;$i<=$search_boxes_count;$i++) {
         # if it's the first one, don't display boolean option, but show scan indexes
         if ($i==1) {
@@ -225,19 +210,20 @@ if ( $template_type && $template_type eq 'advsearch' ) {
         }
 
     }
-    $template->param(uc(C4::Context->preference("marcflavour")) => 1,
+    $template->param(uc(C4::Context->preference("marcflavour")) => 1,   # we already did this for UNIMARC
 					  advsearch => 1,
                       search_boxes_loop => \@search_boxes_array);
 
 # use the global setting by default
-	if ( C4::Context->preference("expandedSearchOption") ) {
+	if ( C4::Context->preference("expandedSearchOption") == 1 ) {
 		$template->param( expanded_options => C4::Context->preference("expandedSearchOption") );
 	}
 	# but let the user override it
-   	if ( $cgi->param("expanded_options") && (($cgi->param('expanded_options') == 0) || ($cgi->param('expanded_options') == 1 )) ) {
-    	$template->param( expanded_options => $cgi->param('expanded_options'));
-	}
-
+	if (defined $cgi->param('expanded_options')) {
+   	    if ( ($cgi->param('expanded_options') == 0) || ($cgi->param('expanded_options') == 1 ) ) {
+    	    $template->param( expanded_options => $cgi->param('expanded_options'));
+	    }
+        }
     output_html_with_http_headers $cgi, $cookie, $template->output;
     exit;
 }
@@ -262,7 +248,7 @@ my $default_sort_by = C4::Context->preference('OPACdefaultSortField')."_".C4::Co
 @sort_by = split("\0",$params->{'sort_by'}) if $params->{'sort_by'};
 $sort_by[0] = $default_sort_by if !$sort_by[0] && defined($default_sort_by);
 foreach my $sort (@sort_by) {
-    $template->param($sort => 1);
+    $template->param($sort => 1);   # FIXME: security hole.  can set any TMPL_VAR here
 }
 $template->param('sort_by' => $sort_by[0]);
 
@@ -384,6 +370,7 @@ my $results_hashref;
 my @coins;
 
 if ($tag) {
+	$query_cgi = "tag=" .$tag . "&" . $query_cgi;
 	my $taglist = get_tags({term=>$tag, approved=>1});
 	$results_hashref->{biblioserver}->{hits} = scalar (@$taglist);
 	my @biblist  = (map {GetBiblioData($_->{biblionumber})} @$taglist);
@@ -439,6 +426,7 @@ for (my $i=0;$i<=@servers;$i++) {
 			$tag_quantity = C4::Context->preference('TagsShowOnList')) {
 			foreach (@newresults) {
 				my $bibnum = $_->{biblionumber} or next;
+				$_->{itemsissued} = CountItemsIssued( $bibnum );
 				$_ ->{'TagLoop'} = get_tags({biblionumber=>$bibnum, approved=>1, 'sort'=>'-weight',
 										limit=>$tag_quantity });
 			}
@@ -563,52 +551,6 @@ if ($query_desc || $limit_desc) {
     $template->param(searchdesc => 1);
 }
 
-## Now let's find out if we have any supplemental data to show the user
-#  and in the meantime, save the current query for statistical purposes, etc.
-my $koha_spsuggest; # a flag to tell if we've got suggestions coming from Koha
-my @koha_spsuggest; # place we store the suggestions to be returned to the template as LOOP
-my $phrases = $query_desc;
-my $ipaddress;
-
-if ( C4::Context->preference("kohaspsuggest") ) {
-        my ($suggest_host, $suggest_dbname, $suggest_user, $suggest_pwd) = split(':', C4::Context->preference("kohaspsuggest"));
-        eval {
-            my $koha_spsuggest_dbh;
-            # FIXME: this needs to be moved to Context.pm
-            eval {
-                $koha_spsuggest_dbh=DBI->connect("DBI:mysql:$suggest_dbname:$suggest_host","$suggest_user","$suggest_pwd");
-            };
-            if ($@) { 
-                warn "can't connect to spsuggest db";
-            }
-            else {
-                my $koha_spsuggest_insert = "INSERT INTO phrase_log(phr_phrase,phr_resultcount,phr_ip) VALUES(?,?,?)";
-                my $koha_spsuggest_query = "SELECT display FROM distincts WHERE strcmp(soundex(suggestion), soundex(?)) = 0 order by soundex(suggestion) limit 0,5";
-                my $koha_spsuggest_sth = $koha_spsuggest_dbh->prepare($koha_spsuggest_query);
-                $koha_spsuggest_sth->execute($phrases);
-                while (my $spsuggestion = $koha_spsuggest_sth->fetchrow_array) {
-                    $spsuggestion =~ s/(:|\/)//g;
-                    my %line;
-                    $line{spsuggestion} = $spsuggestion;
-                    push @koha_spsuggest,\%line;
-                    $koha_spsuggest = 1;
-                }
-
-                # Now save the current query
-                $koha_spsuggest_sth=$koha_spsuggest_dbh->prepare($koha_spsuggest_insert);
-                #$koha_spsuggest_sth->execute($phrases,$results_per_page,$ipaddress);
-                $koha_spsuggest_sth->finish;
-
-                $template->param( koha_spsuggest => $koha_spsuggest ) unless $hits;
-                $template->param( SPELL_SUGGEST => \@koha_spsuggest,
-                );
-            }
-    };
-    if ($@) {
-            warn "Kohaspsuggest failure:".$@;
-    }
-}
-
 # VI. BUILD THE TEMPLATE
 # Build drop-down list for 'Add To:' menu...
 my $session = get_session($cgi->cookie("CGISESSID"));
@@ -630,15 +572,7 @@ if (defined $barshelves) {
 	$template->param( addbarshelvesloop => $barshelves);
 }
 
-my $content_type;
-
-if ($cgi->param('format') && $cgi->param('format') =~ /rss/) {
-    $content_type = 'rss'
-} elsif ($cgi->param('format') && $cgi->param('format') =~ /atom/) {
-    $content_type = 'atom'
-} else {
-    $content_type = 'html'
-}
+my $content_type = ($format eq 'rss' or $format eq 'atom') ? $format : 'html';
 
 # If GoogleIndicTransliteration system preference is On Set paramter to load Google's javascript in OPAC search screens 
 if (C4::Context->preference('GoogleIndicTransliteration')) {

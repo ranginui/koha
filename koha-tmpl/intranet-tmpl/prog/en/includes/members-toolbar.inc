@@ -51,13 +51,14 @@ function update_child() {
 	function yuiToolbar() {
 	    var printmenu = [
 	        { text: _("Print Page"), onclick: {fn: function(){printx_window("page")}} },
-	        { text: _("Print Slip"), onclick: {fn: function(){printx_window("slip")}} }
+	        { text: _("Print Slip"), onclick: {fn: function(){printx_window("slip")}} },
+	        { text: _("Quick Slip"), onclick: {fn: function(){printx_window("qslip")}} }
 	    ];
 	
 		var moremenu = [
 			{ text: _("Renew Patron"),  onclick: { fn: confirm_reregistration } },
 			{ text: _("Set Permissions"), url: "/cgi-bin/koha/members/member-flags.pl?member=<!-- TMPL_VAR NAME="borrowernumber" -->"<!-- TMPL_UNLESS NAME="CAN_user_permissions" -->, disabled: true<!-- /TMPL_UNLESS -->},
-			{ text: _("Delete"), onclick: { fn: confirm_deletion } },
+			{ text: _("Delete"), onclick: { fn: confirm_deletion}<!-- TMPL_UNLESS NAME="samebranch" -->, disabled: true<!-- /TMPL_IF --> },
 			{ text: _("Update Child to Adult Patron") , onclick: { fn: update_child }<!-- TMPL_UNLESS NAME="is_child" -->, disabled: true<!-- /TMPL_UNLESS -->}
 		];
 

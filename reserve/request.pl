@@ -82,8 +82,9 @@ my $CGIbranch = CGI::scrolling_list(
 
 # Select borrowers infos
 my $findborrower = $input->param('findborrower');
+$findborrower = '' unless defined $findborrower;
 $findborrower =~ s|,| |g;
-my $cardnumber = $input->param('cardnumber');
+my $cardnumber = $input->param('cardnumber') || '';
 my $borrowerslist;
 my $messageborrower;
 my $warnings;
@@ -218,16 +219,16 @@ foreach my $biblionumber (@biblionumbers) {
     my $dat          = GetBiblioData($biblionumber);
 
     # get existing reserves .....
-    my ( $count, $reserves ) = GetReservesFromBiblionumber($biblionumber);
+    my ( $count, $reserves ) = GetReservesFromBiblionumber($biblionumber,1);
     my $totalcount = $count;
     my $alreadyreserved;
 
     foreach my $res (@$reserves) {
-        if ( ( $res->{found} eq 'W' ) ) {
+        if ( defined $res->{found} && $res->{found} eq 'W' ) {
             $count--;
         }
 
-        if ( $borrowerinfo->{borrowernumber} eq $res->{borrowernumber} ) {
+        if ( defined $borrowerinfo && ($borrowerinfo->{borrowernumber} eq $res->{borrowernumber}) ) {
             $warnings = 1;
             $alreadyreserved = 1;
             $biblioloopiter{warn} = 1;
@@ -291,8 +292,8 @@ foreach my $biblionumber (@biblionumbers) {
     
     foreach my $biblioitemnumber (@biblioitemnumbers) {
         my $biblioitem = $biblioiteminfos_of->{$biblioitemnumber};
-        my $num_available;
-        my $num_override;
+        my $num_available = 0;
+        my $num_override  = 0;
         
         $biblioitem->{description} =
           $itemtypes->{ $biblioitem->{itemtype} }{description};
@@ -366,7 +367,7 @@ foreach my $biblionumber (@biblionumbers) {
             my ( $transfertwhen, $transfertfrom, $transfertto ) =
               GetTransfers($itemnumber);
             
-            if ( $transfertwhen ne '' ) {
+            if ( defined $transfertwhen && $transfertwhen ne '' ) {
                 $item->{transfertwhen} = format_date($transfertwhen);
                 $item->{transfertfrom} =
                   $branches->{$transfertfrom}{branchname};
@@ -433,8 +434,12 @@ foreach my $biblionumber (@biblionumbers) {
 
     # existingreserves building
     my @reserveloop;
-    ( $count, $reserves ) = GetReservesFromBiblionumber($biblionumber);
-    foreach my $res ( sort { $a->{found} cmp $b->{found} } @$reserves ) {
+    ( $count, $reserves ) = GetReservesFromBiblionumber($biblionumber,1);
+    foreach my $res ( sort { 
+            my $a_found = $a->{found} || '';
+            my $b_found = $a->{found} || '';
+            $a_found cmp $b_found; 
+        } @$reserves ) {
         my %reserve;
         my @optionloop;
         for ( my $i = 1 ; $i <= $totalcount ; $i++ ) {
@@ -446,16 +451,8 @@ foreach my $biblionumber (@biblionumbers) {
                  }
                 );
         }
-        my @branchloop;
-        foreach my $br ( keys %$branches ) {
-            my %abranch;
-            $abranch{'selected'}   = ( $br eq $res->{'branchcode'} );
-            $abranch{'branch'}     = $br;
-            $abranch{'branchname'} = $branches->{$br}->{'branchname'};
-            push( @branchloop, \%abranch );
-        }
         
-        if ( ( $res->{'found'} eq 'W' ) ) {
+        if ( defined $res->{'found'} && $res->{'found'} eq 'W' ) {
             my $item = $res->{'itemnumber'};
             $item = GetBiblioFromItemNumber($item,undef);
             $reserve{'wait'}= 1; 
@@ -481,23 +478,26 @@ foreach my $biblionumber (@biblionumbers) {
         
         #     get borrowers reserve info
         my $reserveborrowerinfo = GetMemberDetails( $res->{'borrowernumber'}, 0);
-        
+        if (C4::Context->preference('HidePatronName')){
+	    $reserve{'hidename'} = 1;
+	    $reserve{'cardnumber'} = $reserveborrowerinfo->{'cardnumber'};
+	}
         $reserve{'date'}           = format_date( $res->{'reservedate'} );
         $reserve{'borrowernumber'} = $res->{'borrowernumber'};
         $reserve{'biblionumber'}   = $res->{'biblionumber'};
         $reserve{'borrowernumber'} = $res->{'borrowernumber'};
         $reserve{'firstname'}      = $reserveborrowerinfo->{'firstname'};
-        $reserve{'surname'}        = $reserveborrowerinfo->{'surname'};
+        $reserve{'surname'}        = $reserveborrowerinfo->{'surname'};	    
         $reserve{'notes'}          = $res->{'reservenotes'};
         $reserve{'wait'}           =
-          ( ( $res->{'found'} eq 'W' ) or ( $res->{'priority'} eq '0' ) );
+          ( ( defined $res->{'found'} and $res->{'found'} eq 'W' ) or ( $res->{'priority'} eq '0' ) );
         $reserve{'constrainttypea'} = ( $res->{'constrainttype'} eq 'a' );
         $reserve{'constrainttypeo'} = ( $res->{'constrainttype'} eq 'o' );
         $reserve{'voldesc'}         = $res->{'volumeddesc'};
         $reserve{'ccode'}           = $res->{'ccode'};
         $reserve{'barcode'}         = $res->{'barcode'};
         $reserve{'priority'}    = $res->{'priority'};
-        $reserve{'branchloop'} = \@branchloop;
+        $reserve{'branchloop'} = GetBranchesLoop($res->{'branchcode'});
         $reserve{'optionloop'} = \@optionloop;
         
         push( @reserveloop, \%reserve );
@@ -521,14 +521,18 @@ foreach my $biblionumber (@biblionumbers) {
                      biblionumber      => $biblionumber,
                      findborrower      => $findborrower,
                      cardnumber        => $cardnumber,
-                     CGIselectborrower => $CGIselectborrower,
                      title             => $dat->{title},
                      author            => $dat->{author},
                      holdsview => 1,
-                     borrower_branchname => $branches->{$borrowerinfo->{'branchcode'}}->{'branchname'},
-                     borrower_branchcode => $borrowerinfo->{'branchcode'},
                      C4::Search::enabled_staff_search_views,
                     );
+    if (defined $borrowerinfo && exists $borrowerinfo->{'branchcode'}) {
+        $template->param(
+                     borrower_branchname => $branches->{$borrowerinfo->{'branchcode'}}->{'branchname'},
+                     borrower_branchcode => $borrowerinfo->{'branchcode'},
+        );
+    }
+    $template->param(CGIselectborrower => $CGIselectborrower) if defined $CGIselectborrower;
 
     $biblioloopiter{biblionumber} = $biblionumber;
     $biblioloopiter{title} = $dat->{title};
@@ -548,6 +552,13 @@ $template->param( biblionumbers => $biblionumbers );
 
 if ($multihold) {
     $template->param( multi_hold => 1 );
+}
+
+if ( C4::Context->preference( 'AllowHoldDateInFuture' ) ) {
+    $template->param(
+	reserve_in_future         => 1,
+	DHTMLcalendar_dateformat  => C4::Dates->DHTMLcalendar(),
+	);
 }
     
 # printout the page

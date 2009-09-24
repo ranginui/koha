@@ -38,6 +38,7 @@ use C4::External::Syndetics qw(get_syndetics_index get_syndetics_summary get_syn
 use C4::Review;
 use C4::Serials;
 use C4::Members;
+use C4::VirtualShelves;
 use C4::XSLT;
 
 BEGIN {
@@ -59,6 +60,10 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
 );
 
 my $biblionumber = $query->param('biblionumber') || $query->param('bib');
+
+$template->param( 'AllowOnShelfHolds' => C4::Context->preference('AllowOnShelfHolds') );
+$template->param( 'ItemsIssued' => CountItemsIssued( $biblionumber ) );
+
 my $record       = GetMarcBiblio($biblionumber);
 $template->param( biblionumber => $biblionumber );
 # XSLT processing of some stuff
@@ -151,7 +156,7 @@ for my $itm (@items) {
         $itm->{'imageurl'}    = getitemtypeimagelocation( 'opac', $itemtypes->{ $itm->{itype} }->{'imageurl'} );
         $itm->{'description'} = $itemtypes->{ $itm->{itype} }->{'description'};
     }
-    foreach (qw(ccode enumchron copynumber itemnotes)) {
+    foreach (qw(ccode enumchron copynumber itemnotes uri)) {
         $itemfields{$_} = 1 if ($itm->{$_});
     }
 
@@ -198,6 +203,7 @@ my $subtitle         = C4::Biblio::get_koha_field_from_marc('bibliosubtitle', 's
                      RequestOnOpac           => C4::Context->preference("RequestOnOpac"),
                      itemdata_ccode          => $itemfields{ccode},
                      itemdata_enumchron      => $itemfields{enumchron},
+                     itemdata_uri            => $itemfields{uri},
                      itemdata_copynumber     => $itemfields{copynumber},
                      itemdata_itemnotes          => $itemfields{itemnotes},
                      authorised_value_images => $biblio_authorised_value_images,
@@ -260,6 +266,13 @@ $template->param(
     reviews             => $reviews,
     loggedincommenter   => $loggedincommenter
 );
+
+# Lists
+
+if (C4::Context->preference("virtualshelves") ) {
+   $template->param( 'GetShelves' => GetBibliosShelves( $biblionumber ) );
+}
+
 
 # XISBN Stuff
 if (C4::Context->preference("OPACFRBRizeEditions")==1) {
@@ -536,5 +549,14 @@ if (C4::Context->preference('TagsEnabled') and $tag_quantity = C4::Context->pref
 	$template->param(TagLoop => get_tags({biblionumber=>$biblionumber, approved=>1,
 								'sort'=>'-weight', limit=>$tag_quantity}));
 }
+
+#Search for title in links
+if (my $search_for_title = C4::Context->preference('OPACSearchForTitleIn')){
+    $search_for_title =~ s/{AUTHOR}/$dat->{author}/g;
+    $search_for_title =~ s/{TITLE}/$dat->{title}/g;
+    $search_for_title =~ s/{ISBN}/$isbn/g;
+ $template->param('OPACSearchForTitleIn' => $search_for_title);
+}
+
 
 output_html_with_http_headers $query, $cookie, $template->output;

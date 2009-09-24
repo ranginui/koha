@@ -1,7 +1,7 @@
 <!-- TMPL_INCLUDE NAME="doc-head-open.inc" -->
 <title>Koha &rsaquo; Search Results</title>
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
-<script language="Javascript">
+<script type="text/javascript" language="javascript">
 //<![CDATA[
 function GetIt(bibno,title)
 {
@@ -21,7 +21,7 @@ function GetIt(bibno,title)
    <div id="bd">
 	
 
-<h1>Search results</h1>
+<h1>Search results from <!-- TMPL_VAR NAME="from" --> to <!-- TMPL_VAR NAME="to" --> of <!-- TMPL_VAR NAME="total" --></h1>
 <!-- TMPL_IF NAME="total"-->
 <table>
     <tr>
@@ -37,16 +37,16 @@ function GetIt(bibno,title)
                     <!-- TMPL_VAR NAME="title" escape="html" -->
                 </a>
                 <br />
-                <small><!-- TMPL_VAR NAME="subtitle" --></small>
+                <small><!-- TMPL_VAR ESCAPE="HTML" NAME="subtitle" --></small>
             </td>
             <td>
-                <!-- TMPL_VAR NAME="author" -->
+                <!-- TMPL_VAR ESCAPE="HTML" NAME="author" -->
             </td>
             <td>
-                <!-- TMPL_VAR NAME="publishercode" -->
+                <!-- TMPL_VAR ESCAPE="HTML" NAME="publishercode" -->
             </td>
             <td>
-                <!-- TMPL_VAR NAME="publicationyear" -->
+                <!-- TMPL_VAR ESCAPE="HTML" NAME="publicationyear" -->
             </td>
         </tr>
     <!-- /TMPL_LOOP -->
@@ -54,15 +54,15 @@ function GetIt(bibno,title)
 <!-- TMPL_ELSE -->
 <h2>No results found for <b><!-- TMPL_VAR NAME="query" --></b></h2>
 <!-- /TMPL_IF-->
-<a onclick="Plugin(f)" href="">Search for another Biblio</a>
-<a class="button" href="#" onclick="window.close()">  Close</a></p>
+<!-- TMPL_IF NAME="displayprev" -->
+<a href="/cgi-bin/koha/serials/subscription-bib-search.pl?op=do_search&amp;type=intranet&amp;startfrom=<!-- TMPL_VAR ESCAPE="URL" NAME="startfromprev" -->&amp;q=<!-- TMPL_VAR ESCAPE="URL" NAME="query" -->">&lt;&lt;</a>
+<!-- /TMPL_IF -->
+<!-- TMPL_IF NAME="displaynext" -->
+<a href="/cgi-bin/koha/serials/subscription-bib-search.pl?op=do_search&amp;type=intranet&amp;startfrom=<!-- TMPL_VAR ESCAPE="URL" NAME="startfromnext" -->&amp;q=<!-- TMPL_VAR ESCAPE="URL" NAME="query" -->">&gt;&gt;</a>
+<!-- /TMPL_IF -->
+<br/>
+<a href="subscription-bib-search.pl">Search for another Biblio</a>
+<a class="button" href="#" onclick="window.close()">  Close</a>
 </div>
-
-<script type="text/javascript">
-function Plugin(f)
-{
-    window.open('subscription-bib-search.pl','FindABibIndex','width=800,height=400,toolbar=no,scrollbars=yes');
-}
-</script>
 
 <!-- TMPL_INCLUDE NAME="intranet-bottom.inc" -->

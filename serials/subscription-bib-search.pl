@@ -48,6 +48,7 @@ to multipage gestion.
 
 
 use strict;
+use warnings;
 
 use CGI;
 use C4::Koha;
@@ -59,7 +60,7 @@ use C4::Biblio;
 
 my $input=new CGI;
 # my $type=$query->param('type');
-my $op = $input->param('op');
+my $op = $input->param('op') || q{};
 my $dbh = C4::Context->dbh;
 
 my $startfrom=$input->param('startfrom');
@@ -77,11 +78,11 @@ if ($op eq "do_search" && $query) {
         my $index = C4::Context->preference("item-level_itypes") ? 'itype' : 'itemtype';
         $query .= " AND $index=$itemtypelimit";
     }
-    
-    $resultsperpage= $input->param('resultsperpage');
-    $resultsperpage = 19 if(!defined $resultsperpage);
 
-    my ($error, $marcrecords, $total_hits) = SimpleSearch($query, $startfrom, $resultsperpage);
+    $resultsperpage= $input->param('resultsperpage');
+    $resultsperpage = 20 if(!defined $resultsperpage);
+
+    my ($error, $marcrecords, $total_hits) = SimpleSearch($query, $startfrom*$resultsperpage, $resultsperpage);
     my $total = scalar @$marcrecords;
 
     if (defined $error) {
@@ -91,7 +92,7 @@ if ($op eq "do_search" && $query) {
         exit;
     }
     my @results;
-    
+
     for(my $i=0;$i<$total;$i++) {
         my %resultsloop;
         my $marcrecord = MARC::File::USMARC::decode($marcrecords->[$i]);
@@ -108,7 +109,7 @@ if ($op eq "do_search" && $query) {
 
         push @results, \%resultsloop;
     }
-    
+
     ($template, $loggedinuser, $cookie)
         = get_template_and_user({template_name => "serials/result.tmpl",
                 query => $input,
@@ -122,14 +123,14 @@ if ($op eq "do_search" && $query) {
     # multi page display gestion
     my $displaynext=0;
     my $displayprev=$startfrom;
-    if(($total - (($startfrom+1)*($resultsperpage))) > 0 ){
+    if(($total_hits - (($startfrom+1)*($resultsperpage))) > 0 ){
         $displaynext = 1;
     }
 
 
     my @numbers = ();
 
-    if ($total>$resultsperpage)
+    if ($total_hits>$resultsperpage)
     {
         for (my $i=1; $i<$total/$resultsperpage+1; $i++)
         {
@@ -145,10 +146,11 @@ if ($op eq "do_search" && $query) {
         }
     }
 
-    my $from = $startfrom*$resultsperpage+1;
+    my $from = 0;
+    $from = $startfrom*$resultsperpage+1 if($total_hits > 0);
     my $to;
 
-    if($total < (($startfrom+1)*$resultsperpage))
+    if($total_hits < (($startfrom+1)*$resultsperpage))
     {
         $to = $total;
     } else {
@@ -163,7 +165,7 @@ if ($op eq "do_search" && $query) {
                             resultsperpage => $resultsperpage,
                             startfromnext => $startfrom+1,
                             startfromprev => $startfrom-1,
-                            total=>$total,
+                            total=>$total_hits,
                             from=>$from,
                             to=>$to,
                             numbers=>\@numbers,

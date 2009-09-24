@@ -79,8 +79,9 @@ if ($query) {
     }
 
     # format output
+    # SimpleSearch() give the results per page we want, so 0 offet here
     my $total = scalar @$marcresults;
-    my @newresults = searchResults( $query, $total, $results_per_page, $page-1, 0, @$marcresults );
+    my @newresults = searchResults( $query, $total, $results_per_page, 0, 0, @$marcresults );
     $template->param(
         total          => $total_hits,
         query          => $query,
@@ -110,14 +111,13 @@ if ($query) {
     ( $countbr, @resultsbr ) = BreedingSearch( $title, $isbn );
 }
 my $breeding_loop = [];
-my $id = 0;
 for my $resultsbr (@resultsbr) {
     push @{$breeding_loop}, {
-        id               => $id++,
+        id               => $resultsbr->{import_record_id},
         isbn             => $resultsbr->{isbn},
         copyrightdate    => $resultsbr->{copyrightdate},
         editionstatement => $resultsbr->{editionstatement},
-        file             => $resultsbr->{file},
+        file             => $resultsbr->{file_name},
         title            => $resultsbr->{title},
         author           => $resultsbr->{author},
     };

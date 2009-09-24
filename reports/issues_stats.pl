@@ -133,21 +133,8 @@ my %select;
 
 # create itemtype arrayref for <select>.
 my @itemtypeloop;
-for my $itype ( keys(%$itemtypes)) {
+for my $itype ( sort {$itemtypes->{$a}->{description} cmp $itemtypes->{$b}->{description}} keys(%$itemtypes)) {
 	push @itemtypeloop, { code => $itype , description => $itemtypes->{$itype}->{description} } ;
-}
-
-my $branches=GetBranches();
-my @branchloop;
-foreach (keys %$branches) {
-	my $thisbranch = ''; # FIXME 
-	my %row = (
-		branchcode => $_,
-		selected => ($thisbranch eq $_ ? 1 : 0),
-		code => $branches->{$_}->{'branchcode'},
-		description => $branches->{$_}->{'branchname'},
-	);
-	push @branchloop, \%row;
 }
 
     # location list
@@ -157,7 +144,7 @@ foreach (sort keys %$locations) {
 }
     
 my @ccodes;
-foreach (keys %$ccodes) {
+foreach (sort {$ccodes->{$a} cmp $ccodes->{$b}} keys %$ccodes) {
 	push @ccodes, { code => $_, description => $ccodes->{$_} };
 }
 
@@ -178,7 +165,7 @@ $template->param(
 	itemtypeloop => \@itemtypeloop,
 	locationloop => \@locations,
 	   ccodeloop => \@ccodes,
-	  branchloop => \@branchloop,
+	  branchloop => GetBranchesLoop(C4::Context->userenv->{'branch'}),
 	hassort1=> $hassort1,
 	hassort2=> $hassort2,
 	Bsort1 => $Bsort1,
@@ -350,8 +337,8 @@ sub calculate {
 	} else {
 		$colfield = $column;
 	}
-	$colorder = ($colfield =~ /dayname/) ? "weekday($line)" :
-				($colfield =~ /^month/ ) ? "  month($line)" : $colfield;
+	$colorder = ($colfield =~ /dayname/) ? "weekday($column)" :
+				($colfield =~ /^month/ ) ? "  month($column)" : $colfield;
 	my $strsth2 = "SELECT distinctrow $colfield FROM statistics, ";
 	# get stats on items if ccode or location, otherwise borrowers.
 	$strsth2 .= ($colsource eq 'items' ) ?

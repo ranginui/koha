@@ -44,6 +44,7 @@ BEGIN {
             &ModShelf
             &ShelfPossibleAction
             &DelFromShelf &DelShelf
+            &GetBibliosShelves
 	);
         @EXPORT_OK = qw(
             &GetShelvesSummary &GetRecentShelves
@@ -266,8 +267,8 @@ sub GetShelfContents ($;$$$) {
 		($sortfield) = $sth2->fetchrow_array;
 	}
     my $query =
-       " SELECT vc.biblionumber, vc.shelfnumber, vc.dateadded,
-	   			biblio.*, biblioitems.itemtype, itemtypes.*
+       " SELECT vc.biblionumber, vc.shelfnumber, vc.dateadded, itemtypes.*,
+	   			biblio.*, biblioitems.itemtype, biblioitems.publicationyear
          FROM   virtualshelfcontents vc
 		 LEFT JOIN biblio      ON      vc.biblionumber =      biblio.biblionumber
 		 LEFT JOIN biblioitems ON  biblio.biblionumber = biblioitems.biblionumber
@@ -530,6 +531,26 @@ sub DelShelf {
 	}
 	my $sth = $dbh->prepare("DELETE FROM virtualshelves WHERE shelfnumber=?");
 	return $sth->execute(shift);
+}
+
+=item GetBibShelves
+
+This finds all the public lists that this bib record is in.
+
+=cut
+
+sub GetBibliosShelves {
+    my ( $biblionumber )  = @_;
+    my $dbh = C4::Context->dbh;
+    my $sth = $dbh->prepare('
+        SELECT vs.shelfname, vs.shelfnumber 
+        FROM virtualshelves vs 
+        JOIN virtualshelfcontents vc ON (vs.shelfnumber= vc.shelfnumber) 
+        WHERE vs.category != 1 
+        AND vc.biblionumber= ?
+    ');
+    $sth->execute( $biblionumber );
+    return $sth->fetchall_arrayref({});
 }
 
 =item RefreshShelvesSummary

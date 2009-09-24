@@ -100,6 +100,12 @@ function verify_images() {
             <!-- /TMPL_LOOP --></ul>
 </li>
     <!-- /TMPL_IF -->
+    
+    <!-- TMPL_IF name="OpacUrl" -->
+    	<li><strong>OPAC View:</strong>
+    	<a href="http://<!-- TMPL_VAR name="OpacUrl" -->/cgi-bin/koha/opac-detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->" target="_blank">Open in new window</a>
+		</li>
+	<!-- /TMPL_IF -->
         </ul>
         </div>
        
@@ -145,6 +151,16 @@ function verify_images() {
                 <!-- /TMPL_LOOP -->
             </li>
         <!-- /TMPL_IF -->
+        <!--This grabs all of the lists a bib record appears in -->
+        <!-- TMPL_IF NAME="GetShelves" -->
+	        <li><strong>Lists that include this title: </strong>
+	        <ul>
+	        <!-- TMPL_LOOP NAME="GetShelves" -->
+		        <li><a href="/cgi-bin/koha/virtualshelves/shelves.pl?viewshelf=<!-- TMPL_VAR NAME="shelfnumber" -->"><!-- TMPL_VAR NAME="shelfname" --></a></li>
+	        <!-- /TMPL_LOOP -->
+	        </ul>
+	        </li>
+        <!-- /TMPL_IF -->
         </ul>
 </div>
 </div>
@@ -170,6 +186,7 @@ function verify_images() {
                 <th>Last seen</th>
                 <th>Barcode</th>
                 <!-- TMPL_IF NAME="volinfo" --><th>Publication Details</th><!-- /TMPL_IF -->
+                <!-- TMPL_IF NAME="itemdata_uri" --><th>URL</th><!-- /TMPL_IF -->
                 <!-- TMPL_IF NAME="itemdata_copynumber" --><th>Copy No.</th><!-- /TMPL_IF -->
             </tr>
             <!-- TMPL_LOOP NAME="itemloop" -->
@@ -194,7 +211,13 @@ function verify_images() {
                 <!-- TMPL_IF name="datedue" -->
 						<span class="datedue">Checked out
                     <!-- TMPL_UNLESS  NAME="NOTSAMEBRANCH" -->
-                          to <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->"><!-- TMPL_VAR NAME="firstname" --> <!-- TMPL_VAR NAME="surname" --></a>
+                          to <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->">
+			  <!-- TMPL_IF NAME='hidepatronname' -->
+			      <!-- TMPL_VAR NAME="cardnumber" -->
+			  <!-- TMPL_ELSE -->
+			      <!-- TMPL_VAR NAME="firstname" --> <!-- TMPL_VAR NAME="surname" -->
+			  <!-- /TMPL_IF -->
+			  </a>
                     <!-- /TMPL_UNLESS -->
 						: due <!-- TMPL_VAR NAME="datedue" -->
 						</span>
@@ -246,7 +269,13 @@ function verify_images() {
                     <!-- TMPL_ELSE -->
                         On hold
                     <!-- /TMPL_IF -->
-                    <!-- TMPL_IF NAME="canreservefromotherbranches" -->for <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=<!-- TMPL_VAR NAME="ReservedForBorrowernumber" -->"><!-- TMPL_VAR NAME="ReservedForFirstname" --> <!-- TMPL_VAR NAME="ReservedForSurname" --></a><!-- /TMPL_IF -->
+                    <!-- TMPL_IF NAME="canreservefromotherbranches" -->for <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=<!-- TMPL_VAR NAME="ReservedForBorrowernumber" -->">
+		        <!-- TMPL_IF NAME="hidepatronname" -->
+		            <!-- TMPL_VAR NAME="cardnumber" -->
+		        <!-- TMPL_ELSE -->
+		            <!-- TMPL_VAR NAME="ReservedForFirstname" --> <!-- TMPL_VAR NAME="ReservedForSurname" -->
+			<!-- /TMPL_IF -->
+		    </a><!-- /TMPL_IF -->
                     <!-- TMPL_IF NAME="waitingdate" -->
                         at<!-- TMPL_ELSE -->expected at
                     <!-- /TMPL_IF -->   <!-- TMPL_VAR NAME="ExpectedAtLibrary" -->
@@ -271,6 +300,9 @@ function verify_images() {
 					<!-- /TMPL_IF -->
 					<!-- TMPL_VAR NAME="serialseq" --><!-- TMPL_IF NAME="publisheddate" --> (<!-- TMPL_VAR NAME="publisheddate" -->)<!-- /TMPL_IF -->
 				</td><!-- /TMPL_IF -->
+				<!-- TMPL_IF NAME="itemdata_uri" -->
+					<td class="uri"><a href="<!-- TMPL_VAR NAME="uri" -->"><!-- TMPL_VAR NAME="uri" --></a></td>
+				<!-- /TMPL_IF -->
 				<!-- TMPL_IF NAME="itemdata_copynumber" -->
 					<td class="copynumber"><!-- TMPL_VAR NAME="copynumber" --></td>
 				<!-- /TMPL_IF -->
