@@ -51,6 +51,7 @@ our $VERSION = '0.01';
 
 sub build_recommendations {
     my $dbh = C4::Context->dbh;
+    $dbh->do("TRUNCATE recommendations");
     my $query =
 "SELECT biblio.biblionumber,borrowernumber FROM old_issues,biblio,items WHERE old_issues.itemnumber=items.itemnumber AND items.biblionumber=biblio.biblionumber";
     my $sth = $dbh->prepare($query);
