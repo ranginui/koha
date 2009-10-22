@@ -2352,6 +2352,7 @@ CREATE TABLE branch_transfer_limits (
     PRIMARY KEY  (limitId)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
 --
 -- Table structure for table `item_circulation_alert_preferences`
 --
@@ -2380,6 +2381,20 @@ CREATE TABLE `messages` (
   `message_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`message_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `recommendations`;
+CREATE TABLE `recommendations` (
+  `id` int(11) NOT NULL auto_increment,
+  `biblio_one` int(11),
+  `biblio_two` int(11),
+  `hit_count` int(11),
+  PRIMARY KEY  (`id`),
+  KEY `biblio_one_idx` (`biblio_one`),
+  KEY `biblio_two_idx` (`biblio_two`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
+
+
 
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
