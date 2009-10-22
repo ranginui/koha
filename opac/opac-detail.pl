@@ -37,6 +37,7 @@ use C4::External::Amazon;
 use C4::Review;
 use C4::Members;
 use C4::XSLT;
+use C4::Recommendations;
 
 BEGIN {
 	if (C4::Context->preference('BakerTaylorEnabled')) {
@@ -57,6 +58,13 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
 );
 
 my $biblionumber = $query->param('biblionumber') || $query->param('bib');
+
+# if ( C4::Context->preference('ShowRecommendations')){
+    my $recommendations = get_recommendations($biblionumber);
+    $template->param('Recommendations' => 1,
+	'recommendation_loop' => $recommendations
+	);
+# }
 
 $template->param( 'AllowOnShelfHolds' => C4::Context->preference('AllowOnShelfHolds') );
 $template->param( 'ItemsIssued' => CountItemsIssued( $biblionumber ) );

@@ -252,6 +252,7 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
     <!-- TMPL_IF NAME="OPACFRBRizeEditions" --><!-- TMPL_IF NAME="XISBNS" --><li><a href="/cgi-bin/koha/opac-detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->#editions">Editions</a></li><!-- /TMPL_IF --><!-- /TMPL_IF -->
     
     <!-- TMPL_IF NAME="AmazonContent" --><li><a href="/cgi-bin/koha/opac-detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->#amazonreviews">Amazon Reviews</a></li><!-- /TMPL_IF -->
+    <!-- TMPL_IF NAME="Recommendations" --><li><a href="/cgi-bin/koha/opac-detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->#recommendations">Recommendations</a></li><!-- /TMPL_IF --> 
 
 </ul>
 
@@ -488,6 +489,16 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
     <!-- TMPL_ELSE -->
         <div id="addcomment"><a href="/cgi-bin/koha/opac-user.pl">Log in to your account</a> to post a comment.</div>
     <!-- /TMPL_IF -->
+</div>
+<!-- /TMPL_IF -->
+
+<!-- TMPL_IF NAME="Recommendations" -->
+<div id="recommendations">
+<table>
+<!-- TMPL_LOOP NAME="recommendation_loop" -->
+<tr><td><a href="/cgi-bin/koha/opac-detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->"><!-- TMPL_VAR NAME="title" --></a></td></tr>
+<!-- /TMPL_LOOP -->
+</table>
 </div>
 <!-- /TMPL_IF -->
 

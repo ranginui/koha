@@ -43,7 +43,7 @@ our %EXPORT_TAGS = (
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
 our @EXPORT = qw(
-build_recommendations get_recommendations;
+build_recommendations get_recommendations
     
 );
 
