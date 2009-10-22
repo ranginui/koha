@@ -2315,6 +2315,17 @@ CREATE TABLE `fieldmapping` (
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `recommendations`;
+CREATE TABLE `recommendations` (
+  `id` int(11) NOT NULL auto_increment,
+  `biblio_one` int(11),
+  `biblio_two` int(11),
+  `hit_count` int(11),
+  PRIMARY KEY  (`id`),
+  KEY `biblio_one_idx` (`biblio_one`),
+  KEY `biblio_two_idx` (`biblio_two`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
+
 
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
