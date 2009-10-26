@@ -103,7 +103,7 @@ sub build_recommendations {
 sub get_recommendations {
     my $biblionumber = shift;
     my $dbh = C4::Context->dbh();
-    my $sth = $dbh->prepare("SELECT biblio.biblionumber,biblio.title FROM biblio,recommendations WHERE biblio_two = biblio.biblionumber AND biblio_one = ? ORDER BY hit_count DESC");
+    my $sth = $dbh->prepare("SELECT biblio.biblionumber,biblio.title,hit_count FROM biblio,recommendations WHERE biblio_two = biblio.biblionumber AND biblio_one = ? ORDER BY hit_count DESC LIMIT 10");
     $sth->execute($biblionumber);
     return $sth->fetchall_arrayref({});
 }

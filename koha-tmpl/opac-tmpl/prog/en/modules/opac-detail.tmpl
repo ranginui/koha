@@ -672,8 +672,10 @@ NAME="description" --></td><!-- /TMPL_IF -->
 <!-- TMPL_IF NAME="Recommendations" -->
 <div id="recommendations">
 <table>
+<!-- /TMPL_LOOP -->
 <!-- TMPL_LOOP NAME="recommendation_loop" -->
-<tr><td><a href="/cgi-bin/koha/opac-detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->"><!-- TMPL_VAR NAME="title" --></a></td></tr>
+<tr><td><!-- TMPL_VAR NAME="hit_count" --> people who read this also
+read </td><td><a href="/cgi-bin/koha/opac-detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->"><!-- TMPL_VAR NAME="title" --></a></td></tr>
 <!-- /TMPL_LOOP -->
 </table>
 </div>
