@@ -11,6 +11,10 @@
 
 <script type="text/javascript" src="<!-- TMPL_VAR name="themelang" -->/lib/jquery/plugins/jquery.checkboxes.min.js"></script>
 <script type="text/javascript" src="<!-- TMPL_VAR name="themelang" -->/lib/jquery/plugins/jquery.highlight-3.js"></script>
+
+
+
+
 <script type="text/javascript">
 //<![CDATA[
 
@@ -265,7 +269,7 @@ $(document).ready(function(){
             <tr>
                 <th>Term/Phrase</th>
                 <th>Count</th>
-            </tr>
+	    </tr>
             <!-- TMPL_LOOP NAME="SEARCH_RESULTS" -->
 			<!-- TMPL_IF name="even" -->
             <tr class="highlight">
@@ -283,8 +287,8 @@ $(document).ready(function(){
         </table>
     </form>
 <!-- TMPL_ELSE -->
-
-    <div class="searchresults">
+    <div id='json_results'></div>
+    <div class="searchresults"  style="margin-right: 280px">
 	<form action="/cgi-bin/koha/opac-search.pl" method="get" name="bookbag_form" id="bookbag_form">
 		<!-- TMPL_IF NAME="searchdesc" -->
 		<!-- TMPL_LOOP NAME="QUERY_INPUTS"-->
@@ -328,8 +332,8 @@ $(document).ready(function(){
             <!-- /TMPL_IF -->
             <!-- /TMPL_IF -->
         </div>
-
-        </td></tr>
+        </td>
+	</tr>
             <!-- Actual Search Results -->
             <!-- TMPL_LOOP NAME="SEARCH_RESULTS" -->
             <!-- TMPL_UNLESS name="__odd__" -->
@@ -483,17 +487,63 @@ $(document).ready(function(){
                 </tr>
                 <!-- /TMPL_LOOP -->
             </table>
+
+
+
+
     </form>
+    
+    
+    
     <form id="hold_form" name="hold_form" method="get" action="/cgi-bin/koha/opac-reserve.pl">
         <!-- The value will be set by holdBiblioNums() in basket.js -->
         <input id="hold_form_biblios" type="hidden" name="biblionumbers" value=""/>
     </form>
         </div>
+
+	
+	
+	<style type="text/css">
+    #json_results { width: 270px; border: 1px solid #aaa; font-size: .8em; float: right; }
+    #json_results .header { background-color: #aaa; margin-bottom: 5px; padding: 10px; }
+    #json_results .header a { color: #fff; }
+    #json_results .result { padding-bottom: 10px; }
+    #json_results .result p { margin: 0; padding: 0; }
+    #json_results .result .title { background-color: #eee; padding: 3px; }
+    #json_results .result .description { margin-left: 10px; margin-top: 5px; }
+  </style>
+  <script type="text/javascript">
+    var json_results = "/cgi-bin/koha/opac-externalsearch.pl?search_terms=<!-- TMPL_VAR NAME="query_desc" -->&json=1&count=" + num_results
+    var num_results = 10
+
+    $(document).ready(function() {
+      $.getJSON(json_results, function(data){
+        var results = data.rss.channel
+        var title = results.title['$t']
+        var link = results.link['$t']
+        $('#json_results').append("<div class='header'><a href='" + link + "' title='" + title + "'>" + title + "</a></div>");
+        $.each(results.item, function(i,item){
+          if ( i == num_results ) return false;
+          title = item.title['$t']
+          link = item.link['$t']
+          description = item.description['$t']
+          result_div = "<div class='result result" + i + "'>"
+          result_div += "  <div class='title'><a href='" + link + "' title='" + title + "'>" + title + "</a></div>"
+          result_div += "  <div class='description'>" + description + "</div>"
+          result_div += "</div>"
+          $('#json_results').append(result_div);
+        });
+      });
+    });
+  </script>
     <!-- /TMPL_IF -->
 	<!-- TMPL_INCLUDE NAME="page-numbers.inc" -->
 
     <!-- TMPL_ELSE -->
     <!-- /TMPL_IF -->
+
+
+
 
 	<!-- TMPL_IF name="suggestion" -->
 <!-- TMPL_IF NAME="AnonSuggestions" --><div class="suggestion">Not finding what you're looking for?<br />  Make a <a href="/cgi-bin/koha/opac-suggestions.pl?op=add">purchase suggestion</a></div><!-- TMPL_ELSE --><!-- TMPL_IF NAME="loggedinusername" --><div class="suggestion">Not finding what you're looking for?<br />  Make a <a href="/cgi-bin/koha/opac-suggestions.pl?op=add">purchase suggestion</a></div><!-- /TMPL_IF --><!-- /TMPL_IF -->
