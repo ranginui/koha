@@ -28,27 +28,27 @@ use C4::Branch;
 use C4::Members;
 use C4::Biblio;
 
-#use constant DEBUG => 0;
-
 my $query = CGI->new;
 
-my ($template, $loggedinuser, $cookie)
-  = get_template_and_user( { template_name => "offline_circ/process_pending.tmpl",
-				query => $query,
-				type => "intranet",
-				authnotrequired => 0,
-				 flagsrequired   => { circulate => "circulate_remaining_permissions" },
-				});
+my ($template, $loggedinuser, $cookie) = get_template_and_user({ 
+    template_name => "offline_circ/list.tmpl",
+    query => $query,
+    type => "intranet",
+    authnotrequired => 0,
+    flagsrequired   => { circulate => "circulate_remaining_permissions" },
+});
 
 my $operations = GetOfflineOperations;
 
 for (@$operations) {
-	$_->{'branch'} = GetBranchName($_->{'branchcode'});
-	my $biblio = GetBiblioFromItemNumber(undef, $_->{'barcode'});
-	$_->{'bibliotitle'} = $biblio->{'title'};
-	my $borrower = GetMemberDetails(undef,$_->{'cardnumber'});
-	$_->{'borrower'} = $borrower->{'firstname'}.' '.$borrower->{'surname'};
-	warn Data::Dumper::Dumper($_);
+	my $biblio             = GetBiblioFromItemNumber(undef, $_->{'barcode'});
+	$_->{'bibliotitle'}    = $biblio->{'title'};
+	$_->{'biblionumber'}   = $biblio->{'biblionumber'};
+	my $borrower           = GetMemberDetails(undef,$_->{'cardnumber'});
+	$_->{'borrowernumber'} = $borrower->{'borrowernumber'};
+	$_->{'borrower'}       = join(' ', $borrower->{'firstname'}, $borrower->{'surname'});
+	$_->{'actionissue'}    = $_->{'action'} eq 'issue';
+	$_->{'actionreturn'}   = $_->{'action'} eq 'return';
 }
 
 $template->param(operations => $operations);

@@ -2587,17 +2587,104 @@ sub DeleteBranchTransferLimits {
 
 sub GetOfflineOperations {
 	my $dbh = C4::Context->dbh;
-	my $sth = $dbh->prepare("SELECT * FROM pending_offline_operations");
-	$sth->execute();
+	my $sth = $dbh->prepare("SELECT * FROM pending_offline_operations WHERE branchcode=? ORDER BY timestamp");
+	$sth->execute(C4::Context->userenv->{'branch'});
 	my $results = $sth->fetchall_arrayref({});
 	$sth->finish;
 	return $results;
 }
 
+sub GetOfflineOperation {
+	my $dbh = C4::Context->dbh;
+	my $sth = $dbh->prepare("SELECT * FROM pending_offline_operations WHERE operationid=?");
+	$sth->execute( shift );
+	my $result = $sth->fetchrow_hashref;
+	$sth->finish;
+	return $result;
+}
+
 sub AddOfflineOperation {
 	my $dbh = C4::Context->dbh;
-	my $sth = $dbh->prepare("INSERT INTO pending_offline_operations VALUES(?,?,?,?,?)");
+	warn Data::Dumper::Dumper(@_);
+	my $sth = $dbh->prepare("INSERT INTO pending_offline_operations VALUES('',?,?,?,?,?,?)");
 	$sth->execute( @_ );
+	return "Added.";
+}
+
+sub DeleteOfflineOperation {
+	my $dbh = C4::Context->dbh;
+	my $sth = $dbh->prepare("DELETE FROM pending_offline_operations WHERE operationid=?");
+	$sth->execute( shift );
+	return "Deleted.";
+}
+
+sub ProcessOfflineOperation {
+	my $operation = shift;
+
+    my $report;
+	if ( $operation->{action} eq 'return' ) {
+        $report = ProcessOfflineReturn( $operation );
+	} elsif ( $operation->{action} eq 'issue' ) {
+	    $report = ProcessOfflineIssue( $operation );
+	}
+	
+	DeleteOfflineOperation( $operation->{operationid} ) if $operation->{operationid};
+	
+	return $report;
+}
+
+sub ProcessOfflineReturn {
+    my $operation = shift;
+
+    my $itemnumber = C4::Items::GetItemnumberFromBarcode( $operation->{barcode} );
+    
+    if ( $itemnumber ) {
+        my $issue = GetOpenIssue( $itemnumber );
+        if ( $issue ) {
+            MarkIssueReturned(
+                $issue->{borrowernumber},
+                $itemnumber,
+                undef,
+                $operation->{timestamp},
+            );
+            return "Success.";
+        } else {
+            return "Item not issued.";
+        }
+    } else {
+        return "Item not found.";
+    }
+}
+
+sub ProcessOfflineIssue {
+    my $operation = shift;
+
+    my $borrower = C4::Members::GetMemberDetails( undef, $operation->{cardnumber} ); # Get borrower from operation cardnumber
+    
+    if ( $borrower->{borrowernumber} ) { 
+        my $itemnumber = C4::Items::GetItemnumberFromBarcode( $operation->{barcode} );
+        my $issue = GetOpenIssue( $itemnumber );
+        
+        if ( $issue and ( $issue->{borrowernumber} ne $borrower->{borrowernumber} ) ) { # Item already issued to another borrower, mark it returned
+            MarkIssueReturned(
+                $issue->{borrowernumber},
+                $itemnumber,
+                undef,
+                $operation->{timestamp},
+            );
+        }
+        AddIssue(
+            $borrower,
+            $operation->{'barcode'},
+            undef,
+            1,
+            $operation->{timestamp},
+            undef,
+        );
+        return "Success.";
+    } else {
+        return "Borrower not found.";
+    }
 }
 
 
