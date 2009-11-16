@@ -554,6 +554,9 @@ foreach ( sort { $a <=> $b } keys %returneditems ) {
         $ri{ccode}            = $biblio->{'ccode'};
         $ri{itemnumber}       = $biblio->{'itemnumber'};
         $ri{barcode}          = $bar_code;
+        $ri{homebranch}       = $item->{'homebranch'};
+        $ri{holdingbranch}    = $item->{'holdingbranch'};
+        $ri{barcode}          = $barcode;
     }
     else {
         last;
