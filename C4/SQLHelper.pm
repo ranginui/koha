@@ -442,7 +442,7 @@ sub _Process_Operands{
 		}
 		if ($searchtype eq "start_with"){
 			push @tmpkeys,("$field LIKE ?","$field LIKE ?");
-			push @localvaluesextended, ("$operand\%", " $operand\%") ;
+			push @localvaluesextended, ("$operand\%", "\% $operand\%") ;
 		}
 		push @values,@localvaluesextended;
 	}

@@ -74,7 +74,7 @@ YAHOO.util.Event.onContentReady("header_search", function() {
       <!-- /TMPL_LOOP --></select>
 	</p>
 	<!--/TMPL_IF -->
-</form>
+    </form>
 	</div>
 	<!-- TMPL_IF NAME="CAN_user_circulate" -->
 	<div id="circ_search" class="residentsearch" style="display:none;">

@@ -82,7 +82,6 @@ if ($orderbyparams){
 else {
 	@orderby = ({surname=>0},{firstname=>0});
 }
-
 $member =~ s/,//g;   #remove any commas from search string
 $member =~ s/\*/%/g;
 
