@@ -1,68 +1,55 @@
 <?xml version='1.0'?>
 <xsl:stylesheet version="1.0" xmlns:marc="http://www.loc.gov/MARC21/slim" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
-  <xsl:template name="datafield">
-    <xsl:param name="tag"/>
-    <xsl:param name="ind1"><xsl:text> </xsl:text></xsl:param>
-    <xsl:param name="ind2"><xsl:text> </xsl:text></xsl:param>
-    <xsl:param name="subfields"/>
-    <xsl:element name="datafield">
-      <xsl:attribute name="tag">
-        <xsl:value-of select="$tag"/>
-      </xsl:attribute>
-      <xsl:attribute name="ind1">
-        <xsl:value-of select="$ind1"/>
-      </xsl:attribute>
-      <xsl:attribute name="ind2">
-       <xsl:value-of select="$ind2"/>
-         </xsl:attribute>
-       <xsl:copy-of select="$subfields"/>
-    </xsl:element>
-  </xsl:template>
+	<xsl:template name="datafield">
+		<xsl:param name="tag"/>
+		<xsl:param name="ind1"><xsl:text> </xsl:text></xsl:param>
+		<xsl:param name="ind2"><xsl:text> </xsl:text></xsl:param>
+		<xsl:param name="subfields"/>
+		<xsl:element name="datafield">
+			<xsl:attribute name="tag">
+				<xsl:value-of select="$tag"/>
+			</xsl:attribute>
+			<xsl:attribute name="ind1">
+				<xsl:value-of select="$ind1"/>
+			</xsl:attribute>
+			<xsl:attribute name="ind2">
+				<xsl:value-of select="$ind2"/>
+			</xsl:attribute>
+			<xsl:copy-of select="$subfields"/>
+		</xsl:element>
+	</xsl:template>
 
-  <xsl:template name="tag_210">
-    <span class="results_summary">
-      <span class="label">Édition: </span>
-      <xsl:for-each select="marc:datafield[@tag=210]">
-        <span>
-          <xsl:call-template name="addClassRtl" />
-          <xsl:value-of select="marc:subfield[@code='a']"/>
-          <xsl:if test="marc:subfield[@code='b']">
-            <xsl:if test="marc:subfield[@code='a']">, </xsl:if>
-            <xsl:value-of select="marc:subfield[@code='b']"/>
-          </xsl:if>
-          <xsl:if test="marc:subfield[@code='a' or @code='b']">
-            <xsl:if test="marc:subfield[@code='a']"> : </xsl:if>
-            <xsl:value-of select="marc:subfield[@code='c']"/>
-          </xsl:if>
-          <xsl:if test="marc:subfield[@code='d']">
-            <xsl:if test="marc:subfield[@code='a' or @code='c']">, </xsl:if>
-            <xsl:value-of select="marc:subfield[@code='d']"/>
-          </xsl:if>
-          <xsl:if test="marc:subfield[@code='e']">
-            <xsl:if test="marc:subfield[@code='a' or @code='c' or @code='d']"> — </xsl:if>
-            <xsl:value-of select="marc:subfield[@code='e']"/>
-          </xsl:if>
-          <xsl:if test="marc:subfield[@code='g']">
-            <xsl:if test="marc:subfield[@code='e']"> : </xsl:if>
-            <xsl:value-of select="marc:subfield[@code='g']"/>
-          </xsl:if>
-          <xsl:if test="marc:subfield[@code='h']">
-            <xsl:if test="marc:subfield[@code='e' or @code='g']">, </xsl:if>
-            <xsl:value-of select="marc:subfield[@code='h']"/>
-          </xsl:if>
-          <xsl:if test="not (position() = last())">
-            <xsl:text> • </xsl:text>
-          </xsl:if>
-        </span>
-      </xsl:for-each>
-    </span>
+	<xsl:template name="tag_210">
+    <xsl:for-each select="marc:datafield[@tag=210]">
+  	    <span class="results_summary">
+        <span class="label">Édition: </span> 
+        <xsl:value-of select="marc:subfield[@code='a']"/>
+        <xsl:if test="marc:subfield[@code='c']">
+          <xsl:if test="marc:subfield[@code='a']"> : </xsl:if>
+          <xsl:value-of select="marc:subfield[@code='c']"/>
+        </xsl:if>
+        <xsl:if test="marc:subfield[@code='d']">
+          <xsl:if test="marc:subfield[@code='a' or @code='c']">, </xsl:if>        
+          <xsl:value-of select="marc:subfield[@code='d']"/>
+        </xsl:if>
+        <xsl:value-of select="marc:subfield[@code='e']"/>
+        <xsl:if test="marc:subfield[@code='g']">
+          <xsl:if test="marc:subfield[@code='e']"> : </xsl:if>
+          <xsl:value-of select="marc:subfield[@code='g']"/>
+        </xsl:if>
+        <xsl:if test="marc:subfield[@code='h']">
+          <xsl:if test="marc:subfield[@code='e' or @code='g']">, </xsl:if>        
+          <xsl:value-of select="marc:subfield[@code='h']"/>
+        </xsl:if>
+      </span>
+    </xsl:for-each>
   </xsl:template>
 
 	<xsl:template name="tag_215">
     <xsl:for-each select="marc:datafield[@tag=215]">
   	  <span class="results_summary">
-        <span class="label">Description: </span>
+        <span class="label">Description: </span> 
         <xsl:if test="marc:subfield[@code='a']">
           <xsl:value-of select="marc:subfield[@code='a']"/>
         </xsl:if>
@@ -79,27 +66,55 @@
     </xsl:for-each>
   </xsl:template>
 
-	<xsl:template name="tag_4xx">
-    <xsl:for-each select="marc:datafield[@tag=464 or @tag=461]">
+
+  <xsl:template name="tag_4xx">
+    <xsl:if test="marc:datafield[@tag=461]">
+      <span class="results_summary">
+      <span class="label">Fait partie de : </span> 
+      <xsl:value-of select="marc:subfield[@code='t']"/>
+      <xsl:if test="marc:subfield[@code='v']"><xsl:value-of select="marc:subfield[@code='v']"/></xsl:if>
+      </span>
+    </xsl:if>	
+    <xsl:if test="marc:datafield[@tag=454]">
+      <span class="results_summary">
+      <span class="label">Traduit de : </span> 
+      <xsl:value-of select="marc:datafield[@tag=454]"/>
+      </span>
+    </xsl:if>	
+    <xsl:for-each select="marc:datafield[@tag=464]">
     	  <span class="results_summary">
-        <span class="label">Extrait de: </span>
-        <span>
-          <xsl:call-template name="addClassRtl" />
-          <xsl:if test="marc:subfield[@code='t']">
-            <xsl:value-of select="marc:subfield[@code='t']"/>
-          </xsl:if>
-          <xsl:if test="marc:subfield[@code='e']"> :
-            <xsl:value-of select="marc:subfield[@code='e']"/>
-          </xsl:if>
-          <xsl:if test="marc:subfield[@code='f']"> /
-            <xsl:value-of select="marc:subfield[@code='f']"/>
-          </xsl:if>
-          <xsl:if test="marc:subfield[@code='v']">,
-            <xsl:value-of select="marc:subfield[@code='v']"/>
-          </xsl:if>
-        </span>
+        <span class="label">Contient : </span> 
+        <xsl:if test="marc:subfield[@code='t']">
+          <xsl:value-of select="marc:subfield[@code='t']"/>
+        </xsl:if>
+        <xsl:if test="marc:subfield[@code='e']"> :
+          <xsl:value-of select="marc:subfield[@code='e']"/>
+        </xsl:if>
+        <xsl:if test="marc:subfield[@code='f']"> /
+          <xsl:value-of select="marc:subfield[@code='f']"/>
+        </xsl:if>
+        <xsl:if test="marc:subfield[@code='v']">,
+          <xsl:value-of select="marc:subfield[@code='v']"/>
+        </xsl:if>
       </span>
     </xsl:for-each>
+  </xsl:template>
+
+  <xsl:template name="RelatorCode">
+       <xsl:if test="marc:subfield[@code=4]">
+	    <xsl:choose>
+	      <xsl:when test="node()='070'"><xsl:text>, coauteur</xsl:text></xsl:when>
+	      <xsl:when test="node()='651'"><xsl:text>, directeur de publication</xsl:text></xsl:when>
+	      <xsl:when test="node()='730'"><xsl:text>, traducteur</xsl:text></xsl:when>
+              <xsl:when test="node()='080'"><xsl:text>, préfacier</xsl:text></xsl:when>
+	      <xsl:when test="node()='340'"><xsl:text>, éditeur</xsl:text></xsl:when>
+	      <xsl:when test="node()='440'"><xsl:text>, illustrateur</xsl:text></xsl:when>
+	      <xsl:when test="node()='557'"><xsl:text>, organisateur</xsl:text></xsl:when>
+	      <xsl:when test="node()='727'"><xsl:text>, directeur de thèse</xsl:text></xsl:when>
+	      <xsl:when test="node()='295'"><xsl:text>, établissement de soutenance</xsl:text></xsl:when>
+	      <xsl:otherwise><xsl:text></xsl:text></xsl:otherwise>
+	    </xsl:choose>
+	  </xsl:if>
   </xsl:template>
 
 	<xsl:template name="subfieldSelect">
@@ -145,7 +160,7 @@
 			<xsl:when test="not($chopString)"/>
 			<xsl:otherwise><xsl:value-of select="$chopString"/></xsl:otherwise>
 		</xsl:choose>
-    <xsl:text> </xsl:text>
+<xsl:text> </xsl:text>
 	</xsl:template>
 
 	<xsl:template name="addClassRtl">
