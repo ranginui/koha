@@ -57,6 +57,11 @@ my $fw = GetFrameworkCode($biblionumber);
 my $marcflavour      = C4::Context->preference("marcflavour");
 my $record           = GetMarcBiblio($biblionumber);
 
+unless (defined($record)) {
+    print $query->redirect("/cgi-bin/koha/errors/404.pl");
+	exit;
+}
+
 # some useful variables for enhanced content;
 # in each case, we're grabbing the first value we find in
 # the record and normalizing it
@@ -72,10 +77,7 @@ $template->param(
     normalized_isbn => $isbn,
 );
 
-unless (defined($record)) {
-    print $query->redirect("/cgi-bin/koha/errors/404.pl");
-	exit;
-}
+
 
 my $marcnotesarray   = GetMarcNotes( $record, $marcflavour );
 my $marcauthorsarray = GetMarcAuthors( $record, $marcflavour );
