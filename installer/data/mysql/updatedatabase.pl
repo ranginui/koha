@@ -3635,7 +3635,7 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
 	);
 	});
 
-    print "Upgrade to $DBversion done (isbd updated)\n";
+    print "Upgrade to $DBversion done (adding one table : pending_offline_operations)\n";
     SetVersion ($DBversion);
 }
 
@@ -3693,7 +3693,7 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
 	ALTER TABLE items ADD statisticvalue VARCHAR(80);
 	});
 	
-    print "Upgrade to $DBversion done (isbd updated)\n";
+    print "Upgrade to $DBversion done (adding statisticvalue field to items)\n";
     SetVersion ($DBversion);
 }
 
