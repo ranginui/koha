@@ -76,6 +76,11 @@ my $record       = GetMarcBiblio($biblionumber);
 $template->param( biblionumber => $biblionumber );
 # XSLT processing of some stuff
 if (C4::Context->preference("XSLTDetailsDisplay") ) {
+    unless ($record){
+	# If we don't have a record, get the hell out, or we will internal server error
+	print $query->redirect("/cgi-bin/koha/errors/404.pl");	
+	exit;
+    }
     $template->param(
         'XSLTBloc' => XSLTParse4Display($biblionumber, $record, 'Detail') );
 }
