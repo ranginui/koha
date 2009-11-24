@@ -1,0 +1,3 @@
+[submodule "misc/sudoc"]
+	path = misc/sudoc
+	url = git://git.biblibre.com/sudoc.git
