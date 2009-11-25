@@ -1928,4 +1928,21 @@ select.advsearchoperator {
     position:absolute;
 }
 
+#collapsedaddress {
+    border: solid 1px #eee;
+    margin-right: 10px;
+    overflow: hidden;
+}
+#toggleaddress {
+    display: block;
+    padding: 2px 2px 2px 12px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+.toggleaddress {
+    background: #eee url(../../img/more-right-arrow.gif) 0 50% no-repeat;
+}
+.toggleaddress2 {
+    background: #eee url(../../img/more-up-arrow.gif) 0 50% no-repeat;
+}
 
