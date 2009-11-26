@@ -51,6 +51,12 @@ $(document).ready(function() {
             $('#finesfilter').parent().attr('class',null);
             $('#nofilter').parent().attr('class',null);
         });
+        // Disable the checkbox on dom ready
+        $('#allowonshelfholds').attr("disabled", ($('#categorycode').val() == "*"));
+        // Enable/disable the checkbox depending on the categorycode select
+        $('#categorycode').change(function() {
+                $('#allowonshelfholds').attr("disabled", ($(this).val() == "*"));
+        });
 });
 //]]>
 </script>
@@ -110,45 +116,46 @@ $(document).ready(function() {
                 <div style="text-align:right;"><label for="filter">Filter: </label><input type="text" name="filter" id="filter" /></div>
             </ul>
             <div class="tabs-container">
-            <form method="post" action="/cgi-bin/koha/admin/smart-rules.pl">
-            <input type="hidden" name="op" value="add" />
-            <table id="smartrules" width="100%">
-                <thead>
-                    <tr>
-                        <th>Patron Category</th>
-                        <th>Item Type</th>
-                        <th class="issues">Current Checkouts Allowed</th>
-                        <th class="issues">Loan Period (day)</th>
-                        <th class="fines">Fine Amount</th>
-                        <th class="fines">Fine Charging Interval</th>
-                        <th class="fines">Fine Grace period (day)</th>
-                        <th class="fines">Suspension in Days (day)</th>
-                        <th class="issues">Renewals Allowed (count)</th>
-                        <th class="reserves">Holds Allowed (count)</th>
-                        <th class="issues">Rental Discount (%)</th>
-                        <th>&nbsp;</th>
-                    </tr>
-                </thead>
-                <tbody>
-				<!-- TMPL_LOOP NAME="rules" -->
-					<!-- TMPL_UNLESS NAME="__odd__" -->
-					<tr class="highlight">
-					<!-- TMPL_ELSE -->
-					<tr>
-					<!-- /TMPL_UNLESS -->
-							<td><!-- TMPL_IF NAME="default_humancategorycode" -->
-									<em>Default</em>
-								<!-- TMPL_ELSE -->
-									<!-- TMPL_VAR NAME="humancategorycode" -->
-								<!-- /TMPL_IF -->
-							</td>
-							<td><!-- TMPL_IF NAME="default_humanitemtype" -->
-									<em>Default</em>
-								<!-- TMPL_ELSE -->
-									<!-- TMPL_VAR NAME="humanitemtype" -->
-								<!-- /TMPL_IF -->
-							</td>
-						            <td class="issues"><!-- TMPL_IF NAME="unlimited_maxissueqty" -->
+                <form method="post" action="/cgi-bin/koha/admin/smart-rules.pl">
+                    <input type="hidden" name="op" value="add" />
+                    <table id="smartrules" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Patron Category</th>
+                                <th>Item Type</th>
+                                <th class="issues">Current Checkouts Allowed</th>
+                                <th class="issues">Loan Period (day)</th>
+                                <th class="fines">Fine Amount</th>
+                                <th class="fines">Fine Charging Interval</th>
+                                <th class="fines">Fine Grace period (day)</th>
+                                <th class="fines">Suspension in Days (day)</th>
+                                <th class="issues">Renewals Allowed (count)</th>
+                                <th class="reserves">Holds Allowed (count)</th>
+                                <th class="reserves">Allow On Shelf Holds</th>
+                                <th class="issues">Rental Discount (%)</th>
+                                <th>&nbsp;</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <!-- TMPL_LOOP NAME="rules" -->
+                            <!-- TMPL_UNLESS NAME="__odd__" -->
+                            <tr class="highlight">
+                            <!-- TMPL_ELSE -->
+                            <tr>
+                            <!-- /TMPL_UNLESS -->
+                                    <td><!-- TMPL_IF NAME="default_humancategorycode" -->
+                                            <em>Default</em>
+                                        <!-- TMPL_ELSE -->
+                                            <!-- TMPL_VAR NAME="humancategorycode" -->
+                                        <!-- /TMPL_IF -->
+                                    </td>
+                                    <td><!-- TMPL_IF NAME="default_humanitemtype" -->
+                                            <em>Default</em>
+                                        <!-- TMPL_ELSE -->
+                                            <!-- TMPL_VAR NAME="humanitemtype" -->
+                                        <!-- /TMPL_IF -->
+                                    </td>
+                                    <td class="issues"><!-- TMPL_IF NAME="unlimited_maxissueqty" -->
                                             Unlimited
                                         <!-- TMPL_ELSE -->
                                             <!-- TMPL_VAR NAME="maxissueqty" -->
@@ -161,32 +168,32 @@ $(document).ready(function() {
                                     <td class="fines"><!-- TMPL_IF NAME="finedays" --> <!-- TMPL_VAR NAME="finedays" --> <!-- /TMPL_IF --></td>
                                     <td class="issues"><!-- TMPL_IF NAME="renewalsallowed" --><!-- TMPL_VAR NAME="renewalsallowed" --> <!-- /TMPL_IF --></td>
                                     <td class="reserves"><!-- TMPL_IF NAME="reservesallowed" --><!-- TMPL_VAR NAME="reservesallowed" --> <!-- /TMPL_IF --></td>
-							<td class="issues"><!-- TMPL_VAR NAME="rentaldiscount" --></td>
-							<td>
-								<a class="button" href="/cgi-bin/koha/admin/smart-rules.pl?op=delete&amp;itemtype=<!-- TMPL_VAR NAME="itemtype" -->&amp;categorycode=<!-- TMPL_VAR NAME="categorycode" -->&amp;branch=<!-- TMPL_VAR NAME="branch" -->">Delete</a>
-							</td>
-                	</tr>
-            	<!-- /TMPL_LOOP -->
-                </tbody>
-                <tfoot>
-                <tr>
-                    <td>
-                        <select name="categorycode">
-                            <option value="*">Default</option>
-                        <!-- TMPL_LOOP NAME="categoryloop" -->
-                            <option value="<!-- TMPL_VAR NAME="categorycode" -->"><!-- TMPL_VAR NAME="description" --></option>
-                        <!-- /TMPL_LOOP -->
-                        </select>
-                    </td>
-                    <td>
-                        <select name="itemtype" style="width:13em;">
-                            <option value="*">Default</option>
-                        <!-- TMPL_LOOP NAME="itemtypeloop" -->
-                            <option value="<!-- TMPL_VAR NAME="itemtype" -->"><!-- TMPL_VAR NAME="description" --></option>
-                        <!-- /TMPL_LOOP -->
-                        </select>
-                    </td>
-                        <td class="issues"><input name="maxissueqty" size="3" /></td>
+                                    <td class="reserves"><!-- TMPL_IF NAME="default_humancategorycode" --><input type="checkbox" disabled="disabled" checked="<!-- TMPL_VAR NAME="allowonshelfhold" -->" /><!-- /TMPL_IF --></td>
+							        <td class="issues"><!-- TMPL_VAR NAME="rentaldiscount" --></td>
+							        <td> <a class="button" href="/cgi-bin/koha/admin/smart-rules.pl?op=delete&amp;itemtype=<!-- TMPL_VAR NAME="itemtype" -->&amp;categorycode=<!-- TMPL_VAR NAME="categorycode" -->&amp;branch=<!-- TMPL_VAR NAME="branch" -->">Delete</a>
+							        </td>
+                	        </tr>
+            	        <!-- /TMPL_LOOP -->
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td>
+                                    <select name="categorycode">
+                                        <option value="*">Default</option>
+                                    <!-- TMPL_LOOP NAME="categoryloop" -->
+                                        <option value="<!-- TMPL_VAR NAME="categorycode" -->"><!-- TMPL_VAR NAME="description" --></option>
+                                    <!-- /TMPL_LOOP -->
+                                    </select>
+                                </td>
+                                <td>
+                                    <select name="itemtype" style="width:13em;">
+                                        <option value="*">Default</option>
+                                    <!-- TMPL_LOOP NAME="itemtypeloop" -->
+                                        <option value="<!-- TMPL_VAR NAME="itemtype" -->"><!-- TMPL_VAR NAME="description" --></option>
+                                    <!-- /TMPL_LOOP -->
+                                    </select>
+                                </td>
+                                <td class="issues"><input name="maxissueqty" size="3" /></td>
                                 <td class="issues"><input name="issuelength" size="3" /> </td>
                                 <td class="fines"><input name="fine" size="4" /></td>
                                 <td class="fines"><input name="chargeperiod" size="2" /></td>
@@ -194,12 +201,13 @@ $(document).ready(function() {
                                 <td class="fines"><input name="finedays" size="3" /> </td>
                                 <td class="issues"><input name="renewalsallowed" size="2" /></td>
                                 <td class="reserves"><input name="reservesallowed" size="2" /></td>
-		    <td><input class="issues" name="rentaldiscount" size="2" /></td>
-                    <td><input type="hidden" name="branch" value="<!-- TMPL_VAR NAME="branch" -->"/><input type="submit" value="Add" class="submit" /></td>
-                </tr>
-                </tfoot>
-            </table>
-        </form>
+                                <td class="reserves"><input type="checkbox" name="allowonshelfholds" id="allowonshelfholds" /></td>
+		                        <td><input class="issues" name="rentaldiscount" size="2" /></td>
+                                <td><input type="hidden" name="branch" value="<!-- TMPL_VAR NAME="branch" -->"/><input type="submit" value="Add" class="submit" /></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </form>
             </div><!-- tabs-container -->
         </div><!-- toptabs -->
     </div>
