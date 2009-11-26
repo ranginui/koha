@@ -142,8 +142,8 @@ if ($cardnumber) {
     my $number_reserves =
       GetReserveCount( $borrowerinfo->{'borrowernumber'} );
 
-    if ( $number_reserves > C4::Context->preference('maxreserves') ) {
-		$warnings = 1;
+    if ( not CanBookBeReserved( $borrowerinfo->{borrowernumber}, $input->param('biblionumber') ) ) {
+ 		$warnings = 1;
         $maxreserves = 1;
     }
 
@@ -151,7 +151,7 @@ if ($cardnumber) {
     my $expiry_date = $borrowerinfo->{dateexpiry};
     my $expiry = 0; # flag set if patron account has expired
     if ($expiry_date and $expiry_date ne '0000-00-00' and
-            Date_to_Days(split /-/,$date) > Date_to_Days(split /-/,$expiry_date)) {
+            Date_to_Days(split (/-/,$date)) > Date_to_Days(split (/-/,$expiry_date))) {
 		$messages = $expiry = 1;
     }
      
@@ -224,7 +224,7 @@ my $borrowerinfo = GetMemberDetails( 0, $cardnumber );
 my @biblionumbers = ();
 my $biblionumbers = $input->param('biblionumbers');
 if ($multihold) {
-    @biblionumbers = split '/', $biblionumbers;
+    @biblionumbers = split ('/', $biblionumbers);
 } else {
     push @biblionumbers, $input->param('biblionumber');
 }

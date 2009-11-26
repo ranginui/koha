@@ -133,7 +133,6 @@ $tabsysprefs{SpineLabelAutoPrint}         = "Cataloging";
 
 # Circulation
 $tabsysprefs{maxoutstanding}                 = "Circulation";
-$tabsysprefs{maxreserves}                    = "Circulation";
 $tabsysprefs{noissuescharge}                 = "Circulation";
 $tabsysprefs{IssuingInProcess}               = "Circulation";
 $tabsysprefs{patronimages}                   = "Circulation";
@@ -142,7 +141,6 @@ $tabsysprefs{ReturnBeforeExpiry}             = "Circulation";
 $tabsysprefs{ceilingDueDate}                 = "Circulation";
 $tabsysprefs{SpecifyDueDate}                 = "Circulation";
 $tabsysprefs{AutomaticItemReturn}            = "Circulation";
-$tabsysprefs{ReservesMaxPickUpDelay}         = "Circulation";
 $tabsysprefs{TransfersMaxDaysWarning}        = "Circulation";
 $tabsysprefs{useDaysMode}                    = "Circulation";
 $tabsysprefs{ReservesNeedReturns}            = "Circulation";

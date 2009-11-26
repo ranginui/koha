@@ -131,6 +131,7 @@ $(document).ready(function() {
                                 <th class="fines">Suspension in Days (day)</th>
                                 <th class="issues">Renewals Allowed (count)</th>
                                 <th class="reserves">Holds Allowed (count)</th>
+                				<th class="reserves">Holds Pickup delay (day)</th>
                                 <th class="reserves">Allow On Shelf Holds</th>
                                 <th class="issues">Rental Discount (%)</th>
                                 <th>&nbsp;</th>
@@ -168,6 +169,7 @@ $(document).ready(function() {
                                     <td class="fines"><!-- TMPL_IF NAME="finedays" --> <!-- TMPL_VAR NAME="finedays" --> <!-- /TMPL_IF --></td>
                                     <td class="issues"><!-- TMPL_IF NAME="renewalsallowed" --><!-- TMPL_VAR NAME="renewalsallowed" --> <!-- /TMPL_IF --></td>
                                     <td class="reserves"><!-- TMPL_IF NAME="reservesallowed" --><!-- TMPL_VAR NAME="reservesallowed" --> <!-- /TMPL_IF --></td>
+									<td class="reserves"><!-- TMPL_IF NAME="holdspickupdelay" --><!-- TMPL_VAR NAME="holdspickupdelay" --> <!-- /TMPL_IF --></td>
                                     <td class="reserves"><!-- TMPL_IF NAME="default_humancategorycode" --><input type="checkbox" disabled="disabled" checked="<!-- TMPL_VAR NAME="allowonshelfhold" -->" /><!-- /TMPL_IF --></td>
 							        <td class="issues"><!-- TMPL_VAR NAME="rentaldiscount" --></td>
 							        <td> <a class="button" href="/cgi-bin/koha/admin/smart-rules.pl?op=delete&amp;itemtype=<!-- TMPL_VAR NAME="itemtype" -->&amp;categorycode=<!-- TMPL_VAR NAME="categorycode" -->&amp;branch=<!-- TMPL_VAR NAME="branch" -->">Delete</a>
@@ -201,6 +203,7 @@ $(document).ready(function() {
                                 <td class="fines"><input name="finedays" size="3" /> </td>
                                 <td class="issues"><input name="renewalsallowed" size="2" /></td>
                                 <td class="reserves"><input name="reservesallowed" size="2" /></td>
+                    			<td class="reserves"><input name="holdspickupdelay" size="2" /></td>
                                 <td class="reserves"><input type="checkbox" name="allowonshelfholds" id="allowonshelfholds" /></td>
 		                        <td><input class="issues" name="rentaldiscount" size="2" /></td>
                                 <td><input type="hidden" name="branch" value="<!-- TMPL_VAR NAME="branch" -->"/><input type="submit" value="Add" class="submit" /></td>

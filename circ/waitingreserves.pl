@@ -26,6 +26,7 @@ use C4::Branch; # GetBranchName
 use C4::Auth;
 use C4::Dates qw/format_date/;
 use C4::Circulation;
+use C4::Reserves qw/GetMaxPickUpDelay/;
 use C4::Members;
 use C4::Biblio;
 use C4::Items;
@@ -117,7 +118,7 @@ foreach my $num (@getreserves) {
     my ( $waiting_year, $waiting_month, $waiting_day ) = split (/-/, $num->{'waitingdate'});
     ( $waiting_year, $waiting_month, $waiting_day ) =
       Add_Delta_Days( $waiting_year, $waiting_month, $waiting_day,
-        C4::Context->preference('ReservesMaxPickUpDelay'));
+        GetMaxPickUpDelay($borrowernumber, $num->{'itemnumber'}));
     my $calcDate = Date_to_Days( $waiting_year, $waiting_month, $waiting_day );
 
     $getreserv{'itemtype'}       = $itemtypeinfo->{'description'};

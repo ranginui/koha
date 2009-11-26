@@ -61,7 +61,6 @@ INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('MARCOrgCode','OSt','Define MARC Organization Code - http://www.loc.gov/marc/organizations/orgshome.html','','free');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('MaxFine',9999,'Maximum fine a patron can have for a single late return','','Integer');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('maxoutstanding',5,'maximum amount withstanding to be able make holds','','Integer');
-INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('maxreserves',50,'Define maximum number of holds a patron can place','','Integer');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('memberofinstitution',0,'If ON, patrons can be linked to institutions',NULL,'YesNo');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('MIME','EXCEL','Define the default application for exporting report data','EXCEL|OPENOFFICE.ORG','Choice');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('noissuescharge',5,'Define maximum amount withstanding before check outs are blocked','','Integer');
@@ -90,7 +89,6 @@ INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('patronimages',0,'Enable patron images for the Staff Client',NULL,'YesNo');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('printcirculationslips',1,'If ON, enable printing circulation receipts','','YesNo');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('RequestOnOpac',1,'If ON, globally enables patron holds on OPAC',NULL,'YesNo');
-INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('ReservesMaxPickUpDelay',7,'Define the Maximum delay to pick up an item on hold','','Integer');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('ReturnBeforeExpiry',0,'If ON, checkout will be prevented if returndate is after patron card expiry',NULL,'YesNo');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('ReturnLog',1,'If ON, enables the circulation (returns) log',NULL,'YesNo');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('reviewson',1,'If ON, enables patron reviews of bibliographic records in the OPAC','','YesNo');

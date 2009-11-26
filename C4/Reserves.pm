@@ -92,6 +92,7 @@ BEGIN {
     @EXPORT = qw(
         &AddReserve
   
+        &GetMaxPickUpDelay
         &GetReservesFromItemnumber
         &GetReservesFromBiblionumber
         &GetReservesFromBorrowernumber
@@ -479,6 +480,91 @@ sub CanItemBeReserved{
         return 0;
     }
 }
+
+=item GetMaxPickUpDelay
+
+$resallowed = &GetMaxPickUpDelay($borrowernumber, $itemnumber)
+
+this function return the number of allowed reserves.
+
+=cut
+
+sub GetMaxPickUpDelay {
+    my ($borrowernumber, $itemnumber) = @_;
+    
+    my $dbh             = C4::Context->dbh;
+    my $allowedreserves = 0;
+            
+    my $controlbranch = C4::Context->preference('ReservesControlBranch');
+    my $itype         = C4::Context->preference('item-level_itypes') ? "itype" : "itemtype";
+
+    # we retrieve borrowers and items informations #
+    my $item     = GetItem($itemnumber);
+    my $borrower = C4::Members::GetMember('borrowernumber'=>$borrowernumber);     
+    
+    # we retrieve user rights on this itemtype and branchcode
+    my $sth = $dbh->prepare("SELECT holdspickupdelay 
+                    FROM issuingrules 
+                    WHERE categorycode=? 
+                    AND itemtype=?
+                    AND branchcode=?
+                    AND holdspickupdelay IS NOT NULL"
+                           );
+    
+    my $itemtype     = $item->{$itype};
+    my $borrowertype = $borrower->{categorycode};
+    my $branchcode   = "";
+    
+    if( $controlbranch eq "ItemHomeLibrary" ){
+        $branchcode = $item->{homebranch};
+    }elsif( $controlbranch eq "PatronLibrary" ){
+        $branchcode = $borrower->{branchcode};
+    }
+    
+    $sth->execute( $borrowertype, $itemtype, $branchcode );
+    my $pickupdelay = $sth->fetchrow_hashref;
+    return $pickupdelay->{holdspickupdelay}
+      if defined($pickupdelay) && $pickupdelay->{holdspickupdelay} ne 'NULL';
+
+    $sth->execute( $borrowertype, "*", $branchcode );
+    $pickupdelay = $sth->fetchrow_hashref;
+    return $pickupdelay->{holdspickupdelay}
+      if defined($pickupdelay) && $pickupdelay->{holdspickupdelay} ne 'NULL';
+
+    $sth->execute( "*", $itemtype, $branchcode );
+    $pickupdelay = $sth->fetchrow_hashref;
+    return $pickupdelay->{holdspickupdelay}
+      if defined($pickupdelay) && $pickupdelay->{holdspickupdelay} ne 'NULL';
+
+    $sth->execute( "*", "*", $branchcode );
+    $pickupdelay = $sth->fetchrow_hashref;
+    return $pickupdelay->{holdspickupdelay}
+      if defined($pickupdelay) && $pickupdelay->{holdspickupdelay} ne 'NULL';
+
+    $sth->execute( $borrowertype, $itemtype, "*" );
+    $pickupdelay = $sth->fetchrow_hashref;
+    return $pickupdelay->{holdspickupdelay}
+      if defined($pickupdelay) && $pickupdelay->{holdspickupdelay} ne 'NULL';
+
+    $sth->execute( $borrowertype, "*", "*" );
+    $pickupdelay = $sth->fetchrow_hashref;
+    return $pickupdelay->{holdspickupdelay}
+      if defined($pickupdelay) && $pickupdelay->{holdspickupdelay} ne 'NULL';
+
+    $sth->execute( "*", $itemtype, "*" );
+    $pickupdelay = $sth->fetchrow_hashref;
+    return $pickupdelay->{holdspickupdelay}
+      if defined($pickupdelay) && $pickupdelay->{holdspickupdelay} ne 'NULL';
+
+    $sth->execute( "*", "*", "*" );
+    $pickupdelay = $sth->fetchrow_hashref;
+    return $pickupdelay->{holdspickupdelay}
+      if defined($pickupdelay) && $pickupdelay->{holdspickupdelay} ne 'NULL';
+    
+    # if nothing found, return no rights
+    return 0;
+}
+
 #--------------------------------------------------------------------------------
 =item GetReserveCount
 
