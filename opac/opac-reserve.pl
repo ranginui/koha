@@ -28,8 +28,10 @@ use C4::Output;
 use C4::Dates qw/format_date/;
 use C4::Context;
 use C4::Members;
+use C4::Overdues;
 use C4::Branch; # GetBranches
 use C4::Debug;
+use C4::Items;
 # use Data::Dumper;
 
 my $MAXIMUM_NUMBER_OF_RESERVES = C4::Context->preference("maxreserves");
