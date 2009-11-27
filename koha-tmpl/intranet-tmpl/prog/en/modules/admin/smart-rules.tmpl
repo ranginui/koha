@@ -52,10 +52,10 @@ $(document).ready(function() {
             $('#nofilter').parent().attr('class',null);
         });
         // Disable the checkbox on dom ready
-        $('#allowonshelfholds').attr("disabled", ($('#categorycode').val() == "*"));
+        $('#allowonshelfholds').attr("disabled", ($('#categorycode').val() != "*"));
         // Enable/disable the checkbox depending on the categorycode select
         $('#categorycode').change(function() {
-                $('#allowonshelfholds').attr("disabled", ($(this).val() == "*"));
+                $('#allowonshelfholds').attr("disabled", ($(this).val() != "*"));
         });
 });
 //]]>
