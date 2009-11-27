@@ -52,7 +52,7 @@ BEGIN {
     }
     if ($cas) {
         require C4::Auth_with_cas;             # no import
-        import  C4::Auth_with_cas qw(checkpw_cas login_cas logout_cas login_cas_url);
+        import  C4::Auth_with_cas qw(check_api_auth_cas checkpw_cas login_cas logout_cas login_cas_url);
     }
 
 }
@@ -1053,7 +1053,7 @@ sub check_api_auth {
     unless ($query->param('userid')) {
         $sessionID = $query->cookie("CGISESSID");
     }
-    if ($sessionID) {
+    if ($sessionID && not $cas) {
         my $session = get_session($sessionID);
         C4::Context->_new_userenv($sessionID);
         if ($session) {
@@ -1103,18 +1103,24 @@ sub check_api_auth {
         # new login
         my $userid = $query->param('userid');
         my $password = $query->param('password');
-        unless ($userid and $password) {
-            # caller did something wrong, fail the authenticateion
-            return ("failed", undef, undef);
-        }
-	my ($return, $cardnumber);
-	if ($cas && $query->param('ticket')) {
+       	my ($return, $cardnumber);
+
+	# Proxy CAS auth
+	if ($cas && $query->param('PT')) {
 	    my $retuserid;
-	    ( $return, $cardnumber, $retuserid ) = checkpw( $dbh, $userid, $password, $query );
-	    $userid = $retuserid;
+	    $debug and print STDERR "## check_api_auth - checking CAS\n";
+	    # In case of a CAS authentication, we use the ticket instead of the password
+	    my $PT = $query->param('PT');
+	    ($return,$cardnumber,$userid) = check_api_auth_cas($dbh, $PT, $query);    # EXTERNAL AUTH
 	} else {
+	    # User / password auth
+	    unless ($userid and $password) {
+		# caller did something wrong, fail the authenticateion
+		return ("failed", undef, undef);
+	    }
 	    ( $return, $cardnumber ) = checkpw( $dbh, $userid, $password, $query );
 	}
+
         if ($return and haspermission(  $userid, $flagsrequired)) {
             my $session = get_session("");
             return ("failed", undef, undef) unless $session;
