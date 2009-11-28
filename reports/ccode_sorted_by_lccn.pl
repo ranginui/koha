@@ -38,8 +38,9 @@ my $rows = $sth->fetchall_arrayref({});
 
 my @sorted  = sort lccn_sort @$rows;
 
+print $cgi->header;
 foreach my $number (@sorted) {
-    print $number->{'itemcallnumber'};
+    print $number->{'itemcallnumber'}."<br />";
 }
 
 sub lccn_sort {
