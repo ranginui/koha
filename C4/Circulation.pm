@@ -404,7 +404,8 @@ sub TooMany {
             } elsif (C4::Context->preference('CircControl') eq 'PatronLibrary') {
                 ; # if branch is the patron's home branch, then count all loans by patron
             } else {
-                $count_query .= " AND items.homebranch = ? ";
+				my $branchfield=C4::Context->Preference('HomeOrHoldingBranch')||"homebranch";
+                $count_query .= " AND items.$branchfield = ? ";
                 push @bind_params, $branch;
             }
         }
@@ -434,7 +435,8 @@ sub TooMany {
         } elsif (C4::Context->preference('CircControl') eq 'PatronLibrary') {
             ; # if branch is the patron's home branch, then count all loans by patron
         } else {
-            $branch_count_query .= " AND items.homebranch = ? ";
+			my $branchfield=C4::Context->Preference('HomeOrHoldingBranch')||"homebranch";
+            $branch_count_query .= " AND items.$branchfield = ? ";
             push @bind_params, $branch;
         }
         my $branch_count_sth = $dbh->prepare($branch_count_query);
