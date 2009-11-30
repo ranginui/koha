@@ -652,6 +652,7 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
         <th scope="col">Due date</th>
         <th scope="col">Title</th>
         <th scope="col">Item Type</th>
+        <th scope="col">Branch</th>
         <th scope="col">Checked out on</th> 
         <th scope="col">Call no</th>
         <th scope="col">Charge</th>
@@ -662,7 +663,7 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
 <!-- TMPL_IF NAME="todayissues" --></thead>
 <tfoot>
 		<tr>
-            <td colspan="5" style="text-align: right; font-weight:bold;">Totals:</td>
+            <td colspan="6" style="text-align: right; font-weight:bold;">Totals:</td>
 			<td><!-- TMPL_VAR NAME="totaldue" --></td>
             <td><!-- TMPL_VAR NAME="totalprice" --></td>
             <td colspan="2">      
@@ -701,6 +702,7 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
         <td><!-- TMPL_VAR NAME="dd" --></td>
         <td><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->&amp;type=intra"><strong><!-- TMPL_VAR NAME="title" escape="html" --></strong></a><!-- TMPL_IF NAME="author" -->, by <!-- TMPL_VAR NAME="author" --><!-- /TMPL_IF --><!-- TMPL_IF NAME="itemnotes" -->- <span class="circ-hlt"><!-- TMPL_VAR name="itemnotes" --></span><!-- /TMPL_IF --> <a href="/cgi-bin/koha/catalogue/moredetail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->&amp;itemnumber=<!-- TMPL_VAR NAME="itemnumber" -->#item<!-- TMPL_VAR NAME="itemnumber" -->"><!-- TMPL_VAR NAME="barcode" --></a></td>
         <td><!-- TMPL_UNLESS NAME="noItemTypeImages" --> <!-- TMPL_IF NAME="itemtype_image" --><img src="<!-- TMPL_VAR NAME="itemtype_image" -->" alt="" /><!-- /TMPL_IF --><!-- /TMPL_UNLESS --><!-- TMPL_VAR NAME="itemtype" --></td>
+	<td><!-- TMPL_VAR NAME="branchdisplay" --></td>
         <td><!-- TMPL_VAR NAME="checkoutdate" --></td>
         <td><!-- TMPL_VAR NAME="itemcallnumber" --></td>
             <td><!-- TMPL_VAR NAME="charge" --></td>
@@ -750,8 +752,8 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
     <!-- /TMPL_LOOP --> <!-- /loop todayissues -->
     <!-- /if todayissues --><!-- /TMPL_IF -->
 <!-- TMPL_IF NAME="previssues" -->
-<!-- TMPL_IF NAME="todayissues" --><tr><th colspan="10"><a name="previous" id="previous"></a>Previous checkouts</th></tr><!-- TMPL_ELSE -->
-<tr><th class="{sorter: false}" colspan="10"><a name="previous" id="previous"></a>Previous checkouts</th></tr></thead>
+<!-- TMPL_IF NAME="todayissues" --><tr><th colspan="11"><a name="previous" id="previous"></a>Previous checkouts</th></tr><!-- TMPL_ELSE -->
+<tr><th class="{sorter: false}" colspan="11"><a name="previous" id="previous"></a>Previous checkouts</th></tr></thead>
 	<tbody>
 <!-- /TMPL_IF -->
     <!-- TMPL_LOOP NAME="previssues" -->
@@ -767,6 +769,7 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
         <td>
             <!-- TMPL_VAR NAME="itemtype" -->
         </td>
+	    <td><!-- TMPL_VAR NAME="branchdisplay" --></td>
         <td><!-- TMPL_VAR NAME="displaydate" --></td>
         <td><!-- TMPL_VAR NAME="itemcallnumber" --></td>
         <td><!-- TMPL_VAR NAME="charge" --></td>

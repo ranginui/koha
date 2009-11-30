@@ -428,6 +428,7 @@ my $issued_itemtypes_count;
 my @issued_itemtypes_count_loop;
 my $totalprice = 0;
 
+
 if ($borrower) {
 # get each issue of the borrower & separate them in todayissues & previous issues
     my ($issueslist) = GetPendingIssues($borrower->{'borrowernumber'});
@@ -459,9 +460,9 @@ if ($borrower) {
         $it->{'od'} = ( $it->{'date_due'} lt $todaysdate ) ? 1 : 0 ;
         ($it->{'author'} eq '') and $it->{'author'} = ' ';
         $it->{'renew_failed'} = $renew_failed{$it->{'itemnumber'}};
+	$it->{'branchdisplay'} = GetBranchName((C4::Context->preference('HomeOrHoldingBranch') eq 'holdingbranch') ? $it->{'holdingbranch'} : $it->{'homebranch'});
         # ADDED BY JF: NEW ITEMTYPE COUNT DISPLAY
         $issued_itemtypes_count->{ $it->{'itemtype'} }++;
-
         if ( $todaysdate eq $it->{'issuedate'} or $todaysdate eq $it->{'lastreneweddate'} ) {
             push @todaysissues, $it;
         } else {
