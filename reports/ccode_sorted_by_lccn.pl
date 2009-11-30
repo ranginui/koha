@@ -49,7 +49,7 @@ sub lccn_sort {
          $lccna[0] cmp $lccnb[0]
       || $lccna[1] <=> $lccnb[1]
       || $lccna[2] cmp $lccnb[2]
-      || $lccna[3] <=> $lccnb[3]
+      || $lccna[3] cmp $lccnb[3]
       || $lccna[4] cmp $lccnb[4];
 }
 
