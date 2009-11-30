@@ -24,7 +24,8 @@
 	<!-- TMPL_IF NAME="error" -->
 	    <div class="dialog alert">Cloning of issuing rules failed!</div>
 	<!-- TMPL_ELSE -->
-	    <div class="dialog message"><p>The rules have been cloned.</p></div>
+	    <div class="message"><p>The rules have <a href="/cgi-bin/koha/admin/smart-rules.pl?branch=<!-- TMPL_VAR NAME="tobranch" -->">been cloned</a>.</p></div>
+	    <script language="javascript">document.location.href = "/cgi-bin/koha/admin/smart-rules.pl?branch=<!-- TMPL_VAR NAME="tobranch" -->";</script>
 	<!-- /TMPL_IF -->
 	<a href="/cgi-bin/koha/admin/smart-rules.pl">Return to Issuing rules</a>
     <!-- TMPL_ELSE -->
