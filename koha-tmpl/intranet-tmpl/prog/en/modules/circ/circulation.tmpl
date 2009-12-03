@@ -487,7 +487,8 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
         <div id="circmessages" class="circmessage attention">
 		<!-- /TMPL_IF -->
 
-		<h3><!-- TMPL_IF NAME="noissues" -->Cannot Check Out!<!-- TMPL_ELSE -->Attention:<!-- /TMPL_IF --></h3>
+		<h3><!-- TMPL_IF NAME="noissues" -->Cannot Check Out!<!-- TMPL_ELSE -->
+		   <!-- TMPL_IF NAME="warning" -->Attention:<!-- /TMPL_IF --><!-- /TMPL_IF --></h3>
 		<ul>
 
 			<!-- TMPL_IF NAME = "warndeparture" -->
