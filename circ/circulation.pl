@@ -122,7 +122,7 @@ my $organisation   = $query->param('organisations');
 my $print          = $query->param('print');
 my $newexpiry      = $query->param('dateexpiry');
 my $debt_confirmed = $query->param('debt_confirmed') || 0; # Don't show the debt error dialog twice
-
+warn $newexpiry;
 # Check if stickyduedate is turned off
 if ( $barcode ) {
     # was stickyduedate loaded from session?
@@ -673,7 +673,6 @@ $template->param(
     surname           => $borrower->{'surname'},
     printer                     => $printer,
     printername                 => $printer,
-    dateexpiry        => format_date($newexpiry),
     expiry            => format_date($borrower->{'dateexpiry'}),
     categoryname      => $borrower->{description},
     address           => $address,
@@ -702,6 +701,8 @@ $template->param(
     circview => 1,
     soundon           => C4::Context->preference("SoundOn"),
 );
+
+$template->param(newexpiry => format_date($newexpiry)) if (defined $newexpiry);
 
 SetMemberInfosInTemplate($borrowernumber, $template);
 
