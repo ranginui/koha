@@ -36,6 +36,7 @@ use C4::XISBN qw(get_xisbns get_biblionumber_from_isbn);
 use C4::External::Amazon;
 use C4::Search;		# enabled_staff_search_views
 use C4::VirtualShelves;
+use C4::XSLT;
 
 # use Smart::Comments;
 
@@ -57,9 +58,15 @@ my $fw = GetFrameworkCode($biblionumber);
 my $marcflavour      = C4::Context->preference("marcflavour");
 my $record           = GetMarcBiblio($biblionumber);
 
+
 unless (defined($record)) {
     print $query->redirect("/cgi-bin/koha/errors/404.pl");
 	exit;
+}
+# XSLT processing of some stuff
+if (C4::Context->preference("XSLTDetailsDisplay") ) {
+    $template->param('XSLTDetailsDisplay' =>'1',
+        'XSLTBloc' => XSLTParse4Display($biblionumber, $record, 'Detail','intranet') );
 }
 
 # some useful variables for enhanced content;
@@ -84,7 +91,7 @@ my $marcauthorsarray = GetMarcAuthors( $record, $marcflavour );
 my $marcsubjctsarray = GetMarcSubjects( $record, $marcflavour );
 my $marcseriesarray  = GetMarcSeries($record,$marcflavour);
 my $marcurlsarray    = GetMarcUrls    ($record,$marcflavour);
-my $subtitle         = C4::Biblio::get_koha_field_from_marc('bibliosubtitle', 'subtitle', $record, '');
+my $subtitle         = GetRecordValue('subtitle', $record, $fw);
 
 # Get Branches, Itemtypes and Locations
 my $branches = GetBranches();
@@ -105,8 +112,9 @@ foreach my $subscription (@subscriptions) {
 	my $serials_to_display;
     $cell{subscriptionid}    = $subscription->{subscriptionid};
     $cell{subscriptionnotes} = $subscription->{notes};
-	$cell{branchcode}        = $subscription->{branchcode};
-	$cell{hasalert}          = $subscription->{hasalert};
+    $cell{branchcode}        = $subscription->{branchcode};
+    $cell{branchname}        = GetBranchName($subscription->{branchcode});
+    $cell{hasalert}          = $subscription->{hasalert};
     #get the three latest serials.
 	$serials_to_display = $subscription->{staffdisplaycount};
 	$serials_to_display = C4::Context->preference('StaffSerialIssueDisplayCount') unless $serials_to_display;

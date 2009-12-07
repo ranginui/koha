@@ -29,6 +29,7 @@ use C4::Context;
 use C4::Koha;
 use C4::Branch;
 use C4::ClassSource;
+use C4::Acquisition qw/GetOrderFromItemnumber ModOrder GetOrder ModOrderItem/;
 
 use Date::Calc qw(Today);
 
@@ -46,7 +47,7 @@ my ($template, $loggedinuser, $cookie)
                  query => $query,
                  type => "intranet",
                  authnotrequired => 0,
-                 flagsrequired => {editcatalogue => 1},
+                 flagsrequired => {editcatalogue => 'edit_catalogue'},
                  debug => 1,
                  });
 
@@ -63,18 +64,17 @@ if ($barcode && $biblionumber) {
     my $itemnumber = GetItemnumberFromBarcode($barcode);
 
     if ($itemnumber) {
-    
     	# And then, we get the item
 	my $item = GetItem($itemnumber);
 
 	if ($item) {
 
 	    my $results = GetBiblioFromItemNumber($itemnumber, $barcode);
-            my $frombiblionumber = $results->{'biblionumber'};
+	    my $frombiblionumber = $results->{'biblionumber'};
 	   
 	    my $moveresult = MoveItemFromBiblio($itemnumber, $frombiblionumber, $biblionumber); 
 	    if ($moveresult) { 
-	             $template->param(success => 1);
+		$template->param(success => 1);
 	    } else {
 		$template->param(error => 1,
 				 errornonewitem => 1); 

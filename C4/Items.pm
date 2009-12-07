@@ -30,6 +30,7 @@ use C4::Log;
 use C4::Branch;
 require C4::Reserves;
 use C4::Charset;
+use C4::Acquisition;
 
 use vars qw($VERSION @ISA @EXPORT);
 
@@ -46,6 +47,7 @@ BEGIN {
         AddItem
         AddItemBatchFromMarc
         ModItemFromMarc
+		Item2Marc
         ModItem
         ModDateLastSeen
         ModItemTransfer
@@ -446,7 +448,11 @@ sub ModItemFromMarc {
 
     my $dbh = C4::Context->dbh;
     my $frameworkcode = GetFrameworkCode( $biblionumber );
-    my $item = &TransformMarcToKoha( $dbh, $item_marc, $frameworkcode );
+	my ($itemtag,$itemsubfield)=GetMarcFromKohaField("items.itemnumber",$frameworkcode);
+	
+	my $localitemmarc=MARC::Record->new;
+	$localitemmarc->append_fields($item_marc->field($itemtag));
+    my $item = &TransformMarcToKoha( $dbh, $item_marc, $frameworkcode ,'items');
     foreach my $item_field (keys %default_values_for_mod_from_marc) {
         $item->{$item_field} = $default_values_for_mod_from_marc{$item_field} unless exists $item->{$item_field};
     }
@@ -1261,11 +1267,12 @@ sub GetItemsInfo {
            items.notforloan as itemnotforloan,
            itemtypes.description
      FROM items
+     LEFT JOIN branches ON items.homebranch = branches.branchcode
      LEFT JOIN biblio      ON      biblio.biblionumber     = items.biblionumber
      LEFT JOIN biblioitems ON biblioitems.biblioitemnumber = items.biblioitemnumber
      LEFT JOIN itemtypes   ON   itemtypes.itemtype         = "
      . (C4::Context->preference('item-level_itypes') ? 'items.itype' : 'biblioitems.itemtype');
-    $query .= " WHERE items.biblionumber = ? ORDER BY items.dateaccessioned desc" ;
+    $query .= " WHERE items.biblionumber = ? ORDER BY branches.branchname,items.dateaccessioned desc" ;
     my $sth = $dbh->prepare($query);
     $sth->execute($biblionumber);
     my $i = 0;
@@ -1648,23 +1655,28 @@ sub GetMarcItem {
 
     # Tack on 'items.' prefix to column names so that TransformKohaToMarc will work.
     # Also, don't emit a subfield if the underlying field is blank.
+
+    
+    return Item2Marc($itemrecord,$biblionumber);
+
+}
+sub Item2Marc {
+	my ($itemrecord,$biblionumber)=@_;
     my $mungeditem = { 
         map {  
             defined($itemrecord->{$_}) && $itemrecord->{$_} ne '' ? ("items.$_" => $itemrecord->{$_}) : ()  
         } keys %{ $itemrecord } 
     };
     my $itemmarc = TransformKohaToMarc($mungeditem);
+    my ( $itemtag, $itemsubfield ) = GetMarcFromKohaField("items.itemnumber",GetFrameworkCode($biblionumber)||'');
 
     my $unlinked_item_subfields = _parse_unlinked_item_subfields_from_xml($mungeditem->{'items.more_subfields_xml'});
     if (defined $unlinked_item_subfields and $#$unlinked_item_subfields > -1) {
-        my @fields = $itemmarc->fields();
-        if ($#fields > -1) {
-            $fields[0]->add_subfields(@$unlinked_item_subfields);
+		foreach my $field ($itemmarc->field($itemtag)){
+            $field->add_subfields(@$unlinked_item_subfields);
         }
     }
-    
-    return $itemmarc;
-
+	return $itemmarc;
 }
 
 =head1 PRIVATE FUNCTIONS AND VARIABLES
@@ -2015,6 +2027,7 @@ MoveItemFromBiblio($itenumber, $frombiblio, $tobiblio);
 
 Moves an item from a biblio to another
 
+Returns undef if the move failed or the biblionumber of the destination record otherwise
 =cut
 sub MoveItemFromBiblio {
     my ($itemnumber, $frombiblio, $tobiblio) = @_;
@@ -2022,15 +2035,58 @@ sub MoveItemFromBiblio {
     my $sth = $dbh->prepare("UPDATE items SET biblioitemnumber = ?, biblionumber = ? WHERE itemnumber = ? AND biblionumber = ?");
     my $return = $sth->execute($tobiblio, $tobiblio, $itemnumber, $frombiblio);
     if ($return == 1) {
-	my $record = GetMarcBiblio($frombiblio);
-	my $frameworkcode = GetFrameworkCode($frombiblio);
-	ModBiblioMarc($record, $frombiblio, $frameworkcode);
 
-	$record = GetMarcBiblio($tobiblio);
-	$frameworkcode = GetFrameworkCode($frombiblio);
-	ModBiblioMarc($record, $tobiblio, $frameworkcode);
+	# Getting framework
+	my $frameworkcode = GetFrameworkCode($frombiblio);
+
+	# Getting marc field for itemnumber
+	my ($itemtag, $itemsubfield) = GetMarcFromKohaField('items.itemnumber', $frameworkcode);
+
+	# Getting the record we want to move the item from
+	my $record = GetMarcBiblio($frombiblio);
+
+	# The item we want to move
+	my $item;
+
+	# For each item
+	foreach my $fielditem ($record->field($itemtag)){
+		# If it is the item we want to move
+		if ($fielditem->subfield($itemsubfield) == $itemnumber) {
+		    # We save it
+		    $item = $fielditem;
+		    # Then delete it from the record
+		    $record->delete_field($fielditem) 
+		}
+	}
+
+	# If we found an item (should always true, except in case of database-marcxml inconsistency)
+	if ($item) {
+
+	    # Checking if the item we want to move is in an order 
+	    my $order = GetOrderFromItemnumber($itemnumber);
+	    if ($order) {
+		# Replacing the biblionumber within the order if necessary
+		$order->{'biblionumber'} = $tobiblio;
+	        ModOrder($order);
+	    }
+
+	    # Saving the modification
+	    ModBiblioMarc($record, $frombiblio, $frameworkcode);
+
+	    # Getting the record we want to move the item to
+	    $record = GetMarcBiblio($tobiblio);
+
+	    # Inserting the previously saved item
+	    $record->insert_fields_ordered($item);	
+
+	    # Saving the modification
+	    ModBiblioMarc($record, $tobiblio, $frameworkcode);
+
+	} else {
+	    return undef;
+	}
     } else {
-	return -1;
+	return undef;
     }
 }
 
