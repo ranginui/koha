@@ -247,6 +247,10 @@ function refocus(calendar) {
     <li>This patron can't check out this item per library circulation policy</li>
 <!-- /TMPL_IF -->
 
+<!-- TMPL_IF NAME="USERBLOCKEDOVERDUE" -->
+    <li>This patron can't check out this item.  Debarred until : <!--TMPL_VAR Name="USERBLOCKEDOVERDUE"--> </li>
+<!-- /TMPL_IF -->
+
 <!-- TMPL_IF NAME="NOT_FOR_LOAN_FORCING" -->
     <li>Item is normally not for loan.  Check out anyway?</li>
 <!-- /TMPL_IF -->
@@ -338,7 +342,7 @@ function refocus(calendar) {
         <!-- /TMPL_IF -->
 
         <!-- TMPL_IF NAME="DEBARRED" -->
-            <li>Patron is restricted</li>
+            <li>Patron is restricted <!--TMPL_IF EXPR="DEBARRED ne 1"-->until <!--TMPL_VAR Name="DEBARRED"--><!--/TMPL_IF--></li>
         <!-- /TMPL_IF -->
 
         <!-- TMPL_IF NAME="NO_MORE_RENEWALS" -->
