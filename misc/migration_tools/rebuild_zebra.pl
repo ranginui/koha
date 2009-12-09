@@ -32,7 +32,7 @@ my $as_xml;
 my $process_zebraqueue;
 my $do_not_clear_zebraqueue;
 my $verbose_logging;
-my $zebraidx_log_opt = " -v none,fatal,warn ";
+my $zebraidx_log_opt = " -v none,fatal ";
 my $result = GetOptions(
     'd:s'           => \$directory,
     'reset'         => \$reset,
