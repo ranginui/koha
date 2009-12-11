@@ -1951,3 +1951,10 @@ a.p1:active {
 div.ft {
 	clear : both;
 }
+select.advsearch {
+   margin-left:5em;
+}
+select.advsearchoperator {
+    position:absolute;
+}
+

@@ -60,7 +60,7 @@
         <!-- TMPL_IF NAME="search_boxes_label" --><div style="text-indent: 4.5em;"><!-- TMPL_ELSE --><div><!-- /TMPL_IF -->
 			<!-- TMPL_IF NAME="expanded_options" -->
             <!-- TMPL_IF NAME="boolean" -->
-                <select name="op">
+                <select class="advsearchoperator" name="op">
                     <option value="and" selected="selected">and</option>
                     <option value="or">or</option>
                     <option value="not">not</option>
@@ -74,7 +74,7 @@
                     <a href="JavaScript:add_field();" id="ButtonPlus" title="Add another field">[+]</a>
 				<!-- /TMPL_IF -->
             	<!-- TMPL_IF NAME="scan_index" -->
-                	<label for="scan">Scan Indexes</label><input type="checkbox" name="scan" id="scan" value="1" />
+                	<label style="float:none" for="scan">Scan Indexes</label><input type="checkbox" name="scan" id="scan" value="1" />
             	<!-- /TMPL_IF -->
             <!-- /TMPL_IF -->
 		</div>
