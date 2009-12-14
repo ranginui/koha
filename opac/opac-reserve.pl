@@ -18,12 +18,12 @@
 use strict;
 use warnings;
 use CGI;
-use C4::Biblio;
-use C4::Items;
 use C4::Auth;    # checkauth, getborrowernumber.
 use C4::Koha;
 use C4::Circulation;
 use C4::Reserves;
+use C4::Biblio;
+use C4::Items;
 use C4::Output;
 use C4::Dates qw/format_date/;
 use C4::Context;
@@ -264,7 +264,7 @@ if ( $borr->{debarred} && ($borr->{debarred} eq 1) ) {
 
 my @reserves = GetReservesFromBorrowernumber( $borrowernumber );
 $template->param( RESERVES => \@reserves );
-if ( scalar(@reserves) >= $MAXIMUM_NUMBER_OF_RESERVES ) {
+if ( $MAXIMUM_NUMBER_OF_RESERVES && scalar(@reserves) >= $MAXIMUM_NUMBER_OF_RESERVES ) {
     $template->param( message => 1 );
     $noreserves = 1;
     $template->param( too_many_reserves => scalar(@reserves));
