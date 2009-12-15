@@ -3604,10 +3604,38 @@ if (C4::Context->preference('Version') < TransformToNum($DBversion)){
     SetVersion ($DBversion);
 }
 
-$DBversion = '3.01.00.127';
+$DBversion = '3.01.00.134';
 if (C4::Context->preference('Version') < TransformToNum($DBversion)){
     $dbh->do("INSERT INTO `permissions` (`module_bit` , `code` , `description`) VALUES ('9', 'edit_items', 'Edit items');");
     print "Upgrade to $DBversion done (Added 'Edit Items' permission)\n";
+    SetVersion ($DBversion);
+}
+
+
+$DBversion = "3.01.00.135";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+	$dbh->do("UPDATE systempreferences SET options = 'Calendar|Days|Datedue' WHERE variable = 'useDaysMode'");
+	
+    print "Upgrade to $DBversion done (upgrade useDaysMode syspref)\n";
+    SetVersion ($DBversion);
+}
+
+$DBversion = "3.01.00.136";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+	$dbh->do(qq{
+	CREATE TABLE IF NOT EXISTS pending_offline_operations (
+	    operationid INT(11) NOT NULL AUTO_INCREMENT,
+	    userid VARCHAR(30) NOT NULL,
+	    branchcode VARCHAR(10) NOT NULL,
+	    timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	    action VARCHAR(10) NOT NULL,
+	    barcode VARCHAR(20) NOT NULL,
+	    cardnumber VARCHAR(16) NULL,
+	    PRIMARY KEY (operationid)
+	);
+	});
+
+    print "Upgrade to $DBversion done (isbd updated)\n";
     SetVersion ($DBversion);
 }
 
