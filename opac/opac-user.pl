@@ -66,14 +66,21 @@ $borr->{'ethnicity'} = fixEthnicity( $borr->{'ethnicity'} );
 if ( $borr->{'debarred'} || $borr->{'gonenoaddress'} || $borr->{'lost'} ) {
     $borr->{'flagged'} = 1;
 }
-# $make flagged available everywhere in the template
-my $patron_flagged = $borr->{'flagged'};
+
 if ( $borr->{'amountoutstanding'} > 5 ) {
     $borr->{'amountoverfive'} = 1;
 }
 if ( 5 >= $borr->{'amountoutstanding'} && $borr->{'amountoutstanding'} > 0 ) {
     $borr->{'amountoverzero'} = 1;
 }
+
+if ( $borr->{'amountoutstanding'} > C4::Context->preference( 'OPACFineNoRenewals' ) ) {
+    $borr->{'flagged'} = 1;
+    $template->param(
+        renewal_blocked_fines => sprintf( "%.02f", C4::Context->preference( 'OPACFineNoRenewals' ) ),
+    );
+}
+
 if ( $borr->{'amountoutstanding'} < 0 ) {
     $borr->{'amountlessthanzero'} = 1;
     $borr->{'amountoutstanding'} = -1 * ( $borr->{'amountoutstanding'} );
@@ -86,12 +93,10 @@ $bordat[0] = $borr;
 
 $template->param(   BORROWER_INFO  => \@bordat,
                     borrowernumber => $borrowernumber,
-                    patron_flagged => $patron_flagged,
+                    patron_flagged => $borr->{flagged},
                 );
 
 #get issued items ....
-my ($issues) = GetPendingIssues($borrowernumber);
-my @issue_list = sort { $b->{'date_due'} cmp $a->{'date_due'} } @$issues;
 
 my $count          = 0;
 my $toggle = 0;
@@ -99,60 +104,61 @@ my $overdues_count = 0;
 my @overdues;
 my @issuedat;
 my $itemtypes = GetItemTypes();
-foreach my $issue ( @issue_list ) {
-    if($count%2 eq 0){ $issue->{'toggle'} = 1; } else { $issue->{'toggle'} = 0; }
-    # check for reserves
-    my ( $restype, $res ) = CheckReserves( $issue->{'itemnumber'} );
-    if ( $restype ) {
-        $issue->{'reserved'} = 1;
-    }
-    
-    my ( $total , $accts, $numaccts) = GetMemberAccountRecords( $borrowernumber );
-    my $charges = 0;
-    foreach my $ac (@$accts) {
-        if ( $ac->{'itemnumber'} == $issue->{'itemnumber'} ) {
-            $charges += $ac->{'amountoutstanding'}
-              if $ac->{'accounttype'} eq 'F';
-            $charges += $ac->{'amountoutstanding'}
-              if $ac->{'accounttype'} eq 'L';
-        }
-    }
-    $issue->{'charges'} = $charges;
+my ($issues) = GetPendingIssues($borrowernumber);
+if ($issues){
+	foreach my $issue ( sort sort { $b->{'date_due'} cmp $a->{'date_due'} } @$issues ) {
+		# check for reserves
+		my ( $restype, $res ) = CheckReserves( $issue->{'itemnumber'} );
+		if ( $restype ) {
+			$issue->{'reserved'} = 1;
+		}
+		
+		my ( $total , $accts, $numaccts) = GetMemberAccountRecords( $borrowernumber );
+		my $charges = 0;
+		foreach my $ac (@$accts) {
+			if ( $ac->{'itemnumber'} == $issue->{'itemnumber'} ) {
+				$charges += $ac->{'amountoutstanding'}
+				  if $ac->{'accounttype'} eq 'F';
+				$charges += $ac->{'amountoutstanding'}
+				  if $ac->{'accounttype'} eq 'L';
+			}
+		}
+		$issue->{'charges'} = $charges;
 
-    # get publictype for icon
+		# get publictype for icon
 
-    my $publictype = $issue->{'publictype'};
-    $issue->{$publictype} = 1;
+		my $publictype = $issue->{'publictype'};
+		$issue->{$publictype} = 1;
 
-    # check if item is renewable
-    my ($status,$renewerror) = CanBookBeRenewed( $borrowernumber, $issue->{'itemnumber'} );
-    ($issue->{'renewcount'},$issue->{'renewsallowed'},$issue->{'renewsleft'}) = GetRenewCount($borrowernumber, $issue->{'itemnumber'});
-    $issue->{'status'} = $status && C4::Context->preference("OpacRenewalAllowed");
-    $issue->{'too_many'} = 1 if $renewerror and $renewerror eq 'too_many';
-    $issue->{'on_reserve'} = 1 if $renewerror and $renewerror eq 'on_reserve';
+		# check if item is renewable
+		my ($status,$renewerror) = CanBookBeRenewed( $borrowernumber, $issue->{'itemnumber'} );
+		($issue->{'renewcount'},$issue->{'renewsallowed'},$issue->{'renewsleft'}) = GetRenewCount($borrowernumber, $issue->{'itemnumber'});
+		$issue->{'status'} = $status && C4::Context->preference("OpacRenewalAllowed");
+		$issue->{'too_many'} = 1 if $renewerror and $renewerror eq 'too_many';
+		$issue->{'on_reserve'} = 1 if $renewerror and $renewerror eq 'on_reserve';
 
-    if ( $issue->{'overdue'} ) {
-        push @overdues, $issue;
-        $overdues_count++;
-        $issue->{'overdue'} = 1;
-    }
-    else {
-        $issue->{'issued'} = 1;
-    }
-    # imageurl:
-    my $itemtype = $issue->{'itemtype'};
-    if ( $itemtype ) {
-        $issue->{'imageurl'}    = getitemtypeimagelocation( 'opac', $itemtypes->{$itemtype}->{'imageurl'} );
-        $issue->{'description'} = $itemtypes->{$itemtype}->{'description'};
-    }
-    $issue->{date_due} = format_date($issue->{date_due});
-    push @issuedat, $issue;
-    $count++;
-    
-    my $isbn = GetNormalizedISBN($issue->{'isbn'});
-    $issue->{normalized_isbn} = $isbn;
+		if ( $issue->{'overdue'} ) {
+			push @overdues, $issue;
+			$overdues_count++;
+			$issue->{'overdue'} = 1;
+		}
+		else {
+			$issue->{'issued'} = 1;
+		}
+		# imageurl:
+		my $itemtype = $issue->{'itemtype'};
+		if ( $itemtype ) {
+			$issue->{'imageurl'}    = getitemtypeimagelocation( 'opac', $itemtypes->{$itemtype}->{'imageurl'} );
+			$issue->{'description'} = $itemtypes->{$itemtype}->{'description'};
+		}
+		$issue->{date_due} = format_date($issue->{date_due});
+		push @issuedat, $issue;
+		$count++;
+		
+		my $isbn = GetNormalizedISBN($issue->{'isbn'});
+		$issue->{normalized_isbn} = $isbn;
+	}
 }
-
 $template->param( ISSUES       => \@issuedat );
 $template->param( issues_count => $count );
 
@@ -232,6 +238,10 @@ foreach my $res (@reserves) {
         push @waiting, $res;
         $wcount++;
     }
+    # can be cancelled
+    #$res->{'cancelable'} = 1 if ($res->{'wait'} && $res->{'atdestination'} && $res->{'found'} ne "1");
+    $res->{'cancelable'} = 1 if    ($res->{wait} and not $res->{found}) or (not $res->{wait} and not $res->{intransit});
+    
 }
 
 $template->param( WAITING => \@waiting );
@@ -259,7 +269,19 @@ if (C4::Context->preference("OPACAmazonCoverImages") or
         $template->param(JacketImages=>1);
 }
 
+if ( GetMessagesCount( $borrowernumber, 'B' ) ) {
+	$template->param( bor_messages => 1 );
+}
+
+if ( $borr->{'opacnote'} ) {
+  $template->param( 
+    bor_messages => 1,
+    opacnote => $borr->{'opacnote'},
+  );
+}
+
 $template->param(
+    bor_messages_loop	=> GetMessages( $borrowernumber, 'B', 'NONE' ),
     waiting_count      => $wcount,
     textmessaging      => $borr->{textmessaging},
     patronupdate => $patronupdate,

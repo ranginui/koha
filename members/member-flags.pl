@@ -5,6 +5,7 @@
 # July 26, 2002 (my birthday!)
 
 use strict;
+use warnings;
 
 use CGI;
 use C4::Output;
@@ -177,6 +178,7 @@ $template->param(
 		address2 => $bor->{'address2'},
 		city => $bor->{'city'},
 		zipcode => $bor->{'zipcode'},
+		country => $bor->{'country'},
 		phone => $bor->{'phone'},
 		email => $bor->{'email'},
 		branchcode => $bor->{'branchcode'},

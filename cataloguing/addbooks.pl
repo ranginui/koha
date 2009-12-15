@@ -49,7 +49,7 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
-        flagsrequired   => { editcatalogue => 1 },
+        flagsrequired   => { editcatalogue => 'edit_catalogue' },
         debug           => 1,
     }
 );
@@ -57,7 +57,7 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
 # get framework list
 my $frameworks = getframeworks;
 my @frameworkcodeloop;
-foreach my $thisframeworkcode ( keys %{$frameworks} ) {
+foreach my $thisframeworkcode ( sort {$frameworks->{$a} cmp $frameworks->{$b}}keys %{$frameworks} ) {
     push @frameworkcodeloop, {
         value         => $thisframeworkcode,
         frameworktext => $frameworks->{$thisframeworkcode}->{'frameworktext'},
@@ -79,8 +79,9 @@ if ($query) {
     }
 
     # format output
+    # SimpleSearch() give the results per page we want, so 0 offet here
     my $total = scalar @$marcresults;
-    my @newresults = searchResults( $query, $total, $results_per_page, $page-1, 0, @$marcresults );
+    my @newresults = searchResults( $query, $total, $results_per_page, 0, 0, @$marcresults );
     $template->param(
         total          => $total_hits,
         query          => $query,
@@ -110,14 +111,13 @@ if ($query) {
     ( $countbr, @resultsbr ) = BreedingSearch( $title, $isbn );
 }
 my $breeding_loop = [];
-my $id = 0;
 for my $resultsbr (@resultsbr) {
     push @{$breeding_loop}, {
-        id               => $id++,
+        id               => $resultsbr->{import_record_id},
         isbn             => $resultsbr->{isbn},
         copyrightdate    => $resultsbr->{copyrightdate},
         editionstatement => $resultsbr->{editionstatement},
-        file             => $resultsbr->{file},
+        file             => $resultsbr->{file_name},
         title            => $resultsbr->{title},
         author           => $resultsbr->{author},
     };

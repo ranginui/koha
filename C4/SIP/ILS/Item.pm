@@ -97,7 +97,7 @@ sub new {
 
 	# check if its on issue and if so get the borrower
 	my $issue = GetItemIssue($item->{'itemnumber'});
-	my $borrower = GetMember($issue->{'borrowernumber'},'borrowernumber');
+	my $borrower = GetMember(borrowernumber=>$issue->{'borrowernumber'});
 	$item->{patron} = $borrower->{'cardnumber'};
     my ($whatever, $arrayref) = GetReservesFromBiblionumber($item->{biblionumber});
 	$item->{hold_queue} = [ sort priority_sort @$arrayref ];
@@ -160,7 +160,7 @@ sub hold_patron_name {
     my $self = shift or return;
     # return $self->{hold_patron_name} if $self->{hold_patron_name};    TODO: consider caching
     my $borrowernumber = (@_ ? shift: $self->hold_patron_id()) or return;
-    my $holder = GetMember($borrowernumber, 'borrowernumber');
+    my $holder = GetMember(borrowernumber=>$borrowernumber);
     unless ($holder) {
         syslog("LOG_ERR", "While checking hold, GetMember failed for borrowernumber '$borrowernumber'");
         return;
@@ -175,6 +175,19 @@ sub hold_patron_name {
     # $self->{hold_patron_name} = $name;      # TODO: consider caching
     return $name;
 }
+
+sub hold_patron_bcode {
+    my $self = shift or return;
+    my $borrowernumber = (@_ ? shift: $self->hold_patron_id()) or return;
+    my $holder = GetMember($borrowernumber, 'borrowernumber');
+    if ($holder) {
+        if ($holder->{cardnumber}) {
+            return $holder->{cardnumber};
+        }
+    }
+    return;
+}
+
 sub destination_loc {
     my $self = shift or return;
     my $hold = $self->next_hold();
@@ -322,7 +335,7 @@ sub available {
 sub _barcode_to_borrowernumber ($) {
     my $known = shift;
     (defined($known)) or return undef;
-    my $member = GetMember($known,'cardnumber') or return undef;
+    my $member = GetMember(cardnumber=>$known) or return undef;
     return $member->{borrowernumber};
 }
 sub barcode_is_borrowernumber ($$$) {    # because hold_queue only has borrowernumber...

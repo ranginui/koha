@@ -38,7 +38,9 @@ use C4::External::Syndetics qw(get_syndetics_index get_syndetics_summary get_syn
 use C4::Review;
 use C4::Serials;
 use C4::Members;
+use C4::VirtualShelves;
 use C4::XSLT;
+use Switch;
 
 BEGIN {
 	if (C4::Context->preference('BakerTaylorEnabled')) {
@@ -68,7 +70,7 @@ $template->param( biblionumber => $biblionumber );
 # XSLT processing of some stuff
 if (C4::Context->preference("XSLTDetailsDisplay") ) {
     $template->param(
-        'XSLTBloc' => XSLTParse4Display($biblionumber, $record, 'Detail') );
+        'XSLTBloc' => XSLTParse4Display($biblionumber, $record, 'Detail'),'opac' );
 }
 
 $template->param('OPACShowCheckoutName' => C4::Context->preference("OPACShowCheckoutName") ); 
@@ -96,8 +98,8 @@ if ( $itemtype ) {
     $dat->{'imageurl'}    = getitemtypeimagelocation( 'opac', $itemtypes->{$itemtype}->{'imageurl'} );
     $dat->{'description'} = $itemtypes->{$itemtype}->{'description'};
 }
-my $shelflocations =GetKohaAuthorisedValues('items.location',$dat->{'frameworkcode'});
-my $collections =  GetKohaAuthorisedValues('items.ccode',$dat->{'frameworkcode'} );
+my $shelflocations =GetKohaAuthorisedValues('items.location',$dat->{'frameworkcode'}, 'opac');
+my $collections =  GetKohaAuthorisedValues('items.ccode',$dat->{'frameworkcode'}, 'opac');
 
 #coping with subscriptions
 my $subscriptionsnumber = CountSubscriptionFromBiblionumber($biblionumber);
@@ -110,6 +112,10 @@ foreach my $subscription (@subscriptions) {
     my %cell;
     $cell{subscriptionid}    = $subscription->{subscriptionid};
     $cell{subscriptionnotes} = $subscription->{notes};
+    $cell{missinglist}       = $subscription->{missinglist};
+    $cell{opacnote}          = $subscription->{opacnote};
+    $cell{histstartdate}     = format_date($subscription->{histstartdate});
+    $cell{histenddate}       = format_date($subscription->{histenddate});
     $cell{branchcode}        = $subscription->{branchcode};
     $cell{branchname}        = GetBranchName($subscription->{branchcode});
     $cell{hasalert}          = $subscription->{hasalert};
@@ -123,6 +129,14 @@ foreach my $subscription (@subscriptions) {
 }
 
 $dat->{'count'} = scalar(@items);
+
+# If there is a lot of items, and the user has not decided
+# to view them all yet, we first warn him
+# TODO: The limit of 50 could be a syspref
+my $viewallitems = $query->param('viewallitems');
+if ($dat->{'count'} >= 50 && !$viewallitems) {
+    $template->param('lotsofitems' => 1);
+}
 
 my $biblio_authorised_value_images = C4::Items::get_authorised_value_images( C4::Biblio::get_biblio_authorised_values( $biblionumber, $record ) );
 
@@ -237,7 +251,7 @@ $template->param(
 my $reviews = getreviews( $biblionumber, 1 );
 my $loggedincommenter;
 foreach ( @$reviews ) {
-    my $borrowerData   = GetMember($_->{borrowernumber},'borrowernumber');
+    my $borrowerData   = GetMember('borrowernumber' => $_->{borrowernumber});
     # setting some borrower info into this hash
     $_->{title}     = $borrowerData->{'title'};
     $_->{surname}   = $borrowerData->{'surname'};
@@ -266,6 +280,13 @@ $template->param(
     loggedincommenter   => $loggedincommenter
 );
 
+# Lists
+
+if (C4::Context->preference("virtualshelves") ) {
+   $template->param( 'GetShelves' => GetBibliosShelves( $biblionumber ) );
+}
+
+
 # XISBN Stuff
 if (C4::Context->preference("OPACFRBRizeEditions")==1) {
     eval {
@@ -275,6 +296,28 @@ if (C4::Context->preference("OPACFRBRizeEditions")==1) {
     };
     if ($@) { warn "XISBN Failed $@"; }
 }
+
+# Serial Collection
+my @sc_fields = $record->field(955);
+my @serialcollections = ();
+
+foreach my $sc_field (@sc_fields) {
+    my %row_data;
+
+    $row_data{text}    = $sc_field->subfield('r');
+    $row_data{branch}  = $sc_field->subfield('9');
+
+    if ($row_data{text} && $row_data{branch}) { 
+	push (@serialcollections, \%row_data);
+    }
+}
+
+if (scalar(@serialcollections) > 0) {
+    $template->param(
+	serialcollection  => 1,
+	serialcollections => \@serialcollections);
+}
+
 # Amazon.com Stuff
 if ( C4::Context->preference("OPACAmazonEnabled") ) {
     $template->param( AmazonTld => get_amazon_tld() );
@@ -414,7 +457,7 @@ if (C4::Context->preference("OPACShelfBrowser")) {
         $starting_homebranch->{code} = $result->{'homebranch'};
         $starting_homebranch->{description} = $branches->{$result->{'homebranch'}}{branchname};
         $starting_location->{code} = $result->{'location'};
-        $starting_location->{description} = GetAuthorisedValueDesc('','',   $result->{'location'} ,'','','LOC');
+        $starting_location->{description} = GetAuthorisedValueDesc('','',   $result->{'location'} ,'','','LOC', 'opac');
     
     }
     
@@ -541,5 +584,56 @@ if (C4::Context->preference('TagsEnabled') and $tag_quantity = C4::Context->pref
 	$template->param(TagLoop => get_tags({biblionumber=>$biblionumber, approved=>1,
 								'sort'=>'-weight', limit=>$tag_quantity}));
 }
+
+#Search for title in links
+if (my $search_for_title = C4::Context->preference('OPACSearchForTitleIn')){
+    $search_for_title =~ s/{AUTHOR}/$dat->{author}/g;
+    $search_for_title =~ s/{TITLE}/$dat->{title}/g;
+    $search_for_title =~ s/{ISBN}/$isbn/g;
+ $template->param('OPACSearchForTitleIn' => $search_for_title);
+}
+
+# We try to select the best default tab to show, according to what
+# the user wants, and what's available for display
+my $defaulttab;
+switch (C4::Context->preference('opacSerialDefaultTab')) {
+
+    # If the user wants subscriptions by default
+    case "subscriptions" { 
+	# And there are subscriptions, we display them
+	if ($subscriptionsnumber) {
+	    $defaulttab = 'subscriptions';
+	} else {
+	   # Else, we try next option
+	   next; 
+	}
+    }
+
+    case "serialcollection" {
+	if (scalar(@serialcollections) > 0) {
+	    $defaulttab = 'serialcollection' ;
+	} else {
+	    next;
+	}
+    }
+
+    case "holdings" {
+	if ($dat->{'count'} > 0) {
+	   $defaulttab = 'holdings'; 
+	} else {
+	     # As this is the last option, we try other options if there are no items
+	     if ($subscriptionsnumber) {
+		$defaulttab = 'subscriptions';
+	     } elsif (scalar(@serialcollections) > 0) {
+		$defaulttab = 'serialcollection' ;
+	     }
+	}
+
+    }
+
+}
+$template->param('defaulttab' => $defaulttab);
+
+
 
 output_html_with_http_headers $query, $cookie, $template->output;

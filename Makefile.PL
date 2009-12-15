@@ -413,6 +413,9 @@ my %config_defaults = (
   'PAZPAR2_PORT' => '11002',
   'RUN_DATABASE_TESTS' => 'no',
   'PATH_TO_ZEBRA' => '',
+  'USE_MEMCACHED'     => 'no',
+  'MEMCACHED_SERVERS' => '127.0.0.1:11211',
+  'MEMCACHED_NAMESPACE' => 'KOHA'
 );
 
 # set some default configuration options based on OS
@@ -449,6 +452,7 @@ my %valid_config_values = (
   'ZEBRA_MARC_FORMAT' => { 'marc21' => 1, 'unimarc' => 1 }, # FIXME should generate from contents of distributation
   'ZEBRA_LANGUAGE'    => { 'en' => 1, 'fr' => 1 }, # FIXME should generate from contents of distribution
   'RUN_DATABASE_TESTS' => { 'yes' => 1, 'no' => 1 },
+  'USE_MEMCACHED'      => { 'yes' => 1, 'no' => 1 },
 );
 
 # get settings from command-line
@@ -577,22 +581,27 @@ WriteMakefile(
                             'MIME::Lite'                       => 3.00,
                             'MIME::QuotedPrint'                => 3.07,
                             'Mail::Sendmail'                   => 0.79,
+                            'Memoize::Memcached'               => 0.03, # optional
                             'Net::LDAP'                        => 0.33, # optional
                             'Net::LDAP::Filter'                => 0.14, # optional
                             'Net::Z3950::ZOOM'                 => 1.16,
+                            'Number::Format'                   => 1.52,
                             'PDF::API2'                        => 2.000,
                             'PDF::API2::Page'                  => 2.000,
                             'PDF::API2::Util'                  => 2.000,
+                            'PDF::API2::Simple'                => 1.000,
+                            'PDF::Table'                       => 0.9.3,
                             'PDF::Reuse'                       => 0.33,
                             'PDF::Reuse::Barcode'              => 0.05,
                             'POE'                              => 0.9999,
                             'POSIX'                            => 1.09,
                             'Schedule::At'                     => 1.06,
+                            'Storable'	                       => 2.21,
                             'SMS::Send'                        => 0.05, # optional
                             'Term::ANSIColor'                  => 1.10,
                             'Test'                             => 1.25,
                             'Test::Harness'                    => 2.56,
-                            'Test::More'                       => 0.62,
+                            'Test::More'                       => 0.80,
                             'Text::CSV'                        => 0.01,
                             'Text::CSV_XS'                     => 0.32,
                             'Text::Iconv'                      => 1.7,
@@ -844,7 +853,10 @@ be run from the current directory.
 
 Configuration directory:);
         # FIXME - home directory portability consideration apply
-        $install_base_default = (exists $ENV{'HOME'}) ? "$ENV{'HOME'}/koha-dev" : "$defaults->{'INSTALL_BASE'}-dev";
+        $install_base_default = 
+	    $ENV{DESTDIR}
+	    || ( exists $ENV{HOME} ? "$ENV{HOME}/koha-dev" : "$defaults->{'INSTALL_BASE'}-dev" ) 
+	;
     } elsif ($config{'INSTALL_MODE'} eq 'single') {
         $msg = "\nPlease specify the directory in which to install Koha";
         # FIXME -- we're assuming under a 'single' mode install
@@ -1083,6 +1095,26 @@ PazPar2 port?);
 
         }
     }
+  $msg = q(
+Use memcached and memoize to cache the results of some function calls? 
+This provides a signficant performance improvement. 
+You will need a Memcached server running.);
+  $msg .= _add_valid_values_disp('USE_MEMCACHED', $valid_values);
+  $config{'USE_MEMCACHED'} = _get_value('USE_MEMCACHED', $msg, $defaults->{'USE_MEMCACHED'}, $valid_values, $install_log_values);
+  if ($config{'USE_MEMCACHED'} eq 'yes'){
+      $msg = q(
+Since you've chosen to use caching, you must specify the memcached servers and the namespace to use:
+);
+      $msg = q(
+Memcached server address?);
+      $config{'MEMCACHED_SERVERS'} = _get_value('MEMCACHED_SERVERS', $msg, $defaults->{'MEMCACHED_SERVERS'}, $valid_values, $install_log_values);
+       
+      $msg = q(
+Memcached namespace?);
+      $config{'MEMCACHED_NAMESPACE'} = _get_value('MEMCACHED_NAMESPACE', $msg, $defaults->{'MEMCACHED_NAMESPACE'}, $valid_values, $install_log_values);
+  }
+
+
 
   $msg = q(
 Would you like to run the database-dependent test suite?);

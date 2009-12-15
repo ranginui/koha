@@ -101,7 +101,7 @@ foreach (@field_check) {
 }
 $template->param("add"=>1) if ($op eq 'add');
 $template->param("checked" => 1) if (defined($nodouble) && $nodouble eq 1);
-($borrower_data = GetMember($borrowernumber,'borrowernumber')) if ($op eq 'modify' or $op eq 'save');
+($borrower_data = GetMember( 'borrowernumber'=>$borrowernumber )) if ($op eq 'modify' or $op eq 'save');
 my $categorycode  = $input->param('categorycode') || $borrower_data->{'categorycode'};
 my $category_type = $input->param('category_type');
 my $new_c_type = $category_type; #if we have input param, then we've already chosen the cat_type.
@@ -202,7 +202,7 @@ if ( defined($guarantorid) and
      ( $category_type eq 'C' || $category_type eq 'P' ) and
      $guarantorid ne ''  and
      $guarantorid ne '0' ) {
-    if (my $guarantordata=GetMember($guarantorid)) {
+    if (my $guarantordata=GetMember(borrowernumber => $guarantorid)) {
         $guarantorinfo=$guarantordata->{'surname'}." , ".$guarantordata->{'firstname'};
         if ( !defined($data{'contactname'}) or $data{'contactname'} eq '' or
              $data{'contactname'} ne $guarantordata->{'surname'} ) {
@@ -210,18 +210,19 @@ if ( defined($guarantorid) and
             $newdata{'contactname'}     = $guarantordata->{'surname'};
             $newdata{'contacttitle'}    = $guarantordata->{'title'};
 	        foreach (qw(streetnumber address streettype address2
-                        zipcode city phone phonepro mobile fax email emailpro branchcode)) {
+                        zipcode country city phone phonepro mobile fax email emailpro branchcode)) {
 		        $newdata{$_} = $guarantordata->{$_};
 	        }
         }
     }
 }
 
-###############test to take the right zipcode and city name ##############
+###############test to take the right zipcode, country and city name ##############
 if (!defined($guarantorid) or $guarantorid eq '' or $guarantorid eq '0') {
     # set only if parameter was passed from the form
     $newdata{'city'}    = $input->param('city')    if defined($input->param('city'));
     $newdata{'zipcode'} = $input->param('zipcode') if defined($input->param('zipcode'));
+    $newdata{'country'} = $input->param('country') if defined($input->param('country'));
 }
 
 #builds default userid
@@ -359,7 +360,7 @@ if ($nok or !$nodouble){
     %data=%newdata; 
     $template->param( updtype => ($op eq 'add' ?'I':'M'));	# used to check for $op eq "insert"... but we just changed $op!
     unless ($step){  
-        $template->param( step_1 => 1,step_2 => 1,step_3 => 1, step_4 => 1, step_5 => 1);
+        $template->param( step_1 => 1,step_2 => 1,step_3 => 1, step_4 => 1, step_5 => 1, step_6 => 1);
     }  
 } 
 if (C4::Context->preference("IndependantBranches")) {
@@ -374,11 +375,11 @@ if (C4::Context->preference("IndependantBranches")) {
 if ($op eq 'add'){
     my $arg2 = $newdata{'dateenrolled'} || C4::Dates->today('iso');
     $data{'dateexpiry'} = GetExpiryDate($newdata{'categorycode'},$arg2);
-    $template->param( updtype => 'I', step_1=>1, step_2=>1, step_3=>1, step_4=>1, step_5 => 1);
+    $template->param( updtype => 'I', step_1=>1, step_2=>1, step_3=>1, step_4=>1, step_5 => 1, step_6 => 1);
 }
 if ($op eq "modify")  {
     $template->param( updtype => 'M',modify => 1 );
-    $template->param( step_1=>1, step_2=>1, step_3=>1, step_4=>1, step_5 => 1) unless $step;
+    $template->param( step_1=>1, step_2=>1, step_3=>1, step_4=>1, step_5 => 1, step_6 => 1) unless $step;
 }
 # my $cardnumber=$data{'cardnumber'};
 $data{'cardnumber'}=fixup_cardnumber($data{'cardnumber'}) if $op eq 'add';

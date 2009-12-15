@@ -66,7 +66,7 @@ my ($template, $borrowernumber, $cookie) = get_template_and_user({
 	query => $input,
 	type => "intranet",
 	authnotrequired => 0,
-	flagsrequired => {reports => 1},
+	flagsrequired => {reports => '*'},
 	debug => 0,
 });
 our $sep     = $input->param("sep");
@@ -337,8 +337,8 @@ sub calculate {
 	} else {
 		$colfield = $column;
 	}
-	$colorder = ($colfield =~ /dayname/) ? "weekday($line)" :
-				($colfield =~ /^month/ ) ? "  month($line)" : $colfield;
+	$colorder = ($colfield =~ /dayname/) ? "weekday($column)" :
+				($colfield =~ /^month/ ) ? "  month($column)" : $colfield;
 	my $strsth2 = "SELECT distinctrow $colfield FROM statistics, ";
 	# get stats on items if ccode or location, otherwise borrowers.
 	$strsth2 .= ($colsource eq 'items' ) ?

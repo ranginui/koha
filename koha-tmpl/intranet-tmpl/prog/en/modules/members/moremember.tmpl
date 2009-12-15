@@ -14,10 +14,10 @@ $.tablesorter.addParser({
 });
 $(document).ready(function() {
 	$('#finesholdsissues > ul').tabs();
+	$.tablesorter.defaults.widgets = ['zebra'];
 	$("#issuest").tablesorter({<!-- TMPL_IF NAME="dateformat_metric" -->
 		dateFormat: 'uk',<!-- /TMPL_IF -->
-		sortList: [[1,0]],
-		headers: { 1: { sorter: 'articles' },4:{sorter:false},5: { sorter: false },6:{sorter:false},7:{sorter:false}}
+		headers: { 1: { sorter: 'articles' },5: { sorter: false },6:{sorter:false},7:{sorter:false},8:{sorter:false}}
 	}); 
 	$("#holdst").tablesorter({<!-- TMPL_IF NAME="dateformat_metric" -->
 		dateFormat: 'uk',<!-- /TMPL_IF -->
@@ -169,7 +169,8 @@ if (nodename =="barcodes[]"){
         <!-- TMPL_VAR NAME="address" --><br />
         <!-- TMPL_IF NAME="address2" --><!-- TMPL_VAR NAME="address2"--><br /><!-- /TMPL_IF -->
     	<!-- TMPL_IF NAME="city" --><!-- TMPL_VAR NAME="city" --><!-- /TMPL_IF -->
-    	<!-- TMPL_IF NAME="zipcode" --><!-- TMPL_VAR NAME="zipcode" --><!-- /TMPL_IF --></p>
+    	<!-- TMPL_IF NAME="zipcode" --><!-- TMPL_VAR NAME="zipcode" --><br /><!-- /TMPL_IF -->
+	<!-- TMPL_IF NAME="country" --><!-- TMPL_VAR NAME="country" --><!-- /TMPL_IF --></p>
 		    
 	<div class="rows">
 		<ol>
@@ -333,9 +334,11 @@ if (nodename =="barcodes[]"){
  <div id="patron-alternate-address" style="padding-top: 1em;">
     <h3>Alternate Address</h3>
     <!-- TMPL_UNLESS NAME="I"--><!-- TMPL_UNLESS NAME="C"-->
-  <p><!-- TMPL_VAR NAME="B_address" --><br />
-      <!-- TMPL_VAR NAME="B_city" --><br />
-      <!-- TMPL_VAR NAME="B_zipcode" --></p>
+    <div class="rows">  <ol><li><span class="label">Address: </span><!-- TMPL_VAR NAME="B_address" --></li>
+      <li><span class="label">Address 2: </span><!-- TMPL_VAR NAME="B_address2" --></li>
+      <li><span class="label">City, State: </span><!-- TMPL_VAR NAME="B_city" --></li>
+      <li><span class="label">Zip/Postal Code: </span><!-- TMPL_VAR NAME="B_zipcode" --></li>
+      <li><span class="label">Country: </span><!-- TMPL_VAR NAME="B_country" --></li></ol></div>
     <!-- /TMPL_UNLESS --><!-- /TMPL_UNLESS -->
      <!-- TMPL_IF NAME="C" -->
    <div class="rows"> <ol><li><span class="label">Surname: </span><!-- TMPL_VAR NAME="contactname" --></li>
@@ -345,15 +348,17 @@ if (nodename =="barcodes[]"){
     <li><span class="label">Relationship: </span><!-- TMPL_VAR NAME="relationship" --></li></ol></div>
    <!-- /TMPL_IF -->
 </div>
+<div class="action"><a href="memberentry.pl?op=modify&amp;borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->&amp;step=6">Edit</a></div>
 
  <div id="patron-alternative-contact" style="padding-top: 1em;">
  <h3>Alternative Contact</h3>	
    <div class="rows"> <ol><li><span class="label">Surname: </span><!-- TMPL_VAR NAME="altcontactsurname" --></li>
     <li><span class="label">First name: </span><!-- TMPL_VAR NAME="altcontactfirstname" --></li>    
     <li><span class="label">Address: </span><!-- TMPL_VAR NAME="altcontactaddress1" --></li>
-    <li><span class="label">Address (cont.): </span><!-- TMPL_VAR NAME="altcontactaddress2" --></li>
+    <li><span class="label">Address 2: </span><!-- TMPL_VAR NAME="altcontactaddress2" --></li>
 	<li><span class="label">City, State: </span><!-- TMPL_VAR NAME="altcontactaddress3" --></li>
 	<li><span class="label">Zip/Postal Code: </span><!-- TMPL_VAR NAME="altcontactzipcode" --></li>
+	<li><span class="label">Country: </span><!-- TMPL_VAR NAME="altcontactcountry" --></li>
     <li><span class="label">Phone: </span><!-- TMPL_VAR NAME="altcontactphone" --></li></ol></div>
 </div>
 <div class="action"><a href="memberentry.pl?op=modify&amp;borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->&amp;step=2">Edit</a></div>
@@ -363,14 +368,16 @@ if (nodename =="barcodes[]"){
 
 <div id="finesholdsissues" class="toptabs">
 	<ul>
-		<li><a href="#checkedout">Checked Out</a></li>
-		<li><a href="#finesandcharges">Fines &amp; Charges</a></li>
-		<li><a href="#onhold">On Hold</a></li>
-		<li><a href="#revisionhistory">Revision History</a></li>
+		<li><a href="/cgi-bin/koha/members/moremember.pl#checkedout"><!-- TMPL_VAR NAME="issuecount"--> Checkout(s)</a></li>
+		<li><a href="/cgi-bin/koha/members/moremember.pl#finesandcharges">Fines &amp; Charges</a></li>
+		<li><!-- TMPL_IF NAME="countreserv"-->
+            <a href="/cgi-bin/koha/members/moremember.pl#onhold"><!--TMPL_VAR NAME="countreserv"--> Hold(s)</a>
+    <!-- TMPL_ELSE -->
+            <a href="/cgi-bin/koha/members/moremember.pl#onhold">0 Holds</a>
+    <!-- /TMPL_IF --></li>
 	</ul>
 	
 <div id="finesandcharges">
-    <h2>Fines and Charges</h2>
     <!-- TMPL_IF NAME="totaldue_raw" -->
         <p>Total due: <!-- TMPL_VAR NAME="totaldue" --></p>
     <!-- TMPL_ELSE -->
@@ -402,7 +409,6 @@ if (nodename =="barcodes[]"){
 </div>
 
 <div id="checkedout">
-    <h2>Checked Out</h2>
     <!-- TMPL_IF NAME="issueloop" -->
     <form action="/cgi-bin/koha/reserve/renewscript.pl" method="post" class="checkboxed">
     <input type="hidden" name="borrowernumber" value="<!-- TMPL_VAR NAME="borrowernumber" -->" />
@@ -410,18 +416,19 @@ if (nodename =="barcodes[]"){
     <table id="issuest">
     <thead>
 		<tr>
-            <th scope="col">Item Type</th>
+            <th scope="col">Due date</th>
             <th scope="col">Title</th>
+            <th scope="col">Item Type</th>
             <th scope="col">Checked out on</th> 
-            <th scope="col">Date due</th>
+        <th scope="col">Call no</th>
             <th scope="col">Charge</th>
             <th scope="col">Price</th>
             <th scope="col">Renew <p class="column-tool"><a href="#" id="CheckAllitems">select all</a> | <a href="#" id="CheckNoitems">none</a></p></th>
-            <th scope="col">Return <p class="column-tool"><a href="#" id="CheckAllreturns">select all</a> | <a href="#" id="CheckNoreturns">none</a></p></th>
+            <th scope="col">Check in <p class="column-tool"><a href="#" id="CheckAllreturns">select all</a> | <a href="#" id="CheckNoreturns">none</a></p></th>
         </tr></thead>
     	<tfoot>
 		<tr>
-            <td colspan="4" style="text-align: right; font-weight:bold;">Totals:</td>
+            <td colspan="5" style="text-align: right; font-weight:bold;">Totals:</td>
 			<td><!-- TMPL_VAR NAME="totaldue" --></td>
             <td><!-- TMPL_VAR NAME="totalprice" --></td>
             <td colspan="2">      
@@ -439,7 +446,7 @@ if (nodename =="barcodes[]"){
                     </script>
                 </p>
                 <p>
-                    Forgive fines on return: <input type="checkbox" name="exemptfine" value="1" />
+                    <label>Forgive fines on return: <input type="checkbox" name="exemptfine" value="1" /></label>
                 </p>
             </td>
         </tr>
@@ -452,13 +459,7 @@ if (nodename =="barcodes[]"){
           <!-- TMPL_ELSE -->
           <tr>
           <!-- /TMPL_IF -->
-		  <td><!-- TMPL_UNLESS NAME="noItemTypeImages" --> <!-- TMPL_IF NAME="itemtype_image" -->
-                <img src="<!-- TMPL_VAR NAME="itemtype_image" -->" alt="" />
-                <!-- /TMPL_IF --><!-- /TMPL_UNLESS -->
-                <!-- TMPL_VAR NAME="itemtype_description" --></td>
-            <td><!-- TMPL_IF NAME="red" --><a class="overdue" href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->"><!-- TMPL_VAR NAME="title" escape="html"--></a><!-- TMPL_ELSE --><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->"><!-- TMPL_VAR NAME="title" escape="html" --></a><!-- /TMPL_IF --> <!-- TMPL_IF NAME="author" -->, by <!-- TMPL_VAR name="author" --><!-- /TMPL_IF --> <!-- TMPL_IF name="publishercode" -->; <!-- TMPL_VAR name="publishercode" --> <!-- /TMPL_IF --> <!-- TMPL_IF name="publicationyear" -->, <!-- TMPL_VAR name="publicationyear" --><!-- /TMPL_IF --> <a href="/cgi-bin/koha/catalogue/moredetail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->&amp;itemnumber=<!-- TMPL_VAR NAME="itemnumber" -->#item<!-- TMPL_VAR NAME="itemnumber" -->"><!-- TMPL_VAR NAME="barcode" --></a></td>
-            <td><!-- TMPL_VAR NAME="issuedate" --></td>
-            <td><!-- TMPL_IF NAME="red" --><span class="overdue"><!-- TMPL_VAR NAME="date_due" --></span><!-- TMPL_ELSE --><!-- TMPL_VAR NAME="date_due" --><!-- /TMPL_IF -->
+		  <td<!-- TMPL_IF NAME="red" --> class="od"<!-- /TMPL_IF -->><!-- TMPL_VAR NAME="date_due" -->
                 <!-- TMPL_IF NAME="itemlost" -->
                                         <span class="lost"><!-- TMPL_VAR NAME="itemlost" --></span>
                     <!-- /TMPL_IF -->
@@ -466,12 +467,16 @@ if (nodename =="barcodes[]"){
                                         <span class="dmg"><!-- TMPL_VAR NAME="itemdamaged" --></span>
                 <!-- /TMPL_IF -->
 </td>
+            <td><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->"><strong><!-- TMPL_VAR NAME="title" escape="html" --></strong></a><!-- TMPL_IF NAME="author" -->, by <!-- TMPL_VAR name="author" --><!-- /TMPL_IF --> <!-- TMPL_IF name="publishercode" -->; <!-- TMPL_VAR name="publishercode" --> <!-- /TMPL_IF --> <!-- TMPL_IF name="publicationyear" -->, <!-- TMPL_VAR name="publicationyear" --><!-- /TMPL_IF --> <a href="/cgi-bin/koha/catalogue/moredetail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->&amp;itemnumber=<!-- TMPL_VAR NAME="itemnumber" -->#item<!-- TMPL_VAR NAME="itemnumber" -->"><!-- TMPL_VAR NAME="barcode" --></a></td>
+<td><!-- TMPL_UNLESS NAME="noItemTypeImages" --> <!-- TMPL_IF NAME="itemtype_image" --><img src="<!-- TMPL_VAR NAME="itemtype_image" -->" alt="" /><!-- /TMPL_IF --><!-- /TMPL_UNLESS --><!-- TMPL_VAR NAME="itemtype_description" --></td>
+            <td><!-- TMPL_VAR NAME="issuedate" --></td>
+	        <td><!-- TMPL_VAR NAME="itemcallnumber" --></td>
             <td><!-- TMPL_VAR NAME="charge" --></td>
             <td><!-- TMPL_VAR NAME="replacementprice" --></td>
       <!-- TMPL_IF NAME="renew_failed" -->
             <td class="problem">Renewal Failed</td>
       <!-- TMPL_ELSE -->
-            <td>
+            <td><span style="padding: 0 1em;"><!-- TMPL_VAR NAME="renewals" --></span>
             <!-- TMPL_IF name="norenew" -->
                 <!-- TMPL_IF NAME="can_confirm" --><span class="renewals-allowed" style="display: none">
                     <input type="checkbox" name="all_items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" checked="checked" style="display: none;" />
@@ -503,7 +508,7 @@ if (nodename =="barcodes[]"){
             </td>
       <!-- /TMPL_IF -->
       <!-- TMPL_IF NAME="return_failed" -->
-            <td class="problem">Return Failed</td>
+            <td class="problem">Checkin Failed</td>
       <!--TMPL_ELSE-->
             <td><input type="checkbox" name="barcodes[]"  value="<!-- TMPL_VAR NAME="barcode" -->" onclick="uncheck_sibling(this);" />
                 <input type="checkbox" name="all_barcodes[]" value="<!-- TMPL_VAR NAME="barcode" -->" checked="checked" style="display: none;" />
@@ -528,7 +533,6 @@ if (nodename =="barcodes[]"){
 	</div>
 	
 <div id="onhold">
-	<h2>Patron current holds</h2>
 <!-- TMPL_IF NAME="reservloop" -->
 <form action="/cgi-bin/koha/reserve/modrequest.pl" method="post">
 	<input type="hidden" name="from" value="borrower" />
@@ -536,11 +540,10 @@ if (nodename =="barcodes[]"){
 		<thead><tr>
 			<th>Hold date</th>
 			<th>Title</th>
-			<th>Item Type</th>
 			<th>Call Number</th>
 			<th>Barcode</th>
 			<th>Priority</th>
-			<th>Delete?</th>
+			<th>Delete?alter</th>
 		</tr></thead>
 		<tbody><!-- TMPL_LOOP NAME="reservloop" -->
 		<tr class="<!-- TMPL_VAR NAME="color" -->">
@@ -548,7 +551,6 @@ if (nodename =="barcodes[]"){
             <td>
                 <a href="/cgi-bin/koha/reserve/request.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->"><!-- TMPL_VAR NAME="title" escape="html" --></a><!-- TMPL_IF NAME="author" -->, by <!-- TMPL_VAR NAME="author" --><!-- /TMPL_IF -->
             </td>
-            <td><!-- TMPL_VAR NAME="itemtype" --></td>
             <td><!-- TMPL_VAR NAME="itemcallnumber" --></td>
             <td><!-- TMPL_IF name="waiting" -->
                 <em>Item is <strong>waiting</strong></em>

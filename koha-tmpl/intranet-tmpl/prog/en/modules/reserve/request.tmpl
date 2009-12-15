@@ -373,7 +373,7 @@ function checkMultiHold() {
             </td>
             <!-- TMPL_IF NAME="item-level_itypes" -->
                 <td>
-                    <img src="<!-- TMPL_VAR name="imageurl" -->" alt="<!-- TMPL_VAR NAME="itypename" -->" title="<!-- TMPL_VAR NAME="itypename" -->" />
+                    <img src="<!-- TMPL_VAR name="imageurl" -->" alt="" /> <br /> <!-- TMPL_VAR NAME="itypename" -->
                 </td>
             <!-- /TMPL_IF -->
 
@@ -552,7 +552,13 @@ function checkMultiHold() {
           </select>
         </td>
         <td>
-          <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->" ><!-- TMPL_VAR NAME="firstname" --> <!-- TMPL_VAR NAME="surname" --></a>
+          <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->" >
+	  <!-- TMPL_IF NAME="hidename" -->
+	      <!-- TMPL_VAR NAME="cardnumber" -->
+	  <!-- TMPL_ELSE -->
+	      <!-- TMPL_VAR NAME="firstname" --> <!-- TMPL_VAR NAME="surname" -->
+	  <!-- /TMPL_IF -->
+	  </a>
         </td>
         <td><!-- TMPL_VAR NAME="notes" --></td>
         <td><!-- TMPL_VAR NAME="date" --></td>

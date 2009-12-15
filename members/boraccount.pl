@@ -23,6 +23,8 @@
 # Suite 330, Boston, MA  02111-1307 USA
 
 use strict;
+use warnings;
+
 use C4::Auth;
 use C4::Output;
 use C4::Dates qw/format_date/;
@@ -44,10 +46,12 @@ my ($template, $loggedinuser, $cookie)
                             });
 
 my $borrowernumber=$input->param('borrowernumber');
-#get borrower details
-my $data=GetMember($borrowernumber,'borrowernumber');
+my $action = $input->param('action') || '';
 
-if ( $input->param('action') eq 'reverse' ) {
+#get borrower details
+my $data=GetMember('borrowernumber' => $borrowernumber);
+
+if ( $action eq 'reverse' ) {
   ReversePayment( $borrowernumber, $input->param('accountno') );
 }
 
@@ -123,6 +127,7 @@ $template->param(
     address2            => $data->{'address2'},
     city                => $data->{'city'},
     zipcode             => $data->{'zipcode'},
+    country             => $data->{'country'},
     phone               => $data->{'phone'},
     email               => $data->{'email'},
     branchcode          => $data->{'branchcode'},

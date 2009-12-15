@@ -5,6 +5,8 @@
 #converted to using templates 3/16/03 by mwhansen@hmc.edu
 
 use strict;
+use warnings;
+
 use C4::Auth;
 use C4::Output;
 use C4::Context;
@@ -38,7 +40,7 @@ my $member=$input->param('member');
 my $cardnumber = $input->param('cardnumber');
 my $destination = $input->param('destination');
 my $errormsg;
-my ($bor)=GetMember($member);
+my ($bor)=GetMember('borrowernumber' => $member);
 if(( $member ne $loggedinuser ) && ($bor->{'category_type'} eq 'S' ) ) {
 	$errormsg = 'NOPERMISSION' unless($staffflags->{'superlibrarian'} || $staffflags->{'staffaccess'} );
 	# need superlibrarian for koha-conf.xml fakeuser.
@@ -100,6 +102,7 @@ $template->param( picture => 1 ) if $picture;
 	    address2 => $bor->{'address2'},
 	    city => $bor->{'city'},
 	    zipcode => $bor->{'zipcode'},
+	    country => $bor->{'country'},
 	    phone => $bor->{'phone'},
 	    email => $bor->{'email'},
 	    branchcode => $bor->{'branchcode'},

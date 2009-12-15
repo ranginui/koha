@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 
 use strict;
+use warnings;
 use CGI;
 use C4::Auth;
 use C4::Serials;
@@ -9,13 +10,13 @@ use C4::Output;
 use C4::Bookseller;
 use C4::Context;
 use C4::Letters;
-
 my $input = new CGI;
 
 my $serialid = $input->param('serialid');
 my $op = $input->param('op');
 my $claimletter = $input->param('claimletter');
 my $supplierid = $input->param('supplierid');
+my $suppliername = $input->param('suppliername');
 my $order = $input->param('order');
 my %supplierlist = GetSuppliersWithLateIssues;
 my @select_supplier;
@@ -29,14 +30,12 @@ my ($template, $loggedinuser, $cookie)
             flagsrequired => {serials => 1},
             debug => 1,
             });
-
 foreach my $supplierid (sort {$supplierlist{$a} cmp $supplierlist{$b} } keys %supplierlist){
         my ($count, @dummy) = GetLateOrMissingIssues($supplierid,"",$order);
         my $counting = $count;
         $supplierlist{$supplierid} = $supplierlist{$supplierid}." ($counting)";
 	push @select_supplier, $supplierid
 }
-
 my $letters = GetLetters("claimissues");
 my @letters;
 foreach (keys %$letters){
@@ -44,7 +43,10 @@ foreach (keys %$letters){
 }
 
 my $letter=((scalar(@letters)>1) || ($letters[0]->{name}||$letters[0]->{code}));
-my ($count2, @missingissues) = GetLateOrMissingIssues($supplierid,$serialid,$order) if $supplierid;
+my ($count2, @missingissues);
+if ($supplierid) {
+    ($count2, @missingissues) = GetLateOrMissingIssues($supplierid,$serialid,$order);
+}
 
 my $CGIsupplier=CGI::scrolling_list( -name     => 'supplierid',
 			-id        => 'supplierid',
@@ -58,21 +60,22 @@ my ($singlesupplier,@supplierinfo);
 if($supplierid){
    (@supplierinfo)=GetBookSeller($supplierid);
 } else { # set up supplierid for the claim links out of main table if all suppliers is chosen
-   for(my $i=0; $i<@missingissues;$i++){
-       $missingissues[$i]->{'supplierid'} = getsupplierbyserialid($missingissues[$i]->{'serialid'});
+   for my $mi (@missingissues){
+       $mi->{supplierid} = getsupplierbyserialid($mi->{serialid});
    }
 }
 
 my $preview=0;
-if($op eq 'preview'){
+if($op && $op eq 'preview'){
     $preview = 1;
-} else {
-    my @serialnums=$input->param('serialid');
-    if (@serialnums) { # i.e. they have been flagged to generate claims
-        SendAlerts('claimissues',\@serialnums,$input->param("letter_code"));
-        my $cntupdate=UpdateClaimdateIssues(\@serialnums);
-        ### $cntupdate SHOULD be equal to scalar(@$serialnums)  TODO so what do we do about it??
-    }
+}
+if ($op eq "send_alert"){
+  my @serialnums=$input->param("serialid");
+  SendAlerts('claimissues',\@serialnums,$input->param("letter_code"));
+  my $cntupdate=UpdateClaimdateIssues(\@serialnums);
+  ### $cntupdate SHOULD be equal to scalar(@$serialnums)
+  $template->param('SHOWCONFIRMATION' => 1);
+  $template->param('suppliername' => $suppliername);
 }
 
 $template->param('letters'=>\@letters,'letter'=>$letter);
@@ -89,5 +92,6 @@ $template->param(
         singlesupplier => $singlesupplier,
         supplierloop => \@supplierinfo,
         dateformat    => C4::Context->preference("dateformat"),
+    	DHTMLcalendar_dateformat => C4::Dates->DHTMLcalendar(),
         );
 output_html_with_http_headers $input, $cookie, $template->output;

@@ -71,7 +71,7 @@ BEGIN {
 				}       
                 print "</body></html>";
 			}
-		CGI::Carp::set_message(\&handle_errors);
+		#CGI::Carp::set_message(\&handle_errors);
 		## give a stack backtrace if KOHA_BACKTRACES is set
 		## can't rely on DebugLevel for this, as we're not yet connected
 		if ($ENV{KOHA_BACKTRACES}) {
@@ -252,7 +252,7 @@ sub read_config_file {		# Pass argument naming config file to read
 	}
 	return $koha;
     }
-    $koha = XMLin(shift, keyattr => ['id'], forcearray => ['listen', 'server', 'serverinfo']);
+    $koha = XMLin(shift, keyattr => ['id'], forcearray => ['listen', 'server', 'serverinfo'], suppressempty => '');
     return $koha;			# Return value: ref-to-hash holding the configuration
 }
 

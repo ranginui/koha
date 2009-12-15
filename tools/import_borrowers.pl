@@ -22,9 +22,9 @@
 # File format
 #
 # cardnumber,surname,firstname,title,othernames,initials,streetnumber,streettype,
-# address line , address line 2, city, zipcode, email, phone, mobile, fax, work email, work phone,
+# address line , address line 2, city, zipcode, contry, email, phone, mobile, fax, work email, work phone,
 # alternate streetnumber, alternate streettype, alternate address line 1, alternate city,
-# alternate zipcode, alternate email, alternate phone, date of birth, branchcode,
+# alternate zipcode, alternate country, alternate email, alternate phone, date of birth, branchcode,
 # categorycode, enrollment date, expiry date, noaddress, lost, debarred, contact surname,
 # contact firstname, contact title, borrower notes, contact relationship, ethnicity, ethnicity notes
 # gender, username, opac note, contact note, password, sort one, sort two
@@ -212,7 +212,7 @@ if ( $uploadborrowers && length($uploadborrowers) > 0 ) {
         my $borrowernumber;
         my $member;
         if ( ($matchpoint eq 'cardnumber') && ($borrower{'cardnumber'}) ) {
-            $member = GetMember( $borrower{'cardnumber'}, 'cardnumber' );
+            $member = GetMember( 'cardnumber' => $borrower{'cardnumber'} );
             if ($member) {
                 $borrowernumber = $member->{'borrowernumber'};
             }

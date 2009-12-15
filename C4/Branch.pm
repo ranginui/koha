@@ -55,7 +55,7 @@ BEGIN {
 		&DelBranch
 		&DelBranchCategory
 	);
-	@EXPORT_OK = qw( &onlymine &mybranch );
+	@EXPORT_OK = qw( &onlymine &mybranch get_branch_code_from_name );
 }
 
 =head1 NAME
@@ -175,10 +175,11 @@ sub GetBranchesLoop (;$$) {  # since this is what most pages want anyway
     my $onlymine = @_ ? shift : onlymine();
     my $branches = GetBranches($onlymine);
     my @loop;
+    my $searchMyLibraryFirst = C4::Context->preference("SearchMyLibraryFirst");;
     foreach (sort { $branches->{$a}->{branchname} cmp $branches->{$b}->{branchname} } keys %$branches) {
         push @loop, {
             value => $_,
-            selected => ($_ eq $branch) ? 1 : 0, 
+            selected => (($_ eq $branch) && $searchMyLibraryFirst ) ? 1 : 0, 
             branchname => $branches->{$_}->{branchname},
         };
     }
@@ -589,6 +590,15 @@ sub CheckBranchCategorycode {
     $sth->execute($categorycode);
     my ($total) = $sth->fetchrow_array;
     return $total;
+}
+
+sub get_branch_code_from_name {
+   my @branch_name = @_;
+   my $query = "SELECT branchcode FROM branches WHERE branchname=?;";
+   my $dbh = C4::Context->dbh();
+   my $sth = $dbh->prepare($query);
+   $sth->execute(@branch_name);
+   return $sth->fetchrow_array;
 }
 
 1;

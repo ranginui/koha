@@ -16,245 +16,6 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `accountlines`
---
-
-DROP TABLE IF EXISTS `accountlines`;
-CREATE TABLE `accountlines` (
-  `borrowernumber` int(11) NOT NULL default 0,
-  `accountno` smallint(6) NOT NULL default 0,
-  `itemnumber` int(11) default NULL,
-  `date` date default NULL,
-  `amount` decimal(28,6) default NULL,
-  `description` mediumtext,
-  `dispute` mediumtext,
-  `accounttype` varchar(5) default NULL,
-  `amountoutstanding` decimal(28,6) default NULL,
-  `lastincrement` decimal(28,6) default NULL,
-  `timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  `notify_id` int(11) NOT NULL default 0,
-  `notify_level` int(2) NOT NULL default 0,
-  KEY `acctsborridx` (`borrowernumber`),
-  KEY `timeidx` (`timestamp`),
-  KEY `itemnumber` (`itemnumber`),
-  CONSTRAINT `accountlines_ibfk_1` FOREIGN KEY (`borrowernumber`) REFERENCES `borrowers` (`borrowernumber`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `accountlines_ibfk_2` FOREIGN KEY (`itemnumber`) REFERENCES `items` (`itemnumber`) ON DELETE SET NULL ON UPDATE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Table structure for table `accountoffsets`
---
-
-DROP TABLE IF EXISTS `accountoffsets`;
-CREATE TABLE `accountoffsets` (
-  `borrowernumber` int(11) NOT NULL default 0,
-  `accountno` smallint(6) NOT NULL default 0,
-  `offsetaccount` smallint(6) NOT NULL default 0,
-  `offsetamount` decimal(28,6) default NULL,
-  `timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  CONSTRAINT `accountoffsets_ibfk_1` FOREIGN KEY (`borrowernumber`) REFERENCES `borrowers` (`borrowernumber`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Table structure for table `action_logs`
---
-
-DROP TABLE IF EXISTS `action_logs`;
-CREATE TABLE `action_logs` (
-  `action_id` int(11) NOT NULL auto_increment,
-  `timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  `user` int(11) NOT NULL default 0,
-  `module` text,
-  `action` text,
-  `object` int(11) default NULL,
-  `info` text,
-  PRIMARY KEY (`action_id`),
-  KEY  (`timestamp`,`user`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Table structure for table `alert`
---
-
-DROP TABLE IF EXISTS `alert`;
-CREATE TABLE `alert` (
-  `alertid` int(11) NOT NULL auto_increment,
-  `borrowernumber` int(11) NOT NULL default 0,
-  `type` varchar(10) NOT NULL default '',
-  `externalid` varchar(20) NOT NULL default '',
-  PRIMARY KEY  (`alertid`),
-  KEY `borrowernumber` (`borrowernumber`),
-  KEY `type` (`type`,`externalid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Table structure for table `aqbasket`
---
-
-DROP TABLE IF EXISTS `aqbasket`;
-CREATE TABLE `aqbasket` (
-  `basketno` int(11) NOT NULL auto_increment,
-  `creationdate` date default NULL,
-  `closedate` date default NULL,
-  `booksellerid` int(11) NOT NULL default 1,
-  `authorisedby` varchar(10) default NULL,
-  `booksellerinvoicenumber` mediumtext,
-  PRIMARY KEY  (`basketno`),
-  KEY `booksellerid` (`booksellerid`),
-  CONSTRAINT `aqbasket_ibfk_1` FOREIGN KEY (`booksellerid`) REFERENCES `aqbooksellers` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Table structure for table `aqbookfund`
---
-
-DROP TABLE IF EXISTS `aqbookfund`;
-CREATE TABLE `aqbookfund` (
-  `bookfundid` varchar(10) NOT NULL default '',
-  `bookfundname` mediumtext,
-  `bookfundgroup` varchar(5) default NULL,
-  `branchcode` varchar(10) NOT NULL default '',
-  PRIMARY KEY  (`bookfundid`,`branchcode`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Table structure for table `aqbooksellers`
---
-
-DROP TABLE IF EXISTS `aqbooksellers`;
-CREATE TABLE `aqbooksellers` (
-  `id` int(11) NOT NULL auto_increment,
-  `name` mediumtext NOT NULL,
-  `address1` mediumtext,
-  `address2` mediumtext,
-  `address3` mediumtext,
-  `address4` mediumtext,
-  `phone` varchar(30) default NULL,
-  `accountnumber` mediumtext,
-  `othersupplier` mediumtext,
-  `currency` varchar(3) NOT NULL default '',
-  `deliverydays` smallint(6) default NULL,
-  `followupdays` smallint(6) default NULL,
-  `followupscancel` smallint(6) default NULL,
-  `specialty` mediumtext,
-  `booksellerfax` mediumtext,
-  `notes` mediumtext,
-  `bookselleremail` mediumtext,
-  `booksellerurl` mediumtext,
-  `contact` varchar(100) default NULL,
-  `postal` mediumtext,
-  `url` varchar(255) default NULL,
-  `contpos` varchar(100) default NULL,
-  `contphone` varchar(100) default NULL,
-  `contfax` varchar(100) default NULL,
-  `contaltphone` varchar(100) default NULL,
-  `contemail` varchar(100) default NULL,
-  `contnotes` mediumtext,
-  `active` tinyint(4) default NULL,
-  `listprice` varchar(10) default NULL,
-  `invoiceprice` varchar(10) default NULL,
-  `gstreg` tinyint(4) default NULL,
-  `listincgst` tinyint(4) default NULL,
-  `invoiceincgst` tinyint(4) default NULL,
-  `discount` float(6,4) default NULL,
-  `fax` varchar(50) default NULL,
-  `nocalc` int(11) default NULL,
-  `invoicedisc` float(6,4) default NULL,
-  PRIMARY KEY  (`id`),
-  KEY `listprice` (`listprice`),
-  KEY `invoiceprice` (`invoiceprice`),
-  CONSTRAINT `aqbooksellers_ibfk_1` FOREIGN KEY (`listprice`) REFERENCES `currency` (`currency`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `aqbooksellers_ibfk_2` FOREIGN KEY (`invoiceprice`) REFERENCES `currency` (`currency`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Table structure for table `aqbudget`
---
-
-DROP TABLE IF EXISTS `aqbudget`;
-CREATE TABLE `aqbudget` (
-  `bookfundid` varchar(10) NOT NULL default '',
-  `startdate` date NOT NULL default 0,
-  `enddate` date default NULL,
-  `budgetamount` decimal(13,2) default NULL,
-  `aqbudgetid` tinyint(4) NOT NULL auto_increment,
-  `branchcode` varchar(10) default NULL,
-  PRIMARY KEY  (`aqbudgetid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Table structure for table `aqorderbreakdown`
---
-
-DROP TABLE IF EXISTS `aqorderbreakdown`;
-CREATE TABLE `aqorderbreakdown` (
-  `ordernumber` int(11) default NULL,
-  `linenumber` int(11) default NULL,
-  `branchcode` varchar(10) default NULL,
-  `bookfundid` varchar(10) NOT NULL default '',
-  `allocation` smallint(6) default NULL,
-  KEY `ordernumber` (`ordernumber`),
-  KEY `bookfundid` (`bookfundid`),
-  CONSTRAINT `aqorderbreakdown_ibfk_1` FOREIGN KEY (`ordernumber`) REFERENCES `aqorders` (`ordernumber`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `aqorderbreakdown_ibfk_2` FOREIGN KEY (`bookfundid`) REFERENCES `aqbookfund` (`bookfundid`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Table structure for table `aqorderdelivery`
---
-
-DROP TABLE IF EXISTS `aqorderdelivery`;
-CREATE TABLE `aqorderdelivery` (
-  `ordernumber` date default NULL,
-  `deliverynumber` smallint(6) NOT NULL default 0,
-  `deliverydate` varchar(18) default NULL,
-  `qtydelivered` smallint(6) default NULL,
-  `deliverycomments` mediumtext
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Table structure for table `aqorders`
---
-
-DROP TABLE IF EXISTS `aqorders`;
-CREATE TABLE `aqorders` (
-  `ordernumber` int(11) NOT NULL auto_increment,
-  `biblionumber` int(11) default NULL,
-  `title` mediumtext,
-  `entrydate` date default NULL,
-  `quantity` smallint(6) default NULL,
-  `currency` varchar(3) default NULL,
-  `listprice` decimal(28,6) default NULL,
-  `totalamount` decimal(28,6) default NULL,
-  `datereceived` date default NULL,
-  `booksellerinvoicenumber` mediumtext,
-  `freight` decimal(28,6) default NULL,
-  `unitprice` decimal(28,6) default NULL,
-  `quantityreceived` smallint(6) default NULL,
-  `cancelledby` varchar(10) default NULL,
-  `datecancellationprinted` date default NULL,
-  `notes` mediumtext,
-  `supplierreference` mediumtext,
-  `purchaseordernumber` mediumtext,
-  `subscription` tinyint(1) default NULL,
-  `serialid` varchar(30) default NULL,
-  `basketno` int(11) default NULL,
-  `biblioitemnumber` int(11) default NULL,
-  `timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  `rrp` decimal(13,2) default NULL,
-  `ecost` decimal(13,2) default NULL,
-  `gst` decimal(13,2) default NULL,
-  `budgetdate` date default NULL,
-  `sort1` varchar(80) default NULL,
-  `sort2` varchar(80) default NULL,
-  PRIMARY KEY  (`ordernumber`),
-  KEY `basketno` (`basketno`),
-  KEY `biblionumber` (`biblionumber`),
-  CONSTRAINT `aqorders_ibfk_1` FOREIGN KEY (`basketno`) REFERENCES `aqbasket` (`basketno`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `aqorders_ibfk_2` FOREIGN KEY (`biblionumber`) REFERENCES `biblio` (`biblionumber`) ON DELETE SET NULL ON UPDATE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
 -- Table structure for table `auth_header`
 --
 
@@ -294,7 +55,7 @@ CREATE TABLE `auth_subfield_structure` (
   `hidden` tinyint(3) NOT NULL default 0,
   `linkid` tinyint(1) NOT NULL default 0,
   `kohafield` varchar(45) NULL default '',
-  `frameworkcode` varchar(8) NOT NULL default '',
+  `frameworkcode` varchar(10) NOT NULL default '',
   PRIMARY KEY  (`authtypecode`,`tagfield`,`tagsubfield`),
   KEY `tab` (`authtypecode`,`tab`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -421,7 +182,6 @@ CREATE TABLE `biblioitems` (
   KEY `bibnoidx` (`biblionumber`),
   KEY `isbn` (`isbn`),
   KEY `publishercode` (`publishercode`),
-  KEY `issn` (`issn`),
   CONSTRAINT `biblioitems_ibfk_1` FOREIGN KEY (`biblionumber`) REFERENCES `biblio` (`biblionumber`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -444,6 +204,7 @@ CREATE TABLE `borrowers` (
   `address2` text,
   `city` mediumtext NOT NULL,
   `zipcode` varchar(25) default NULL,
+  `country` text,
   `email` mediumtext,
   `phone` text,
   `mobile` varchar(50) default NULL,
@@ -453,8 +214,10 @@ CREATE TABLE `borrowers` (
   `B_streetnumber` varchar(10) default NULL,
   `B_streettype` varchar(50) default NULL,
   `B_address` varchar(100) default NULL,
+  `B_address2` text default NULL,
   `B_city` mediumtext,
   `B_zipcode` varchar(25) default NULL,
+  `B_country` text,
   `B_email` text,
   `B_phone` mediumtext,
   `dateofbirth` date default NULL,
@@ -487,6 +250,7 @@ CREATE TABLE `borrowers` (
   `altcontactaddress2` varchar(255) default NULL,
   `altcontactaddress3` varchar(255) default NULL,
   `altcontactzipcode` varchar(50) default NULL,
+  `altcontactcountry` text default NULL,
   `altcontactphone` varchar(50) default NULL,
   `smsalertnumber` varchar(50) default NULL,
   UNIQUE KEY `cardnumber` (`cardnumber`),
@@ -771,6 +535,7 @@ CREATE TABLE `currency` (
   `symbol` varchar(5) default NULL,
   `timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   `rate` float(7,5) default NULL,
+  `active` tinyint(1) default NULL,
   PRIMARY KEY  (`currency`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -860,6 +625,7 @@ CREATE TABLE `deletedborrowers` (
   `address2` text,
   `city` mediumtext NOT NULL,
   `zipcode` varchar(25) default NULL,
+  `country` text,
   `email` mediumtext,
   `phone` text,
   `mobile` varchar(50) default NULL,
@@ -869,8 +635,10 @@ CREATE TABLE `deletedborrowers` (
   `B_streetnumber` varchar(10) default NULL,
   `B_streettype` varchar(50) default NULL,
   `B_address` varchar(100) default NULL,
+  `B_address2` text default NULL,
   `B_city` mediumtext,
   `B_zipcode` varchar(25) default NULL,
+  `B_country` text,
   `B_email` text,
   `B_phone` mediumtext,
   `dateofbirth` date default NULL,
@@ -903,6 +671,7 @@ CREATE TABLE `deletedborrowers` (
   `altcontactaddress2` varchar(255) default NULL,
   `altcontactaddress3` varchar(255) default NULL,
   `altcontactzipcode` varchar(50) default NULL,
+  `altcontactcountry` text default NULL,
   `altcontactphone` varchar(50) default NULL,
   `smsalertnumber` varchar(50) default NULL,
   KEY `borrowernumber` (`borrowernumber`),
@@ -932,7 +701,7 @@ CREATE TABLE `deleteditems` (
   `damaged` tinyint(1) NOT NULL default 0,
   `itemlost` tinyint(1) NOT NULL default 0,
   `wthdrawn` tinyint(1) NOT NULL default 0,
-  `itemcallnumber` varchar(30) default NULL,
+  `itemcallnumber` varchar(255) default NULL,
   `issues` smallint(6) default NULL,
   `renewals` smallint(6) default NULL,
   `reserves` smallint(6) default NULL,
@@ -942,6 +711,7 @@ CREATE TABLE `deleteditems` (
   `paidfor` mediumtext,
   `timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   `location` varchar(80) default NULL,
+  `permanent_location` varchar(80) default NULL,
   `onloan` date default NULL,
   `cn_source` varchar(10) default NULL,
   `cn_sort` varchar(30) default NULL,
@@ -952,9 +722,11 @@ CREATE TABLE `deleteditems` (
   `more_subfields_xml` longtext default NULL,
   `enumchron` varchar(80) default NULL,
   `copynumber` varchar(32) default NULL,
+  `stocknumber` varchar(32) default NULL,
   `marc` longblob,
   PRIMARY KEY  (`itemnumber`),
   KEY `delitembarcodeidx` (`barcode`),
+  KEY `delitemstocknumberidx` (`stocknumber`),
   KEY `delitembinoidx` (`biblioitemnumber`),
   KEY `delitembibnoidx` (`biblionumber`),
   KEY `delhomebranch` (`homebranch`),
@@ -971,6 +743,20 @@ CREATE TABLE `ethnicity` (
   `name` varchar(255) default NULL,
   PRIMARY KEY  (`code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `export_format`
+--
+
+DROP TABLE IF EXISTS `export_format`;
+CREATE TABLE `export_format` (
+  `export_format_id` int(11) NOT NULL auto_increment,
+  `profile` varchar(255) NOT NULL,
+  `description` mediumtext NOT NULL,
+  `marcfields` mediumtext NOT NULL,
+  PRIMARY KEY  (`export_format_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Used for CSV export';
+
 
 --
 -- Table structure for table `hold_fill_targets`
@@ -1138,12 +924,15 @@ CREATE TABLE `issuingrules` (
   `rentaldiscount` decimal(28,6) default NULL,
   `reservecharge` decimal(28,6) default NULL,
   `fine` decimal(28,6) default NULL,
+  `finedays` int(11) default NULL,
   `firstremind` int(11) default NULL,
   `chargeperiod` int(11) default NULL,
   `accountsent` int(11) default NULL,
   `chargename` varchar(100) default NULL,
   `maxissueqty` int(4) default NULL,
   `issuelength` int(4) default NULL,
+  `renewalsallowed` smallint(6) NOT NULL default "0",
+  `reservesallowed` smallint(6) NOT NULL default "0",
   `branchcode` varchar(10) NOT NULL default '',
   PRIMARY KEY  (`branchcode`,`categorycode`,`itemtype`),
   KEY `categorycode` (`categorycode`),
@@ -1173,7 +962,7 @@ CREATE TABLE `items` (
   `damaged` tinyint(1) NOT NULL default 0,
   `itemlost` tinyint(1) NOT NULL default 0,
   `wthdrawn` tinyint(1) NOT NULL default 0,
-  `itemcallnumber` varchar(30) default NULL,
+  `itemcallnumber` varchar(255) default NULL,
   `issues` smallint(6) default NULL,
   `renewals` smallint(6) default NULL,
   `reserves` smallint(6) default NULL,
@@ -1183,6 +972,7 @@ CREATE TABLE `items` (
   `paidfor` mediumtext,
   `timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   `location` varchar(80) default NULL,
+  `permanent_location` varchar(80) default NULL,
   `onloan` date default NULL,
   `cn_source` varchar(10) default NULL,
   `cn_sort` varchar(30) default NULL,
@@ -1193,8 +983,10 @@ CREATE TABLE `items` (
   `more_subfields_xml` longtext default NULL,
   `enumchron` varchar(80) default NULL,
   `copynumber` varchar(32) default NULL,
+  `stocknumber` varchar(32) default NULL,
   PRIMARY KEY  (`itemnumber`),
   UNIQUE KEY `itembarcodeidx` (`barcode`),
+  UNIQUE KEY `itemstocknumberidx` (`stocknumber`),
   KEY `itembinoidx` (`biblioitemnumber`),
   KEY `itembibnoidx` (`biblionumber`),
   KEY `homebranch` (`homebranch`),
@@ -1212,7 +1004,6 @@ DROP TABLE IF EXISTS `itemtypes`;
 CREATE TABLE `itemtypes` (
   `itemtype` varchar(10) NOT NULL default '',
   `description` mediumtext,
-  `renewalsallowed` smallint(6) default NULL,
   `rentalcharge` double(16,4) default NULL,
   `notforloan` smallint(6) default NULL,
   `imageurl` varchar(200) default NULL,
@@ -1222,60 +1013,40 @@ CREATE TABLE `itemtypes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Table structure for table `labels`
+-- Table structure for table `labels_batches`
 --
 
-DROP TABLE IF EXISTS `labels`;
-CREATE TABLE `labels` (
-  `labelid` int(11) NOT NULL auto_increment,
-  `batch_id` int(10) NOT NULL default 1,
-  `itemnumber` varchar(100) NOT NULL default '',
+DROP TABLE IF EXISTS `labels_batches`;
+CREATE TABLE `labels_batches` (
+  `label_id` int(11) NOT NULL auto_increment,
+  `batch_id` int(10) NOT NULL default '1',
+  `item_number` int(11) NOT NULL default '0',
   `timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  PRIMARY KEY  (`labelid`)
+  `branch_code` varchar(10) NOT NULL default 'NB',
+  PRIMARY KEY  USING BTREE (`label_id`),
+  KEY `branch_fk` (`branch_code`),
+  KEY `item_fk` (`item_number`),
+  CONSTRAINT `item_fk_constraint` FOREIGN KEY (`item_number`) REFERENCES `items` (`itemnumber`) ON DELETE CASCADE,
+  CONSTRAINT `branch_fk_constraint` FOREIGN KEY (`branch_code`) REFERENCES `branches` (`branchcode`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Table structure for table `labels_conf`
+-- Table structure for table `labels_layouts`
 --
 
-DROP TABLE IF EXISTS `labels_conf`;
-CREATE TABLE `labels_conf` (
- `id` int(4) NOT NULL auto_increment,
-  `barcodetype` char(100) default '',
-  `title` int(1) default '0',
-  `subtitle` int(1) default '0',
-  `itemtype` int(1) default '0',
-  `barcode` int(1) default '0',
-  `dewey` int(1) default '0',
-  `classification` int(1) default NULL,
-  `subclass` int(1) default '0',
-  `itemcallnumber` int(1) default '0',
-  `author` int(1) default '0',
-  `issn` int(1) default '0',
-  `isbn` int(1) default '0',
-  `startlabel` int(2) NOT NULL default '1',
-  `printingtype` char(32) default 'BAR',
-  `formatstring` mediumtext default NULL,
-  `layoutname` char(20) NOT NULL default 'TEST',
+DROP TABLE IF EXISTS `labels_layouts`;
+CREATE TABLE `labels_layouts` (
+  `layout_id` int(4) NOT NULL auto_increment,
+  `barcode_type` char(100) NOT NULL default 'CODE39',
+  `printing_type` char(32) NOT NULL default 'BAR',
+  `layout_name` char(20) NOT NULL default 'DEFAULT',
   `guidebox` int(1) default '0',
-  `active` tinyint(1) default '1',
-  `fonttype` char(10) collate utf8_unicode_ci default NULL,
-  `ccode` char(4) collate utf8_unicode_ci default NULL,
-  `callnum_split` int(1) default NULL,
-  `text_justify` char(1) collate utf8_unicode_ci default NULL,
-  PRIMARY KEY  (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Table structure for table `labels_profile`
---
-
-DROP TABLE IF EXISTS `labels_profile`;
-CREATE TABLE `labels_profile` (
-  `tmpl_id` int(4) NOT NULL,
-  `prof_id` int(4) NOT NULL,
-  UNIQUE KEY `tmpl_id` (`tmpl_id`),
-  UNIQUE KEY `prof_id` (`prof_id`)
+  `font` char(10) character set utf8 collate utf8_unicode_ci NOT NULL default 'TR',
+  `font_size` int(4) NOT NULL default '10',
+  `callnum_split` int(1) default '0',
+  `text_justify` char(1) character set utf8 collate utf8_unicode_ci NOT NULL default 'L',
+  `format_string` varchar(210) NOT NULL default 'barcode',
+  PRIMARY KEY  USING BTREE (`layout_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -1284,24 +1055,25 @@ CREATE TABLE `labels_profile` (
 
 DROP TABLE IF EXISTS `labels_templates`;
 CREATE TABLE `labels_templates` (
-`tmpl_id` int(4) NOT NULL auto_increment,
-  `tmpl_code` char(100)  default '',
-  `tmpl_desc` char(100) default '',
-  `page_width` float default '0',
-  `page_height` float default '0',
-  `label_width` float default '0',
-  `label_height` float default '0',
-  `topmargin` float default '0',
-  `leftmargin` float default '0',
-  `cols` int(2) default '0',
-  `rows` int(2) default '0',
-  `colgap` float default '0',
-  `rowgap` float default '0',
-  `active` int(1) default NULL,
-  `units` char(20)  default 'PX',
-  `fontsize` int(4) NOT NULL default '3',
-  `font` char(10) NOT NULL default 'TR',
-  PRIMARY KEY  (`tmpl_id`)
+  `template_id` int(4) NOT NULL auto_increment,
+  `profile_id` int(4) default NULL,
+  `template_code` char(100) NOT NULL default 'DEFAULT TEMPLATE',
+  `template_desc` char(100) NOT NULL default 'Default description',
+  `page_width` float NOT NULL default '0',
+  `page_height` float NOT NULL default '0',
+  `label_width` float NOT NULL default '0',
+  `label_height` float NOT NULL default '0',
+  `top_text_margin` float NOT NULL default '0',
+  `left_text_margin` float NOT NULL default '0',
+  `top_margin` float NOT NULL default '0',
+  `left_margin` float NOT NULL default '0',
+  `cols` int(2) NOT NULL default '0',
+  `rows` int(2) NOT NULL default '0',
+  `col_gap` float NOT NULL default '0',
+  `row_gap` float NOT NULL default '0',
+  `units` char(20) NOT NULL default 'POINT',
+  PRIMARY KEY  (`template_id`),
+  KEY `template_profile_fk_constraint` (`profile_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -1624,18 +1396,17 @@ CREATE TABLE `printers` (
 
 DROP TABLE IF EXISTS `printers_profile`;
 CREATE TABLE `printers_profile` (
-  `prof_id` int(4) NOT NULL auto_increment,
-  `printername` varchar(40) NOT NULL,
-  `tmpl_id` int(4) NOT NULL,
-  `paper_bin` varchar(20) NOT NULL,
-  `offset_horz` float default NULL,
-  `offset_vert` float default NULL,
-  `creep_horz` float default NULL,
-  `creep_vert` float default NULL,
-  `unit` char(20) NOT NULL default 'POINT',
-  PRIMARY KEY  (`prof_id`),
-  UNIQUE KEY `printername` (`printername`,`tmpl_id`,`paper_bin`),
-  CONSTRAINT `printers_profile_pnfk_1` FOREIGN KEY (`tmpl_id`) REFERENCES `labels_templates` (`tmpl_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  `profile_id` int(4) NOT NULL auto_increment,
+  `printer_name` varchar(40) NOT NULL default 'Default Printer',
+  `template_id` int(4) NOT NULL default '0',
+  `paper_bin` varchar(20) NOT NULL default 'Bypass',
+  `offset_horz` float NOT NULL default '0',
+  `offset_vert` float NOT NULL default '0',
+  `creep_horz` float NOT NULL default '0',
+  `creep_vert` float NOT NULL default '0',
+  `units` char(20) NOT NULL default 'POINT',
+  PRIMARY KEY  (`profile_id`),
+  UNIQUE KEY `printername` (`printer_name`,`template_id`,`paper_bin`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -1771,7 +1542,24 @@ CREATE TABLE saved_reports (
    `date_run` datetime default NULL,
    PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-		   
+
+
+--
+-- Table structure for table `search_history`
+--
+
+DROP TABLE IF EXISTS `search_history`;
+CREATE TABLE IF NOT EXISTS `search_history` (
+  `userid` int(11) NOT NULL,
+  `sessionid` varchar(32) NOT NULL,
+  `query_desc` varchar(255) NOT NULL,
+  `query_cgi` varchar(255) NOT NULL,
+  `total` int(11) NOT NULL,
+  `time` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  KEY `userid` (`userid`),
+  KEY `sessionid` (`sessionid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Opac search history results';
+
 		   
 --
 -- Table structure for table `serial`
@@ -1918,7 +1706,7 @@ CREATE TABLE `subscriptionhistory` (
   `biblionumber` int(11) NOT NULL default 0,
   `subscriptionid` int(11) NOT NULL default 0,
   `histstartdate` date default NULL,
-  `enddate` date default NULL,
+  `histenddate` date default NULL,
   `missinglist` longtext NOT NULL,
   `recievedlist` longtext NOT NULL,
   `opacnote` varchar(150) NOT NULL default '',
@@ -1948,7 +1736,13 @@ DROP TABLE IF EXISTS `suggestions`;
 CREATE TABLE `suggestions` (
   `suggestionid` int(8) NOT NULL auto_increment,
   `suggestedby` int(11) NOT NULL default 0,
+  `suggesteddate` date NOT NULL default 0,
   `managedby` int(11) default NULL,
+  `manageddate` date default NULL,
+   acceptedby INT(11) default NULL,
+   accepteddate date default NULL,
+   rejectedby INT(11) default NULL,
+   rejecteddate date default NULL,
   `STATUS` varchar(10) NOT NULL default '',
   `note` mediumtext,
   `author` varchar(80) default NULL,
@@ -1963,6 +1757,10 @@ CREATE TABLE `suggestions` (
   `mailoverseeing` smallint(1) default 0,
   `biblionumber` int(11) default NULL,
   `reason` text,
+   budgetid INT(11),
+   branchcode VARCHAR(10) default NULL,
+   collectiontitle text default NULL,
+   itemtype VARCHAR(30) default NULL,
   PRIMARY KEY  (`suggestionid`),
   KEY `suggestedby` (`suggestedby`),
   KEY `managedby` (`managedby`)
@@ -2148,6 +1946,8 @@ CREATE TABLE language_subtag_registry (
         type varchar(25), -- language-script-region-variant-extension-privateuse
         description varchar(25), -- only one of the possible descriptions for ease of reference, see language_descriptions for the complete list
         added date,
+        id int(11) NOT NULL auto_increment,
+        PRIMARY KEY  (`id`),
         KEY `subtag` (`subtag`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -2158,6 +1958,8 @@ DROP TABLE IF EXISTS language_rfc4646_to_iso639;
 CREATE TABLE language_rfc4646_to_iso639 (
         rfc4646_subtag varchar(25),
         iso639_2_code varchar(25),
+        id int(11) NOT NULL auto_increment,
+        PRIMARY KEY  (`id`),
         KEY `rfc4646_subtag` (`rfc4646_subtag`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -2167,6 +1969,8 @@ CREATE TABLE language_descriptions (
         type varchar(25),
         lang varchar(25),
         description varchar(255),
+        id int(11) NOT NULL auto_increment,
+        PRIMARY KEY  (`id`),
         KEY `lang` (`lang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -2233,7 +2037,7 @@ CREATE TABLE `tmp_holdsqueue` (
   `cardnumber` varchar(16) default NULL,
   `reservedate` date default NULL,
   `title` mediumtext,
-  `itemcallnumber` varchar(30) default NULL,
+  `itemcallnumber` varchar(255) default NULL,
   `holdingbranch` varchar(10) default NULL,
   `pickbranch` varchar(10) default NULL,
   `notes` text,
@@ -2370,6 +2174,342 @@ CREATE TABLE `item_circulation_alert_preferences` (
   PRIMARY KEY  (`id`),
   KEY `branchcode` (`branchcode`,`categorycode`,`item_type`, `notification`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `messages`
+--
+
+CREATE TABLE `messages` (
+  `message_id` int(11) NOT NULL auto_increment,
+  `borrowernumber` int(11) NOT NULL,
+  `branchcode` varchar(4) default NULL,
+  `message_type` varchar(1) NOT NULL,
+  `message` text NOT NULL,
+  `message_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`message_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `accountlines`
+--
+
+DROP TABLE IF EXISTS `accountlines`;
+CREATE TABLE `accountlines` (
+  `borrowernumber` int(11) NOT NULL default 0,
+  `accountno` smallint(6) NOT NULL default 0,
+  `itemnumber` int(11) default NULL,
+  `date` date default NULL,
+  `amount` decimal(28,6) default NULL,
+  `description` mediumtext,
+  `dispute` mediumtext,
+  `accounttype` varchar(5) default NULL,
+  `amountoutstanding` decimal(28,6) default NULL,
+  `lastincrement` decimal(28,6) default NULL,
+  `timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `notify_id` int(11) NOT NULL default 0,
+  `notify_level` int(2) NOT NULL default 0,
+  KEY `acctsborridx` (`borrowernumber`),
+  KEY `timeidx` (`timestamp`),
+  KEY `itemnumber` (`itemnumber`),
+  CONSTRAINT `accountlines_ibfk_1` FOREIGN KEY (`borrowernumber`) REFERENCES `borrowers` (`borrowernumber`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `accountlines_ibfk_2` FOREIGN KEY (`itemnumber`) REFERENCES `items` (`itemnumber`) ON DELETE SET NULL ON UPDATE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `accountoffsets`
+--
+
+DROP TABLE IF EXISTS `accountoffsets`;
+CREATE TABLE `accountoffsets` (
+  `borrowernumber` int(11) NOT NULL default 0,
+  `accountno` smallint(6) NOT NULL default 0,
+  `offsetaccount` smallint(6) NOT NULL default 0,
+  `offsetamount` decimal(28,6) default NULL,
+  `timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  CONSTRAINT `accountoffsets_ibfk_1` FOREIGN KEY (`borrowernumber`) REFERENCES `borrowers` (`borrowernumber`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `action_logs`
+--
+
+DROP TABLE IF EXISTS `action_logs`;
+CREATE TABLE `action_logs` (
+  `action_id` int(11) NOT NULL auto_increment,
+  `timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `user` int(11) NOT NULL default 0,
+  `module` text,
+  `action` text,
+  `object` int(11) default NULL,
+  `info` text,
+  PRIMARY KEY (`action_id`),
+  KEY  (`timestamp`,`user`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `alert`
+--
+
+DROP TABLE IF EXISTS `alert`;
+CREATE TABLE `alert` (
+  `alertid` int(11) NOT NULL auto_increment,
+  `borrowernumber` int(11) NOT NULL default 0,
+  `type` varchar(10) NOT NULL default '',
+  `externalid` varchar(20) NOT NULL default '',
+  PRIMARY KEY  (`alertid`),
+  KEY `borrowernumber` (`borrowernumber`),
+  KEY `type` (`type`,`externalid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `aqbasketgroups`
+--
+
+DROP TABLE IF EXISTS `aqbasketgroups`;
+CREATE TABLE `aqbasketgroups` (
+  `id` int(11) NOT NULL auto_increment,
+  `name` varchar(50) default NULL,
+  `closed` tinyint(1) default NULL,
+  `booksellerid` int(11) NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `booksellerid` (`booksellerid`),
+  CONSTRAINT `aqbasketgroups_ibfk_1` FOREIGN KEY (`booksellerid`) REFERENCES `aqbooksellers` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `aqbasket`
+--
+
+DROP TABLE IF EXISTS `aqbasket`;
+CREATE TABLE `aqbasket` (
+  `basketno` int(11) NOT NULL auto_increment,
+  `basketname` varchar(50) default NULL,
+  `note` mediumtext,
+  `booksellernote` mediumtext,
+  `contractnumber` int(11),
+  `creationdate` date default NULL,
+  `closedate` date default NULL,
+  `booksellerid` int(11) NOT NULL default 1,
+  `authorisedby` varchar(10) default NULL,
+  `booksellerinvoicenumber` mediumtext,
+  `basketgroupid` int(11),
+  PRIMARY KEY  (`basketno`),
+  KEY `booksellerid` (`booksellerid`),
+  KEY `basketgroupid` (`basketgroupid`),
+  KEY `contractnumber` (`contractnumber`),
+  CONSTRAINT `aqbasket_ibfk_1` FOREIGN KEY (`booksellerid`) REFERENCES `aqbooksellers` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `aqbasket_ibfk_2` FOREIGN KEY (`contractnumber`) REFERENCES `aqcontract` (`contractnumber`),
+  CONSTRAINT `aqbasket_ibfk_3` FOREIGN KEY (`basketgroupid`) REFERENCES `aqbasketgroups` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `aqbooksellers`
+--
+
+DROP TABLE IF EXISTS `aqbooksellers`;
+CREATE TABLE `aqbooksellers` (
+  `id` int(11) NOT NULL auto_increment,
+  `name` mediumtext NOT NULL,
+  `address1` mediumtext,
+  `address2` mediumtext,
+  `address3` mediumtext,
+  `address4` mediumtext,
+  `phone` varchar(30) default NULL,
+  `accountnumber` mediumtext,
+  `othersupplier` mediumtext,
+  `currency` varchar(3) NOT NULL default '',
+  `booksellerfax` mediumtext,
+  `notes` mediumtext,
+  `bookselleremail` mediumtext,
+  `booksellerurl` mediumtext,
+  `contact` varchar(100) default NULL,
+  `postal` mediumtext,
+  `url` varchar(255) default NULL,
+  `contpos` varchar(100) default NULL,
+  `contphone` varchar(100) default NULL,
+  `contfax` varchar(100) default NULL,
+  `contaltphone` varchar(100) default NULL,
+  `contemail` varchar(100) default NULL,
+  `contnotes` mediumtext,
+  `active` tinyint(4) default NULL,
+  `listprice` varchar(10) default NULL,
+  `invoiceprice` varchar(10) default NULL,
+  `gstreg` tinyint(4) default NULL,
+  `listincgst` tinyint(4) default NULL,
+  `invoiceincgst` tinyint(4) default NULL,
+  `gstrate` decimal(6,4) default NULL,
+  `discount` float(6,4) default NULL,
+  `fax` varchar(50) default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `listprice` (`listprice`),
+  KEY `invoiceprice` (`invoiceprice`),
+  CONSTRAINT `aqbooksellers_ibfk_1` FOREIGN KEY (`listprice`) REFERENCES `currency` (`currency`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `aqbooksellers_ibfk_2` FOREIGN KEY (`invoiceprice`) REFERENCES `currency` (`currency`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `aqbudgets`
+--
+
+DROP TABLE IF EXISTS `aqbudgets`;
+CREATE TABLE `aqbudgets` (
+  `budget_id` int(11) NOT NULL auto_increment,
+  `budget_parent_id` int(11) default NULL,
+  `budget_code` varchar(30) default NULL,
+  `budget_name` varchar(80) default NULL,
+  `budget_branchcode` varchar(10) default NULL,
+  `budget_amount` decimal(28,6) NULL default '0.00',
+  `budget_encumb` decimal(28,6) NULL default '0.00', 
+  `budget_expend` decimal(28,6) NULL default '0.00', 
+  `budget_notes` mediumtext,
+  `timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `budget_period_id` int(11) default NULL,
+  `sort1_authcat` varchar(80) default NULL,
+  `sort2_authcat` varchar(80) default NULL,
+  `budget_owner_id` int(11) default NULL,
+  `budget_permission` int(1) default '0',
+  PRIMARY KEY  (`budget_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+--
+-- Table structure for table `aqbudgetperiods`
+--
+
+
+DROP TABLE IF EXISTS `aqbudgetperiods`;
+CREATE TABLE `aqbudgetperiods` (
+  `budget_period_id` int(11) NOT NULL auto_increment,
+  `budget_period_startdate` date NOT NULL,
+  `budget_period_enddate` date NOT NULL,
+  `budget_period_active` tinyint(1) default '0',
+  `budget_period_description` mediumtext,
+  `budget_period_total` decimal(28,6),
+  `budget_period_locked` tinyint(1) default NULL,
+  `sort1_authcat` varchar(10) default NULL,
+  `sort2_authcat` varchar(10) default NULL,
+  PRIMARY KEY  (`budget_period_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `aqbudgets_planning`
+--
+
+DROP TABLE IF EXISTS `aqbudgets_planning`;
+CREATE TABLE `aqbudgets_planning` (
+  `plan_id` int(11) NOT NULL auto_increment,
+  `budget_id` int(11) NOT NULL,
+  `budget_period_id` int(11) NOT NULL,
+  `estimated_amount` decimal(28,6) default NULL,
+  `authcat` varchar(30) NOT NULL,
+  `authvalue` varchar(30) NOT NULL,
+  PRIMARY KEY  (`plan_id`),
+  CONSTRAINT `aqbudgets_planning_ifbk_1` FOREIGN KEY (`budget_id`) REFERENCES `aqbudgets` (`budget_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table 'aqcontract'
+--
+
+DROP TABLE IF EXISTS `aqcontract`;
+CREATE TABLE `aqcontract` (
+  `contractnumber` int(11) NOT NULL auto_increment,
+  `contractstartdate` date default NULL,
+  `contractenddate` date default NULL,
+  `contractname` varchar(50) default NULL,
+  `contractdescription` mediumtext,
+  `booksellerid` int(11) not NULL,
+  PRIMARY KEY  (`contractnumber`),
+  CONSTRAINT `booksellerid_fk1` FOREIGN KEY (`booksellerid`) 
+       REFERENCES `aqbooksellers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- Table structure for table `aqorderdelivery`
+--
+
+DROP TABLE IF EXISTS `aqorderdelivery`;
+CREATE TABLE `aqorderdelivery` (
+  `ordernumber` date default NULL,
+  `deliverynumber` smallint(6) NOT NULL default 0,
+  `deliverydate` varchar(18) default NULL,
+  `qtydelivered` smallint(6) default NULL,
+  `deliverycomments` mediumtext
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `aqorders`
+--
+
+DROP TABLE IF EXISTS `aqorders`;
+CREATE TABLE `aqorders` (
+  `ordernumber` int(11) NOT NULL auto_increment,
+  `biblionumber` int(11) default NULL,
+  `entrydate` date default NULL,
+  `quantity` smallint(6) default NULL,
+  `currency` varchar(3) default NULL,
+  `listprice` decimal(28,6) default NULL,
+  `totalamount` decimal(28,6) default NULL,
+  `datereceived` date default NULL,
+  `booksellerinvoicenumber` mediumtext,
+  `freight` decimal(28,6) default NULL,
+  `unitprice` decimal(28,6) default NULL,
+  `quantityreceived` smallint(6) default NULL,
+  `cancelledby` varchar(10) default NULL,
+  `datecancellationprinted` date default NULL,
+  `notes` mediumtext,
+  `supplierreference` mediumtext,
+  `purchaseordernumber` mediumtext,
+  `subscription` tinyint(1) default NULL,
+  `serialid` varchar(30) default NULL,
+  `basketno` int(11) default NULL,
+  `biblioitemnumber` int(11) default NULL,
+  `timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `rrp` decimal(13,2) default NULL,
+  `ecost` decimal(13,2) default NULL,
+  `gst` decimal(13,2) default NULL,
+  `budget_id` int(11) NOT NULL,
+  `budgetgroup_id` int(11) NOT NULL,
+  `budgetdate` date default NULL,
+  `sort1` varchar(80) default NULL,
+  `sort2` varchar(80) default NULL,
+  `sort1_authcat` varchar(10) default NULL,
+  `sort2_authcat` varchar(10) default NULL,
+  `uncertainprice` tinyint(1),
+  PRIMARY KEY  (`ordernumber`),
+  KEY `basketno` (`basketno`),
+  KEY `biblionumber` (`biblionumber`),
+  CONSTRAINT `aqorders_ibfk_1` FOREIGN KEY (`basketno`) REFERENCES `aqbasket` (`basketno`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `aqorders_ibfk_2` FOREIGN KEY (`biblionumber`) REFERENCES `biblio` (`biblionumber`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `aqorders_items`
+--
+
+DROP TABLE IF EXISTS `aqorders_items`;
+CREATE TABLE `aqorders_items` (
+  `ordernumber` int(11) NOT NULL,
+  `itemnumber` int(11) NOT NULL,
+  `timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`itemnumber`),
+  KEY `ordernumber` (`ordernumber`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- 
+-- Table structure for table `fieldmapping`
+--
+
+DROP TABLE IF EXISTS `fieldmapping`;
+CREATE TABLE `fieldmapping` (
+  `id` int(11) NOT NULL auto_increment,
+  `field` varchar(255) NOT NULL,
+  `frameworkcode` char(4) NOT NULL default '',
+  `fieldcode` char(3) NOT NULL,
+  `subfieldcode` char(1) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

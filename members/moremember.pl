@@ -93,7 +93,7 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
 my $borrowernumber = $input->param('borrowernumber');
 
 #start the page and read in includes
-my $data           = GetMember( $borrowernumber ,'borrowernumber');
+my $data           = GetMember( 'borrowernumber' => $borrowernumber );
 my $reregistration = $input->param('reregistration');
 
 if ( not defined $data ) {
@@ -138,8 +138,8 @@ $data->{ "sex_".$data->{'sex'}."_p" } = 1;
 my $catcode;
 if ( $category_type eq 'C') {
 	if ($data->{'guarantorid'} ne '0' ) {
-    	my $data2 = GetMember( $data->{'guarantorid'} ,'borrowernumber');
-    	foreach (qw(address city B_address B_city phone mobile zipcode)) {
+    	my $data2 = GetMember( 'borrowernumber' => $data->{'guarantorid'} );
+    	foreach (qw(address city B_address B_city phone mobile zipcode country B_country)) {
     	    $data->{$_} = $data2->{$_};
     	}
    }
@@ -178,7 +178,7 @@ if ( $category_type eq 'A' ) {
 }
 else {
     if ($data->{'guarantorid'}){
-	    my ($guarantor) = GetMember( $data->{'guarantorid'},'biblionumber');
+	    my ($guarantor) = GetMember( 'borrowernumber' =>$data->{'guarantorid'});
 		$template->param(guarantor => 1);
 		foreach (qw(borrowernumber cardnumber firstname surname)) {        
 			  $template->param("guarantor$_" => $guarantor->{$_});
@@ -216,13 +216,13 @@ $template->param( lib2 => $lib2 ) if ($lib2);
 # current issues
 #
 my $issue = GetPendingIssues($borrowernumber);
-my $count = scalar(@$issue);
+my $issuecount = scalar(@$issue);
 my $roaddetails = &GetRoadTypeDetails( $data->{'streettype'} );
 my $today       = POSIX::strftime("%Y-%m-%d", localtime);	# iso format
 my @issuedata;
 my $overdues_exist = 0;
 my $totalprice = 0;
-for ( my $i = 0 ; $i < $count ; $i++ ) {
+for ( my $i = 0 ; $i < $issuecount ; $i++ ) {
     my $datedue = $issue->[$i]{'date_due'};
     my $issuedate = $issue->[$i]{'issuedate'};
     $issue->[$i]{'date_due'}  = C4::Dates->new($issue->[$i]{'date_due'}, 'iso')->output('syspref');
@@ -347,7 +347,9 @@ if ($borrowernumber) {
     }
 
     # return result to the template
-    $template->param( reservloop => \@reservloop );
+    $template->param( reservloop => \@reservloop,
+        countreserv => scalar @reservloop,
+	 );
 }
 
 # extract staff activity on patron record
@@ -409,6 +411,7 @@ $template->param(
     totaldue        => sprintf("%.2f", $total),
     totaldue_raw    => $total,
     issueloop       => \@issuedata,
+	issuecount => $issuecount,
     overdues_exist  => $overdues_exist,
     error           => $error,
     $error          => 1,

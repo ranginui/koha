@@ -118,23 +118,40 @@ sub getAuthorisedValues4MARCSubfields {
 my $stylesheet;
 
 sub XSLTParse4Display {
-    my ( $biblionumber, $orig_record, $xsl_suffix ) = @_;
+    my ( $biblionumber, $orig_record, $xsl_suffix, $interface ) = @_;
+    $interface = 'opac' unless $interface;
     # grab the XML, run it through our stylesheet, push it out to the browser
     my $record = transformMARCXML4XSLT($biblionumber, $orig_record);
     #return $record->as_formatted();
     my $itemsxml  = buildKohaItemsNamespace($biblionumber);
     my $xmlrecord = $record->as_xml();
-    $xmlrecord =~ s/\<\/record\>/$itemsxml\<\/record\>/;
+    my $sysxml = "<sysprefs>\n";
+    foreach my $syspref ( qw/OPACURLOpenInNewWindow DisplayOPACiconsXSLT URLLinkText/ ) {
+        $sysxml .= "<syspref name=\"$syspref\">" .
+                   C4::Context->preference( $syspref ) .
+                   "</syspref>\n";
+    }
+    $sysxml .= "</sysprefs>\n";
+    $xmlrecord =~ s/\<\/record\>/$itemsxml$sysxml\<\/record\>/;
+
     my $parser = XML::LibXML->new();
     # don't die when you find &, >, etc
     $parser->recover_silently(1);
     my $source = $parser->parse_string($xmlrecord);
     unless ( $stylesheet ) {
         my $xslt = XML::LibXSLT->new();
-        my $xslfile = C4::Context->config('opachtdocs') . 
+        my $xslfile;
+        if ($interface eq 'intranet') {
+            $xslfile = C4::Context->config('intrahtdocs') . 
+                      "/prog/en/xslt/" .
+                      C4::Context->preference('marcflavour') .
+                      "slim2intranet$xsl_suffix.xsl";
+        } else {
+            $xslfile = C4::Context->config('opachtdocs') . 
                       "/prog/en/xslt/" .
                       C4::Context->preference('marcflavour') .
                       "slim2OPAC$xsl_suffix.xsl";
+        }
         my $style_doc = $parser->parse_file($xslfile);
         $stylesheet = $xslt->parse_stylesheet($style_doc);
     }

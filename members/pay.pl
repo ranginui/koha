@@ -26,6 +26,8 @@
 =cut
 
 use strict;
+use warnings;
+
 use C4::Context;
 use C4::Auth;
 use C4::Output;
@@ -56,7 +58,7 @@ if ( $borrowernumber eq '' ) {
 }
 
 # get borrower details
-my $data = GetMember( $borrowernumber,'borrowernumber' );
+my $data = GetMember( borrowernumber => $borrowernumber );
 my $user = $input->remote_user;
 
 # get account details
@@ -82,7 +84,7 @@ for ( my $i = 0 ; $i < @names ; $i++ ) {
         $check = 2;
     }
 }
-my $total = $input->param('total');
+my $total = $input->param('total') || '';
 if ( $check == 0 ) {
     if ( $total ne '' ) {
         recordpayment( $borrowernumber, $total );
@@ -155,6 +157,7 @@ $template->param( picture => 1 ) if $picture;
 	address2 => $data->{'address2'},
 	city => $data->{'city'},
 	zipcode => $data->{'zipcode'},
+	country => $data->{'country'},
 	phone => $data->{'phone'},
 	email => $data->{'email'},
 	branchcode => $data->{'branchcode'},

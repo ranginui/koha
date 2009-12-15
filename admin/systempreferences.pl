@@ -44,6 +44,7 @@ use strict;
 use warnings;
 
 use CGI;
+use MIME::Base64;
 use C4::Auth;
 use C4::Context;
 use C4::Koha;
@@ -67,9 +68,14 @@ use C4::Output;
 my %tabsysprefs;
 
 # Acquisitions
-$tabsysprefs{acquisitions}              = "Acquisitions";
-$tabsysprefs{gist}                      = "Acquisitions";
-$tabsysprefs{emailPurchaseSuggestions}  = "Acquisitions";
+    $tabsysprefs{acquisitions}="Acquisitions";
+    $tabsysprefs{gist}="Acquisitions";
+    $tabsysprefs{emailPurchaseSuggestions}="Acquisitions";
+    $tabsysprefs{RenewSerialAddsSuggestion}="Acquisitions";
+    $tabsysprefs{AcqCreateItem}="Acquisitions";
+    $tabsysprefs{OrderPdfFormat}="Acquisitions";
+    $tabsysprefs{OrderPdfTemplate}="Acquisitions";
+    $tabsysprefs{CurrencyFormat}="Acquisitions";
 
 # Admin
 $tabsysprefs{singleBranchMode}      = "Admin";
@@ -149,6 +155,7 @@ $tabsysprefs{globalDueDate}                  = "Circulation";
 $tabsysprefs{holdCancelLength}               = "Circulation";
 $tabsysprefs{itemBarcodeInputFilter}         = "Circulation";
 $tabsysprefs{WebBasedSelfCheck}              = "Circulation";
+$tabsysprefs{ShowPatronImageInWebBasedSelfCheck} = "Circulation";
 $tabsysprefs{CircControl}                    = "Circulation";
 $tabsysprefs{finesCalendar}                  = "Circulation";
 $tabsysprefs{previousIssuesDefaultSortOrder} = "Circulation";
@@ -165,6 +172,12 @@ $tabsysprefs{AllowNotForLoanOverride}        = "Circulation";
 $tabsysprefs{RenewalPeriodBase}              = "Circulation";
 $tabsysprefs{FilterBeforeOverdueReport}      = "Circulation";
 $tabsysprefs{AllowHoldDateInFuture}          = "Circulation";
+$tabsysprefs{OPACFineNoRenewals}             = "Circulation";
+$tabsysprefs{InProcessingToShelvingCart}     = "Circulation";
+$tabsysprefs{NewItemsDefaultLocation}        = "Circulation";
+$tabsysprefs{ReturnToShelvingCart}           = "Circulation";
+$tabsysprefs{DisplayClearScreenButton}       = "Circulation";
+$tabsysprefs{AllowAllMessageDeletion}        = "Circulation";
 
 # Staff Client
 $tabsysprefs{TemplateEncoding}        = "StaffClient";
@@ -202,6 +215,8 @@ $tabsysprefs{AutoEmailOpacUser}            = "Patrons";
 $tabsysprefs{AutoEmailPrimaryAddress}      = "Patrons";
 $tabsysprefs{EnhancedMessagingPreferences} = "Patrons";
 $tabsysprefs{'SMSSendDriver'}              = 'Patrons';
+$tabsysprefs{HidePatronName}               = "Patrons";
+
 
 # I18N/L10N
 $tabsysprefs{dateformat}    = "I18N/L10N";
@@ -308,9 +323,13 @@ $tabsysprefs{OPACUserCSS}                = "OPAC";
 $tabsysprefs{OPACHighlightedWords}       = "OPAC";
 $tabsysprefs{OPACViewOthersSuggestions}  = "OPAC";
 $tabsysprefs{URLLinkText}                = "OPAC";
+$tabsysprefs{OPACSearchForTitleIn}       = "OPAC";
 $tabsysprefs{OPACShelfBrowser}           = "OPAC";
 $tabsysprefs{OPACDisplayRequestPriority} = "OPAC";
 $tabsysprefs{OPACAllowHoldDateInFuture}  = "OPAC";
+$tabsysprefs{OPACPatronDetails}  = "OPAC";
+$tabsysprefs{OPACFinesTab}  = "OPAC";
+$tabsysprefs{DisplayOPACiconsXSLT}	 = "OPAC";
 
 # OPAC
 $tabsysprefs{SearchMyLibraryFirst} = "OPAC";
@@ -338,6 +357,7 @@ $tabsysprefs{XSLTResultsDisplay}   = "OPAC";
 $tabsysprefs{OPACShowCheckoutName}   = "OPAC";
 
 # Serials
+$tabsysprefs{RoutingListAddReserves}  	   = "Serials";
 $tabsysprefs{OPACSerialIssueDisplayCount}  = "Serials";
 $tabsysprefs{StaffSerialIssueDisplayCount} = "Serials";
 $tabsysprefs{OPACDisplayExtendedSubInfo}   = "Serials";
@@ -361,6 +381,8 @@ $tabsysprefs{'OAI-PMH:MaxCount'}  = "OAI-PMH";
 $tabsysprefs{'OAI-PMH:Set'}       = "OAI-PMH";
 $tabsysprefs{'OAI-PMH:Subset'}    = "OAI-PMH";
 
+# ILS-DI variables
+$tabsysprefs{'ILS-DI'} = "ILS-DI";
 sub StringSearch {
     my ( $searchstring, $type ) = @_;
     my $dbh = C4::Context->dbh;
@@ -437,6 +459,8 @@ sub GetPrefParams {
     if ( not defined( $data->{'type'} ) ) {
         $params->{'type-free'} = 1;
         $params->{'fieldlength'} = ( defined( $data->{'options'} ) and $data->{'options'} and $data->{'options'} > 0 );
+    } elsif ( $data->{'type'} eq 'Upload' ) {
+        $params->{'type-upload'} = 1;
     } elsif ( $data->{'type'} eq 'Choice' ) {
         $params->{'type-choice'} = 1;
     } elsif ( $data->{'type'} eq 'YesNo' ) {
@@ -669,6 +693,13 @@ if ( $op eq 'add_form' ) {
             $value = $params->{'value'};
         }
     }
+
+    if ( $input->param('preftype') eq 'Upload' ) {
+        my $lgtfh = $input->upload('value');
+        $value = join '', <$lgtfh>;
+        $value = encode_base64($value);
+    }
+
     if ( $sth->rows ) {
         unless ( C4::Context->config('demo') ) {
             my $sth = $dbh->prepare("update systempreferences set value=?,explanation=?,type=?,options=? where variable=?");
