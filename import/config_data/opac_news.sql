@@ -16,32 +16,32 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `borrower_attributes`
+-- Table structure for table `opac_news`
 --
 
-DROP TABLE IF EXISTS `borrower_attributes`;
+DROP TABLE IF EXISTS `opac_news`;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-CREATE TABLE `borrower_attributes` (
-  `borrowernumber` int(11) NOT NULL,
-  `code` varchar(10) NOT NULL,
-  `attribute` varchar(64) default NULL,
-  `password` varchar(64) default NULL,
-  KEY `borrowernumber` (`borrowernumber`),
-  KEY `code_attribute` (`code`,`attribute`),
-  CONSTRAINT `borrower_attributes_ibfk_1` FOREIGN KEY (`borrowernumber`) REFERENCES `borrowers` (`borrowernumber`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `borrower_attributes_ibfk_2` FOREIGN KEY (`code`) REFERENCES `borrower_attribute_types` (`code`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE `opac_news` (
+  `idnew` int(10) unsigned NOT NULL auto_increment,
+  `title` varchar(250) NOT NULL default '',
+  `new` text NOT NULL,
+  `lang` varchar(25) NOT NULL default '',
+  `timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  `expirationdate` date default NULL,
+  `number` int(11) default NULL,
+  PRIMARY KEY  (`idnew`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Dumping data for table `borrower_attributes`
+-- Dumping data for table `opac_news`
 --
 
-LOCK TABLES `borrower_attributes` WRITE;
-/*!40000 ALTER TABLE `borrower_attributes` DISABLE KEYS */;
-INSERT INTO `borrower_attributes` VALUES (4448,'AREA','L',NULL),(4448,'ETHNIC','European / Pakeha',NULL),(1000015428,'AREA','O',NULL),(1000015428,'ETHNIC','None',NULL),(1000015430,'AREA','V',NULL),(1000015430,'ETHNIC','European / Pakeha',NULL),(21087,'AREA','V',NULL),(1000015431,'AREA','L',NULL),(1000015431,'ETHNIC','Other',NULL),(1000003097,'AREA','V',NULL),(1000003097,'ETHNIC','European / Pakeha',NULL);
-/*!40000 ALTER TABLE `borrower_attributes` ENABLE KEYS */;
+LOCK TABLES `opac_news` WRITE;
+/*!40000 ALTER TABLE `opac_news` DISABLE KEYS */;
+INSERT INTO `opac_news` VALUES (3,'Welcome to our new-look website','<p>And isn\'t it a beauty!</p>\r\n\r\n<p>The artwork is by <a href=\"http://kete.library.org.nz/site/topics/show/43-wendy-hodder\">Wendy Hodder</a>, a very talented professional artist and children\'s book illustrator from Foxton, and the site design is by Dean at Katipo Communications in Wellington.</p>','en','2009-06-13 00:00:00',NULL,1);
+/*!40000 ALTER TABLE `opac_news` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
