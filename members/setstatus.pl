@@ -63,8 +63,8 @@ if($destination eq "circ"){
 	}
 } else {
 	if($dateexpiry){
-		print $input->redirect("/cgi-bin/koha/members/moremember.pl?bornum=$borrowernumber&dateexpiry=$dateexpiry");
+		print $input->redirect("/cgi-bin/koha/members/moremember.pl?borrowernumber=$borrowernumber&dateexpiry=$dateexpiry");
 	} else {
-		print $input->redirect("/cgi-bin/koha/members/moremember.pl?bornum=$borrowernumber");
+		print $input->redirect("/cgi-bin/koha/members/moremember.pl?borrowernumber=$borrowernumber");
 	}
 }

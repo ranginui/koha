@@ -293,6 +293,9 @@ function Dopop(link) {
                     <!-- TMPL_IF Name="waslost" -->
                         <p class="problem">Item was lost, now found.</p>
                     <!-- /TMPL_IF -->
+                    <!-- TMPL_IF Name="havefines" -->
+                        <p class="problem"><!-- TMPL_VAR NAME="finename" --> (<!-- TMPL_VAR NAME="finecardnumber" -->) has an outstanding fine of <!-- TMPL_VAR NAME="havefines" --> for books returned late.</p>
+                    <!-- /TMPL_IF -->
                     <!-- TMPL_IF Name="withdrawn" -->
                         <p class="problem">Item is withdrawn.</p>
                     <!-- /TMPL_IF -->

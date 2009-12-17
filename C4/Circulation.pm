@@ -30,6 +30,7 @@ use C4::Members;
 use C4::Dates;
 use C4::Calendar;
 use C4::Accounts;
+use C4::Overdues qw/GetFine/;
 use C4::ItemCirculationAlertPreference;
 use C4::Message;
 use C4::Debug;
@@ -1517,10 +1518,19 @@ sub AddReturn {
         $messages->{'WasLost'} = 1;
     }
 
-    # fix up the overdues in accounts...
     if ($borrowernumber) {
+        # fix up the overdues in accounts...
         my $fix = _FixOverduesOnReturn($borrowernumber, $item->{itemnumber}, $exemptfine, $dropbox);
         defined($fix) or warn "_FixOverduesOnReturn($borrowernumber, $item->{itemnumber}...) failed!";  # zero is OK, check defined
+    
+        # fix fine days
+        my $debardate = _FixFineDaysOnReturn($issue->{borrowernumber}, $itemnumber, $issue->{date_due});
+        $messages->{'Debarred'} = $debardate if($debardate);
+
+        # get fines for the borrower
+        my $fineamount = C4::Overdues::GetFine($borrowernumber);
+        $messages->{'HaveFines'} = $fineamount if($fineamount);
+        
     }
 
     # find reserves.....

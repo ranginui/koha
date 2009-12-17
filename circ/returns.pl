@@ -36,6 +36,7 @@ use C4::Circulation;
 use C4::Dates qw/format_date/;
 use Date::Calc qw/Add_Delta_Days/;
 use C4::Calendar;
+use C4::Budgets qw/GetCurrency/;
 use C4::Print;
 use C4::Reserves;
 use C4::Biblio;
@@ -397,6 +398,16 @@ foreach my $code ( keys %$messages ) {
     }
     elsif ( $code eq 'WasTransfered' ) {
         ;    # FIXME... anything to do here?
+    }
+    elsif( $code eq 'Debarred' ){
+        $err{debarred}        = format_date($messages->{'Debarred'});
+        $err{debarcardnumber} = $borrower->{cardnumber};
+        $err{debarname}       = "$borrower->{firstname} $borrower->{surname}";
+    }
+    elsif( $code eq 'HaveFines' ){
+        $err{havefines}       = $borrower->{'flags'}->{'CHARGES'}->{'amount'} . %{GetCurrency()}->{symbol};
+        $err{finecardnumber} = $borrower->{cardnumber};
+        $err{finename}       = "$borrower->{firstname} $borrower->{surname}";
     }
     elsif ( $code eq 'wthdrawn' ) {
         $err{withdrawn} = 1;
