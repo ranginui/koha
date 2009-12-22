@@ -553,10 +553,11 @@ foreach my $flag ( sort keys %$flags ) {
             noissues => 'true',
         );
         if ( $flag eq 'GNA' ) {
-            $template->param( gna => 'true', warning => 1 );
+	warn $borrower->{'gonenoaddresscomment'};
+            $template->param( gna => 'true', gonenoaddresscomment => $borrower->{'gonenoaddresscomment'}, warning => 1 );
         }
         elsif ( $flag eq 'LOST' ) {
-            $template->param( lost => 'true', warning => 1 );
+            $template->param( lost => 'true', lostcomment => $borrower->{'lostcomment'}, warning => 1 );
         }
         elsif ( $flag eq 'DBARRED' ) {
             $template->param( dbarred => 'true', warning => 1 );

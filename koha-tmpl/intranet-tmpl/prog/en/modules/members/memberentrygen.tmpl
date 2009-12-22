@@ -7,6 +7,8 @@
 <script type="text/JavaScript" language="JavaScript">
 //<![CDATA[
     $(document).ready(function() {
+
+
 		$("fieldset.rows input").keydown(function(e){ return checkEnter(e); });
         $("#guarantordelete").click(function() {
             $("#contact-details").hide().find('a').remove();
@@ -31,13 +33,32 @@
 	    	}
         });
 
-    	if($(":radio:checked[name='debarred']").val() == 1){
+	if($(":radio:checked[name='debarred']").val() == 1){
         	$('.debarred').removeAttr('disabled');
     	}else{
-			$('.debarred').attr('disabled','disabled');
+		$('.debarred').attr('disabled','disabled');
     	}
-    });
+    
 
+	$(":radio[name='gonenoaddress']").change(function(){
+	    	if (this.value == 1){ 
+		    $('.classgonenoaddress').show();
+	    	}else{
+		    $('.classgonenoaddress').hide();
+	    	}
+        });
+	if($(":radio:checked[name='gonenoaddress']").val() == 0){ $('.classgonenoaddress').hide() };
+    
+	$(":radio[name='lost']").change(function(){
+	    	if (this.value == 1){ 
+		    $('.classlost').show();
+	    	}else{
+		    $('.classlost').hide();
+	    	}
+        });
+	if($(":radio:checked[name='lost']").val() == 0){ $('.classlost').hide() };
+   }); 
+    	
     function clear_entry(node) {
         var original = node.parentNode.parentNode;
         $("input[type=text]", original).attr('value', '');
@@ -942,7 +963,10 @@
 				<input type="radio" id="no<!-- TMPL_VAR NAME="name" -->" name="<!-- TMPL_VAR NAME="name" -->" value="0" />
 				<!-- /TMPL_IF -->
 
-				
+				<p>
+				<label class="class<!-- TMPL_VAR NAME="name" -->" for="<!-- TMPL_VAR NAME="name" -->comment">Comment:</label><br />
+				<textarea cols="40" rows="2" class="class<!-- TMPL_VAR NAME="name" -->" id="<!-- TMPL_VAR NAME="name" -->comment" name="<!-- TMPL_VAR NAME="name" -->comment"><!-- TMPL_IF EXPR="key eq 'gonenoaddress'" --><!-- TMPL_VAR NAME="gonenoaddresscomment" --><!-- /TMPL_IF --><!-- TMPL_IF EXPR="key eq 'lost'" --><!-- TMPL_VAR NAME="lostcomment" --><!-- /TMPL_IF --></textarea>
+				</p>
 
 			</li>
 			<!-- /TMPL_LOOP -->

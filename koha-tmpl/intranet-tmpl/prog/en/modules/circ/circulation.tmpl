@@ -334,11 +334,11 @@ function refocus(calendar) {
         <!-- /TMPL_IF -->
 
         <!-- TMPL_IF NAME="GNA" -->
-            <li>Patron's address is in doubt</li>
+            <li>Patron's address is in doubt<!-- TMPL_IF NAME="gonenoaddresscomment" -->: <!-- TMPL_VAR NAME="gonenoaddresscomment" --><!-- /TMPL_IF --></li>
         <!-- /TMPL_IF -->
 
         <!-- TMPL_IF NAME="CARD_LOST" -->
-            <li>Patron's card is lost</li>
+            <li>Patron's card is lost<!-- TMPL_IF NAME="lostcomment" -->: <!-- TMPL_VAR NAME="lostcomment" --><!-- /TMPL_IF --></li>
         <!-- /TMPL_IF -->
 
         <!-- TMPL_IF NAME="DEBARRED" -->
@@ -528,11 +528,11 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
 			<!-- /TMPL_IF -->
 
             <!-- TMPL_IF NAME="gna" -->
-			<li class="blocker"><span class="circ-hlt">Address:</span> Patron's address in doubt</li>
+			<li class="blocker"><span class="circ-hlt">Address: </span>Patron's address is in doubt<!-- TMPL_IF NAME="gonenoaddresscomment" --> (<!-- TMPL_VAR NAME="gonenoaddresscomment" -->)<!-- /TMPL_IF --></li>
 			<!-- /TMPL_IF -->
 
             <!-- TMPL_IF NAME="lost" -->
-			<li class="blocker"><span class="circ-hlt">Lost: </span>Patron's card is lost</li>
+			<li class="blocker"><span class="circ-hlt">Lost: </span>Patron's card is lost<!-- TMPL_IF NAME="lostcomment" --> (<!-- TMPL_VAR NAME="lostcomment" -->)<!-- /TMPL_IF --></li>
 			<!-- /TMPL_IF -->
 
             <!-- TMPL_IF NAME="dbarred" --><li class="blocker">

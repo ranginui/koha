@@ -3703,6 +3703,18 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     SetVersion ($DBversion);
 }
 
+
+
+$DBversion = "3.02.00.007";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+	$dbh->do("ALTER TABLE `borrowers` ADD `gonenoaddresscomment` VARCHAR(255) DEFAULT NULL AFTER `gonenoaddress`");
+	$dbh->do("ALTER TABLE `borrowers` ADD `lostcomment` VARCHAR(255) DEFAULT NULL AFTER `lost`");
+	
+    print "Upgrade to $DBversion done (add comments in borrowers)\n";
+    SetVersion ($DBversion);
+}
+
+
 =item DropAllForeignKeys($table)
 
   Drop all foreign keys of the table $table
