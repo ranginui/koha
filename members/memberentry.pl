@@ -131,6 +131,11 @@ if ($op eq 'insert' || $op eq 'modify' || $op eq 'save') {
     if($newdata{debarred}){
         $newdata{debarred} = $newdata{datedebarred} ? $newdata{datedebarred} : "9999-12-31";
     }
+
+    # Manipulate flags :
+    # Delete comment if flag set to no
+    $newdata{gonenoaddresscomment} = "" if (defined $newdata{gonenoaddress} && $newdata{gonenoaddress} == 0);
+    $newdata{lostcomment} = "" if (defined $newdata{lost} && $newdata{lost} == 0);
     
     my $dateobject = C4::Dates->new();
     my $syspref = $dateobject->regexp();		# same syspref format for all 3 dates
