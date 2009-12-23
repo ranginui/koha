@@ -63,12 +63,6 @@ if (not $biblios and not $authorities) {
     die $msg;
 }
 
-if ($authorities and $as_xml) {
-    my $msg = "Cannot specify both -a and -x\n";
-    $msg   .= "Please do '$0 --help' to see usage.\n";
-    die $msg;
-}
-
 if ( !$as_xml and $nosanitize ) {
     my $msg = "Cannot specify both -no_xml and -nosanitize\n";
     $msg   .= "Please do '$0 --help' to see usage.\n";
@@ -425,7 +419,11 @@ sub get_raw_marc_record {
             return;
         }
     }
-    return $marc;
+    if ($marc->fields()){
+        return $marc;
+    } else {
+        return undef;
+    }
 }
 
 sub fix_leader {
