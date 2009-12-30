@@ -3756,6 +3756,13 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     SetVersion ($DBversion);
 }
 
+$DBversion = '3.02.00.011';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do('ALTER TABLE issuingrules ADD COLUMN `renewalperiod` int(11) NOT NULL default "0" AFTER `renewalsallowed`;');
+    print "Upgrade done (Add renewalperiod)\n";
+    SetVersion ($DBversion);
+}
+
 =item DropAllForeignKeys($table)
 
   Drop all foreign keys of the table $table

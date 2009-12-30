@@ -113,6 +113,7 @@ $(document).ready(function() {
                                 <th class="fines">Fine grace period (day)</th>
                                 <th class="fines">Suspension duration (day)</th>
                                 <th class="issues">Renewals allowed (count)</th>
+                                <th class="issues">Renewals period (days)</th>
                                 <th class="reserves">Holds allowed (count)</th>
                                 <th class="reserves">Holds pickup delay (day)</th>
                                 <th class="reserves">Allow on shelf holds</th>
@@ -194,6 +195,13 @@ $(document).ready(function() {
                                     <!-- /TMPL_IF -->
                                     <!-- TMPL_VAR NAME="renewalsallowed" -->
                                     </td>
+                                    <!-- TMPL_IF NAME="herited_renewalperiod" -->
+                                    <td class="issues herited">
+                                    <!-- TMPL_ELSE -->
+                                    <td class="issues">
+                                    <!-- /TMPL_IF -->
+                                    <!-- TMPL_VAR NAME="renewalperiod" -->
+                                    </td>
                                     <!-- TMPL_IF NAME="herited_reservesallowed" -->
                                     <td class="reserves herited">
                                     <!-- TMPL_ELSE -->
@@ -268,6 +276,7 @@ $(document).ready(function() {
                                 <td class="fines"><input name="firstremind" size="2" /> </td>
                                 <td class="fines"><input name="finedays" size="3" /> </td>
                                 <td class="issues"><input name="renewalsallowed" size="2" /></td>
+                                <td class="issues"><input name="renewalperiod" size="2" /></td>
                                 <td class="reserves"><input name="reservesallowed" size="2" /></td>
                                 <td class="reserves"><input name="holdspickupdelay" size="2" /></td>
                                 <td class="reserves">

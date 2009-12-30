@@ -947,6 +947,7 @@ CREATE TABLE `issuingrules` (
   `holdrestricted` tinyint(1) default NULL,
   `renewalsallowed` smallint(6)  default NULL,
   `reservesallowed` smallint(6)  default NULL,
+  `renewalperiod` smallint(6) NULL DEFAULT NULL,
   `branchcode` varchar(10) NOT NULL default '',
   PRIMARY KEY  (`branchcode`,`categorycode`,`itemtype`),
   KEY `categorycode` (`categorycode`),

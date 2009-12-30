@@ -1880,58 +1880,26 @@ sub CanBookBeRenewed {
 
     # Look in the issues table for this item, lent to this borrower,
     # and not yet returned.
-    my %branch = (
-            'ItemHomeLibrary' => 'items.homebranch',
-            'PickupLibrary'   => 'items.holdingbranch',
-            'PatronLibrary'   => 'borrowers.branchcode'
-            );
-    my $controlbranch = $branch{C4::Context->preference('CircControl')};
-    my $itype         = C4::Context->preference('item-level_itypes') ? 'items.itype' : 'biblioitems.itemtype';
+    my $borrower = C4::Members::GetMemberDetails( $borrowernumber, 0 ) or return undef;
+    my $item = GetItem($itemnumber) or return undef;
+    my $itemissue = GetItemIssue($itemnumber) or return undef;
+    my $branchcode = _GetCircControlBranch($item, $borrower);
     
-    my $sthcount = $dbh->prepare("
-                   SELECT 
-                    borrowers.categorycode, biblioitems.itemtype, issues.renewals, renewalsallowed, $controlbranch
-                   FROM  issuingrules, 
-                   issues 
-                   LEFT JOIN items USING (itemnumber) 
-                   LEFT JOIN borrowers USING (borrowernumber) 
-                   LEFT JOIN biblioitems USING (biblioitemnumber)
-                   
-                   WHERE
-                    (issuingrules.categorycode = borrowers.categorycode OR issuingrules.categorycode = '*')
-                   AND
-                    (issuingrules.itemtype = $itype OR issuingrules.itemtype = '*')
-                   AND
-                    (issuingrules.branchcode = $controlbranch OR issuingrules.branchcode = '*') 
-                   AND 
-                    borrowernumber = ? 
-                   AND
-                    itemnumber = ?
-                   ORDER BY
-                    issuingrules.categorycode desc,
-                    issuingrules.itemtype desc,
-                    issuingrules.branchcode desc
-                   LIMIT 1;
-                  ");
-
-    $sthcount->execute( $borrowernumber, $itemnumber );
-    if ( my $data1 = $sthcount->fetchrow_hashref ) {
-        
-        if ( ( $data1->{renewalsallowed} && $data1->{renewalsallowed} > $data1->{renewals} ) || $override_limit ) {
-            $renewokay = 1;
-        }
-        else {
-			$error="too_many";
-		}
-		
-        my ( $resfound, $resrec ) = C4::Reserves::CheckReserves($itemnumber);
-        if ($resfound) {
-            $renewokay = 0;
-			$error="on_reserve"
-        }
-
+    my $issuingrule = GetIssuingRule($borrower->{categorycode}, $item->{itype}, $branchcode);
+    
+    if ( ( $issuingrule->{renewalsallowed} > $itemissue->{renewals} ) || $override_limit ) {
+        $renewokay = 1;
+    } else {
+        $error = "too_many";
     }
-    return ($renewokay,$error);
+
+    my ( $resfound, $resrec ) = C4::Reserves::CheckReserves($itemnumber);
+    if ($resfound) {
+        $renewokay = 0;
+        $error     = "on_reserve";
+    }
+
+    return ( $renewokay, $error );
 }
 
 =head2 AddRenewal
@@ -1986,16 +1954,15 @@ sub AddRenewal {
     # based on the value of the RenewalPeriodBase syspref.
     unless ($datedue) {
 
-        my $borrower = C4::Members::GetMemberDetails( $borrowernumber, 0 ) or return undef;
-        my $loanlength = GetLoanLength(
-                    $borrower->{'categorycode'},
-                    (C4::Context->preference('item-level_itypes')) ? $biblio->{'itype'} : $biblio->{'itemtype'} ,
-			        $issuedata->{'branchcode'}  );   # that's the circ control branch.
+        my $borrower   = C4::Members::GetMemberDetails( $borrowernumber, 0 ) or return undef;
+        my $branchcode = _GetCircControlBranch($item, $borrower);
+        my $loanlength = GetIssuingRule( $borrower->{categorycode}, $item->{itype}, $branchcode );
 
-        $datedue = (C4::Context->preference('RenewalPeriodBase') eq 'date_due') ?
-                                        C4::Dates->new($issuedata->{date_due}, 'iso') :
-                                        C4::Dates->new();
-        $datedue =  CalcDateDue($datedue,$loanlength,$issuedata->{'branchcode'},$borrower);
+        $datedue =
+          ( C4::Context->preference('RenewalPeriodBase') eq 'date_due' )
+          ? C4::Dates->new( $issuedata->{date_due}, 'iso' )
+          : C4::Dates->new();
+        $datedue = CalcDateDue( $datedue, $loanlength->{renewalperiod}, $issuedata->{'branchcode'}, $borrower );
     }
 
     # Update the issues record to have the new due date, and a new count
