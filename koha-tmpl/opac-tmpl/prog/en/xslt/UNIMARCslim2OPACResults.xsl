@@ -20,15 +20,12 @@
   <xsl:variable name="leader6" select="substring($leader,7,1)"/>
   <xsl:variable name="leader7" select="substring($leader,8,1)"/>
   <xsl:variable name="biblionumber" 
-select="marc:datafield[@tag=999]/marc:subfield[@code='a']"/>
+select="marc:datafield[@tag=999]/marc:subfield[@code='9']"/>
   <xsl:variable name="isbn" select="marc:datafield[@tag=010]/marc:subfield[@code='a']"/>
      	
   <xsl:if test="marc:datafield[@tag=200]">
     <xsl:for-each select="marc:datafield[@tag=200]">
-      	<a><xsl:attribute name="href">
-             /cgi-bin/koha/opac-detail.pl?biblionumber=
-             <xsl:value-of select="$biblionumber"/>
-             <xsl:if test="$leader7='s'">#subscriptions</xsl:if>
+      	<a><xsl:attribute name="href">/cgi-bin/koha/opac-detail.pl?biblionumber=<xsl:value-of select="$biblionumber"/>
            </xsl:attribute>
         <xsl:value-of select="marc:subfield[@code='a']"/>
       </a>

@@ -10,7 +10,7 @@
     <xsl:variable name="leader" select="marc:leader"/>
     <xsl:variable name="leader6" select="substring($leader,7,1)"/>
     <xsl:variable name="leader7" select="substring($leader,8,1)"/>
-    <xsl:variable name="biblionumber" select="marc:datafield[@tag=999]/marc:subfield[@code='a']"/>
+    <xsl:variable name="biblionumber" select="marc:datafield[@tag=999]/marc:subfield[@code='9']"/>
     <xsl:if test="marc:datafield[@tag=200]">
       <xsl:for-each select="marc:datafield[@tag=200]">
         <h1>
@@ -48,13 +48,13 @@
         <span id="Normalview">Notice simple</span>
       </span>
       <span class="view">
-        <a id="MARCviewPop" href="/cgi-bin/koha/opac-showmarc.pl?id={marc:datafield[@tag=999]/marc:subfield[@code='a']}" title="MARC" rel="gb_page_center[600,500]">Notice MARC</a>
+        <a id="MARCviewPop" href="/cgi-bin/koha/opac-showmarc.pl?id={marc:datafield[@tag=999]/marc:subfield[@code='9']}" title="MARC" rel="gb_page_center[600,500]">Notice MARC</a>
       </span>
       <span class="view">
-        <a id="MARCview" href="/cgi-bin/koha/opac-MARCdetail.pl?biblionumber={marc:datafield[@tag=999]/marc:subfield[@code='a']}" title="MARC">Notice MARC développée</a>
+        <a id="MARCview" href="/cgi-bin/koha/opac-MARCdetail.pl?biblionumber={marc:datafield[@tag=999]/marc:subfield[@code='9']}" title="MARC">Notice MARC développée</a>
       </span>
       <span class="view">
-        <a id="ISBDview" href="/cgi-bin/koha/opac-ISBDdetail.pl?biblionumber={marc:datafield[@tag=999]/marc:subfield[@code='a']}">Notice ISBD</a>
+        <a id="ISBDview" href="/cgi-bin/koha/opac-ISBDdetail.pl?biblionumber={marc:datafield[@tag=999]/marc:subfield[@code='9']}">Notice ISBD</a>
       </span>
     </div><br/>
     <xsl:call-template name="tag_4xx"/>
