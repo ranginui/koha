@@ -307,7 +307,7 @@ if (@branchcodes) {
     } else {
     
         $verbose and warn "No active overduerules for $branchcodes_word  '@branchcodes'\n";
-        ( scalar grep { '' eq $_ } @branches )
+        ( scalar grep { $_ eq ""} @overduebranches )
           or die "No active overduerules for DEFAULT either!";
         $verbose and warn "Falling back on default rules for @branchcodes\n";
         @branches = ('');
@@ -362,7 +362,7 @@ if ( defined $htmlfilename ) {
 
 foreach my $branchcode (@branches) {
 
-    my $branch_details = C4::Branch::GetBranchDetail($branchcode);
+    my $branch_details = C4::Branch::GetBranchDetail($branchcode) unless ($branchcode eq "");
     my $admin_email_address = $branch_details->{'branchemail'} || C4::Context->preference('KohaAdminEmailAddress');
     my @output_chunks;    # may be sent to mail or stdout or csv file.
 
@@ -424,7 +424,7 @@ WHERE  issues.borrowernumber=borrowers.borrowernumber
 AND    borrowers.categorycode=categories.categorycode
 END_SQL
             my @borrower_parameters;
-            if ($branchcode) {
+            if ($branchcode && $branchcode ne "") {
                 $borrower_sql .= ' AND issues.branchcode=? ';
                 push @borrower_parameters, $branchcode;
             }
