@@ -46,7 +46,7 @@ my $sql = qq(SELECT surname, firstname, cardnumber, address, city, zipcode
              WHERE surname LIKE ?
              OR firstname LIKE ?
              OR cardnumber LIKE ?);
-if (C4::Context->preference("IndependentBranchPatron")){
+if (C4::Context->preference("IndependantBranches")){
   if (C4::Context->userenv && (C4::Context->userenv->{flags} % 2) !=1 && C4::Context->userenv->{'branch'}){
      $sql.=" AND borrowers.branchcode =".$dbh->quote(C4::Context->userenv->{'branch'}) unless (C4::Context->userenv->{'branch'} eq "insecure");
   }
