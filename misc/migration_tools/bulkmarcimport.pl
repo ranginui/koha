@@ -24,6 +24,7 @@ use C4::Koha;
 use C4::Debug;
 use C4::Charset;
 use C4::Items;
+use YAML;
 use Unicode::Normalize;
 use Time::HiRes qw(gettimeofday);
 use Getopt::Long;
@@ -34,7 +35,7 @@ use open qw( :std :utf8 );
 binmode(STDOUT, ":utf8");
 
 my ( $input_marc_file, $number, $offset) = ('',0,0);
-my ($version, $delete, $test_parameter, $skip_marc8_conversion, $char_encoding, $verbose, $commit, $fk_off,$format,$biblios,$authorities,$keepids,$match, $isbn_check, $logfile);
+my ($version, $delete, $test_parameter, $skip_marc8_conversion, $char_encoding, $verbose, $commit, $fk_off,$format,$biblios,$authorities,$keepids,$match, $isbn_check, $logfile,$yamlfile);
 my ($sourcetag,$sourcesubfield,$idmapfl);
 
 $|=1;
@@ -61,6 +62,7 @@ GetOptions(
     'x:s' => \$sourcetag,
     'y:s' => \$sourcesubfield,
     'idmap:s' => \$idmapfl,
+    'yaml:s' => \$yamlfile,
 );
 $biblios=!$authorities||$biblios;
 
@@ -181,7 +183,7 @@ $batch->warnings_off();
 $batch->strict_off();
 my $i=0;
 my $commitnum = $commit ? $commit : 50;
-
+my $yamlhash;
 
 # Skip file offset
 if ( $offset ) {
@@ -404,6 +406,7 @@ RECORD: while (  ) {
             if ($#{ $errors_ref } > -1) { 
                 report_item_errors($biblionumber, $errors_ref);
             }
+            $yamlhash->{$originalid}=$biblionumber if ($yamlfile);
         }
         $dbh->commit() if (0 == $i % $commitnum);
     }
@@ -426,6 +429,10 @@ if ($logfile){
   print $loghandle "file : $input_marc_file\n";
   print $loghandle "$i MARC records done in $timeneeded seconds\n";
   $loghandle->close;
+}
+if ($yamlfile){
+    open YAML, "> $yamlfile" or die "cannot open $yamlfile \n"; 
+    print YAML Dump($yamlhash);
 }
 exit 0;
 
