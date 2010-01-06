@@ -156,10 +156,10 @@ AND notforloan = 0 AND damaged = 0 AND itemlost = 0 AND wthdrawn = 0
 #    multiple patrons have a hold on an item
 
 
-if (C4::Context->preference('IndependantBranches')){
+# if (C4::Context->preference('IndependantBranches')){
 	$strsth .= " AND items.holdingbranch=? ";
     push @query_params, C4::Context->userenv->{'branch'};
-}
+# }
 $strsth .= " GROUP BY reserves.biblionumber " . $sqlorderby;
 
 my $sth = $dbh->prepare($strsth);
@@ -203,54 +203,6 @@ while ( my $data = $sth->fetchrow_hashref ) {
 }
 
 $sth->finish;
-
-# *** I doubt any of this is needed now with the above fixes *** -d.u.
-
-#$strsth=~ s/AND reserves.itemnumber is NULL/AND reserves.itemnumber is NOT NULL/;
-#$strsth=~ s/LEFT JOIN items ON items.biblionumber=reserves.biblionumber/LEFT JOIN items ON items.biblionumber=reserves.itemnumber/;
-#$sth = $dbh->prepare($strsth);
-#if (C4::Context->preference('IndependantBranches')){
-#       $sth->execute(C4::Context->userenv->{'branch'});
-#}
-#else {
-#       $sth->execute();
-#}
-#while ( my $data = $sth->fetchrow_hashref ) {
-#    $this=$data->{biblionumber}.":".$data->{borrowernumber};
-#    my @itemlist;
-#    push(
-#        @reservedata,
-#        {
-#            reservedate      => format_date( $data->{l_reservedate} ),
-#            priority         => $data->{priority},
-#            name             => $data->{l_patron},
-#            title            => $data->{title},
-#            author           => $data->{author},
-#            borrowernumber   => $data->{borrowernumber},
-#            itemnum          => $data->{itemnumber},
-#            phone            => $data->{phone},
-#            email            => $data->{email},
-#            biblionumber     => $data->{biblionumber},
-#            statusw          => ( $data->{found} eq "W" ),
-#            statusf          => ( $data->{found} eq "F" ),
-#            holdingbranch    => $data->{l_holdingbranch},
-#            branch           => $data->{l_branch},
-#            itemcallnumber   => $data->{l_itemcallnumber},
-#            notes            => $data->{notes},
-#            notificationdate => $data->{notificationdate},
-#            reminderdate     => $data->{reminderdate},
-#            count				  => $data->{icount},
-#            rcount			  => $data->{rcount},
-#            pullcount		  => $data->{icount} <= $data->{rcount} ? $data->{icount} : $data->{rcount},
-#            itype				  => $data->{l_itype},
-#            location			  => $data->{l_location},
-#            thisitemonly     => 1,
-# 
-#        }
-#    );
-#    $previous=$this;
-#}
-#$sth->finish;
 
 $template->param(
     todaysdate      	=> format_date($todaysdate),
