@@ -61,7 +61,7 @@ my $record           = GetMarcBiblio($biblionumber);
 # XSLT processing of some stuff
 if (C4::Context->preference("XSLTDetailsDisplay") ) {
     $template->param('XSLTDetailsDisplay' =>'1',
-        'XSLTBloc' => XSLTParse4Display($biblionumber, $record, 'Detail','intranet') );
+        'XSLTBloc' => XSLTParse4Display($biblionumber, $record, C4::Context->preference('IntranetXSLTDetailsDisplay')) );
 }
 
 $template->param( 'SpineLabelShowPrintOnBibDetails' => C4::Context->preference("SpineLabelShowPrintOnBibDetails") );

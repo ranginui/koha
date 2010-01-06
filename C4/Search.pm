@@ -1352,10 +1352,9 @@ Format results in a form suitable for passing to the template
 # IMO this subroutine is pretty messy still -- it's responsible for
 # building the HTML output for the template
 sub searchResults {
-    my ( $searchdesc, $hits, $results_per_page, $offset, $scan, @marcresults, $hidelostitems ) = @_;
+    my ( $searchdesc, $hits, $results_per_page, $offset, $scan, @marcresults ) = @_;
     my $dbh = C4::Context->dbh;
     my @newresults;
-
     #Build branchnames hash
     #find branchname
     #get branch information.....
@@ -1664,9 +1663,10 @@ sub searchResults {
 	use C4::Charset;
 	SetUTF8Flag($marcrecord);
 	$debug && warn $marcrecord->as_formatted;
+        # FIXME : This needs some work in order to be more flexible : Can not use a result list for intranet different from OPAC
         if (C4::Context->preference("XSLTResultsDisplay") && !$scan) {
             $oldbiblio->{XSLTResultsRecord} = XSLTParse4Display(
-                $oldbiblio->{biblionumber}, $marcrecord, 'Results' );
+                $oldbiblio->{biblionumber}, $marcrecord, C4::Context->preference("XSLTResultsDisplay") );
         }
 
         # last check for norequest : if itemtype is notforloan, it can't be reserved either, whatever the items

@@ -212,10 +212,11 @@ INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES
 
 INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('OPACShelfBrowser','1','','Enable/disable Shelf Browser on item details page. WARNING: this feature is very resource consuming on collections with large numbers of items.','YesNo');
 INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES
-('OPACXSLTDetailsDisplay','0','','Enable XSL stylesheet control over details page display on OPAC','YesNo'),
-('OPACXSLTResultsDisplay','0','','Enable XSL stylesheet control over results page display on OPAC','YesNo'),
-('XSLTDetailsDisplay','0','','Enable XSL stylesheet control over details page display on intranet','YesNo'),
-('XSLTResultsDisplay','0','','Enable XSL stylesheet control over results page display on intranet','YesNo');
+('OPACXSLTDetailsDisplay','','','Enable XSL stylesheet control over details page display on OPAC exemple : ../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl','Free'),
+('IntranetXSLTDetailsDisplay','','','Enable XSL stylesheet control over details page display on Intranet exemple : ../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl','Free'),
+('IntranetXSLTResultsDisplay','','','Enable XSL stylesheet control over results page display both on Intranet and OPAC exemple : ../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl','Free'),
+('XSLTDetailsDisplay','','','Enable XSL stylesheet control over details page display','YesNo'),
+('XSLTResultsDisplay','','','Enable XSL stylesheet control over results page display','YesNo');
 INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('AdvancedSearchTypes','itemtypes','itemtypes|ccode','Select which set of fields comprise the Type limit in the advanced search','Choice');
 INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('AllowOnShelfHolds', '0', '', 'Allow hold requests to be placed on items that are not on loan', 'YesNo');
 INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('AllowHoldsOnDamagedItems', '1', '', 'Allow hold requests to be placed on damaged items', 'YesNo');
@@ -287,3 +288,4 @@ INSERT INTO `systempreferences` ( `variable` , `value` , `options` , `explanatio
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('ILS-DI','0','Enables ILS-DI services at OPAC.','','YesNo');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('ILS-DI:Authorized_IPs','','.','Restricts usage of ILS-DI to some IPs','Free');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES ('OverduesBlockCirc','noblock','When checking out an item should overdues block checkout, generate a confirmation dialogue, or allow checkout','noblock|confirmation|block','Choice');
+INSERT INTO systempreferences set value='../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2IntranetDetails.xsl',type='Free', variable='IntranetXSLTResultsDisplay';

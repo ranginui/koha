@@ -3390,6 +3390,14 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     print "Upgrade done (mark DBrev for 3.2-alpha release)\n";
     SetVersion ($DBversion);
 }
+$DBversion = "3.01.00.112";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("UPDATE systempreferences set value='../koha-tmpl/opac-tmpl/prog/en/xslt/".C4::Context->preference('marcflavour')."slim2OPACDetail.xsl',type='Free' where variable='XSLTDetailsDisplay' AND value=1;");
+    $dbh->do("UPDATE systempreferences set value='../koha-tmpl/opac-tmpl/prog/en/xslt/".C4::Context->preference('marcflavour')."slim2OPACResults.xsl',type='Free' where variable='XSLTResultsDisplay' AND value=1;");
+    $dbh->do("INSERT INTO systempreferences set value='../koha-tmpl/intranet-tmpl/prog/en/xslt/".C4::Context->preference('marcflavour')."slim2IntranetDetails.xsl',type='Free', variable='IntranetXSLTResultsDisplay';");
+    print "Upgrade to $DBversion done (Improve XSLT)\n";
+    SetVersion ($DBversion);
+}
 
 $DBversion = '3.01.00.112';
 if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
