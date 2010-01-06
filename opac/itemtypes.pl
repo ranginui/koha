@@ -44,6 +44,7 @@ if ($itemtypes) {
         print '<input type="hidden" name="limit" value="available">';
     }
     print '<select name="limit" onChange="this.form.submit()">';
+    print '<option>-- Please choose --</option>';
     foreach my $thisitemtype ( sort {$a->{description} cmp $b->{description}} @$itemtypes ) {
         print '<option value="mc-ccode:'
           . $thisitemtype->{code} . '">'
