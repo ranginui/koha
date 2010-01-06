@@ -2,6 +2,7 @@
 
 
 # Copyright 2000-2002 Katipo Communications
+# Parts copyright Catalyst
 #
 # This file is part of Koha.
 #
@@ -172,10 +173,10 @@ if ( $run_report ) {
     #    multiple patrons have a hold on an item
 
 
-    if (C4::Context->preference('IndependantBranches')){
+#    if (C4::Context->preference('IndependantBranches')){
         $strsth .= " AND items.holdingbranch=? ";
         push @query_params, C4::Context->userenv->{'branch'};
-    }
+#    }
     $strsth .= " GROUP BY reserves.biblionumber " . $sqlorderby;
 
     my $sth = $dbh->prepare($strsth);
