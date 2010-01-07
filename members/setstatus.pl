@@ -43,6 +43,7 @@ my $borrowernumber=$input->param('borrowernumber');
 my $status = $input->param('status');
 my $reregistration = $input->param('reregistration') || '';
 
+undef $status unless ($status);
 my $dbh = C4::Context->dbh;
 my $dateexpiry;
 
