@@ -535,7 +535,7 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
 			<li class="blocker"><span class="circ-hlt">Lost: </span>Patron's card is lost<!-- TMPL_IF NAME="lostcomment" --> (<!-- TMPL_VAR NAME="lostcomment" -->)<!-- /TMPL_IF --></li>
 			<!-- /TMPL_IF -->
 
-            <!-- TMPL_IF NAME="dbarred" --><li class="blocker">
+            <!-- TMPL_IF NAME="debarred" --><li class="blocker">
                <span class="circ-hlt"> Restricted:</span> Patron's account is restricted<!-- TMPL_IF NAME="userdebarreddate" --> to <!-- TMPL_VAR NAME="userdebarreddate" --><!-- /TMPL_IF -->
                <form class="inline compact" action="/cgi-bin/koha/members/setstatus.pl" method="post">
 	                <input type="hidden" name="borrowernumber" value="<!-- TMPL_VAR NAME="borrowernumber" -->" />
