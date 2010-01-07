@@ -166,7 +166,7 @@ if($duedatespec_allow){
     $datedue = $globalduedate if ($globalduedate);
 }
 
-my $todaysdate = C4::Dates->new->output(C4::Context->preference('dateformat'));
+my $todaysdate = C4::Dates->new;
 
 # check and see if we should print
 if ( $barcode eq '' && $print eq 'maybe' ) {
@@ -450,7 +450,7 @@ if ($borrower) {
         $it->{'can_renew'} = $can_renew;
         $it->{'can_confirm'} = !$can_renew && !$restype;
         $it->{'renew_error'} = $restype;
-        $it->{'checkoutdate'} = C4::Dates->new($it->{'issuedate'},'iso')->output('syspref');
+	    $it->{'checkoutdate'} = C4::Dates->new($it->{'issuedate'},'iso');
 
         $totalprice += $it->{'replacementprice'};
         $it->{'itemtype'} = $itemtypeinfo->{'description'};
@@ -463,7 +463,7 @@ if ($borrower) {
 	$it->{'branchdisplay'} = GetBranchName((C4::Context->preference('HomeOrHoldingBranch') eq 'holdingbranch') ? $it->{'holdingbranch'} : $it->{'homebranch'});
         # ADDED BY JF: NEW ITEMTYPE COUNT DISPLAY
         $issued_itemtypes_count->{ $it->{'itemtype'} }++;
-        if ( $todaysdate eq $it->{'issuedate'} or $todaysdate eq $it->{'lastreneweddate'} ) {
+        if ( $todaysdate eq $it->{'checkoutdate'} or $todaysdate eq $it->{'lastreneweddate'} ) {
             push @todaysissues, $it;
         } else {
             push @previousissues, $it;
