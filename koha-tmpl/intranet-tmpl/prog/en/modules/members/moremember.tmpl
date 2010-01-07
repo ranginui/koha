@@ -141,7 +141,7 @@ if (nodename =="barcodes[]"){
 
     <!-- TMPL_IF NAME="userdebarred" -->
     <ul>
-            <li>Patron is restricted<!-- TMPL_IF NAME="userdebarreddate" --> to <!-- TMPL_VAR NAME="userdebarreddate" --><!-- /TMPL_IF -->
+            <li>Patron is restricted<!-- TMPL_IF NAME="userdebarreddate" --> until <!-- TMPL_VAR NAME="userdebarreddate" --><!-- /TMPL_IF -->
             <form class="inline compact" action="/cgi-bin/koha/members/setstatus.pl" method="post">
                 <input type="hidden" name="borrowernumber" value="<!-- TMPL_VAR NAME="borrowernumber" -->" />
                 <input type="hidden" name="status" value="0" />
