@@ -24,7 +24,7 @@ use C4::Context;
 use C4::Stats;
 use C4::Members;
 use C4::Items;
-use C4::Circulation qw(MarkIssueReturned);
+use C4::Circulation ;
 
 use vars qw($VERSION @ISA @EXPORT);
 
