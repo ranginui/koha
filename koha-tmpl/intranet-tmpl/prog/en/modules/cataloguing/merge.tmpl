@@ -193,8 +193,8 @@ $(document).ready(function(){
 <form id="mergeform" action="/cgi-bin/koha/cataloguing/merge.pl" method="post">
     <fieldset>
 	<legend>Merge reference</legend>
-	<input type="radio" value="<!-- TMPL_VAR NAME="biblio1" -->" checked="checked" id="mergereference1" name="mergereference" /><label for="mergereference1"><!-- TMPL_VAR NAME="title1" --> (<!-- TMPL_VAR NAME="biblio1" -->)</label><br />
-	<input type="radio" value="<!-- TMPL_VAR NAME="biblio2" -->" id="mergereference2" name="mergereference" /><label for="mergereference2"><!-- TMPL_VAR NAME="title2" --> (<!-- TMPL_VAR NAME="biblio2" -->)</label><br />
+	<p><input type="radio" value="<!-- TMPL_VAR NAME="biblio1" -->" checked="checked" id="mergereference1" name="mergereference" /><label style="float:none" for="mergereference1"><!-- TMPL_VAR NAME="title1" --> (<!-- TMPL_VAR NAME="biblio1" -->)</label></p>
+	<p><input type="radio" value="<!-- TMPL_VAR NAME="biblio2" -->" id="mergereference2" name="mergereference" /><label style="float:none" for="mergereference2"><!-- TMPL_VAR NAME="title2" --> (<!-- TMPL_VAR NAME="biblio2" -->)</label></p>
 	<input type="hidden" name="biblionumber" value="<!-- TMPL_VAR name="biblio1" -->" />
 	<input type="hidden" name="biblionumber" value="<!-- TMPL_VAR name="biblio2" -->" />
 	<input type="submit" />
