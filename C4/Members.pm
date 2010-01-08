@@ -500,7 +500,6 @@ sub patronflags {
             $flaginfo{'message'}  = 'Borrower is Debarred.';
             $flaginfo{'noissues'} = 1;
             $flaginfo{'dateend'} = $patroninformation->{'debarred'};
-            $flaginfo{'comment'} = $patroninformation->{'debarredcomment'};
             $flags{'DEBARRED'}     = \%flaginfo;
         }
     }
@@ -591,11 +590,9 @@ sub GetMember {
     my $data = $sth->fetchall_arrayref({});
     #FIXME interface to this routine now allows generation of a result set
     #so whole array should be returned but bowhere in the current code expects this
-    if (@{$data} ) {
-        return $data->[0];
-    }
-
-    return;
+    return undef if (scalar(@$data)==0);        
+    if (scalar(@$data)==1) {return $data->[0];}
+    ($data) and return $data;
 }
 
 

@@ -35,6 +35,7 @@ use C4::Members;
 use C4::Biblio;
 use C4::Reserves;
 use C4::Context;
+use C4::Debug;
 use CGI::Session;
 
 use Date::Calc qw(
@@ -122,7 +123,7 @@ my $organisation   = $query->param('organisations');
 my $print          = $query->param('print');
 my $newexpiry      = $query->param('dateexpiry');
 my $debt_confirmed = $query->param('debt_confirmed') || 0; # Don't show the debt error dialog twice
-warn $newexpiry;
+$debug && warn $newexpiry;
 # Check if stickyduedate is turned off
 if ( $barcode ) {
     # was stickyduedate loaded from session?
@@ -272,6 +273,7 @@ if ($borrowernumber) {
     my $debar = CheckBorrowerDebarred($borrowernumber);
     if($debar){
         $template->param(userdebarred => 1);
+        $template->param(debarredcomment => $borrower->{debarredcomment});
         if( $debar ne "9999-12-31"){
             $template->param(userdebarreddate => C4::Dates::format_date($debar));
         }
@@ -553,14 +555,13 @@ foreach my $flag ( sort keys %$flags ) {
             noissues => 'true',
         );
         if ( $flag eq 'GNA' ) {
-	warn $borrower->{'gonenoaddresscomment'};
             $template->param( gna => 'true', gonenoaddresscomment => $borrower->{'gonenoaddresscomment'}, warning => 1 );
         }
         elsif ( $flag eq 'LOST' ) {
             $template->param( lost => 'true', lostcomment => $borrower->{'lostcomment'}, warning => 1 );
         }
-        elsif ( $flag eq 'DBARRED' ) {
-            $template->param( dbarred => 'true', warning => 1 );
+        elsif ( $flag eq 'DEBARRED' ) {
+            $template->param( debarred => 'true', warning => 1, debarredcomment=>$borrower->{'debarredcomment'});
         }
         elsif ( $flag eq 'CHARGES' ) {
             $template->param(
@@ -568,7 +569,7 @@ foreach my $flag ( sort keys %$flags ) {
                 chargesmsg => $flags->{'CHARGES'}->{'message'},
                 chargesamount => $flags->{'CHARGES'}->{'amount'},
                 charges_is_blocker => 1,
-		warning => 1
+                warning => 1
             );
         }
         elsif ( $flag eq 'CREDITS' ) {
@@ -587,7 +588,7 @@ foreach my $flag ( sort keys %$flags ) {
                 flagged    => 1,
                 chargesmsg => $flags->{'CHARGES'}->{'message'},
                 chargesamount => $flags->{'CHARGES'}->{'amount'},
-		warning => 1
+                warning => 1
             );
         }
         elsif ( $flag eq 'CREDITS' ) {
@@ -603,7 +604,7 @@ foreach my $flag ( sort keys %$flags ) {
                 odues    => 'true',
                 flagged  => 1,
                 oduesmsg => $flags->{'ODUES'}->{'message'},
-		warning => 1
+                warning => 1
             );
 
             my $items = $flags->{$flag}->{'itemlist'};

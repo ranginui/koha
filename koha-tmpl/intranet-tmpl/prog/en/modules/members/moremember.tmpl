@@ -143,15 +143,15 @@ if (nodename =="barcodes[]"){
    <div class="error">
     <ul>
         <!-- TMPL_IF NAME="userdebarred" -->
-            <li>Patron is restricted<!-- TMPL_IF NAME="userdebarreddate" --> until <!-- TMPL_VAR NAME="userdebarreddate" --><!-- /TMPL_IF -->
+            <li>Patron is restricted<!-- TMPL_IF NAME="userdebarreddate" --> until <!-- TMPL_VAR NAME="userdebarreddate" --> <!-- TMPL_IF NAME="debarredcomment"-->(<!-- TMPL_VAR NAME="debarredcomment" -->)<!-- /TMPL_IF --> <!-- /TMPL_IF -->
             <form class="inline compact" action="/cgi-bin/koha/members/setstatus.pl" method="post">
                 <input type="hidden" name="borrowernumber" value="<!-- TMPL_VAR NAME="borrowernumber" -->" />
                 <input type="submit" value="Lift Debarment" />
             </form>
             </li>
         <!-- /TMPL_IF -->
-        <!-- TMPL_IF NAME="gonenoaddress" --><li>Patron's address is in doubt.</li><!-- /TMPL_IF -->
-        <!-- TMPL_IF NAME="lost" --><li>Patron's card has been reported lost.</li><!-- /TMPL_IF -->
+        <!-- TMPL_IF NAME="gonenoaddress" --><li>Patron's address is in doubt.<!-- TMPL_IF NAME="gonenoaddresscomment" --> (<!-- TMPL_VAR NAME="gonenoaddresscomment" -->)<!-- /TMPL_IF --></li><!-- /TMPL_IF -->
+        <!-- TMPL_IF NAME="lost" --><li>Patron's card has been reported lost.<!-- TMPL_IF NAME="lostcomment" --> (<!-- TMPL_VAR NAME="lostcomment" -->)<!-- /TMPL_IF --></li><!-- /TMPL_IF -->
     </ul>
     </div>
     <!-- /TMPL_IF -->
