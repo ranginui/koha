@@ -251,9 +251,11 @@ if($barcodefilter){
  	$linefilter[0] = @$filters[7] if ($line =~ /publishercode/ ) ;
  	$linefilter[0] = @$filters[8] if ($line =~ /publicationyear/ ) ;
  	$linefilter[1] = @$filters[9] if ($line =~ /publicationyear/ ) ;
+
  	$linefilter[0] = @$filters[10] if ($line =~ /items\.homebranch/ ) ;
  	$linefilter[0] = @$filters[11] if ($line =~ /items\.location/ ) ;
  	$linefilter[0] = @$filters[12] if ($line =~ /items\.ccode/ ) ;
+	$linefilter[0] = @$filters[13] if ($line =~ /items.dateaccessioned/ ) ;
 
  	my @colfilter ;
  	$colfilter[0] = @$filters[0] if ($column =~ /dewey/ )  ;
@@ -273,6 +275,7 @@ if($barcodefilter){
  	$colfilter[0] = @$filters[10] if ($column =~ /items\.homebranch/ ) ;
  	$colfilter[0] = @$filters[11] if ($column =~ /items\.location/ ) ;
  	$colfilter[0] = @$filters[12] if ($column =~ /items\.ccode/ ) ;
+ 	$colfilter[0] = @$filters[13] if ($column =~ /items.dateaccessioned/ ) ;
 
 # 1st, loop rows.
 	my $linefield;
@@ -450,7 +453,10 @@ if($barcodefilter){
 		@$filters[12]=~ s/\*/%/g;
 		$strcalc .= " AND items.ccode  LIKE '" . @$filters[12] ."'";
 	}
-	
+	if (@$filters[13]){
+		@$filters[13]=~ s/\*/%/g;
+		$strcalc .= " AND TO_DAYS(now()) - TO_DAYS(items.dateaccessioned) > (" . @$filters[13] . " * 365)";
+	}
 	$strcalc .= " group by $linefield, $colfield order by $linefield,$colfield";
 	$debug and warn "SQL: $strcalc";
 	my $dbcalc = $dbh->prepare($strcalc);
