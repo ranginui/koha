@@ -1324,8 +1324,6 @@ sub searchResults {
             }
 	    my $prefix = $item->{$hbranch} . '--' . $item->{location} . $item->{itype} . $item->{itemcallnumber};
 # For each grouping of items (onloan, available, unavailable), we build a key to store relevant info about that item
-	    use Data::Dumper;
-	    warn Dumper $item;
             if ( $item->{onloan} ) {
                 $onloan_count++;
 				my $key = $prefix . $item->{onloan} . $item->{barcode};
