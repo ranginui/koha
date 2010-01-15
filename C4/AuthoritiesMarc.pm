@@ -670,10 +670,14 @@ sub AddAuthority {
     }
 	}
 
-  if (($format eq "UNIMARCAUTH") && (!$record->subfield('100','a'))){
+  if ($format eq "UNIMARCAUTH") {
         $record->leader("     nx  j22             ") unless ($record->leader());
         my $date=POSIX::strftime("%Y%m%d",localtime);    
-        if ($record->field('100')){
+	if (my $string=$record->subfield('100',"a")){
+      		$string=~s/fre50/frey50/;
+      		$record->field('100')->update('a'=>$string);
+	}
+        elsif ($record->field('100')){
           $record->field('100')->update('a'=>$date."afrey50      ba0");
         } else {      
           $record->append_fields(
