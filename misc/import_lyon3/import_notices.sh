@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/zsh
 
 #autorites : fichier en RXXCXX.RAW
 #biblios : fichier en RXXAXX.RAW
@@ -17,7 +17,8 @@ cd src
 perl autorites.pl
 
 perl -I. -- ../import_lyon3/import_lyon3.pl LYON3_IMPORT`date "+%Y%m%d"`R01A001.RAW
-mv fichiers/LYON3_IMPORT* fichiers_traites
+rm fichiers/LYON3_IMPORT*
+rm ../**/LYON3*.yaml
 
 perl $PERL5LIB/misc/migration_tools/rebuild_zebra.pl -a -x -reset -nosanitize
 perl $PERL5LIB/misc/migration_tools/rebuild_zebra.pl -b -x -reset -nosanitize
