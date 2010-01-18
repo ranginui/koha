@@ -239,7 +239,7 @@ if ( !$advanced_search_types or $advanced_search_types eq 'itemtypes' ) {
     foreach my $thisitemtype ( sort { $itemtypes->{$a}->{'description'} cmp $itemtypes->{$b}->{'description'} } keys %$itemtypes ) {
         my %row = (
             number      => $cnt++,
-            ccl         => $itype_or_itemtype,
+            ccl => qq($itype_or_itemtype,phr),
             code        => $thisitemtype,
             selected    => $selected,
             description => $itemtypes->{$thisitemtype}->{'description'},
@@ -255,7 +255,7 @@ if ( !$advanced_search_types or $advanced_search_types eq 'itemtypes' ) {
     for my $thisitemtype ( sort { $a->{'lib'} cmp $b->{'lib'} } @$advsearchtypes ) {
         my %row = (
             number      => $cnt++,
-            ccl         => $advanced_search_types,
+            ccl         => qq($advanced_search_types,phr),
             code        => $thisitemtype->{authorised_value},
             selected    => $selected,
             description => $thisitemtype->{'lib'},
