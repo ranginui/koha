@@ -64,9 +64,9 @@
       <xsl:for-each select="marc:datafield[@tag=700]">
             <a>
               <xsl:choose>
-                <xsl:when test="marc:subfield[@code=8]">
+                <xsl:when test="marc:subfield[@code=9]">
                   <xsl:attribute name="href">
-                  /cgi-bin/koha/opac-search.pl?q=an:<xsl:value-of select="marc:subfield[@code=8]"/>
+                  /cgi-bin/koha/opac-search.pl?q=an:<xsl:value-of select="marc:subfield[@code=9]"/>
                 </xsl:attribute>
                 </xsl:when>
                 <xsl:otherwise>
@@ -87,8 +87,8 @@
       <xsl:for-each select="marc:datafield[@tag=701]">
           <a>
             <xsl:choose>
-              <xsl:when test="marc:subfield[@code=8]">
-                <xsl:attribute name="href">/cgi-bin/koha/opac-search.pl?q=an:<xsl:value-of select="marc:subfield[@code=8]"/></xsl:attribute>
+              <xsl:when test="marc:subfield[@code=9]">
+                <xsl:attribute name="href">/cgi-bin/koha/opac-search.pl?q=an:<xsl:value-of select="marc:subfield[@code=9]"/></xsl:attribute>
               </xsl:when>
               <xsl:otherwise>
                 <xsl:attribute name="href">/cgi-bin/koha/opac-search.pl?q=au:<xsl:value-of select="marc:subfield[@code='a']"/><xsl:text> </xsl:text><xsl:value-of select="marc:subfield[@code='b']"/></xsl:attribute>
@@ -117,7 +117,7 @@
       <xsl:for-each select="marc:datafield[@tag=702]">
           <a>
           <xsl:choose>
-            <xsl:when test="marc:subfield[@code=8]"><xsl:attribute name="href">/cgi-bin/koha/opac-search.pl?q=an:<xsl:value-of select="marc:subfield[@code=8]"/></xsl:attribute></xsl:when>
+            <xsl:when test="marc:subfield[@code=9]"><xsl:attribute name="href">/cgi-bin/koha/opac-search.pl?q=an:<xsl:value-of select="marc:subfield[@code=9]"/></xsl:attribute></xsl:when>
             <xsl:otherwise><xsl:attribute name="href">/cgi-bin/koha/opac-search.pl?q=au:<xsl:value-of select="marc:subfield[@code='a']"/><xsl:text></xsl:text><xsl:value-of select="marc:subfield[@code='b']"/></xsl:attribute></xsl:otherwise>
 	  </xsl:choose>
 	  <xsl:if test="marc:subfield[@code='a']"><xsl:value-of select="marc:subfield[@code='a']"/></xsl:if>
@@ -132,8 +132,8 @@
       <xsl:for-each select="marc:datafield[@tag=710]">
             <a>
               <xsl:choose>
-                <xsl:when test="marc:subfield[@code=8]">
-                  <xsl:attribute name="href">/cgi-bin/koha/opac-search.pl?q=an:<xsl:value-of select="marc:subfield[@code=8]"/></xsl:attribute>
+                <xsl:when test="marc:subfield[@code=9]">
+                  <xsl:attribute name="href">/cgi-bin/koha/opac-search.pl?q=an:<xsl:value-of select="marc:subfield[@code=9]"/></xsl:attribute>
                 </xsl:when>
                 <xsl:otherwise>
                   <xsl:attribute name="href">/cgi-bin/koha/opac-search.pl?q=au:<xsl:value-of select="marc:subfield[@code='a']"/><xsl:text> </xsl:text><xsl:value-of select="marc:subfield[@code='b']"/></xsl:attribute>
@@ -159,8 +159,8 @@
       <xsl:for-each select="marc:datafield[@tag=711]">
             <a>
             <xsl:choose>
-              <xsl:when test="marc:subfield[@code=8]">
-                <xsl:attribute name="href">/cgi-bin/koha/opac-search.pl?q=an:<xsl:value-of select="marc:subfield[@code=8]"/></xsl:attribute>
+              <xsl:when test="marc:subfield[@code=9]">
+                <xsl:attribute name="href">/cgi-bin/koha/opac-search.pl?q=an:<xsl:value-of select="marc:subfield[@code=9]"/></xsl:attribute>
               </xsl:when>
               <xsl:otherwise>
                 <xsl:attribute name="href">/cgi-bin/koha/opac-search.pl?q=au:<xsl:value-of select="marc:subfield[@code='a']"/><xsl:text> </xsl:text><xsl:value-of select="marc:subfield[@code='b']"/></xsl:attribute>
@@ -195,8 +195,8 @@
       <xsl:for-each select="marc:datafield[@tag=712]">
             <a>
               <xsl:choose>
-                <xsl:when test="marc:subfield[@code=8]">
-                  <xsl:attribute name="href">/cgi-bin/koha/opac-search.pl?q=an:<xsl:value-of select="marc:subfield[@code=8]"/></xsl:attribute>
+                <xsl:when test="marc:subfield[@code=9]">
+                  <xsl:attribute name="href">/cgi-bin/koha/opac-search.pl?q=an:<xsl:value-of select="marc:subfield[@code=9]"/></xsl:attribute>
                 </xsl:when>
                 <xsl:otherwise>
                   <xsl:attribute name="href">/cgi-bin/koha/opac-search.pl?q=au:<xsl:value-of select="marc:subfield[@code='a']"/><xsl:text> </xsl:text><xsl:value-of select="marc:subfield[@code='b']"/></xsl:attribute>
@@ -364,8 +364,8 @@
         <xsl:for-each select="marc:datafield[@tag=600 or @tag=601 or @tag=606 or @tag=607 or @tag=610]">
           <a>
             <xsl:choose>
-              <xsl:when test="marc:subfield[@code=8]">
-                <xsl:attribute name="href">/cgi-bin/koha/opac-search.pl?q=an:<xsl:value-of select="marc:subfield[@code=8]"/></xsl:attribute>
+              <xsl:when test="marc:subfield[@code=9]">
+                <xsl:attribute name="href">/cgi-bin/koha/opac-search.pl?q=an:<xsl:value-of select="marc:subfield[@code=9]"/></xsl:attribute>
               </xsl:when>
               <xsl:otherwise>
                 <xsl:attribute name="href">/cgi-bin/koha/opac-search.pl?q=su:<xsl:value-of select="marc:subfield[@code='a']"/></xsl:attribute>

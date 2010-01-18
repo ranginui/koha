@@ -54,6 +54,7 @@ select="marc:datafield[@tag=999]/marc:subfield[@code='9']"/>
         <xsl:text> ; </xsl:text>
         <xsl:value-of select="marc:subfield[@code='g']"/>
       </xsl:if>
+      <xsl:text> </xsl:text>
     </xsl:for-each>
   </xsl:if>
 
