@@ -10,7 +10,8 @@ completeness 0
 position 1
 alwaysmatches 1
 firstinfield 1
-charmap word-phrase-utf.chr
+#charmap word-phrase-utf.chr
+icuchain icu.xml
 #firstinfield 1
 
 # Phrase index
@@ -18,8 +19,9 @@ charmap word-phrase-utf.chr
 # and structure is word/phrase/word-list/free-form-text/document-text
 index p
 completeness 1
-charmap word-phrase-utf.chr
-firstinfield 1
+#charmap word-phrase-utf.chr
+icuchain icu.xml
+#firstinfield 1
 
 # URX (URL) index
 # Used if structure=urx (@attr 4=104)
