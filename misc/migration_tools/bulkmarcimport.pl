@@ -30,7 +30,9 @@ use Getopt::Long;
 use IO::File;
 use Pod::Usage;
 
+use open qw( :std :utf8 );
 binmode(STDOUT, ":utf8");
+
 my ( $input_marc_file, $number, $offset) = ('',0,0);
 my ($version, $delete, $test_parameter, $skip_marc8_conversion, $char_encoding, $verbose, $commit, $fk_off,$format,$biblios,$authorities,$keepids,$match, $isbn_check, $logfile);
 my ($sourcetag,$sourcesubfield,$idmapfl);
@@ -256,6 +258,8 @@ RECORD: while (  ) {
     }
     my $id;
     # search for duplicates (based on Local-number)
+    my $originalid;
+    $originalid=GetRecordId($record,$tagid,$subfieldid);
     if ($match){
        require C4::Search;
        my $query=build_query($match,$record);
@@ -267,6 +271,23 @@ RECORD: while (  ) {
            my $marcrecord = MARC::File::USMARC::decode($results->[0]);
            SetUTF8Flag($marcrecord);
 	   	   $id=GetRecordId($marcrecord,$tagid,$subfieldid);
+           if ($authorities && $marcFlavour ) {
+                #Skip if authority in database is the same as the on in database
+				if ($marcrecord->field('005')->data >= $record->field('005')->data){
+					if ($yamlfile){
+						$yamlhash->{$originalid}->{'authid'}=$id;
+						# On récupère tous les souschamps des champs vedettes d'autorités
+						my @subfields=map{
+						    		    my $field=$_;
+						    		    map{
+									($_->[0]=~/[a-z]/?$_->[1]:()) 
+						    		       }  $field->subfields();
+								 } $marcrecord->field("2..");
+						$yamlhash->{$originalid}->{'subfields'}=\@subfields;
+					}
+					next;
+				}
+			}
        } 
        elsif  ($results && scalar(@$results)>1){
           $debug && warn "more than one match for $query";
@@ -275,9 +296,7 @@ RECORD: while (  ) {
           $debug && warn "nomatch for $query";
        }
     }
-	my $originalid;
     if ($keepids){
-	  $originalid=GetRecordId($record,$tagid,$subfieldid);
       if ($originalid){
 		 my $storeidfield;
 		 if (length($keepids)==3){
@@ -328,6 +347,11 @@ RECORD: while (  ) {
 					printlog({id=>$originalid||$id||$authid, op=>"insert",status=>"ok"}) if ($logfile);
 				}
  	        }
+	        if ($yamlfile){
+              	$yamlhash->{$originalid}->{'authid'}=$authid;
+	      	  	my @subfields=map{($_->[0]=~/[a-z]/?$_->[1]:())} $record->field("2..")->subfields();
+	      		$yamlhash->{$originalid}->{'subfields'}=\@subfields;
+            }
         }
         else {
             my ( $biblionumber, $biblioitemnumber, $itemnumbers_ref, $errors_ref );
