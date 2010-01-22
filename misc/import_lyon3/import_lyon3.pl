@@ -20,6 +20,7 @@
 use strict;
 use warnings;
 use diagnostics;
+use open qw( :std :utf8 );
 
 use FindBin qw($Bin);
 use lib "$Bin/../sudoc/sudoc/src/";
