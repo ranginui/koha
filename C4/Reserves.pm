@@ -501,12 +501,12 @@ sub GetMaxPickUpDelay {
     my $dbh             = C4::Context->dbh;
     my $allowedreserves = 0;
             
-    my $controlbranch = C4::Context->preference('ReservesControlBranch');
     my $itype         = C4::Context->preference('item-level_itypes') ? "itype" : "itemtype";
 
     # we retrieve borrowers and items informations #
     my $item     = C4::Items::GetItem($itemnumber);
     my $borrower = C4::Members::GetMember('borrowernumber'=>$borrowernumber);     
+    my $controlbranch = GetReservesControlBranch($borrower,$item);
     
     # we retrieve user rights on this itemtype and branchcode
     my $sth = $dbh->prepare("SELECT holdspickupdelay 
@@ -519,13 +519,7 @@ sub GetMaxPickUpDelay {
     
     my $itemtype     = $item->{$itype};
     my $borrowertype = $borrower->{categorycode};
-    my $branchcode   = "";
-    
-    if( $controlbranch eq "ItemHomeLibrary" ){
-        $branchcode = $item->{homebranch};
-    }elsif( $controlbranch eq "PatronLibrary" ){
-        $branchcode = $borrower->{branchcode};
-    }
+    my $branchcode   = $controlbranch;
     
     $sth->execute( $borrowertype, $itemtype, $branchcode );
     my $pickupdelay = $sth->fetchrow_hashref;
