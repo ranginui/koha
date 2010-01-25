@@ -293,12 +293,12 @@ RECORD: while (  ) {
 					if ($yamlfile){
 						$yamlhash->{$originalid}->{'authid'}=$id;
 						# On récupère tous les souschamps des champs vedettes d'autorités
-						my @subfields=map{
-						    		    my $field=$_;
-						    		    map{
-									($_->[0]=~/[a-z]/?$_->[1]:()) 
+						my @subfields;
+						foreach my $field ($marcrecord->field("2..")){
+						    push @subfields, map{
+									($_->[0]=~/[a-z]/?$_->[1]:())
 						    		       }  $field->subfields();
-								 } $marcrecord->field("2..");
+						}
 						$yamlhash->{$originalid}->{'subfields'}=\@subfields;
 					}
 					next;
@@ -382,7 +382,12 @@ RECORD: while (  ) {
  	        }
 	        if ($yamlfile){
               	$yamlhash->{$originalid}->{'authid'}=$authid;
-	      	  	my @subfields=map{($_->[0]=~/[a-z]/?$_->[1]:())} $record->field("2..")->subfields();
+				my @subfields;
+				foreach my $field ($record->field("2..")){
+		    		push @subfields, map{
+							($_->[0]=~/[a-z]/?$_->[1]:())
+		    		       	}  $field->subfields();
+				}
 	      		$yamlhash->{$originalid}->{'subfields'}=\@subfields;
             }
         }
