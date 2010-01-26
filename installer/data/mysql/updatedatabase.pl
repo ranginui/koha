@@ -3748,7 +3748,7 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     $dbh->do('INSERT INTO issuingrules (branchcode, categorycode, itemtype,holdrestricted,maxissueqty)
                     SELECT branchcode,"*","*",holdallowed,maxissueqty from default_branch_circ_rules defaults
               ON DUPLICATE KEY update maxissueqty=defaults.maxissueqty, holdrestricted=defaults.holdallowed');
-    $dbh->do('INSERT INTO issuingrules (branchcode, categorycode, itemtype,holdrestricted,maxissueqty)
+    $dbh->do('INSERT INTO issuingrules (branchcode, categorycode, itemtype,holdrestricted)
                     SELECT "*","*",itemtype,holdallowed from default_branch_item_rules defaults 
               ON DUPLICATE KEY update holdrestricted=defaults.holdallowed');
     for my $tablename qw(default_circ_rules default_branch_circ_rules default_branch_item_rules default_borrower_circ_rules){
