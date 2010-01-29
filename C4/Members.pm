@@ -396,9 +396,9 @@ sub GetMemberDetails {
  $flags->{ LOST  }->{noissues}      Set for each LOST
  $flags->{ LOST  }->{message}       Message -- deprecated
 
- $flags->{DBARRED}                  Set if patron debarred, no access
- $flags->{DBARRED}->{noissues}      Set for each DBARRED
- $flags->{DBARRED}->{message}       Message -- deprecated
+ $flags->{DEBARRED}                  Set if patron debarred, no access
+ $flags->{DEBARRED}->{noissues}      Set for each DEBARRED
+ $flags->{DEBARRED}->{message}       Message -- deprecated
 
  $flags->{ NOTES }
  $flags->{ NOTES }->{message}       The note itself.  NOT deprecated
@@ -412,6 +412,7 @@ sub GetMemberDetails {
  $flags->{WAITING}->{message}       Message -- deprecated
  $flags->{WAITING}->{itemlist}      ref-to-array: list of available items
 
+ $flags->{EXPIRED}                  patron subscription expired
 =over 4
 
 C<$flags-E<gt>{ODUES}-E<gt>{itemlist}> is a reference-to-array listing the
@@ -472,13 +473,22 @@ sub patronflags {
         $flaginfo{'noissues'} = 1;
         $flags{'LOST'}        = \%flaginfo;
     }
-    if (   $patroninformation->{'debarred'}
-        && $patroninformation->{'debarred'} == 1 )
-    {
-        my %flaginfo;
-        $flaginfo{'message'}  = 'Borrower is Debarred.';
-        $flaginfo{'noissues'} = 1;
-        $flags{'DBARRED'}     = \%flaginfo;
+    if ( check_date(split(/-/,$patroninformation->{'dateexpiry'})) ){
+        if(Date_to_Days(Date::Calc::Today) > Date_to_Days(split(/-/,$patroninformation->{'dateexpiry'}) )){
+            my %flaginfo;
+            $flaginfo{'noissues'} = 1;
+            $flags{'EXPIRED'} = \%flaginfo;
+        }
+    }
+    if ( $patroninformation->{'debarred'} && check_date(split(/-/,$patroninformation->{'debarred'})) ){
+        if(Date_to_Days(Date::Calc::Today) < Date_to_Days(split(/-/,$patroninformation->{'debarred'}) )){
+            my %flaginfo;
+            $flaginfo{'message'}  = 'Borrower is Debarred.';
+            $flaginfo{'noissues'} = 1;
+            $flaginfo{'dateend'} = $patroninformation->{'debarred'};
+            $flaginfo{'comment'} = $patroninformation->{'debarredcomment'};
+            $flags{'DEBARRED'}     = \%flaginfo;
+        }
     }
     if (   $patroninformation->{'borrowernotes'}
         && $patroninformation->{'borrowernotes'} )
