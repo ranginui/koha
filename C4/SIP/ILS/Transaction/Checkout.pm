@@ -60,6 +60,7 @@ sub do_checkout {
 	$debug and warn "do_checkout borrower: . " . Dumper $borrower;
 	my ($issuingimpossible,$needsconfirmation) = CanBookBeIssued( $borrower, $barcode );
 	my $noerror=1;
+	$debug and warn "do_checkout IssuingImpossible: . " , Dumper($issuingimpossible),"\n",Dumper($needsconfirmation);
     if (scalar keys %$issuingimpossible) {
         foreach (keys %$issuingimpossible) {
             # do something here so we pass these errors
@@ -116,7 +117,7 @@ sub do_checkout {
 	$debug and warn "do_checkout: calling AddIssue(\$borrower,$barcode, undef, 0)\n"
 		# . "w/ \$borrower: " . Dumper($borrower)
 		. "w/ C4::Context->userenv: " . Dumper(C4::Context->userenv);
-	my $c4due  = AddIssue($borrower, $barcode, undef, 0);
+	my $c4due  = AddIssue($borrower, $barcode, undef, 0,undef,1);
 	my $due  = $c4due->output('iso') || undef;
 	$debug and warn "Item due: $due";
 	$self->{'due'} = $due;
