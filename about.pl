@@ -16,7 +16,7 @@
 # Suite 330, Boston, MA  02111-1307 USA
 
 use strict;
-
+use warnings;
 use C4::Output;    # contains gettemplate
 use C4::Auth;
 use C4::Context;
@@ -130,6 +130,7 @@ Test::Harness
 Test::More
 Text::CSV
 Text::CSV_XS
+Text::CSV::Encoded
 Text::Iconv
 Text::Wrap
 Time::HiRes

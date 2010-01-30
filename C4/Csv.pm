@@ -31,15 +31,15 @@ $VERSION = 3.00;
 
 @EXPORT = qw(
   &GetCsvProfiles
+  &GetCsvProfile
   &GetCsvProfilesLoop
   &GetMarcFieldsForCsv
 );
 
-my $dbh = C4::Context->dbh;
 
 # Returns all informations about csv profiles
 sub GetCsvProfiles {
-
+    my $dbh = C4::Context->dbh;
     my $query = "SELECT * FROM export_format";
 
     $sth = $dbh->prepare($query);
@@ -49,11 +49,23 @@ sub GetCsvProfiles {
 
 }
 
+# Returns all informations about a given csv profile
+sub GetCsvProfile {
+    my ($id) = @_;
+    my $dbh = C4::Context->dbh;
+    my $query = "SELECT * FROM export_format WHERE export_format_id=?";
+
+    $sth = $dbh->prepare($query);
+    $sth->execute($id);
+
+    return ($sth->fetchrow_hashref);
+}
+
 # Returns fields to extract for the given csv profile
 sub GetMarcFieldsForCsv {
 
     my ($id) = @_;
-
+    my $dbh = C4::Context->dbh;
     my $query = "SELECT marcfields FROM export_format WHERE export_format_id=?";
 
     $sth = $dbh->prepare($query);
@@ -67,6 +79,7 @@ sub GetMarcFieldsForCsv {
 # Returns informations aboout csv profiles suitable for html templates
 sub GetCsvProfilesLoop {
    # List of existing profiles
+    my $dbh = C4::Context->dbh;
     my $sth;
     my $query = "SELECT export_format_id, profile FROM export_format";
     $sth = $dbh->prepare($query);

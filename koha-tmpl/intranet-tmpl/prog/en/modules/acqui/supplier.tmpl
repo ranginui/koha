@@ -98,39 +98,39 @@ if (f.company.value == "") {
                         <!-- TMPL_VAR NAME="currency" -->
                     <!-- /TMPL_LOOP -->
                     </select></li>
-	    </ol>
-	    <ol class="radio">
-            <!-- TMPL_IF NAME="GST" --><li><label for="gst" class="radio">GST Registered</label>
+            </ol>
+            <ol class="radio">
+            <!-- TMPL_IF NAME="GST" --><li><label for="gstyes" class="radio">Tax Number Registered:</label>
                 <!-- TMPL_IF name="gstreg" -->
-                    <input type="radio" name="gst" id="gstyes" value="1" checked="checked" /><label for="gstyes">Yes</label>
-                    <input type="radio" name="gst" id="gstno" value="0" /><label for="gstno">No</label>
+                    <label for="gstyes">Yes</label> <input type="radio" name="gst" id="gstyes" value="1" checked="checked" />
+                    <label for="gstno">No</label> <input type="radio" name="gst" id="gstno" value="0" />
                 <!-- TMPL_ELSE -->
-                    <input type="radio" name="gst" id="gstyes" value="1" /><label for="gstyes">Yes</label>
-                    <input type="radio" name="gst" id="gstno" value="0" checked="checked" /><label for="gstno">No</label>
+                    <label for="gstyes">Yes</label> <input type="radio" name="gst" id="gstyes" value="1" />
+                    <label for="gstno">No</label> <input type="radio" name="gst" id="gstno" value="0" checked="checked" />
                 <!-- /TMPL_IF --></li><!-- /TMPL_IF -->
             
-            <!-- TMPL_IF NAME="GST" --><li><label for="order_prices" class="radio">Ordering prices</label>
+            <!-- TMPL_IF NAME="GST" --><li><label for="list_gstyes" class="radio">Ordering prices:</label>
                 <!-- TMPL_IF name="listincgst" -->
-                    <input type="radio" id="list_gstyes" name="list_gst" value="1" checked="checked" /><label for="list_gstyes">include GST</label>
-                    <input type="radio" id="list_gstno" name="list_gst" value="0" /><label for="list_gstno">don't include GST</label>
+                    <label for="list_gstyes">Include tax</label> <input type="radio" id="list_gstyes" name="list_gst" value="1" checked="checked" />
+                    <label for="list_gstno">Don't include tax</label> <input type="radio" id="list_gstno" name="list_gst" value="0" />
                 <!-- TMPL_ELSE -->
-                    <input type="radio" id="list_gstyes" name="list_gst" value="1" /><label for="list_gstyes">include GST</label>
-                    <input type="radio" id="list_gstno" name="list_gst" value="0" checked="checked" /><label for="list_gstno">don't include GST</label>
+                    <label for="list_gstyes">Include tax</label> <input type="radio" id="list_gstyes" name="list_gst" value="1" />
+                    <label for="list_gstno">Don't include tax</label> <input type="radio" id="list_gstno" name="list_gst" value="0" checked="checked" />
                 <!-- /TMPL_IF --></li><!-- /TMPL_IF -->
             
-            <!-- TMPL_IF NAME="GST" --><li><label for="invoice_prices" class="radio">Invoice prices</label>
+            <!-- TMPL_IF NAME="GST" --><li><label for="invoice_gstyes" class="radio">Invoice prices:</label>
                 <!-- TMPL_IF name= "invoiceincgst" -->
-                    <input type="radio" id="invoice_gstyes" name="invoice_gst" value="1" checked="checked" /><label for="invoice_gstyes">include GST</label>
-                    <input type="radio" id="invoice_gstno" name="invoice_gst" value="0" /><label for="invoice_gstno">don't include GST</label>
+                    <label for="invoice_gstyes">Include tax</label> <input type="radio" id="invoice_gstyes" name="invoice_gst" value="1" checked="checked" />
+                    <label for="invoice_gstno">Don't include tax</label> <input type="radio" id="invoice_gstno" name="invoice_gst" value="0" />
                     <!-- TMPL_ELSE -->
-                    <input type="radio" id="invoice_gstyes" name="invoice_gst" value="1"><label for="invoice_gstyes">include GST</label>
-                    <input type="radio" id="invoice_gstno" name="invoice_gst" value="0" checked="checked" /><label for="invoice_gstno">don't include GST</label>
+                    <label for="invoice_gstyes">Include tax</label> <input type="radio" id="invoice_gstyes" name="invoice_gst" value="1">
+                    <label for="invoice_gstno">Don't include tax</label> <input type="radio" id="invoice_gstno" name="invoice_gst" value="0" checked="checked" />
                 <!-- /TMPL_IF --></li><!-- /TMPL_IF -->
-	    </ol>
-	    <ol>
+            </ol>
+            <ol>
             <li><label for="discount">Discount</label>
                 <input type="text" size="3" id="discount" name="discount" value="<!-- TMPL_VAR NAME="discount" -->" /> %</li>
-            <li><label for="gstrate">GST rate</label><input type="text" name="gstrate" id="gstrate" size="5" value="<!-- TMPL_VAR name="gstrate" -->"/>%</li>
+            <!-- TMPL_IF NAME="GST" --><li><label for="gstrate">Tax rate</label><input type="text" name="gstrate" id="gstrate" size="5" value="<!-- TMPL_VAR name="gstrate" -->"/>%</li><!-- /TMPL_IF -->
             <li><label for="notes">Notes</label>
                 <textarea cols="40" rows="4" id="notes" name="notes" ><!-- TMPL_VAR NAME="notes" --></textarea></li></ol>			
             <!-- TMPL_UNLESS NAME="GST" -->
@@ -145,38 +145,39 @@ if (f.company.value == "") {
 <!--TMPL_ELSE-->
     <h1><!-- TMPL_VAR NAME="name" --></h1>
         <div class="yui-g">
-        <div id="supplier-company-details" class="yui-u first">
-            <p><strong>Company Name: </strong>
-                <!-- TMPL_VAR NAME="name" --></p>
-            <p><strong>Postal Address: </strong>
-                    <!-- TMPL_VAR NAME="postal" --></p>
-            <p><strong>Physical Address: </strong>
-                <!-- TMPL_VAR NAME="address1" --><!-- TMPL_VAR NAME="address2" --><!-- TMPL_VAR NAME="address3" --><!-- TMPL_VAR NAME="address4" --></p>
-            <p><strong>Phone: </strong>
-                <!-- TMPL_VAR NAME="phone" --></p>
-            <p><strong>Fax: </strong>
-                <!-- TMPL_VAR NAME="fax" --></p>
-        <!-- TMPL_IF NAME="url" --> <p><strong>Web site: </strong>
-                <a href="<!-- TMPL_VAR NAME="url" -->"><!-- TMPL_VAR NAME="url" --></a></p><!-- /TMPL_IF -->
-        </div>
-        <div id="supplier-contact-details" class="yui-u">
-            <h3>Contact details</h3>
-            <p><strong>Contact name: </strong>
-                <!-- TMPL_VAR NAME="contact" --></p>
-            <p><strong>Position: </strong>
-                <!-- TMPL_VAR NAME="contpos" --></p>
-            <p><strong>Phone: </strong>
-                <!-- TMPL_VAR NAME="contphone" --></p>
-            <p><strong>Alternative phone: </strong>
-                <!-- TMPL_VAR NAME="contaltphone" --></p>
-            <p><strong>Fax: </strong>
-                <!-- TMPL_VAR NAME="contfax" --></p>
-            <!-- TMPL_IF NAME="contemail" --><p><strong>Email: </strong>
-                <a href="mailto:<!-- TMPL_VAR NAME="contemail" -->"><!-- TMPL_VAR NAME="contemail" --></a></p><!-- /TMPL_IF -->
-            <!-- TMPL_IF NAME="contnotes" --><p><strong>Notes: </strong>
-                <!-- TMPL_VAR NAME="contnotes" --></p><!-- /TMPL_IF -->
-        
-        </div>
+            <div id="supplier-company-details" class="yui-u first">
+                <h3>Supplier details</h3>
+                <div class="rows">
+                    <ol>
+                        <li><span class="label">Company Name: </span><!-- TMPL_VAR NAME="name" --></li>
+                        <li><span class="label">Postal Address: </span><!-- TMPL_VAR NAME="postal" --></li>
+                        <li><span class="label">Physical Address: </span><!-- TMPL_VAR NAME="address1" --><!-- TMPL_VAR NAME="address2" --><!-- TMPL_VAR NAME="address3" --><!-- TMPL_VAR NAME="address4" --></li>
+                        <li><span class="label">Phone: </span><!-- TMPL_VAR NAME="phone" --></li>
+                        <li><span class="label">Fax: </span><!-- TMPL_VAR NAME="fax" --></li>
+                        <!-- TMPL_IF NAME="url" -->
+                            <li><span class="label">Web site: </span><a href="<!-- TMPL_VAR NAME="url" -->"><!-- TMPL_VAR NAME="url" --></a></li>
+                        <!-- /TMPL_IF -->
+                    </ol>
+                </div>
+            </div>
+            <div id="supplier-contact-details" class="yui-u">
+                <h3>Contact details</h3>
+                <div class="rows">
+                    <ol>
+                        <li><span class="label">Contact name: </span><!-- TMPL_VAR NAME="contact" --></li>
+                        <li><span class="label">Position: </span><!-- TMPL_VAR NAME="contpos" --></li>
+                        <li><span class="label">Phone: </span><!-- TMPL_VAR NAME="contphone" --></li>
+                        <li><span class="label">Alternative phone: </span><!-- TMPL_VAR NAME="contaltphone" --></li>
+                        <li><span class="label">Fax: </span><!-- TMPL_VAR NAME="contfax" --></li>
+                        <!-- TMPL_IF NAME="contemail" -->
+                            <li><span class="label">Email: </span><a href="mailto:<!-- TMPL_VAR NAME="contemail" -->"><!-- TMPL_VAR NAME="contemail" --></a></li>
+                        <!-- /TMPL_IF -->
+                        <!-- TMPL_IF NAME="contnotes" -->
+                            <li><span class="label">Notes: </span><!-- TMPL_VAR NAME="contnotes" --></li>
+                        <!-- /TMPL_IF -->
+                    </ol>
+                </div>
+            </div>
         </div>
         <div id="supplier-ordering-information" class="yui-g">
         <h3>Ordering information</h3>
@@ -188,19 +189,45 @@ if (f.company.value == "") {
                     <!-- /TMPL_IF --></p>
             <p><strong>List Prices are: </strong><!--TMPL_VAR Name="listprice"--></p>
             <p><strong>Invoice Prices are: </strong><!--TMPL_VAR Name="invoiceprice"--></p>
-            <!-- TMPL_IF NAME="GST" --><p><strong>GST Registered: </strong>
+            <!-- TMPL_IF NAME="GST" --><p><strong>Tax Number Registered: </strong>
                     <!-- TMPL_IF name="gstreg" -->Yes<!--TMPL_ELSE-->No<!-- /TMPL_IF --></p>
-            <p><strong>List Item Price Includes GST: </strong>
+            <p><strong>List Item Price Includes Tax: </strong>
                     <!-- TMPL_IF name="listincgst" -->Yes<!--TMPL_ELSE-->No<!-- /TMPL_IF --></p>
-            <p><strong>Invoice Item Price Includes GST: </strong>
+            <p><strong>Invoice Item Price Includes Tax: </strong>
                     <!-- TMPL_IF name= "invoiceincgst" -->Yes<!--TMPL_ELSE-->No<!-- /TMPL_IF --></p><!-- /TMPL_IF -->
             <p><strong>Discount: </strong>
                 <!-- TMPL_VAR NAME="discount" --> %</p>
-            <p><strong>GST rate: </strong>
-                <!-- TMPL_VAR name="GST" -->%</p>
+            <!-- TMPL_IF NAME="GST" --<p><strong>Tax rate: </strong>
+                <!-- TMPL_VAR name="GST" -->%</p><!-- /TMPL_IF -->
             <!-- TMPL_IF NAME="notes" --><p><strong>Notes: </strong>
                 <!-- TMPL_VAR NAME="notes" --></p><!-- /TMPL_IF -->
         </div>
+
+                <!-- TMPL_IF name="contracts" -->
+		    <h3>Contract(s)</h3>
+                    <table>
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Start date</th>
+                            <th scope="col">End date</th>
+                            <th scope="col" colspan="2">&nbsp; </th>
+                        </tr>
+                    <!-- TMPL_LOOP NAME="contracts" -->
+                        <!-- TMPL_IF NAME="__even__" --><tr class="highlight"><!-- TMPL_ELSE --><tr><!-- /TMPL_IF -->
+                        <td>
+                            <a href="/cgi-bin/koha/admin/aqcontract.pl?op=add_form&amp;contractnumber=<!-- TMPL_VAR NAME="contractnumber" -->&amp;booksellerid=<!-- TMPL_VAR name="booksellerid" -->"><!-- TMPL_VAR NAME="contractname" --></a>
+                        </td>
+                        <td><!-- TMPL_VAR NAME="contractdescription" --></td>
+                        <td><!-- TMPL_VAR NAME="contractstartdate" --></td>
+                        <td><!-- TMPL_VAR NAME="contractenddate" --></td>
+                        <td><a href="/cgi-bin/koha/admin/aqcontract.pl?op=add_form&amp;contractnumber=<!-- TMPL_VAR NAME="contractnumber" -->&amp;booksellerid=<!-- TMPL_VAR name="booksellerid" -->">Edit</a></td>
+                        <td><a href="/cgi-bin/koha/admin/aqcontract.pl?op=delete_confirm&amp;contractnumber=<!-- TMPL_VAR NAME="contractnumber" -->&amp;booksellerid=<!-- TMPL_VAR name="booksellerid" -->">Delete</a></td>
+                        </tr>
+                    <!-- /TMPL_LOOP -->
+                </table>
+                <!-- /TMPL_IF -->
+
 <!--/TMPL_IF-->
 
 </div>

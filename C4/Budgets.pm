@@ -39,6 +39,7 @@ BEGIN {
         &ModBudget
         &DelBudget
         &GetBudgetSpent
+        &GetBudgetOrdered
         &GetPeriodsCount
 
 	    &GetBudgetPeriod
@@ -300,9 +301,26 @@ sub GetBudgetSpent {
 	my ($budget_id) = @_;
 	my $dbh = C4::Context->dbh;
 	my $sth = $dbh->prepare(qq|
-        SELECT SUM(ecost *  quantity  ) AS sum FROM aqorders
+        SELECT SUM(ecost *  quantity) AS sum FROM aqorders
             WHERE budget_id = ? AND
-            datecancellationprinted IS NULL 
+            quantityreceived > 0 AND
+            datecancellationprinted IS NULL
+    |);
+
+	$sth->execute($budget_id);
+	my $sum =  $sth->fetchrow_array;
+	return $sum;
+}
+
+# -------------------------------------------------------------------
+sub GetBudgetOrdered {
+	my ($budget_id) = @_;
+	my $dbh = C4::Context->dbh;
+	my $sth = $dbh->prepare(qq|
+        SELECT SUM(ecost *  quantity) AS sum FROM aqorders
+            WHERE budget_id = ? AND
+            quantityreceived = 0 AND
+            datecancellationprinted IS NULL
     |);
 
 	$sth->execute($budget_id);
@@ -318,6 +336,7 @@ sub GetBudgetPermDropbox {
 	$labels{'1'} = 'Owner';
 	$labels{'2'} = 'Library';
 	my $radio = CGI::scrolling_list(
+		-id       => 'budget_permission',
 		-name      => 'budget_permission',
 		-values    => [ '0', '1', '2' ],
 		-default   => $perm,

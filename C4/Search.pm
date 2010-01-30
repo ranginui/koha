@@ -197,7 +197,7 @@ $template->param(result=>\@results);
 
 sub SimpleSearch {
     my ( $query, $offset, $max_results, $servers )  = @_;
-    
+
     if ( C4::Context->preference('NoZebra') ) {
         my $result = NZorder( NZanalyse($query) )->{'biblioserver'};
         my $search_result =
@@ -283,7 +283,7 @@ sub SimpleSearch {
     );
 
 The all singing, all dancing, multi-server, asynchronous, scanning,
-searching, record nabbing, facet-building 
+searching, record nabbing, facet-building
 
 See verbse embedded documentation.
 
@@ -517,9 +517,9 @@ sub getRecords {
 
                             # if it's a branch, label by the name, not the code,
                             if ( $link_value =~ /branch/ ) {
-								if (defined $branches 
-									&& ref($branches) eq "HASH" 
-									&& defined $branches->{$one_facet} 
+								if (defined $branches
+									&& ref($branches) eq "HASH"
+									&& defined $branches->{$one_facet}
 									&& ref ($branches->{$one_facet}) eq "HASH")
 								{
                                 	$facet_label_value =
@@ -550,7 +550,7 @@ sub getRecords {
                     push @facets_loop, {
                         type_link_value => $link_value,
                         type_id         => $link_value . "_id",
-                        "type_label_" . $facets_info->{$link_value}->{'label_value'} => 1, 
+                        "type_label_" . $facets_info->{$link_value}->{'label_value'} => 1,
                         facets     => \@this_facets_array,
                         expandable => $expandable,
                         expand     => $link_value,
@@ -578,10 +578,10 @@ sub pazGetRecords {
     my $results_hashref = {};
     my $stats = XMLin($paz->stat);
     my $results = XMLin($paz->show($offset, $results_per_page, 'work-title:1'), forcearray => 1);
-   
+
     # for a grouped search result, the number of hits
     # is the number of groups returned; 'bib_hits' will have
-    # the total number of bibs. 
+    # the total number of bibs.
     $results_hashref->{'biblioserver'}->{'hits'} = $results->{'merged'}->[0];
     $results_hashref->{'biblioserver'}->{'bib_hits'} = $stats->{'hits'};
 
@@ -613,7 +613,7 @@ sub pazGetRecords {
 
         push @{ $results_hashref->{'biblioserver'}->{'GROUPS'} }, $result_group;
     }
-    
+
     # pass through facets
     my $termlist_xml = $paz->termlist('author,subject');
     my $terms = XMLin($termlist_xml, forcearray => 1);
@@ -647,7 +647,7 @@ sub _remove_stopwords {
 #       we use IsAlpha unicode definition, to deal correctly with diacritics.
 #       otherwise, a French word like "leçon" woudl be split into "le" "çon", "le"
 #       is a stopword, we'd get "çon" and wouldn't find anything...
-#       
+#
 		foreach ( keys %{ C4::Context->stopwords } ) {
 			next if ( $_ =~ /(and|or|not)/ );    # don't remove operators
 			$debug && warn "$_ Dump($operand)";
@@ -700,13 +700,13 @@ sub _build_stemmed_operand {
 
     # If operand contains a digit, it is almost certainly an identifier, and should
     # not be stemmed.  This is particularly relevant for ISBNs and ISSNs, which
-    # can contain the letter "X" - for example, _build_stemmend_operand would reduce 
+    # can contain the letter "X" - for example, _build_stemmend_operand would reduce
     # "014100018X" to "x ", which for a MARC21 database would bring up irrelevant
     # results (e.g., "23 x 29 cm." from the 300$c).  Bug 2098.
     return $operand if $operand =~ /\d/;
 
 # FIXME: the locale should be set based on the user's language and/or search choice
-    warn "$lang";
+    #warn "$lang";
     my $stemmer = Lingua::Stem::Snowball->new( lang => $lang,
                                                encoding => "UTF-8" );
 
@@ -783,6 +783,194 @@ sub _build_weighted_query {
     return $weighted_query;
 }
 
+=head2 getIndexes
+
+Return an array with available indexes.
+
+=cut
+
+sub getIndexes{
+    my @indexes = (
+                    # biblio indexes
+                    'ab',
+                    'Abstract',
+                    'acqdate',
+                    'allrecords',
+                    'an',
+                    'Any',
+                    'at',
+                    'au',
+                    'aub',
+                    'aud',
+                    'audience',
+                    'auo',
+                    'aut',
+                    'Author',
+                    'Author-in-order ',
+                    'Author-personal-bibliography',
+                    'Authority-Number',
+                    'authtype',
+                    'bc',
+                    'biblionumber',
+                    'bio',
+                    'biography',
+                    'callnum',          
+                    'cfn',
+                    'Chronological-subdivision',
+                    'cn-bib-source',
+                    'cn-bib-sort',
+                    'cn-class',
+                    'cn-item',
+                    'cn-prefix',
+                    'cn-suffix',
+                    'cpn',
+                    'Code-institution',
+                    'Conference-name',
+                    'Conference-name-heading',
+                    'Conference-name-see',
+                    'Conference-name-seealso',
+                    'Content-type',
+                    'Control-number',
+                    'copydate',
+                    'Corporate-name',
+                    'Corporate-name-heading',
+                    'Corporate-name-see',
+                    'Corporate-name-seealso',
+                    'ctype',
+                    'date-entered-on-file',
+                    'Date-of-acquisition',
+                    'Date-of-publication',
+                    'Dewey-classification',
+                    'extent',
+                    'fic',
+                    'fiction',
+                    'Form-subdivision',
+                    'format',
+                    'Geographic-subdivision',
+                    'he',
+                    'Heading',
+                    'Heading-use-main-or-added-entry',
+                    'Heading-use-series-added-entry ',
+                    'Heading-use-subject-added-entry',
+                    'Host-item',
+                    'id-other',
+                    'Illustration-code',
+                    'ISBN',
+                    'ISSN',
+                    'itemtype',
+                    'kw',
+                    'Koha-Auth-Number',
+                    'l-format',
+                    'language',
+                    'lc-card',
+                    'LC-card-number',
+                    'lcn',
+                    'llength',
+                    'ln',
+                    'Local-classification',
+                    'Local-number',
+                    'Match-heading',
+                    'Match-heading-see-from',
+                    'Material-type',
+                    'mc-itemtype',
+                    'mc-rtype',
+                    'mus',
+                    'Name-geographic',
+                    'Name-geographic-heading',
+                    'Name-geographic-see',
+                    'Name-geographic-seealso',
+                    'nb',
+                    'Note',
+                    'ns',
+                    'nt',
+                    'pb',
+                    'Personal-name',
+                    'Personal-name-heading',
+                    'Personal-name-see',
+                    'Personal-name-seealso',
+                    'pl',
+                    'Place-publication',
+                    'pn',
+                    'popularity',
+                    'pubdate',
+                    'Publisher',
+                    'Record-type',
+                    'rtype',
+                    'se',
+                    'See',
+                    'See-also',
+                    'sn',
+                    'Stock-number',
+                    'su',
+                    'Subject',
+                    'Subject-heading-thesaurus',
+                    'Subject-name-personal',
+                    'Subject-subdivision',
+                    'Summary',
+                    'Suppress',
+                    'su-geo',
+                    'su-na',
+                    'su-to',
+                    'su-ut',
+                    'ut',
+                    'Term-genre-form',
+                    'Term-genre-form-heading',
+                    'Term-genre-form-see',
+                    'Term-genre-form-seealso',
+                    'ti',
+                    'Title',
+                    'Title-cover',
+                    'Title-series',
+                    'Title-uniform',
+                    'Title-uniform-heading',
+                    'Title-uniform-see',
+                    'Title-uniform-seealso',
+                    'totalissues',
+                    'yr',
+                    
+                    # items indexes
+                    'acqsource',
+                    'barcode',
+                    'bc',
+                    'branch',
+                    'ccode',
+                    'classification-source',
+                    'cn-sort',
+                    'coded-location-qualifier',
+                    'copynumber',
+                    'damaged',
+                    'datelastborrowed',
+                    'datelastseen',
+                    'holdingbranch',
+                    'homebranch',
+                    'issues',
+                    'itemnumber',
+                    'itype',
+                    'Local-classification',
+                    'location',
+                    'lost',
+                    'materials-specified',
+                    'mc-ccode',
+                    'mc-itype',
+                    'mc-loc',
+                    'notforloan',
+                    'onloan',
+                    'price',
+                    'renewals',
+                    'replacementprice',
+                    'replacementpricedate',
+                    'reserves',
+                    'restricted',
+                    'stack',
+                    'uri',
+                    'withdrawn',
+                    
+                    # subject related
+                  );
+                  
+    return \@indexes;
+}
+
 =head2 buildQuery
 
 ( $error, $query,
@@ -819,9 +1007,10 @@ sub buildQuery {
 
     # no stemming/weight/fuzzy in NoZebra
     if ( C4::Context->preference("NoZebra") ) {
-        $stemming      = 0;
-        $weight_fields = 0;
-        $fuzzy_enabled = 0;
+        $stemming         = 0;
+        $weight_fields    = 0;
+        $fuzzy_enabled    = 0;
+    	$auto_truncation  = 0;
     }
 
     my $query        = $operands[0];
@@ -838,6 +1027,17 @@ sub buildQuery {
 
     my $stopwords_removed;    # flag to determine if stopwords have been removed
 
+    my $cclq;
+    my $cclindexes = getIndexes();
+    if( $query !~ /\s*ccl=/ ){
+        for my $index (@$cclindexes){
+            if($query =~ /($index)(,?\w)*[:=]/){
+                $cclq = 1;
+            }
+        }
+        $query = "ccl=$query" if($cclq);
+    }
+
 # for handling ccl, cql, pqf queries in diagnostic mode, skip the rest of the steps
 # DIAGNOSTIC ONLY!!
     if ( $query =~ /^ccl=/ ) {
@@ -852,13 +1052,15 @@ sub buildQuery {
 
     # pass nested queries directly
     # FIXME: need better handling of some of these variables in this case
-    if ( $query =~ /(\(|\))/ ) {
-        return (
-            undef,              $query, $simple_query, $query_cgi,
-            $query,             $limit, $limit_cgi,    $limit_desc,
-            $stopwords_removed, 'ccl'
-        );
-    }
+    # Nested queries aren't handled well and this implementation is flawed and causes users to be
+    # unable to search for anything containing () commenting out, will be rewritten for 3.4.0
+#    if ( $query =~ /(\(|\))/ ) {
+#        return (
+#            undef,              $query, $simple_query, $query_cgi,
+#            $query,             $limit, $limit_cgi,    $limit_desc,
+#            $stopwords_removed, 'ccl'
+#        );
+#    }
 
 # Form-based queries are non-nested and fixed depth, so we can easily modify the incoming
 # query operands and indexes and add stemming, truncation, field weighting, etc.
@@ -905,13 +1107,18 @@ sub buildQuery {
                 # ISBN,ISSN,Standard Number, don't need special treatment
                 elsif ( $index eq 'nb' || $index eq 'ns' ) {
                     $indexes_set++;
-                    (   
+                    (
                         $stemming,      $auto_truncation,
                         $weight_fields, $fuzzy_enabled,
                         $remove_stopwords
                     ) = ( 0, 0, 0, 0, 0 );
 
                 }
+                
+                if(not $index){
+                    $index = 'kw';
+                }
+                
                 # Set default structure attribute (word list)
                 my $struct_attr;
                 unless ( $indexes_set || !$index || $index =~ /(st-|phr|ext|wrdl)/ ) {
@@ -932,7 +1139,13 @@ sub buildQuery {
                 }
 
                 if ($auto_truncation){
-					$operand=~join(" ",map{ "$_*" }split (/\s+/,$operand));
+					unless ( $index =~ /(st-|phr|ext)/ ) {
+						#FIXME only valid with LTR scripts
+						$operand=join(" ",map{ 
+											(index($_,"*")>0?"$_":"$_*")
+											 }split (/\s+/,$operand));
+						warn $operand if $DEBUG;
+					}
 				}
 
                 # Detect Truncation
@@ -1090,6 +1303,8 @@ sub buildQuery {
     }
 
     # Normalize the query and limit strings
+    # This is flawed , means we can't search anything with : in it
+    # if user wants to do ccl or cql, start the query with that
     $query =~ s/:/=/g;
     $limit =~ s/:/=/g;
     for ( $query, $query_desc, $limit, $limit_desc ) {
@@ -1195,20 +1410,19 @@ sub searchResults {
     }
 
 	my $marcflavour = C4::Context->preference("marcflavour");
-    # We get the biblionumber position in MARC 
+    # We get the biblionumber position in MARC
     my ($bibliotag,$bibliosubf)=GetMarcFromKohaField('biblio.biblionumber','');
     my $fw;
-    
+
     # loop through all of the records we've retrieved
     for ( my $i = $offset ; $i <= $times - 1 ; $i++ ) {
         my $marcrecord = MARC::File::USMARC::decode( $marcresults[$i] );
-        
         if ($bibliotag<10){
             $fw = GetFrameworkCode($marcrecord->field($bibliotag)->data);
         }else{
             $fw = GetFrameworkCode($marcrecord->subfield($bibliotag,$bibliosubf));
         }
-        
+
         my $oldbiblio = TransformMarcToKoha( $dbh, $marcrecord, $fw );
         $oldbiblio->{subtitle} = GetRecordValue('subtitle', $marcrecord, $fw);
         $oldbiblio->{result_number} = $i + 1;
@@ -1231,7 +1445,7 @@ sub searchResults {
         if ( $itemtypes{ $oldbiblio->{itemtype} }->{summary} ) {
             my $summary = $itemtypes{ $oldbiblio->{itemtype} }->{summary};
             my @fields  = $marcrecord->fields();
-            
+
             my $newsummary;
             foreach my $line ( "$summary\n" =~ /(.*)\n/g ){
                 my $tags = {};
@@ -1242,28 +1456,28 @@ sub searchResults {
                         $tags->{$tag} = $#abc + 1 ;
                     }
                 }
-                
+
                 # We catch how many times to repeat this line
                 my $max = 0;
                 foreach my $tag (keys(%$tags)){
                     $max = $tags->{$tag} if($tags->{$tag} > $max);
                  }
-                
+
                 # we replace, and repeat each line
                 for (my $i = 0 ; $i < $max ; $i++){
                     my $newline = $line;
 
                     foreach my $tag ( $newline =~ /\[(\d{3}[\w|\d])\]/g ) {
                         $tag =~ /(.{3})(.)/;
-                        
+
                         if($marcrecord->field($1)){
                             my @repl = $marcrecord->field($1)->subfield($2);
                             my $subfieldvalue = $repl[$i];
-                            
+
                             if (! utf8::is_utf8($subfieldvalue)) {
                                 utf8::decode($subfieldvalue);
                             }
- 
+
                              $newline =~ s/\[$tag\]/$subfieldvalue/g;
                         }
                     }
@@ -1320,7 +1534,7 @@ sub searchResults {
                 $item->{'branchname'} = $branches{$item->{$hbranch}};
             }
             elsif ($item->{$otherbranch}) {	# Last resort
-                $item->{'branchname'} = $branches{$item->{$otherbranch}}; 
+                $item->{'branchname'} = $branches{$item->{$otherbranch}};
             }
 	    my $prefix = $item->{$hbranch} . '--' . $item->{location} . $item->{itype} . $item->{itemcallnumber};
 # For each grouping of items (onloan, available, unavailable), we build a key to store relevant info about that item
@@ -1356,7 +1570,7 @@ sub searchResults {
                 # is item in transit?
                 my $transfertwhen = '';
                 my ($transfertfrom, $transfertto);
-                
+
                 unless ($item->{wthdrawn}
                         || $item->{itemlost}
                         || $item->{damaged}
@@ -1382,7 +1596,7 @@ sub searchResults {
                 if (   $item->{wthdrawn}
                     || $item->{itemlost}
                     || $item->{damaged}
-                    || $item->{notforloan} 
+                    || $item->{notforloan}
                     || ($transfertwhen ne ''))
                 {
                     $wthdrawn_count++        if $item->{wthdrawn};
@@ -1434,6 +1648,10 @@ sub searchResults {
         }
 
         # XSLT processing of some stuff
+	my $debug=1;
+	use C4::Charset;
+	SetUTF8Flag($marcrecord);
+	$debug && warn $marcrecord->as_formatted;
         if (C4::Context->preference("XSLTResultsDisplay") && !$scan) {
             $oldbiblio->{XSLTResultsRecord} = XSLTParse4Display(
                 $oldbiblio->{biblionumber}, $marcrecord, 'Results' );
@@ -1460,34 +1678,34 @@ sub searchResults {
         $oldbiblio->{orderedcount}         = $ordered_count;
         $oldbiblio->{isbn} =~
           s/-//g;    # deleting - in isbn to enable amazon content
-        push( @newresults, $oldbiblio ) 
+        push( @newresults, $oldbiblio )
             if(not $hidelostitems
-               or (($items_count > $itemlost_count ) 
+               or (($items_count > $itemlost_count )
                     && $hidelostitems));
     }
-    
+
     return @newresults;
 }
 
 =head2 SearchAcquisitions
-    Search for acquisitions 
+    Search for acquisitions
 =cut
 
 sub SearchAcquisitions{
     my ($datebegin, $dateend, $itemtypes,$criteria, $orderby) = @_;
-    
+
     my $dbh=C4::Context->dbh;
     # Variable initialization
     my $str=qq|
-    SELECT marcxml 
-    FROM biblio 
+    SELECT marcxml
+    FROM biblio
     LEFT JOIN biblioitems ON biblioitems.biblionumber=biblio.biblionumber
     LEFT JOIN items ON items.biblionumber=biblio.biblionumber
-    WHERE dateaccessioned BETWEEN ? AND ? 
+    WHERE dateaccessioned BETWEEN ? AND ?
     |;
-    
+
     my (@params,@loopcriteria);
-    
+
     push @params, $datebegin->output("iso");
     push @params, $dateend->output("iso");
 
@@ -1496,53 +1714,53 @@ sub SearchAcquisitions{
             $str .= "AND items.itype IN (?".( ',?' x scalar @$itemtypes - 1 ).") ";
         }else{
             $str .= "AND biblioitems.itemtype IN (?".( ',?' x scalar @$itemtypes - 1 ).") ";
-        }    
+        }
         push @params, @$itemtypes;
     }
-        
+
     if ($criteria =~/itemtype/){
         if(C4::Context->preference("item-level_itypes")){
             $str .= "AND items.itype=? ";
         }else{
             $str .= "AND biblioitems.itemtype=? ";
         }
-        
+
         if(scalar(@$itemtypes) == 0){
             my $itypes = GetItemTypes();
             for my $key (keys %$itypes){
                 push @$itemtypes, $key;
             }
         }
-        
+
         @loopcriteria= @$itemtypes;
     }elsif ($criteria=~/itemcallnumber/){
-        $str .= "AND (items.itemcallnumber LIKE CONCAT(?,'%') 
+        $str .= "AND (items.itemcallnumber LIKE CONCAT(?,'%')
                  OR items.itemcallnumber is NULL
                  OR items.itemcallnumber = '')";
 
-        @loopcriteria = ("AA".."ZZ", "") unless (scalar(@loopcriteria)>0);  
+        @loopcriteria = ("AA".."ZZ", "") unless (scalar(@loopcriteria)>0);
     }else {
         $str .= "AND biblio.title LIKE CONCAT(?,'%') ";
-        @loopcriteria = ("A".."z") unless (scalar(@loopcriteria)>0);  
+        @loopcriteria = ("A".."z") unless (scalar(@loopcriteria)>0);
     }
-        
+
     if ($orderby =~ /date_desc/){
         $str.=" ORDER BY dateaccessioned DESC";
     } else {
         $str.=" ORDER BY title";
     }
-    
+
     my $qdataacquisitions=$dbh->prepare($str);
-        
+
     my @loopacquisitions;
     foreach my $value(@loopcriteria){
         push @params,$value;
         my %cell;
         $cell{"title"}=$value;
         $cell{"titlecode"}=$value;
-        
+
         eval{$qdataacquisitions->execute(@params);};
-  
+
         if ($@){ warn "recentacquisitions Error :$@";}
         else {
             my @loopdata;
@@ -1632,7 +1850,7 @@ sub NZanalyse {
             # depending of operand, intersect, union or exclude both lists
             # to get a result list
             if ( $operator eq ' and ' ) {
-                return NZoperatorAND($leftresult,$rightresult);      
+                return NZoperatorAND($leftresult,$rightresult);
             }
             elsif ( $operator eq ' or ' ) {
 
@@ -1640,13 +1858,13 @@ sub NZanalyse {
                 return $leftresult . $rightresult;
             }
             elsif ( $operator eq ' not ' ) {
-                return NZoperatorNOT($leftresult,$rightresult);      
+                return NZoperatorNOT($leftresult,$rightresult);
             }
-        }      
+        }
         else {
 # this error is impossible, because of the regexp that isolate the operand, but just in case...
             return $leftresult;
-        } 
+        }
     }
     warn "string :" . $string if $DEBUG;
     my $left = "";
@@ -1738,7 +1956,7 @@ sub NZanalyse {
         $left = 'subject'          if $left =~ '^su$';
         $left = 'koha-Auth-Number' if $left =~ '^an$';
         $left = 'keyword'          if $left =~ '^kw$';
-        $left = 'itemtype'         if $left =~ '^mc$'; # Fix for Bug 2599 - Search limits not working for NoZebra 
+        $left = 'itemtype'         if $left =~ '^mc$'; # Fix for Bug 2599 - Search limits not working for NoZebra
         warn "handling leaf... left:$left operator:$operator right:$right" if $DEBUG;
         my $dbh = C4::Context->dbh;
         if ( $operator && $left ne 'keyword' ) {
@@ -1814,10 +2032,10 @@ sub NZanalyse {
 
 sub NZoperatorAND{
     my ($rightresult, $leftresult)=@_;
-    
+
     my @leftresult = split /;/, $leftresult;
     warn " @leftresult / $rightresult \n" if $DEBUG;
-    
+
     #             my @rightresult = split /;/,$leftresult;
     my $finalresult;
 
@@ -1838,7 +2056,7 @@ sub NZoperatorAND{
     warn "NZAND DONE : $finalresult \n" if $DEBUG;
     return $finalresult;
 }
-      
+
 sub NZoperatorOR{
     my ($rightresult, $leftresult)=@_;
     return $rightresult.$leftresult;
@@ -1846,7 +2064,7 @@ sub NZoperatorOR{
 
 sub NZoperatorNOT{
     my ($leftresult, $rightresult)=@_;
-    
+
     my @leftresult = split /;/, $leftresult;
 
     #             my @rightresult = split /;/,$leftresult;
@@ -1864,7 +2082,7 @@ sub NZoperatorNOT{
 =head2 NZorder
 
   $finalresult = NZorder($biblionumbers, $ordering,$results_per_page,$offset);
-  
+
   TODO :: Description
 
 =cut
@@ -2299,12 +2517,12 @@ sub BiblioAddAuthorities{
   my $dbh=C4::Context->dbh;
   my $query=$dbh->prepare(qq|
 SELECT authtypecode,tagfield
-FROM marc_subfield_structure 
-WHERE frameworkcode=? 
+FROM marc_subfield_structure
+WHERE frameworkcode=?
 AND (authtypecode IS NOT NULL AND authtypecode<>\"\")|);
 # SELECT authtypecode,tagfield
-# FROM marc_subfield_structure 
-# WHERE frameworkcode=? 
+# FROM marc_subfield_structure
+# WHERE frameworkcode=?
 # AND (authtypecode IS NOT NULL OR authtypecode<>\"\")|);
   $query->execute($frameworkcode);
   my ($countcreated,$countlinked);
@@ -2316,7 +2534,7 @@ AND (authtypecode IS NOT NULL AND authtypecode<>\"\")|);
       my $query='at='.$data->{authtypecode}.' ';
       map {$query.= ' and he,ext="'.$_->[1].'"' if ($_->[0]=~/[A-z]/)}  $field->subfields();
       my ($error, $results, $total_hits)=SimpleSearch( $query, undef, undef, [ "authorityserver" ] );
-    # there is only 1 result 
+    # there is only 1 result
           if ( $error ) {
         warn "BIBLIOADDSAUTHORITIES: $error";
             return (0,0) ;
@@ -2326,14 +2544,14 @@ AND (authtypecode IS NOT NULL AND authtypecode<>\"\")|);
         $field->add_subfields('9'=>$marcrecord->field('001')->data);
         $countlinked++;
       } elsif (scalar(@$results)>1) {
-   #More than One result 
+   #More than One result
    #This can comes out of a lack of a subfield.
 #         my $marcrecord = MARC::File::USMARC::decode($results->[0]);
 #         $record->field($data->{tagfield})->add_subfields('9'=>$marcrecord->field('001')->data);
   $countlinked++;
       } else {
   #There are no results, build authority record, add it to Authorities, get authid and add it to 9
-  ###NOTICE : This is only valid if a subfield is linked to one and only one authtypecode     
+  ###NOTICE : This is only valid if a subfield is linked to one and only one authtypecode
   ###NOTICE : This can be a problem. We should also look into other types and rejected forms.
          my $authtypedata=C4::AuthoritiesMarc->GetAuthType($data->{authtypecode});
          next unless $authtypedata;
