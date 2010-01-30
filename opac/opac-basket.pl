@@ -68,6 +68,13 @@ foreach my $biblionumber ( @bibs ) {
     my $marcseriesarray  = GetMarcSeries  ($record,$marcflavour);
     my $marcurlsarray    = GetMarcUrls    ($record,$marcflavour);
     my @items            = &GetItemsInfo( $biblionumber, 'opac' );
+    
+    if ($marcflavour eq "MARC21"){
+	my $title_proper = $record->subfield("245","a") . " " . $record->subfield("245","h")
+	  . " " . $record->subfield("245","n") . " " .  $record->subfield("245","p") . " " .
+	   $record->subfield("245","b") . " " .  $record->subfield("245","c");
+	$dat->{title_proper} = $title_proper;
+    }
 
     my $hasauthors = 0;
     if($dat->{'author'} || @$marcauthorsarray) {
