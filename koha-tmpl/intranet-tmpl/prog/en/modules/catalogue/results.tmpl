@@ -1,4 +1,4 @@
-<!-- TMPL_INCLUDE NAME="doc-head-open.inc" -->
+a<!-- TMPL_INCLUDE NAME="doc-head-open.inc" -->
 <title>Koha &rsaquo; Catalog &rsaquo; <!-- TMPL_IF NAME="searchdesc" -->Results of Search <!-- TMPL_IF NAME="query_desc" -->for '<!-- TMPL_VAR NAME="query_desc" -->'<!-- /TMPL_IF --><!-- TMPL_IF NAME="limit_desc" -->&nbsp;with limit(s):&nbsp;'<!-- TMPL_VAR NAME="limit_desc" -->'<!-- /TMPL_IF --><!-- TMPL_ELSE -->You did not specify any search criteria<!-- /TMPL_IF --></title>
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
 <script type="text/javascript" src="/intranet-tmpl/prog/en/lib/jquery/plugins/jquery.highlight-3.js"></script>
@@ -464,11 +464,16 @@ function GetZ3950Terms(){
                                 </td>
 
                                 <td><div class="availability">
-                                    <!-- TMPL_IF NAME="items_count" --><strong><!-- TMPL_VAR NAME="items_count" -->
-                                    <!-- TMPL_IF NAME="itemsplural" -->items<!-- TMPL_ELSE -->item<!-- /TMPL_IF --><!-- TMPL_IF NAME="available_items_loop" -->, <!-- TMPL_IF NAME="availablecount" --><!-- TMPL_VAR NAME="availablecount" --> available:<!-- /TMPL_IF --><!-- TMPL_ELSE -->, None available<!-- /TMPL_IF --></strong>
+                                    <!-- TMPL_IF NAME="items_count" --><strong><a href="/cgi-bin/catalogue/moredetail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->"><!-- TMPL_VAR NAME="items_count" -->
+                                        <!-- TMPL_IF NAME="itemsplural" -->items
+                                        <!-- TMPL_ELSE -->item
+                                        <!-- /TMPL_IF --></a>
+                                        <!-- TMPL_IF NAME="available_items_loop" -->, 
+                                            <!-- TMPL_IF NAME="availablecount" --><!-- TMPL_VAR NAME="availablecount" --> available:<!-- /TMPL_IF -->
+                                        <!-- TMPL_ELSE -->, None available<!-- /TMPL_IF -->
+                                        </strong>
 
                                     <!-- TMPL_IF NAME="available_items_loop" -->
-                                    <!-- TMPL_IF NAME="availablecount" --><!-- TMPL_VAR NAME="availablecount" --><!-- /TMPL_IF --> available:
                                     <ul>
                                     <!-- TMPL_LOOP NAME="available_items_loop" -->
 
