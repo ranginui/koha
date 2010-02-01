@@ -449,10 +449,10 @@ if ($borrower) {
         );
         $it->{"renew_error_${can_renew_error}"} = 1 if defined $can_renew_error;
         my ( $restype, $reserves ) = CheckReserves( $it->{'itemnumber'} );
-        $it->{'can_renew'} = $can_renew;
-        $it->{'can_confirm'} = !$can_renew && !$restype;
-        $it->{'renew_error'} = $restype;
-	    $it->{'checkoutdate'} = C4::Dates->new($it->{'issuedate'},'iso');
+		$it->{'can_renew'} = $can_renew;
+		$it->{'can_confirm'} = !$can_renew && !$restype;
+		$it->{'renew_error'} = $restype;
+	    $it->{'checkoutdate'} = $it->{'issuedate'};
 
         $totalprice += $it->{'replacementprice'};
         $it->{'itemtype'} = $itemtypeinfo->{'description'};
