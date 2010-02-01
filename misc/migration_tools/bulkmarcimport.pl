@@ -35,8 +35,9 @@ use open qw( :std :utf8 );
 binmode(STDOUT, ":utf8");
 
 my ( $input_marc_file, $number, $offset) = ('',0,0);
-my ($version, $delete, $test_parameter, $skip_marc8_conversion, $char_encoding, $verbose, $commit, $fk_off,$format,$biblios,$authorities,$keepids,$match, $isbn_check, $logfile,$yamlfile);
+my ($version, $delete, $skip_marc8_conversion, $char_encoding, $verbose, $commit, $fk_off,$format,$biblios,$authorities,$keepids,$match, $isbn_check, $logfile,$yamlfile);
 my ($sourcetag,$sourcesubfield,$idmapfl);
+my ($insert,$filters,$update,$all,$test_parameter);
 
 $|=1;
 
@@ -47,7 +48,7 @@ GetOptions(
     'o|offset:f' => \$offset,
     'h' => \$version,
     'd' => \$delete,
-    't' => \$test_parameter,
+    't|test' => \$test_parameter,
     's' => \$skip_marc8_conversion,
     'c:s' => \$char_encoding,
     'v:s' => \$verbose,
@@ -57,6 +58,10 @@ GetOptions(
     'k|keepids:s' => \$keepids,
     'b|biblios' => \$biblios,
     'a|authorities' => \$authorities,
+    'filter=s@' => \$filters,
+    'insert' => \$insert,
+    'update' => \$update,
+    'all' => \$all,
     'match=s@'    => \$match,
     'i|isbn' => \$isbn_check,
     'x:s' => \$sourcetag,
@@ -64,7 +69,12 @@ GetOptions(
     'idmap:s' => \$idmapfl,
     'yaml:s' => \$yamlfile,
 );
-$biblios=!$authorities||$biblios;
+$biblios||= !$authorities;
+$insert ||= !$update;
+if ($all){
+    $insert=1;
+    $update=1;
+}
 
 if ($version || ($input_marc_file eq '')) {
     print <<EOF
@@ -98,6 +108,10 @@ Parameters:
   match  matchindex,fieldtomatch matchpoint to use to deduplicate
           fieldtomatch can be either 001 to 999 
                        or field and list of subfields as such 100abcde
+  test   if set, test mode only, donot add anything in database
+  insert if set, only insert when possible
+  update if set, only updates (any biblio should have a matching record)
+  all    if set, do whatever is required
   i|isbn if set, a search will be done on isbn, and, if the same isbn is found, the biblio is not added. It's another
          method to deduplicate. 
          match & i can be both set.
@@ -290,10 +304,10 @@ RECORD: while (  ) {
 					next;
 				}
 			}
-       } 
+       }
        elsif  ($results && scalar(@$results)>1){
           $debug && warn "more than one match for $query";
-       } 
+       }
        else {
           $debug && warn "nomatch for $query";
        }
@@ -311,14 +325,31 @@ RECORD: while (  ) {
 	     $record->delete_field($record->field($tagid));
       }
     }
-    unless ($test_parameter) {
+    foreach my $stringfilter (@$filters){
+        if (length($stringfilter)==3){
+            foreach my $field ($record->field($stringfilter)){
+                $record->delete_field($field);
+                $debug && warn "removed : ",$field->as_string;
+            }
+        }
+        else {
+                my ($removetag,$removesubfield,$removematch)=($1,$2,$3) 
+                    if $stringfilter=~/([0-9]{3})([a-z0-9])(.*)/;
+                if (($removetag >"010")&& $removesubfield){
+                    foreach my $field ($record->field($removetag)){
+                        $field->delete_subfield(code=>"$removesubfield",match=>$removematch);
+                        $debug && warn "Potentially removed : ",$field->subfield($removesubfield);
+                    }
+                }
+        }
+    }
         if ($authorities){
             use C4::AuthoritiesMarc;
             my $authtypecode=GuessAuthTypeCode($record);
             my $authid= ($id?$id:GuessAuthId($record));
-            if ($authid && GetAuthority($authid)){
+            if ($authid && GetAuthority($authid) && $update){
             ## Authority has an id and is in database : Replace
-                eval { ( $authid ) = ModAuthority($authid,$record, $authtypecode) };
+                (! $test_parameter) and eval { ( $authid ) = ModAuthority($authid,$record, $authtypecode) };
                 if ($@){
                     warn "Problem with authority $authid Cannot Modify";
 					printlog({id=>$originalid||$id||$authid, op=>"edit",status=>"ERROR"}) if ($logfile);
@@ -329,7 +360,7 @@ RECORD: while (  ) {
             }  
             elsif (defined $authid) {
             ## An authid is defined but no authority in database : add
-                eval { ( $authid ) = AddAuthority($record,$authid, $authtypecode) };
+                (! $test_parameter) and eval { ( $authid ) = AddAuthority($record,$authid, $authtypecode) };
                 if ($@){
                     warn "Problem with authority $authid Cannot Add ".$@;
 					printlog({id=>$originalid||$id||$authid, op=>"insert",status=>"ERROR"}) if ($logfile);
@@ -340,7 +371,7 @@ RECORD: while (  ) {
             }
 	        else {
             ## True insert in database
-                eval { ( $authid ) = AddAuthority($record,"", $authtypecode) };
+                (! $test_parameter) and eval { ( $authid ) = AddAuthority($record,"", $authtypecode) };
                 if ($@){
                     warn "Problem with authority $authid Cannot Add".$@;
 					printlog({id=>$originalid||$id||$authid, op=>"insert",status=>"ERROR"}) if ($logfile);
@@ -377,21 +408,40 @@ RECORD: while (  ) {
 			}
 					# create biblio, unless we already have it ( either match or isbn )
             if ($biblionumber) {
-				eval{$biblioitemnumber=GetBiblioData($biblionumber)->{biblioitemnumber};}
+				eval{$biblioitemnumber=GetBiblioData($biblionumber)->{biblioitemnumber};};
+                if ($update) {
+                    (! $test_parameter) and eval { ( $biblionumber, $biblioitemnumber ) = ModBiblio($record, $biblionumber,GetFrameworkcode($biblionumber)) };
+                    if ( $@ ) {
+                        warn "ERROR: Edit biblio $biblionumber failed: $@\n";
+                        printlog({id=>$id||$originalid||$biblionumber, op=>"update",status=>"ERROR"}) if ($logfile);
+                        next RECORD;
+                    }
+                    else{
+                        printlog({id=>$id||$originalid||$biblionumber, op=>"update",status=>"ok"}) if ($logfile);
+                    }
+                }
+                else {
+                   printlog({id=>$id||$originalid||$biblionumber, op=>"insert",status=>"warning : already in database"}) if ($logfile);
+                }
 			}
 			else 
 			{
-                eval { ( $biblionumber, $biblioitemnumber ) = AddBiblio($record, '', { defer_marc_save => 1 }) };
+                if ($insert){
+                    (! $test_parameter) and eval { ( $biblionumber, $biblioitemnumber ) = AddBiblio($record, '', { defer_marc_save => 1 }) };
+                    if ( $@ ) {
+                        warn "ERROR: Adding biblio $biblionumber failed: $@\n";
+                        printlog({id=>$id||$originalid||$biblionumber, op=>"insert",status=>"ERROR"}) if ($logfile);
+                        next RECORD;
+                    }
+                    else{
+                        printlog({id=>$id||$originalid||$biblionumber, op=>"insert",status=>"ok"}) if ($logfile);
+                    }
+                }
+                else {
+                   printlog({id=>$id||$originalid||$biblionumber, op=>"update",status=>"warning : not in database"}) if ($logfile);
+                }
             }
-            if ( $@ ) {
-                warn "ERROR: Adding biblio $biblionumber failed: $@\n";
-				printlog({id=>$id||$originalid||$biblionumber, op=>"insert",status=>"ERROR"}) if ($logfile);
-                next RECORD;
-            } 
- 			else{
-				printlog({id=>$id||$originalid||$biblionumber, op=>"insert",status=>"ok"}) if ($logfile);
-			}
-            eval { ( $itemnumbers_ref, $errors_ref ) = AddItemBatchFromMarc( $record, $biblionumber, $biblioitemnumber, '' ); };
+            (! $test_parameter) and eval { ( $itemnumbers_ref, $errors_ref ) = AddItemBatchFromMarc( $record, $biblionumber, $biblioitemnumber, '' ); };
             if ( $@ ) {
                 warn "ERROR: Adding items to bib $biblionumber failed: $@\n";
 				printlog({id=>$id||$originalid||$biblionumber, op=>"insertitem",status=>"ERROR"}) if ($logfile);
@@ -399,7 +449,7 @@ RECORD: while (  ) {
                 # the MARC columns in biblioitems were not set.
                 ModBiblioMarc( $record, $biblionumber, '' );
                 next RECORD;
-            } 
+            }
  			else{
 				printlog({id=>$id||$originalid||$biblionumber, op=>"insert",status=>"ok"}) if ($logfile);
 			}
@@ -409,7 +459,6 @@ RECORD: while (  ) {
             $yamlhash->{$originalid}=$biblionumber if ($yamlfile);
         }
         $dbh->commit() if (0 == $i % $commitnum);
-    }
     last if $i == $number;
 }
 $dbh->commit();
@@ -443,7 +492,7 @@ sub GetRecordId{
 	my $id;
 	if ($tag lt "010"){
 		return $marcrecord->field($tag)->data() if $marcrecord->field($tag);
-	} 
+	}
 	elsif ($subfield){
 		if ($marcrecord->field($tag)){
 			return $marcrecord->subfield($tag,$subfield);
