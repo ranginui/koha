@@ -299,6 +299,9 @@ function Dopop(link) {
                     <!-- TMPL_IF Name="withdrawn" -->
                         <p class="problem">Item is withdrawn.</p>
                     <!-- /TMPL_IF -->
+                    <!-- TMPL_IF Name="debarred" -->
+                        <p class="problem"><a href="/cgi-bin/koha/circ/circulation.pl?borrowernumber=<!-- TMPL_VAR NAME="debarborrowernumber" -->"><!-- TMPL_VAR NAME="debarname" -->(<!-- TMPL_VAR NAME="debarcardnumber" -->)</a> is now debarred until <!-- TMPL_VAR NAME="debarred" -->.</p>
+                    <!-- /TMPL_IF -->
             <!-- /TMPL_LOOP -->
 <!-- TMPL_IF NAME="soundon" -->
 <audio src="/intranet-tmpl/prog/sound/critical.ogg" autoplay="autoplay" autobuffer="autobuffer"></audio>

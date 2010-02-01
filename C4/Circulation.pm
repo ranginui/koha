@@ -1459,7 +1459,7 @@ sub _FixFineDaysOnReturn {
         my $issuingrule = GetIssuingRule($borrower->{categorycode}, $item->{itype}, $branchcode);
         my $finedays    = $issuingrule->{finedays};
 
-        my @newdate     = Add_Delta_Days(Today(), 0 - $deltadays );
+        my @newdate     = Add_Delta_Days(Today(), (0 - $deltadays) * $finedays );
         my $isonewdate  = join('-',@newdate);
         my ($deby, $debm, $debd) = split(/-/,$borrower->{debarred});
         if(check_date($deby, $debm, $debd)){

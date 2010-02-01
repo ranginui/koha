@@ -60,7 +60,11 @@ if($destination eq "circ"){
 	if($dateexpiry){
 		print $input->redirect("/cgi-bin/koha/circ/circulation.pl?findborrower=$cardnumber&dateexpiry=$dateexpiry");
 	} else {
-		print $input->redirect("/cgi-bin/koha/circ/circulation.pl?findborrower=$cardnumber");
+	    if($cardnumber){
+		    print $input->redirect("/cgi-bin/koha/circ/circulation.pl?findborrower=$cardnumber");
+	    }else{
+	        print $input->redirect("/cgi-bin/koha/circ/circulation.pl?findborrower=$borrowernumber");
+	    }
 	}
 } else {
 	if($dateexpiry){

@@ -404,9 +404,10 @@ foreach my $code ( keys %$messages ) {
         ;    # FIXME... anything to do here?
     }
     elsif( $code eq 'Debarred' ){
-        $err{debarred}        = format_date($messages->{'Debarred'});
-        $err{debarcardnumber} = $borrower->{cardnumber};
-        $err{debarname}       = "$borrower->{firstname} $borrower->{surname}";
+        $err{debarred}            = format_date($messages->{'Debarred'});
+        $err{debarcardnumber}     = $borrower->{cardnumber};
+        $err{debarborrowernumber} = $borrower->{borrowernumber};
+        $err{debarname}           = "$borrower->{firstname} $borrower->{surname}";
     }
     elsif( $code eq 'HaveFines' ){
         $err{havefines}       = $borrower->{'flags'}->{'CHARGES'}->{'amount'} . %{GetCurrency()}->{symbol};
