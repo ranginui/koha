@@ -451,7 +451,7 @@ RECORD: while (  ) {
                 next RECORD;
             }
  			else{
-				printlog({id=>$id||$originalid||$biblionumber, op=>"insert",status=>"ok"}) if ($logfile);
+				printlog({id=>$id||$originalid||$biblionumber, op=>"insertitem",status=>"ok"}) if ($logfile);
 			}
             if ($#{ $errors_ref } > -1) { 
                 report_item_errors($biblionumber, $errors_ref);
