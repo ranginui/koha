@@ -260,9 +260,11 @@ RECORD: while (  ) {
     if ($biblios) {
         if ($marcFlavour eq 'UNIMARC') {
             if (my $f010 = $record->field('010')) {
-                $isbn = $f010->subfield('a');
-                $isbn =~ s/-//g;
-                $f010->update('a' => $isbn);
+                if ($f010->subfield('a')){
+                    $isbn = $f010->subfield('a');
+                    $isbn =~ s/-//g;
+                    $f010->update('a' => $isbn);
+                }
             }
         } else {
             if (my $f020 = $record->field('020')) {
@@ -280,6 +282,7 @@ RECORD: while (  ) {
        require C4::Search;
        my $query=build_query($match,$record);
        my $server=($authorities?'authorityserver':'biblioserver');
+       $debug && warn $query;
        my ($error, $results,$totalhits)=C4::Search::SimpleSearch( $query, 0, 3, [$server] );
        die "unable to search the database for duplicates : $error" if (defined $error);
        $debug && warn "$query $server : $totalhits";
@@ -542,7 +545,7 @@ sub report_item_errors {
 }
 sub printlog{
 	my $logelements=shift;
-	print $loghandle join (";",@$logelements{qw<id op status>}),"\n";
+	print $loghandle join (";",map{defined $_?$_:""}@$logelements{qw<id op status>}),"\n";
 }
 
 
