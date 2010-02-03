@@ -427,9 +427,9 @@ RECORD: while (  ) {
 			}
 					# create biblio, unless we already have it ( either match or isbn )
             if ($biblionumber) {
-				eval{$biblioitemnumber=GetBiblioData($biblionumber)->{biblioitemnumber};};
+		eval{$biblioitemnumber=GetBiblioData($biblionumber)->{biblioitemnumber};};
                 if ($update) {
-                    (! $test_parameter) and eval { ( $biblionumber, $biblioitemnumber ) = ModBiblio($record, $biblionumber,GetFrameworkcode($biblionumber)) };
+                    (! $test_parameter) and eval { ( $biblionumber, $biblioitemnumber ) = ModBiblio($record, $biblionumber,'') };
                     if ( $@ ) {
                         warn "ERROR: Edit biblio $biblionumber failed: $@\n";
                         printlog({id=>$originalid||$id||$biblionumber, op=>"update",status=>"ERROR"}) if ($logfile);
@@ -457,11 +457,10 @@ RECORD: while (  ) {
                     }
                 }
                 else {
-                   warn $record->as_formatted unless ($id||$originalid||$biblionumber);
-                   printlog({id=>$id||$originalid||$biblionumber, op=>"update",status=>"warning : not in database"}) if ($logfile);
+                   printlog({id=>GetRecordId($record,$tagid,$subfieldid), op=>"update",status=>"warning : not in database;". $record->field('001')->data()}) if ($logfile);
                 }
             }
-            (! $test_parameter) and eval { ( $itemnumbers_ref, $errors_ref ) = AddItemBatchFromMarc( $record, $biblionumber, $biblioitemnumber, '' ); };
+            (! $test_parameter && $biblionumber && $biblioitemnumber) and eval { ( $itemnumbers_ref, $errors_ref ) = AddItemBatchFromMarc( $record, $biblionumber, $biblioitemnumber, '' ); };
             if ( $@ ) {
                 warn "ERROR: Adding items to bib $biblionumber failed: $@\n";
 				printlog({id=>$id||$originalid||$biblionumber, op=>"insertitem",status=>"ERROR"}) if ($logfile);
