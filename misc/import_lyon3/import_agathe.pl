@@ -319,6 +319,15 @@ RECORD: while (  ) {
 				}
 			}
             if ($yamlfileinput){
+		$record->delete_field($record->field('001'));
+		my @fields_to_insert;
+		for my $keepfield qw(001 009 035){
+		    foreach my $initial_field ($marcrecord->field($keepfield)){
+			push @fields_to_insert, $initial_field if (($keepfield ne '035') 
+			    					|| ($keepfield eq '035' && $initial_field->subfield('a')=~/^(ADV|AG)/));
+		    }
+		}
+		$record->insert_fields_ordered(@fields_to_insert);
 	        $record = $dd->_serialsFlag( $record);  # Serials flag
 	        $record = $dd->_autresTraitements( $record); # other processings
             $debug && warn $record->as_formatted;
