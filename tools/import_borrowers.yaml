@@ -1,0 +1,3 @@
+# Default values for import_borrowers.pl used in command line
+column: value
+othercolumn: value

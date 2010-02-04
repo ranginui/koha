@@ -45,7 +45,8 @@ use C4::Members;
 use C4::Members::Attributes qw(:all);
 use C4::Members::AttributeTypes;
 use C4::Members::Messaging;
-
+use Date::Calc qw(Today_and_Now);
+use Getopt::Long;
 use Text::CSV;
 # Text::CSV::Unicode, even in binary mode, fails to parse lines with these diacriticals:
 # ė
@@ -53,6 +54,45 @@ use Text::CSV;
 
 use CGI;
 # use encoding 'utf8';    # don't do this
+
+my $input = CGI->new();
+
+# Checks if the script is called from commandline
+my $commandline = 0;
+my $uploadborrowers;
+my $matchpoint;
+my $overwrite_cardnumber;
+my $ext_preserve;
+my $file;
+my $cl_defaults;
+my $help;
+if (scalar @ARGV > 0) { 
+    # Getting parameters
+    GetOptions ('matchpoint=s' => \$matchpoint, 'overwrite' => \$overwrite_cardnumber, 'preserve_attributes' => \$ext_preserve, 'file=s' => \$file, 'help|?' => \$help);
+    $commandline = 1;
+
+    if ($help) {
+	print "\nimport_borrowers.pl [--matchpoint=matchpoint] [--overwrite] [--preserve_attributes] --file=csvtoimport.csv\n\n";
+	print " * matchpoint is either 'cardnumber' or like 'patron_attribute_' + patron attribute code (example: patron_attribute_EXTERNALID)\n";
+	print " * Default values can be specified in import_borrowers.yaml (keys must be column names from the borrowers table)\n\n";
+	exit;
+    } 
+
+    # Default parameters values : 
+    $matchpoint ||= "cardnumber";
+    $overwrite_cardnumber ||= 0;
+    $ext_preserve ||= 0;
+
+    # Default values
+    $cl_defaults = YAML::LoadFile('import_borrowers.yaml') if (-e 'import_borrowers.yaml');
+
+    open($uploadborrowers, '<', $file) or die("Unable to open $file");
+} else {
+    $uploadborrowers      = $input->param('uploadborrowers');
+    $matchpoint           = $input->param('matchpoint');
+    $overwrite_cardnumber = $input->param('overwrite_cardnumber');
+    $ext_preserve         = $input->param('ext_preserve') || 0;
+}
 
 my (@errors, @feedback);
 my $extended = C4::Context->preference('ExtendedPatronAttributes');
@@ -63,54 +103,55 @@ if ($extended) {
 }
 my $columnkeystpl = [ map { {'key' => $_} }  grep {$_ ne 'borrowernumber' && $_ ne 'cardnumber'} @columnkeys ];  # ref. to array of hashrefs.
 
-my $input = CGI->new();
 our $csv  = Text::CSV->new({binary => 1});  # binary needed for non-ASCII Unicode
 # push @feedback, {feedback=>1, name=>'backend', value=>$csv->backend, backend=>$csv->backend};
 
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user({
-        template_name   => "tools/import_borrowers.tmpl",
-        query           => $input,
-        type            => "intranet",
-        authnotrequired => 0,
-        flagsrequired   => { tools => 'import_patrons' },
-        debug           => 1,
-});
+	    template_name   => "tools/import_borrowers.tmpl",
+	    query           => $input,
+	    type            => "intranet",
+	    authnotrequired => $commandline,
+	    flagsrequired   => { tools => 'import_patrons' },
+	    debug           => 1,
+    });
 
-$template->param(columnkeys => $columnkeystpl);
+if (!$commandline) {
+    $template->param(columnkeys => $columnkeystpl);
+    $template->param( SCRIPT_NAME => $ENV{'SCRIPT_NAME'} );
+    ($extended) and $template->param(ExtendedPatronAttributes => 1);
 
-if ($input->param('sample')) {
-    print $input->header(
-        -type       => 'application/vnd.sun.xml.calc', # 'application/vnd.ms-excel' ?
-        -attachment => 'patron_import.csv',
-    );
-    $csv->combine(@columnkeys);
-    print $csv->string, "\n";
-    exit 1;
+    if ($input->param('sample')) {
+	print $input->header(
+	    -type       => 'application/vnd.sun.xml.calc', # 'application/vnd.ms-excel' ?
+	    -attachment => 'patron_import.csv',
+	);
+	$csv->combine(@columnkeys);
+	print $csv->string, "\n";
+	exit 1;
+    }
 }
-my $uploadborrowers = $input->param('uploadborrowers');
-my $matchpoint      = $input->param('matchpoint');
+
 if ($matchpoint) {
     $matchpoint =~ s/^patron_attribute_//;
 }
-my $overwrite_cardnumber = $input->param('overwrite_cardnumber');
 
-$template->param( SCRIPT_NAME => $ENV{'SCRIPT_NAME'} );
 
-($extended) and $template->param(ExtendedPatronAttributes => 1);
 
 if ( $uploadborrowers && length($uploadborrowers) > 0 ) {
     push @feedback, {feedback=>1, name=>'filename', value=>$uploadborrowers, filename=>$uploadborrowers};
-    my $handle = $input->upload('uploadborrowers');
+    my $handle = ($commandline == 1) ? $uploadborrowers : $input->upload('uploadborrowers');
     my $uploadinfo = $input->uploadInfo($uploadborrowers);
     foreach (keys %$uploadinfo) {
         push @feedback, {feedback=>1, name=>$_, value=>$uploadinfo->{$_}, $_=>$uploadinfo->{$_}};
     }
     my $imported    = 0;
     my $alreadyindb = 0;
+    my $lastalreadyindb;
     my $overwritten = 0;
     my $invalid     = 0;
+    my $lastinvalid;
     my $matchpoint_attr_type; 
-    my %defaults = $input->Vars;
+    my %defaults = ($commandline) ? %$cl_defaults : $input->Vars;
 
     # use header line to construct key to column map
     my $borrowerline = <$handle>;
@@ -125,7 +166,6 @@ if ( $uploadborrowers && length($uploadborrowers) > 0 ) {
         $csvkeycol{$keycol} = $col++;
     }
     #warn($borrowerline);
-    my $ext_preserve = $input->param('ext_preserve') || 0;
     if ($extended) {
         $matchpoint_attr_type = C4::Members::AttributeTypes->fetch($matchpoint);
     }
@@ -186,7 +226,7 @@ if ( $uploadborrowers && length($uploadborrowers) > 0 ) {
                 $_->{surname}        = $borrower{surname} || 'UNDEF';
             }
             $invalid++;
-            (25 > scalar @errors) and push @errors, {missing_criticals=>\@missing_criticals};
+            ($commandline or 25 > scalar @errors) and push @errors, {missing_criticals=>\@missing_criticals};
             # The first 25 errors are enough.  Keeping track of 30,000+ would destroy performance.
             next LINE;
         }
@@ -232,7 +272,8 @@ if ( $uploadborrowers && length($uploadborrowers) > 0 ) {
             # borrower exists
             unless ($overwrite_cardnumber) {
                 $alreadyindb++;
-                $template->param('lastalreadyindb'=>$borrower{'surname'}.' / '.$borrowernumber);
+                $template->param('lastalreadyindb'=>$borrower{'surname'}.' / '.$borrowernumber) if (!$commandline);
+                $lastalreadyindb = $borrower{'surname'}.' / '.$borrowernumber;
                 next LINE;
             }
             $borrower{'borrowernumber'} = $borrowernumber;
@@ -245,7 +286,8 @@ if ( $uploadborrowers && length($uploadborrowers) > 0 ) {
             }
             unless (ModMember(%borrower)) {
                 $invalid++;
-                $template->param('lastinvalid'=>$borrower{'surname'}.' / '.$borrowernumber);
+                $template->param('lastinvalid'=>$borrower{'surname'}.' / '.$borrowernumber) if (!$commandline);
+		$lastinvalid = $borrower{'surname'}.' / '.$borrowernumber;
                 next LINE;
             }
             if ($extended) {
@@ -256,7 +298,7 @@ if ( $uploadborrowers && length($uploadborrowers) > 0 ) {
                 SetBorrowerAttributes($borrower{'borrowernumber'}, $patron_attributes);
             }
             $overwritten++;
-            $template->param('lastoverwritten'=>$borrower{'surname'}.' / '.$borrowernumber);
+            $template->param('lastoverwritten'=>$borrower{'surname'}.' / '.$borrowernumber) if (!$commandline);
         } else {
             # FIXME: fixup_cardnumber says to lock table, but the web interface doesn't so this doesn't either.
             # At least this is closer to AddMember than in members/memberentry.pl
@@ -272,15 +314,16 @@ if ( $uploadborrowers && length($uploadborrowers) > 0 ) {
                                                                                   categorycode => $borrower{categorycode} });
                 }
                 $imported++;
-                $template->param('lastimported'=>$borrower{'surname'}.' / '.$borrowernumber);
+                $template->param('lastimported'=>$borrower{'surname'}.' / '.$borrowernumber) if (!$commandline);
             } else {
                 $invalid++;
-                $template->param('lastinvalid'=>$borrower{'surname'}.' / AddMember');
+                $template->param('lastinvalid'=>$borrower{'surname'}.' / AddMember') if (!$commandline);
+                $lastinvalid = $borrower{'surname'}.' / AddMember';
             }
         }
     }
-    (@errors  ) and $template->param(  ERRORS=>\@errors  );
-    (@feedback) and $template->param(FEEDBACK=>\@feedback);
+    (@errors  ) and $template->param(  ERRORS=>\@errors  ) if (!$commandline);
+    (@feedback) and $template->param(FEEDBACK=>\@feedback) if (!$commandline);
     $template->param(
         'uploadborrowers' => 1,
         'imported'        => $imported,
@@ -288,7 +331,67 @@ if ( $uploadborrowers && length($uploadborrowers) > 0 ) {
         'alreadyindb'     => $alreadyindb,
         'invalid'         => $invalid,
         'total'           => $imported + $alreadyindb + $invalid + $overwritten,
-    );
+    ) if (!$commandline);
+    if ($commandline) {
+
+	my $total = $imported + $alreadyindb + $invalid + $overwritten;
+	my $output;
+
+	my $timestamp = C4::Dates->new()->output . " " . POSIX::strftime("%H:%M:%S",localtime);
+	$output .= "Timestamp : $timestamp\n";
+	$output .= "Import results\n";
+	$output .= "$imported imported records\n";
+	$output .= "$overwritten overwritten records\n";
+	$output .= "$alreadyindb not imported because already in borrowers table and overwrite disabled\n"; 
+	$output .= "(last was $lastalreadyindb)\n" if ($lastalreadyindb);
+	$output .= "$invalid not imported because they are not in the expected format\n"; 
+	$output .= "(last was $lastinvalid)\n" if ($lastinvalid);
+	$output .= "$total records parsed\n";
+
+
+	$output .= "\nError analysis\n";
+	foreach my $hash (@errors) {
+	   $output .= "Header row could not be parsed" if ($hash->{'badheader'});
+	   foreach my $array ($hash->{'missing_criticals'}) {
+	       foreach (@$array) {
+		    $output .= "Line $_->{'line'}: ";
+		    if ($hash->{'badparse'}) {
+			$output .= "could not be parsed!";
+		    } elsif ($hash->{'bad_date'}) { 
+			$output .= "has $_->{'key'} in unrecognized format: $_->{'value'} ";
+		    } else {
+			$output .= "Critical field $_->{'key'}: ";
+			if ($_->{'branch_map'} || $_->{'category_map'}) {
+			    $output .= "has unrecognized value: $_->{'value'}";
+			} else {
+			    $output .= " missing";
+			}
+			$output .= " (borrowernumber: $_->{'borrowernumber'}; surname: $_->{'surname'})";
+		    }
+		    $output .= "\n". $_->{'lineraw'} . "\n";
+		}
+	   }
+	}
+
+    # Write log file
+    my $logfile = "/var/log/koha/reports/import_borrowers.log";
+    if (open (FH, ">>$logfile")) {
+	print FH $output;
+	close(FH);
+    } else {
+	$output .= "Unable to write to log file : $logfile\n";
+    }
+
+
+    # Send email with log
+     my $mail = MIME::Lite->new(
+                To      => C4::Context->preference('KohaAdminEmailAddress'),
+                Subject => "Import borrowers log email",
+                Type    => 'text/plain',
+                Data    => $output
+            );
+    $mail->send() or print "Unable to send log email";
+    }
 
 } else {
     if ($extended) {
@@ -304,5 +407,5 @@ if ( $uploadborrowers && length($uploadborrowers) > 0 ) {
     }
 }
 
-output_html_with_http_headers $input, $cookie, $template->output;
+output_html_with_http_headers $input, $cookie, $template->output if (!$commandline);
 
