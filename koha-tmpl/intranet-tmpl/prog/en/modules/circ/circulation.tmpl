@@ -472,15 +472,17 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
                         );
 				//]]>
                  </script>
-
-          <label for="stickyduedate"> Remember for Session:</label>
-<!-- TMPL_IF NAME="stickyduedate" -->
-<input type="checkbox" id="stickyduedate" onclick="this.form.barcode.focus();" name="stickyduedate" checked="checked" />
-<!-- TMPL_ELSE -->
-<input type="checkbox" id="stickyduedate" onclick="this.form.barcode.focus();" name="stickyduedate" />
+        </p><p>
+        <label for="stickyduedate"> Remember for Session:</label>
+        <!-- TMPL_IF NAME="stickyduedate" -->
+            <input type="checkbox" id="stickyduedate" onclick="this.form.barcode.focus();" name="stickyduedate" checked="checked" />
+        <!-- TMPL_ELSE -->
+            <input type="checkbox" id="stickyduedate" onclick="this.form.barcode.focus();" name="stickyduedate" />
+        <!-- /TMPL_IF -->
+        <input type="button" class="action" id="cleardate" value="Clear" name="cleardate" onclick="this.checked = false; this.form.duedatespec.value = ''; this.form.stickyduedate.checked = false; this.form.barcode.focus(); return false;" />
+        </p>
+    </div>
 <!-- /TMPL_IF -->
-          <input type="button" class="action" id="cleardate" value="Clear" name="cleardate" onclick="this.checked = false; this.form.duedatespec.value = ''; this.form.stickyduedate.checked = false; this.form.barcode.focus(); return false;" />
-</div><!-- /TMPL_IF -->
           <input type="hidden" name="borrowernumber" id="borrowernumber" value="<!-- TMPL_VAR NAME="borrowernumber" -->" />
           <input type="hidden" name="branch" value="<!-- TMPL_VAR NAME="branch" -->" />
           <input type="hidden" name="printer" value="<!-- TMPL_VAR NAME="printer" -->" />
