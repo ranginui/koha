@@ -31,7 +31,6 @@ print $input->header;
 
 if ($base_url = C4::Context->preference('keteurl')){
     $base_url .= $search_terms;
-    warn $base_url;
     my $content = get($base_url);
     if ($input->param('json')){
 	my $XML2JSON = XML::XML2JSON->new();
@@ -42,7 +41,4 @@ if ($base_url = C4::Context->preference('keteurl')){
 	print $content;
     }
 	
-}
-else {
-    warn "Base URL is not configured"
 }
