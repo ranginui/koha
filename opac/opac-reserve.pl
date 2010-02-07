@@ -45,7 +45,7 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
         debug           => 1,
     }
 );
-
+my $OPACDisplayRequestPriority = (C4::Context->preference("OPACDisplayRequestPriority")) ? 1 : 0;
 sub get_out ($$$) {
 	output_html_with_http_headers(shift,shift,shift); # $query, $cookie, $template->output;
 	exit;
@@ -95,16 +95,6 @@ $template->param( branch => $branch );
 # make branch selection options...
 my $CGIbranchloop = GetBranchesLoop($branch);
 $template->param( CGIbranch => $CGIbranchloop );
-
-#Debug
-#output_html_with_http_headers($query,$cookie,"<html><head></head><body> @biblionumbers </body></html>\n");
-#exit;
-#my %bibdata;
-#my $rank;
-#my $biblionumber;
-#my $bibdata;
-#my %itemhash;
-#my $forloan;
 
 #
 #
@@ -167,7 +157,7 @@ if ( $query->param('place_reserve') ) {
         my $branch = $query->param('branch');
         $selectedItems = "$bib/$item/$branch/";
     }
-    
+
     my @selectedItems = split /\//, $selectedItems;
 
     # Make sure there is a biblionum/itemnum/branch triplet for each item.
@@ -190,7 +180,7 @@ if ( $query->param('place_reserve') ) {
 
         my $biblioData = $biblioDataHash{$biblioNum};
         my $found;
-        
+
 	# Check for user supplied reserve date
 	my $startdate;
 	if (
@@ -216,7 +206,7 @@ if ( $query->param('place_reserve') ) {
             # Inserts a null into the 'itemnumber' field of 'reserves' table.
             $itemNum = undef;
         }
-        
+
         # Here we actually do the reserveration. Stage 3.
         AddReserve($branch, $borrowernumber, $biblioNum, 'a', [$biblioNum], $rank, $startdate, $notes,
                    $biblioData->{'title'}, $itemNum, $found) if ($canreserve);
@@ -264,7 +254,7 @@ if ( $borr->{debarred} && ($borr->{debarred} eq 1) ) {
 
 my @reserves = GetReservesFromBorrowernumber( $borrowernumber );
 $template->param( RESERVES => \@reserves );
-if ( $MAXIMUM_NUMBER_OF_RESERVES && scalar(@reserves) >= $MAXIMUM_NUMBER_OF_RESERVES ) {
+if ( $MAXIMUM_NUMBER_OF_RESERVES && (scalar(@reserves) >= $MAXIMUM_NUMBER_OF_RESERVES) ) {
     $template->param( message => 1 );
     $noreserves = 1;
     $template->param( too_many_reserves => scalar(@reserves));
@@ -333,12 +323,12 @@ foreach my $biblioNum (@biblionumbers) {
         my $fee = GetReserveFee(undef, $borrowernumber, $itemInfo->{'biblionumber'}, 'a',
                                 ( $itemInfo->{'biblioitemnumber'} ) );
         $itemInfo->{'reservefee'} = sprintf "%.02f", ($fee ? $fee : 0.0);
-        
+
         if ($itemLevelTypes && $itemInfo->{itype}) {
             $itemInfo->{description} = $itemTypes->{$itemInfo->{itype}}{description};
             $itemInfo->{imageurl} = getitemtypeimagesrc() . "/". $itemTypes->{$itemInfo->{itype}}{imageurl};
         }
-        
+
         if (!$itemInfo->{'notforloan'} && !($itemInfo->{'itemnotforloan'} > 0)) {
             $biblioLoopIter{forloan} = 1;
         }
@@ -449,13 +439,13 @@ foreach my $biblioNum (@biblionumbers) {
             $itemLoopIter->{waitingdate} = format_date($wait_hashref->{waitingdate});
         }
 	$itemLoopIter->{imageurl} = getitemtypeimagelocation( 'opac', $itemTypes->{ $itemInfo->{itype} }{imageurl} );
-     
+
     # Show serial enumeration when needed
     if ($itemLoopIter->{enumchron}) {
-        $itemdata_enumchron = 1;    
+        $itemdata_enumchron = 1;
     }
     $template->param( itemdata_enumchron => $itemdata_enumchron );
-        
+
         push @{$biblioLoopIter{itemLoop}}, $itemLoopIter;
     }
 
@@ -489,7 +479,7 @@ $template->param(itemtable_colspan => $itemTableColspan);
 
 # display infos
 $template->param(bibitemloop => $biblioLoop);
-
+$template->param( showpriority=>1 ) if $OPACDisplayRequestPriority;
 # can set reserve date in future
 if (
     C4::Context->preference( 'AllowHoldDateInFuture' ) &&

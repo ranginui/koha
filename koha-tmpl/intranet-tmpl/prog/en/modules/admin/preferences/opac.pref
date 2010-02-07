@@ -33,7 +33,7 @@ OPAC:
               choices:
                   yes: Show
                   no: "Don't show"
-            - a warning that the OPAC is under maintenance, instead of the OPAC itself. Note: this shows the same warning as when the database needs upgraded, but unconditionally.
+            - "a warning that the OPAC is under maintenance, instead of the OPAC itself. Note: this shows the same warning as when the database needs to be upgraded, but unconditionally."
         -
             - By default, show bib records
             - pref: BiblioDefaultView
@@ -148,6 +148,12 @@ OPAC:
             - pref: OPACSearchForTitleIn
               type: textarea
               class: code
+        -
+            - pref: OpacAddMastheadLibraryPulldown
+              choices: 
+                  yes: Add
+                  no: "Don't add"
+            - a library select pulldown menu on the OPAC masthead.
     Features:
         -
             - pref: opacuserlogin
@@ -276,3 +282,18 @@ OPAC:
                   yes: Show
                   no: "Don't show"
             - purchase suggestions from other patrons on the OPAC.
+    Privacy:
+        -
+            - pref: EnableOpacSearchHistory
+              default: 0
+              choices:
+                  yes: Keep
+                  no: "Don't keep"
+            - patron search history in the OPAC.
+        -
+            - pref: OpacPrivacy
+              default: 0
+              choices:
+                  yes: Allow
+                  no: "Don't allow"
+            - patrons to opt-in/opt-out of saving their reading/circulation history.

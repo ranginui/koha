@@ -1,5 +1,3 @@
--	$dbh->do("ALTER TABLE issuingrules ADD COLUMN `finedays` int(11) default NULL AFTER `fine` ");
--	print "Upgrade done (Adding finedays in issuingrules table)\n";
 #!/usr/bin/perl
 
 
@@ -3342,7 +3340,7 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     $dbh->do("
         INSERT INTO permissions (module_bit, code, description) 
         VALUES ( 13, 'rotating_collections', 'Manage Rotating collections')" );
-	print "Upgrade to $DBversion done (added collection and collection_tracking tables for rotataing collection functionnality)\n";
+	print "Upgrade to $DBversion done (added collection and collection_tracking tables for rotating collections functionality)\n";
     SetVersion ($DBversion);
 }
 $DBversion = "3.01.00.106";
@@ -3384,6 +3382,19 @@ $DBversion = '3.01.00.110';
 if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     $dbh->do('ALTER TABLE `categories` ADD COLUMN `enrolmentperioddate` DATE NULL DEFAULT NULL AFTER `enrolmentperiod`');
     print "Upgrade done (Add enrolment period date support)\n";
+    SetVersion ($DBversion);
+}
+
+$DBversion = '3.01.00.111';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    print "Upgrade done (mark DBrev for 3.2-alpha release)\n";
+    SetVersion ($DBversion);
+}
+
+$DBversion = '3.01.00.112';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+	$dbh->do("INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES ('SpineLabelShowPrintOnBibDetails', '0', '', 'If turned on, a \"Print Label\" link will appear for each item on the bib details page in the staff interface.', 'YesNo');");
+	print "Upgrade done ( added Show Spine Label Printer on Bib Items Details preferences )\n";
     SetVersion ($DBversion);
 }
 

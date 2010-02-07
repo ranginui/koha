@@ -25,6 +25,13 @@ Cataloging:
             - (Enter in columns from the <code>biblio</code>, <code>biblioitems</code> or <code>items</code> tables, surrounded by &lt; and &gt;.)
             - pref: SpineLabelFormat
               type: textarea
+        -
+            - pref: SpineLabelShowPrintOnBibDetails
+              choices:
+                  yes: Display
+                  no:  "Don't display"
+            - buttons on the bib details page to print item spine labels.
+        -
     Record Structure:
         -
             - Interpret and store MARC records in the
@@ -57,12 +64,6 @@ Cataloging:
             - pref: z3950AuthorAuthFields
               class: multi
             - tags (separated by commas) to the correct author tags when importing a record using Z39.50.
-        -
-            - pref: RoutingSerials
-              choices:
-                  yes: Add
-                  no: "Don't add"
-            - extra information to items automatically added to serials.
         -
             - Barcodes are
             - pref: autoBarcode

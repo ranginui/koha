@@ -515,36 +515,62 @@ sub patronflags {
 
   $borrower = &GetMember(%information);
 
-Looks up information about a patron (borrower) by either card number
-,firstname, or borrower number, depending on $type value.
-If C<$type> == 'cardnumber', C<&GetBorrower>
-searches by cardnumber then by firstname if not found in cardnumber; 
-otherwise, it searches by borrowernumber.
+Retrieve the first patron record meeting on criteria listed in the
+C<%information> hash, which should contain one or more
+pairs of borrowers column names and values, e.g.,
+
+   $borrower = GetMember(borrowernumber => id);
 
 C<&GetBorrower> returns a reference-to-hash whose keys are the fields of
 the C<borrowers> table in the Koha database.
+
+FIXME: GetMember() is used throughout the code as a lookup
+on a unique key such as the borrowernumber, but this meaning is not
+enforced in the routine itself.
 
 =cut
 
 #'
 sub GetMember {
     my ( %information ) = @_;
+    if (exists $information{borrowernumber} && !defined $information{borrowernumber}) {
+        #passing mysql's kohaadmin?? Makes no sense as a query
+        return;
+    }
     my $dbh = C4::Context->dbh;
-    my $sth;
-    my $select = "
-SELECT borrowers.*, categories.category_type, categories.description
-FROM borrowers 
-LEFT JOIN categories on borrowers.categorycode=categories.categorycode 
-";
-    $select.=" WHERE ".join(" AND ",map {"$_ = ?"}keys %information);
-    $select=~s/AND $//;
+    my $select =
+    q{SELECT borrowers.*, categories.category_type, categories.description
+    FROM borrowers 
+    LEFT JOIN categories on borrowers.categorycode=categories.categorycode WHERE };
+    my $more_p = 0;
+    my @values = ();
+    for (keys %information ) {
+        if ($more_p) {
+            $select .= ' AND ';
+        }
+        else {
+            $more_p++;
+        }
+
+        if (defined $information{$_}) {
+            $select .= "$_ = ?";
+            push @values, $information{$_};
+        }
+        else {
+            $select .= "$_ IS NULL";
+        }
+    }
     $debug && warn $select, " ",values %information;
-    $sth = $dbh->prepare("$select");
+    my $sth = $dbh->prepare("$select");
     $sth->execute(map{$information{$_}} keys %information);
     my $data = $sth->fetchall_arrayref({});
-    return undef if (scalar(@$data)==0);        
-    if (scalar(@$data)==1) {return $$data[0];}
-    ($data) and return $data;
+    #FIXME interface to this routine now allows generation of a result set
+    #so whole array should be returned but bowhere in the current code expects this
+    if (@{$data} ) {
+        return $data->[0];
+    }
+
+    return;
 }
 
 

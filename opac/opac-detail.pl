@@ -217,7 +217,7 @@ my $marcauthorsarray = GetMarcAuthors ($record,$marcflavour);
 my $marcsubjctsarray = GetMarcSubjects($record,$marcflavour);
 my $marcseriesarray  = GetMarcSeries  ($record,$marcflavour);
 my $marcurlsarray    = GetMarcUrls    ($record,$marcflavour);
-my $subtitle         = C4::Biblio::get_koha_field_from_marc('bibliosubtitle', 'subtitle', $record, '');
+my $subtitle         = GetRecordValue('subtitle', $record, GetFrameworkCode($biblionumber));
 
     $template->param(
                      MARCNOTES               => $marcnotesarray,
@@ -598,9 +598,9 @@ if (C4::Context->preference('TagsEnabled') and $tag_quantity = C4::Context->pref
 
 #Search for title in links
 if (my $search_for_title = C4::Context->preference('OPACSearchForTitleIn')){
-    $search_for_title =~ s/{AUTHOR}/$dat->{author}/g;
-    $search_for_title =~ s/{TITLE}/$dat->{title}/g;
-    $search_for_title =~ s/{ISBN}/$isbn/g;
+    $dat->{author} ? $search_for_title =~ s/{AUTHOR}/$dat->{author}/g : $search_for_title =~ s/{AUTHOR}//g;
+    $dat->{title} ? $search_for_title =~ s/{TITLE}/$dat->{title}/g : $search_for_title =~ s/{TITLE}//g;
+    $isbn ? $search_for_title =~ s/{ISBN}/$isbn/g : $search_for_title =~ s/{ISBN}//g;
  $template->param('OPACSearchForTitleIn' => $search_for_title);
 }
 
