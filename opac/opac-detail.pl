@@ -608,7 +608,6 @@ if (my $search_for_title = C4::Context->preference('OPACSearchForTitleIn')){
 # the user wants, and what's available for display
 my $defaulttab;
 switch (C4::Context->preference('opacSerialDefaultTab')) {
-
     # If the user wants subscriptions by default
     case "subscriptions" { 
 	# And there are subscriptions, we display them
