@@ -176,7 +176,7 @@ sub SearchMember {
     
     # this is used by circulation everytime a new borrowers cardnumber is scanned
     # so we can check an exact match first, if that works return, otherwise do the rest
-    $query = "SELECT * FROM borrowers
+    $query = "SELECT *,categories.description FROM borrowers
         LEFT JOIN categories ON borrowers.categorycode=categories.categorycode
         ";
     my $sth = $dbh->prepare("$query WHERE cardnumber = ?");

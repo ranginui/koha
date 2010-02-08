@@ -1865,3 +1865,21 @@ img.spinner {
 #cataloguing_additem_itemlist div {
 	overflow : scroll;
 }
+
+* html #listsmenulink {
+	border : 1px solid #006699;
+}
+
+.results_summary {
+  display: block;
+  font-size : 85%; 
+  color: #707070;
+  padding : 0 0 .5em 0;
+}
+.results_summary .label {
+  color: #202020;
+}
+.results_summary a {
+  font-weight: normal;
+}
+
