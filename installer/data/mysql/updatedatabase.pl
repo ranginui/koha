@@ -2867,7 +2867,7 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
                          ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
     $dbh->do("ALTER TABLE aqbasket ADD COLUMN `basketgroupid` int(11)");
     $dbh->do("ALTER TABLE aqbasket ADD FOREIGN KEY (`basketgroupid`) REFERENCES `aqbasketgroups` (`id`) ON UPDATE CASCADE ON DELETE SET NULL");
-    $dbh->do("INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES ('pdfformat','pdfformat::example','Controls what script is used for printing (basketgroups)','','free')");
+    $dbh->do("INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES ('pdfformat','pdfformat::layout2pages','Controls what script is used for printing (basketgroups)','','free')");
     print "Upgrade to $DBversion done (adding basketgroups)\n";
     SetVersion ($DBversion);
 }
@@ -3395,6 +3395,37 @@ $DBversion = '3.01.00.112';
 if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
 	$dbh->do("INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES ('SpineLabelShowPrintOnBibDetails', '0', '', 'If turned on, a \"Print Label\" link will appear for each item on the bib details page in the staff interface.', 'YesNo');");
 	print "Upgrade done ( added Show Spine Label Printer on Bib Items Details preferences )\n";
+    SetVersion ($DBversion);
+}
+
+$DBversion = '3.01.00.113';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    my $value = C4::Context->preference("XSLTResultsDisplay");
+    $dbh->do(
+        "INSERT INTO systempreferences (variable,value,type)
+         VALUES('OPACXSLTResultsDisplay',$value,'YesNo')");
+    $value = C4::Context->preference("XSLTDetailsDisplay");
+    $dbh->do(
+        "INSERT INTO systempreferences (variable,value,type)
+         VALUES('OPACXSLTDetailsDisplay',$value,'YesNo')");
+    print "Upgrade done (added two new syspref: OPACXSLTResultsDisplay and OPACXSLTDetailDisplay). You may have to go in Admin > System preference to tweak XSLT related syspref both in OPAC and Search tabs.\n     ";
+    SetVersion ($DBversion);
+}
+
+$DBversion = '3.01.00.114';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("INSERT INTO systempreferences (variable,value,explanation,options,type)VALUES('AutoSelfCheckAllowed', '0', 'For corporate and special libraries which want web-based self-check available from any PC without the need for a manual staff login. Most libraries will want to leave this turned off. If on, requires self-check ID and password to be entered in AutoSelfCheckID and AutoSelfCheckPass sysprefs.', '', 'YesNo')");
+    $dbh->do("INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('AutoSelfCheckID','','Staff ID with circulation rights to be used for automatic web-based self-check. Only applies if AutoSelfCheckAllowed syspref is turned on.','','free')");
+    $dbh->do("INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('AutoSelfCheckPass','','Password to be used for automatic web-based self-check. Only applies if AutoSelfCheckAllowed syspref is turned on.','','free')");
+	print "Upgrade to $DBversion done ( Added AutoSelfCheckAllowed, AutoSelfCheckID, and AutoShelfCheckPass system preference )\n";
+    SetVersion ($DBversion);
+}
+
+$DBversion = '3.01.00.115';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do('UPDATE aqorders SET quantityreceived = 0 WHERE quantityreceived IS NULL');
+    $dbh->do('ALTER TABLE aqorders MODIFY COLUMN quantityreceived smallint(6) NOT NULL DEFAULT 0');
+	print "Upgrade to $DBversion done ( Default aqorders.quantityreceived to 0 )\n";
     SetVersion ($DBversion);
 }
 

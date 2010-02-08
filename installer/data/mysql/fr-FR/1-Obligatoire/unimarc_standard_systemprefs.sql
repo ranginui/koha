@@ -214,8 +214,10 @@ INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES
 	('TagsShowOnList',   '6','','Nombre de tags à afficher sur la page de résultat, 0 désactivant l\'affichage.','Integer');
 
 INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('OPACShelfBrowser','1','','Active le parcours des rayonnages sur la page de détail','YesNo');
-INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('XSLTDetailsDisplay','0','','Activer la feuille XSL pour l''affichage des notices détaillées','YesNo');
-INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('XSLTResultsDisplay','0','','Activer la feuille XSL pour l''affichage des listes de résultat','YesNo');
+INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('OPACXSLTDetailsDisplay','0','','Activer la feuille XSL pour l''affichage à l''OPAC des notices détaillées','YesNo');
+INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('OPACXSLTResultsDisplay','0','','Activer la feuille XSL pour l''affichage à l''OPAC des listes de résultat','YesNo');
+INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('XSLTDetailsDisplay','0','','Activer la feuille XSL pour l''affichage des notices détaillées dans la partie pro','YesNo');
+INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('XSLTResultsDisplay','0','','Activer la feuille XSL pour l''affichage des listes de résultat dans la partie pro','YesNo');
 INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('AdvancedSearchTypes','itemtypes','itemtypes|ccode','Définit quel champ est utilisé pour la limitation par type de document dans la recherche avancée','Choice');
 INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('AllowOnShelfHolds', '0', '', 'Autorise les réservations de documents en rayon.', 'YesNo');
 INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('AllowHoldsOnDamagedItems', '1', '', 'Autorise les réservations de documents déclarés endommagés', 'YesNo');
@@ -280,3 +282,6 @@ INSERT INTO  systempreferences VALUES ('ImageLimit',5,'','Limiter le nombre d''i
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES ('OPACPatronDetails','1','Si désactivé, l''affichage détaillé des données adhérents est désactivé à l''OPAC.','','YesNo');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES ('OPACFinesTab','1','Si désactivé, l''onglet Amende est désactivé à l''OPAC.','','YesNo');
 INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES ('SpineLabelShowPrintOnBibDetails', '0', '', 'If turned on, a "Print Label" link will appear for each item on the bib details page in the staff interface.', 'YesNo');
+INSERT INTO systempreferences (variable,value,explanation,options,type)VALUES('AutoSelfCheckAllowed', '0', 'Pour les bibliothèques d''entreprise qui veulent du prêt auto-contrôlé de n''importe quel PC sans le besoin de recourir à un login de bibliothécaire.', '', 'YesNo');
+INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('AutoSelfCheckID','','Identifiant Bibliothécaire avec droits de circulation qui sera utilisé pour les prêt auto-contré. Ne s''applique que dans les cas de l''activation de la préférence AutoSelfCheckout.','','free');
+INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('AutoSelfCheckPass','','Mot de passe utilisé pour le prêt autocontrôlé. Ne s''applique que dans le cas de l''activation de la préférence AutoSelfCheckout.','','free');
