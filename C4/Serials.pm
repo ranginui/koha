@@ -56,8 +56,7 @@ BEGIN {
       &getroutinglist     &delroutingmember   &addroutingmember
       &reorder_members
       &check_routing &updateClaim &removeMissingIssue
-      &CountIssues
-      HasItems
+      &CountIssues &HasItems
 
     );
 }
