@@ -113,7 +113,7 @@ foreach my $code ( @codes ) {
 	$row_data{ to_branch_loop } = \@to_branch_loop;
 	foreach my $toBranch ( @branchcodes ) {
 		my %row_data;
-                my $isChecked = IsBranchTransferAllowed( $toBranch, $branchcode, $code );
+        my $isChecked = IsBranchTransferAllowed( $toBranch, $branchcode, $code );
 		$row_data{ code }         = $code;
 		$row_data{ toBranch }     = $toBranch;
 		$row_data{ isChecked }    = $isChecked;	

@@ -48,6 +48,7 @@
 			return false;
 		});
 
+        $('#selectlibrary input[type=submit]').hide();
 	});
 </script>
 <style type="text/css">td { text-align: center; }</style>
@@ -68,13 +69,18 @@
     <form method="get" action="/cgi-bin/koha/admin/branch_transfer_limits.pl" id="selectlibrary">
         <label for="branchselect">Select a library :</label>
             <select name="branchcode" id="branchselect">
+            <option value="">Choose one</option>
 		<!-- TMPL_LOOP NAME="branch_loop" -->
+            <!-- TMPL_IF EXPR="value eq branchcode" -->
+                <option value="<!-- TMPL_VAR NAME="value" -->" selected="selected"><!-- TMPL_VAR NAME="branchname" --></option>
+            <!-- TMPL_ELSE -->
                 <option value="<!-- TMPL_VAR NAME="value" -->"><!-- TMPL_VAR NAME="branchname" --></option>
+            <!-- /TMPL_IF -->
 		<!-- /TMPL_LOOP -->
             </select>
 	    <input type="submit" value="Choose" />	    
     </form>
-
+<!-- TMPL_IF NAME="branchcode" -->
 <p class="help">Check the boxes for the libraries you accept to checkin items from.</p>
 <fieldset>For <strong>all</strong> <!--TMPL_VAR NAME="limit_phrase" -->s: <a id="CheckAll" href="#">Check All</a> | <a id="UncheckAll" href="#">Uncheck All</a></fieldset>
 
@@ -121,6 +127,7 @@
 		</div>
   </div>
 </div>
+<!-- /TMPL_IF -->
 <div class="yui-b">
   <!-- TMPL_INCLUDE NAME="admin-menu.inc" -->
 </div>
