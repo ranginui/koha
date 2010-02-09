@@ -11,7 +11,7 @@ July 13 2000	 First post to the koha mailing list
 July 21 2000	 Koha 1.00 put up for download	release
 August 9 2000	 Koha 1.01 released	release
 August 17 2000	 First request for internationalisation from Poland	translation
-August 19 2000	 Koha 1.03 released	release
+Auguest 19 2000	 Koha 1.03 released	release
 October 9 2000	 Koha 1.06 released	release
 October 17 2000	 Koha wins 3M Innovation in Libraries award	award
 October 24 2000	 "WebMedia, E-Loan collect awards" http://computerworld.co.nz/news.nsf/news/CC256CED0016AD1ECC2569810006EAE0?Opendocument&HighLight=2,koha
