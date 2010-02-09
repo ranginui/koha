@@ -702,10 +702,12 @@ sub CanBookBeIssued {
     if ( $borrower->{'dateexpiry'} eq '0000-00-00') {
         $issuingimpossible{EXPIRED} = 1;
     } else {
-        my @expirydate=  split /-/,$borrower->{'dateexpiry'};
-        if($expirydate[0]==0 || $expirydate[1]==0|| $expirydate[2]==0 ||
-            Date_to_Days(Today) > Date_to_Days( @expirydate )) {
-            $issuingimpossible{EXPIRED} = 1;                                   
+        my @expirydate = split (/-/, $borrower->{'dateexpiry'});
+        if (   $expirydate[0] == 0
+            || $expirydate[1] == 0
+            || $expirydate[2] == 0
+            || Date_to_Days(Today) > Date_to_Days(@expirydate) ) {
+            $issuingimpossible{EXPIRED} = 1;
         }
     }
     #
@@ -792,8 +794,18 @@ sub CanBookBeIssued {
             }
         }
     }
-    if ( $item->{'wthdrawn'} && $item->{'wthdrawn'} == 1 )
-    {
+    if ( $item->{'damaged'} && $item->{'damaged'} > 0 ){
+        $needsconfirmation{DAMAGED} = $item->{'damaged'};
+        my $fw                      = GetFrameworkCode($item->{biblionumber});
+        my $category                = GetAuthValCode('items.damaged',$fw);
+        my $authorizedvalues        = GetAuthorisedValues($category, $item->{damaged});
+        
+        foreach my $authvalue (@$authorizedvalues){
+            $needsconfirmation{DAMAGED} = $authvalue->{lib} if $authvalue->{'authorised_value'} eq $item->{'damaged'};
+        }
+        
+    }
+    if ( $item->{'wthdrawn'} && $item->{'wthdrawn'} == 1 ) {
         $issuingimpossible{WTHDRAWN} = 1;
     }
     if (   $item->{'restricted'}
