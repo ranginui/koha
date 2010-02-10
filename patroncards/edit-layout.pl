@@ -28,8 +28,8 @@ use autouse 'Data::Dumper' => qw(Dumper);
 
 use C4::Auth qw(get_template_and_user);
 use C4::Output qw(output_html_with_http_headers);
-use C4::Creators::Lib 1.000000 qw(get_barcode_types get_label_types get_font_types get_text_justification_types get_unit_values get_all_image_names);
-use C4::Patroncards::Layout 1.000000;
+use C4::Creators 1.000000;
+use C4::Patroncards 1.000000;
 
 my $cgi = new CGI;
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
@@ -145,6 +145,7 @@ if ($op eq 'edit') {
             layout_id       => $layout->get_attr('layout_id') > -1 ? $layout->get_attr('layout_id') : '',
             layout_name     => $layout->get_attr('layout_name'),
             page_side       => ($layout_xml->{'page_side'} eq 'F' ? 0 : 1),
+            guide_box       => $layout_xml->{'guide_box'},
             units           => $units,
             @barcode,
             barcode_type    => get_barcode_types(),
@@ -206,6 +207,7 @@ elsif  ($op eq 'save') {
             $layout_id = $cgi->param($parameter) if $parameter eq 'layout_id';
             $layout->{'units'} = $cgi->param($parameter) if $parameter eq 'units';
             $layout->{'page_side'} = $cgi->param($parameter) if $parameter eq 'page_side';
+            $layout->{'guide_box'} = $cgi->param($parameter) if $parameter eq 'guide_box';
         }
     }
     $layout->{'text'} = $text_lines;

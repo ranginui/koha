@@ -11,7 +11,7 @@ July 13 2000	 First post to the koha mailing list
 July 21 2000	 Koha 1.00 put up for download	release
 August 9 2000	 Koha 1.01 released	release
 August 17 2000	 First request for internationalisation from Poland	translation
-Auguest 19 2000	 Koha 1.03 released	release
+August 19 2000	 Koha 1.03 released	release
 October 9 2000	 Koha 1.06 released	release
 October 17 2000	 Koha wins 3M Innovation in Libraries award	award
 October 24 2000	 "WebMedia, E-Loan collect awards" http://computerworld.co.nz/news.nsf/news/CC256CED0016AD1ECC2569810006EAE0?Opendocument&HighLight=2,koha
@@ -290,7 +290,7 @@ March 7 2006	Pierrick Le Gall becomes the 40th committer to Koha
 March 13 2006	IRC meeting
 March 17 2006	First email from Kyle Hall at ccfls to the Mailing list
 March 24 2006	Joshua Ferraro has revised his document about installing Koha on Debian to accommodate Koha version 2.2.6 and Debian sarge (3.1).  Find it on www.kohadocs.org under "System Administration."	documentation
-April 3	2006	Developer meeting on IRC
+April 3 2006	Developer meeting on IRC
 April 11 2006	 Tümer Garip becomes the 41st committer to Koha (major influence in the addition of zebra to Koha and other)
 April 14 2006	Pierrick Le Gall begins as translation manager
 May 2,3 2006	 Kohacon in Paris http://www.koha.org/community/conferences/
