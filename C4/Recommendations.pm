@@ -51,27 +51,31 @@ our $VERSION = '0.01';
 
 sub build_recommendations {
     my $dbh = C4::Context->dbh;
-    $dbh->do("TRUNCATE recommendations");
-    my $query =
-"SELECT biblio.biblionumber,borrowernumber FROM old_issues,biblio,items WHERE old_issues.itemnumber=items.itemnumber AND items.biblionumber=biblio.biblionumber";
+#    $dbh->do("TRUNCATE recommendations");
+    my $query = "SELECT max(updated) AS updated_time FROM recommendations";
     my $sth = $dbh->prepare($query);
-    $sth->execute();
+    my $max = $sth->fetchrow_hashref();
+    $sth->finish;
+    $query =
+"SELECT biblio.biblionumber,borrowernumber FROM old_issues,biblio,items WHERE old_issues.itemnumber=items.itemnumber AND items.biblionumber=biblio.biblionumber AND old_issues.issuedate > ?";
+    $sth = $dbh->prepare($query);
+    $sth->execute($max->{'updated_time'});
     my $query2 =
-"SELECT  biblio.biblionumber,borrowernumber FROM old_issues,biblio,items WHERE old_issues.itemnumber=items.itemnumber AND items.biblionumber=biblio.biblionumber AND old_issues.borrowernumber = ?";
+"SELECT  biblio.biblionumber,borrowernumber FROM old_issues,biblio,items WHERE old_issues.itemnumber=items.itemnumber AND items.biblionumber=biblio.biblionumber AND old_issues.borrowernumber = ? AND old_issues.issuedate > ?";
     my $sth2                   = $dbh->prepare($query2);
     my $recommendations_select = $dbh->prepare(
         "SELECT * FROM recommendations WHERE biblio_one = ? AND biblio_two = ?"
     );
     my $recommendations_update = $dbh->prepare(
-"UPDATE recommendations SET hit_count = ? WHERE biblio_one = ? AND biblio_two = ?"
+"UPDATE recommendations SET hit_count = ?,updated=now() WHERE biblio_one = ? AND biblio_two = ?"
     );
     my $recommendations_insert = $dbh->prepare(
-"INSERT INTO recommendations (biblio_one,biblio_two,hit_count) VALUES (?,?,?)"
+"INSERT INTO recommendations (biblio_one,biblio_two,hit_count,updated) VALUES (?,?,?,now())"
     );
 
     while ( my $issue = $sth->fetchrow_hashref() ) {
 #	warn $issue->{'borrowernumber'};
-        $sth2->execute( $issue->{'borrowernumber'} );
+        $sth2->execute( $issue->{'borrowernumber'}, $max->{'updated_time'} );
         while ( my $borrowers_issue = $sth2->fetchrow_hashref() ) {
 #	    warn $borrowers_issue->{'biblionumber'};
 	    if ($issue->{'biblionumber'} == $borrowers_issue->{'biblionumber'}){
