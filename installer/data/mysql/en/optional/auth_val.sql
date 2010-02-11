@@ -48,6 +48,13 @@ INSERT INTO `authorised_values` (category, authorised_value, lib) VALUES ('RESTR
 
 -- manual invoice types
 INSERT INTO `authorised_values` (category, authorised_value, lib) VALUES ('MANUAL_INV','Copier Fees','.25');
+INSERT INTO `authorised_values` (category, authorised_value, lib) VALUES ('MANUAL_INV','C','Credit');
+INSERT INTO `authorised_values` (category, authorised_value, lib) VALUES ('MANUAL_INV','N','New Card');
+INSERT INTO `authorised_values` (category, authorised_value, lib) VALUES ('MANUAL_INV','F','Fine');
+INSERT INTO `authorised_values` (category, authorised_value, lib) VALUES ('MANUAL_INV','A','Account Management Fee');
+INSERT INTO `authorised_values` (category, authorised_value, lib) VALUES ('MANUAL_INV','M','Sundry');
+INSERT INTO `authorised_values` (category, authorised_value, lib) VALUES ('MANUAL_INV','L','Lost Item');
+INSERT INTO `authorised_values` (category, authorised_value, lib) VALUES ('MANUAL_INV','FOR','Forgiven');
 
 --custom borrower notes
 INSERT INTO `authorised_values` (category, authorised_value, lib) VALUES ('BOR_NOTES','ADDR','Address Notes');
