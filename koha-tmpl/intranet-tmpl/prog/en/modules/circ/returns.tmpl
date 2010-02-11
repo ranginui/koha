@@ -299,6 +299,12 @@ function Dopop(link) {
                     <!-- TMPL_IF Name="withdrawn" -->
                         <p class="problem">Item is withdrawn.</p>
                     <!-- /TMPL_IF -->
+                    <!-- TMPL_IF Name="notforloan" -->
+                        <p class="problem">Item was not for loan: <!-- TMPL_VAR NAME="notforloan" -->.</p>
+                    <!-- /TMPL_IF -->
+                    <!-- TMPL_IF Name="damaged" -->
+                        <p class="problem">Item is considered damaged (<!-- TMPL_VAR NAME="damaged" -->).</p>
+                    <!-- /TMPL_IF -->
                     <!-- TMPL_IF Name="debarred" -->
                         <p class="problem"><a href="/cgi-bin/koha/circ/circulation.pl?borrowernumber=<!-- TMPL_VAR NAME="debarborrowernumber" -->"><!-- TMPL_VAR NAME="debarname" -->(<!-- TMPL_VAR NAME="debarcardnumber" -->)</a> is now debarred until <!-- TMPL_VAR NAME="debarred" -->.</p>
                     <!-- /TMPL_IF -->
