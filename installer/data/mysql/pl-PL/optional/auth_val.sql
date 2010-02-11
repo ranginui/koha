@@ -43,3 +43,13 @@ INSERT INTO `authorised_values` (category, authorised_value, lib) VALUES ('NOT_L
 -- restricted status of an item, linked to items.restricted
 INSERT INTO `authorised_values` (category, authorised_value, lib) VALUES ('RESTRICTED','0','');
 INSERT INTO `authorised_values` (category, authorised_value, lib) VALUES ('RESTRICTED','1','Restricted Access');
+
+-- manual invoice types
+INSERT INTO `authorised_values` (category, authorised_value, lib) VALUES ('MANUAL_INV','Copier Fees','.25');
+INSERT INTO `authorised_values` (category, authorised_value, lib) VALUES ('MANUAL_INV','C','Credit');
+INSERT INTO `authorised_values` (category, authorised_value, lib) VALUES ('MANUAL_INV','N','New Card');
+INSERT INTO `authorised_values` (category, authorised_value, lib) VALUES ('MANUAL_INV','F','Fine');
+INSERT INTO `authorised_values` (category, authorised_value, lib) VALUES ('MANUAL_INV','A','Account Management Fee');
+INSERT INTO `authorised_values` (category, authorised_value, lib) VALUES ('MANUAL_INV','M','Sundry');
+INSERT INTO `authorised_values` (category, authorised_value, lib) VALUES ('MANUAL_INV','L','Lost Item');
+INSERT INTO `authorised_values` (category, authorised_value, lib) VALUES ('MANUAL_INV','FOR','Forgiven');
