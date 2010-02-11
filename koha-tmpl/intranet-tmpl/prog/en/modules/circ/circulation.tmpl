@@ -211,20 +211,12 @@ function refocus(calendar) {
     <li>The patron has a debt of <!-- TMPL_VAR name="DEBT" --></li>
 <!-- /TMPL_IF -->
 
-<!-- TMPL_IF NAME="RENEW_ISSUE" -->
-    <li>Item is currently checked out to this patron.  Renew?</li>
-<!-- /TMPL_IF -->
-
 <!-- TMPL_IF NAME="RESERVE_WAITING" -->
     <li>Item is consigned for <!-- TMPL_VAR NAME="RESERVE_WAITING" --></li>
 <!-- /TMPL_IF -->
 
 <!-- TMPL_IF NAME="RESERVED" -->
     <li>Item is on hold for <!-- TMPL_VAR NAME="RESERVED" --></li>
-<!-- /TMPL_IF -->
-
-<!-- TMPL_IF NAME="ISSUED_TO_ANOTHER" -->
-    <li>Item ( <!-- TMPL_VAR NAME="getTitleMessageIteminfo" --> ) checked out to <!-- TMPL_VAR NAME="ISSUED_TO_ANOTHER" -->. Check in and check out?</li>
 <!-- /TMPL_IF -->
 
 <!-- TMPL_IF NAME="TOO_MANY" -->
@@ -256,6 +248,14 @@ function refocus(calendar) {
 <!-- /TMPL_IF -->
 <!-- TMPL_IF NAME="DAMAGED" -->
     <li>Item is considered damaged (<!-- TMPL_VAR NAME="DAMAGED" -->). Check out anyway?</li>
+<!-- /TMPL_IF -->
+
+<!-- TMPL_IF NAME="ISSUED_TO_ANOTHER" -->
+    <li>Item ( <!-- TMPL_VAR NAME="getTitleMessageIteminfo" --> ) checked out to <!-- TMPL_VAR NAME="ISSUED_TO_ANOTHER" -->. Check in and check out?</li>
+<!-- /TMPL_IF -->
+
+<!-- TMPL_IF NAME="RENEW_ISSUE" -->
+    <li>Item is currently checked out to this patron.  Renew?</li>
 <!-- /TMPL_IF -->
 
 </ul>

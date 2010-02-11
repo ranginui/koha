@@ -524,7 +524,6 @@ div.yui-b fieldset.brief {
 }
 
 label {  
-	float: left;  
 	width: 12em;  
 	margin-right: 1em;  
 	text-align: left;
@@ -567,7 +566,6 @@ fieldset.rows legend {
 }
 
 fieldset.rows label, fieldset.rows span.label {  
-	float: left;  
 	font-weight : bold;
 	width: 6em;  
 	margin-right: 1em;  
@@ -1153,6 +1151,14 @@ td input.approve {
 div.alert {
   background : #FFC url(../../img/alert-bg.gif) repeat-x left 0;
   text-align : center;
+}
+
+div.alert ul{
+	text-align: left;
+}
+
+div.alert ul li {
+	text-align: center;
 }
 
 div.alert strong {
