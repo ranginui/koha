@@ -24,6 +24,7 @@ use C4::Stats;
 use C4::Members;
 use C4::Items;
 use C4::Circulation qw(MarkIssueReturned);
+use C4::Koha;
 
 use vars qw($VERSION @ISA @EXPORT);
 
@@ -365,22 +366,22 @@ sub manualinvoice {
 #        $amountleft =
 #          fixcredit( $borrowernumber, $amount2, $itemnum, $type, $user );
 #    }
+    my %types = map { $_->{authorised_value} => $_->{lib} } @{C4::Koha::GetAuthorisedValues('MANUAL_INV', undef, undef)};
     if ( $type eq 'N' ) {
-        $desc .= " New Card";
+        $desc .= " ".( $types{$type} ) ? $types{$type} : "New Card";
     }
     if ( $type eq 'F' ) {
-        $desc .= " Fine";
+        $desc .= " ".( $types{$type} ) ? $types{$type} : "Fine";
     }
     if ( $type eq 'A' ) {
-        $desc .= " Account Management fee";
+        $desc .= " ".( $types{$type} ) ? $types{$type} : "Account Management Fee";
     }
     if ( $type eq 'M' ) {
-        $desc .= " Sundry";
+        $desc .= " ".( $types{$type} ) ? $types{$type} : "Sundry";
     }
 
     if ( $type eq 'L' && $desc eq '' ) {
-
-        $desc = " Lost Item";
+        $desc .= " ".( $types{$type} ) ? $types{$type} : "Lost Item";
     }
 #    if ( $type eq 'REF' ) {
 #        $desc .= " Cash Refund";
