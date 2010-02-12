@@ -1317,7 +1317,7 @@ sub AddReturn {
         defined($fix) or warn "_FixOverduesOnReturn($borrowernumber, $item->{itemnumber}...) failed!";  # zero is OK, check defined
     
         # fix fine days
-        my $debardate = _FixFineDaysOnReturn($issue->{borrowernumber}, $itemnumber, $issue->{date_due});
+        my $debardate = _FixFineDaysOnReturn($borrower, $item, $issue->{date_due});
         $messages->{'Debarred'} = $debardate if($debardate);
 
         # get fines for the borrower
@@ -1440,20 +1440,20 @@ sub MarkIssueReturned {
 
 =head2 _FixFineDaysOnReturn
 
-    &_FixFineDaysOnReturn($borrowernumber, $itemnumber);
+    &_FixFineDaysOnReturn($borrower, $item, $datedue);
 
-C<$borrowernumber> borrowernumber
+C<$borrower> borrower hashref
 
-C<$itemnumber> itemnumber
+C<$item> item hashref
 
 C<$datedue> date due
 
-Internal function, called only by AddReturn that calculate and update the user fine days, and debarre him
+Internal function, called only by AddReturn that calculate and update the user fine days, and debars him
 
 =cut
 
 sub _FixFineDaysOnReturn {
-    my ($borrowernumber, $itemnumber, $datedue) = @_;
+    my ($borrower, $item, $datedue) = @_;
     
     my @date_due;
     if($datedue){
@@ -1465,18 +1465,17 @@ sub _FixFineDaysOnReturn {
     
     my $deltadays = Delta_Days(Today(), @date_due);
     
-    if( $deltadays < 0){
+    my $branchcode  =_GetCircControlBranch($item,$borrower);
 
-        my $item        = GetItem($itemnumber);
-        my $borrower    = C4::Members::GetMemberDetails($borrowernumber);
-        my $circcontrol = C4::Context::preference('CircControl');
-        my $branchcode  = "*";
+    my $circcontrol = C4::Context::preference('CircControl');
+    my $issuingrule = GetIssuingRule($borrower->{categorycode}, $item->{itype}, $branchcode);
+    my $finedays    = $issuingrule->{finedays};
+    # exit if no finedays defined
+    return unless $finedays;
+    my $grace       = $issuingrule->{firstremind};
+
+    if( $deltadays +$grace < 0){
         
-        $branchcode=_GetCircControlBranch($item,$borrower);
-
-        my $issuingrule = GetIssuingRule($borrower->{categorycode}, $item->{itype}, $branchcode);
-        my $finedays    = $issuingrule->{finedays};
-
         my @newdate     = Add_Delta_Days(Today(), (0 - $deltadays) * $finedays );
         my $isonewdate  = join('-',@newdate);
         my ($deby, $debm, $debd) = split(/-/,$borrower->{debarred});
@@ -1484,11 +1483,11 @@ sub _FixFineDaysOnReturn {
             my @olddate = split(/-/, $borrower->{debarred});
 
             if(Delta_Days(@olddate,@newdate) > 0){
-                C4::Members::DebarMember($borrowernumber, $isonewdate);
+                C4::Members::DebarMember($borrower->{borrowernumber}, $isonewdate);
                 return $isonewdate;
             }
         }else{
-            C4::Members::DebarMember($borrowernumber, $isonewdate);
+            C4::Members::DebarMember($borrower->{borrowernumber}, $isonewdate);
             return $isonewdate;
         }
     }
