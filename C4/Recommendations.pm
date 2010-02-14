@@ -51,17 +51,20 @@ our $VERSION = '0.01';
 
 sub build_recommendations {
     my $dbh = C4::Context->dbh;
-#    $dbh->do("TRUNCATE recommendations");
     my $query = "SELECT max(updated) AS updated_time FROM recommendations";
     my $sth = $dbh->prepare($query);
+    $sth->execute;
     my $max = $sth->fetchrow_hashref();
+    if (!$max->{updated_time}){
+	$max->{'updated_time'} = '0000-00-00';
+    }
     $sth->finish;
     $query =
-"SELECT biblio.biblionumber,borrowernumber FROM old_issues,biblio,items WHERE old_issues.itemnumber=items.itemnumber AND items.biblionumber=biblio.biblionumber AND old_issues.issuedate > ?";
+"SELECT biblio.biblionumber,borrowernumber FROM old_issues,biblio,items WHERE old_issues.itemnumber=items.itemnumber AND items.biblionumber=biblio.biblionumber AND (old_issues.timestamp > ?)";
     $sth = $dbh->prepare($query);
-    $sth->execute($max->{'updated_time'});
+    $sth->execute($max->{'updated_time'}) || die $sth->err_str;
     my $query2 =
-"SELECT  biblio.biblionumber,borrowernumber FROM old_issues,biblio,items WHERE old_issues.itemnumber=items.itemnumber AND items.biblionumber=biblio.biblionumber AND old_issues.borrowernumber = ? AND old_issues.issuedate > ?";
+"SELECT  biblio.biblionumber,borrowernumber FROM old_issues,biblio,items WHERE old_issues.itemnumber=items.itemnumber AND items.biblionumber=biblio.biblionumber AND old_issues.borrowernumber = ? AND old_issues.timestamp > ?";
     my $sth2                   = $dbh->prepare($query2);
     my $recommendations_select = $dbh->prepare(
         "SELECT * FROM recommendations WHERE biblio_one = ? AND biblio_two = ?"
