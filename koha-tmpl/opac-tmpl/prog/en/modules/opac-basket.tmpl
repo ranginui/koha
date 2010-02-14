@@ -161,13 +161,13 @@ function tagAdded() {
     <h3>
         <!-- TMPL_IF NAME="print_basket" -->
             <!-- TMPL_VAR NAME="title" escape="html" -->
-                <!-- TMPL_IF name="subtitle" --> <!-- TMPL_LOOP NAME="subtitle" --><!-- TMPL_VAR NAME="subfield" --><!-- /TMPL_LOOP --><!-- /TMPL_IF -->
-                <!-- TMPL_IF name="author" --> <!-- TMPL_VAR NAME="author" --><!-- /TMPL_IF -->
+                <!-- TMPL_IF name="subtitle" --> <!-- TMPL_LOOP NAME="subtitle" escape="html" --><!-- TMPL_VAR NAME="subfield" --><!-- /TMPL_LOOP --><!-- /TMPL_IF -->
+                <!-- TMPL_IF name="author" --> <!-- TMPL_VAR NAME="author" escape="html" --><!-- /TMPL_IF -->
         <!-- TMPL_ELSE -->
                 <input type="checkbox" value="<!-- TMPL_VAR NAME="biblionumber" -->" name="bib<!-- TMPL_VAR NAME="biblionumber" -->" id="bib<!-- TMPL_VAR NAME="biblionumber" -->" onclick="selRecord(value,checked)" />
                 <!-- TMPL_VAR NAME="title" escape="html" -->
-                <!-- TMPL_IF name="subtitle" --> <!-- TMPL_LOOP NAME="subtitle" --><!-- TMPL_VAR NAME="subfield" --><!-- /TMPL_LOOP --><!-- /TMPL_IF -->
-                <!-- TMPL_IF name="author" --> <!-- TMPL_VAR NAME="author" --><!-- /TMPL_IF -->
+                <!-- TMPL_IF name="subtitle" --> <!-- TMPL_VAR NAME="subtitle" escape "html" --><!-- /TMPL_IF -->
+                <!-- TMPL_IF name="author" --> <!-- TMPL_VAR NAME="author" escape="html" --><!-- /TMPL_IF -->
         <!-- /TMPL_IF -->
     </h3>
 	    <!-- COinS / OpenURL -->
@@ -348,6 +348,32 @@ function tagAdded() {
                         <input type="checkbox" value="<!-- TMPL_VAR NAME="biblionumber" -->" name="bib<!-- TMPL_VAR NAME="biblionumber" -->" id="bib<!-- TMPL_VAR NAME="biblionumber" -->" onclick="selRecord(value,checked);" />
 
                 </td> <!-- /TMPL_UNLESS -->
+<<<<<<< HEAD:koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl
+            <td><a href="#" onclick="openBiblio('<!-- TMPL_VAR name="dest" -->',<!-- TMPL_VAR name="biblionumber" -->)">
+	      <!-- TMPL_IF NAME="title_proper" -->
+                 <!-- TMPL_VAR NAME="title_proper" -->
+              <!-- TMPL_ELSE -->
+                  <!-- TMPL_VAR NAME="title" escape="html" -->
+              <!-- /TMPL_IF>
+					
+
+                    </a>
+                        <!-- TMPL_VAR NAME="author" -->
+                        <p><!-- TMPL_IF name="publishercode" -->- <!-- TMPL_VAR name="publishercode" -->
+                        <!-- TMPL_IF name="place" --> <!-- TMPL_VAR name="place" --><!-- /TMPL_IF --><!-- /TMPL_IF -->
+                        <!-- TMPL_IF name="pages" --> - <!-- TMPL_VAR name="pages" --><!-- TMPL_IF name="size" --> <!-- TMPL_VAR name="size" -->
+                        <!-- /TMPL_IF -->
+                        <!-- /TMPL_IF --></p>
+                        <!-- TMPL_IF name="notes" -->
+                        <p><!-- TMPL_VAR name="notes" --></p>
+                        <!-- /TMPL_IF -->
+						    <!-- COinS / OpenURL -->
+    <span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.au=<!-- TMPL_VAR NAME="author" -->&amp;rft.btitle=<!-- TMPL_VAR NAME="title" ESCAPE="url" -->&amp;rft.date=<!-- TMPL_VAR NAME="publicationyear" -->&amp;rft.tpages=<!-- TMPL_VAR NAME="size" -->&amp;rft.isbn=<!-- TMPL_VAR NAME="isbn"  ESCAPE="url" -->&amp;rft.aucorp=&amp;rft.place=<!-- TMPL_VAR NAME="place" -->&amp;rft.pub=<!-- TMPL_VAR NAME="publisher" ESCAPE="url" -->&amp;rft.edition=<!-- TMPL_VAR NAME="edition" -->&amp;rft.series=<!-- TMPL_VAR NAME="series" -->&amp;rft.genre="></span>
+    <div id="newtag<!-- TMPL_VAR NAME="biblionumber">_status" class="tagstatus results_summary" style="display:none">Tag status here.</div>
+    
+						</td>
+            <td><!-- TMPL_VAR name="description" --></td>
+=======
             <td>
 		<a href="#" onclick="openBiblio('<!-- TMPL_VAR name="dest" -->',<!-- TMPL_VAR name="biblionumber" -->)">
                         <!-- TMPL_VAR NAME="title" escape="html" --><!-- TMPL_IF name="subtitle" --> <!-- TMPL_LOOP NAME="subtitle" --><!-- TMPL_VAR NAME="subfield" --><!-- /TMPL_LOOP --><!-- /TMPL_IF -->
@@ -364,6 +390,7 @@ function tagAdded() {
 		    <!-- TMPL_VAR NAME="copyrightdate" -->
                 <!-- /TMPL_IF -->
 	    </td>
+>>>>>>> kohamaster:koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl
                 <td><!-- TMPL_IF NAME="ITEM_RESULTS" --><!-- TMPL_LOOP NAME="ITEM_RESULTS" -->
                     <p>
                         <!-- TMPL_VAR NAME="branchname" --><!-- TMPL_IF NAME="location" -->, <!-- TMPL_VAR NAME="location" --><!-- /TMPL_IF -->
