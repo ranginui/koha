@@ -68,13 +68,7 @@ foreach my $biblionumber ( @bibs ) {
     my $marcseriesarray  = GetMarcSeries  ($record,$marcflavour);
     my $marcurlsarray    = GetMarcUrls    ($record,$marcflavour);
     my @items            = &GetItemsInfo( $biblionumber, 'opac' );
-    
-    if ($marcflavour eq "MARC21"){
-	my $title_proper = $record->subfield("245","a") . " " . $record->subfield("245","h")
-	  . " " . $record->subfield("245","n") . " " .  $record->subfield("245","p") . " " .
-	   $record->subfield("245","b") . " " .  $record->subfield("245","c");
-	$dat->{title_proper} = $title_proper;
-    }
+    my $subtitle         = GetRecordValue('subtitle', $record, GetFrameworkCode($biblionumber));
 
     my $hasauthors = 0;
     if($dat->{'author'} || @$marcauthorsarray) {
@@ -102,6 +96,7 @@ foreach my $biblionumber ( @bibs ) {
     $dat->{MARCSERIES}  = $marcseriesarray;
     $dat->{MARCURLS}    = $marcurlsarray;
     $dat->{HASAUTHORS}  = $hasauthors;
+    $dat->{subtitle} = $subtitle;
 
     if ( C4::Context->preference("BiblioDefaultView") eq "normal" ) {
         $dat->{dest} = "opac-detail.pl";

@@ -1648,7 +1648,6 @@ sub searchResults {
         }
 
         # XSLT processing of some stuff
-	my $debug=1;
 	use C4::Charset;
 	SetUTF8Flag($marcrecord);
 	$debug && warn $marcrecord->as_formatted;
