@@ -39,7 +39,6 @@ my $enddate=$input->param('to');
 my $run_report=$input->param('run_report');
 my $report_page=$input->param('report_page');
 
-
 my $theme = $input->param('theme');    # only used if allowthemeoverride is set
 
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
