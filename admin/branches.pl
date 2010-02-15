@@ -168,7 +168,6 @@ elsif ( $op eq 'addcategory_validate' ) {
 	if (CheckCategoryUnique($input->param('categorycode'))){
 	    ModBranchCategoryInfo($params);
         default("MESSAGE5",$template);
-
 	}
 	else {
 	    default("MESSAGE9",$template);
