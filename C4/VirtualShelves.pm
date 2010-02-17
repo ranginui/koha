@@ -203,11 +203,13 @@ sub GetRecentShelves ($$$) {
 	my ($mincategory, $row_count, $owner) = @_;
     my (@shelflist);
 	my $total = _shelf_count($owner, $mincategory);
-	my @params = ($owner, $mincategory, 0, $row_count);	 #FIXME: offset is hardcoded here, but could be passed in for enhancements
+	my @params = ($owner, $mincategory);	
+	push @params, $row_count if (defined $row_count);
 	shift @params if (not defined $owner);
 	my $query = "SELECT * FROM virtualshelves";
 	$query .= ((defined $owner) ? " WHERE owner = ? AND category = ?" : " WHERE category >= ? ");
-	$query .= " ORDER BY lastmodified DESC LIMIT ?, ?";
+	$query .= " ORDER BY lastmodified DESC";
+	$query .= " LIMIT ?" if (defined $row_count);
 	my $sth = $dbh->prepare($query);
 	$sth->execute(@params);
 	@shelflist = $sth->fetchall_arrayref({});
@@ -572,7 +574,7 @@ sub RefreshShelvesSummary ($$$) {
 	my $session = C4::Auth::get_session($sessionID);
 	my ($total, $totshelves, $barshelves, $pubshelves);
 
-	($barshelves, $totshelves) = GetRecentShelves(1, $row_count, $loggedinuser);
+	($barshelves, $totshelves) = GetRecentShelves(1, undef, $loggedinuser);
 	$total->{'bartotal'} = $totshelves;
 	($pubshelves, $totshelves) = GetRecentShelves(2, $row_count, undef);
 	$total->{'pubtotal'} = $totshelves;

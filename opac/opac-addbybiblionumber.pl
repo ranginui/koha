@@ -102,7 +102,7 @@ else {
     my %shelvesloop;
     #grab each type of shelf, open (type 3) should not be limited by user.
     foreach my $shelftype (1,2,3) {
-        my ($shelflist) = GetRecentShelves($shelftype, $limit, $shelftype == 3 ? undef : $loggedinuser);
+        my ($shelflist) = GetRecentShelves($shelftype, $shelftype == 1 ? undef : $limit, $shelftype == 3 ? undef : $loggedinuser);
         for my $shelf (@{ $shelflist->[0] }) {
             push(@shelvesloop, $shelf->{shelfnumber});
             $shelvesloop{$shelf->{shelfnumber}} = $shelf->{shelfname};
