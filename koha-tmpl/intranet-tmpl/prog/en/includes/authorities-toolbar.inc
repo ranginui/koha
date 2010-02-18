@@ -18,7 +18,7 @@
 			<!-- TMPL_LOOP name="authtypesloop" -->{ text: "<!-- TMPL_VAR name="authtypetext" -->", url: "/cgi-bin/koha/authorities/authorities.pl?authtypecode=<!-- TMPL_VAR name="value" -->"},
 <!-- /TMPL_LOOP -->
 		]
-
+		<!-- TMPL_IF NAME="CAN_user_editauthorities" -->
 	    new YAHOO.widget.Button({
 	        type: "menu",
 	        label: _("New Authority"),
@@ -36,6 +36,7 @@
           container: "delAuthc",
 		  onclick: {fn: confirm_deletion }
       });
+      <!-- /TMPL_IF -->
 	}
 
 	//]]>
