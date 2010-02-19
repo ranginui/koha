@@ -115,7 +115,10 @@ my @fields = $record->fields();
 foreach my $field (@fields) {
     my @subfields_data;
 
-    # if tag <10, there's no subfield, use the "@" trick
+    # skip UNIMARC fields <200, they are useless for a patron
+    next if C4::Context->preference('MarcFlavour') eq 'UNIMARC' && $field->tag() <200;
+
+# if tag <10, there's no subfield, use the "@" trick
     if ( $field->tag() < 10 ) {
         next if ( $tagslib->{ $field->tag() }->{'@'}->{hidden} );
         my %subfield_data;
@@ -131,6 +134,8 @@ foreach my $field (@fields) {
         for my $i ( 0 .. $#subf ) {
             $subf[$i][0] = "@" unless $subf[$i][0];
             next if ( $tagslib->{ $field->tag() }->{ $subf[$i][0] }->{hidden} );
+            # skip useless subfields (for patrons)
+            next if $subf[$i][0] =~ /7|8|9/;
             my %subfield_data;
             $subfield_data{marc_lib} = $tagslib->{ $field->tag() }->{ $subf[$i][0] }->{lib};
             if ( $tagslib->{ $field->tag() }->{ $subf[$i][0] }->{isurl} ) {
