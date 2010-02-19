@@ -56,5 +56,5 @@ INSERT INTO `authorised_values` (category, authorised_value, lib) VALUES ('MANUA
 INSERT INTO `authorised_values` (category, authorised_value, lib) VALUES ('MANUAL_INV','L','Lost Item');
 INSERT INTO `authorised_values` (category, authorised_value, lib) VALUES ('MANUAL_INV','FOR','Forgiven');
 
---custom borrower notes
+-- custom borrower notes
 INSERT INTO `authorised_values` (category, authorised_value, lib) VALUES ('BOR_NOTES','ADDR','Address Notes');

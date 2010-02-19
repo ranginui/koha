@@ -561,7 +561,8 @@ foreach my $flag ( sort keys %$flags ) {
         elsif ( $flag eq 'CREDITS' ) {
             $template->param(
                 credits    => 'true',
-                creditsmsg => $flags->{'CREDITS'}->{'message'}
+                creditsmsg => $flags->{'CREDITS'}->{'message'},
+                creditsamount => sprintf("%.02f", -($flags->{'CREDITS'}->{'amount'})), # from patron's pov
             );
         }
     }
@@ -577,7 +578,8 @@ foreach my $flag ( sort keys %$flags ) {
         elsif ( $flag eq 'CREDITS' ) {
             $template->param(
                 credits    => 'true',
-                creditsmsg => $flags->{'CREDITS'}->{'message'}
+                creditsmsg => $flags->{'CREDITS'}->{'message'},
+                creditsamount => sprintf("%.02f", -($flags->{'CREDITS'}->{'amount'})), # from patron's pov
             );
         }
         elsif ( $flag eq 'ODUES' ) {
@@ -686,6 +688,7 @@ $template->param(
     CGIorganisations  => $CGIorganisations,
     is_child          => ($borrower->{'category_type'} eq 'C'),
     circview => 1,
+    soundon           => C4::Context->preference("SoundOn"),
 );
 
 # save stickyduedate to session

@@ -1,4 +1,22 @@
 #!/usr/bin/perl
+
+# Copyright 2008 Garry Collum and the Koha Koha Development team
+#
+# This file is part of Koha.
+#
+# Koha is free software; you can redistribute it and/or modify it under the
+# terms of the GNU General Public License as published by the Free Software
+# Foundation; either version 2 of the License, or (at your option) any later
+# version.
+#
+# Koha is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+# A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
+# Suite 330, Boston, MA  02111-1307 USA
+
 # Script to perform searching
 # Mostly copied from search.pl, see POD there
 use strict;            # always use
@@ -494,7 +512,8 @@ for (my $i=0;$i<=@servers;$i++) {
  	    }
  	}
     ## If there's just one result, redirect to the detail page
-        if ($total == 1) {         
+        if ($total == 1 && $format ne 'rss2'
+	    && $format ne 'opensearchdescription' && $format ne 'atom') {   
             my $biblionumber=$newresults[0]->{biblionumber};
             if (C4::Context->preference('BiblioDefaultView') eq 'isbd') {
                 print $cgi->redirect("/cgi-bin/koha/opac-ISBDdetail.pl?biblionumber=$biblionumber");

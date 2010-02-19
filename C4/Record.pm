@@ -32,6 +32,7 @@ use XML::LibXML;
 use C4::Biblio; #marc2bibtex
 use C4::Csv; #marc2csv
 use C4::Koha; #marc2csv
+use YAML; #marcrecords2csv
 use Text::CSV::Encoded; #marc2csv
 
 use vars qw($VERSION @ISA @EXPORT);
@@ -52,7 +53,6 @@ $VERSION = 3.00;
   &marc2modsxml
   &marc2bibtex
   &marc2csv
-
   &html2marcxml
   &html2marc
   &changeEncoding
@@ -328,11 +328,59 @@ sub marc2endnote {
 	
 }
 
-=head2 marc2csv - Convert from UNIMARC to CSV
+=head2 marc2csv - Convert several records from UNIMARC to CSV
+Pre and postprocessing can be done through a YAML file
 
 =over 4
 
-my ($csv) = marc2csv($record, $csvprofileid, $header);
+my ($csv) = marc2csv($biblios, $csvprofileid);
+
+Returns a CSV scalar
+
+=over 2
+
+C<$biblio> - a list of biblionumbers
+
+C<$csvprofileid> - the id of the CSV profile to use for the export (see export_format.export_format_id and the GetCsvProfiles function in C4::Csv)
+
+=back
+
+=back
+
+=cut
+sub marc2csv {
+    my ($biblios, $id) = @_;
+    my $output;
+    my $csv = Text::CSV::Encoded->new();
+
+    # Getting yaml file
+    my $configfile = "../tools/csv-profiles/$id.yaml";
+    my ($preprocess, $postprocess, $fieldprocessing);
+    if (-e $configfile){
+        ($preprocess,$postprocess, $fieldprocessing) = YAML::LoadFile($configfile);
+    }
+
+    warn $fieldprocessing;
+    # Preprocessing
+    eval $preprocess if ($preprocess);
+
+    my $firstpass = 1;
+    foreach my $biblio (@$biblios) {
+	$output .= marcrecord2csv($biblio, $id, $firstpass, $csv, $fieldprocessing) ;
+	$firstpass = 0;
+    }
+
+    # Postprocessing
+    eval $postprocess if ($postprocess);
+
+    return $output;
+}
+
+=head2 marcrecord2csv - Convert a single record from UNIMARC to CSV
+
+=over 4
+
+my ($csv) = marcrecord2csv($biblio, $csvprofileid, $header);
 
 Returns a CSV scalar
 
@@ -344,6 +392,8 @@ C<$csvprofileid> - the id of the CSV profile to use for the export (see export_f
 
 C<$header> - true if the headers are to be printed (typically at first pass)
 
+C<$csv> - an already initialised Text::CSV object
+
 =back
 
 =back
@@ -351,8 +401,8 @@ C<$header> - true if the headers are to be printed (typically at first pass)
 =cut
 
 
-sub marc2csv {
-    my ($biblio, $id, $header) = @_;
+sub marcrecord2csv {
+    my ($biblio, $id, $header, $csv, $fieldprocessing) = @_;
     my $output;
 
     # Getting the record
@@ -366,7 +416,6 @@ sub marc2csv {
 
     # Getting output encoding
     my $encoding          = $profile->{encoding} || 'utf8';
-
     # Getting separators
     my $csvseparator      = $profile->{csv_separator}      || ',';
     my $fieldseparator    = $profile->{field_separator}    || '#';
@@ -376,10 +425,12 @@ sub marc2csv {
     if ($csvseparator eq '\t') { $csvseparator = "\t" }
     if ($fieldseparator eq '\t') { $fieldseparator = "\t" }
     if ($subfieldseparator eq '\t') { $subfieldseparator = "\t" }
+    if ($csvseparator eq '\n') { $csvseparator = "\n" }
+    if ($fieldseparator eq '\n') { $fieldseparator = "\n" }
+    if ($subfieldseparator eq '\n') { $subfieldseparator = "\n" }
 
-    # Init CSV
-    my $csv = Text::CSV::Encoded->new({ sep_char => $csvseparator });
-    $csv = $csv->encoding_out($encoding) if ($encoding ne 'utf8');
+    $csv = $csv->encoding_out($encoding) ;
+    $csv->sep_char($csvseparator);
 
     # Getting the marcfields
     my $marcfieldslist = $profile->{marcfields};
@@ -460,13 +511,26 @@ sub marc2csv {
 	} else {
 	    my @fields = ($record->field($marcfield));
 	    my $authvalues = GetKohaAuthorisedValuesFromField($marcfield, undef, $frameworkcode, undef);
-	    push (@fieldstab, join($fieldseparator, map((defined $authvalues->{$_->as_string}) ? $authvalues->{$_->as_string} : $_->as_string, @fields)));  		
+
+	    my @valuesarray;
+	    foreach (@fields) {
+		my $value;
+
+		# Getting authorised value
+		$value = defined $authvalues->{$_->as_string} ? $authvalues->{$_->as_string} : $_->as_string;
+
+		# Field processing
+		eval $fieldprocessing if ($fieldprocessing);
+
+		push @valuesarray, $value;
+	    }
+	    push (@fieldstab, join($fieldseparator, @valuesarray)); 
 	 }
     };
 
     $csv->combine(@fieldstab);
     $output .= $csv->string() . "\n";
-   
+
     return $output;
 
 }

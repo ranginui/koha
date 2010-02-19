@@ -3445,6 +3445,40 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     SetVersion ($DBversion);
 }
 
+$DBversion = '3.01.00.118';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    my ($count) = $dbh->selectrow_array("SELECT count(*) FROM information_schema.columns
+                                         WHERE table_name = 'aqbudgets_planning'
+                                         AND column_name = 'display'");
+    if ($count < 1) {
+        $dbh->do("ALTER TABLE aqbudgets_planning ADD COLUMN display tinyint(1) DEFAULT 1");
+    }
+    print "Upgrade to $DBversion done (bug 4203: add display column to aqbudgets_planning if missing)\n";
+    SetVersion ($DBversion);
+}
+
+$DBversion = '3.01.00.119';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    eval{require Locale::Currency::Format};
+    if (!$@) {
+        print "Upgrade to $DBversion done (Locale::Currency::Format installed.)\n";
+        SetVersion ($DBversion);
+    }
+    else {
+        print "Upgrade to $DBversion done.\n";
+        print "NOTICE: The Locale::Currency::Format package is not installed on your system or not found in \@INC.\nThis dependency is required in order to include fine information in overdue notices.\nPlease ask your system administrator to install this package.\n";
+        SetVersion ($DBversion);
+    }
+}
+
+$DBversion = '3.01.00.120';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do(q{
+INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('soundon','0','Enable circulation sounds during checkin and checkout in the staff interface.  Not supported by all web browsers yet.','','YesNo');
+});
+    print "Upgrade to $DBversion done (bug 1080: add soundon system preference for circulation sounds)\n";
+    SetVersion ($DBversion);
+}
 =item DropAllForeignKeys($table)
 
   Drop all foreign keys of the table $table

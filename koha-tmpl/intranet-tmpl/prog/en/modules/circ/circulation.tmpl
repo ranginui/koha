@@ -281,6 +281,11 @@ function refocus(calendar) {
 <!-- /TMPL_IF --> <!-- NEEDSCONFIRMATION -->
 
         <!-- TMPL_IF NAME="IMPOSSIBLE" -->
+
+<!-- TMPL_IF NAME="soundon" -->
+<audio src="/intranet-tmpl/prog/sound/critical.ogg" autoplay="autoplay" autobuffer="autobuffer"></audio>
+<!-- /TMPL_IF -->        
+
 <div class="yui-g">
 <div id="circ_impossible" class="dialog alert">
 <!-- RESULT OF ISSUING REQUEST -->
@@ -339,6 +344,10 @@ function refocus(calendar) {
     <!-- /TMPL_IF -->
 
 </div></div>
+<!-- TMPL_ELSE -->
+<!-- TMPL_IF NAME="soundon" -->
+<audio src="/intranet-tmpl/prog/sound/beep.ogg" autoplay="autoplay" autobuffer="autobuffer"></audio>
+<!-- /TMPL_IF -->
     <!--/TMPL_IF --> <!-- /impossible -->
 
 <!-- TMPL_IF NAME="issued" -->
@@ -514,7 +523,9 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
 			<!-- /TMPL_IF -->
 
         	<!-- TMPL_IF NAME="credits" -->
-			<li><span class="circ-hlt">Credits:</span> Patron has a credit</li>
+			<li>
+                <span class="circ-hlt">Credits:</span> Patron has a credit<!-- TMPL_IF NAME="creditsamount" --> of <!-- TMPL_VAR name="creditsamount" --><!-- /TMPL_IF -->
+            </li>
 			<!-- /TMPL_IF -->
 
 

@@ -577,7 +577,9 @@ WriteMakefile(
 			    'Lingua::Stem::Snowball'	       => 0.952,
                             'List::Util'                       => 1.18,
                             'List::MoreUtils'                  => 0.21,
+                            'Locale::Currency::Format'         => 1.28,
                             'Locale::Language'                 => 2.07,
+                            'Locale::PO'                       => 0.17,
                             'MARC::Charset'                    => 0.98,
                             'MARC::Crosswalk::DublinCore'      => 0.02,
                             'MARC::File::XML'                  => 0.88,
@@ -1193,6 +1195,7 @@ sub _get_value {
 
     # take value from install log if present
     if (exists $install_log_values{$key}) {
+        $install_log_values{$key} =~ s/\$/\$\$/g;
         return $install_log_values{$key};
     }
 
@@ -1212,6 +1215,7 @@ sub _get_value {
         $retry_msg .= _add_valid_values_disp($key, $valid_values);
         $val = prompt($retry_msg, $default);
     }
+    $val =~ s/\$/\$\$/g;
     return $val;
 }
 
