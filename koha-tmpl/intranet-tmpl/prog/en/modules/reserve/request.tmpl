@@ -270,7 +270,7 @@ function checkMultiHold() {
         </li>
         <!-- TMPL_UNLESS NAME="multi_hold" -->
           <li>
-          <span class="label">Priority:</span>
+              <span class="label">Priority:</span>
               <strong><!-- TMPL_VAR Name="fixedRank" --></strong>
           </li>
         <!-- /TMPL_UNLESS -->
@@ -282,6 +282,7 @@ function checkMultiHold() {
             <label for="pickup">Pickup at:</label>
             <!-- TMPL_VAR NAME="CGIbranch" -->
         </li>
+
 	<!-- TMPL_IF NAME="reserve_in_future" -->
 	<li>
 	    <label for="reserve_date">Hold starts on date:</label>
@@ -313,6 +314,37 @@ function checkMultiHold() {
 	    </script>
 	</li>
 	<!-- /TMPL_IF -->
+
+	<li>
+	    <label for="expiration_date">Hold expires on date:</label>
+	    <input name="expiration_date" id="expiration_date" size="10" readonly="readonly" />
+	    <img src="<!-- TMPL_VAR NAME="themelang" -->/lib/calendar/cal.gif" alt="Show Calendar" border="0" id="CalendarExpirationDate" style="cursor: pointer;" />
+	    <script language="JavaScript" type="text/javascript">
+		//<![CDATA[
+		function validate1(date) {
+			var today = new Date();
+			if ( (date > today) ||
+                    ( date.getDate() == today.getDate() &&
+                      date.getMonth() == today.getMonth() &&
+                      date.getFullYear() == today.getFullYear() ) ) {
+				return false;
+			} else {
+				return true;
+			}
+		};
+		Calendar.setup(
+			{
+				inputField : "expiration_date",
+				ifFormat : "<!-- TMPL_VAR NAME="DHTMLcalendar_dateformat" -->",
+				button : "CalendarExpirationDate",
+				disableFunc : validate1,
+				dateStatusFunc : validate1,
+			}
+		);
+		//]]>
+	    </script>
+		<a href='#' onclick="document.getElementById('expiration_date').value='';">Clear Date</a>
+	</li>
 
         <!-- TMPL_UNLESS NAME="multi_hold" -->
           <li> <label for="requestany">Place a hold on the next available copy </label>
@@ -463,7 +495,7 @@ function checkMultiHold() {
               <img src="<!-- TMPL_VAR name="imageurl" -->" alt="<!-- TMPL_VAR NAME="itypename" -->" title="<!-- TMPL_VAR NAME="itypename" -->" />
             </td>
           <!-- /TMPL_UNLESS -->
-          <td><!-- TMPL_VAR NAME="rank" --></td>
+            <td><!-- TMPL_VAR NAME="rank" --></td>
           <td>
             <!-- TMPL_IF NAME="alreadyres" -->
               <ul>
@@ -529,12 +561,22 @@ function checkMultiHold() {
           <caption><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->"><!-- TMPL_VAR NAME="title" ESCAPE="html" --></a></caption>
       <!-- /TMPL_IF -->
       <tr>
-        <th>Priority</th>
+        <!-- TMPL_IF NAME="CAN_user_reserveforothers_modify_holds_priority" -->
+            <th>Priority</th>
+	        <th>&nbsp</th>
+        <!-- TMPL_ELSE -->
+            <th>Delete?</th>
+        <!-- /TMPL_IF -->
         <th>Patron</th>
         <th>Notes</th>
         <th>Date</th>
+	<th>Expiration</th>
         <th>Pick up Library</th>
         <th>Details</th>
+        <!-- TMPL_IF NAME="CAN_user_reserveforothers_modify_holds_priority" -->
+            <th><img src="/intranet-tmpl/<!-- TMPL_VAR NAME='theme' -->/img/go-bottom.png" border="0" alt="Toggle Set to Lowest Priority" /></th>
+        <!-- /TMPL_IF -->
+	<th>&nbsp;</th>
       </tr>
   <!-- TMPL_LOOP Name="reserveloop" -->
   <!-- TMPL_UNLESS Name="__odd__" --><tr class="highlight"><!-- TMPL_ELSE --><tr><!-- /TMPL_UNLESS -->
@@ -545,12 +587,33 @@ function checkMultiHold() {
     <!-- TMPL_IF Name="wait" -->
             <option value="W" selected="selected">Waiting</option>
     <!-- /TMPL_IF -->
-	<!-- TMPL_LOOP Name="optionloop" -->
-	<!-- TMPL_IF Name="selected" --><option value="<!-- TMPL_VAR NAME="num" -->" selected="selected"><!-- TMPL_VAR NAME="num" --></option><!-- TMPL_ELSE --><option value="<!-- TMPL_VAR NAME="num" -->"><!-- TMPL_VAR NAME="num" --></option><!-- /TMPL_IF -->
-	<!-- /TMPL_LOOP -->
+	<!-- TMPL_IF NAME="CAN_user_reserveforothers_modify_holds_priority" --><!-- TMPL_LOOP Name="optionloop" -->
+        <!-- TMPL_IF Name="selected" --><option value="<!-- TMPL_VAR NAME="num" -->" selected="selected"><!-- TMPL_VAR NAME="num" --></option><!-- TMPL_ELSE --><option value="<!-- TMPL_VAR NAME="num" -->"><!-- TMPL_VAR NAME="num" --></option><!-- /TMPL_IF -->
+        <!-- /TMPL_LOOP --><!-- TMPL_ELSE --><option value=""></option><!-- /TMPL_IF -->
             <option value="del">del</option>
           </select>
         </td>
+
+     <!-- TMPL_IF NAME="CAN_user_reserveforothers_modify_holds_priority" -->
+        <td style="white-space:nowrap;">
+	        <a title="Move Hold Up" href="request.pl?action=move&amp;where=up&amp;borrowernumber=<!-- TMPL_VAR Name="borrowernumber" -->&amp;biblionumber=<!-- TMPL_VAR Name="biblionumber" -->&amp;date=<!-- TMPL_VAR Name="date" -->">
+			<img src="/intranet-tmpl/<!-- TMPL_VAR NAME='theme' -->/img/go-up.png" border="0" alt="Go up" />
+                </a>
+
+		<a title="Move Hold To Top" href="request.pl?action=move&amp;where=top&amp;borrowernumber=<!-- TMPL_VAR Name="borrowernumber" -->&amp;biblionumber=<!-- TMPL_VAR Name="biblionumber" -->&amp;date=<!-- TMPL_VAR Name="date" -->">
+                	<img src="/intranet-tmpl/<!-- TMPL_VAR NAME='theme' -->/img/go-top.png" border="0" alt="Go top" />
+                </a>
+
+                <a title="Move Hold To Bottom" href="request.pl?action=move&amp;where=bottom&amp;borrowernumber=<!-- TMPL_VAR Name="borrowernumber" -->&amp;biblionumber=<!-- TMPL_VAR Name="biblionumber" -->&amp;date=<!-- TMPL_VAR Name="date" -->">
+                	<img src="/intranet-tmpl/<!-- TMPL_VAR NAME='theme' -->/img/go-bottom.png" border="0" alt="Go bottom" />
+                </a>
+
+                <a title="Move Hold Down" href="request.pl?action=move&amp;where=down&amp;borrowernumber=<!-- TMPL_VAR Name="borrowernumber" -->&amp;biblionumber=<!-- TMPL_VAR Name="biblionumber" -->&amp;date=<!-- TMPL_VAR Name="date" -->">
+                	<img src="/intranet-tmpl/<!-- TMPL_VAR NAME='theme' -->/img/go-down.png" border="0" alt="Go down" />
+                </a>
+        </td>
+    <!-- /TMPL_IF -->
+
         <td>
           <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->" >
 	  <!-- TMPL_IF NAME="hidename" -->
@@ -562,6 +625,7 @@ function checkMultiHold() {
         </td>
         <td><!-- TMPL_VAR NAME="notes" --></td>
         <td><!-- TMPL_VAR NAME="date" --></td>
+	<td><!-- TMPL_VAR NAME="expirationdate" --></td>
         <td>
     <!-- TMPL_IF Name="wait" -->
     	<!-- TMPL_IF NAME="atdestination" -->
@@ -621,7 +685,27 @@ function checkMultiHold() {
       <!-- /TMPL_IF -->
     <!-- /TMPL_IF -->
         </td>
+
+    <!-- TMPL_IF NAME="CAN_user_reserveforothers_modify_holds_priority" -->
+	<td>
+		<a title="Toggle Lowest Priority" href="request.pl?action=setLowestPriority&amp;borrowernumber=<!-- TMPL_VAR Name="borrowernumber" -->&amp;biblionumber=<!-- TMPL_VAR Name="biblionumber" -->&amp;date=<!-- TMPL_VAR Name="date" -->"> 
+			<!-- TMPL_IF NAME="lowestPriority" -->
+	                	<img src="/intranet-tmpl/<!-- TMPL_VAR NAME='theme' -->/img/go-bottom.png" border="0" alt="Unset Lowest Priority" />
+		        <!-- TMPL_ELSE -->
+		                <img src="/intranet-tmpl/<!-- TMPL_VAR NAME='theme' -->/img/go-down.png" border="0" alt="Set To Lowest Priority" />
+		        <!-- /TMPL_IF -->
+		</a>
+	</td> 
+    <!-- /TMPL_IF -->
+
+	<td>
+		<a title="Cancel Hold" href="request.pl?action=cancel&amp;borrowernumber=<!-- TMPL_VAR Name="borrowernumber" -->&amp;biblionumber=<!-- TMPL_VAR Name="biblionumber" -->&amp;date=<!-- TMPL_VAR Name="date" -->">
+                	<img src="/intranet-tmpl/<!-- TMPL_VAR NAME='theme' -->/img/x.png" border="0" alt="Cancel" />
+                </a>
+	</td>
+
       </tr>
+
   <!-- /TMPL_LOOP --> <!-- existing reserveloop -->
      </table>
   <!-- /TMPL_IF --><!-- /reserveloop -->

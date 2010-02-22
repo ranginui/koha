@@ -3479,6 +3479,47 @@ INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES
     print "Upgrade to $DBversion done (bug 1080: add soundon system preference for circulation sounds)\n";
     SetVersion ($DBversion);
 }
+
+$DBversion = '3.01.00.121';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("ALTER TABLE `reserves` ADD `expirationdate` DATE DEFAULT NULL");
+    $dbh->do("ALTER TABLE `reserves` ADD `lowestPriority` tinyint(1) NOT NULL");
+    $dbh->do("ALTER TABLE `old_reserves` ADD `expirationdate` DATE DEFAULT NULL");
+    $dbh->do("ALTER TABLE `old_reserves` ADD `lowestPriority` tinyint(1) NOT NULL");
+    print "Upgrade to $DBversion done ( Added Additional Fields to Reserves tables )\n";
+    SetVersion ($DBversion);
+}
+
+$DBversion = '3.01.00.122';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do(q{
+      INSERT INTO systempreferences (variable,value,explanation,options,type)
+      VALUES ('OAI-PMH:ConfFile', '', 'If empty, Koha OAI Server operates in normal mode, otherwise it operates in extended mode.','','File');
+});
+    print "Upgrade to $DBversion done. — Add a new system preference OAI-PMF:ConfFile\n";
+    SetVersion ($DBversion);
+}
+
+$DBversion = "3.01.00.123";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("INSERT INTO `permissions` (`module_bit`, `code`, `description`) VALUES
+        (6, 'place_holds', 'Place holds for patrons')");
+    $dbh->do("INSERT INTO `permissions` (`module_bit`, `code`, `description`) VALUES
+        (6, 'modify_holds_priority', 'Modify holds priority')");
+    $dbh->do("UPDATE `userflags` SET `flagdesc` = 'Place and modify holds for patrons' WHERE `flag` = 'reserveforothers'");
+    print "Upgrade to $DBversion done (Add granular permission for holds modification and update description of reserveforothers permission)\n";
+    SetVersion ($DBversion);
+}
+
+$DBversion = '3.01.00.124';
+if (C4::Context->preference('Version') < TransformToNum($DBversion)){
+    $dbh->do("
+        INSERT INTO `letter` (module, code, name, title, content)         VALUES('reserves', 'HOLDPLACED', 'Hold Placed on Item', 'Hold Placed on Item','A hold has been placed on the following item : <<title>> (<<biblionumber>>) by the user <<firstname>> <<surname>> (<<cardnumber>>).');
+    ");
+    print "Upgrade to $DBversion done (bug 3242: add HOLDPLACED letter template, which is used when emailLibrarianWhenHoldIsPlaced is enabled)\n";
+    SetVersion ($DBversion);
+}
+
 =item DropAllForeignKeys($table)
 
   Drop all foreign keys of the table $table

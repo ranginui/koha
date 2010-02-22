@@ -1,5 +1,5 @@
 Circulation:
-# broken, omitted: emailLibrarianWhenHoldIsPlaced, holdCancelLength, WebBasedSelfCheck
+# broken, omitted: holdCancelLength
 # FIXME: printcirculationslips is also omitted. It _technically_ could work, but C4::Print is HLT specific and needs a little bit of refactoring.
     Interface:
         -
@@ -49,11 +49,6 @@ Circulation:
                   yes: Allow
                   no: "Don't allow"
             - staff to delete messages added from other libraries.
-        -
-            - Mark a hold as problematic if it has been waiting for more than
-            - pref: ReservesMaxPickUpDelay
-              class: integer
-            - days.
         -
             - Show the
             - pref: numReturnedItemsToShow
@@ -222,7 +217,12 @@ Circulation:
               choices:
                   ItemHomeLibrary: "item's home library"
                   PatronLibrary: "patron's home library"
-            - to see if the patron can place a hold on the item.                  
+            - to see if the patron can place a hold on the item.    
+        -
+            - Mark a hold as problematic if it has been waiting for more than
+            - pref: ReservesMaxPickUpDelay
+              class: integer
+            - days.
         -
             - Satisfy holds from the libraries
             - pref: StaticHoldsQueueWeight
@@ -250,6 +250,12 @@ Circulation:
             - pref: maxreserves
               class: integer
             - holds at once.
+        -
+            - pref: emailLibrarianWhenHoldIsPlaced
+              choices:
+                  yes: Enable
+                  no:  "Don't enable"
+            - "sending an email to the Koha administrator email address whenever a hold request is placed."
     Fines Policy:
         -
             - Calculate fines based on days overdue
