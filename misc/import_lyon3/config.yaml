@@ -1,0 +1,73 @@
+--- 
+MAST: biblionumber
+INST: branchcode
+SUBLOC: location
+CALL.NO: callnumber
+VENDOR: aqbooksellerid
+PRICE: cost
+NOTE: internalnotes
+LOCAL: opacnote
+RECUS: received
+PERIODICITE: periodicity
+NUMEROTATION: numberingmethod
+FIRSTDATE: firstacquidate
+STARTDATE: startdate
+ENDDATE: enddate
+LASTDATE: histenddate
+--- 
+periodicity: 
+    a: 1
+#    b: 2
+    c: 2
+    d: 3
+    e: 3
+    f: 5
+    g: 6
+    h: 7
+#    i: 
+    j: 9
+    k: 10
+    l: 11
+#    m
+#    n
+#;    o
+    u: 16
+    y: 32
+    z: 48
+#vendor: 
+#    ABF: 8
+#    CNDP: 17
+#    D: 18
+#    DALABO: 19
+#    DALLOZ: 20
+#    DAW: 21
+#    DAWABO: 22
+#    DECIT: 25
+#    DECITG: 26
+#    DOKABO: 27
+#    DONSABO: 28
+#    DV: 30
+#    EBSCOA: 31
+#    EBSCOF: 32
+#    EDTECH: 33
+#    EFLABO: 34
+#    ENSSIB: 35
+#    EUROPERI: 37
+#    FL: 38
+#    INCONNU: 6
+#    JCABO: 41
+#    JO: 42
+#    JOCE: 43
+#    JOLYABO: 44
+#    LAMYABO: 46
+#    LEGIABO: 48
+#    LGDJABO: 49
+#    LITABO: 50
+#    M: 51
+#    MEMDROIT: 52
+#    OCD: 55
+#    PROCUBAL: 57
+#    SWETSA: 63
+#    SWETSF: 64
+#    ujm: 65
+#
