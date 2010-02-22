@@ -53,8 +53,18 @@ my ($template, $loggedinuser, $cookie)
             debug => 1,
             });
 
+my @suploop;
+for ( sort {$supplierlist{$a} cmp $supplierlist{$b} } keys %supplierlist ) {
+    my ($count, @dummy) = GetLateOrMissingIssues($_, "", $order);
+    push @suploop, {
+        id       => $_,
+        name     => $supplierlist{$_},
+        count    => $count,
+        selected => $_ == $supplierid,
+    };
+}
 
-my $letters = GetLetters('claimissues');
+my $letters = GetLetters("claimissues");
 my @letters;
 foreach (keys %{$letters}){
     push @letters ,{code=>$_,name=> $letters->{$_}};
@@ -82,7 +92,11 @@ if($op && $op eq 'preview'){
 $template->param('letters'=>\@letters,'letter'=>$letter);
 $template->param(
         order =>$order,
+<<<<<<< HEAD:serials/claims.pl
         supplier_loop => $supplierlist,
+=======
+        suploop => \@suploop,
+>>>>>>> [MT2766] Replaced CGI dropdown box call wich is deprecated:serials/claims.pl
         phone => $supplierinfo[0]->{phone},
         booksellerfax => $supplierinfo[0]->{booksellerfax},
         bookselleremail => $supplierinfo[0]->{bookselleremail},
