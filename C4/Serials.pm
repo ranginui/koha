@@ -337,7 +337,8 @@ sub GetSubscription {
     $debug and warn "query : $query\nsubsid :$subscriptionid";
     my $sth = $dbh->prepare($query);
     $sth->execute($subscriptionid);
-    return $sth->fetchrow_hashref;
+    my $data= $sth->fetchrow_hashref;
+    return $data;
 }
 
 =head2 GetFullSubscription
@@ -895,7 +896,7 @@ sub GetSeq {
 
 =head2 GetExpirationDate
 
-$sensddate = GetExpirationDate($subscriptionid, [$startdate])
+$enddate = GetExpirationDate($subscriptionid, [$startdate])
 
 this function return the next expiration date for a subscription given on input args.
 
@@ -1238,15 +1239,25 @@ sub NewSubscription {
         $internalnotes, $serialsadditems, $staffdisplaycount, $opacdisplaycount, $graceperiod,   $location,     $enddate
     );
 
-    #then create the 1st waited number
     my $subscriptionid = $dbh->{'mysql_insertid'};
+    unless ($enddate){
+       $enddate=GetExpirationDate($subscriptionid,$startdate); 
+        $query = qq|
+            UPDATE subscription
+            SET    enddate=?
+            WHERE  subscriptionid=?
+        |;
+        $sth = $dbh->prepare($query);
+        $sth->execute( $enddate, $subscriptionid );
+    }
+    #then create the 1st waited number
     $query = qq(
         INSERT INTO subscriptionhistory
             (biblionumber, subscriptionid, histstartdate,  opacnote, librariannote)
         VALUES (?,?,?,?,?)
         );
     $sth = $dbh->prepare($query);
-    $sth->execute( $biblionumber, $subscriptionid, $startdate, $notes, $internalnotes );
+    $sth->execute( $biblionumber, $subscriptionid, $startdate,  $notes, $internalnotes );
 
     # reread subscription to get a hash (for calculation of the 1st issue number)
     $query = qq(
@@ -1590,10 +1601,7 @@ sub HasSubscriptionExpired {
     my $dbh              = C4::Context->dbh;
     my $subscription     = GetSubscription($subscriptionid);
     if ( ( $subscription->{periodicity} % 16 ) > 0 ) {
-        my $expirationdate = $subscription->{enddate};
-        if (!defined $expirationdate) {
-            $expirationdate = q{};
-        }
+        my $expirationdate = $subscription->{enddate}||GetExpirationDate($subscriptionid);
         my $query          = qq|
             SELECT max(planneddate)
             FROM   serial
