@@ -142,6 +142,7 @@ if (nodename =="barcodes[]"){
     <!-- TMPL_IF NAME="flagged" -->
    <div class="error">
     <ul>
+        <!-- TMPL_IF NAME="borrowernotes" --><li><!-- TMPL_VAR NAME="borrowernotes" --> </li><!-- /TMPL_IF -->
         <!-- TMPL_IF NAME="userdebarred" -->
             <li>Patron is restricted<!-- TMPL_IF NAME="userdebarreddate" --> until <!-- TMPL_VAR NAME="userdebarreddate" --> <!-- TMPL_IF NAME="debarredcomment"-->(<!-- TMPL_VAR NAME="debarredcomment" -->)<!-- /TMPL_IF --> <!-- /TMPL_IF -->
             <form class="inline compact" action="/cgi-bin/koha/members/setstatus.pl" method="post">
