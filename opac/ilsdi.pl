@@ -113,9 +113,9 @@ my %optional = (
 );
 
 # If ILS-DI module is disabled in System->Preferences, redirect to 404
-if ( not C4::Context->preference('ILS-DI') ) {
-    print $cgi->redirect("/cgi-bin/koha/errors/404.pl");
-}
+#if ( not C4::Context->preference('ILS-DI') ) {
+#    print $cgi->redirect("/cgi-bin/koha/errors/404.pl");
+#}
 
 # If no service is requested, display the online documentation
 if ( not $cgi->param('service') ) {
