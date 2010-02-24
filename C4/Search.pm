@@ -1693,9 +1693,9 @@ sub searchResults {
         $oldbiblio->{isbn} =~
           s/-//g;    # deleting - in isbn to enable amazon content
         push( @newresults, $oldbiblio )
-            if(not $hidelostitems
+            if(not C4::Context->preference('hidelostitems')
                or (($items_count > $itemlost_count )
-                    && $hidelostitems));
+                    && C4::Context->preference('hidelostitems')));
     }
 
     return @newresults;
