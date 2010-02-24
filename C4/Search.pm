@@ -671,14 +671,14 @@ sub _detect_truncation {
     $operand =~ s/^ //g;
     my @wordlist = split( /\s/, $operand );
     foreach my $word (@wordlist) {
-        if ( $word =~ s/^\*([^\*]+)\*$/$1/ ) {
-            push @rightlefttruncated, $word;
+        if (( index( $word, "*" ) ==length($word)-1) && (index( $word, "*" )==0)) {
+            push @rightlefttruncated, substr($word,1,-1);
         }
-        elsif ( $word =~ s/^\*([^\*]+)$/$1/ ) {
-            push @lefttruncated, $word;
+        elsif ( index( $word, "*" ) == length($word)-1  ) {
+            push @righttruncated, substr($word,0,-1);
         }
-        elsif ( $word =~ s/^([^\*]+)\*$/$1/ ) {
-            push @righttruncated, $word;
+        elsif ( index( $word, "*" ) ==0) {
+            push @lefttruncated, substr($word,1);
         }
         elsif ( index( $word, "*" ) < 0 ) {
             push @nontruncated, $word;
