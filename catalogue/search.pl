@@ -159,7 +159,7 @@ my ($template,$borrowernumber,$cookie);
 my $template_name;
 my $template_type;
 my @params = $cgi->param("limit");
-if ((@params>=1) || ($cgi->param("q")) || ($cgi->param('multibranchlimit')) || ($cgi->param('limit-yr')) ) {
+if ((@params>=1) || ($cgi->param("q")) || ($cgi->param('multibranchlimit')) || ($cgi->param('limit-yr'))|| ($cgi->param('copydate-limit-yr')) ) {
     $template_name = 'catalogue/results.tmpl';
 }
 else {
@@ -389,7 +389,7 @@ foreach my $limit(@limits) {
 }
 $template->param(available => $available);
 
-# append year limits if they exist
+# append publication year limits if they exist
 my $limit_yr;
 my $limit_yr_value;
 if ($params->{'limit-yr'}) {
@@ -403,6 +403,23 @@ if ($params->{'limit-yr'}) {
         $limit_yr_value = $params->{'limit-yr'};
     }
     push @limits,$limit_yr;
+    #FIXME: Should return a error to the user, incorect date format specified
+}
+
+# append copyright year limits if they exist
+my $copydate_limit_yr;
+my $copydate_limit_yr_value;
+if ($params->{'copydate-limit-yr'}) {
+    if ($params->{'copydate-limit-yr'} =~ /\d{4}-\d{4}/) {
+        my ($yr1,$yr2) = split(/-/, $params->{'copydate-limit-yr'});
+        $copydate_limit_yr = "copydate,st-numeric,ge=$yr1 and copydate,st-numeric,le=$yr2";
+        $copydate_limit_yr_value = "$yr1-$yr2";
+    }
+    elsif ($params->{'copydate-limit-yr'} =~ /\d{4}/) {
+        $copydate_limit_yr = "copydate,st-numeric=$params->{'copydate-limit-yr'}";
+        $copydate_limit_yr_value = $params->{'copydate-limit-yr'};
+    }
+    push @limits,$copydate_limit_yr;
     #FIXME: Should return a error to the user, incorect date format specified
 }
 
@@ -469,6 +486,11 @@ for my $this_cgi ( split('&',$limit_cgi) ) {
     # handle special case limit-yr
     if ($this_cgi =~ /yr,st-numeric/) {
         push @limit_inputs, { input_name => 'limit-yr', input_value => $limit_yr_value };   
+        next;
+    }
+    # handle special case copydate-limit-yr
+    if ($this_cgi =~ /copydate,st-numeric/) {
+        push @limit_inputs, { input_name => 'copydate-limit-yr', input_value => $copydate_limit_yr_value };   
         next;
     }
     $this_cgi =~ m/(.*=)(.*)/;
