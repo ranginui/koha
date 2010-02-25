@@ -17,11 +17,11 @@
 <option value="call_number_dsc" selected="selected">Call Number (Fiction Z-A to Non-fiction 9-0)</option><!-- TMPL_ELSE -->
 <option value="call_number_dsc">Call Number (Fiction Z-A to Non-fiction 9-0)</option><!-- /TMPL_IF -->
 </optgroup>
-<optgroup label="Dates"><!-- TMPL_IF NAME="pubdate_dsc" -->
-<option value="pubdate_dsc" selected="selected">Publication/Copyright Date: Newest to Oldest</option><!-- TMPL_ELSE -->
-<option value="pubdate_dsc">Publication/Copyright Date: Newest to Oldest</option><!-- /TMPL_IF --><!-- TMPL_IF NAME="pubdate_asc" -->
-<option value="pubdate_asc" selected="selected">Publication/Copyright Date: Oldest to Newest</option><!-- TMPL_ELSE -->
-<option value="pubdate_asc">Publication/Copyright Date: Oldest to Newest</option><!-- /TMPL_IF --><!-- TMPL_IF NAME="acqdate_dsc" -->
+<optgroup label="Dates"><!-- TMPL_IF NAME="copydate_dsc" -->
+<option value="copydate_dsc" selected="selected">Copyright Date: Newest to Oldest</option><!-- TMPL_ELSE -->
+<option value="copydate_dsc">Copyright Date: Newest to Oldest</option><!-- /TMPL_IF --><!-- TMPL_IF NAME="copydate_asc" -->
+<option value="copydate_asc" selected="selected">Copyright Date: Oldest to Newest</option><!-- TMPL_ELSE -->
+<option value="copydate_asc">Copyright Date: Oldest to Newest</option><!-- /TMPL_IF --><!-- TMPL_IF NAME="acqdate_dsc" -->
 <option value="acqdate_dsc" selected="selected">Acquisition Date: Newest to Oldest</option><!-- TMPL_ELSE -->
 <option value="acqdate_dsc">Acquisition Date: Newest to Oldest</option><!-- /TMPL_IF --><!-- TMPL_IF NAME="acqdate_asc" -->
 <option value="acqdate_asc" selected="selected">Acquisition Date: Oldest to Newest</option><!-- TMPL_ELSE -->

@@ -358,16 +358,22 @@ sub getRecords {
                 $sort_by .= "1=1003 >i ";
             }
             elsif ( $sort eq "popularity_asc" ) {
-                $sort_by .= "1=9003 <i ";
+                $sort_by .= "1=8019 <i ";
             }
             elsif ( $sort eq "popularity_dsc" ) {
-                $sort_by .= "1=9003 >i ";
+                $sort_by .= "1=8019 >i ";
             }
             elsif ( $sort eq "call_number_asc" ) {
                 $sort_by .= "1=20  <i ";
             }
             elsif ( $sort eq "call_number_dsc" ) {
                 $sort_by .= "1=20 >i ";
+            }
+            elsif ( $sort eq "copydate_asc" ) {
+                $sort_by .= "1=30 <i ";
+            }
+            elsif ( $sort eq "copydate_dsc" ) {
+                $sort_by .= "1=30 >i ";
             }
             elsif ( $sort eq "pubdate_asc" ) {
                 $sort_by .= "1=31 <i ";
