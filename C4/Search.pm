@@ -1106,6 +1106,13 @@ sub buildQuery {
 					$stemming = $auto_truncation = $weight_fields = $fuzzy_enabled = $remove_stopwords = 0;
                 }
 
+                # Date of Copyright
+                if ( $index eq 'copydate' ) {
+                    $index .= ",st-numeric";
+                    $indexes_set++;
+                    $stemming = $auto_truncation = $weight_fields = $fuzzy_enabled = $remove_stopwords = 0;
+                }
+
                 # Date of Acquisition
                 elsif ( $index eq 'acqdate' ) {
                     $index .= ",st-date-normalized";

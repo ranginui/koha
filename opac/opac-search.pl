@@ -67,7 +67,7 @@ if ($format =~ /(rss|atom|opensearchdescription)/) {
 elsif ($build_grouped_results) {
     $template_name = 'opac-results-grouped.tmpl';
 }
-elsif ((@params>=1) || ($cgi->param("q")) || ($cgi->param('multibranchlimit')) || ($cgi->param('limit-yr')) ) {
+elsif ((@params>=1) || ($cgi->param("q")) || ($cgi->param('multibranchlimit')) || ($cgi->param('limit-yr')) || ($cgi->param('copydate-limit-yr')) ) {
 	$template_name = 'opac-results.tmpl';
 }
 else {
@@ -326,7 +326,7 @@ foreach my $limit(@limits) {
 }
 $template->param(available => $available);
 
-# append year limits if they exist
+# append publication year limits if they exist
 if ($params->{'limit-yr'}) {
     if ($params->{'limit-yr'} =~ /\d{4}-\d{4}/) {
         my ($yr1,$yr2) = split(/-/, $params->{'limit-yr'});
@@ -334,6 +334,20 @@ if ($params->{'limit-yr'}) {
     }
     elsif ($params->{'limit-yr'} =~ /\d{4}/) {
         push @limits, "yr,st-numeric=$params->{'limit-yr'}";
+    }
+    else {
+        #FIXME: Should return a error to the user, incorect date format specified
+    }
+}
+
+# append copyright year limits if they exist
+if ($params->{'copydate-limit-yr'}) {
+    if ($params->{'copydate-limit-yr'} =~ /\d{4}-\d{4}/) {
+        my ($yr1,$yr2) = split(/-/, $params->{'copydate-limit-yr'});
+        push @limits, "copydate,st-numeric,ge=$yr1 and copydate,st-numeric,le=$yr2";
+    }
+    elsif ($params->{'copydate-limit-yr'} =~ /\d{4}/) {
+        push @limits, "copydate,st-numeric=$params->{'copydate-limit-yr'}";
     }
     else {
         #FIXME: Should return a error to the user, incorect date format specified
