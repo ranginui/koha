@@ -139,17 +139,15 @@ if (nodename =="barcodes[]"){
 <!-- TMPL_ELSE -->
     <!-- TMPL_IF NAME="reregistration" --><div class="dialog message">Patron's account has been renewed until <!-- TMPL_VAR NAME="dateexpiry" --></div><!-- /TMPL_IF -->
 
-    <!-- TMPL_IF NAME="flagged" -->
+    <!-- TMPL_IF NAME="userdebarred" -->
     <ul>
-        <!-- TMPL_IF NAME="debarred" -->
-            <li>Patron is restricted
-            <form class="inline compact" action="/cgi-bin/koha/members/setdebar.pl" method="post">
+            <li>Patron is restricted<!-- TMPL_IF NAME="userdebarreddate" --> to <!-- TMPL_VAR NAME="userdebarreddate" --><!-- /TMPL_IF -->
+            <form class="inline compact" action="/cgi-bin/koha/members/setstatus.pl" method="post">
                 <input type="hidden" name="borrowernumber" value="<!-- TMPL_VAR NAME="borrowernumber" -->" />
                 <input type="hidden" name="status" value="0" />
                 <input type="submit" value="Lift Debarment" />
             </form>
             </li>
-        <!-- /TMPL_IF -->
         <!-- TMPL_IF NAME="gonenoaddress" --><li>Patron's address is in doubt.</li><!-- /TMPL_IF -->
         <!-- TMPL_IF NAME="lost" --><li>Patron's card has been reported lost.</li><!-- /TMPL_IF -->
     </ul>

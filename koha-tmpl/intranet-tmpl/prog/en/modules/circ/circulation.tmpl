@@ -528,8 +528,13 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
 			<!-- /TMPL_IF -->
 
             <!-- TMPL_IF NAME="dbarred" --><li class="blocker">
-               <span class="circ-hlt"> Restricted:</span> Patron's account is restricted <a href="/cgi-bin/koha/members/setstatus.pl?borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->&amp;cardnumber=<!-- TMPL_VAR NAME="cardnumber" -->&amp;destination=circ&amp;status=0">Lift restriction</a>
-</li><!-- /TMPL_IF -->
+               <span class="circ-hlt"> Restricted:</span> Patron's account is restricted<!-- TMPL_IF NAME="userdebarreddate" --> to <!-- TMPL_VAR NAME="userdebarreddate" --><!-- /TMPL_IF -->
+               <form class="inline compact" action="/cgi-bin/koha/members/setstatus.pl" method="post">
+	                <input type="hidden" name="borrowernumber" value="<!-- TMPL_VAR NAME="borrowernumber" -->" />
+	                <input type="hidden" name="status" value="0" />
+	                <input type="submit" value="Lift Debarment" />
+               </form>
+			</li><!-- /TMPL_IF -->
 
         	<!-- TMPL_IF name="odues" --><li><!-- TMPL_IF name="nonreturns" --><span class="circ-hlt">Overdues:</span> Patron has <span class="circ-hlt">ITEMS OVERDUE</span>. See highlighted items <a href="#checkouts">below</a><!-- /TMPL_IF --></li>
             <!-- /TMPL_IF -->

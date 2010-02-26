@@ -630,6 +630,7 @@ sub IsMemberBlocked {
     my $borrowernumber = shift;
     my $dbh            = C4::Context->dbh;
 
+<<<<<<< HEAD:C4/Members.pm
     # does patron have current fine days?
 	my $strsth=qq{
             SELECT
@@ -658,8 +659,11 @@ sub IsMemberBlocked {
     my $row = $sth->fetchrow_hashref;
     my $blockeddate  = $row->{'blockeddate'};
     my $blockedcount = $row->{'blockedcount'};
+=======
+    my $blockeddate = CheckBorrowerDebarred($borrowernumber);
+>>>>>>> Change debarring system (MT2263):C4/Members.pm
 
-    return (1, $blockedcount) if $blockedcount > 0;
+    return (1, $blockeddate) if $blockeddate;
 
     # if he have late issues
     $sth = $dbh->prepare(
@@ -2016,7 +2020,7 @@ sub GetBorrowersNamesAndLatestIssue {
 
 =over 4
 
-my $success = DebarMember( $borrowernumber );
+my $success = DebarMember( $borrowernumber, $todate );
 
 marks a Member as debarred, and therefore unable to checkout any more
 items.
@@ -2030,12 +2034,13 @@ true on success, false on failure
 
 sub DebarMember {
     my $borrowernumber = shift;
+    my $todate = shift;
 
     return unless defined $borrowernumber;
     return unless $borrowernumber =~ /^\d+$/;
 
     return ModMember( borrowernumber => $borrowernumber,
-                      debarred       => 1 );
+                      debarred       => $todate );
     
 }
 

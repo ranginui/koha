@@ -118,6 +118,7 @@ $category_type="A" unless $category_type; # FIXME we should display a error mess
 # initialize %newdata
 my %newdata;	# comes from $input->param()
 if ($op eq 'insert' || $op eq 'modify' || $op eq 'save') {
+
     my @names= ($borrower_data && $op ne 'save') ? keys %$borrower_data : $input->param();
     foreach my $key (@names) {
         if (defined $input->param($key)) {
@@ -125,11 +126,16 @@ if ($op eq 'insert' || $op eq 'modify' || $op eq 'save') {
             $newdata{$key} =~ s/\"/&quot;/g unless $key eq 'borrowernotes' or $key eq 'opacnote';
         }
     }
+        
+    ## Manipulate debarred
+    if($newdata{debarred}){
+        $newdata{debarred} = $newdata{datedebarred} ? $newdata{datedebarred} : "9999-12-31";
+    }
+    
     my $dateobject = C4::Dates->new();
     my $syspref = $dateobject->regexp();		# same syspref format for all 3 dates
     my $iso     = $dateobject->regexp('iso');	#
-    foreach (qw(dateenrolled dateexpiry dateofbirth)) {
-        next unless exists $newdata{$_};
+    foreach (qw(dateenrolled dateexpiry dateofbirth debarred)) {
         my $userdate = $newdata{$_} or next;
         if ($userdate =~ /$syspref/) {
             $newdata{$_} = format_date_in_iso($userdate);	# if they match syspref format, then convert to ISO
@@ -471,7 +477,7 @@ my $borrotitlepopup = CGI::popup_menu(-name=>'title',
         -default=>$default_borrowertitle
         );    
 
-my @relationships = split /,|\|/, C4::Context->preference('BorrowerRelationship');
+my @relationships = split (/,|\|/, C4::Context->preference('BorrowerRelationship'));
 my @relshipdata;
 while (@relationships) {
   my $relship = shift @relationships || '';
@@ -485,10 +491,9 @@ while (@relationships) {
 }
 
 my %flags = ( 'gonenoaddress' => ['gonenoaddress' ],
-        'lost'          => ['lost'],
-        'debarred'      => ['debarred']);
+        'lost'          => ['lost']);
 
- 
+
 my @flagdata;
 foreach (keys(%flags)) {
 	my $key = $_;
@@ -589,7 +594,10 @@ if (C4::Context->preference('uppercasesurnames')) {
 	$data{'surname'}    =uc($data{'surname'}    );
 	$data{'contactname'}=uc($data{'contactname'});
 }
-foreach (qw(dateenrolled dateexpiry dateofbirth)) {
+
+$data{debarred} = C4::Overdues::CheckBorrowerDebarred($borrowernumber);
+$data{datedebarred} = $data{debarred} if ($data{debarred} ne "9999-12-31");  
+foreach (qw(dateenrolled dateexpiry dateofbirth debarred)) {
 	$data{$_} = format_date($data{$_});	# back to syspref for display
 	$template->param( $_ => $data{$_});
 }

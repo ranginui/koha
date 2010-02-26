@@ -1028,7 +1028,7 @@ sub GetOverduerules {
 
 Check if the borrowers is already debarred
 
-C<$debarredstatus> return 0 for not debarred and return 1 for debarred
+C<$debarredstatus> return 0 for not debarred and return end of debar date for debarred
 
 C<$borrowernumber> contains the borrower number
 
@@ -1042,32 +1042,38 @@ sub CheckBorrowerDebarred {
         SELECT debarred
         FROM borrowers
         WHERE borrowernumber=?
+        AND debarred > NOW()
     |;
     my $sth = $dbh->prepare($query);
     $sth->execute($borrowernumber);
-    my ($debarredstatus) = $sth->fetchrow;
-    return ( $debarredstatus eq '1' ? 1 : 0 );
+    if( my ($debarredstatus) = $sth->fetchrow ){
+        return $debarredstatus;
+    }else{
+        return 0;
+    }
+    
 }
 
 =head2 UpdateBorrowerDebarred
 
-($borrowerstatut) = &UpdateBorrowerDebarred($borrowernumber);
+($borrowerstatut) = &UpdateBorrowerDebarred($borrowernumber, $todate);
 
 update status of borrowers in borrowers table (field debarred)
 
 C<$borrowernumber> borrower number
+C<$todate> end of bare
 
 =cut
 
 sub UpdateBorrowerDebarred{
-    my($borrowernumber) = @_;
+    my($borrowernumber, $todate) = @_;
     my $dbh = C4::Context->dbh;
         my $query=qq|UPDATE borrowers
-             SET debarred='1'
+             SET debarred=?
                      WHERE borrowernumber=?
             |;
     my $sth=$dbh->prepare($query);
-        $sth->execute($borrowernumber);
+        $sth->execute($todate, $borrowernumber);
         $sth->finish;
         return 1;
 }

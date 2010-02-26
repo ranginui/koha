@@ -42,6 +42,7 @@ use C4::Reserves;
 use C4::Biblio;
 use C4::Items;
 use C4::Members;
+use C4::Overdues qw/CheckBorrowerDebarred/;
 use C4::Branch; # GetBranches GetBranchName
 use C4::Koha;   # FIXME : is it still useful ?
 use C4::RotatingCollections;
@@ -349,7 +350,7 @@ if ( $messages->{'ResFound'}) {
                 reserved     => 1,
             );
         }
-
+        my $debarred = CheckBorrowerDebarred($reserve->{borrowernumber});
         # same params for Waiting or Reserved
         $template->param(
             found          => 1,
@@ -366,7 +367,7 @@ if ( $messages->{'ResFound'}) {
             borcity        => $borr->{'city'},
             borzip         => $borr->{'zipcode'},
             borcnum        => $borr->{'cardnumber'},
-            debarred       => $borr->{'debarred'},
+            debarred       => $debarred,
             gonenoaddress  => $borr->{'gonenoaddress'},
             barcode        => $barcode,
             destbranch     => $reserve->{'branchcode'},

@@ -718,8 +718,13 @@ sub CanBookBeIssued {
     if ( $borrower->{flags}->{'LOST'} ) {
         $issuingimpossible{CARD_LOST} = 1;
     }
-    if ( $borrower->{flags}->{'DBARRED'} ) {
-        $issuingimpossible{DEBARRED} = 1;
+    if ( $borrower->{flags}->{'DEBARRED'} ) {
+		if (my $dateenddebarred=$borrower->{flags}->{'DEBARRED'}->{'dateend'}){
+        	$issuingimpossible{DEBARRED} = format_date($dateenddebarred);
+		}
+		else {
+        	$issuingimpossible{DEBARRED} = 1;
+		}
     }
     if ( $borrower->{'dateexpiry'} eq '0000-00-00') {
         $issuingimpossible{EXPIRED} = 1;
