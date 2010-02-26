@@ -25,12 +25,13 @@ use C4::Dates qw(format_date_in_iso);
 use Digest::MD5 qw(md5_base64);
 use Date::Calc qw/Today Add_Delta_YM check_date Date_to_Days/;
 use C4::Log; # logaction
+use C4::Branch;
 use C4::Overdues;
 use C4::Reserves;
 use C4::Accounts;
 use C4::Biblio;
 use C4::SQLHelper qw(InsertInTable UpdateInTable SearchInTable);
-use C4::Members::Attributes qw(SearchIdMatchingAttribute);
+use C4::Members::Attributes qw(SearchIdMatchingAttribute GetBorrowerAttributes);
 
 our ($VERSION,@ISA,@EXPORT,@EXPORT_OK,$debug);
 
@@ -85,6 +86,7 @@ BEGIN {
 		&DeleteMessage
 		&GetMessages
 		&GetMessagesCount
+		&SetMemberInfosInTemplate
 	);
 
 	#Modify data
@@ -1656,6 +1658,47 @@ sub DelMember {
     $sth->execute($borrowernumber);
     logaction("MEMBERS", "DELETE", $borrowernumber, "") if C4::Context->preference("BorrowersLog");
     return $sth->rows;
+}
+
+=head2 SetMemberInfosInTemplate
+    &SetMemberInfosInTemplate($borrowernumber, $template)
+    
+    
+Settings borrower informations for template user
+
+=cut
+
+sub SetMemberInfosInTemplate {
+    my ($borrowernumber, $template) = @_;
+    
+    my $borrower = GetMemberDetails( $borrowernumber, 0 );
+    foreach my $key (keys %$borrower){
+        $template->param($key => $borrower->{$key});
+    }
+    
+    # Computes full borrower address
+    my (undef, $roadttype_hashref) = &GetRoadTypes();
+    my $address = $borrower->{'streetnumber'}.' '.$roadttype_hashref->{$borrower->{'streettype'}}.' '.$borrower->{'address'};
+    $template->param(is_child  => ($borrower->{'category_type'} eq 'C'),
+                    address    => $address,
+                    branchname => GetBranchName($borrower->{'branchcode'}),
+                    );
+                    
+    foreach (qw(dateenrolled dateexpiry dateofbirth)) {
+		my $userdate = $borrower->{$_};
+		unless ($userdate) {
+			$borrower->{$_} = '';
+			next;
+		}
+		$userdate = C4::Dates->new($userdate,'iso')->output('syspref');
+		$borrower->{$_} = $userdate || '';
+		$template->param( $_ => $userdate );
+    }
+    
+    my $attributes = GetBorrowerAttributes($borrowernumber);
+    $template->param(
+        extendedattributes => $attributes,
+    );
 }
 
 =head2 ExtendMemberSubscriptionTo (OUEST-PROVENCE)

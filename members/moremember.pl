@@ -128,7 +128,6 @@ foreach (qw(dateenrolled dateexpiry dateofbirth)) {
 		$data->{$_} = $userdate || '';
 		$template->param( $_ => $userdate );
 }
-$data->{'IS_ADULT'} = ( $data->{'categorycode'} ne 'I' );
 
 for (qw(gonenoaddress lost borrowernotes)) {
 	 $data->{$_} and $template->param(flagged => 1) and last;
@@ -399,7 +398,7 @@ $template->param( picture => 1 ) if $picture;
 
 my $branch=C4::Context->userenv->{'branch'};
 
-$template->param($data);
+SetMemberInfosInTemplate($borrowernumber, $template);
 
 if (C4::Context->preference('ExtendedPatronAttributes')) {
     $template->param(ExtendedPatronAttributes => 1);
