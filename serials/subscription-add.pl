@@ -122,6 +122,21 @@ for my $thisbranch (sort { $branches->{$a}->{branchname} cmp $branches->{$b}->{b
         branchname => $branches->{$thisbranch}->{'branchname'},
     };
 }
+
+my $fw = GetFrameworkCode( $biblionumber );
+my $shelflocations = GetKohaAuthorisedValues('items.location', $fw);
+
+my @locationarg;
+foreach my $key (keys %{$shelflocations}){
+    my %row = {
+         code  => $key,
+         value => $shelflocations->{$key}
+    };
+    $row{selected} = 1 if ($key eq $subs->{location});
+    push @locationarg, %row;
+}
+$template->param(shelflocations => \@locationarg );
+
 $template->param(branchloop => $branchloop,
     DHTMLcalendar_dateformat => C4::Dates->DHTMLcalendar(),
 );
@@ -232,9 +247,13 @@ sub redirect_add_subscription {
 	my $staffdisplaycount = $query->param('staffdisplaycount');
 	my $opacdisplaycount = $query->param('opacdisplaycount');
     my $location = $query->param('location');
-    my $startdate       = format_date_in_iso($query->param('startdate'));
+    $startdate       = format_date_in_iso($query->param('startdate'));
     my $enddate       = format_date_in_iso($query->param('enddate'));
+<<<<<<< HEAD:serials/subscription-add.pl
     my $firstacquidate  = format_date_in_iso($query->param('firstacquidate'));
+=======
+    $firstacquidate  = format_date_in_iso($query->param('firstacquidate'));    
+>>>>>>> (MT #2972) use "select" box for location in subscription-add:serials/subscription-add.pl
     my $histenddate = format_date_in_iso($query->param('histenddate'));
     my $histstartdate = format_date_in_iso($query->param('histstartdate'));
     my $recievedlist = $query->param('recievedlist');
@@ -270,7 +289,7 @@ sub redirect_mod_subscription {
     my $nextacquidate = $query->param('nextacquidate') ?
                             format_date_in_iso($query->param('nextacquidate')):
                             format_date_in_iso($query->param('startdate'));
-    my $enddate = format_date_in_iso($query->param('enddate'));
+    $enddate = format_date_in_iso($query->param('enddate'));
     my $periodicity = $query->param('periodicity');
     my $dow = $query->param('dow');
 

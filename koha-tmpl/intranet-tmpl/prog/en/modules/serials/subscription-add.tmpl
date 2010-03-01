@@ -1000,7 +1000,15 @@ $(document).ready(function() {
         </li>
         <li>
             <label for="location">Location:</label>
-            <input type="text" name="location" id="location" value="<!-- TMPL_VAR name="location" -->" size="30" />
+            <!-- TMPL_IF NAME="shelflocations" -->
+                <select name="location" id="location">
+                <!-- TMPL_LOOP NAME="shelflocations" -->
+                    <option value="<!-- TMPL_VAR NAME="code" -->" <!-- TMPL_IF NAME="selected" -->selected="selected"<!-- /TMPL_IF -->><!-- TMPL_VAR NAME="value" --></option>
+                <!-- /TMPL_LOOP -->
+                </select>
+            <!-- TMPL_ELSE -->
+                <input type="text" name="location" id="location" value="<!-- TMPL_VAR name="location" -->" size="30" />
+            <!-- /TMPL_IF -->
         </li>
          <li>
             <label for="callnumber">Call Number:</label>
