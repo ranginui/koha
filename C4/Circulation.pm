@@ -1909,14 +1909,17 @@ sub CanBookBeRenewed {
     if ( ( $issuingrule->{renewalsallowed} > $itemissue->{'issues.renewals'} ) || $override_limit ) {
         $renewokay = 1;
     } else {
-        $error = "too_many";
+        $error->{message} = "too_many";
     }
 
     my ( $resfound, $resrec ) = C4::Reserves::CheckReserves($itemnumber);
     if ($resfound) {
         $renewokay = 0;
-        $error     = "on_reserve";
+        $error->{message} = "on_reserve";
     }
+    $error->{reserves}       = $resrec;
+    $error->{renewals}       = $itemissue->{'issues.renewals'};
+    $error->{renewalsallowed}= $issuingrule->{renewalsallowed};
 
     return ( $renewokay, $error );
 }

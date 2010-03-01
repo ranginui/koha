@@ -292,9 +292,10 @@ for ( my $i = 0 ; $i < $issuecount ; $i++ ) {
     $row{'charge'} = sprintf( "%.2f", $charge );
 
 	my ( $renewokay,$renewerror ) = CanBookBeRenewed( $borrowernumber, $issue->[$i]{'itemnumber'}, $override_limit );
+    $row{$_} = $renewerror->{$_} for (qw(renewals renewalsallowed reserves));
 	$row{'norenew'} = !$renewokay;
 	$row{'can_confirm'} = ( !$renewokay && $renewerror ne 'on_reserve' );
-	$row{"norenew_reason_$renewerror"} = 1 if $renewerror;
+	$row{"norenew_reason_".$renewerror->{message}} = 1 if $renewerror->{message};
 	$row{'renew_failed'}  = $renew_failed{ $issue->[$i]{'itemnumber'} };
 	$row{'return_failed'} = $return_failed{$issue->[$i]{'barcode'}};   
     push( @issuedata, \%row );

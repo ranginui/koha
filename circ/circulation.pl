@@ -447,7 +447,8 @@ if ($borrower) {
         my ($can_renew, $can_renew_error) = CanBookBeRenewed( 
             $borrower->{'borrowernumber'},$it->{'itemnumber'}
         );
-        $it->{"renew_error_${can_renew_error}"} = 1 if defined $can_renew_error;
+        $it->{"renew_error_".$can_renew_error->{message}} = 1 if defined $can_renew_error->{message};
+        $it->{$_} = $can_renew_error->{$_} for (qw(renewals renewalsallowed reserves));
         my ( $restype, $reserves ) = CheckReserves( $it->{'itemnumber'} );
 		$it->{'can_renew'} = $can_renew;
 		$it->{'can_confirm'} = !$can_renew && !$restype;

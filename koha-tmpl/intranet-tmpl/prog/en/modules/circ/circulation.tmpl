@@ -32,16 +32,6 @@ $.tablesorter.addParser({
 			headers: { 1: { sorter: 'articles' }}
 		});
 
-        <!-- TMPL_IF NAME="AllowRenewalLimitOverride" -->
-        $( '#override_limit' ).click( function () {
-            if ( this.checked ) {
-                $( '.renewals-allowed' ).show(); $( '.renewals-disabled' ).hide();
-            } else {
-                $( '.renewals-allowed' ).hide(); $( '.renewals-disabled' ).show();
-            }
-        } ).attr( 'checked', false );
-        <!-- /TMPL_IF -->
-
 var allcheckboxes = $(".checkboxed");
 	$("#renew_all").click(function(){
 		$(allcheckboxes).checkCheckboxes(":input[name*=items]"); 
@@ -65,12 +55,9 @@ var allcheckboxes = $(".checkboxed");
     <!-- TMPL_IF NAME="CAN_user_circulate_override_renewals" -->
     <!-- TMPL_IF NAME="AllowRenewalLimitOverride" -->
     $( '#override_limit' ).click( function () {
-        if ( this.checked ) {
-           $( '.renewals-allowed' ).show(); $( '.renewals-disabled' ).hide();
-        } else {
-           $( '.renewals-allowed' ).hide(); $( '.renewals-disabled' ).show();
-        }
-    } ).attr( 'checked', false );
+           $( '.renewals-allowed' ).toggle(); $( '.renewals-disabled' ).toggle();
+    } ).attr( 'checked', true );
+    $( '.renewals-allowed' ).show(); $( '.renewals-disabled' ).hide();
     <!-- /TMPL_IF -->
     <!-- /TMPL_IF -->
 	$("td").click(function(e){
@@ -697,8 +684,16 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
 				 </script>
                 </p>
                 <p>
-                    <label>Forgive fines on return: <input type="checkbox" name="exemptfine" value="1" /></label>
+                    <label for="exemptfine">Forgive fines on return: </label><input type="checkbox" name="exemptfine" value="1" />
                 </p>
+                <!-- TMPL_IF NAME="CAN_user_circulate_override_renewals" -->
+                <!-- TMPL_IF NAME="AllowRenewalLimitOverride" -->
+                <p>
+                    <label for="override_limit">Override Renewal Limit:</label>
+                    <input type="checkbox" name="override_limit" id="override_limit" value="1" />
+                </p>
+                <!-- /TMPL_IF -->
+                <!-- /TMPL_IF -->
             </td>
         </tr>
 		</tfoot>
@@ -718,10 +713,11 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
         <td><!-- TMPL_VAR NAME="itemcallnumber" --></td>
             <td><!-- TMPL_VAR NAME="charge" --></td>
             <td><!-- TMPL_VAR NAME="replacementprice" --></td>
-      <!-- TMPL_IF NAME="renew_failed" -->
-            <td class="problem">Renewal Failed</td>
-      <!-- TMPL_ELSE -->
-        <td><span style="padding: 0 1em;"><!-- TMPL_VAR NAME="renewals" --></span>
+            <td><span style="padding: 0 1em;">
+            <!-- TMPL_IF Name="renew_error_too_many"--><span class="problem"><!-- /TMPL_IF -->
+            <!-- TMPL_VAR NAME="renewals" -->/<!-- TMPL_VAR NAME="renewalsallowed" -->
+            <!-- TMPL_IF Name="renew_error_too_many"--></span><!-- /TMPL_IF -->
+                </span>
         <!-- TMPL_IF NAME="can_renew" -->
         <input type="checkbox" name="all_items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" checked="checked" style="display: none;" />
         <!-- TMPL_IF NAME="od" -->
@@ -738,7 +734,7 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
                     <input type="checkbox" name="items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" />
                 <!-- /TMPL_IF -->
                 </span>
-                <span class="renewals-disabled">
+                <span class="renewals-disabled problem">
             <!-- /TMPL_IF -->
 		<!-- TMPL_IF NAME="renew_error_on_reserve" -->
 			On Hold
@@ -833,12 +829,6 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
     </table>
     <!--TMPL_IF NAME="issuecount"-->
     <fieldset class="action">
-        <!-- TMPL_IF NAME="CAN_user_circulate_override_renewals" -->
-        <!-- TMPL_IF NAME="AllowRenewalLimitOverride" -->
-        <label for="override_limit">Override Renewal Limit:</label>
-        <input type="checkbox" name="override_limit" id="override_limit" value="1" />
-        <!-- /TMPL_IF -->
-        <!-- /TMPL_IF -->
         <input type="submit" name="renew_checked" value="Renew or Return checked items" />
         <input type="submit" id="renew_all" name="renew_all" value="Renew all" />
         </fieldset>

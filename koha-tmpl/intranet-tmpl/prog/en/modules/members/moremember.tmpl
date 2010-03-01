@@ -46,12 +46,9 @@ $(document).ready(function() {
     <!-- TMPL_IF NAME="CAN_user_circulate_override_renewals" -->
     <!-- TMPL_IF NAME="AllowRenewalLimitOverride" -->
     $( '#override_limit' ).click( function () {
-        if ( this.checked ) {
-           $( '.renewals-allowed' ).show(); $( '.renewals-disabled' ).hide();
-        } else {
-           $( '.renewals-allowed' ).hide(); $( '.renewals-disabled' ).show();
-        }
-    } ).attr( 'checked', false );
+           $( '.renewals-allowed' ).toggle(); $( '.renewals-disabled' ).toggle();
+    } ).attr( 'checked', true );
+    $( '.renewals-allowed' ).show(); $( '.renewals-disabled' ).hide();
     <!-- /TMPL_IF -->
     <!-- /TMPL_IF -->
 	$("td").click(function(e){
@@ -438,9 +435,17 @@ if (nodename =="barcodes[]"){
 				<span style="display:block;color:#666;font-weight:normal;font-size:90%;"><!-- TMPL_INCLUDE NAME="date-format.inc" --></span>
                 </p>
                 <p>
-                    <label>Forgive fines on return: <input type="checkbox" name="exemptfine" value="1" /></label>
+                    <label for="exemptfine">Forgive fines on return: </label><input type="checkbox" name="exemptfine" value="1" />
                 </p>
-            </td>
+                <!-- TMPL_IF NAME="CAN_user_circulate_override_renewals" -->
+                <!-- TMPL_IF NAME="AllowRenewalLimitOverride" -->
+                <p>
+                    <label for="override_limit">Override Renewal Limit:</label>
+                    <input type="checkbox" name="override_limit" id="override_limit" value="1" />
+                </p>
+                <!-- /TMPL_IF -->
+                <!-- /TMPL_IF -->
+                </td>
         </tr>
 		</tfoot>
        <tbody>
@@ -471,7 +476,11 @@ if (nodename =="barcodes[]"){
       <!-- TMPL_IF NAME="renew_failed" -->
             <td class="problem">Renewal Failed</td>
       <!-- TMPL_ELSE -->
-            <td><span style="padding: 0 1em;"><!-- TMPL_VAR NAME="renewals" --></span>
+            <td><span style="padding: 0 1em;">
+            <!-- TMPL_IF Name="norenew_reason_too_many"--><span class="problem"><!-- /TMPL_IF -->
+            <!-- TMPL_VAR NAME="renewals" -->/<!-- TMPL_VAR NAME="renewalsallowed" -->
+            <!-- TMPL_IF Name="norenew_reason_too_many"--></span><!-- /TMPL_IF -->
+                </span>
             <!-- TMPL_IF name="norenew" -->
                 <!-- TMPL_IF NAME="can_confirm" --><span class="renewals-allowed" style="display: none">
                     <input type="checkbox" name="all_items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" checked="checked" style="display: none;" />
@@ -481,7 +490,7 @@ if (nodename =="barcodes[]"){
                         <input type="checkbox" name="items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" />
                     <!-- /TMPL_IF -->
                     </span>
-                    <span class="renewals-disabled">
+                    <span class="renewals-disabled problem">
                 <!-- /TMPL_IF -->
                 <!-- TMPL_IF NAME="norenew_reason_on_reserve" -->
                 <a href="/cgi-bin/koha/reserve/request.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->">On Hold</a>
@@ -514,12 +523,6 @@ if (nodename =="barcodes[]"){
         </tbody>
         </table>
         <fieldset class="action">
-        <!-- TMPL_IF NAME="CAN_user_circulate_override_renewals" -->
-        <!-- TMPL_IF NAME="AllowRenewalLimitOverride" -->
-        <label for="override_limit">Override Renewal Limit:</label>
-        <input type="checkbox" name="override_limit" id="override_limit" value="1" />
-        <!-- /TMPL_IF -->
-        <!-- /TMPL_IF -->
         <input type="submit" name="renew_checked" value="Renew or Return checked items" />
         <input type="submit" id="renew_all" name="renew_all" value="Renew all" />
         </fieldset>
