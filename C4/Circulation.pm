@@ -1903,6 +1903,9 @@ sub CanBookBeRenewed {
     my $item = GetItem($itemnumber) or return undef;
     my $itemissue = GetItemIssue($itemnumber) or return undef;
     my $branchcode = _GetCircControlBranch($item, $borrower);
+    if (Delta_Days(Today,Parse_Date($itemissue->{date_due}))<=0){
+       $error->{message}='overdue'; 
+    }
     
     my $issuingrule = GetIssuingRule($borrower->{categorycode}, $item->{itype}, $branchcode);
     

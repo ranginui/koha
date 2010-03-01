@@ -739,6 +739,9 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
 		<!-- TMPL_IF NAME="renew_error_on_reserve" -->
 			On Hold
 		<!-- /TMPL_IF -->
+                <!-- TMPL_IF NAME="renew_error_overdue" -->
+			Not Renewable
+                <!-- /TMPL_IF -->
                 <!-- TMPL_IF NAME="renew_error_too_many" -->
 			Not Renewable
                 <!-- /TMPL_IF -->
