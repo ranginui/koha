@@ -546,6 +546,7 @@ $(document).ready(function(){
     $(document).ready(function() {
       $.getJSON(json_results, function(data){
         var results = data.rss.channel
+	if(!(results.item instanceof Array)) { results.item = [ results.item ]; }
         var title = results.title['$t']
         var link = results.link['$t']
         $('#json_results').append("<div class='header'><a href='" + link + "' title='" + title + "'>" + title + "</a></div>");
