@@ -14,6 +14,7 @@ $.tablesorter.addParser({
 });
 $(document).ready(function() {
 	$('#finesholdsissues > ul').tabs();
+	$('#patron-details > ul').tabs();
 	$.tablesorter.defaults.widgets = ['zebra'];
 	$("#issuest").tablesorter({<!-- TMPL_IF NAME="dateformat_metric" -->
 		dateFormat: 'uk',<!-- /TMPL_IF -->
@@ -156,8 +157,19 @@ if (nodename =="barcodes[]"){
 
 <h3><!-- TMPL_UNLESS NAME="I" -->
    <!-- TMPL_VAR NAME="title" --> <!-- TMPL_VAR NAME="firstname" --> <!-- /TMPL_UNLESS --> <!-- TMPL_VAR NAME="surname" --> (<!-- TMPL_VAR NAME="cardnumber" -->)</h3>
- <div class="yui-u first">
-<div id="patron-information" style="padding : .5em;">
+
+<div id="patron-details" class="toptabs">
+    <ul>
+        <li><a href="#patron-information">Base</a></li>
+        <!-- TMPL_IF NAME="patronimages" -->
+        <li><a href="#manage-patron-image">Image</a></li>
+        <!-- /TMPL_IF -->
+        <li><a href="#patron-library-details">Library details</a></li>
+        <li><a href="#patron-alternate-address">Alternate address</a></li>
+        <li><a href="#patron-alternative-contact">Alternative contact</a></li>
+    </ul>
+
+<div id="patron-information">
 
      <!-- TMPL_UNLESS NAME="I" --><!-- TMPL_IF NAME="othernames" -->&ldquo;<!-- TMPL_VAR NAME="othernames" -->&rdquo;<!-- /TMPL_IF -->
 
@@ -220,8 +232,8 @@ if (nodename =="barcodes[]"){
 
 <!-- Begin Upload Patron Image Section -->
 
-<div id="manage-patron-image">
 <!-- TMPL_IF NAME="patronimages" -->
+<div id="manage-patron-image">
     <!-- TMPL_IF NAME="CAN_user_tools_batch_upload_patron_images" -->
         <form method="post" action="/cgi-bin/koha/tools/picture-upload.pl" enctype="multipart/form-data">
             <fieldset class="brief">
@@ -250,14 +262,14 @@ if (nodename =="barcodes[]"){
             </fieldset>
         </form>
     <!-- /TMPL_IF -->
-<!-- /TMPL_IF -->
 </div>
+<!-- /TMPL_IF -->
 
 <!-- End Upload Patron Image Section -->
 
 <!-- TMPL_IF NAME="ExtendedPatronAttributes" -->
 <!-- TMPL_UNLESS NAME="no_patron_attribute_types" -->
-<div id="patron-extended-attributes" style="padding-top: 1em;">
+<div id="patron-extended-attributes">
 <h3>Additional attributes and identifiers</h3>
 <table>
     <tr>
@@ -275,25 +287,24 @@ if (nodename =="barcodes[]"){
     </tr>
     <!-- /TMPL_LOOP -->
 </table>
-</div>
 <div class="action"><a href="memberentry.pl?op=modify&amp;borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->&amp;step=4">Edit</a></div>
+</div>
 <!-- /TMPL_UNLESS -->
 <!-- /TMPL_IF -->
 
 <!-- TMPL_IF NAME="EnhancedMessagingPreferences" -->
-<div id="patron-messaging-prefs" style="padding-top: 1em;">
+<div id="patron-messaging-prefs">
 <h3>Patron messaging preferences</h3>
 <!-- TMPL_INCLUDE NAME="messaging-preference-form.inc" -->
  <!-- TMPL_IF NAME="SMSSendDriver" -->
       <div class="rows"> <ol><li><span class="label">SMS number:</span><!-- TMPL_VAR NAME="SMSnumber"  -->
      </li></ol></div>
  <!-- /TMPL_IF -->
-</div>
 <div class="action"><a href="memberentry.pl?op=modify&amp;borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->&amp;step=5">Edit</a></div>
+</div>
 <!-- /TMPL_IF -->
 
-</div>
- <div class="yui-u"> 
+
  <div id="patron-library-details">
  <h3>Library use</h3>
 <div class="rows"> 
@@ -327,10 +338,10 @@ if (nodename =="barcodes[]"){
     <!-- TMPL_IF NAME="opacnote"      --><li><span class="label">OPAC note:</span><!-- TMPL_VAR NAME="opacnote" --></li><!-- /TMPL_IF -->
 	</ol>
 	</div>
+	<div class="action"><a href="memberentry.pl?op=modify&amp;borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->&amp;step=3">Edit</a></div>
  </div>
-    <div class="action"><a href="memberentry.pl?op=modify&amp;borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->&amp;step=3">Edit</a></div>
  
- <div id="patron-alternate-address" style="padding-top: 1em;">
+ <div id="patron-alternate-address">
     <h3>Alternate Address</h3>
     <!-- TMPL_UNLESS NAME="I"--><!-- TMPL_UNLESS NAME="C"-->
     <div class="rows">  <ol><li><span class="label">Address: </span><!-- TMPL_VAR NAME="B_address" --></li>
@@ -346,10 +357,10 @@ if (nodename =="barcodes[]"){
     <li><span class="label">Email: </span><!-- TMPL_VAR NAME="email" --></li>
     <li><span class="label">Relationship: </span><!-- TMPL_VAR NAME="relationship" --></li></ol></div>
    <!-- /TMPL_IF -->
+   <div class="action"><a href="memberentry.pl?op=modify&amp;borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->&amp;step=6">Edit</a></div>
 </div>
-<div class="action"><a href="memberentry.pl?op=modify&amp;borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->&amp;step=6">Edit</a></div>
 
- <div id="patron-alternative-contact" style="padding-top: 1em;">
+ <div id="patron-alternative-contact">
  <h3>Alternative Contact</h3>	
    <div class="rows"> <ol><li><span class="label">Surname: </span><!-- TMPL_VAR NAME="altcontactsurname" --></li>
     <li><span class="label">First name: </span><!-- TMPL_VAR NAME="altcontactfirstname" --></li>    
@@ -359,10 +370,10 @@ if (nodename =="barcodes[]"){
 	<li><span class="label">Zip/Postal Code: </span><!-- TMPL_VAR NAME="altcontactzipcode" --></li>
 	<li><span class="label">Country: </span><!-- TMPL_VAR NAME="altcontactcountry" --></li>
     <li><span class="label">Phone: </span><!-- TMPL_VAR NAME="altcontactphone" --></li></ol></div>
+    <div class="action"><a href="memberentry.pl?op=modify&amp;borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->&amp;step=2">Edit</a></div>
 </div>
-<div class="action"><a href="memberentry.pl?op=modify&amp;borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->&amp;step=2">Edit</a></div>
 
-</div>
+</div><!-- patron details -->
 </div>
 
 <div id="finesholdsissues" class="toptabs">
