@@ -258,6 +258,10 @@ function refocus(calendar) {
     <li>Item is currently checked out to this patron.  Renew?</li>
 <!-- /TMPL_IF -->
 
+<!-- TMPL_IF NAME="USERBLOCKEDREMAINING" -->
+    <li>Patron cannot check-out this item : has overdue items.</li>
+<!-- /TMPL_IF -->
+
 </ul>
 
 <form method="post" action="/cgi-bin/koha/circ/circulation.pl">
