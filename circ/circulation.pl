@@ -38,6 +38,7 @@ use C4::Context;
 use C4::Debug;
 use CGI::Session;
 
+use YAML;
 use Date::Calc qw(
   Today
   Add_Delta_YM
@@ -91,8 +92,13 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user (
 my $branches = GetBranches();
 
 my @failedrenews = $query->param('failedrenew');    # expected to be itemnumbers 
+my @failedreturns = $query->param('failedreturn');    # expected to be itemnumbers 
+my @renewerrors = $query->param('renewerror');    # expected to be itemnumbers 
+my @returnerrors = $query->param('returnerror');    # expected to be itemnumbers 
 my %renew_failed;
-for (@failedrenews) { $renew_failed{$_} = 1; }
+my %return_failed;
+for (@failedrenews) { $renew_failed{$_} = shift @renewerrors; }
+for (@failedreturns) { $return_failed{GetItemnumberFromBarcode($_)} = shift @returnerrors; }
 
 my $findborrower = $query->param('findborrower');
 $findborrower =~ s|,| |g;
@@ -463,6 +469,7 @@ if ($borrower) {
         $it->{'od'} = ( $it->{'date_due'} lt $todaysdate ) ? 1 : 0 ;
         ($it->{'author'} eq '') and $it->{'author'} = ' ';
         $it->{'renew_failed'} = $renew_failed{$it->{'itemnumber'}};
+        $it->{'return_failed'} = $return_failed{$it->{'itemnumber'}};
 	$it->{'branchdisplay'} = GetBranchName((C4::Context->preference('HomeOrHoldingBranch') eq 'holdingbranch') ? $it->{'holdingbranch'} : $it->{'homebranch'});
         # ADDED BY JF: NEW ITEMTYPE COUNT DISPLAY
         $issued_itemtypes_count->{ $it->{'itemtype'} }++;
@@ -547,6 +554,7 @@ if ($borrowerslist) {
 
 #title
 my $flags = $borrower->{'flags'};
+    $debug && warn Dump($flags);
 foreach my $flag ( sort keys %$flags ) {
     $template->param( flagged=> 1);
     $flags->{$flag}->{'message'} =~ s#\n#<br />#g;
