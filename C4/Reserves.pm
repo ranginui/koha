@@ -1797,7 +1797,7 @@ sub _koha_notify_reserve {
         return if ( !defined( $messagingprefs->{'letter_code'} ) );
         $letter_code = $messagingprefs->{'letter_code'};
     } else {
-        $letter_code = 'HOLD_PRINT';
+        $letter_code = 'HOLD';
         $print_mode = 1;
     }
 
