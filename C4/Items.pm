@@ -1698,7 +1698,12 @@ sub GetMarcItem {
 
 sub Item2Marc {
     my ( $itemrecord, $biblionumber ) = @_;
-    my $mungeditem = { map { defined( $itemrecord->{$_} ) && $itemrecord->{$_} ne '' ? ( "items.$_" => $itemrecord->{$_} ) : () } keys %{$itemrecord} };
+    my $mungeditem = { 
+        map {  
+            defined($itemrecord->{$_}) && $itemrecord->{$_} ne '' ? ("items.$_" => $itemrecord->{$_}) : ()  
+        } keys %{ $itemrecord } 
+    };
+
     my $itemmarc = TransformKohaToMarc($mungeditem);
     my ( $itemtag, $itemsubfield ) = GetMarcFromKohaField( "items.itemnumber", GetFrameworkCode($biblionumber) || '' );
 
@@ -2250,14 +2255,17 @@ sub _marc_from_item_hash {
     foreach my $item_field ( keys %{$mungeditem} ) {
         my ( $tag, $subfield ) = GetMarcFromKohaField( $item_field, $frameworkcode );
         next unless defined $tag and defined $subfield;    # skip if not mapped to MARC field
-        if ( my $field = $item_marc->field($tag) ) {
-            $field->add_subfields( $subfield => $mungeditem->{$item_field} );
-        } else {
-            my $add_subfields = [];
-            if ( defined $unlinked_item_subfields and ref($unlinked_item_subfields) eq 'ARRAY' and $#$unlinked_item_subfields > -1 ) {
-                $add_subfields = $unlinked_item_subfields;
+        my @values = split(/\s?\|\s?/, $mungeditem->{$item_field}, -1);
+        foreach my $value (@values){
+            if ( my $field = $item_marc->field($tag) ) {
+                $field->add_subfields( $subfield => $value );
+            } else {
+                my $add_subfields = [];
+                if ( defined $unlinked_item_subfields and ref($unlinked_item_subfields) eq 'ARRAY' and $#$unlinked_item_subfields > -1 ) {
+                    $add_subfields = $unlinked_item_subfields;
+                }
+                $item_marc->add_fields( $tag, " ", " ", $subfield => $value, @$add_subfields );
             }
-            $item_marc->add_fields( $tag, " ", " ", $subfield => $mungeditem->{$item_field}, @$add_subfields );
         }
     }
 
