@@ -716,7 +716,7 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
             <td><span style="padding: 0 1em;">
             <!-- TMPL_IF Name="renew_error_too_many"--><span class="problem"><!-- /TMPL_IF -->
             <!-- TMPL_VAR NAME="renewals" -->/<!-- TMPL_VAR NAME="renewalsallowed" -->
-            <!-- TMPL_IF Name="renew_error_too_many"--></span><!-- /TMPL_IF -->
+            <!-- TMPL_IF NAME="renew_error_too_many"--></span><!-- /TMPL_IF -->
                 </span>
         <!-- TMPL_IF NAME="can_renew" -->
         <input type="checkbox" name="all_items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" checked="checked" style="display: none;" />
@@ -740,7 +740,7 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
 			On Hold
 		<!-- /TMPL_IF -->
                 <!-- TMPL_IF NAME="renew_error_overdue" -->
-			Not Renewable
+			Overdue
                 <!-- /TMPL_IF -->
                 <!-- TMPL_IF NAME="renew_error_too_many" -->
 			Not Renewable
@@ -779,15 +779,16 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
         <td>
             <!-- TMPL_VAR NAME="itemtype" -->
         </td>
-	    <td><!-- TMPL_VAR NAME="branchdisplay" --></td>
-        <td><!-- TMPL_VAR NAME="displaydate" --></td>
-        <td><!-- TMPL_VAR NAME="itemcallnumber" --></td>
+	<td><!-- TMPL_VAR NAME="branchdisplay" -->
+        <!--TMPL_IF NAME="itemcallnumber"-->(<!-- TMPL_VAR NAME="itemcallnumber" -->)<!--/TMPL_IF--></td>
+        <td><!-- TMPL_VAR NAME="issuedate" --></td>
         <td><!-- TMPL_VAR NAME="charge" --></td>
         <td><!-- TMPL_VAR NAME="replacementprice" --></td>
-      <!-- TMPL_IF NAME="renew_failed" -->
-            <td class="problem">Renewal Failed</td>
-      <!-- TMPL_ELSE -->
-        <td><span style="padding: 0 1em;"><!-- TMPL_IF NAME="renewals" --><!-- TMPL_VAR NAME="renewals" --><!-- TMPL_ELSE -->0<!-- /TMPL_IF --></span>
+        <td><span style="padding: 0 1em;">
+            <!-- TMPL_IF Name="renew_error_too_many"--><span class="problem"><!-- /TMPL_IF -->
+            <!-- TMPL_VAR NAME="renewals" -->/<!-- TMPL_VAR NAME="renewalsallowed" -->
+            <!-- TMPL_IF Name="renew_error_too_many"--></span><!-- /TMPL_IF -->
+            </span>
         <!-- TMPL_IF NAME="can_renew" -->
         <input type="checkbox" name="all_items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" checked="checked" style="display: none;" />
         <!-- TMPL_IF NAME="od" -->
@@ -804,11 +805,14 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
                     <input type="checkbox" name="items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" />
                 <!-- /TMPL_IF -->
                 </span>
-                <span class="renewals-disabled">
+                <span class="renewals-disabled problem">
             <!-- /TMPL_IF -->
 		<!-- TMPL_IF NAME="renew_error_on_reserve" -->
 			On Hold
 		<!-- /TMPL_IF -->
+			    <!-- TMPL_IF NAME="renew_error_overdue" -->
+			Overdue
+                <!-- /TMPL_IF -->
                 <!-- TMPL_IF NAME="renew_error_too_many" -->
 			Not Renewable
                 <!-- /TMPL_IF -->

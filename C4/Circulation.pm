@@ -1888,11 +1888,11 @@ already renewed the loan. $error will contain the reason the renewal can not pro
 sub CanBookBeRenewed {
 
     # check renewal status
-    my ( $borrowernumber, $itemnumber, $override_limit ) = @_;
+    my ( $borrowernumber, $itemnumber ) = @_;
     my $dbh       = C4::Context->dbh;
     my $renews    = 1;
-    my $renewokay = 0;
-	my $error;
+    my $renewokay = 1;
+    my $error;
 
     # Look in the issues table for this item, lent to this borrower,
     # and not yet returned.
@@ -1903,15 +1903,15 @@ sub CanBookBeRenewed {
     my $item = GetItem($itemnumber) or return undef;
     my $itemissue = GetItemIssue($itemnumber) or return undef;
     my $branchcode = _GetCircControlBranch($item, $borrower);
-    if (Delta_Days(Today,Parse_Date($itemissue->{date_due}))<=0){
+    if ($itemissue->{'overdue'}){
+       $renewokay=0;
        $error->{message}='overdue'; 
     }
     
     my $issuingrule = GetIssuingRule($borrower->{categorycode}, $item->{itype}, $branchcode);
     
-    if ( ( $issuingrule->{renewalsallowed} > $itemissue->{'issues.renewals'} ) || $override_limit ) {
-        $renewokay = 1;
-    } else {
+    if ( $issuingrule->{renewalsallowed} <= $itemissue->{'issues.renewals'} )  {
+        $renewokay=0;
         $error->{message} = "too_many";
     }
 
