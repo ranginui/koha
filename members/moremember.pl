@@ -34,6 +34,7 @@
 use strict;
 #use warnings; FIXME - Bug 2505
 use CGI;
+use YAML;
 use C4::Context;
 use C4::Auth;
 use C4::Output;
@@ -68,11 +69,13 @@ my $print = $input->param('print');
 my $override_limit = $input->param("override_limit") || 0;
 my @failedrenews = $input->param('failedrenew');
 my @failedreturns = $input->param('failedreturn');
+my @renewerrors   = $input->param('renewerror');    # expected to be json
+my @returnerrors  = $input->param('returnerror');   # expected to be json
 my $error = $input->param('error');
 my %renew_failed;
-for my $renew (@failedrenews) { $renew_failed{$renew} = 1; }
 my %return_failed;
-for my $failedret (@failedreturns) { $return_failed{$failedret} = 1; }
+for (@failedrenews) { $renew_failed{$_} = decode_json(shift @renewerrors); }
+for (@failedreturns) { $return_failed{GetItemnumberFromBarcode($_)} = decode_json(shift @returnerrors); }
 
 my $template_name;
 my $quickslip = 0;
@@ -235,6 +238,7 @@ my $totalprice = 0;
 for ( my $i = 0 ; $i < $issuecount ; $i++ ) {
     my $datedue = $issue->[$i]{'date_due'};
     my $issuedate = $issue->[$i]{'issuedate'};
+    my $itemnumber = $issue->[$i]{'itemnumber'};
     $issue->[$i]{'date_due'}  = C4::Dates->new($issue->[$i]{'date_due'}, 'iso')->output('syspref');
     $issue->[$i]{'issuedate'} = C4::Dates->new($issue->[$i]{'issuedate'},'iso')->output('syspref');
     my $biblionumber = $issue->[$i]{'biblionumber'};
@@ -275,7 +279,7 @@ for ( my $i = 0 ; $i < $issuecount ; $i++ ) {
 
     #find the charge for an item
     my ( $charge, $itemtype ) =
-      GetIssuingCharges( $issue->[$i]{'itemnumber'}, $borrowernumber );
+      GetIssuingCharges( $itemnumber, $borrowernumber );
 
     my $itemtypeinfo = getitemtypeinfo($itemtype);
     $row{'itemtype_description'} = $itemtypeinfo->{description};
@@ -291,14 +295,28 @@ for ( my $i = 0 ; $i < $issuecount ; $i++ ) {
 
     $row{'charge'} = sprintf( "%.2f", $charge );
 
-	my ( $renewokay,$renewerror ) = CanBookBeRenewed( $borrowernumber, $issue->[$i]{'itemnumber'}, $override_limit );
+	my ( $renewokay,$renewerror ) = CanBookBeRenewed( $borrowernumber, $itemnumber);
+    if (defined $renewerror->{message}){
+            $row{"norenew_reason_".$renewerror->{message}} = 1;
+		    $row{'norenew'} = 1;
+    }
     $row{$_} = $renewerror->{$_} for (qw(renewals renewalsallowed reserves));
-	$row{'norenew'} = !$renewokay;
-	$row{'can_confirm'} = ( !$renewokay && $renewerror ne 'on_reserve' );
-	$row{"norenew_reason_".$renewerror->{message}} = 1 if $renewerror->{message};
-	$row{'renew_failed'}  = $renew_failed{ $issue->[$i]{'itemnumber'} };
-	$row{'return_failed'} = $return_failed{$issue->[$i]{'barcode'}};   
-    push( @issuedata, \%row );
+    my ( $restype, $reserves ) = CheckReserves( $issue->[$i]->{'itemnumber'} );
+    if ($restype){
+		    $row{'reserved'} = 1;
+            $row{$restype}=1
+    }
+	$row{'can_confirm'} = $row{'norenew'} && C4::Context->preference("AllowRenewalLimitOverride");#( !$renewokay && $renewerror->{message} ne 'on_reserve' );
+	$row{'renew_failed'}  = defined($renew_failed{ $itemnumber });
+	$row{'return_failed'} = defined($return_failed{$itemnumber});   
+    if ($row{'return_failed'}){
+            $row{'return_error_'.$return_failed{$issue->[$i]->{'itemnumber'}}->{message}}=1;
+    }
+    if ( $row{'renew_failed'}){
+            $row{'norenew_reason_'.$renew_failed{$issue->[$i]->{'itemnumber'}}->{message}}=1;
+    }
+    warn Dump(%row);
+ push( @issuedata, \%row );
 }
 
 ### ###############################################################################

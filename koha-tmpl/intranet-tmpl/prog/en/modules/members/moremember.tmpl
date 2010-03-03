@@ -46,9 +46,9 @@ $(document).ready(function() {
     <!-- TMPL_IF NAME="CAN_user_circulate_override_renewals" -->
     <!-- TMPL_IF NAME="AllowRenewalLimitOverride" -->
     $( '#override_limit' ).click( function () {
-           $( '.renewals-allowed' ).toggle(); $( '.renewals-disabled' ).toggle();
+           $( '.renewals-allowed' ).toggle(); 
     } ).attr( 'checked', true );
-    $( '.renewals-allowed' ).show(); $( '.renewals-disabled' ).hide();
+    $( '.renewals-allowed' ).show(); 
     <!-- /TMPL_IF -->
     <!-- /TMPL_IF -->
 	$("td").click(function(e){
@@ -476,24 +476,24 @@ if (nodename =="barcodes[]"){
       <!-- TMPL_IF NAME="renew_failed" -->
             <td class="problem">Renewal Failed</td>
       <!-- TMPL_ELSE -->
-            <td><span style="padding: 0 1em;">
+            <td style="text-align : center"><span style="padding: 0 1em;">
             <!-- TMPL_IF Name="norenew_reason_too_many"--><span class="problem"><!-- /TMPL_IF -->
-            <!-- TMPL_VAR NAME="renewals" -->/<!-- TMPL_VAR NAME="renewalsallowed" -->
+            <!--TMPL_IF NAME="renewals"--><!-- TMPL_VAR NAME="renewals" -->/<!--/TMPL_IF--><!-- TMPL_VAR NAME="renewalsallowed" -->
             <!-- TMPL_IF Name="norenew_reason_too_many"--></span><!-- /TMPL_IF -->
                 </span>
             <!-- TMPL_IF name="norenew" -->
                 <!-- TMPL_IF NAME="can_confirm" --><span class="renewals-allowed" style="display: none">
-                    <input type="checkbox" name="all_items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" checked="checked" style="display: none;" />
                     <!-- TMPL_IF NAME="od" -->
                         <input type="checkbox" name="items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" checked="checked" />
                     <!-- TMPL_ELSE -->
                         <input type="checkbox" name="items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" />
                     <!-- /TMPL_IF -->
                     </span>
+                    <br/>
                     <span class="renewals-disabled problem">
                 <!-- /TMPL_IF -->
                 <!-- TMPL_IF NAME="norenew_reason_on_reserve" -->
-                <a href="/cgi-bin/koha/reserve/request.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->">On Hold</a>
+                        On Hold
                 <!-- /TMPL_IF -->
 				    <!-- TMPL_IF NAME="norenew_reason_overdue" -->
 				        Overdue
@@ -505,7 +505,6 @@ if (nodename =="barcodes[]"){
                     </span>
                 <!-- /TMPL_IF -->
             <!-- TMPL_ELSE -->
-            <input type="checkbox" name="all_items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" checked="checked" style="display: none;" />
             <!-- TMPL_IF NAME="red" -->
             <input type="checkbox" name="items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" checked="checked" onclick="uncheck_sibling(this);" />
             <!-- TMPL_ELSE -->
@@ -517,8 +516,8 @@ if (nodename =="barcodes[]"){
       <!-- TMPL_IF NAME="return_failed" -->
             <td class="problem">Checkin Failed</td>
       <!--TMPL_ELSE-->
-            <td><input type="checkbox" name="barcodes[]"  value="<!-- TMPL_VAR NAME="barcode" -->" onclick="uncheck_sibling(this);" />
-                <input type="checkbox" name="all_barcodes[]" value="<!-- TMPL_VAR NAME="barcode" -->" checked="checked" style="display: none;" />
+            <td style="text-align:center;"><input type="checkbox" name="barcodes[]"  value="<!-- TMPL_VAR NAME="barcode" -->" onclick="uncheck_sibling(this);" />
+                <!-- TMPL_IF Name="reserved"--><br/><a href="javascript:void(0);" onclick="window.open('/cgi-bin/koha/reserve/request.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->')">On Hold</a><!-- /TMPL_IF -->
             </td>
       <!-- /TMPL_IF -->
         </tr>

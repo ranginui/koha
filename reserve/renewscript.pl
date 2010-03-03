@@ -27,6 +27,7 @@ use CGI;
 use C4::Circulation;
 use C4::Auth;
 use C4::Dates qw/format_date_in_iso/;
+use JSON;
 my $input = new CGI;
 
 #Set Up User_env
@@ -79,12 +80,12 @@ my $override_limit = $input->param("override_limit") || 0;
 my $failedrenews;
 foreach my $itemno (@data) {
     # check status before renewing issue
-	my ($renewokay,$error) = CanBookBeRenewed($borrowernumber,$itemno,$override_limit);
-    if ($renewokay){
+	my ($renewokay,$error) = CanBookBeRenewed($borrowernumber,$itemno);
+    if ($renewokay||$override_limit){
         AddRenewal($borrowernumber,$itemno,$branch,$datedue);
     }
 	else {
-		$failedrenews.="&failedrenew=$itemno";        
+		$failedrenews.="&failedrenew=$itemno&renewerror=".encode_json($error);
 	}
 }
 my $failedreturn;
@@ -92,7 +93,9 @@ foreach my $barcode (@barcodes) {
     # check status before renewing issue
    my ( $returned, $messages, $issueinformation, $borrower ) = 
     AddReturn($barcode, $branch, $exemptfine);
-   $failedreturn.="&failedreturn=$barcode" unless ($returned);
+    unless ($returned){
+        $failedreturn.="&failedreturn=$barcode&returnerror=".encode_json($messages);
+    }
 }
 
 #

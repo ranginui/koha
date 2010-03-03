@@ -37,7 +37,7 @@ use C4::Reserves;
 use C4::Context;
 use C4::Debug;
 use CGI::Session;
-
+use JSON;
 use YAML;
 use Date::Calc qw(
   Today
@@ -91,14 +91,14 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user (
 
 my $branches = GetBranches();
 
-my @failedrenews = $query->param('failedrenew');    # expected to be itemnumbers 
-my @failedreturns = $query->param('failedreturn');    # expected to be itemnumbers 
-my @renewerrors = $query->param('renewerror');    # expected to be itemnumbers 
-my @returnerrors = $query->param('returnerror');    # expected to be itemnumbers 
+my @failedrenews  = $query->param('failedrenew');   # expected to be itemnumbers
+my @failedreturns = $query->param('failedreturn');  # expected to be barcodes
+my @renewerrors   = $query->param('renewerror');    # expected to be json
+my @returnerrors  = $query->param('returnerror');   # expected to be json
 my %renew_failed;
 my %return_failed;
-for (@failedrenews) { $renew_failed{$_} = shift @renewerrors; }
-for (@failedreturns) { $return_failed{GetItemnumberFromBarcode($_)} = shift @returnerrors; }
+for (@failedrenews) { $renew_failed{$_} = decode_json(shift @renewerrors); }
+for (@failedreturns) { $return_failed{GetItemnumberFromBarcode($_)} = decode_json(shift @returnerrors); }
 
 my $findborrower = $query->param('findborrower');
 $findborrower =~ s|,| |g;
@@ -453,9 +453,16 @@ if ($borrower) {
         my ($can_renew, $can_renew_error) = CanBookBeRenewed( 
             $borrower->{'borrowernumber'},$it->{'itemnumber'}
         );
-        $it->{"renew_error_".$can_renew_error->{message}} = 1 if defined $can_renew_error->{message};
+        if (defined $can_renew_error->{message}){
+            $it->{"renew_error_".$can_renew_error->{message}} = 1;
+		    $it->{'renew_error'} = 1;
+        }
         $it->{$_} = $can_renew_error->{$_} for (qw(renewals renewalsallowed reserves));
         my ( $restype, $reserves ) = CheckReserves( $it->{'itemnumber'} );
+        if ($restype){
+		    $it->{'reserved'} = 1;
+            $it->{$restype}=1
+        }
 		$it->{'can_renew'} = $can_renew;
 		$it->{'can_confirm'} = !$can_renew && !$restype;
 		$it->{'renew_error'} = $restype;
@@ -468,8 +475,13 @@ if ($borrower) {
         $it->{'displaydate'} = format_date($it->{'issuedate'});
         $it->{'od'} = ( $it->{'date_due'} lt $todaysdate ) ? 1 : 0 ;
         ($it->{'author'} eq '') and $it->{'author'} = ' ';
-        $it->{'renew_failed'} = $renew_failed{$it->{'itemnumber'}};
-        $it->{'return_failed'} = $return_failed{$it->{'itemnumber'}};
+        if (defined($return_failed{$it->{'itemnumber'}})){
+            $it->{'return_error_'.$return_failed{$it->{'itemnumber'}}->{message}}=1;
+        }
+         if (defined($renew_failed{$it->{'itemnumber'}})){
+            $it->{'renew_error_'.$renew_failed{$it->{'itemnumber'}}->{message}}=1;
+        }
+        $it->{'return_failed'} = defined($return_failed{$it->{'itemnumber'}});
 	$it->{'branchdisplay'} = GetBranchName((C4::Context->preference('HomeOrHoldingBranch') eq 'holdingbranch') ? $it->{'holdingbranch'} : $it->{'homebranch'});
         # ADDED BY JF: NEW ITEMTYPE COUNT DISPLAY
         $issued_itemtypes_count->{ $it->{'itemtype'} }++;

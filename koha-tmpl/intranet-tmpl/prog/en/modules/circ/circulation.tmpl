@@ -41,6 +41,11 @@ var allcheckboxes = $(".checkboxed");
 		$(allcheckboxes).checkCheckboxes(":input[name*=items]");
 		$(allcheckboxes).unCheckCheckboxes(":input[name*=barcodes]"); return false;
 	});
+//    $(":input[name*]=items").click(function(){
+//        var itemnumber=getitemnumber($(this).attr(‘id’));
+//        alert(getitemnumber($(this).attr(‘id’)));
+//        $("#return_"+itemnumber).attr('checked', !$(this).attr('checked'));
+//	});
     $("#CheckNoitems").click(function(){
 		$(allcheckboxes).unCheckCheckboxes(":input[name*=items]"); return false;
 	});
@@ -55,9 +60,9 @@ var allcheckboxes = $(".checkboxed");
     <!-- TMPL_IF NAME="CAN_user_circulate_override_renewals" -->
     <!-- TMPL_IF NAME="AllowRenewalLimitOverride" -->
     $( '#override_limit' ).click( function () {
-           $( '.renewals-allowed' ).toggle(); $( '.renewals-disabled' ).toggle();
+           $( '.renewals-allowed' ).toggle();
     } ).attr( 'checked', true );
-    $( '.renewals-allowed' ).show(); $( '.renewals-disabled' ).hide();
+    $( '.renewals-allowed' ).show();
     <!-- /TMPL_IF -->
     <!-- /TMPL_IF -->
 	$("td").click(function(e){
@@ -82,6 +87,10 @@ var allcheckboxes = $(".checkboxed");
 		$("#add_message_form").show();
 	 });
  });
+function getitemnumber(id){
+   index = id.IndexOf("_");
+   return id.substr(index+1);
+}
 function uncheck_sibling(me){
 nodename=me.getAttribute("name");
 if (nodename =="barcodes[]"){
@@ -714,47 +723,36 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
             <td><!-- TMPL_VAR NAME="replacementprice" --></td>
             <td><span style="padding: 0 1em;">
             <!-- TMPL_IF Name="renew_error_too_many"--><span class="problem"><!-- /TMPL_IF -->
-            <!-- TMPL_VAR NAME="renewals" -->/<!-- TMPL_VAR NAME="renewalsallowed" -->
+            <!--TMPL_IF NAME=renewals--><!-- TMPL_VAR NAME="renewals" -->/<!--/TMPL_IF--><!-- TMPL_VAR NAME="renewalsallowed" -->
             <!-- TMPL_IF NAME="renew_error_too_many"--></span><!-- /TMPL_IF -->
                 </span>
-        <!-- TMPL_IF NAME="can_renew" -->
-        <input type="checkbox" name="all_items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" checked="checked" style="display: none;" />
-        <!-- TMPL_IF NAME="od" -->
-            <input type="checkbox" name="items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" checked="checked" />
-        <!-- TMPL_ELSE -->
-            <input type="checkbox" name="items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" />
-        <!-- /TMPL_IF -->
-        <!-- TMPL_ELSE -->
-            <!-- TMPL_IF NAME="can_confirm" --><span class="renewals-allowed" style="display: none">
-                <input type="checkbox" name="all_items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" checked="checked" style="display: none;" />
+        <!-- TMPL_UNLESS NAME="can_renew" -->
+            <span class="renewals-allowed" style="display: none">
+        <!-- /TMPL_UNLESS  -->
                 <!-- TMPL_IF NAME="od" -->
-                    <input type="checkbox" name="items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" checked="checked" />
+                    <input type="checkbox" id="renew_<!--TMPL_VAR NAME="itemnumber"-->" name="items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" checked="checked" />
                 <!-- TMPL_ELSE -->
-                    <input type="checkbox" name="items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" />
+                    <input type="checkbox" id="renew_<!--TMPL_VAR NAME="itemnumber"-->" name="items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" />
                 <!-- /TMPL_IF -->
-                </span>
-                <span class="renewals-disabled problem">
+        <!-- TMPL_UNLESS NAME="can_renew" -->
+            </span>
+        <!-- /TMPL_UNLESS  -->
+
+            <!-- TMPL_IF NAME="renew_error"-->
+            <br/>
+            <span class="renewals-disabled problem">
+            <!-- TMPL_IF NAME="renew_error_on_reserve" --> On Hold       <!-- /TMPL_IF -->
+            <!-- TMPL_IF NAME="renew_error_overdue"    --> Overdue       <!-- /TMPL_IF -->
+            <!-- TMPL_IF NAME="renew_error_too_many"   --> Not Renewable <!-- /TMPL_IF -->
+            </span>
             <!-- /TMPL_IF -->
-		<!-- TMPL_IF NAME="renew_error_on_reserve" -->
-			On Hold
-		<!-- /TMPL_IF -->
-                <!-- TMPL_IF NAME="renew_error_overdue" -->
-			Overdue
-                <!-- /TMPL_IF -->
-                <!-- TMPL_IF NAME="renew_error_too_many" -->
-			Not Renewable
-                <!-- /TMPL_IF -->
-            <!-- TMPL_IF NAME="can_confirm" -->
-                </span>
-            <!-- /TMPL_IF -->
-        <!-- /TMPL_IF -->
         </td>
         <!-- /TMPL_IF -->
   <!-- TMPL_IF NAME="return_failed" -->
             <td class="problem">Checkin Failed</td>
       <!--TMPL_ELSE-->
-            <td><input type="checkbox" name="barcodes[]"  value="<!-- TMPL_VAR NAME="barcode" -->" onclick="uncheck_sibling(this);" />
-                <input type="checkbox" name="all_barcodes[]" value="<!-- TMPL_VAR NAME="barcode" -->" checked="checked" style="display: none;" />
+            <td style="text-align:center;"><input type="checkbox" id="return_<!--TMPL_VAR NAME="itemnumber"-->" name="barcodes[]"  value="<!-- TMPL_VAR NAME="barcode" -->" />
+                <!-- TMPL_IF Name="reserved"--><br/><a href="javascript:void(0);" onclick="window.open('/cgi-bin/koha/reserve/request.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->')">On Hold</a><!-- /TMPL_IF -->
             </td>
       <!-- /TMPL_IF -->
     </tr>
@@ -780,49 +778,37 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
         <td><!-- TMPL_VAR NAME="issuedate" --></td>
         <td><!-- TMPL_VAR NAME="charge" --></td>
         <td><!-- TMPL_VAR NAME="replacementprice" --></td>
-        <td><span style="padding: 0 1em;">
+        <td style="text-align : center;"><span style="padding: 0 1em;">
             <!-- TMPL_IF Name="renew_error_too_many"--><span class="problem"><!-- /TMPL_IF -->
-            <!-- TMPL_VAR NAME="renewals" -->/<!-- TMPL_VAR NAME="renewalsallowed" -->
+            <!--TMPL_IF Name="renewals"--><!-- TMPL_VAR NAME="renewals" -->/<!--/TMPL_IF--><!-- TMPL_VAR NAME="renewalsallowed" -->
             <!-- TMPL_IF Name="renew_error_too_many"--></span><!-- /TMPL_IF -->
             </span>
-        <!-- TMPL_IF NAME="can_renew" -->
-        <input type="checkbox" name="all_items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" checked="checked" style="display: none;" />
-        <!-- TMPL_IF NAME="od" -->
-            <input type="checkbox" name="items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" checked="checked" />
-        <!-- TMPL_ELSE -->
-            <input type="checkbox" name="items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" />
-        <!-- /TMPL_IF -->
-        <!-- TMPL_ELSE -->
-            <!-- TMPL_IF NAME="can_confirm" --><span class="renewals-allowed" style="display: none">
-                <input type="checkbox" name="all_items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" checked="checked" style="display: none;" />
+        <!-- TMPL_UNLESS NAME="can_renew" -->
+            <span class="renewals-allowed" style="display: none">
+        <!-- /TMPL_UNLESS  -->
                 <!-- TMPL_IF NAME="od" -->
-                    <input type="checkbox" name="items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" checked="checked" />
+                    <input type="checkbox" id="renew_<!--TMPL_VAR NAME="itemnumber"-->" name="items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" checked="checked" />
                 <!-- TMPL_ELSE -->
-                    <input type="checkbox" name="items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" />
+                    <input type="checkbox" id="renew_<!--TMPL_VAR NAME="itemnumber"-->" name="items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" />
                 <!-- /TMPL_IF -->
-                </span>
-                <span class="renewals-disabled problem">
+        <!-- TMPL_UNLESS NAME="can_renew" -->
+            </span>
+        <!-- /TMPL_UNLESS  -->
+            <!-- TMPL_IF NAME="renew_error"-->
+            <br/>
+            <span class="renewals-disabled problem">
+            <!-- TMPL_IF NAME="renew_error_on_reserve" --> On Hold       <!-- /TMPL_IF -->
+            <!-- TMPL_IF NAME="renew_error_overdue"    --> Overdue       <!-- /TMPL_IF -->
+            <!-- TMPL_IF NAME="renew_error_too_many"   --> Not Renewable <!-- /TMPL_IF -->
+            </span>
             <!-- /TMPL_IF -->
-		<!-- TMPL_IF NAME="renew_error_on_reserve" -->
-			On Hold
-		<!-- /TMPL_IF -->
-			    <!-- TMPL_IF NAME="renew_error_overdue" -->
-			Overdue
-                <!-- /TMPL_IF -->
-                <!-- TMPL_IF NAME="renew_error_too_many" -->
-			Not Renewable
-                <!-- /TMPL_IF -->
-            <!-- TMPL_IF NAME="can_confirm" -->
-                </span>
-            <!-- /TMPL_IF -->
-        <!-- /TMPL_IF -->
         </td>
         <!-- /TMPL_IF -->
 		  <!-- TMPL_IF NAME="return_failed" -->
             <td class="problem">Checkin Failed</td>
-        <!--TMPL_ELSE-->
-            <td><input type="checkbox" name="barcodes[]"  value="<!-- TMPL_VAR NAME="barcode" -->" onclick="uncheck_sibling(this);" />
-                <input type="checkbox" name="all_barcodes[]" value="<!-- TMPL_VAR NAME="barcode" -->" checked="checked" style="display: none;" />
+      <!--TMPL_ELSE-->
+            <td style="text-align : center;"><input type="checkbox" id="return_<!--TMPL_VAR NAME="itemnumber"-->" name="barcodes[]"  value="<!-- TMPL_VAR NAME="barcode" -->" onclick="uncheck_sibling(this);" />
+                <!-- TMPL_IF Name="reserved"--><br/><a href="javascript:void(0);" onclick="window.open('/cgi-bin/koha/reserve/request.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->')">On Hold</a><!-- /TMPL_IF -->
             </td>
       <!-- /TMPL_IF -->
     </tr>
