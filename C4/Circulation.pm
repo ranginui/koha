@@ -1779,7 +1779,7 @@ sub GetItemIssues {
     }
     my $results = $sth->fetchall_arrayref({});
     foreach (@$results) {
-        $_->{'overdue'} = ($_->{'date_due'} lt $today) ? 1 : 0;
+        $_->{'overdue'} = ( $_->{'date_due'} lt $today && !defined($_->{return_date}) ) ? 1 : 0;
     }
     return $results;
 }
