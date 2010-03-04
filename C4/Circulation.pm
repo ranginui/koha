@@ -1468,6 +1468,8 @@ sub _FixFineDaysOnReturn {
     my $deltadays = Delta_Days(Today(), @date_due);
     
     my $branchcode  =_GetCircControlBranch($item,$borrower);
+    my $calendar    = C4::Calendar->new( branchcode => $branchcode );
+    my $today       = C4::Dates->new();
 
     my $circcontrol = C4::Context::preference('CircControl');
     my $issuingrule = GetIssuingRule($borrower->{categorycode}, $item->{itype}, $branchcode);
@@ -1476,10 +1478,9 @@ sub _FixFineDaysOnReturn {
     return unless $finedays;
     my $grace       = $issuingrule->{firstremind};
 
-    if( $deltadays +$grace < 0){
-        
-        my @newdate     = Add_Delta_Days(Today(), (0 - $deltadays) * $finedays );
-        my $isonewdate  = join('-',@newdate);
+    if( $deltadays + $grace < 0){
+        my $isonewdate     = $calendar->addDate($today, (0 - $deltadays) * $finedays )->output('iso');
+        my @newdate  = split('-',$isonewdate);
         my ($deby, $debm, $debd) = split(/-/,$borrower->{debarred});
         if(check_date($deby, $debm, $debd)){
             my @olddate = split(/-/, $borrower->{debarred});
