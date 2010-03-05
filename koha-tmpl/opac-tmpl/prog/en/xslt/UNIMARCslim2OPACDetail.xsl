@@ -32,7 +32,7 @@
             <xsl:value-of select="marc:subfield[@code='h']"/>
           </xsl:if>
           <xsl:if test="marc:subfield[@code='i']">
-            <xsl:text> ; </xsl:text>
+            <xsl:text> : </xsl:text>
             <xsl:value-of select="marc:subfield[@code='i']"/>
           </xsl:if>
           <xsl:if test="marc:subfield[@code='f']">
