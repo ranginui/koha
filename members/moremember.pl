@@ -272,6 +272,14 @@ for ( my $i = 0 ; $i < $issuecount ; $i++ ) {
     $row{'itemtype_description'} = $itemtypeinfo->{description};
     $row{'itemtype_image'}       = $itemtypeinfo->{imageurl};
 
+    # find the collection of an item
+    my $collection;
+    my $authvals = GetAuthorisedValues('CCODE');
+    for ( @$authvals ) {
+        $collection = $_->{'lib'} if $_->{'authorised_value'} eq $row{'ccode'}
+    }
+    $row{'collection'} = $collection;
+
     $row{'charge'} = sprintf( "%.2f", $charge );
 
 	my ( $renewokay,$renewerror ) = CanBookBeRenewed( $borrowernumber, $issue->[$i]{'itemnumber'}, $override_limit );
