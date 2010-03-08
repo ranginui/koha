@@ -1,0 +1,6 @@
+---
+port: 8200
+message:
+    in: RRR
+    out: DDD
+    cancel: SSS

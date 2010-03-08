@@ -32,6 +32,7 @@ use C4::Overdues; #CheckBorrowerDebarred
 use C4::Members; #GetMemberDetail
 use C4::Items;
 use C4::Branch;
+use List::MoreUtils qw/any/;
 use JSON;
 use C4::Reserves;
 my $input = new CGI;
@@ -90,6 +91,16 @@ foreach my $itemno (@data) {
 	my ($renewokay,$error) = CanBookBeRenewed($borrowernumber,$itemno);
     if ($renewokay||$override_limit){
         AddRenewal($borrowernumber,$itemno,$branch,$datedue);
+        my $remotehost=$input->remote_host;
+        my @ips=split /,|\|/, C4::Context->preference("CI-3M:AuthorizedIPs");
+        #my $pid=fork();
+        #unless($pid && $remotehost=~qr(^$ips$)){
+        #if (!$pid && any{ $remotehost eq $_ }@ips ){
+        if (any{ $remotehost eq $_ }@ips ){
+            warn $remotehost;
+            system("../services/magnetise.pl $remotehost out");
+            #die 0;
+        }
     }
 	else {
 		$failedrenews.="&failedrenew=$itemno&renewerror=".encode_json($error);
@@ -138,10 +149,20 @@ foreach my $barcode (@barcodes) {
                 
             }
         }
+        my $remotehost=$input->remote_host;
+        my @ips=split /,|\|/, C4::Context->preference("CI-3M:AuthorizedIPs");
+        #my $pid=fork();
+        #unless($pid && $remotehost=~qr(^$ips$)){
+        #if (!$pid && any{ $remotehost eq $_ }@ips ){
+        if (any{ $remotehost eq $_ }@ips ){
+            warn $remotehost;
+            system("../services/magnetise.pl $remotehost in");
+            #die 0;
+        }
     }
     if (!$returned ||$messages){
         $failedreturn.="&failedreturn=$barcode&returnerror=".encode_json($messages);
-    }
+   }
 }
 
 #
