@@ -47,6 +47,7 @@ use C4::Members::AttributeTypes;
 use C4::Members::Messaging;
 use Date::Calc qw(Today_and_Now);
 use Getopt::Long;
+use File::Temp;
 use Text::CSV;
 # Text::CSV::Unicode, even in binary mode, fails to parse lines with these diacriticals:
 # ė
@@ -127,6 +128,19 @@ if (!$commandline) {
 	);
 	$csv->combine(@columnkeys);
 	print $csv->string, "\n";
+	exit 1;
+    }
+
+    if ($input->param('report')) {
+	open (FH, $input->param('errors_filename'));
+	print $input->header(
+	    -type => 'text/plain',
+	    -attachment => 'import_borrowers_report.txt'
+	);
+	print <FH>;
+	close FH;
+	#TODO : We surely want to check that is it really a temp file that we are unlinking
+	unlink $input->param('errors_filename');
 	exit 1;
     }
 }
@@ -226,8 +240,7 @@ if ( $uploadborrowers && length($uploadborrowers) > 0 ) {
                 $_->{surname}        = $borrower{surname} || 'UNDEF';
             }
             $invalid++;
-            ($commandline or 25 > scalar @errors) and push @errors, {missing_criticals=>\@missing_criticals};
-            # The first 25 errors are enough.  Keeping track of 30,000+ would destroy performance.
+            push @errors, {missing_criticals=>\@missing_criticals};
             next LINE;
         }
         if ($extended) {
@@ -332,7 +345,8 @@ if ( $uploadborrowers && length($uploadborrowers) > 0 ) {
         'invalid'         => $invalid,
         'total'           => $imported + $alreadyindb + $invalid + $overwritten,
     ) if (!$commandline);
-    if ($commandline) {
+
+    if (scalar(@errors) > 25 or $commandline) {
 
 	my $total = $imported + $alreadyindb + $invalid + $overwritten;
 	my $output;
@@ -368,30 +382,40 @@ if ( $uploadborrowers && length($uploadborrowers) > 0 ) {
 			}
 			$output .= " (borrowernumber: $_->{'borrowernumber'}; surname: $_->{'surname'})";
 		    }
-		    $output .= "\n". $_->{'lineraw'} . "\n";
+		    $output .= "\n";
+		    $output .= $_->{'lineraw'} . "\n" if ($commandline);
 		}
 	   }
 	}
 
-    # Write log file
-    my $logfile = "/var/log/koha/reports/import_borrowers.log";
-    if (open (FH, ">>$logfile")) {
-	print FH $output;
-	close(FH);
-    } else {
-	$output .= "Unable to write to log file : $logfile\n";
+    if (scalar(@errors) > 25 && !$commandline) {
+	my $tmpf = File::Temp->new(UNLINK => 0);
+	print $tmpf $output;
+	$template->param(download_errors => 1, errors_filename => $tmpf->filename);
+	close $tmpf;
     }
 
+    if ($commandline) {
+	# Write log file
+	my $logfile = "/var/log/koha/reports/import_borrowers.log";
+	if (open (FH, ">>$logfile")) {
+	    print FH $output;
+	    close(FH);
+	} else {
+	    $output .= "Unable to write to log file : $logfile\n";
+	}
 
-    # Send email with log
-     my $mail = MIME::Lite->new(
-                To      => C4::Context->preference('KohaAdminEmailAddress'),
-                Subject => "Import borrowers log email",
-                Type    => 'text/plain',
-                Data    => $output
-            );
-    $mail->send() or print "Unable to send log email";
+
+	# Send email with log
+	 my $mail = MIME::Lite->new(
+		    To      => C4::Context->preference('KohaAdminEmailAddress'),
+		    Subject => "Import borrowers log email",
+		    Type    => 'text/plain',
+		    Data    => $output
+		);
+	$mail->send() or print "Unable to send log email";
     }
+   }
 
 } else {
     if ($extended) {

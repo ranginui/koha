@@ -51,6 +51,13 @@
   <br /><br />
     <div>
     <h5>Error analysis:</h5>
+    <!-- TMPL_IF NAME="download_errors" -->
+    <form method="post">
+	<input type="hidden" name="errors_filename" value="<!-- TMPL_VAR NAME="errors_filename" -->" />
+	<input type="hidden" name="report" value="report" />
+	<input type="submit" value="Download report" />
+    </form>
+    <!-- TMPL_ELSE -->
     <ul>
     <!-- TMPL_LOOP NAME="ERRORS" -->
         <!-- TMPL_IF NAME="badheader" --><li>Header row could not be parsed</li><!-- /TMPL_IF -->
@@ -74,6 +81,7 @@
         <!-- /TMPL_LOOP -->
     <!-- /TMPL_LOOP -->
     </ul>
+    <!-- /TMPL_IF -->
     </div>
   <!-- /TMPL_IF -->
 <!-- TMPL_ELSE -->
