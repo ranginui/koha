@@ -738,17 +738,22 @@ sub _build_weighted_query {
     # Keyword, or, no index specified
     if ( ( $index eq 'kw' ) || ( !$index ) ) {
         $weighted_query .=
-          "Title-cover,ext,r1=\"$operand\"";    # exact title-cover
-        $weighted_query .= " or ti,ext,r2=\"$operand\"";    # exact title
-        $weighted_query .= " or ti,phr,r3=\"$operand\"";    # phrase title
+          "Title-cover,first-in-field,phr,r1=\"$operand\"";    # exact title-cover
+        $weighted_query .= " or ti,first-in-field,phr,r2=\"$operand\"";    # exact title
+        $weighted_query .= " or au,first-in-field,phr,r3=\"$operand\"";    # phrase title
+        $weighted_query .= " or ti,phr,r3=\"$operand\"";    # exact title
+        $weighted_query .= " or au,phr,r3=\"$operand\"";    # phrase title
+        $weighted_query .= " or ti,wrdl,r4=\"$operand\"";
+        $weighted_query .= " or au,wrdl,r4=\"$operand\"";
           #$weighted_query .= " or any,ext,r4=$operand";               # exact any
           #$weighted_query .=" or kw,wrdl,r5=\"$operand\"";            # word list any
-        $weighted_query .= " or wrdl,fuzzy,r8=\"$operand\""
+        $weighted_query .= " or phr,r5=\"$operand\"";
+        $weighted_query .= " or wrdl,r7=\"$operand\"";
+        $weighted_query .= " or wrdl,fuzzy,r9=\"$operand\""
           if $fuzzy_enabled;    # add fuzzy, word list
         $weighted_query .= " or wrdl,right-Truncation,r9=\"$stemmed_operand\""
           if ( $stemming and $stemmed_operand )
           ;                     # add stemming, right truncation
-        $weighted_query .= " or wrdl,r9=\"$operand\"";
 
         # embedded sorting: 0 a-z; 1 z-a
         # $weighted_query .= ") or (sort1,aut=1";
@@ -773,9 +778,9 @@ sub _build_weighted_query {
 
     #TODO: build better cases based on specific search indexes
     else {
-        $weighted_query .= " $index,ext,r1=\"$operand\"";    # exact index
+        $weighted_query .= " $index,phr,r1=\"$operand\"";    # exact index
           #$weighted_query .= " or (title-sort-az=0 or $index,startswithnt,st-word,r3=$operand #)";
-        $weighted_query .= " or $index,phr,r3=\"$operand\"";    # phrase index
+        $weighted_query .= " or $index,wrdl,r3=\"$operand\"";    # phrase index
         $weighted_query .=
           " or $index,rt,wrdl,r3=\"$operand\"";    # word list index
     }
