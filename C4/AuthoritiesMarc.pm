@@ -219,9 +219,10 @@ sub SearchAuthorities {
         
         my $dosearch;
         my $and=" \@and " ;
-        my $q2;
+        my @q2;
         for(my $i = 0 ; $i <= $#{$value} ; $i++)
         {
+            my $querypart;
             if (@$value[$i]){
             ##If mainentry search $a tag
                 if (@$tags[$i] eq "mainmainentry") {
@@ -245,16 +246,23 @@ sub SearchAuthorities {
                     $attr .=" \@attr 5=1 \@attr 4=6 ";## Word list, right truncated, anywhere
                 }
                 $attr =$attr."\"".@$value[$i]."\"";
-                $q2 .=$attr;
+                $querypart .=$attr;
             $dosearch=1;
             }#if value
+            push @q2, $querypart;
         }
         ##Add how many queries generated
-        if ($query=~/\S+/){    
-          $query= $and.$query.$q2 
-        } else {
-          $query=$q2;    
-        }         
+        my $count=0;
+        for my $querypart (@q2){
+            if ($query=~/\S+/){    
+              $query= (($count<scalar(@q2)-1)?$and:"").$query.$querypart;
+            } 
+            else {
+                $query= $querypart;
+            }
+            $count++;
+        }
+                 
         ## Adding order
         #$query=' @or  @attr 7=2 @attr 1=Heading 0 @or  @attr 7=1 @attr 1=Heading 1'.$query if ($sortby eq "HeadingDsc");
         my $orderstring= ($sortby eq "HeadingAsc"?
