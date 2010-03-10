@@ -305,6 +305,10 @@ function refocus(calendar) {
             <li>The barcode was not found</li>
         <!-- /TMPL_IF -->
 
+        <!-- TMPL_IF NAME="LOAN_LENGTH_UNDEFINED" -->
+            <li>No circulation rule defined for <!-- TMPL_VAR Name="LOAN_LENGTH_UNDEFINED"--> </li>
+        <!-- /TMPL_IF -->
+
         <!-- TMPL_IF NAME="NOT_FOR_LOAN" -->
             <li>Item not for loan</li>
         <!-- /TMPL_IF -->
