@@ -234,9 +234,12 @@ function refocus(calendar) {
 <!-- TMPL_IF NAME="BORRNOTSAMEBRANCH" -->
     <li>This patrons is from a different library (<!-- TMPL_VAR NAME="BORRNOTSAMEBRANCH" -->)</li>
 <!-- /TMPL_IF -->
+<!-- TMPL_IF NAME="BRANCH_TRANSFER_NOT_ALLOWED" -->
+    <li>Item should be at <!--TMPL_VAR Name="BRANCH_TRANSFER_NOT_ALLOWED"-->.<br /> It should not be checked out in this library.</li>
+<!-- /TMPL_IF -->
 
 <!-- TMPL_IF NAME="PATRON_CANT" -->
-    <li>This patron can't check out this item per library circulation policy</i>
+    <li>This patron can't check out this item per library circulation policy</li>
 <!-- /TMPL_IF -->
 
 <!-- TMPL_IF NAME="NOT_FOR_LOAN_FORCING" -->

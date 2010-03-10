@@ -44,6 +44,7 @@ use C4::Members;
 use C4::Branch; # GetBranches GetBranchName
 use C4::Koha;   # FIXME : is it still useful ?
 use C4::RotatingCollections;
+use C4::Debug;
 
 my $query = new CGI;
 
@@ -171,11 +172,16 @@ my $barcode     = $query->param('barcode');
 my $exemptfine  = $query->param('exemptfine');
 my $dropboxmode = $query->param('dropboxmode');
 my $dotransfer  = $query->param('dotransfer');
+my $override    = $query->param('override');
 my $calendar    = C4::Calendar->new( branchcode => $userenv_branch );
 #dropbox: get last open day (today - 1)
 my $today       = C4::Dates->new();
 my $today_iso   = $today->output('iso');
 my $dropboxdate = $calendar->addDate($today, -1);
+if ($debug){
+    use YAML;
+    warn Dump($query->Vars);
+}
 if ($dotransfer){
 # An item has been returned to a branch other than the homebranch, and the librarian has chosen to initiate a transfer
     my $transferitem = $query->param('transferitem');
@@ -207,7 +213,7 @@ if ($barcode) {
 # save the return
 #
     ( $returned, $messages, $issueinformation, $borrower ) =
-      AddReturn( $barcode, $userenv_branch, $exemptfine, $dropboxmode);     # do the return
+      AddReturn( $barcode, $userenv_branch, $exemptfine, $dropboxmode,$override);     # do the return
 
     # get biblio description
     my $biblio = GetBiblioFromItemNumber($itemnumber);

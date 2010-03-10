@@ -33,6 +33,7 @@ use C4::Accounts;
 use C4::ItemCirculationAlertPreference;
 use C4::Message;
 use C4::Debug;
+use YAML;
 use Date::Calc qw(
   Today
   Today_and_Now
@@ -818,15 +819,23 @@ sub CanBookBeIssued {
     {
         $issuingimpossible{RESTRICTED} = 1;
     }
+    my $userenv = C4::Context->userenv;
+    my $branch=$userenv->{branch};
+    my $hbr= $item->{ C4::Context->preference("HomeOrHoldingBranch") };
     if ( C4::Context->preference("IndependantBranches") ) {
-        my $userenv = C4::Context->userenv;
         if ( ($userenv) && ( $userenv->{flags} % 2 != 1 ) ) {
             $issuingimpossible{ITEMNOTSAMEBRANCH} = 1
-              if ( $item->{C4::Context->preference("HomeOrHoldingBranch")} ne $userenv->{branch} );
+              if ( $hbr ne $branch );
             $needsconfirmation{BORRNOTSAMEBRANCH} = GetBranchName( $borrower->{'branchcode'} )
               if ( $borrower->{'branchcode'} ne $userenv->{branch} );
         }
     }
+    my $branchtransferfield=C4::Context->preference("BranchTransferLimitsType") eq "ccode" ? "ccode" : "itype";
+    if  ( C4::Context->preference("UseBranchTransferLimits")
+                and !IsBranchTransferAllowed( $branch, $hbr, $item->{ $branchtransferfield } ) ) {
+        $needsconfirmation{BRANCH_TRANSFER_NOT_ALLOWED} = $hbr;
+    }
+
 
     #
     # CHECK IF BOOK ALREADY ISSUED TO THIS BORROWER
@@ -1385,8 +1394,8 @@ patron who last borrowed the book.
 =cut
 
 sub AddReturn {
-    my ( $barcode, $branch, $exemptfine, $dropbox ) = @_;
-    if ($branch and not GetBranchDetail($branch)) {
+    my ( $barcode, $branch, $exemptfine, $dropbox, $force) = @_;
+    if ( $branch and not GetBranchDetail($branch) ) {
         warn "AddReturn error: branch '$branch' not found.  Reverting to " . C4::Context->userenv->{'branch'};
         undef $branch;
     }
@@ -1429,9 +1438,17 @@ sub AddReturn {
         my $branches = GetBranches();    # a potentially expensive call for a non-feature.
         $branches->{$hbr}->{PE} and $messages->{'IsPermanent'} = $hbr;
     }
-
+    my $branchtransferfield=C4::Context->preference("BranchTransferLimitsType") eq "ccode" ? "ccode" : "itype";
+    $debug && warn "$branch, $hbr, ",C4::Context->preference("BranchTransferLimitsType")," ,",$item->{ $branchtransferfield } ;
+    $debug && warn Dump($item);
+    $debug && warn IsBranchTransferAllowed( $branch, $hbr, $item->{ C4::Context->preference("BranchTransferLimitsType") } );
     # if indy branches and returning to different branch, refuse the return
-    if ($hbr ne $branch && C4::Context->preference("IndependantBranches")){
+    if ( !$force && ($hbr ne $branch)
+		&& (C4::Context->preference("IndependantBranches") 
+			or ( C4::Context->preference("UseBranchTransferLimits")
+                and !IsBranchTransferAllowed( $branch, $hbr, $item->{$branchtransferfield } ) )
+		    )
+		){
         $messages->{'Wrongbranch'} = {
             Wrongbranch => $branch,
             Rightbranch => $hbr,
@@ -1442,7 +1459,6 @@ sub AddReturn {
         # FIXME - even in an indy branches situation, there should
         # still be an option for the library to accept the item
         # and transfer it to its owning library.
-        return ( $doreturn, $messages, $issue, $borrower );
     }
 
     if ( $item->{'wthdrawn'} ) { # book has been cancelled
@@ -1465,15 +1481,15 @@ sub AddReturn {
             $messages->{'WasReturned'} = 1;    # FIXME is the "= 1" right?  This could be the borrower hash.
         }
 
-        ModItem({ onloan => undef }, $issue->{'biblionumber'}, $item->{'itemnumber'});
+        ModItem( { onloan => undef }, $issue->{'biblionumber'}, $item->{'itemnumber'} );
+    	# the holdingbranch is updated if the document is returned to another location.
+    	# this is always done regardless of whether the item was on loan or not
+    	if ( $item->{'holdingbranch'} ne $branch ) {
+       	    UpdateHoldingbranch( $branch, $item->{'itemnumber'} );
+            $item->{'holdingbranch'} = $branch;    # update item data holdingbranch too
+	    }	   
     }
 
-    # the holdingbranch is updated if the document is returned to another location.
-    # this is always done regardless of whether the item was on loan or not
-    if ($item->{'holdingbranch'} ne $branch) {
-        UpdateHoldingbranch($branch, $item->{'itemnumber'});
-        $item->{'holdingbranch'} = $branch; # update item data holdingbranch too
-    }
     ModDateLastSeen( $item->{'itemnumber'} );
 
     # check if we have a transfer for this document
@@ -1548,12 +1564,12 @@ sub AddReturn {
     #adding message if holdingbranch is non equal a userenv branch to return the document to homebranch
     #we check, if we don't have reserv or transfert for this document, if not, return it to homebranch .
 
-    if ($doreturn and ($branch ne $hbr) and not $messages->{'WrongTransfer'} and ($validTransfert ne 1) ){
-        if ( C4::Context->preference("AutomaticItemReturn"    ) or
-            (C4::Context->preference("UseBranchTransferLimits") and
-             ! IsBranchTransferAllowed($branch, $hbr, $item->{C4::Context->preference("BranchTransferLimitsType")} )
-           )) {
-            $debug and warn sprintf "about to call ModItemTransfer(%s, %s, %s)", $item->{'itemnumber'},$branch, $hbr;
+    if ( $doreturn and ( $branch ne $hbr ) and not $messages->{'WrongTransfer'} and ( $validTransfert ne 1 ) ) {
+        if (C4::Context->preference("AutomaticItemReturn")
+            or ( C4::Context->preference("UseBranchTransferLimits")
+                and !IsBranchTransferAllowed( $branch, $hbr, $item->{ $branchtransferfield } ) )
+          ) {
+            $debug and warn sprintf "about to call ModItemTransfer(%s, %s, %s)", $item->{'itemnumber'}, $branch, $hbr;
             $debug and warn "item: " . Dumper($item);
             ModItemTransfer($item->{'itemnumber'}, $branch, $hbr);
             $messages->{'WasTransfered'} = 1;
