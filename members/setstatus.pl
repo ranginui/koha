@@ -63,7 +63,7 @@ if($destination eq "circ"){
 	    if($cardnumber){
 		    print $input->redirect("/cgi-bin/koha/circ/circulation.pl?findborrower=$cardnumber");
 	    }else{
-	        print $input->redirect("/cgi-bin/koha/circ/circulation.pl?findborrower=$borrowernumber");
+	        print $input->redirect("/cgi-bin/koha/circ/circulation.pl?borrowernumber=$borrowernumber");
 	    }
 	}
 } else {
