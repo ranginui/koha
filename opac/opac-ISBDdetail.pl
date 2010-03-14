@@ -120,6 +120,18 @@ $template->param(
     subscriptionsnumber => $subscriptionsnumber,
 );
 
+<<<<<<< HEAD:opac/opac-ISBDdetail.pl
+=======
+## Check if an item Can be holds on shelf
+$template->param(C4::Search::enabled_opac_search_views);
+my @all_items = &GetItemsInfo( $biblionumber, 'opac' );
+my $allowonshelfholds = 0;
+for my $item (@all_items){
+    $allowonshelfholds = 1 if(CanHoldOnShelf($item->{itemnumber}) and not $allowonshelfholds);
+}
+$template->param( 'AllowOnShelfHolds' => $allowonshelfholds );
+
+>>>>>>> MT2631 : adds sysprefs for MARC or ISBD display in OPAC:opac/opac-ISBDdetail.pl
 # my @blocs = split /\@/,$ISBD;
 # my @fields = $record->fields();
 my $res = GetISBDView($biblionumber, "opac");
