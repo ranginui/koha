@@ -448,25 +448,12 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
 		<img src="<!-- TMPL_VAR Name="themelang" -->/lib/calendar/cal.gif" alt="Show Calendar"  border="0" id="CalendarDueDate" style="cursor: pointer;" />
              <script language="JavaScript" type="text/javascript">
 			 //<![CDATA[
-                   function validate1(date) {
-                         var today = new Date();
-                         if ( date < today ) {
-                             return true;
-                          } else {
-                             return false;
-                          }
-                     };
-                     function refocus(calendar) {
-                        $('#barcode').focus();
-                        calendar.hide();
-                     };
 				//#TODO - ADD syspref (AllowPostDatedCheckouts).
                      Calendar.setup(
                           {
                              inputField : "duedatespec",
                              ifFormat : "<!-- TMPL_VAR NAME="DHTMLcalendar_dateformat" -->",
                              button : "CalendarDueDate",
-                             disableFunc : validate1,
                              dateStatusFunc : validate1,
                              onClose : refocus
                            }
@@ -683,7 +670,6 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
                              inputField : "newduedate",
                              ifFormat : "<!-- TMPL_VAR NAME="DHTMLcalendar_dateformat" -->",
                              button : "newduedate_button",
-                             disableFunc : validate1,
                              dateStatusFunc : validate1,
                              onClose : refocus
                            }
