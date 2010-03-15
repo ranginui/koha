@@ -487,8 +487,10 @@ sub patronflags {
         $flaginfo{'noissues'} = 1;
         $flags{'LOST'}        = \%flaginfo;
     }
-    if ( check_date(split(/-/,$patroninformation->{'dateexpiry'})) ){
-        if(Date_to_Days(Date::Calc::Today) > Date_to_Days(split(/-/,$patroninformation->{'dateexpiry'}) )){
+    my $dateexpiry=$patroninformation->{'dateexpiry'};
+    my @dateexpiry=split(/-/,$patroninformation->{'dateexpiry'}) if ($dateexpiry);
+    if ( scalar(@dateexpiry)>0 && check_date(@dateexpiry)) {
+        if(Date_to_Days(Date::Calc::Today) > Date_to_Days(@dateexpiry )){
             my %flaginfo;
             $flaginfo{'noissues'} = 1;
             $flags{'EXPIRED'} = \%flaginfo;
