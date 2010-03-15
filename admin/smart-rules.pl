@@ -44,6 +44,25 @@ my ($template, $loggedinuser, $cookie) = get_template_and_user({
 my $type       = $input->param('type');
 my $branchcode = $input->param('branchcode') || ( C4::Branch::onlymine() ? ( C4::Branch::mybranch() || '*' ) : '*' );
 my $op         = $input->param('op');
+my $confirm    = $input->param('confirm'); 
+
+# This block builds the branch list
+my $branches = GetBranches();
+my @branchloop;
+for my $thisbranch (sort { $branches->{$a}->{'branchname'} cmp $branches->{$b}->{'branchname'} } keys %$branches) {
+    my $selected = 1 if $thisbranch eq $branchcode;
+    my %row =(value => $thisbranch,
+                selected => $selected,
+                branchname => $branches->{$thisbranch}->{'branchname'},
+            );
+    push @branchloop, \%row;
+}
+
+# Get the patron category list
+my @category_loop = C4::Category->all;
+
+# Get the item types list
+my @itemtypes = C4::ItemType->all;
 
 if ( $op eq 'delete' ) {
     DelIssuingRule({
@@ -73,31 +92,43 @@ elsif ( $op eq 'add' ) {
     });
 
     # ...we modify the existing rule...
-    if ( @issuingrules ) {
+    if ( @issuingrules && $confirm) {
         ModIssuingRule( $issuingrule );
     # ...else we add a new rule.
+    } elsif (@issuingrules){
+        $template->param(confirm=>1);
+        $template->param(%$issuingrule);
+        foreach (@category_loop) { 
+            $_->{selected}="selected" if ($_->{categorycode} eq $issuingrule->{categorycode});
+        }
+        foreach (@itemtypes) { 
+            $_->{selected}="selected" if ($_->{itemtype} eq $issuingrule->{itemtype});
+        }
     } else {
         AddIssuingRule( $issuingrule );
     }
 }
 
-# This block builds the branch list
-my $branches = GetBranches();
-my @branchloop;
-for my $thisbranch (sort { $branches->{$a}->{'branchname'} cmp $branches->{$b}->{'branchname'} } keys %$branches) {
-    my $selected = 1 if $thisbranch eq $branchcode;
-    my %row =(value => $thisbranch,
-                selected => $selected,
-                branchname => $branches->{$thisbranch}->{'branchname'},
-            );
-    push @branchloop, \%row;
+# Get the issuing rules list...
+my @issuingrules = GetIssuingRulesByBranchCode($branchcode);
+
+# ...and refine its data, row by row.
+for my $rule ( @issuingrules ) {
+    $rule->{'humanitemtype'}             ||= $rule->{'itemtype'};
+    $rule->{'default_humanitemtype'}       = $rule->{'humanitemtype'} eq '*';
+    $rule->{'humancategorycode'}         ||= $rule->{'categorycode'};
+    $rule->{'default_humancategorycode'}   = $rule->{'humancategorycode'} eq '*';
+
+    # This block is to show herited values in grey.
+    # We juste compare keys from our raw rule, with keys from the computed rule.
+    my $computedrule = GetIssuingRule($rule->{'categorycode'}, $rule->{'itemtype'}, $rule->{'branchcode'});
+    for ( keys %$rule ) {
+        if ( not defined $rule->{$_} ) {
+            $rule->{$_} = $computedrule->{$_};
+            $rule->{"herited_$_"} = 1;
+        }
+    }
 }
-
-# Get the patron category list
-my @category_loop = C4::Category->all;
-
-# Get the item types list
-my @itemtypes = C4::ItemType->all;
 
 # Get the issuing rules list...
 my @issuingrules = GetIssuingRulesByBranchCode($branchcode);

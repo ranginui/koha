@@ -19,6 +19,9 @@ $(document).ready(function() {
             $('.issues').show();
             $('.fines').show();
             $('.reserves').show();
+            $('.issues :input').removeAttr('disabled',true);
+            $('.fines :input').removeAttr('disabled',true);
+            $('.reserves :input').removeAttr('disabled',true);
             $(this).parent().attr('class','ui-tabs-selected');
             $('#issuesfilter').parent().attr('class',null);
             $('#finesfilter').parent().attr('class',null);
@@ -28,6 +31,9 @@ $(document).ready(function() {
             $('.issues').show();
             $('.fines').hide();
             $('.reserves').hide();
+            $('.issues :input').removeAttr('disabled',true);
+            $('.fines :input').attr('disabled',true);
+            $('.reserves :input').attr('disabled',true);
             $(this).parent().attr('class','ui-tabs-selected');
             $('#nofilter').parent().attr('class',null);
             $('#finesfilter').parent().attr('class',null);
@@ -37,6 +43,9 @@ $(document).ready(function() {
             $('.issues').hide();
             $('.fines').show();
             $('.reserves').hide();
+            $('.issues :input').attr('disabled',true);
+            $('.fines :input').removeAttr('disabled',true);
+            $('.reserves :input').attr('disabled',true);
             $(this).parent().attr('class','ui-tabs-selected');
             $('#issuesfilter').parent().attr('class',null);
             $('#nofilter').parent().attr('class',null);
@@ -46,6 +55,9 @@ $(document).ready(function() {
             $('.issues').hide();
             $('.fines').hide();
             $('.reserves').show();
+            $('.issues :input').attr('disabled',true);
+            $('.fines :input').attr('disabled',true);
+            $('.reserves :input').removeAttr('disabled',true);
             $(this).parent().attr('class','ui-tabs-selected');
             $('#issuesfilter').parent().attr('class',null);
             $('#finesfilter').parent().attr('class',null);
@@ -100,6 +112,12 @@ $(document).ready(function() {
             </ul>
             <div class="tabs-container">
                 <form method="post" action="/cgi-bin/koha/admin/smart-rules.pl">
+
+                    <!-- TMPL_IF Name="confirm"--><div class="dialog alert">
+                    An existing rule has been found for <!-- TMPL_VAR NAME="branchcode" -->,<!-- TMPL_VAR NAME="categorycode" -->,<!-- TMPL_VAR NAME="itemtype" -->. 
+                    Do you want to edit that rule ?
+                    <input type='submit' name="confirm" value="Confirm" class="approve"/>
+                    <input type='submit' name="clear"   value="Cancel" class="deny" onClick="this.form.reset()"/></div><!-- /TMPL_IF -->
                     <input type="hidden" name="op" value="add" />
                     <table id="smartrules" width="100%">
                         <thead>
@@ -257,7 +275,10 @@ $(document).ready(function() {
                                     <select name="categorycode" id="categorycode" style="width:12em;">
                                         <option value="*">Default</option>
                                     <!-- TMPL_LOOP NAME="categoryloop" -->
-                                        <option value="<!-- TMPL_VAR NAME="categorycode" -->"><!-- TMPL_VAR NAME="description" --></option>
+                                        <!-- TMPL_IF Name="selected"-->
+                                        <option value="<!-- TMPL_VAR NAME="categorycode" -->" selected="selected"><!-- TMPL_VAR NAME="description" --></option>
+                                        <!--TMPL_ELSE --> <option value="<!-- TMPL_VAR NAME="categorycode" -->" ><!-- TMPL_VAR NAME="description" --></option>
+                                        <!-- /TMPL_IF -->
                                     <!-- /TMPL_LOOP -->
                                     </select>
                                 </td>
@@ -265,20 +286,23 @@ $(document).ready(function() {
                                     <select name="itemtype" style="width:12em;">
                                         <option value="*">Default</option>
                                     <!-- TMPL_LOOP NAME="itemtypeloop" -->
-                                        <option value="<!-- TMPL_VAR NAME="itemtype" -->"><!-- TMPL_VAR NAME="description" --></option>
+                                        <!-- TMPL_IF Name="selected"-->
+                                        <option value="<!-- TMPL_VAR NAME="itemtype" -->" selected="selected"><!-- TMPL_VAR NAME="description" --></option>
+                                        <!--TMPL_ELSE --> <option value="<!-- TMPL_VAR NAME="itemtype" -->"><!-- TMPL_VAR NAME="description" --></option>
+                                        <!-- /TMPL_IF -->
                                     <!-- /TMPL_LOOP -->
                                     </select>
                                 </td>
-                                <td class="issues"><input name="maxissueqty" size="3" /></td>
-                                <td class="issues"><input name="issuelength" size="3" /> </td>
-                                <td class="fines"><input name="fine" size="4" /></td>
-                                <td class="fines"><input name="chargeperiod" size="2" /></td>
-                                <td class="fines"><input name="firstremind" size="2" /> </td>
-                                <td class="fines"><input name="finedays" size="3" /> </td>
-                                <td class="issues"><input name="renewalsallowed" size="2" /></td>
-                                <td class="issues"><input name="renewalperiod" size="2" /></td>
-                                <td class="reserves"><input name="reservesallowed" size="2" /></td>
-                                <td class="reserves"><input name="holdspickupdelay" size="2" /></td>
+                                <td class="issues"><input name="maxissueqty" size="3" value="<!-- TMPL_VAR NAME="maxissueqty" -->"/></td>
+                                <td class="issues"><input name="issuelength" size="3" value="<!-- TMPL_VAR NAME="issuelength" -->"/> </td>
+                                <td class="fines"><input name="fine" size="4" value="<!-- TMPL_VAR NAME="fine" -->"/></td>
+                                <td class="fines"><input name="chargeperiod" size="2" value="<!-- TMPL_VAR NAME="chargeperiod" -->"/></td>
+                                <td class="fines"><input name="firstremind" size="2" value="<!-- TMPL_VAR NAME="firstremind" -->"/> </td>
+                                <td class="fines"><input name="finedays" size="3" value="<!-- TMPL_VAR NAME="finedays" -->"/> </td>
+                                <td class="issues"><input name="renewalsallowed" size="2" value="<!-- TMPL_VAR NAME="renewalsallowed" -->"/></td>
+                                <td class="issues"><input name="renewalperiod" size="2" value="<!-- TMPL_VAR NAME="renewalperiod" -->"/></td>
+                                <td class="reserves"><input name="reservesallowed" size="2" value="<!-- TMPL_VAR NAME="reservesallowed" -->"/></td>
+                                <td class="reserves"><input name="holdspickupdelay" size="2" value="<!-- TMPL_VAR NAME="holdspickupdelay" -->"/></td>
                                 <td class="reserves">
                                     <select name="allowonshelfholds">
                                         <option value=""></option>
@@ -286,7 +310,7 @@ $(document).ready(function() {
                                         <option value="0">No</option>
                                     </select>
                                 </td>
-                                <td class="reserves"><input type="checkbox" name="holdrestricted" value="1"/> </td>
+                                <td class="reserves"><!-- TMPL_IF NAME="holdrestricted"--><input type="checkbox" name="holdrestricted" checked="checked" value="1"/> <!--TMPL_ELSE--><input type="checkbox" name="holdrestricted" value="1"/> <!-- /TMPL_IF --></td>
 		                        <td><input class="issues" name="rentaldiscount" size="2" /></td>
                                 <td><input type="hidden" name="branchcode" value="<!-- TMPL_VAR NAME="branchcode" -->"/><input type="submit" value="Add" class="submit" /></td>
                             </tr>
