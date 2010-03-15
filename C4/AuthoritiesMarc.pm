@@ -252,15 +252,13 @@ sub SearchAuthorities {
             push @q2, $querypart;
         }
         ##Add how many queries generated
-        my $count=0;
-        for my $querypart (@q2){
+        while (my $querypart=shift @q2){
             if ($query=~/\S+/){    
-              $query= (($count<scalar(@q2)-1)?$and:"").$query.$querypart;
+              $query= $and.$query.$querypart;
             } 
             else {
                 $query= $querypart;
             }
-            $count++;
         }
                  
         ## Adding order
