@@ -37,6 +37,7 @@ use C4::Reserves;
 use C4::Context;
 use C4::Debug;
 use CGI::Session;
+use C4::Items;
 use JSON;
 use YAML;
 use Date::Calc qw(
