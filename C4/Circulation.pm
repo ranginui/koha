@@ -711,20 +711,31 @@ sub CanBookBeIssued {
     #
 
     # DEBTS
+    # There are two limits: a soft one and a hard one. If debt is less
+    # than the soft limit, we allow the book the be issued. If it is
+    # between the two limits, we require a confirmation from the 
+    # librarian. If it is over the hard limit, we stop the book from
+    # being issued.
+    #
+    # FIXME: This does not currently honor the IssuingInProcess
+    # setting. To honor that, change the code so that it sets
+    # $thisbookcost to something else than 0 when IssuingInProcess
+    # is true.
     my ($amount) =
-      C4::Members::GetMemberAccountRecords( $borrower->{'borrowernumber'}, '' && $duedate->output('iso') );
-    if ( C4::Context->preference("IssuingInProcess") ) {
-        my $amountlimit = C4::Context->preference("noissuescharge");
-        if ( $amount > $amountlimit && !$inprocess ) {
-            $issuingimpossible{DEBT} = sprintf( "%.2f", $amount );
-        }
-        elsif ( $amount > 0 && $amount <= $amountlimit && !$inprocess ) {
-            $needsconfirmation{DEBT} = sprintf( "%.2f", $amount );
-        }
+      C4::Members::GetMemberAccountRecords( $borrower->{'borrowernumber'}, '');
+    my $softlimit = C4::Context->preference("noissuesconfirm");
+    my $hardlimit = C4::Context->preference("noissuescharge");
+    my $thisbookcost = 0;
+    if (C4::Context->preference("IssuingInProcess")) {
+        $thisbookcost = 0;
     }
-    else {
-        if ( $amount > 0 ) {
-            $needsconfirmation{DEBT} = sprintf( "%.2f", $amount );
+
+    if (!$inprocess) {
+        my $debt = $amount + $thisbookcost;
+        if ($debt >= $hardlimit) {
+            $issuingimpossible{DEBT} = sprintf("%.2f", $debt);
+        } elsif ($debt >= $softlimit and $debt < $hardlimit) {
+            $needsconfirmation{DEBT} = sprintf("%.2f", $debt);
         }
     }
 
