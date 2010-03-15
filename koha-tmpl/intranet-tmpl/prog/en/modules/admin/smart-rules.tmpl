@@ -115,7 +115,7 @@ $(document).ready(function() {
 
                     <!-- TMPL_IF Name="confirm"--><div class="dialog alert">
                     An existing rule has been found for <!-- TMPL_VAR NAME="branchcode" -->,<!-- TMPL_VAR NAME="categorycode" -->,<!-- TMPL_VAR NAME="itemtype" -->. 
-                    Do you want to edit that rule ?
+                    <br/>Do you want to edit that rule ?
                     <input type='submit' name="confirm" value="Confirm" class="approve"/>
                     <input type='submit' name="clear"   value="Cancel" class="deny" onClick="this.form.reset()"/></div><!-- /TMPL_IF -->
                     <input type="hidden" name="op" value="add" />
