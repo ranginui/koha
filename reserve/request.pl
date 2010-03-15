@@ -439,8 +439,7 @@ foreach my $biblionumber (@biblionumbers) {
             }
             push @{ $biblioitem->{itemloop} }, $item;
         }
-        
-        if ( $num_override == scalar( @{ $biblioitem->{itemloop} } ) ) { # That is, if all items require an override
+        if ( $num_override > 0) { 
             $template->param( override_required => 1 );
         } elsif ( $num_available == 0 ) {
             $template->param( none_available => 1 );
