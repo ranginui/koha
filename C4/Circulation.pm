@@ -1457,19 +1457,17 @@ Internal function, called only by AddReturn that calculate and update the user f
 sub _FixFineDaysOnReturn {
     my ($borrower, $item, $datedue) = @_;
     
-    my @date_due;
     if($datedue){
-        my ($ddy, $ddm, $ddd) = @date_due = split(/-/,$datedue);
-        return unless(check_date($ddy,$ddm,$ddd));
+        $datedue = C4::Dates->new($datedue,"iso");
     }else{
         return;
     }
     
-    my $deltadays = Delta_Days(Today(), @date_due);
-    
-    my $branchcode  =_GetCircControlBranch($item,$borrower);
+    my $branchcode  =_GetCircControlBranch($item, $borrower);
     my $calendar    = C4::Calendar->new( branchcode => $branchcode );
     my $today       = C4::Dates->new();
+
+    my $deltadays = $calendar->daysBetween($datedue, C4::Dates->new());
 
     my $circcontrol = C4::Context::preference('CircControl');
     my $issuingrule = GetIssuingRule($borrower->{categorycode}, $item->{itype}, $branchcode);
@@ -1478,9 +1476,9 @@ sub _FixFineDaysOnReturn {
     return unless $finedays;
     my $grace       = $issuingrule->{firstremind};
 
-    if( $deltadays + $grace < 0){
-        my $isonewdate     = $calendar->addDate($today, (0 - $deltadays) * $finedays )->output('iso');
-        my @newdate  = split('-',$isonewdate);
+    if( $deltadays - $grace < 0){
+        my @newdate     = Add_Delta_Days(Today(), $deltadays * $finedays );
+        my $isonewdate  = join('-',@newdate);
         my ($deby, $debm, $debd) = split(/-/,$borrower->{debarred});
         if(check_date($deby, $debm, $debd)){
             my @olddate = split(/-/, $borrower->{debarred});
