@@ -420,6 +420,7 @@
 
                     <!-- TMPL_UNLESS NAME="singleBranchMode" -->
                       <td>
+                    <!-- TMPL_IF NAME="OPACPickupLocation" -->
                         <select name="branch" id="branch_<!-- TMPL_VAR NAME="biblionumber" -->"
                           <!-- TMPL_UNLESS NAME="holdable" -->disabled="disabled"<!-- /TMPL_UNLESS --> >
                           <!-- TMPL_LOOP NAME="branchChoicesLoop" -->
@@ -430,6 +431,9 @@
                             <!-- /TMPL_IF -->
                           <!-- /TMPL_LOOP -->
                         </select>
+                    <!-- TMPL_ELSE -->
+                        <input type="hidden" name="branch" value="<!--TMPL_VAR Name="branch"-->" /> <!-- TMPL_VAR NAME="branchname" -->
+                    <!-- /TMPL_IF -->
                       </td>
                     <!-- /TMPL_UNLESS -->
                   </tr>

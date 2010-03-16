@@ -92,6 +92,7 @@ if (($#biblionumbers < 0) && (! $query->param('place_reserve'))) {
 my $branch = $query->param('branch') || C4::Context->userenv->{branch} || '' ;
 ($branches->{$branch}) or $branch = "";     # Confirm branch is real
 $template->param( branch => $branch );
+$template->param( branchname => $branches->{$branch}->{branchname} );
 
 # make branch selection options...
 my $CGIbranchloop = GetBranchesLoop($branch);

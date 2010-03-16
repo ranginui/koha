@@ -398,6 +398,7 @@ sub get_template_and_user {
             $opac_name = C4::Branch::GetBranchName($mylibraryfirst);
         }
         $template->param(
+            OPACPickupLocation        => "" . C4::Context->preference("OPACPickupLocation"),
             AmazonContent             => "" . C4::Context->preference("AmazonContent"),
             AnonSuggestions           => "" . C4::Context->preference("AnonSuggestions"),
             AuthorisedValueImages     => C4::Context->preference("AuthorisedValueImages"),
