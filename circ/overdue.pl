@@ -48,7 +48,7 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
-        flagsrequired   => { reports => 1, circulate => "circulate_remaining_permissions" },
+        flagsrequired   => { reports => 'execute_reports', circulate => "circulate_remaining_permissions" },
         debug           => 1,
     }
 );
