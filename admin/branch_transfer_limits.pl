@@ -86,10 +86,10 @@ if ( $input->param('updateLimits') ) {
 	DeleteBranchTransferLimits($branchcode);
 
 	foreach my $code ( @codes ) {
-		foreach my $toBranch ( @branchcodes ) {
-			my $isSet = not $input->param( $code . "_" . $toBranch);
+		foreach my $fromBranch ( @branchcodes ) {
+			my $isSet = not $input->param( $code . "_" . $fromBranch);
 			if ( $isSet ) {
-			    CreateBranchTransferLimit( $toBranch, $branchcode, $code );
+			    CreateBranchTransferLimit( $branchcode, $fromBranch, $code );
 			}
 		}
 	}
@@ -107,18 +107,18 @@ my $branchcount = scalar(@branchcode_loop);
 ## Build the default data
 my @codes_loop;
 foreach my $code ( @codes ) {
-	my @to_branch_loop;
+	my @from_branch_loop;
 	my %row_data;
 	$row_data{ code } = $code;
-	$row_data{ to_branch_loop } = \@to_branch_loop;
-	foreach my $toBranch ( @branchcodes ) {
+	$row_data{ from_branch_loop } = \@from_branch_loop;
+	foreach my $fromBranch ( @branchcodes ) {
 		my %row_data;
-        my $isChecked = IsBranchTransferAllowed( $toBranch, $branchcode, $code );
+        my $isChecked = IsBranchTransferAllowed( $branchcode, $fromBranch, $code );
 		$row_data{ code }         = $code;
-		$row_data{ toBranch }     = $toBranch;
+		$row_data{ fromBranch }     = $fromBranch;
 		$row_data{ isChecked }    = $isChecked;	
-		$row_data{ toBranchname } = GetBranchName($toBranch);	
-		push( @to_branch_loop, \%row_data );
+		$row_data{ fromBranchname } = GetBranchName($fromBranch);	
+		push( @from_branch_loop, \%row_data );
 	}
 
 	push( @codes_loop, \%row_data );

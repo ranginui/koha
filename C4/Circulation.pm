@@ -2576,14 +2576,14 @@ sub CreateBranchTransferLimit {
 
 =head2 DeleteBranchTransferLimits
 
-DeleteBranchTransferLimits($frombranch);
+DeleteBranchTransferLimits($tobranch);
 
 =cut
 
 sub DeleteBranchTransferLimits {
     my $branch = shift;
     my $dbh = C4::Context->dbh;
-    my $sth = $dbh->prepare("DELETE FROM branch_transfer_limits WHERE fromBranch = ?");
+    my $sth = $dbh->prepare("DELETE FROM branch_transfer_limits WHERE toBranch = ?");
     $sth->execute($branch);
 }
 

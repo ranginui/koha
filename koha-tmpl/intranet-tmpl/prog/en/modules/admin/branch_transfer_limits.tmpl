@@ -105,11 +105,11 @@
 			</thead>
 
 			<tbody>
-					<!-- TMPL_LOOP NAME="to_branch_loop" -->
+					<!-- TMPL_LOOP NAME="from_branch_loop" -->
 						<!-- TMPL_UNLESS NAME="__odd__" --><tr class="highlight"><!-- TMPL_ELSE
 --><tr><!-- /TMPL_UNLESS -->
-							<td><label style="min-width:400px;" for="<!-- TMPL_VAR NAME="code" --><!-- TMPL_VAR NAME="toBranch" -->row"><!-- TMPL_VAR NAME="toBranch" --> - <!-- TMPL_VAR NAME="toBranchname" --></label></td>
-							<td><input type="checkbox" id="<!-- TMPL_VAR NAME="code" --><!-- TMPL_VAR NAME="toBranch" -->row" name="<!-- TMPL_VAR NAME="code" -->_<!-- TMPL_VAR NAME="toBranch" -->" <!-- TMPL_IF NAME="isChecked" -->checked="checked" <!-- /TMPL_IF --> /></td>
+							<td><label style="min-width:400px;" for="<!-- TMPL_VAR NAME="code" --><!-- TMPL_VAR NAME="fromBranch" -->row"><!-- TMPL_VAR NAME="fromBranch" --> - <!-- TMPL_VAR NAME="fromBranchname" --></label></td>
+							<td><input type="checkbox" id="<!-- TMPL_VAR NAME="code" --><!-- TMPL_VAR NAME="fromBranch" -->row" name="<!-- TMPL_VAR NAME="code" -->_<!-- TMPL_VAR NAME="fromBranch" -->" <!-- TMPL_IF NAME="isChecked" -->checked="checked" <!-- /TMPL_IF --> /></td>
 						</tr>
 					<!-- /TMPL_LOOP -->
 			</tbody>
