@@ -292,3 +292,4 @@ INSERT INTO `systempreferences` ( `variable` , `value` , `options` , `explanatio
 INSERT INTO systempreferences (variable,value, options, explanation, type) VALUES('ReservesControlBranch','PatronLibrary','ItemHomeLibrary|PatronLibrary','Branch checked for members reservations rights','Choice');
 INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('OPACviewISBD','1','Allow display of ISBD view of bibiographic records in OPAC','','YesNo');
 INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('OPACviewMARC','1','Allow display of MARC view of bibiographic records in OPAC','','YesNo');
+INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('OPACPickUpLocation','1','Enable Pickup location choice for holds','','YesNo');

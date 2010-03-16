@@ -3788,6 +3788,14 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     SetVersion ($DBversion);
 }
 
+$DBversion = '3.02.00.014';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do(qq{INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('OPACPickupLocation','1','Allow choice for Pickup Library reserve at OPAC','','YesNo');});
+
+    print "Upgrade to $DBversion done (Added OPACPickupLocation sysprefs)\n";
+    SetVersion ($DBversion);
+}
+
 =item DropAllForeignKeys($table)
 
   Drop all foreign keys of the table $table
