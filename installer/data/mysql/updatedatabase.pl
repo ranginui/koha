@@ -3796,6 +3796,12 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     SetVersion ($DBversion);
 }
 
+$DBversion = "3.03.00.015";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+	$dbh->do("INSERT INTO permissions (module_bit, code, description) VALUES (1, 'view_borrowers_logs', 'Enables log access for the borrower on staff viw')");
+    print "Upgrade to $DBversion done (Adding permissions for staff member access to borrowers logs.  )\n";
+    SetVersion ($DBversion);
+}
 =item DropAllForeignKeys($table)
 
   Drop all foreign keys of the table $table
