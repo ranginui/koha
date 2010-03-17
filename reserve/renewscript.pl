@@ -27,7 +27,11 @@ use CGI;
 use C4::Circulation;
 use C4::Auth;
 use C4::Dates qw/format_date_in_iso/;
+use C4::Context;
+use C4::Members;
+use C4::Items;
 use JSON;
+use C4::Reserves;
 my $input = new CGI;
 
 #Set Up User_env
@@ -93,7 +97,35 @@ foreach my $barcode (@barcodes) {
     # check status before renewing issue
    my ( $returned, $messages, $issueinformation, $borrower ) = 
     AddReturn($barcode, $branch, $exemptfine);
-    unless ($returned){
+    my $itemnumber=GetItemnumberFromBarcode($barcode);
+    if ($returned){
+        if (my ($reservetype,$reserve)=C4::Reserves::CheckReserves(undef,$barcode)){
+            if ($reservetype eq "Waiting" || $reservetype eq "Reserved"){
+                my $transfer=C4::Context->userenv->{branch} ne $reserve->{branchcode};
+                ModReserveAffect($itemnumber,$reserve->{borrowernumber},$transfer);
+                my ( $message_reserve, $nextreservinfo ) = GetOtherReserves($itemnumber);
+
+                my ($borr) = GetMemberDetails( $nextreservinfo, 0 );
+                my $name   = $borr->{'surname'} . ", " . $borr->{'title'} . " " . $borr->{'firstname'};
+                if ( $message_reserve->{'transfert'} ) {
+                    $messages->{more}={
+                        itemtitle      => $reserve->{'title'},
+                        itembiblionumber => $reserve->{'biblionumber'},
+                        iteminfo       => $reserve->{'author'},
+                        tobranchname   => GetBranchName($messages->{'transfert'}),
+                        name           => $name,
+                        borrowernumber => $borrowernumber,
+                        borcnum        => $borr->{'cardnumber'},
+                        borfirstname   => $borr->{'firstname'},
+                        borsurname     => $borr->{'surname'},
+                        diffbranch     => 1,
+                    };
+                }
+                
+            }
+        }
+    }
+    if (!$returned ||$messages){
         $failedreturn.="&failedreturn=$barcode&returnerror=".encode_json($messages);
     }
 }
@@ -102,6 +134,7 @@ foreach my $barcode (@barcodes) {
 # redirection to the referrer page
 #
 if ($input->param('destination') eq "circ"){
+    warn ($failedreturn);
     print $input->redirect(
         '/cgi-bin/koha/circ/circulation.pl?findborrower='.$cardnumber.$failedrenews.$failedreturn
     );
