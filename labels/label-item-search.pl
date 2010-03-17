@@ -13,9 +13,9 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
 use warnings;
@@ -126,7 +126,8 @@ if ($show_results) {
             foreach my $item ( keys %$item_results ) {
                 #DEBUG Notes: Build an array element 'item' of the correct bib (results) hash which contains item-specific data...
                 if ($item_results->{$item}->{'biblionumber'} eq $results_set[$i]->{'biblionumber'}) {
-                    my $item_data->{'_item_number'} = $item_results->{$item}->{'itemnumber'};
+                    my $item_data;
+                    $item_data->{'_item_number'} = $item_results->{$item}->{'itemnumber'};
                     $item_data->{'_item_call_number'} = ($item_results->{$item}->{'itemcallnumber'} ? $item_results->{$item}->{'itemcallnumber'} : 'NA');
                     $item_data->{'_date_accessioned'} = $item_results->{$item}->{'dateaccessioned'};
                     $item_data->{'_barcode'} = ( $item_results->{$item}->{'barcode'} ? $item_results->{$item}->{'barcode'} : 'NA');

@@ -13,9 +13,9 @@ package C4::Creators::Lib;
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
 use warnings;
@@ -318,7 +318,8 @@ sub get_label_summary {
             return -1;
         }
         my $record = $sth->fetchrow_hashref;
-        my $label_summary->{'_label_number'} = $label_number;
+        my $label_summary;
+        $label_summary->{'_label_number'} = $label_number;
         $record->{'author'} =~ s/[^\.|\w]$// if $record->{'author'};  # strip off ugly trailing chars... but not periods or word chars
         $record->{'title'} =~ s/\W*$//;  # strip off ugly trailing chars
         # FIXME contructing staff interface URLs should be done *much* higher up the stack - for the most part, C4 module code
