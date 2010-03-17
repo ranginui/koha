@@ -494,6 +494,7 @@ END_SQL
                     push (@items, $item_info->{'biblionumber'});
                 }
                 $titles.="</table>" if ($htmlfilename);
+		$debug && warn $titles;
                 $sth2->finish;
                 $letter = parse_letter(
                     {   letter          => $letter,
@@ -511,12 +512,12 @@ END_SQL
                   $letter->{'content'} .= "List too long for form; please check your account online for a complete list of your overdue items.";
                 }
 
-                my @misses = grep { /./ } map { /^([^>]*)[>]+/; ( $1 || '' ); } split /\</, $letter->{'content'};
+                my @misses = grep { /./ } map { /^([^>]*)[>]{2,}/; ( $1 || '' ); } split /\<\</, $letter->{'content'};
                 if (@misses) {
                     $verbose and warn "The following terms were not matched and replaced: \n\t" . join "\n\t", @misses;
                 }
-                $letter->{'content'} =~ s/\<[^<>]*?\>//g;    # Now that we've warned about them, remove them.
-                $letter->{'content'} =~ s/\<[^<>]*?\>//g;    # 2nd pass for the double nesting.
+                $letter->{'content'} =~ s/\<\<[^<>]*?\>\>//g;    # Now that we've warned about them, remove them.
+#                $letter->{'content'} =~ s/\<[^<>]*?\>//g;    # 2nd pass for the double nesting.
     
                 if ($nomail) {
     
@@ -725,6 +726,7 @@ sub prepare_letter_for_printing {
         }
     } elsif ( exists $params->{'outputformat'} && $params->{'outputformat'} eq 'html' ) {
       $return = "<pre>\n";
+      $params->{'letter'}->{'content'}=~s##<br/>#g;
       $return .= "$params->{'letter'}->{'content'}\n";
       $return .= "\n</pre>\n";
     } else {
