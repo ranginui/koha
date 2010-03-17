@@ -40,6 +40,7 @@ use C4::Dates qw/format_date/;
 use C4::Debug;
 use C4::Letters;
 use C4::Overdues qw(GetFine);
+use open qw(:std :utf8);
 
 =head1 NAME
 
@@ -528,6 +529,7 @@ END_SQL
                             address1       => $address1,
                             address2       => $address2,
                             city           => $city,
+                            country        => $country,
                             postcode       => $postcode,
                             email          => $email,
                             itemcount      => $itemcount,
@@ -556,6 +558,7 @@ END_SQL
                                 address1       => $address1,
                                 address2       => $address2,
                                 city           => $city,
+                                country        => $country,
                                 postcode       => $postcode,
                                 email          => $email,
                                 itemcount      => $itemcount,
@@ -713,7 +716,7 @@ sub prepare_letter_for_printing {
     if ( exists $params->{'outputformat'} && $params->{'outputformat'} eq 'csv' ) {
         if ($csv->combine(
                 $params->{'firstname'}, $params->{'lastname'}, $params->{'address1'},  $params->{'address2'}, $params->{'postcode'},
-                $params->{'city'},      $params->{'email'},    $params->{'itemcount'}, $params->{'titles'}
+                $params->{'city'}, $params->{'country'},      $params->{'email'},    $params->{'itemcount'}, $params->{'titles'}
             )
           ) {
             return $csv->string, "\n";
