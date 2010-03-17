@@ -472,7 +472,7 @@ END_SQL
                 my @params = ($listall ? ( $borrowernumber , 1 , $MAX ) : ( $borrowernumber, $mindays, $maxdays ));
                 $sth2->execute(@params);
                 my $itemcount = 0;
-                my $titles = "";
+                my $titles = ($htmlfilename?"<table id='itemscontent$borrowernumber'>":"");
                 my @items = ();
                 
                 my $i = 0;
@@ -484,10 +484,15 @@ END_SQL
                     }
                     $i++;
                     my @item_info = map { $_ =~ /^date|date$/ ? format_date( $item_info->{$_} ) : $item_info->{$_} || '' } @item_content_fields;
-                    $titles .= join("\t", @item_info) . "\n";
+                    if ($htmlfilename){
+                        $titles .= "<tr><td>".join("</td><td>", @item_info). "</td></tr>";
+                    } else {
+                        $titles .= join("\t", @item_info) . "\n";
+                    }
                     $itemcount++;
                     push (@items, $item_info->{'biblionumber'});
                 }
+                $titles.="</table>" if ($htmlfilename);
                 $sth2->finish;
                 $letter = parse_letter(
                     {   letter          => $letter,
