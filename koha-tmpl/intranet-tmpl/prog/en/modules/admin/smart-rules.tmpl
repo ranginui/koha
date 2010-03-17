@@ -111,13 +111,8 @@ $(document).ready(function() {
                 </div>
             </ul>
             <div class="tabs-container">
-                <form method="post" action="/cgi-bin/koha/admin/smart-rules.pl">
+                <form method="post" name="inputrules" action="/cgi-bin/koha/admin/smart-rules.pl">
 
-                    <!-- TMPL_IF Name="confirm"--><div class="dialog alert">
-                    An existing rule has been found for <!-- TMPL_VAR NAME="branchcode" -->,<!-- TMPL_VAR NAME="categorycode" -->,<!-- TMPL_VAR NAME="itemtype" -->. 
-                    <br/>Do you want to edit that rule ?
-                    <input type='submit' name="confirm" value="Confirm" class="approve"/>
-                    <input type='submit' name="clear"   value="Cancel" class="deny" onClick="this.form.reset()"/></div><!-- /TMPL_IF -->
                     <input type="hidden" name="op" value="add" />
                     <table id="smartrules" width="100%">
                         <thead>

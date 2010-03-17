@@ -92,18 +92,18 @@ elsif ( $op eq 'add' ) {
     });
 
     # ...we modify the existing rule...
-    if ( @issuingrules && $confirm) {
+    if ( @issuingrules ) {
         ModIssuingRule( $issuingrule );
+#    } elsif (@issuingrules){
+#        $template->param(confirm=>1);
+#        $template->param(%$issuingrule);
+#        foreach (@category_loop) { 
+#            $_->{selected}="selected" if ($_->{categorycode} eq $issuingrule->{categorycode});
+#        }
+#        foreach (@itemtypes) { 
+#            $_->{selected}="selected" if ($_->{itemtype} eq $issuingrule->{itemtype});
+#        }
     # ...else we add a new rule.
-    } elsif (@issuingrules){
-        $template->param(confirm=>1);
-        $template->param(%$issuingrule);
-        foreach (@category_loop) { 
-            $_->{selected}="selected" if ($_->{categorycode} eq $issuingrule->{categorycode});
-        }
-        foreach (@itemtypes) { 
-            $_->{selected}="selected" if ($_->{itemtype} eq $issuingrule->{itemtype});
-        }
     } else {
         AddIssuingRule( $issuingrule );
     }
