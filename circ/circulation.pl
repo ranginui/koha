@@ -479,6 +479,7 @@ if ($borrower) {
         ($it->{'author'} eq '') and $it->{'author'} = ' ';
         if (defined($return_failed{$it->{'itemnumber'}})){
             $it->{'return_error_'.$return_failed{$it->{'itemnumber'}}->{message}}=1;
+            delete $return_failed{$it->{'itemnumber'}};
         }
          if (defined($renew_failed{$it->{'itemnumber'}})){
             $it->{'renew_error_'.$renew_failed{$it->{'itemnumber'}}->{message}}=1;
@@ -506,6 +507,16 @@ if ($borrower) {
         @previousissues = sort { $b->{'date_due'} cmp $a->{'date_due'} } @previousissues;
     }
 }
+my @reserveswaiting;
+foreach my $itemnumber (keys %return_failed){
+   next unless $return_failed{$itemnumber}->{'reservesdata'};
+   my $hashdata=$return_failed{$itemnumber}->{'reservesdata'};
+   $hashdata->{circborrowernumber}=$borrowernumber;
+   $hashdata->{script_name}=$query->script_name();
+   push @reserveswaiting, $hashdata if (%$hashdata);
+}
+
+$template->param(reserves_waiting=>\@reserveswaiting);
 
 #### ADDED BY JF FOR COUNTS BY ITEMTYPE RULES
 # FIXME: This should utilize all the issuingrules options rather than just the defaults

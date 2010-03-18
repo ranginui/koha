@@ -6,6 +6,9 @@
 <script type="text/javascript" src="<!-- TMPL_VAR name="themelang" -->/lib/jquery/plugins/jquery.checkboxes.min.js"></script>
 <script type="text/JavaScript" language="JavaScript">
 //<![CDATA[
+function Dopop(link) {
+    var newin=window.open(link,'popup','width=600,height=400,resizable=1,toolbar=0,scrollbars=1,top');
+}
 $.tablesorter.addParser({
     id: 'articles', 
     is: function(s) {return false;  }, 
@@ -153,6 +156,8 @@ if (nodename =="barcodes[]"){
     </ul>
     </div>
     <!-- /TMPL_IF -->
+
+<!-- TMPL_INCLUDE Name="reserves_waiting.inc" -->
 
 <h3><!-- TMPL_UNLESS NAME="I" -->
    <!-- TMPL_VAR NAME="title" --> <!-- TMPL_VAR NAME="firstname" --> <!-- /TMPL_UNLESS --> <!-- TMPL_VAR NAME="surname" --> (<!-- TMPL_VAR NAME="cardnumber" -->)</h3>

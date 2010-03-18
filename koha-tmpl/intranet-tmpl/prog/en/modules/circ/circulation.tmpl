@@ -9,6 +9,9 @@
 <script type="text/javascript" src="<!-- TMPL_VAR name="themelang" -->/lib/jquery/plugins/jquery.checkboxes.min.js"></script>
 <script type="text/javascript">
 //<![CDATA[
+function Dopop(link) {
+    var newin=window.open(link,'popup','width=600,height=400,resizable=1,toolbar=0,scrollbars=1,top');
+}
 $.tablesorter.addParser({
     id: 'articles',
     is: function(s) {return false;  },
@@ -194,6 +197,8 @@ function refocus(calendar) {
 </fieldset>
 </form>
 </div>
+
+<!-- TMPL_INCLUDE NAME="reserves_waiting.inc" -->
 
 <!-- TMPL_IF NAME="newexpiry" --><div class="dialog message">Patron's account has been renewed until <!-- TMPL_VAR NAME="newexpiry" --></div><!-- /TMPL_IF -->
 <!-- TMPL_IF NAME="NEEDSCONFIRMATION" -->

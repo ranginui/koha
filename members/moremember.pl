@@ -315,6 +315,7 @@ for ( my $i = 0 ; $i < $issuecount ; $i++ ) {
 	$row{'return_failed'} = defined($return_failed{$itemnumber});   
     if ($row{'return_failed'}){
             $row{'return_error_'.$return_failed{$issue->[$i]->{'itemnumber'}}->{message}}=1;
+            delete $return_failed{$issue->[$i]->{'itemnumber'}};
     }
     if ( $row{'renew_failed'}){
             $row{'norenew_reason_'.$renew_failed{$issue->[$i]->{'itemnumber'}}->{message}}=1;
@@ -322,6 +323,18 @@ for ( my $i = 0 ; $i < $issuecount ; $i++ ) {
     warn Dump(%row);
  push( @issuedata, \%row );
 }
+
+#BUILDS the LOOP for reserves when returning books with reserves
+my @reserveswaiting;
+foreach my $itemnumber (keys %return_failed){
+   next unless $return_failed{$itemnumber}->{'reservesdata'};
+   my $hashdata=$return_failed{$itemnumber}->{'reservesdata'};
+   $hashdata->{circborrowernumber}=$borrowernumber;
+   $hashdata->{script_name}=$input->script_name();
+   push @reserveswaiting, $hashdata if (%$hashdata);
+}
+
+$template->param(reserves_waiting=>\@reserveswaiting);
 
 ### ###############################################################################
 # BUILD HTML

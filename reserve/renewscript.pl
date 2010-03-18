@@ -28,8 +28,10 @@ use C4::Circulation;
 use C4::Auth;
 use C4::Dates qw/format_date_in_iso/;
 use C4::Context;
-use C4::Members;
+use C4::Overdues; #CheckBorrowerDebarred
+use C4::Members; #GetMemberDetail
 use C4::Items;
+use C4::Branch;
 use JSON;
 use C4::Reserves;
 my $input = new CGI;
@@ -52,6 +54,7 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
 # find items to renew, all items or a selection of items
 #
 
+my $branches = GetBranches();
 my @data;
 if ($input->param('renew_all')) {
     @data = $input->param('all_items[]');
@@ -92,6 +95,7 @@ foreach my $itemno (@data) {
 		$failedrenews.="&failedrenew=$itemno&renewerror=".encode_json($error);
 	}
 }
+
 my $failedreturn;
 foreach my $barcode (@barcodes) {
     # check status before renewing issue
@@ -106,21 +110,31 @@ foreach my $barcode (@barcodes) {
                 my ( $message_reserve, $nextreservinfo ) = GetOtherReserves($itemnumber);
 
                 my ($borr) = GetMemberDetails( $nextreservinfo, 0 );
-                my $name   = $borr->{'surname'} . ", " . $borr->{'title'} . " " . $borr->{'firstname'};
-                if ( $message_reserve->{'transfert'} ) {
-                    $messages->{more}={
-                        itemtitle      => $reserve->{'title'},
-                        itembiblionumber => $reserve->{'biblionumber'},
-                        iteminfo       => $reserve->{'author'},
-                        tobranchname   => GetBranchName($messages->{'transfert'}),
-                        name           => $name,
-                        borrowernumber => $borrowernumber,
-                        borcnum        => $borr->{'cardnumber'},
+                $messages->{reservesdata}={
+                        found          => 1,
+                        currentbranch  => $branches->{C4::Context->userenv->{branch}}->{'branchname'},
+                        destbranchname => $branches->{ $reserve->{'branchcode'} }->{'branchname'},
+                        name           => $borr->{'surname'} . ", " . $borr->{'title'} . " " . $borr->{'firstname'},
                         borfirstname   => $borr->{'firstname'},
                         borsurname     => $borr->{'surname'},
-                        diffbranch     => 1,
-                    };
-                }
+                        bortitle       => $borr->{'title'},
+                        borphone       => $borr->{'phone'},
+                        boremail       => $borr->{'email'},
+                        boraddress     => $borr->{'address'},
+                        boraddress2    => $borr->{'address2'},
+                        borcity        => $borr->{'city'},
+                        borzip         => $borr->{'zipcode'},
+                        borcnum        => $borr->{'cardnumber'},
+                        debarred       => CheckBorrowerDebarred($borr->{borrowernumber}),
+                        gonenoaddress  => $borr->{'gonenoaddress'},
+                        barcode        => $barcode,
+                        transfertodo   => $transfer,
+                        destbranch	   => $reserve->{'branchcode'},
+                        borrowernumber => $reserve->{'borrowernumber'},
+                        itemnumber     => $reserve->{'itemnumber'},
+                        biblionumber   => $reserve->{'biblionumber'},
+                        reservenotes   => $reserve->{'reservenotes'},
+                };
                 
             }
         }
