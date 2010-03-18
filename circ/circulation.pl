@@ -458,7 +458,8 @@ if ($borrower) {
             $it->{"renew_error_".$can_renew_error->{message}} = 1;
 		    $it->{'renew_error'} = 1;
         }
-        $it->{$_} = $can_renew_error->{$_} for (qw(renewals renewalsallowed reserves));
+        $it->{renewals} ||= 0;
+        $it->{$_} = $can_renew_error->{$_} for (qw(renewalsallowed reserves));
         my ( $restype, $reserves ) = CheckReserves( $it->{'itemnumber'} );
         if ($restype){
 		    $it->{'reserved'} = 1;

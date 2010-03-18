@@ -710,7 +710,7 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
             <td><!-- TMPL_VAR NAME="replacementprice" --></td>
             <td><span style="padding: 0 1em;">
             <!-- TMPL_IF Name="renew_error_too_many"--><span class="problem"><!-- /TMPL_IF -->
-            <!-- TMPL_IF NAME="renewals"--><!-- TMPL_VAR NAME="renewals" -->/<!--/TMPL_IF--><!-- TMPL_VAR NAME="renewalsallowed" -->
+            <!-- TMPL_VAR NAME="renewals" -->/<!-- TMPL_VAR NAME="renewalsallowed" -->
             <!-- TMPL_IF NAME="renew_error_too_many"--></span><!-- /TMPL_IF -->
                 </span>
         <!-- TMPL_UNLESS NAME="can_renew" -->
@@ -767,7 +767,7 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
         <td><!-- TMPL_VAR NAME="replacementprice" --></td>
         <td style="text-align : center;"><span style="padding: 0 1em;">
             <!-- TMPL_IF Name="renew_error_too_many"--><span class="problem"><!-- /TMPL_IF -->
-            <!--TMPL_IF Name="renewals"--><!-- TMPL_VAR NAME="renewals" -->/<!--/TMPL_IF--><!-- TMPL_VAR NAME="renewalsallowed" -->
+            <!-- TMPL_VAR NAME="renewals" -->/<!-- TMPL_VAR NAME="renewalsallowed" -->
             <!-- TMPL_IF Name="renew_error_too_many"--></span><!-- /TMPL_IF -->
             </span>
         <!-- TMPL_UNLESS NAME="can_renew" -->

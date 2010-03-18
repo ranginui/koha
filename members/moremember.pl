@@ -303,6 +303,8 @@ for ( my $i = 0 ; $i < $issuecount ; $i++ ) {
 		    $row{'norenew'} = 1;
     }
     $row{$_} = $renewerror->{$_} for (qw(renewals renewalsallowed reserves));
+    $row{renewals} = $issue->[$i]{renewals};
+    $row{renewals} ||= 0;
     my ( $restype, $reserves ) = CheckReserves( $issue->[$i]->{'itemnumber'} );
     if ($restype){
 		    $row{'reserved'} = 1;
