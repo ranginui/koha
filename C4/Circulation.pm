@@ -1484,7 +1484,7 @@ sub _FixFineDaysOnReturn {
     return unless $finedays;
     my $grace       = $issuingrule->{firstremind};
 
-    if( $deltadays - $grace < 0){
+    if( $deltadays - $grace > 0){
         my @newdate     = Add_Delta_Days(Today(), $deltadays * $finedays );
         my $isonewdate  = join('-',@newdate);
         my ($deby, $debm, $debd) = split(/-/,$borrower->{debarred});
