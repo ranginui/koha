@@ -291,3 +291,4 @@ INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES
 INSERT INTO systempreferences  (variable,value,explanation,options,type) VALUES ('IndependentBranchPatron','0','Si activé, Le bibliothécaire ne recherche les lecteurs que dans SA bibliothèque',NULL,'YesNo');
 INSERT INTO systempreferences (variable,value, options, explanation, type) VALUES('ReservesControlBranch','PatronLibrary','ItemHomeLibrary|PatronLibrary','Site considéré pour calculer les droits de réservation','Choice');
 INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('OPACPickUpLocation','1','Permet aux adhérent de choisir leur bibliothèque de retrait pour une réservation','','YesNo');
+INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('CI-3M:AuthorizedIPs','','Liste des IPs autorisées pour la magnétisation 3M','','Free');

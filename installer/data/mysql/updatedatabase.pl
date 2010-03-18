@@ -3796,9 +3796,17 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     SetVersion ($DBversion);
 }
 
-$DBversion = "3.03.00.015";
+$DBversion = "3.02.00.015";
 if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
 	$dbh->do("INSERT INTO permissions (module_bit, code, description) VALUES (1, 'view_borrowers_logs', 'Enables log access for the borrower on staff viw')");
+    print "Upgrade to $DBversion done (Adding permissions for staff member access to borrowers logs.  )\n";
+    SetVersion ($DBversion);
+}
+$DBversion = "3.02.00.016";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+	$dbh->do(q{
+INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('CI-3M:AuthorizedIPs','','Liste des IPs autorisées pour la magnétisation 3M','','Free');
+    });
     print "Upgrade to $DBversion done (Adding permissions for staff member access to borrowers logs.  )\n";
     SetVersion ($DBversion);
 }
