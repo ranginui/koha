@@ -86,6 +86,11 @@ function placeHold () {
 		<!-- TMPL_IF NAME="verbose" --><a href="basket.pl" class="brief" onclick="showLess(); return false;">Brief Display</a><!-- TMPL_ELSE --><a href="basket.pl" class="detail" onclick="showMore(); return false;">More Details</a><!-- /TMPL_IF -->
 	    </span></span>
 	</li>
+    <li>
+        <span id="batchedit" class="yui-button yui-link-button"><span class="first-child">
+        <a class="batchedit" href="basket.pl" onclick="batchEdit(); return false;">Batch Edit</a>
+        </span></span>
+    </li>
 	<li>
 	    <span id="receive" class="yui-button yui-link-button"><span class="first-child">
 		<a class="send" href="basket.pl" onclick="sendBasket(); return false;">Send</a>

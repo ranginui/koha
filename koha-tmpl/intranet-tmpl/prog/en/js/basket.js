@@ -435,4 +435,10 @@ $(document).ready(function(){
 	if(basketcount){ updateBasket(basketcount); }
 });
 
+function batchEdit(){
+    var valCookie = readCookie(nameCookie);
+    var strCookie = nameParam + "=" + valCookie;
 
+    var loc = CGIBIN + "tools/batchedit.pl?" + strCookie;
+    window.opener.location = loc;
+}

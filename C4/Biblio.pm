@@ -92,6 +92,8 @@ BEGIN {
       &ModBiblio
       &ModBiblioframework
       &ModZebra
+      
+      &BatchModField
     );
 
     # To delete something
@@ -3502,6 +3504,40 @@ sub get_biblio_authorised_values {
 
     # warn ( Data::Dumper->Dump( [ $authorised_values ], [ 'authorised_values' ] ) );
     return $authorised_values;
+}
+
+=head3 BatchModField
+
+  Mod subfields in field record
+
+
+=cut
+
+sub BatchModField {
+    my ($field, $subfield, $action, $condval, $repval) = @_;
+    
+    if($action eq "add"){
+        $field->add_subfields( $subfield => $repval );
+    }else{
+        my @subfields = $field->subfield( $subfield );
+
+        $field->delete_subfield( code => $subfield );
+        
+        foreach my $subf (@subfields){
+            if( $action eq "mod" ){
+                if( $subf =~ /^$condval$/ ){
+                    $field->add_subfields( $subfield => $repval );
+                }else{
+                    $field->add_subfields( $subfield => $subf );
+                }
+            }elsif( $action eq "del"){
+                if ($subf !~ /^$condval$/ ){          
+                    $field->add_subfields( $subfield => $subf );
+                }
+            }
+        }
+    }
+    
 }
 
 1;

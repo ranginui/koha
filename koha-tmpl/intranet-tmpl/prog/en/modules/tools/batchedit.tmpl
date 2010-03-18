@@ -1,0 +1,183 @@
+<!-- TMPL_INCLUDE NAME="doc-head-open.inc" -->
+<title>Koha &rsaquo; Tools &rsaquo; Batch Deletion of Items</title>
+<!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
+
+<!-- TMPL_UNLESS NAME="modsuccess" -->
+
+<script type="text/javascript" src="<!-- TMPL_VAR name="themelang" -->/lib/jquery/plugins/jquery.tablesorter.min.js"></script>
+<script type="text/JavaScript" language="JavaScript">
+//<![CDATA[
+     var CGIBIN = "/cgi-bin/koha/";
+     
+     function fieldChanged(){
+        var field = $('#fieldchoice').val();
+        $.ajax({
+        	url: CGIBIN + 'tools/batchedit.pl?field=' + field,
+        	dataType: 'json',
+            success: function(data){
+            	$("#subfield option").remove();
+            
+        	    var subfield = $('#subfieldchoice'); 
+                for( var i=0; i < data.length ; i++){
+                	$("<option>").attr("value", data[i].subfield)
+                                 .text(data[i].subfield)
+                                 .appendTo('#subfieldchoice');
+                }
+                subfieldChanged();
+            }
+        });
+     }
+
+     function subfieldChanged(){
+        var field    = $('#fieldchoice').val();
+        var subfield = $('#subfieldchoice').val();
+        $.ajax({
+        	url: CGIBIN + 'tools/batchedit.pl?field=' + field + '&subfield=' + subfield,
+        	dataType: 'json',
+            success: function(data){
+
+        	    if( data.length > 0) {
+        	    	$("#condvaltd").html('<select name="condvalchoice" id="condvalchoice" />');
+        	    	$("<option>").attr("value", "")
+                        .text("")
+                        .appendTo('#condvalchoice');
+        	    	$("#repvaltd" ).html('<select name="repvalchoice" id="repvalchoice" />'  );
+                    $("<option>").attr("value", "")
+                        .text("")
+                        .appendTo('#repvalchoice');
+
+                    for( var i=0; i < data.length ; i++){
+                    	$("<option>").attr("value", data[i].code)
+                            .text(data[i].value)
+                            .appendTo('#repvalchoice');
+                    	$("<option>").attr("value", data[i].code)
+                            .text(data[i].value)
+                            .appendTo('#condvalchoice');
+                    }
+        	    }else{
+                    $("#condvaltd").html('<input type="text" name="condvalchoice" id="condvalchoice" />');
+                    $("#repvaltd").html('<input type="text" name="repvalchoice"  id="repvalchoice" />');
+        	    }
+            }
+        });
+        
+     }
+
+     function addRule(){
+        var actionlabel = {
+                mod: _('Modify'),
+                del: _('Delete'),
+                add: _('Create')
+                };
+        var condvallabel = $('#condvalchoice :selected').text() || $("#condvalchoice").val();
+        var repvallabel  = $('#repvalchoice :selected').text()  || $("#repvalchoice").val();
+        
+        var field    = $('#fieldchoice').val();
+        var subfield = $('#subfieldchoice').val();
+        var action   = $('#actionchoice').val();
+        var condval  = $('#condvalchoice').val();
+        var repval   = $('#repvalchoice').val();
+
+        var tmpl = "<tr>"
+                + '<td><input type="hidden" name="field" value="'    + field + '" />'    + field               + '</td>'
+                + '<td><input type="hidden" name="subfield" value="' + subfield + '" />' + subfield            + '</td>'
+                + '<td><input type="hidden" name="action" value="'   + action + '" />'   + actionlabel[action] + '</td>'
+                + '<td><input type="hidden" name="condval" value="'  + condval + '" />'  + condvallabel        + '</td>'
+                + '<td><input type="hidden" name="repval" value="'   + repval + '" />'   + repvallabel         + '</td>'
+                + '<td><input type="button" value="Delete" onclick="deleteRule(this)" /></td>'
+            + '</tr>';
+        $('#rulestable').append(tmpl);
+
+     }
+
+     function deleteRule(button){
+        $(button).parent().parent().remove();
+        return false;
+     }
+
+
+//]]>
+</script>
+<!-- /TMPL_UNLESS -->
+</head>
+<body>
+<!-- TMPL_INCLUDE NAME="header.inc" -->
+<!-- TMPL_INCLUDE NAME="cat-search.inc"-->
+<div id="doc3" class="yui-t2">
+    <div id="bd">
+        <div id="yui-main">
+            <div class="yui-b">
+
+<h2>List of records:</h2>
+<table id="bibliolist">
+    <thead>
+        <tr>
+            <th>Biblionumber</th><th>Title</th><th>Author</th>
+        </tr>
+    </thead>
+    <!-- TMPL_LOOP NAME="biblioinfos" -->
+        <tr>
+            <td><!-- TMPL_VAR NAME="biblionumber" --></td>
+            <td><!-- TMPL_VAR NAME="title" --></td>
+            <td><!-- TMPL_VAR NAME="author" --></td>
+        </tr>
+    <!-- /TMPL_LOOP -->
+</table>            
+            
+<!-- TMPL_IF NAME="modsuccess" -->
+    <div class="dialog alert">Modifications made successfully</span>
+<!-- TMPL_ELSE -->
+<h2>Modification rules:</h2>
+<form method="post">
+<input type="submit" value="Submit" />
+<input type="hidden" name="op" value="do" />
+<input type="hidden" name="bib_list" value="<!-- TMPL_VAR NAME="bib_list" -->" />
+<table id="rulestable">
+    <thead>
+        <tr>
+            <th>Field</th><th>Subfield</th><th>Action</th><th>Condition Value</th><th>Value</th><th>&nbsp;</th>
+        </tr>
+    </thead>
+        <tr>
+            <td>
+                <select name="fieldchoice" id="fieldchoice" onchange="fieldChanged();">
+<!-- TMPL_LOOP NAME="marcfields" -->
+                    <option value="<!-- TMPL_VAR NAME="tag" -->"><!-- TMPL_VAR NAME="tag" --></option>
+<!-- /TMPL_LOOP -->
+                </select>
+            </td>
+            <td>
+                <select name="subfieldchoice" id="subfieldchoice" onchange="subfieldChanged();">
+                
+                </select>
+            </td>
+            <td>
+                <select name="actionchoice" id="actionchoice">
+                    <option value="add">Create field</option>
+                    <option value="mod">Modify field</option>
+                    <option value="del">Delete field</option>
+                </select>
+            </td>
+            <td id="condvaltd">
+                <input type="text" name="condvalchoice" id="condvalcondvalchoice" />
+            </td>
+            <td id="repvaltd">
+                <input type="text" name="repvalchoice" id="repvalchoice" />
+            </td>
+            <td><input type="button" value="Add" onclick="addRule();" /></td>
+        </tr>
+    </thead>
+    
+<!-- TMPL_LOOP NAME="marcfields" -->
+    
+<!-- /TMPL_LOOP -->
+</table>
+<input type="submit" value="Submit" />
+</form>
+<!-- /TMPL_IF -->
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
