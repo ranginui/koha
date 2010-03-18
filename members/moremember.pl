@@ -139,7 +139,7 @@ for (qw(gonenoaddress lost borrowernotes)) {
 
 my $debar = CheckBorrowerDebarred($borrowernumber);
 if($debar){
-    $template->param(userdebarred => 1);
+    $template->param(userdebarred => 1,flagged=>1);
     if( $debar ne "9999-12-31"){
         $template->param(userdebarreddate => C4::Dates::format_date($debar));
         $template->param(debarredcomment => $data->{debarredcomment});
