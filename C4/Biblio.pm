@@ -910,7 +910,7 @@ sub GetISBDView {
 
 =over 4
 
-( $count, @results ) = &GetBiblio($biblionumber);
+$results = &GetBiblio($biblionumber);
 
 =back
 
@@ -920,15 +920,15 @@ sub GetBiblio {
     my ($biblionumber) = @_;
     my $dbh            = C4::Context->dbh;
     my $sth            = $dbh->prepare("SELECT * FROM biblio WHERE biblionumber = ?");
-    my $count          = 0;
-    my @results;
+
     $sth->execute($biblionumber);
-    while ( my $data = $sth->fetchrow_hashref ) {
-        $results[$count] = $data;
-        $count++;
-    }    # while
-    $sth->finish;
-    return ( $count, @results );
+    
+    if ( my $data = $sth->fetchrow_hashref ) {
+        return $data;
+    }else{
+        return undef;
+    }
+
 }    # sub GetBiblio
 
 =head2 GetBiblioItemInfosOf

@@ -195,20 +195,20 @@ if ( $shelfnumber || ( $shelfnumber == -1 ) ) {    # the shelf already exist.
     );
 
     unless (@biblionumbers) {
-        my ( $bibliocount, @biblios ) = GetBiblio($biblionumber);
+        my $biblio = GetBiblio($biblionumber);
 
         $template->param(
             biblionumber => $biblionumber,
-            title        => $biblios[0]->{'title'},
-            author       => $biblios[0]->{'author'},
+            title        => $biblio->{'title'},
+            author       => $biblio->{'author'},
         );
     } else {
         my @biblioloop = ();
         foreach my $biblionumber (@biblionumbers) {
-            my ( $bibliocount, @biblios ) = GetBiblio($biblionumber);
+            my $biblio = GetBiblio($biblionumber);
             my %biblioiter = (
-                title  => $biblios[0]->{'title'},
-                author => $biblios[0]->{'author'}
+                title =>$biblio->{'title'},
+                author=>$biblio->{'author'},
             );
             push @biblioloop, \%biblioiter;
         }
