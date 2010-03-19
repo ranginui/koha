@@ -1362,17 +1362,10 @@ sub AddReturn {
             branch   => $branch,
         });
     }
-<<<<<<< HEAD:C4/Circulation.pm
-    
-    logaction("CIRCULATION", "RETURN", $borrowernumber, $item->{'biblionumber'})
-        if C4::Context->preference("ReturnLog");
-    
-=======
 
     logaction( "CIRCULATION", "RETURN", $borrowernumber, $item->{'itemnumber'} )
       if C4::Context->preference("ReturnLog");
 
->>>>>>> Circulation Log Fixing ::C4/Circulation.pm
     # FIXME: make this comment intelligible.
     #adding message if holdingbranch is non equal a userenv branch to return the document to homebranch
     #we check, if we don't have reserv or transfert for this document, if not, return it to homebranch .
