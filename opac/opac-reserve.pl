@@ -34,7 +34,6 @@ use C4::Debug;
 use C4::Items;
 # use Data::Dumper;
 
-my $MAXIMUM_NUMBER_OF_RESERVES = C4::Context->preference("maxreserves");
 
 my $query = new CGI;
 my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
@@ -258,11 +257,6 @@ if ( CheckBorrowerDebarred($borrowernumber) ) {
 
 my @reserves = GetReservesFromBorrowernumber( $borrowernumber );
 $template->param( RESERVES => \@reserves );
-if ( $MAXIMUM_NUMBER_OF_RESERVES && (scalar(@reserves) >= $MAXIMUM_NUMBER_OF_RESERVES) ) {
-    $template->param( message => 1 );
-    $noreserves = 1;
-    $template->param( too_many_reserves => scalar(@reserves));
-}
 foreach my $res (@reserves) {
     foreach my $biblionumber (@biblionumbers) {
         if ( $res->{'biblionumber'} == $biblionumber && $res->{'borrowernumber'} == $borrowernumber) {
@@ -419,17 +413,7 @@ foreach my $biblioNum (@biblionumbers) {
         # If there is no loan, return and transfer, we show a checkbox.
         $itemLoopIter->{notforloan} = $itemLoopIter->{notforloan} || 0;
 
-        my $branch = C4::Circulation::_GetCircControlBranch($itemLoopIter, $borr);
-
-        my $branchitemrule = GetBranchItemRule( $branch, $itemInfo->{'itype'} );
-        my $policy_holdallowed = 1;
-
-        if ( $branchitemrule->{'holdallowed'} == 0 ||
-                ( $branchitemrule->{'holdallowed'} == 1 && $borr->{'branchcode'} ne $itemInfo->{'homebranch'} ) ) {
-            $policy_holdallowed = 0;
-        }
-
-        if (IsAvailableForItemLevelRequest($itemNum) and $policy_holdallowed and CanItemBeReserved($borrowernumber,$itemNum)) {
+        if (IsAvailableForItemLevelRequest($itemNum) and CanItemBeReserved($borrowernumber,$itemNum)) {
             $itemLoopIter->{available} = 1;
             $numCopiesAvailable++;
         }
@@ -461,7 +445,10 @@ foreach my $biblioNum (@biblionumbers) {
         $biblioLoopIter{holdable} = undef;
     }
     if(not CanBookBeReserved($borrowernumber,$biblioNum)){
-        $biblioLoopIter{holdable} = undef;
+       $template->param( message => 1 );
+       $noreserves = 1;
+       $template->param( too_many_reserves => scalar(@reserves));
+       $biblioLoopIter{holdable} = undef;
     }
 
     push @$biblioLoop, \%biblioLoopIter;

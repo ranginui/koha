@@ -3715,6 +3715,47 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
 }
 
 
+$DBversion = "3.02.00.008";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+	$dbh->do("ALTER TABLE issuingrules MODIFY renewalsallowed SMALLINT(6) NULL DEFAULT NULL;");
+	$dbh->do("ALTER TABLE issuingrules MODIFY reservesallowed SMALLINT(6) NULL DEFAULT NULL;");
+	$dbh->do("ALTER TABLE issuingrules MODIFY allowonshelfholds TINYINT(1) NULL DEFAULT NULL;");
+
+	print "Upgrade done (Allow NULL in issuingrules)\n";
+
+    SetVersion ($DBversion);
+}
+
+$DBversion = '3.02.00.009';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do('ALTER TABLE `categories` ADD COLUMN `enrolmentperioddate` DATE NULL DEFAULT NULL AFTER `enrolmentperiod`');
+    print "Upgrade done (Add enrolment period date support)\n";
+    SetVersion ($DBversion);
+}
+
+$DBversion = '3.02.00.010';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("ALTER TABLE `issuingrules` ADD `holdrestricted` TINYINT( 1 ) NULL default NULL ");
+    $dbh->do('INSERT INTO issuingrules (branchcode, categorycode, itemtype,holdrestricted,maxissueqty)
+                SELECT "*","*","*",holdallowed,maxissueqty
+                FROM default_circ_rules defaults
+              ON DUPLICATE KEY update maxissueqty=defaults.maxissueqty, holdrestricted=defaults.holdallowed');
+    $dbh->do('INSERT INTO issuingrules (branchcode, itemtype, categorycode,maxissueqty)
+                    SELECT "*","*",categorycode,maxissueqty from default_borrower_circ_rules defaults
+              ON DUPLICATE KEY update maxissueqty=defaults.maxissueqty');
+    $dbh->do('INSERT INTO issuingrules (branchcode, categorycode, itemtype,holdrestricted,maxissueqty)
+                    SELECT branchcode,"*","*",holdallowed,maxissueqty from default_branch_circ_rules defaults
+              ON DUPLICATE KEY update maxissueqty=defaults.maxissueqty, holdrestricted=defaults.holdallowed');
+    $dbh->do('INSERT INTO issuingrules (branchcode, categorycode, itemtype,holdrestricted,maxissueqty)
+                    SELECT "*","*",itemtype,holdallowed from default_branch_item_rules defaults 
+              ON DUPLICATE KEY update holdrestricted=defaults.holdallowed');
+    for my $tablename qw(default_circ_rules default_branch_circ_rules default_branch_item_rules default_borrower_circ_rules){
+        $dbh->do("DROP TABLE $tablename");
+    }     
+    print "Upgrade done (Updating Circulation rules\n Inserting defaults values into issuingrules \n removing defaults table)\n";
+    SetVersion ($DBversion);
+}
+
 =item DropAllForeignKeys($table)
 
   Drop all foreign keys of the table $table

@@ -9,7 +9,7 @@
 //<![CDATA[
 $(document).ready(function() {
         $('#selectlibrary').find("input:submit").hide();
-        $('#branch').change(function() {
+        $('#branchcode').change(function() {
                 $('#selectlibrary').submit();
         });
         $('#filter').keyup(function() {
@@ -51,12 +51,6 @@ $(document).ready(function() {
             $('#finesfilter').parent().attr('class',null);
             $('#nofilter').parent().attr('class',null);
         });
-        // Disable the checkbox on dom ready
-        $('#allowonshelfholds').attr("disabled", ($('#categorycode').val() != "*"));
-        // Enable/disable the checkbox depending on the categorycode select
-        $('#categorycode').change(function() {
-                $('#allowonshelfholds').attr("disabled", ($(this).val() != "*"));
-        });
 });
 //]]>
 </script>
@@ -80,24 +74,10 @@ $(document).ready(function() {
             Defining default issuing rules
         <!-- /TMPL_IF -->
     </h1>
-    <div class="help">
-        <p>The rules are applied from most specific to less specific, using the first found in this order:</p>
-        <ul>
-            <li>same library, same patron type, same item type</li>
-            <li>same library, same patron type, default item type</li>
-            <li>same library, default patron type, same item type</li>
-            <li>same library, default patron type, default item type</li>
-            <li>default library, same patron type, same item type</li>
-            <li>default library, same patron type, default item type</li>
-            <li>default library, default patron type, same item type</li>
-            <li>default library, default patron type, default item type</li>
-        </ul>
-        <p>To modify a rule, create a new one with the same patron type and item type.</p>
-    </div>
     <div id="bloc100">
         <form method="get" action="/cgi-bin/koha/admin/smart-rules.pl" id="selectlibrary">
         Select a library :
-            <select name="branch" id="branch" style="width:20em;">
+            <select name="branchcode" id="branchcode" style="width:20em;">
                 <option value="*">Default</option>
             <!-- TMPL_LOOP NAME="branchloop" -->
                 <!-- TMPL_IF NAME="selected" --><option value="<!-- TMPL_VAR NAME="value" -->" selected="selected"><!-- TMPL_VAR NAME="branchname" --></option><!-- TMPL_ELSE --><option value="<!-- TMPL_VAR NAME="value" -->"><!-- TMPL_VAR NAME="branchname" --></option><!-- /TMPL_IF -->
@@ -113,7 +93,10 @@ $(document).ready(function() {
                 <li><a id="issuesfilter">Issues</a></li>
                 <li><a id="finesfilter">Fines</a></li>
                 <li><a id="reservesfilter">Reserves</a></li>
-                <div style="text-align:right;"><label for="filter">Filter: </label><input type="text" name="filter" id="filter" /></div>
+                <div style="text-align:right;">
+                    <label for="filter" style="float:none;">Filter: </label>
+                    <input type="text" name="filter" id="filter" />
+                </div>
             </ul>
             <div class="tabs-container">
                 <form method="post" action="/cgi-bin/koha/admin/smart-rules.pl">
@@ -121,18 +104,19 @@ $(document).ready(function() {
                     <table id="smartrules" width="100%">
                         <thead>
                             <tr>
-                                <th>Patron Category</th>
-                                <th>Item Type</th>
-                                <th class="issues">Current Checkouts Allowed</th>
-                                <th class="issues">Loan Period (day)</th>
-                                <th class="fines">Fine Amount</th>
-                                <th class="fines">Fine Charging Interval</th>
-                                <th class="fines">Fine Grace period (day)</th>
-                                <th class="fines">Suspension in Days (day)</th>
-                                <th class="issues">Renewals Allowed (count)</th>
-                                <th class="reserves">Holds Allowed (count)</th>
-                				<th class="reserves">Holds Pickup delay (day)</th>
-                                <th class="reserves">Allow On Shelf Holds</th>
+                                <th>Patron category</th>
+                                <th>Item type</th>
+                                <th class="issues">Current checkouts allowed</th>
+                                <th class="issues">Loan period (day)</th>
+                                <th class="fines">Fine amount</th>
+                                <th class="fines">Fine charging interval</th>
+                                <th class="fines">Fine grace period (day)</th>
+                                <th class="fines">Suspension duration (day)</th>
+                                <th class="issues">Renewals allowed (count)</th>
+                                <th class="reserves">Holds allowed (count)</th>
+                                <th class="reserves">Holds pickup delay (day)</th>
+                                <th class="reserves">Allow on shelf holds</th>
+                                <th class="reserves">Holds restricted to library</th>
                                 <th class="issues">Rental Discount (%)</th>
                                 <th>&nbsp;</th>
                             </tr>
@@ -150,37 +134,119 @@ $(document).ready(function() {
                                             <!-- TMPL_VAR NAME="humancategorycode" -->
                                         <!-- /TMPL_IF -->
                                     </td>
-                                    <td><!-- TMPL_IF NAME="default_humanitemtype" -->
+                                    <td>
+                                        <!-- TMPL_IF NAME="default_humanitemtype" -->
                                             <em>Default</em>
                                         <!-- TMPL_ELSE -->
                                             <!-- TMPL_VAR NAME="humanitemtype" -->
                                         <!-- /TMPL_IF -->
                                     </td>
-                                    <td class="issues"><!-- TMPL_IF NAME="unlimited_maxissueqty" -->
+                                    <!-- TMPL_IF NAME="herited_maxissueqty" -->
+                                    <td class="issues herited">
+                                    <!-- TMPL_ELSE -->
+                                    <td class="issues">
+                                    <!-- /TMPL_IF -->
+                                        <!-- TMPL_IF NAME="unlimited_maxissueqty" -->
                                             Unlimited
                                         <!-- TMPL_ELSE -->
                                             <!-- TMPL_VAR NAME="maxissueqty" -->
                                         <!-- /TMPL_IF -->
                                     </td>
-                                    <td class="issues"><!-- TMPL_IF NAME="issuelength" --><!-- TMPL_VAR NAME="issuelength" --> <!-- /TMPL_IF --></td>
-                                    <td class="fines"><!-- TMPL_VAR NAME="fine" --></td>
-                                    <td class="fines"><!-- TMPL_IF NAME="chargeperiod" --><!-- TMPL_VAR NAME="chargeperiod" --> <!-- /TMPL_IF --></td>
-                                    <td class="fines"><!-- TMPL_IF NAME="firstremind" --><!-- TMPL_VAR NAME="firstremind" --> <!-- /TMPL_IF --></td>
-                                    <td class="fines"><!-- TMPL_IF NAME="finedays" --> <!-- TMPL_VAR NAME="finedays" --> <!-- /TMPL_IF --></td>
-                                    <td class="issues"><!-- TMPL_IF NAME="renewalsallowed" --><!-- TMPL_VAR NAME="renewalsallowed" --> <!-- /TMPL_IF --></td>
-                                    <td class="reserves"><!-- TMPL_IF NAME="reservesallowed" --><!-- TMPL_VAR NAME="reservesallowed" --> <!-- /TMPL_IF --></td>
-									<td class="reserves"><!-- TMPL_IF NAME="holdspickupdelay" --><!-- TMPL_VAR NAME="holdspickupdelay" --> <!-- /TMPL_IF --></td>
-                                    <td class="reserves"><!-- TMPL_IF NAME="default_humancategorycode" --><input type="checkbox" disabled="disabled" checked="<!-- TMPL_VAR NAME="allowonshelfhold" -->" /><!-- /TMPL_IF --></td>
-							        <td class="issues"><!-- TMPL_VAR NAME="rentaldiscount" --></td>
-							        <td> <a class="button" href="/cgi-bin/koha/admin/smart-rules.pl?op=delete&amp;itemtype=<!-- TMPL_VAR NAME="itemtype" -->&amp;categorycode=<!-- TMPL_VAR NAME="categorycode" -->&amp;branch=<!-- TMPL_VAR NAME="branch" -->">Delete</a>
-							        </td>
-                	        </tr>
-            	        <!-- /TMPL_LOOP -->
+                                    <!-- TMPL_IF NAME="herited_issuelength" -->
+                                    <td class="issues herited">
+                                    <!-- TMPL_ELSE -->
+                                    <td class="issues">
+                                    <!-- /TMPL_IF -->
+                                    <!-- TMPL_VAR NAME="issuelength" -->
+                                    </td>
+                                    <!-- TMPL_IF NAME="herited_fine" -->
+                                    <td class="fines herited">
+                                    <!-- TMPL_ELSE -->
+                                    <td class="fines">
+                                    <!-- /TMPL_IF -->
+                                    <!-- TMPL_VAR NAME="fine" -->
+                                    </td>
+                                    <!-- TMPL_IF NAME="herited_chargeperiod" -->
+                                    <td class="fines herited">
+                                    <!-- TMPL_ELSE -->
+                                    <td class="fines">
+                                    <!-- /TMPL_IF -->
+                                    <!-- TMPL_VAR NAME="chargeperiod" -->
+                                    </td>
+                                    <!-- TMPL_IF NAME="herited_firstremind" -->
+                                    <td class="fines herited">
+                                    <!-- TMPL_ELSE -->
+                                    <td class="fines">
+                                    <!-- /TMPL_IF -->
+                                    <!-- TMPL_VAR NAME="firstremind" -->
+                                    </td>
+                                    <!-- TMPL_IF NAME="herited_finedays" -->
+                                    <td class="fines herited">
+                                    <!-- TMPL_ELSE -->
+                                    <td class="fines">
+                                    <!-- /TMPL_IF -->
+                                    <!-- TMPL_VAR NAME="finedays" -->
+                                    </td>
+                                    <!-- TMPL_IF NAME="herited_renewalsallowed" -->
+                                    <td class="issues herited">
+                                    <!-- TMPL_ELSE -->
+                                    <td class="issues">
+                                    <!-- /TMPL_IF -->
+                                    <!-- TMPL_VAR NAME="renewalsallowed" -->
+                                    </td>
+                                    <!-- TMPL_IF NAME="herited_reservesallowed" -->
+                                    <td class="reserves herited">
+                                    <!-- TMPL_ELSE -->
+                                    <td class="reserves">
+                                    <!-- /TMPL_IF -->
+                                    <!-- TMPL_VAR NAME="reservesallowed" -->
+                                    </td>
+                                     <!-- TMPL_IF NAME="herited_holdspickupdelay" -->
+                                    <td class="reserves herited">
+                                    <!--TMPL_ELSE-->
+                                    <td class="reserves">
+                                    <!--/TMPL_IF-->
+                                    <!-- TMPL_VAR NAME="holdspickupdelay" -->
+                                    </td>
+                                    <!-- TMPL_IF NAME="herited_allowonshelfholds" -->
+                                    <td class="reserves herited">
+                                    <!--TMPL_ELSE-->
+                                    <td class="reserves">
+				    <!--/TMPL_IF-->
+                                    <!-- TMPL_IF NAME="allowonshelfholds" -->
+                                    Yes
+                                    <!--TMPL_ELSE-->
+                                    No
+                                    <!--/TMPL_IF-->
+                                    </td>
+                                    <!-- TMPL_IF NAME="herited_holdrestricted" -->
+                                    <td class="reserves herited">
+                                    <!--TMPL_ELSE-->
+                                     <td class="reserves">
+                                    <!--/TMPL_IF-->
+                                    <!-- TMPL_IF NAME="holdrestricted" -->
+                                    Yes
+                                    <!--TMPL_ELSE-->
+                                    No
+                                    <!--/TMPL_IF-->
+                                    </td>
+                                    <!-- TMPL_IF NAME="herited_rentaldiscount" -->
+                                    <td class="issues herited">
+                                    <!-- TMPL_ELSE -->
+                                    <td class="issues">
+                                    <!-- /TMPL_IF -->
+                                    <!-- TMPL_VAR NAME="rentaldiscount" -->
+                                    </td>
+                                    <td>
+                                        <a class="button" href="/cgi-bin/koha/admin/smart-rules.pl?op=delete&amp;itemtype=<!-- TMPL_VAR NAME="itemtype" -->&amp;categorycode=<!-- TMPL_VAR NAME="categorycode" -->&amp;branch=<!-- TMPL_VAR NAME="branch" -->">Delete</a>
+                                    </td>
+                                </tr>
+                            <!-- /TMPL_LOOP -->
                         </tbody>
                         <tfoot>
                             <tr>
                                 <td>
-                                    <select name="categorycode">
+                                    <select name="categorycode" id="categorycode" style="width:12em;">
                                         <option value="*">Default</option>
                                     <!-- TMPL_LOOP NAME="categoryloop" -->
                                         <option value="<!-- TMPL_VAR NAME="categorycode" -->"><!-- TMPL_VAR NAME="description" --></option>
@@ -188,7 +254,7 @@ $(document).ready(function() {
                                     </select>
                                 </td>
                                 <td>
-                                    <select name="itemtype" style="width:13em;">
+                                    <select name="itemtype" style="width:12em;">
                                         <option value="*">Default</option>
                                     <!-- TMPL_LOOP NAME="itemtypeloop" -->
                                         <option value="<!-- TMPL_VAR NAME="itemtype" -->"><!-- TMPL_VAR NAME="description" --></option>
@@ -203,202 +269,23 @@ $(document).ready(function() {
                                 <td class="fines"><input name="finedays" size="3" /> </td>
                                 <td class="issues"><input name="renewalsallowed" size="2" /></td>
                                 <td class="reserves"><input name="reservesallowed" size="2" /></td>
-                    			<td class="reserves"><input name="holdspickupdelay" size="2" /></td>
-                                <td class="reserves"><input type="checkbox" name="allowonshelfholds" id="allowonshelfholds" /></td>
+                                <td class="reserves"><input name="holdspickupdelay" size="2" /></td>
+                                <td class="reserves">
+                                    <select name="allowonshelfholds">
+                                        <option value=""></option>
+                                        <option value="1">Yes</option>
+                                        <option value="0">No</option>
+                                    </select>
+                                </td>
+                                <td class="reserves"><input type="checkbox" name="holdrestricted" value="1"/> </td>
 		                        <td><input class="issues" name="rentaldiscount" size="2" /></td>
-                                <td><input type="hidden" name="branch" value="<!-- TMPL_VAR NAME="branch" -->"/><input type="submit" value="Add" class="submit" /></td>
+                                <td><input type="hidden" name="branchcode" value="<!-- TMPL_VAR NAME="branchcode" -->"/><input type="submit" value="Add" class="submit" /></td>
                             </tr>
                         </tfoot>
                     </table>
                 </form>
             </div><!-- tabs-container -->
         </div><!-- toptabs -->
-    </div>
-    <div class="help">
-        <h4>Defaults for this library</h4>
-        <p>You can set a default maximum number of checkouts and hold policy that will be used if none is defined below for a particular item type or category.</p>
-    </div>
-    <div>
-        <form method="post" action="/cgi-bin/koha/admin/smart-rules.pl">
-            <input type="hidden" name="op" value="set-branch-defaults" />
-            <input type="hidden" name="branch" value="<!-- TMPL_VAR NAME="branch" -->"/>
-            <table>
-                <tr>
-                    <th>&nbsp;</th>
-                    <th>Total Current Checkouts Allowed</th>
-                    <th>Hold Policy</th>
-                    <th>&nbsp;</th>
-                    <th>&nbsp;</th>
-                </tr>
-                <tr>
-                    <td><em>Defaults<!-- TMPL_UNLESS NAME="default_rules" --> (not set)<!-- /TMPL_IF --></em></td>
-                    <td><input name="maxissueqty" size="3" value="<!-- TMPL_VAR NAME="default_maxissueqty" -->"/></td>
-                    <td>
-                        <select name="holdallowed">
-                            <!-- TMPL_IF NAME="default_holdallowed_any" -->
-                            <option value="2" selected="selected">
-                            <!-- TMPL_ELSE -->
-                            <option value="2">
-                            <!-- /TMPL_IF -->
-                                From Any Library
-                            </option>
-                            <!-- TMPL_IF NAME="default_holdallowed_same" -->
-                            <option value="1" selected="selected">
-                            <!-- TMPL_ELSE -->
-                            <option value="1">
-                            <!-- /TMPL_IF -->
-                                From Home Library
-                            </option>
-                            <!-- TMPL_IF NAME="default_holdallowed_none" -->
-                            <option value="0" selected="selected">
-                            <!-- TMPL_ELSE -->
-                            <option value="0">
-                            <!-- /TMPL_IF -->
-                                No Holds Allowed
-                            </option>
-                        </select>
-                    </td>
-                    <td><input type="submit" value="Save" class="submit" /></td>
-                    <td>
-                        <a class="button" href="/cgi-bin/koha/admin/smart-rules.pl?op=delete-branch-cat&amp;categorycode=*&amp;branch=<!-- TMPL_VAR NAME="branch" -->">Unset</a>
-                    </td>
-                </tr>
-            </table>
-        </form>
-    </div>
-    <!-- TMPL_IF NAME="show_branch_cat_rule_form" -->
-    <div class="help">
-        <p>For this library, you can specify the maximum number of loans that
-            a patron of a given category can make, regardless of the item type.
-        </p>
-        <p>If the total amount loanable for a given patron category is left blank,
-           no limit applies, except possibly for a limit you define for a specific item type.
-        </p>
-    </div>
-    <div>
-        <form method="post" action="/cgi-bin/koha/admin/smart-rules.pl">
-            <input type="hidden" name="op" value="add-branch-cat" />
-            <input type="hidden" name="branch" value="<!-- TMPL_VAR NAME="branch" -->"/>
-            <table>
-                <tr>
-                    <th>Patron Category</th>
-                    <th>Total Current Checkouts Allowed</th>
-                    <th>&nbsp;</th>
-                </tr>
-                <!-- TMPL_LOOP NAME="branch_cat_rule_loop" -->
-                    <!-- TMPL_UNLESS NAME="__odd__" -->
-                    <tr class="highlight">
-                    <!-- TMPL_ELSE -->
-                    <tr>
-                    <!-- /TMPL_UNLESS -->
-                        <td><!-- TMPL_IF NAME="default_humancategorycode" -->
-                                <em>Default</em>
-                            <!-- TMPL_ELSE -->
-                                <!-- TMPL_VAR NAME="humancategorycode" -->
-                            <!-- /TMPL_IF -->
-                        </td>
-                        <td><!-- TMPL_IF NAME="unlimited_maxissueqty" -->
-                                Unlimited
-                            <!-- TMPL_ELSE -->
-                                <!-- TMPL_VAR NAME="maxissueqty" -->
-                            <!-- /TMPL_IF -->
-                        </td>
-                        <td>
-                            <a class="button" href="/cgi-bin/koha/admin/smart-rules.pl?op=delete-branch-cat&amp;categorycode=<!-- TMPL_VAR NAME="categorycode" -->&amp;branch=<!-- TMPL_VAR NAME="branch" -->">Delete</a>
-                        </td>
-                    </tr>
-                <!-- /TMPL_LOOP -->
-                <tr>
-                    <td>
-                        <select name="categorycode">
-                        <!-- TMPL_LOOP NAME="categoryloop" -->
-                            <option value="<!-- TMPL_VAR NAME="categorycode" -->"><!-- TMPL_VAR NAME="description" --></option>
-                        <!-- /TMPL_LOOP -->
-                        </select>
-                    </td>
-                    <td><input name="maxissueqty" size="3" /></td>
-                    <td><input type="submit" value="Add" class="submit" /></td>
-                </tr>
-            </table>
-        </form>
-    </div>
-    <!-- /TMPL_IF -->
-    <div class="help">
-        <p>
-            For this library, you can edit rules for given itemtypes, regardless
-            of the patron's category.
-        </p>
-        <p>
-            Currently, this means hold policies.
-            The various policies have the following effects:
-        </p>
-        <ul>
-            <li><strong>From Any Library:</strong> Patrons from any library may put this item on hold. <cite>(default if none is defined)</cite></li>
-            <li><strong>From Home Library:</strong> Only patrons from the item's home library may put this book on hold.</li>
-            <li><strong>No Holds Allowed:</strong> No patron may put this book on hold.</li>
-        </ul>
-        <p>
-            Note that if the system preference
-            <code>AllowHoldPolicyOverride</code> is enabled, these policies can
-            be overridden by your circulation staff. Also, these policies are
-            based on the patron's home branch, <em>not</em> the branch that
-            the reserving staff member is from.
-        </p>
-    </div>
-    <div>
-        <form method="post" action="/cgi-bin/koha/admin/smart-rules.pl">
-            <input type="hidden" name="op" value="add-branch-item" />
-            <input type="hidden" name="branch" value="<!-- TMPL_VAR NAME="branch" -->"/>
-            <table>
-                <tr>
-                    <th>Item Type</th>
-                    <th>Hold Policy</th>
-                    <th>&nbsp;</th>
-                </tr>
-                <!-- TMPL_LOOP NAME="branch_item_rule_loop" -->
-                    <!-- TMPL_UNLESS NAME="__odd__" -->
-                    <tr class="highlight">
-                    <!-- TMPL_ELSE -->
-                    <tr>
-                    <!-- /TMPL_UNLESS -->
-                        <td><!-- TMPL_IF NAME="default_humanitemtype" -->
-                                <em>Default</em>
-                            <!-- TMPL_ELSE -->
-                                <!-- TMPL_VAR NAME="humanitemtype" -->
-                            <!-- /TMPL_IF -->
-                        </td>
-                        <td><!-- TMPL_IF NAME="holdallowed_any" -->
-                                From Any Library
-                            <!-- TMPL_ELSIF NAME="holdallowed_same" -->
-                                From Home Library
-                            <!-- TMPL_ELSE -->
-                                No Holds Allowed
-                            <!-- /TMPL_IF -->
-                        </td>
-                        <td>
-                            <a class="button" href="/cgi-bin/koha/admin/smart-rules.pl?op=delete-branch-item&amp;itemtype=<!-- TMPL_VAR NAME="itemtype" -->&amp;branch=<!-- TMPL_VAR NAME="branch" -->">Delete</a>
-                        </td>
-                    </tr>
-                <!-- /TMPL_LOOP -->
-                <tr>
-                    <td>
-                        <select name="itemtype">
-                        <!-- TMPL_LOOP NAME="itemtypeloop" -->
-                            <option value="<!-- TMPL_VAR NAME="itemtype" -->"><!-- TMPL_VAR NAME="description" --></option>
-                        <!-- /TMPL_LOOP -->
-                        </select>
-                    </td>
-                    <td>
-                        <select name="holdallowed">
-                            <option value="2">From Any Library</option>
-                            <option value="1">From Home Library</option>
-                            <option value="0">No Holds Allowed</option>
-                        </select>
-                    </td>
-                    <td><input type="submit" value="Add" class="submit" /></td>
-                </tr>
-            </table>
-        </form>
     </div>
 </div>
 

@@ -1946,3 +1946,7 @@ select.advsearchoperator {
     background: #eee url(../../img/more-up-arrow.gif) 0 50% no-repeat;
 }
 
+.herited {
+    color: #ccc;
+}
+

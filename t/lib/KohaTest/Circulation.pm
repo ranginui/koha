@@ -20,8 +20,6 @@ sub methods : Test( 1 ) {
                       CanBookBeIssued 
                       AddIssue 
                       GetLoanLength 
-                      GetIssuingRule 
-                      GetBranchBorrowerCircRule
                       AddReturn 
                       MarkIssueReturned 
                       _FixOverduesOnReturn

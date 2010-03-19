@@ -944,6 +944,7 @@ CREATE TABLE `issuingrules` (
   `maxissueqty` int(4) default NULL,
   `issuelength` int(4) default NULL,
   `allowonshelfholds` tinyint(1) default NULL,
+  `holdrestricted` tinyint(1) default NULL,
   `renewalsallowed` smallint(6)  default NULL,
   `reservesallowed` smallint(6)  default NULL,
   `branchcode` varchar(10) NOT NULL default '',

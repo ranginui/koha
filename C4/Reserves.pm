@@ -36,6 +36,7 @@ use C4::Members qw();
 use C4::Letters;
 use C4::Branch qw( GetBranchDetail );
 use C4::Dates qw( format_date_in_iso );
+use C4::IssuingRules;
 use List::MoreUtils qw( firstidx );
 
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
@@ -98,6 +99,7 @@ BEGIN {
         &GetReservesFromBorrowernumber
         &GetReservesForBranch
         &GetReservesToBranch
+        &GetReservesControlBranch
         &GetReserveCount
         &GetReserveFee
 		&GetReserveInfo
@@ -372,7 +374,7 @@ sub GetReservesFromBorrowernumber {
     my $data = $sth->fetchall_arrayref({});
     return @$data;
 }
-#-------------------------------------------------------------------------------------
+
 =item CanBookBeReserved
 
 $error = &CanBookBeReserved($borrowernumber, $biblionumber)
@@ -446,15 +448,19 @@ sub CanItemBeReserved{
         $branchcode = $borrower->{branchcode};
     }
     
-    # we retrieve rights 
-    $sth->execute($categorycode, $itemtype, $branchcode);
-    if(my $rights = $sth->fetchrow_hashref()){
-        $itemtype        = $rights->{itemtype};
-        $allowedreserves = $rights->{reservesallowed}; 
+    # we retrieve user rights on this itemtype and branchcode
+    my $issuingrule = GetIssuingRule($borrower->{categorycode}, $item->{$itype}, $branchcode);
+
+    if($issuingrule){
+        $itemtype        = $issuingrule->{itemtype};
+        $allowedreserves = $issuingrule->{reservesallowed}; 
     }else{
         $itemtype = '*';
     }
     
+    return 0 if ($issuingrule->{reservesallowed}==0 || 
+                ($issuingrule->{holdrestricted}== 1 && !($branchcode eq $borrower->{branchcode}))
+                );
     # we retrieve count
     
     $querycount .= "AND $branchfield = ?";
@@ -1533,6 +1539,27 @@ sub ToggleLowestPriority {
     $sth->finish;
     
     _FixPriority( $biblionumber, $borrowernumber, '999999' );
+}
+
+=item CanHoldOnShelf
+
+my $canhold = &CanHoldOnShelf($itemnumber);
+
+ Check if a book can be hold on shelf.
+
+=cut
+
+sub CanHoldOnShelf {
+    my ($itemnumber) = @_;
+    
+    my $item = C4::Items::GetItem($itemnumber);
+    my $itemtype = C4::Context->preference('item-level_itypes');
+    $itemtype = $itemtype ? $item->{itype} : $item->{itemtype} ;
+    my $branch = $item->{C4::Context->preference('homeorholdingbranch')};
+    
+    my $issuingrule = GetIssuingRule('*', $itemtype, $branch);
+    return $issuingrule->{allowonshelfholds};
+    
 }
 
 =item _FixPriority

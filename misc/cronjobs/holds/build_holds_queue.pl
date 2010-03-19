@@ -21,6 +21,7 @@ use C4::Search;
 use C4::Items;
 use C4::Branch;
 use C4::Circulation;
+use C4::IssuingRules;
 use C4::Members;
 use C4::Biblio;
 
@@ -198,9 +199,10 @@ sub GetItemsAvailableToFillHoldRequestsForBib {
     $sth->execute(@params);
 
     my $items = $sth->fetchall_arrayref({});
-    $items = [ grep { my @transfers = GetTransfers($_->{itemnumber}); $#transfers == -1; } @$items ]; 
-    map { my $rule = GetBranchItemRule($_->{homebranch}, $_->{itype}); $_->{holdallowed} = $rule->{holdallowed}; $rule->{holdallowed} != 0 } @$items;
-    return [ grep { $_->{holdallowed} != 0 } @$items ];
+
+    $branchfield = C4::Context->preference('HomeOrHoldingBranch');
+
+    return [ grep { my $rule = GetIssuingRule('*', $_->{itype}, $_->{$branchfield}); $_->{reservesallowed} = $rule->{reservesallowed}; $_->{reservesallowed} != 0 } @items ];
 }
 
 =head2 MapItemsToHoldRequests

@@ -27,6 +27,7 @@ use C4::Koha;
 use C4::Biblio;
 use C4::Items;
 use C4::Members;
+use C4::IssuingRules;
 use C4::Dates;
 use C4::Calendar;
 use C4::Accounts;
@@ -78,9 +79,6 @@ BEGIN {
 		&GetItemIssues
 		&GetBorrowerIssues
 		&GetIssuingCharges
-		&GetIssuingRule
-        &GetBranchBorrowerCircRule
-        &GetBranchItemRule
 		&GetBiblioIssues
 		&AnonymiseIssueHistory
 	);
@@ -102,6 +100,14 @@ BEGIN {
                 &CreateBranchTransferLimit
                 &DeleteBranchTransferLimits
 	);
+	
+	# subs to deal with offline circulation
+	push @EXPORT, qw(
+		&GetOfflineOperations
+		&AddOfflineOperation
+		&DeleteOfflineOperation
+		&ProcessOfflineOperation
+	);	
 }
 
 =head1 NAME
@@ -431,40 +437,7 @@ sub TooMany {
                 $toomany=0;
             }
         }
-
-        # Now count total loans against the limit for the branch
-        my $branch_borrower_circ_rule = GetBranchBorrowerCircRule($branch, $cat_borrower);
-        if (defined($branch_borrower_circ_rule->{maxissueqty})) {
-            my @bind_params = ();
-            my $branch_count_query = "SELECT COUNT(*) FROM issues 
-                                      JOIN items USING (itemnumber)
-                                      WHERE borrowernumber = ? ";
-            push @bind_params, $borrower->{borrowernumber};
-
-            if (C4::Context->preference('CircControl') eq 'PickupLibrary') {
-                $branch_count_query .= " AND issues.branchcode = ? ";
-                push @bind_params, $branch;
-            } elsif (C4::Context->preference('CircControl') eq 'PatronLibrary') {
-                ; # if branch is the patron's home branch, then count all loans by patron
-            } else {
-                my $branchfield=C4::Context->Preference('HomeOrHoldingBranch')||"homebranch";
-                $branch_count_query .= " AND items.$branchfield = ? ";
-                push @bind_params, $branch;
-            }
-            my $branch_count_sth = $dbh->prepare($branch_count_query);
-            $branch_count_sth->execute(@bind_params);
-            my ($current_loan_count) = $branch_count_sth->fetchrow_array;
-
-            my $max_loans_allowed = $branch_borrower_circ_rule->{maxissueqty};
-            if ( $current_loan_count >= $max_loans_allowed ) {
-                return 1,$current_loan_count,$max_loans_allowed;
-            }
-            else {
-                $toomany=0;
-            }
-        }
     }
-    # OK, the patron can issue !!!
     return $toomany;
 }
 
@@ -1120,212 +1093,6 @@ sub GetLoanLength {
     my ( $borrowertype, $itemtype, $branchcode ) = @_;
     my $loanlength=GetIssuingRule($borrowertype,$itemtype,$branchcode);
     return $loanlength->{issuelength};
-}
-
-=head2 GetIssuingRule
-
-FIXME - This is a copy-paste of GetLoanLength
-as a stop-gap.  Do not wish to change API for GetLoanLength 
-this close to release, however, Overdues::GetIssuingRules is broken.
-
-Get the issuing rule for an itemtype, a borrower type and a branch
-Returns a hashref from the issuingrules table.
-
-my $irule = &GetIssuingRule($borrowertype,$itemtype,branchcode)
-
-=cut
-
-sub GetIssuingRule {
-    my ( $borrowertype, $itemtype, $branchcode ) = @_;
-    my $dbh = C4::Context->dbh;
-    my $sth =  $dbh->prepare( "select * from issuingrules where categorycode=? and itemtype=? and branchcode=? and issuelength is not null"  );
-    my $irule;
-
-	$sth->execute( $borrowertype, $itemtype, $branchcode );
-    $irule = $sth->fetchrow_hashref;
-    return $irule if defined($irule) ;
-
-    $sth->execute( $borrowertype, "*", $branchcode );
-    $irule = $sth->fetchrow_hashref;
-    return $irule if defined($irule) ;
-
-    $sth->execute( "*", $itemtype, $branchcode );
-    $irule = $sth->fetchrow_hashref;
-    return $irule if defined($irule) ;
-
-    $sth->execute( "*", "*", $branchcode );
-    $irule = $sth->fetchrow_hashref;
-    return $irule if defined($irule) ;
-
-    $sth->execute( $borrowertype, $itemtype, "*" );
-    $irule = $sth->fetchrow_hashref;
-    return $irule if defined($irule) ;
-
-    $sth->execute( $borrowertype, "*", "*" );
-    $irule = $sth->fetchrow_hashref;
-    return $irule if defined($irule) ;
-
-    $sth->execute( "*", $itemtype, "*" );
-    $irule = $sth->fetchrow_hashref;
-    return $irule if defined($irule) ;
-
-    $sth->execute( "*", "*", "*" );
-    $irule = $sth->fetchrow_hashref;
-    return $irule if defined($irule) ;
-
-    # if no rule matches,
-    return undef;
-}
-
-=head2 GetBranchBorrowerCircRule
-
-=over 4
-
-my $branch_cat_rule = GetBranchBorrowerCircRule($branchcode, $categorycode);
-
-=back
-
-Retrieves circulation rule attributes that apply to the given
-branch and patron category, regardless of item type.  
-The return value is a hashref containing the following key:
-
-maxissueqty - maximum number of loans that a
-patron of the given category can have at the given
-branch.  If the value is undef, no limit.
-
-This will first check for a specific branch and
-category match from branch_borrower_circ_rules. 
-
-If no rule is found, it will then check default_branch_circ_rules
-(same branch, default category).  If no rule is found,
-it will then check default_borrower_circ_rules (default 
-branch, same category), then failing that, default_circ_rules
-(default branch, default category).
-
-If no rule has been found in the database, it will default to
-the buillt in rule:
-
-maxissueqty - undef
-
-C<$branchcode> and C<$categorycode> should contain the
-literal branch code and patron category code, respectively - no
-wildcards.
-
-=cut
-
-sub GetBranchBorrowerCircRule {
-    my $branchcode = shift;
-    my $categorycode = shift;
-
-    my $branch_cat_query = "SELECT maxissueqty
-                            FROM branch_borrower_circ_rules
-                            WHERE branchcode = ?
-                            AND   categorycode = ?";
-    my $dbh = C4::Context->dbh();
-    my $sth = $dbh->prepare($branch_cat_query);
-    $sth->execute($branchcode, $categorycode);
-    my $result;
-    if ($result = $sth->fetchrow_hashref()) {
-        return $result;
-    }
-
-    # try same branch, default borrower category
-    my $branch_query = "SELECT maxissueqty
-                        FROM default_branch_circ_rules
-                        WHERE branchcode = ?";
-    $sth = $dbh->prepare($branch_query);
-    $sth->execute($branchcode);
-    if ($result = $sth->fetchrow_hashref()) {
-        return $result;
-    }
-
-    # try default branch, same borrower category
-    my $category_query = "SELECT maxissueqty
-                          FROM default_borrower_circ_rules
-                          WHERE categorycode = ?";
-    $sth = $dbh->prepare($category_query);
-    $sth->execute($categorycode);
-    if ($result = $sth->fetchrow_hashref()) {
-        return $result;
-    }
-  
-    # try default branch, default borrower category
-    my $default_query = "SELECT maxissueqty
-                          FROM default_circ_rules";
-    $sth = $dbh->prepare($default_query);
-    $sth->execute();
-    if ($result = $sth->fetchrow_hashref()) {
-        return $result;
-    }
-    
-    # built-in default circulation rule
-    return {
-        maxissueqty => undef,
-    };
-}
-
-=head2 GetBranchItemRule
-
-=over 4
-
-my $branch_item_rule = GetBranchItemRule($branchcode, $itemtype);
-
-=back
-
-Retrieves circulation rule attributes that apply to the given
-branch and item type, regardless of patron category.
-
-The return value is a hashref containing the following key:
-
-holdallowed => Hold policy for this branch and itemtype. Possible values:
-  0: No holds allowed.
-  1: Holds allowed only by patrons that have the same homebranch as the item.
-  2: Holds allowed from any patron.
-
-This searches branchitemrules in the following order:
-
-  * Same branchcode and itemtype
-  * Same branchcode, itemtype '*'
-  * branchcode '*', same itemtype
-  * branchcode and itemtype '*'
-
-Neither C<$branchcode> nor C<$categorycode> should be '*'.
-
-=cut
-
-sub GetBranchItemRule {
-    my ( $branchcode, $itemtype ) = @_;
-    my $dbh = C4::Context->dbh();
-    my $result = {};
-
-    my @attempts = (
-        ['SELECT holdallowed
-            FROM branch_item_rules
-            WHERE branchcode = ?
-              AND itemtype = ?', $branchcode, $itemtype],
-        ['SELECT holdallowed
-            FROM default_branch_circ_rules
-            WHERE branchcode = ?', $branchcode],
-        ['SELECT holdallowed
-            FROM default_branch_item_rules
-            WHERE itemtype = ?', $itemtype],
-        ['SELECT holdallowed
-            FROM default_circ_rules'],
-    );
-
-    foreach my $attempt (@attempts) {
-        my ($query, @bind_params) = @{$attempt};
-
-        # Since branch/category and branch/itemtype use the same per-branch
-        # defaults tables, we have to check that the key we want is set, not
-        # just that a row was returned
-        return $result if ( defined( $result->{'holdallowed'} = $dbh->selectrow_array( $query, {}, @bind_params ) ) );
-    }
-    
-    # built-in default circulation rule
-    return {
-        holdallowed => 2,
-    };
 }
 
 =head2 AddReturn
