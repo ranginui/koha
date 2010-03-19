@@ -88,7 +88,7 @@ my $koha_news_count = scalar @$all_koha_news;
 $template->param(
     koha_news       => $all_koha_news,
     koha_news_count => $koha_news_count,
-#    opaccolorstylesheet => 'home_colors.css'
+    opaccolorstylesheet => 'home_colors.css'
 );
 
 # If GoogleIndicTransliteration system preference is On Set paramter to load Google's javascript in OPAC search screens

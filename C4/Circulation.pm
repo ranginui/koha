@@ -2046,7 +2046,7 @@ sub CanBookBeRenewed {
     my $dbh       = C4::Context->dbh;
     my $renews    = 1;
     my $renewokay = 0;
-	my $error;
+    my $error;
 
     # Look in the issues table for this item, lent to this borrower,
     # and not yet returned.
@@ -2071,9 +2071,9 @@ sub CanBookBeRenewed {
                    LEFT JOIN biblioitems USING (biblioitemnumber)
                    
                    WHERE
-                    issuingrules.categorycode = borrowers.categorycode
+                    (issuingrules.categorycode = borrowers.categorycode or issuingrules.categorycode='*')
                    AND
-                    issuingrules.itemtype = $itype
+                    (issuingrules.itemtype = $itype or issuingrules.itemtype='*')
                    AND
                     (issuingrules.branchcode = $controlbranch OR issuingrules.branchcode = '*') 
                    AND 
@@ -2086,10 +2086,8 @@ sub CanBookBeRenewed {
                     issuingrules.branchcode desc
                    LIMIT 1;
                   ");
-
     $sthcount->execute( $borrowernumber, $itemnumber );
     if ( my $data1 = $sthcount->fetchrow_hashref ) {
-        
         if ( ( $data1->{renewalsallowed} && $data1->{renewalsallowed} > $data1->{renewals} ) || $override_limit ) {
             $renewokay = 1;
         }
