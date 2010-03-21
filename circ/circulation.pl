@@ -705,6 +705,13 @@ my $bor_messages_loop = GetMessages( $borrowernumber, 'B', $branch );
 if($bor_messages_loop){ $template->param(flagged => 1 ); }
 
 
+# Computes full borrower address
+my (undef, $roadttype_hashref) = &GetRoadTypes();
+my $address = $borrower->{'streetnumber'}.' ' if ($borrower->{'streetnumber'});
+$address    .= $roadttype_hashref->{$borrower->{'streettype'}}.' ' if ( $roadttype_hashref->{$borrower->{'streettype'}});
+$address    .= $borrower->{'address'};
+
+
 $duedatespec = "" if not ($stickyduedate or scalar $confirm_required);
 
 $template->param(
