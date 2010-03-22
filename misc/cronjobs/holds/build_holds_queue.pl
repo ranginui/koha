@@ -200,9 +200,9 @@ sub GetItemsAvailableToFillHoldRequestsForBib {
 
     my $items = $sth->fetchall_arrayref({});
 
-    $branchfield = C4::Context->preference('HomeOrHoldingBranch');
+    my $branchfield = C4::Context->preference('HomeOrHoldingBranch');
 
-    return [ grep { my $rule = GetIssuingRule('*', $_->{itype}, $_->{$branchfield}); $_->{reservesallowed} = $rule->{reservesallowed}; $_->{reservesallowed} != 0 } @items ];
+    return [ grep { my $rule = GetIssuingRule('*', $_->{itype}, $_->{$branchfield}); $_->{reservesallowed} = $rule->{reservesallowed}; $_->{reservesallowed} != 0 } @$items ];
 }
 
 =head2 MapItemsToHoldRequests
