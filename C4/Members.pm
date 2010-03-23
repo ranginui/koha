@@ -23,7 +23,7 @@ use strict;
 use C4::Context;
 use C4::Dates qw(format_date_in_iso);
 use Digest::MD5 qw(md5_base64);
-use Date::Calc qw/Today Add_Delta_YM/;
+use Date::Calc qw/Today Add_Delta_YM check_date Date_to_Days/;
 use C4::Log; # logaction
 use C4::Overdues;
 use C4::Reserves;
