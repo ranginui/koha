@@ -2349,6 +2349,7 @@ sub PrepareItemrecordDisplay {
                                 push @authorised_values, $branchcode;
                                 $authorised_lib{$branchcode} = $branchname;
                             }
+			    $defaultvalue = C4::Context->userenv->{branch};
                         }
 
                         #----- itemtypes
