@@ -20,6 +20,21 @@ use strict;
 use warnings;
 use vars qw($VERSION $AUTOLOAD $context @context_stack);
 
+eval {
+    my $servers = C4::Context->config('memcached_servers');
+    if ($servers) {
+        require Memoize::Memcached;
+        import Memoize::Memcached qw(memoize_memcached);
+ 
+        my $memcached = {
+            servers    => [ $servers ],
+            key_prefix => C4::Context->config('memcached_namespace') || 'koha',
+        };
+
+        memoize_memcached('preference', memcached => $memcached, expire_time => 600000); #cache for 10 minutes
+    }
+};
+
 BEGIN {
 	if ($ENV{'HTTP_USER_AGENT'})	{
 		require CGI::Carp;
@@ -79,7 +94,8 @@ BEGIN {
 		}
     }  	# else there is no browser to send fatals to!
 	$VERSION = '3.00.00.036';
-}
+};
+
 
 use DBI;
 use ZOOM;
@@ -87,6 +103,7 @@ use XML::Simple;
 use C4::Boolean;
 use C4::Debug;
 use POSIX ();
+
 
 =head1 NAME
 
@@ -477,12 +494,12 @@ sub preference {
 
     # Look up systempreferences.variable==$var
     my $sql = <<'END_SQL';
-        SELECT    value
+        SELECT    variable, value
         FROM    systempreferences
-        WHERE    variable=?
-        LIMIT    1
 END_SQL
-    $sysprefs{$var} = $dbh->selectrow_array( $sql, {}, $var );
+    my $sysprefs_arrayref;
+    $sysprefs_arrayref = $dbh->selectcol_arrayref( $sql, { Columns=>[1,2] });
+    %sysprefs= @$sysprefs_arrayref;
     return $sysprefs{$var};
 }
 

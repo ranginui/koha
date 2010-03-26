@@ -23,6 +23,7 @@ use strict;
 #use warnings; FIXME - Bug 2505
 use Carp;
 use C4::Context;
+use List::MoreUtils qw/any/;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $DEBUG);
 
 eval {
@@ -36,9 +37,10 @@ eval {
             key_prefix => C4::Context->config('memcached_namespace') || 'koha',
         };
 
-        memoize_memcached('getTranslatedLanguages', memcached => $memcached, expire_time => 600); #cache for 10 minutes
-        memoize_memcached('getFrameworkLanguages' , memcached => $memcached, expire_time => 600);
-        memoize_memcached('getAllLanguages',        memcached => $memcached, expire_time => 600);
+        memoize_memcached('getTranslatedLanguages', memcached => $memcached, expire_time => 600000); #cache for 10 minutes
+        memoize_memcached('getFrameworkLanguages' , memcached => $memcached, expire_time => 600000);
+        memoize_memcached('getAllLanguages',        memcached => $memcached, expire_time => 600000);
+        memoize_memcached('language_get_description',        memcached => $memcached, expire_time => 600000);
     }
 };
 
@@ -92,17 +94,11 @@ sub getFrameworkLanguages {
     closedir MYDIR;
 
     # pull out all data for the dir names that exist
-    for my $dirname (@listdir) {
-        for my $language_set (@$all_languages) {
-
-            if ($dirname eq $language_set->{language_code}) {
-                push @languages, {
-                    'language_code'=>$dirname, 
-                    'language_description'=>$language_set->{language_description}, 
-                    'native_descrition'=>$language_set->{language_native_description} }
-            }
-        }
-    }
+    my @languages=grep {
+                    my $language=$_; 
+                    any {$language->{languagecode} eq $_
+                        } @listdir
+                  } @$all_languages;
     return \@languages;
 }
 
@@ -128,7 +124,8 @@ sub getTranslatedLanguages {
     my @enabled_languages;
  
     if ($interface && $interface eq 'opac' ) {
-        @enabled_languages = split ",", C4::Context->preference('opaclanguages');
+        my $languages= C4::Context->preference('opaclanguage') ||'en';
+        @enabled_languages = split ",", $languages;
         $htdocs = C4::Context->config('opachtdocs');
         if ( $theme and -d "$htdocs/$theme" ) {
             (@languages) = _get_language_dirs($htdocs,$theme);
@@ -140,7 +137,8 @@ sub getTranslatedLanguages {
         }
     }
     elsif ($interface && $interface eq 'intranet' ) {
-        @enabled_languages = split ",", C4::Context->preference('language');
+        my $languages= C4::Context->preference('language') ||'en';
+        @enabled_languages = split ",", $languages;
         $htdocs = C4::Context->config('intrahtdocs');
         if ( $theme and -d "$htdocs/$theme" ) {
             @languages = _get_language_dirs($htdocs,$theme);
@@ -152,7 +150,8 @@ sub getTranslatedLanguages {
         }
     }
     else {
-        @enabled_languages = split ",", C4::Context->preference('opaclanguages');
+        my $languages= C4::Context->preference('opaclanguage') ||'en';
+        @enabled_languages = split ",", $languages;
         my $htdocs = C4::Context->config('intrahtdocs');
         foreach my $theme ( _get_themes('intranet') ) {
             push @languages, _get_language_dirs($htdocs,$theme);
@@ -182,8 +181,10 @@ Returns a reference to an array of hashes:
 
 =cut
 
+my @languages_loop;
+
 sub getAllLanguages {
-    my @languages_loop;
+    return   \@languages_loop if scalar(@languages_loop);
     my $dbh=C4::Context->dbh;
     my $current_language = shift || 'en';
     my $sth = $dbh->prepare('SELECT * FROM language_subtag_registry WHERE type=\'language\'');
