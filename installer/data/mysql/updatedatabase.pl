@@ -3641,7 +3641,7 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
 
 $DBversion = "3.01.00.137";
 if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
-	my $borrowers=$dbh->selectall_arrayref("SELECT borrowernumber from borrowers where debarred <>0;",[0]);
+	my $borrowers=$dbh->selectcol_arrayref("SELECT borrowernumber from borrowers where debarred <>0;",{Columns=>[1]});
 	$dbh->do("ALTER TABLE borrowers MODIFY debarred DATE DEFAULT NULL;");
 	$dbh->do("UPDATE borrowers set debarred='9999-12-31' where borrowernumber IN (".join (",",@$borrowers).");");
 	$dbh->do("ALTER TABLE borrowers ADD COLUMN debarredcomment VARCHAR(255) DEFAULT NULL AFTER debarred;");
