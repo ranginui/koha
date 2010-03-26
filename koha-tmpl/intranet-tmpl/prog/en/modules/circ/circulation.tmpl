@@ -119,10 +119,10 @@ if (nodename =="barcodes[]"){
 }
 function validate1(date) {
     var today = new Date();
-    if ( date < today ) {
-        return true;
-     } else {
+    if ( today < date || date.toDateString() == today.toDateString() ) {
         return false;
+     } else {
+        return true;
      }
 };
 function refocus(calendar) {
