@@ -23,7 +23,7 @@ use strict;
 #use warnings; FIXME - Bug 2505
 use Carp;
 use C4::Context;
-use List::MoreUtils qw/any/;
+use List::MoreUtils qw/any uniq/;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $DEBUG);
 
 eval {
@@ -119,52 +119,35 @@ Returns a reference to an array of hashes:
 sub getTranslatedLanguages {
     my ($interface, $theme, $current_language, $which) = @_;
     my $htdocs;
-    my $all_languages = getAllLanguages();
     my @languages;
     my @enabled_languages;
  
-    if ($interface && $interface eq 'opac' ) {
-        my $languages= C4::Context->preference('opaclanguage') ||'en';
-        @enabled_languages = split ",", $languages;
-        $htdocs = C4::Context->config('opachtdocs');
-        if ( $theme and -d "$htdocs/$theme" ) {
-            (@languages) = _get_language_dirs($htdocs,$theme);
-        }
-        else {
-            for my $theme ( _get_themes('opac') ) {
-                push @languages, _get_language_dirs($htdocs,$theme);
-            }
-        }
-    }
-    elsif ($interface && $interface eq 'intranet' ) {
-        my $languages= C4::Context->preference('language') ||'en';
-        @enabled_languages = split ",", $languages;
-        $htdocs = C4::Context->config('intrahtdocs');
-        if ( $theme and -d "$htdocs/$theme" ) {
-            @languages = _get_language_dirs($htdocs,$theme);
-        }
-        else {
-            foreach my $theme ( _get_themes('intranet') ) {
-                push @languages, _get_language_dirs($htdocs,$theme);
-            }
-        }
+    my ($preference,$config);
+    if ($interface && $interface eq 'intranet' ) {
+        $preference="language";
+        $config='intrahtdocs';
     }
     else {
-        my $languages= C4::Context->preference('opaclanguage') ||'en';
-        @enabled_languages = split ",", $languages;
-        my $htdocs = C4::Context->config('intrahtdocs');
-        foreach my $theme ( _get_themes('intranet') ) {
-            push @languages, _get_language_dirs($htdocs,$theme);
-        }
-        $htdocs = C4::Context->config('opachtdocs');
-        foreach my $theme ( _get_themes('opac') ) {
-            push @languages, _get_language_dirs($htdocs,$theme);
-        }
-        my %seen;
-        $seen{$_}++ for @languages;
-        @languages = keys %seen;
+        $preference="opaclanguages";
+        $config='opachtdocs';
+        $interface ||='opac';
+
     }
-    return _build_languages_arrayref($all_languages,\@languages,$current_language,\@enabled_languages);
+
+    my $languages= C4::Context->preference($preference) ||'en';
+    @enabled_languages = split ",", $languages;
+    $htdocs = C4::Context->config($config);
+    if ( $theme and -d "$htdocs/$theme" ) {
+        (@languages) = _get_language_dirs($htdocs,$theme);
+    }
+    else {
+        for my $theme ( _get_themes($interface) ) {
+            push @languages, _get_language_dirs($htdocs,$theme);
+        }
+        @languages=uniq @languages;
+    }
+    @enabled_languages=grep{my $enabled_language=$_;any{$_ eq $enabled_language}@languages}@enabled_languages;
+    return _build_languages_arrayref(\@enabled_languages,$current_language);
 }
 
 =head2 getAllLanguages
@@ -281,10 +264,9 @@ FIXME: this could be rewritten and simplified using map
 =cut
 
 sub _build_languages_arrayref {
-        my ($all_languages,$translated_languages,$current_language,$enabled_languages) = @_;
+        my ($translated_languages,$current_language) = @_;
         my @translated_languages = @$translated_languages;
         my @languages_loop; # the final reference to an array of hashrefs
-        my @enabled_languages = @$enabled_languages;
         # how many languages are enabled, if one, take note, some contexts won't need to display it
         my %seen_languages; # the language tags we've seen
         my %found_languages;
@@ -296,15 +278,10 @@ sub _build_languages_arrayref {
             # separate the language string into its subtag types
             my $language_subtags_hashref = regex_lang_subtags($translated_language);
 
-            # is this language string 'enabled'?
-            for my $enabled_language (@enabled_languages) {
-                #warn "Checking out if $translated_language eq $enabled_language";
-                $language_subtags_hashref->{'enabled'} = 1 if $translated_language eq $enabled_language;
-            }
-            
             # group this language, key by langtag
             $language_subtags_hashref->{'sublanguage_current'} = 1 if $translated_language eq $current_language;
             $language_subtags_hashref->{'rfc4646_subtag'} = $translated_language;
+            $language_subtags_hashref->{'enabled'} = 1;
             $language_subtags_hashref->{'native_description'} = language_get_description($language_subtags_hashref->{language},$language_subtags_hashref->{language},'language');
             $language_subtags_hashref->{'script_description'} = language_get_description($language_subtags_hashref->{script},$language_subtags_hashref->{'language'},'script');
             $language_subtags_hashref->{'region_description'} = language_get_description($language_subtags_hashref->{region},$language_subtags_hashref->{'language'},'region');
@@ -316,11 +293,6 @@ sub _build_languages_arrayref {
         while( my ($key, $value) = each %$language_groups) {
 
             # is this language group enabled? are any of the languages within it enabled?
-            my $enabled;
-            for my $enabled_language (@enabled_languages) {
-                my $regex_enabled_language = regex_lang_subtags($enabled_language);
-                $enabled = 1 if $key eq $regex_enabled_language->{language};
-            }
             push @languages_loop,  {
                             # this is only use if there is one
                             rfc4646_subtag => @$value[0]->{rfc4646_subtag},
@@ -329,7 +301,7 @@ sub _build_languages_arrayref {
                             sublanguages_loop => $value,
                             plural => $track_language_groups->{$key} >1 ? 1 : 0,
                             current => $current_language_regex->{language} eq $key ? 1 : 0,
-                            group_enabled => $enabled,
+                            group_enabled=>1
                            };
         }
         return \@languages_loop;
