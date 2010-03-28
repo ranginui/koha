@@ -64,8 +64,8 @@ var allcheckboxes = $(".checkboxed");
     <!-- TMPL_IF NAME="AllowRenewalLimitOverride" -->
     $( '#override_limit' ).click( function () {
            $( '.renewals-allowed' ).toggle();
-    } ).attr( 'checked', true );
-    $( '.renewals-allowed' ).show();
+    } ).attr( 'checked', false );
+    $( '.renewals-allowed' ).hide();
     <!-- /TMPL_IF -->
     <!-- /TMPL_IF -->
 	$("td").click(function(e){
