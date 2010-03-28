@@ -27,7 +27,10 @@ select="marc:datafield[@tag=999]/marc:subfield[@code='9']"/>
     <xsl:for-each select="marc:datafield[@tag=200]">
       	<a><xsl:attribute name="href">/cgi-bin/koha/opac-detail.pl?biblionumber=<xsl:value-of select="$biblionumber"/>
            </xsl:attribute>
-        <xsl:value-of select="marc:subfield[@code='a']"/>
+        <xsl:variable name="title" select="marc:subfield[@code='a']"/>
+        <xsl:variable name="ntitle"
+             select="translate($title, '&#x0098;&#x009C;&#xC29C;&#xC29B;&#xC298;&#xC288;&#xC289;','')"/>
+        <xsl:value-of select="$ntitle" />
       </a>
       <xsl:if test="marc:subfield[@code='e']">
         <xsl:text> : </xsl:text>
