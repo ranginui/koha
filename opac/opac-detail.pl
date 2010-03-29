@@ -104,31 +104,100 @@ if ( $itemtype ) {
 my $shelflocations =GetKohaAuthorisedValues('items.location',$dat->{'frameworkcode'}, 'opac');
 my $collections =  GetKohaAuthorisedValues('items.ccode',$dat->{'frameworkcode'}, 'opac');
 
-#coping with subscriptions
-my $subscriptionsnumber = CountSubscriptionFromBiblionumber($biblionumber);
-my @subscriptions       = GetSubscriptions( $dat->{title}, $dat->{issn}, $biblionumber );
+# Serial Collection
+my @sc_fields = $record->field(955);
+my @serialcollections = ();
 
-my @subs;
-$dat->{'serial'}=1 if $subscriptionsnumber;
-foreach my $subscription (@subscriptions) {
-    my $serials_to_display;
-    my %cell;
-    $cell{subscriptionid}    = $subscription->{subscriptionid};
-    $cell{subscriptionnotes} = $subscription->{notes};
-    $cell{missinglist}       = $subscription->{missinglist};
-    $cell{opacnote}          = $subscription->{opacnote};
-    $cell{histstartdate}     = format_date($subscription->{histstartdate});
-    $cell{histenddate}       = format_date($subscription->{histenddate});
-    $cell{branchcode}        = $subscription->{branchcode};
-    $cell{branchname}        = GetBranchName($subscription->{branchcode});
-    $cell{hasalert}          = $subscription->{hasalert};
-    #get the three latest serials.
-    $serials_to_display = $subscription->{opacdisplaycount};
-    $serials_to_display = C4::Context->preference('OPACSerialIssueDisplayCount') unless $serials_to_display;
-	$cell{opacdisplaycount} = $serials_to_display;
-    $cell{latestserials} =
-      GetLatestSerials( $subscription->{subscriptionid}, $serials_to_display );
-    push @subs, \%cell;
+foreach my $sc_field (@sc_fields) {
+    my %row_data;
+
+    $row_data{text}    = $sc_field->subfield('r');
+    $row_data{branch}  = $sc_field->subfield('9');
+
+    if ($row_data{text} && $row_data{branch}) { 
+	push (@serialcollections, \%row_data);
+    }
+}
+
+if (scalar(@serialcollections) > 0) {
+    $template->param(
+	serialcollection  => 1,
+	serialcollections => \@serialcollections);
+}
+
+#coping with subscriptions
+if ($dat->{'serial'}){
+    my $subscriptionsnumber = CountSubscriptionFromBiblionumber($biblionumber);
+    my @subscriptions       = GetSubscriptions( $dat->{title}, $dat->{issn}, $biblionumber );
+
+    my @subs;
+    $dat->{'serial'}=1 if $subscriptionsnumber;
+    foreach my $subscription (@subscriptions) {
+        my $serials_to_display;
+        my %cell;
+        $cell{subscriptionid}    = $subscription->{subscriptionid};
+        $cell{subscriptionnotes} = $subscription->{notes};
+        $cell{missinglist}       = $subscription->{missinglist};
+        $cell{opacnote}          = $subscription->{opacnote};
+        $cell{histstartdate}     = format_date($subscription->{histstartdate});
+        $cell{histenddate}       = format_date($subscription->{histenddate});
+        $cell{branchcode}        = $subscription->{branchcode};
+        $cell{branchname}        = GetBranchName($subscription->{branchcode});
+        $cell{hasalert}          = $subscription->{hasalert};
+        #get the three latest serials.
+        $serials_to_display = $subscription->{opacdisplaycount};
+        $serials_to_display = C4::Context->preference('OPACSerialIssueDisplayCount') unless $serials_to_display;
+        $cell{opacdisplaycount} = $serials_to_display;
+        $cell{latestserials} =
+          GetLatestSerials( $subscription->{subscriptionid}, $serials_to_display );
+        push @subs, \%cell;
+    }
+    $template->param(subscriptionsnumber => $subscriptionsnumber,
+    subscriptions       => \@subs,
+    subscriptionsnumber => $subscriptionsnumber,
+    );
+    # We try to select the best default tab to show, according to what
+    # the user wants, and what's available for display
+    my $defaulttab;
+    switch (C4::Context->preference('opacSerialDefaultTab')) {
+
+        # If the user wants subscriptions by default
+        case "subscriptions" { 
+        # And there are subscriptions, we display them
+        if ($subscriptionsnumber) {
+            $defaulttab = 'subscriptions';
+        } else {
+           # Else, we try next option
+           next; 
+        }
+        }
+
+        case "serialcollection" {
+        if (scalar(@serialcollections) > 0) {
+            $defaulttab = 'serialcollection' ;
+        } else {
+            next;
+        }
+        }
+
+        case "holdings" {
+        if ($dat->{'count'} > 0) {
+           $defaulttab = 'holdings'; 
+        } else {
+             # As this is the last option, we try other options if there are no items
+             if ($subscriptionsnumber) {
+            $defaulttab = 'subscriptions';
+             } elsif (scalar(@serialcollections) > 0) {
+            $defaulttab = 'serialcollection' ;
+             }
+        }
+
+        }
+
+    }
+$template->param('defaulttab' => $defaulttab);
+
+
 }
 
 $dat->{'count'} = scalar(@items);
@@ -275,10 +344,7 @@ if(C4::Context->preference("ISBD")) {
 
 $template->param(
     ITEM_RESULTS        => \@items,
-    subscriptionsnumber => $subscriptionsnumber,
     biblionumber        => $biblionumber,
-    subscriptions       => \@subs,
-    subscriptionsnumber => $subscriptionsnumber,
     reviews             => $reviews,
     loggedincommenter   => $loggedincommenter
 );
@@ -298,27 +364,6 @@ if (C4::Context->preference("OPACFRBRizeEditions")==1) {
         );
     };
     if ($@) { warn "XISBN Failed $@"; }
-}
-
-# Serial Collection
-my @sc_fields = $record->field(955);
-my @serialcollections = ();
-
-foreach my $sc_field (@sc_fields) {
-    my %row_data;
-
-    $row_data{text}    = $sc_field->subfield('r');
-    $row_data{branch}  = $sc_field->subfield('9');
-
-    if ($row_data{text} && $row_data{branch}) { 
-	push (@serialcollections, \%row_data);
-    }
-}
-
-if (scalar(@serialcollections) > 0) {
-    $template->param(
-	serialcollection  => 1,
-	serialcollections => \@serialcollections);
 }
 
 # Amazon.com Stuff
@@ -597,48 +642,6 @@ if (my $search_for_title = C4::Context->preference('OPACSearchForTitleIn')){
     $isbn ? $search_for_title =~ s/{ISBN}/$isbn/g : $search_for_title =~ s/{ISBN}//g;
  $template->param('OPACSearchForTitleIn' => $search_for_title);
 }
-
-# We try to select the best default tab to show, according to what
-# the user wants, and what's available for display
-my $defaulttab;
-switch (C4::Context->preference('opacSerialDefaultTab')) {
-
-    # If the user wants subscriptions by default
-    case "subscriptions" { 
-	# And there are subscriptions, we display them
-	if ($subscriptionsnumber) {
-	    $defaulttab = 'subscriptions';
-	} else {
-	   # Else, we try next option
-	   next; 
-	}
-    }
-
-    case "serialcollection" {
-	if (scalar(@serialcollections) > 0) {
-	    $defaulttab = 'serialcollection' ;
-	} else {
-	    next;
-	}
-    }
-
-    case "holdings" {
-	if ($dat->{'count'} > 0) {
-	   $defaulttab = 'holdings'; 
-	} else {
-	     # As this is the last option, we try other options if there are no items
-	     if ($subscriptionsnumber) {
-		$defaulttab = 'subscriptions';
-	     } elsif (scalar(@serialcollections) > 0) {
-		$defaulttab = 'serialcollection' ;
-	     }
-	}
-
-    }
-
-}
-$template->param('defaulttab' => $defaulttab);
-
 
 
 output_html_with_http_headers $query, $cookie, $template->output;
