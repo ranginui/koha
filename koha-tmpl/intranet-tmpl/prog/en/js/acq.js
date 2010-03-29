@@ -641,27 +641,31 @@ function messenger(X,Y,etc){    // FIXME: unused?
 
 function calcNeworderTotal(){
     //collect values
-    var f        = document.getElementById('Aform');
-    var quantity = new Number(f.quantity.value);
-    var discount = new Number(f.discount.value);
-    var listinc  = new Number (f.listinc.value);
-    var currency = f.currency.value;
-    var applygst = new Number (f.applygst.value);
-    var listprice   =  new Number(f.listprice.value);
-    var invoiceingst =  new Number (f.invoiceincgst.value);
-    var exchangerate =  new Number(f.elements[currency].value);      //get exchange rate
-    var gst_on=(!listinc && invoiceingst);
+    var f            = document.getElementById('Aform');
+    var quantity     = parseInt(f.quantity.value);
+    var discount     = parseFloat(f.discount.value);
+    var listinc      = parseInt(f.listinc.value);
+    var currency     = f.currency.value;
+    var applygst     = parseInt(f.applygst.value);
+    var gstrate      = parseFloat(f.gstrate.value);
+    var listprice    = parseFloat(f.listprice.value);
+    var exchangerate = parseInt(f.elements[currency].value);      //get exchange rate
+
+    // GST should be on if we apply GST, and if the listing doesn't already
+    // include it.
+    var gst_on=(!listinc && applygst);
 
     //do real stuff
     var rrp   = new Number(listprice*exchangerate);
     var ecost = new Number(rrp * (100 - discount ) / 100);
-    var GST   = new Number(0);
+    var GST   = 0;
     if (gst_on) {
-            rrp=rrp * (1+f.gstrate.value / 100);
-        GST=ecost * f.gstrate.value / 100;
+        // Note: the gstrate should realy
+        rrp=rrp * (1+gstrate);
+        GST=ecost * gstrate;
     }
 
-    var total =  new Number( (ecost + GST) * quantity);
+    var total =  new Number( ecost  * quantity);
 
     f.rrp.value = rrp.toFixed(2);
 

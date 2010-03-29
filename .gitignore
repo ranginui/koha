@@ -1,0 +1,6 @@
+Makefile
+*swp
+*~
+blib
+pm_to_blib
+t/test-config.txt
