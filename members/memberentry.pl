@@ -141,6 +141,7 @@ if ($op eq 'insert' || $op eq 'modify' || $op eq 'save') {
     my $syspref = $dateobject->regexp();		# same syspref format for all 3 dates
     my $iso     = $dateobject->regexp('iso');	#
     foreach (qw(dateenrolled dateexpiry dateofbirth debarred)) {
+        next unless exists $newdata{$_};
         my $userdate = $newdata{$_} or next;
         if ($userdate =~ /$syspref/) {
             $newdata{$_} = format_date_in_iso($userdate);	# if they match syspref format, then convert to ISO
