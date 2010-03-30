@@ -69,7 +69,8 @@ if($importid) {
 if($view eq 'card') {
 $xmlrecord = GetXmlBiblio($biblionumber) unless $xmlrecord;
 
-my $xslfile = C4::Context->config('intrahtdocs')."/prog/en/xslt/compact.xsl";
+my $filename=(C4::Context->preference('marcflavour') ne "MARC21"?C4::Context->preference('marcflavour')."_":"").'compact.xsl';
+my $xslfile = C4::Context->config('intrahtdocs')."/prog/en/xslt/$filename";
 my $parser = XML::LibXML->new();
 my $xslt = XML::LibXSLT->new();
 my $source = $parser->parse_string($xmlrecord);
