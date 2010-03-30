@@ -34,13 +34,10 @@
       
       <xsl:template match="marc:datafield">
         <xsl:if test="starts-with(@tag, '7')">
-          <p class="mainheading"><xsl:value-of select="."/></p>
+          <p class="mainheading"> <xsl:apply-templates select="marc:subfield"/></p>
         </xsl:if>
         <xsl:if test="@tag='200'">
           <span class="title"><xsl:value-of select="."/></span>
-        </xsl:if>
-        <xsl:if test="@tag='200'">
-          <span class="titlemain"><xsl:value-of select="."/></span><br/>
         </xsl:if>
         <xsl:if test="@tag='205'">
           <xsl:value-of select="."/>
@@ -48,14 +45,10 @@
         <xsl:if test="@tag='215'">
           <p class="extent"><xsl:value-of select="."/></p>
         </xsl:if>
-        <xsl:if test="starts-with(@tag, '3')">
-          <p class="note"><xsl:value-of select="."/></p>
-        </xsl:if>
-        <xsl:if test="@tag='606'">
-          <span class='counter'><xsl:number count="marc:datafield[@tag='606']"/>.</span> <xsl:apply-templates select="marc:subfield"/>
-        </xsl:if>
-        <xsl:if test="@tag='610'">
-          <span class="counter"><xsl:number format="i" count="marc:datafield[@tag='610']"/>.</span> <xsl:apply-templates select="marc:subfield"/>
+        <xsl:if test="substring(@tag,1,1)='6' and @tag!='680' and @tag!='676'">
+        <p> 
+          <span class='counter'><xsl:number count="marc:datafield[substring(@tag,1,1)='6']"/>.</span> <xsl:apply-templates select="marc:subfield"/>
+        </p>
         </xsl:if>
         <xsl:if test="@tag='680'">
           <xsl:variable name="LCCN.nospace" select="translate(marc:subfield[@code='a'], ' ', '')"/>
@@ -78,7 +71,7 @@
         </xsl:if>
       </xsl:template>
       <xsl:template match="marc:subfield">
-        <xsl:if test="@code!='2'">    
+        <xsl:if test="@code!='0' and @code!='1' and @code!='2' and @code!='3' and @code!='5' and @code!='6' and @code!='7' and @code!='8' and @code!='9'">    
         <xsl:if test="@code!='a'">--</xsl:if>
         <xsl:value-of select="."/>
       </xsl:if>
