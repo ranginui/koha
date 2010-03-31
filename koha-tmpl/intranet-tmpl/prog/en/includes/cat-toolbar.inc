@@ -99,7 +99,7 @@ function confirm_items_deletion() {
 		];
 
 		var addtomenu = [
-		{ text: _("Cart"), onclick: { fn: addToCart } },
+		<!-- TMPL_IF NAME="intranetbookbag" -->{ text: _("Cart"), onclick: { fn: addToCart } },<!-- /TMPL_IF -->
 		{ text: _("List"),  onclick: { fn: addToShelf } }
 		];
 
