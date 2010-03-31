@@ -5,8 +5,6 @@ use strict;
 use Data::Dumper;
 use C4::Context;
 
-
-
 use MARC::Record;
 use MARC::Field;
 use MARC::Charset;
@@ -18,7 +16,6 @@ MARC::Charset->assume_unicode(1);
 
 my $dbh          = C4::Context->dbh();
 my $auto_barcode = 1000000000;
-
 
 # Item type mapping
 
@@ -162,8 +159,8 @@ foreach (@m) {
 
 }
 
-#my $sth = $dbh->prepare("select * from biblio,biblioitems where 
-#  biblioitems.biblionumber=biblio.biblionumber 
+#my $sth = $dbh->prepare("select * from biblio,biblioitems where
+#  biblioitems.biblionumber=biblio.biblionumber
 #  and (biblioitems.itemtype <> 'M'
 #      and biblioitems.itemtype <> 'MJ'
 #      and biblioitems.itemtype <> 'MP'
@@ -174,7 +171,9 @@ foreach (@m) {
 #      and biblioitems.itemtype <> 'PYP')
 #  order by biblio.biblionumber ");
 
- my $sth = $dbh->prepare("select * from biblio,biblioitems where biblioitems.biblionumber=biblio.biblionumber") ;
+my $sth = $dbh->prepare(
+"select * from biblio,biblioitems where biblioitems.biblionumber=biblio.biblionumber"
+);
 
 # my $sth = $dbh->prepare("select * from biblio where biblionumber <  100  ") ;
 # my $sth = $dbh->prepare("select * from biblio where biblionumber >   34700  and  biblionumber <    34800  ") ;
@@ -190,7 +189,8 @@ my $sth_item =
 my $sth4 = $dbh->prepare(
     "select count(*) as cnt from items where biblioitemnumber = ? ");
 
-open( MARCOUT, '> /home/chrisc/opusrecord.dat' ) or die "\nFail- open marcoutput: $!";
+open( MARCOUT, '> /home/chrisc/opusrecord.dat' )
+  or die "\nFail- open marcoutput: $!";
 my $cnt;
 my @marcdata;
 
@@ -198,21 +198,22 @@ my $i = 0;
 my $oldbib;
 BRECORD: while ( my $bib = $sth->fetchrow_hashref() ) {
     my $itmcnt = 0;
-
+    my $dewey  = '';
     $i++;
-    print ".";
-#    print "$i" unless $i % 100;
+
+    #    print ".";
+    #    print "$i" unless $i % 100;
 
     ## ## $bib
-#    my $sth3 = $dbh->prepare(
-#        "select count(*) as cnt from biblioitems where biblionumber = ? ");
+    #    my $sth3 = $dbh->prepare(
+    #        "select count(*) as cnt from biblioitems where biblionumber = ? ");
 
     #    $sth3->{TraceLevel} = 3;
-#    $sth3->execute( $bib->{'biblionumber'} );
-#    my $icnt = $sth3->fetchrow_hashref();
+    #    $sth3->execute( $bib->{'biblionumber'} );
+    #    my $icnt = $sth3->fetchrow_hashref();
 
     # ###  $icnt
-#    next if $icnt->{'cnt'} == 0;
+    #    next if $icnt->{'cnt'} == 0;
 
     my $sth_bibid = $dbh->prepare(
         "select bibid as bibid from marc_biblio  where  biblionumber = ? ");
@@ -239,24 +240,25 @@ BRECORD: while ( my $bib = $sth->fetchrow_hashref() ) {
     #-------------------------------------------------------------------
     my $mref = {};
 
-#my @tags = qw/ 010 020 022 082 100 240 245 260 300 362 440 500 520 852 942 999 /;
+    my @tags =
+      qw/ 010 020 022 082 100 240 245 260 300 362 440 500 520 852 942 999 /;
 
-    my @tags = qw/ 020 022 100 245 260 300 362 999 /;
+    #    my @tags = qw/ 020 022 100 245 260 300 362 999 /;
     foreach my $tag (@tags) {
         $mref->{"$tag"} = MARC::Field->new( $tag, '', '', xxx => '' );
     }
 
     # bib shizz
-    my $biblionumber  = $bib->{'biblionumber'};
-    my $biblioitemnumber  = $bib->{'biblioitemnumber'};    
-    my $author        = $bib->{'author'};
-    my $title         = $bib->{'title'};
-    my $unititle      = $bib->{'unititle'};
-    my $notes         = $bib->{'notes'};
-    my $serial        = $bib->{'serial'};
-    my $seriestitle   = $bib->{'seriestitle'};
-    my $copyrightdate = $bib->{'copyrightdate'};
-    my $abstract      = $bib->{'abstract'};
+    my $biblionumber     = $bib->{'biblionumber'};
+    my $biblioitemnumber = $bib->{'biblioitemnumber'};
+    my $author           = $bib->{'author'};
+    my $title            = $bib->{'title'};
+    my $unititle         = $bib->{'unititle'};
+    my $notes            = $bib->{'notes'};
+    my $serial           = $bib->{'serial'};
+    my $seriestitle      = $bib->{'seriestitle'};
+    my $copyrightdate    = $bib->{'copyrightdate'};
+    my $abstract         = $bib->{'abstract'};
 
     #    print "$bib->{'biblionumber'}\n";
     $sth_tags->execute( $bibid->{'bibid'} );
@@ -271,9 +273,10 @@ BRECORD: while ( my $bib = $sth->fetchrow_hashref() ) {
 ## ## $mref
     foreach my $tag (@tags_arr) {
         next if ( $tag->{'tag'} =~ /952/ );
-	next if ( $tag->{'tag'} =~ /300/ );
-	next if ( $tag->{'tag'} =~ /260/ );
-	next if ( $tag->{'tag'} =~ /362/ );
+        next if ( $tag->{'tag'} =~ /300/ );
+        next if ( $tag->{'tag'} =~ /260/ );
+        next if ( $tag->{'tag'} =~ /362/ );
+
  #        next if ( $tag->{'tag'} =~ /942/ );  # old koha 2.2 item field, ignore
         next if ( $tag->{'tag'} =~ /852/ );    ## 852 is rubbish too
 
@@ -288,6 +291,11 @@ BRECORD: while ( my $bib = $sth->fetchrow_hashref() ) {
 ### $tag
         }
 
+        if ( $tag->{'tag'} eq '942' ) {
+            if ( $tag->{'subfieldcode'} eq 'k' ) {
+                $dewey = $tag->{'subfieldvalue'};
+            }
+        }
         my $tagcode  = ( $tag->{'tag'} );
         my $subcode  = ( $tag->{'subfieldcode'} );
         my $subvalue = ( $tag->{'subfieldvalue'} );
@@ -336,11 +344,11 @@ BRECORD: while ( my $bib = $sth->fetchrow_hashref() ) {
         }
 
     }
-    if ($oldbib == $biblionumber){
-	$biblionumber='';
+    if ( $oldbib == $biblionumber ) {
+        $biblionumber = '';
     }
     else {
-	$oldbib = $biblionumber;
+        $oldbib = $biblionumber;
     }
     $mref->{'999'}->add_subfields( 'c' => $biblionumber )
       if defined $biblionumber;    #bibnum
@@ -373,32 +381,32 @@ BRECORD: while ( my $bib = $sth->fetchrow_hashref() ) {
         ### e
         my $biblioitemnumber = $bi->{'biblioitemnumber'};    #REMAP!
         my $class            = $bi->{'classification'};
-        my $dewey            = $bi->{'dewey'};
-        my $illus            = $bi->{'illus'};
-        my $isbn             = $bi->{'isbn'};
-        my $issn             = $bi->{'issn'};
-        my $itemtype         = $bi->{'itemtype'};            #i
-        my $lccn             = $bi->{'lccn'};
-        my $notes            = $bi->{'notes'};               #i
-        my $number           = $bi->{'number'};              #i
-        my $pages            = $bi->{'pages'};
-        my $classification   = $bi->{'classification'};
-        my $place            = $bi->{'place'};
-        my $publicationyear  = $bi->{'publicationyear'};
-        my $publishercode    = $bi->{'publishercode'};
-        my $size             = $bi->{'size'};
-        my $subclass         = $bi->{'subclass'};            #i
-        my $url              = $bi->{'url'};                 #i
-        my $volume           = $bi->{'volume'};
-        my $volumeddesc      = $bi->{'volumeddesc'};
 
-        
+        #       my $dewey            = $bi->{'dewey'};
+        my $illus           = $bi->{'illus'};
+        my $isbn            = $bi->{'isbn'};
+        my $issn            = $bi->{'issn'};
+        my $itemtype        = $bi->{'itemtype'};             #i
+        my $lccn            = $bi->{'lccn'};
+        my $notes           = $bi->{'notes'};                #i
+        my $number          = $bi->{'number'};               #i
+        my $pages           = $bi->{'pages'};
+        my $classification  = $bi->{'classification'};
+        my $place           = $bi->{'place'};
+        my $publicationyear = $bi->{'publicationyear'};
+        my $publishercode   = $bi->{'publishercode'};
+        my $size            = $bi->{'size'};
+        my $subclass        = $bi->{'subclass'};             #i
+        my $url             = $bi->{'url'};                  #i
+        my $volume          = $bi->{'volume'};
+        my $volumeddesc     = $bi->{'volumeddesc'};
+
         # ITEMTYPE MAPPING
         # skip these itemtypes
 
-#        foreach (@skipped_itypes) {
-#            next BIRECORD if $itemtype eq $_;
-#        }
+        #        foreach (@skipped_itypes) {
+        #            next BIRECORD if $itemtype eq $_;
+        #        }
 ### eeeeeee
 
 #        $mref->{'999'}->add_subfields( 'd' => $bib->{'biblionumber'} );   #REMAP  - bibitem-num now re-mapped to bibnumber
@@ -407,54 +415,51 @@ BRECORD: while ( my $bib = $sth->fetchrow_hashref() ) {
 #        $sth_item->{TraceLevel} = "3";
 
         # ### wwwwww
-       
-       my $title_check = $mref->{'245'}->subfield('a');
-       my $author_check = $mref->{'100'}->subfield('a');
-       my $isbn_check = $mref->{'020'}->subfield('a');
-       my $issn_check = $mref->{'022'}->subfield('a');
-      my $pubdate_check = $mref->{'260'}->subfield('c');
-      my $publisher_check = $mref->{'260'}->subfield('b');
-      my $place_check = $mref->{'260'}->subfield('a');
-      my $illus_check = $mref->{'300'}->subfield('b');
-      my $pages_check = $mref->{'300'}->subfield('a');
-      my $size_check = $mref->{'300'}->subfield('c');
-      my $volume_check = $mref->{'362'}->subfield('a');
-       if (! $title_check){
-	   $mref->{'245'}->add_subfields( 'a' => $title );
-       }       
-       if (! $isbn_check){
-	   $mref->{'020'}->add_subfields( 'a' => $isbn );
-       }
-       if (! $author_check){
-	   $mref->{'100'}->add_subfields( 'a' => $author );
-       }
-       if (! $issn_check){
-	   $mref->{'022'}->add_subfields( 'a' => $issn );
-       }
-      if (! $pubdate_check){
-	   $mref->{'260'}->add_subfields( 'c' => $publicationyear );
-       } 
-      if (! $publisher_check){
-	   $mref->{'260'}->add_subfields( 'b' => $publishercode );
-       }
-      if (! $place_check){
-	   $mref->{'260'}->add_subfields( 'b' => $place );
-       }
-      if (! $illus_check){
-	   $mref->{'300'}->add_subfields( 'b' => $illus );
-       }
-      if (! $pages_check){
-	   $mref->{'300'}->add_subfields( 'a' => $pages );
-       }
-      if (! $size_check){
-	   $mref->{'300'}->add_subfields( 'c' => $size );
-       }
-      if (! $volume_check){
-	   $mref->{'362'}->add_subfields( 'a' => $volumeddesc );
-       }
-      
-      
 
+        my $title_check     = $mref->{'245'}->subfield('a');
+        my $author_check    = $mref->{'100'}->subfield('a');
+        my $isbn_check      = $mref->{'020'}->subfield('a');
+        my $issn_check      = $mref->{'022'}->subfield('a');
+        my $pubdate_check   = $mref->{'260'}->subfield('c');
+        my $publisher_check = $mref->{'260'}->subfield('b');
+        my $place_check     = $mref->{'260'}->subfield('a');
+        my $illus_check     = $mref->{'300'}->subfield('b');
+        my $pages_check     = $mref->{'300'}->subfield('a');
+        my $size_check      = $mref->{'300'}->subfield('c');
+        my $volume_check    = $mref->{'362'}->subfield('a');
+        if ( !$title_check ) {
+            $mref->{'245'}->add_subfields( 'a' => $title );
+        }
+        if ( !$isbn_check ) {
+            $mref->{'020'}->add_subfields( 'a' => $isbn );
+        }
+        if ( !$author_check ) {
+            $mref->{'100'}->add_subfields( 'a' => $author );
+        }
+        if ( !$issn_check ) {
+            $mref->{'022'}->add_subfields( 'a' => $issn );
+        }
+        if ( !$pubdate_check ) {
+            $mref->{'260'}->add_subfields( 'c' => $publicationyear );
+        }
+        if ( !$publisher_check ) {
+            $mref->{'260'}->add_subfields( 'b' => $publishercode );
+        }
+        if ( !$place_check ) {
+            $mref->{'260'}->add_subfields( 'b' => $place );
+        }
+        if ( !$illus_check ) {
+            $mref->{'300'}->add_subfields( 'b' => $illus );
+        }
+        if ( !$pages_check ) {
+            $mref->{'300'}->add_subfields( 'a' => $pages );
+        }
+        if ( !$size_check ) {
+            $mref->{'300'}->add_subfields( 'c' => $size );
+        }
+        if ( !$volume_check ) {
+            $mref->{'362'}->add_subfields( 'a' => $volumeddesc );
+        }
 
         $sth_item->execute($biblioitemnumber);
 
@@ -482,21 +487,22 @@ BRECORD: while ( my $bib = $sth->fetchrow_hashref() ) {
             #                }
             #                $itemtype = 'BK';
             #            } else {
-#            foreach my $m (@map_arr) {
-#                if ( $itemtype eq @$m[0] ) {
-#                    $itemtype = @$m[1];
-#                    $ccode    = @$m[2];
+            #            foreach my $m (@map_arr) {
+            #                if ( $itemtype eq @$m[0] ) {
+            #                    $itemtype = @$m[1];
+            #                    $ccode    = @$m[2];
 
-                    #                        $loc      = @$m[3];
-#                    last;
-#                }
-#            }
+            #                        $loc      = @$m[3];
+            #                    last;
+            #                }
+            #            }
 
             #            }
 
          #        $mref->{"$tag"} = MARC::Field->new( $tag, '', '', xxx => '' );
 
-            my @branches = qw/AY AL OP AR AU LA AN BM BN BR CG CT GF CH CR GR CW DE DU LD EM EXT FR GS HA LH INFO IC KW KE MU NA LB NE NP LP NS NR NO OR PO PN PU QU RO LR SR SY TP TG LT TH TU VA WU WI WA WE WR WK WH LW/;
+            my @branches =
+              qw/AY AL OP AR AU LA AN BM BN BR CG CT GF CH CR GR CW DE DU LD EM EXT FR GS HA LH INFO IC KW KE MU NA LB NE NP LP NS NR NO OR PO PN PU QU RO LR SR SY TP TG LT TH TU VA WU WI WA WE WR WK WH LW/;
             my $match;
             foreach (@branches) {
                 if ( $item->{'homebranch'} eq $_ ) {
@@ -509,7 +515,7 @@ BRECORD: while ( my $bib = $sth->fetchrow_hashref() ) {
             $mref->{'999'}->add_subfields( 'a' => $item->{'itemnumber'} );
             my $item_mrc = MARC::Field->new( 952, '', '', xxx => '' );
 
-            my $dewey = $bi->{'dewey'};
+            #            my $dewey = $bi->{'dewey'};
             $dewey =~ s/\r//g;
             $dewey =~ s/^[ \t]+|[ \t]+$//g;
             chomp $dewey;
@@ -531,21 +537,23 @@ BRECORD: while ( my $bib = $sth->fetchrow_hashref() ) {
               if defined $item->{'price'};
             $item_mrc->add_subfields( 'j' => $item->{'stack'} )
               if defined $item->{'stack'};
-	    
-	    my @spl_author = split(/\,/,$author);
-	    my $clean_author = $spl_author[0];
-	    $clean_author =~ s/\W//g;
-	    
-	    my $clean_title = $title;
-	    # get rid of stop words
-	    $clean_title =~ s/^the //i;
-	    $clean_title =~ s/^a //i;
-	    $clean_title =~ s/^and //i;
-	    $clean_title =~ s/\W//g;
-#	    if ($dewey){
-#	    }
-	    
-	    print "$title\t$itemtype\t$dewey\n";
+
+            my @spl_author = split( /\,/, $author );
+            my $clean_author = $spl_author[0];
+            $clean_author =~ s/\W//g;
+
+            my $clean_title = $title;
+
+            # get rid of stop words
+            $clean_title =~ s/^the //i;
+            $clean_title =~ s/^a //i;
+            $clean_title =~ s/^and //i;
+            $clean_title =~ s/\W//g;
+
+            #	    if ($dewey){
+            #	    }
+
+            #  print "$title\t$itemtype\t$dewey\n";
             $item_mrc->add_subfields( 'o' => $dewey ) if $dewey;
 
             $item_mrc->add_subfields( 'p' => $item->{'barcode'} )
@@ -560,7 +568,8 @@ BRECORD: while ( my $bib = $sth->fetchrow_hashref() ) {
               if defined $item->{'replacementprice'};
 
             $item_mrc->add_subfields( 'y' => $itemtype );
-            $item_mrc->add_subfields( 't' => $volumeddesc ) if defined $volumeddesc;
+            $item_mrc->add_subfields( 't' => $volumeddesc )
+              if defined $volumeddesc;
             $item_mrc->add_subfields( '8' => $ccode ) if defined $ccode;
             $item_mrc->add_subfields( 'c' => $loc ) if defined $loc; # shelv-LOC
 
@@ -588,8 +597,8 @@ BRECORD: while ( my $bib = $sth->fetchrow_hashref() ) {
              #-----------------------------------
     }
 ### $itmcnt
-warn $itmcnt;
-#    next BRECORD if $itmcnt == 0;    # if not items skipp to next bib!!
+    # warn $itmcnt;
+    #    next BRECORD if $itmcnt == 0;    # if not items skipp to next bib!!
 
     while ( my ( $key, $value ) = each(%$mref) ) {
 
@@ -607,7 +616,8 @@ warn $itmcnt;
 
     #    my $cntmrc = push @marcdata, ($record);
     print MARCOUT $record->as_usmarc();
-#      print MARCOUT $record->as_formatted();  
+
+    #      print MARCOUT $record->as_formatted();
 }
 
 #foreach (@marcdata) {
