@@ -130,7 +130,7 @@ if ($op eq 'insert' || $op eq 'modify' || $op eq 'save') {
     ## Manipulate debarred
     if($newdata{debarred}){
         $newdata{debarred} = $newdata{datedebarred} ? $newdata{datedebarred} : "9999-12-31";
-    }else{
+    }elsif (exists ($newdata{debarredcomment}) && $newdata{debarredcomment} eq ""){
         undef($newdata{debarredcomment});
     }
 
