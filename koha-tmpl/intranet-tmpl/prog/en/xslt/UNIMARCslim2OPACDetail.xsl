@@ -43,20 +43,7 @@
         </h1>
       </xsl:for-each>
     </xsl:if>
-    <div id="views">
-      <span class="view">
-        <span id="Normalview">Notice simple</span>
-      </span>
-      <span class="view">
-        <a id="MARCviewPop" href="/cgi-bin/koha/opac-showmarc.pl?id={marc:datafield[@tag=999]/marc:subfield[@code='a']}" title="MARC" rel="gb_page_center[600,500]">Notice MARC</a>
-      </span>
-      <span class="view">
-        <a id="MARCview" href="/cgi-bin/koha/opac-MARCdetail.pl?biblionumber={marc:datafield[@tag=999]/marc:subfield[@code='a']}" title="MARC">Notice MARC développée</a>
-      </span>
-      <span class="view">
-        <a id="ISBDview" href="/cgi-bin/koha/opac-ISBDdetail.pl?biblionumber={marc:datafield[@tag=999]/marc:subfield[@code='a']}">Notice ISBD</a>
-      </span>
-    </div><br/>
+<br/>
     <xsl:call-template name="tag_4xx"/>
     <xsl:if test="marc:datafield[@tag=700] or marc:datafield[@tag=701] or marc:datafield[@tag=702] or marc:datafield[@tag=710] or marc:datafield[@tag=711] or marc:datafield[@tag=712]">
       <span class="results_summary">
