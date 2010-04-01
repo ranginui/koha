@@ -1314,7 +1314,7 @@ sub AddReturn {
         $messages->{'Damaged'} = $item->{'damaged'};
     }
 
-    if ($borrowernumber) {
+    if ($borrowernumber && $doreturn) {
         # fix up the overdues in accounts...
         my $fix = _FixOverduesOnReturn($borrowernumber, $item->{itemnumber}, $exemptfine, $dropbox);
         defined($fix) or warn "_FixOverduesOnReturn($borrowernumber, $item->{itemnumber}...) failed!";  # zero is OK, check defined
