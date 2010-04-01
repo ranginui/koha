@@ -742,6 +742,7 @@ true on success, or false on failure
 =cut
 sub ModMember {
     my (%data) = @_;
+    my $dbh = C4::Context->dbh;
     # test to know if you must update or not the borrower password
     if (exists $data{password}) {
         if ($data{password} eq '****' or $data{password} eq '') {
@@ -751,14 +752,27 @@ sub ModMember {
         }
     }
 	my $execute_success=UpdateInTable("borrowers",\%data);
-# ok if its an adult (type) it may have borrowers that depend on it as a guarantor
-# so when we update information for an adult we should check for guarantees and update the relevant part
-# of their records, ie addresses and phone numbers
+    # ok if its an adult (type) it may have borrowers that depend on it as a guarantor
+    # so when we update information for an adult we should check for guarantees and update the relevant part
+    # of their records, ie addresses and phone numbers
     my $borrowercategory= GetBorrowercategory( $data{'category_type'} );
     if ( exists  $borrowercategory->{'category_type'} && $borrowercategory->{'category_type'} eq ('A' || 'S') ) {
         # is adult check guarantees;
         UpdateGuarantees(%data);
     }
+
+    # If the patron changes to a category with enrollment fee, we add an invoice
+    if ($data{'categorycode'}) {
+	# check for enrollment fee & add it if needed
+	my $sth = $dbh->prepare("SELECT enrolmentfee FROM categories WHERE categorycode=?");
+	$sth->execute($data{'categorycode'});
+	my ($enrolmentfee) = $sth->fetchrow;
+	if ($enrolmentfee && $enrolmentfee > 0) {
+	    # insert fee in patron debts
+	    manualinvoice($data{'borrowernumber'}, '', '', 'A', $enrolmentfee);
+	}
+    }
+
     logaction("MEMBERS", "MODIFY", $data{'borrowernumber'}, "UPDATE (executed w/ arg: $data{'borrowernumber'})") 
         if C4::Context->preference("BorrowersLog");
 
