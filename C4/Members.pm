@@ -630,38 +630,7 @@ sub IsMemberBlocked {
     my $borrowernumber = shift;
     my $dbh            = C4::Context->dbh;
 
-<<<<<<< HEAD:C4/Members.pm
-    # does patron have current fine days?
-	my $strsth=qq{
-            SELECT
-            ADDDATE(returndate, finedays * DATEDIFF(returndate,date_due) ) AS blockingdate,
-            DATEDIFF(ADDDATE(returndate, finedays * DATEDIFF(returndate,date_due)),NOW()) AS blockedcount
-            FROM old_issues
-	};
-    if(C4::Context->preference("item-level_itypes")){
-        $strsth.=
-		qq{ LEFT JOIN items ON (items.itemnumber=old_issues.itemnumber)
-            LEFT JOIN issuingrules ON (issuingrules.itemtype=items.itype)}
-    }else{
-        $strsth .= 
-		qq{ LEFT JOIN items ON (items.itemnumber=old_issues.itemnumber)
-            LEFT JOIN biblioitems ON (biblioitems.biblioitemnumber=items.biblioitemnumber)
-            LEFT JOIN issuingrules ON (issuingrules.itemtype=biblioitems.itemtype) };
-    }
-	$strsth.=
-        qq{ WHERE finedays IS NOT NULL
-            AND  date_due < returndate
-            AND borrowernumber = ?
-            ORDER BY blockingdate DESC, blockedcount DESC
-            LIMIT 1};
-	my $sth=$dbh->prepare($strsth);
-    $sth->execute($borrowernumber);
-    my $row = $sth->fetchrow_hashref;
-    my $blockeddate  = $row->{'blockeddate'};
-    my $blockedcount = $row->{'blockedcount'};
-=======
     my $blockeddate = CheckBorrowerDebarred($borrowernumber);
->>>>>>> Change debarring system (MT2263):C4/Members.pm
 
     return (1, $blockeddate) if $blockeddate;
 
