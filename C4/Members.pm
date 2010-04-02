@@ -712,6 +712,10 @@ true on success, or false on failure
 sub ModMember {
     my (%data) = @_;
     my $dbh = C4::Context->dbh;
+
+    # Getting patron informations
+    my $meminfos = GetMember('borrowernumber' => $data{'borrowernumber'});
+
     # test to know if you must update or not the borrower password
     if (exists $data{password}) {
         if ($data{password} eq '****' or $data{password} eq '') {
@@ -731,7 +735,7 @@ sub ModMember {
     }
 
     # If the patron changes to a category with enrollment fee, we add an invoice
-    if ($data{'categorycode'}) {
+    if ($data{'categorycode'} && $data{'categorycode'} ne $meminfos->{'categorycode'}) {
 	# check for enrollment fee & add it if needed
 	my $sth = $dbh->prepare("SELECT enrolmentfee FROM categories WHERE categorycode=?");
 	$sth->execute($data{'categorycode'});
