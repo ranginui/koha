@@ -123,8 +123,7 @@ for my $thisbranch (sort { $branches->{$a}->{branchname} cmp $branches->{$b}->{b
     };
 }
 
-my $fw = GetFrameworkCode( $biblionumber );
-my $shelflocations = GetKohaAuthorisedValues('items.location', $fw);
+my $shelflocations = GetKohaAuthorisedValues('items.location', '');
 
 my @locationarg;
 foreach my $key (keys %{$shelflocations}){
