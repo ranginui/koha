@@ -126,14 +126,13 @@ for my $thisbranch (sort { $branches->{$a}->{branchname} cmp $branches->{$b}->{b
 my $shelflocations = GetKohaAuthorisedValues('items.location', '');
 
 my @locationarg;
-foreach my $key (keys %{$shelflocations}){
-    my %row = {
-         code  => $key,
-         value => $shelflocations->{$key}
-    };
-    $row{selected} = 1 if ($key eq $subs->{location});
-    push @locationarg, %row;
-}
+my @locationarg=map{
+    {code=>$_,
+    value=> $shelflocations->{$_},
+    selected=> (($_ eq $subs->{location})?"selected=\"selected\"":""),
+    }
+}sort keys %{$shelflocations};
+
 $template->param(shelflocations => \@locationarg );
 
 $template->param(branchloop => $branchloop,
