@@ -569,6 +569,26 @@ sub GetMaxPickUpDelay {
     return 0;
 }
 
+=item GetMaxPickUpDate
+
+$maxpickupdate = &GetMaxPickUpDate($date);
+
+this function return the max pickup date.
+(e.g. : the date after which the hold will be considered cancelled)
+
+=cut
+
+sub GetMaxPickupDate{
+    my $inputdate=shift;
+    my $borrowernumber=shift;
+    my $item=shift;
+    my @date = split (/-/, $inputdate);
+    ( @date ) =
+      Add_Delta_Days( @date,
+        GetMaxPickUpDelay($borrowernumber, $item->{'itemnumber'}));
+    return @date;
+}
+
 #--------------------------------------------------------------------------------
 =item GetReserveCount
 

@@ -115,11 +115,9 @@ foreach my $num (@getreserves) {
     my $itemtypeinfo = getitemtypeinfo( $gettitle->{'itemtype'} );  # using the fixed up itype/itemtype
     $getreserv{'waitingdate'} = format_date( $num->{'waitingdate'} );
 
-    my ( $waiting_year, $waiting_month, $waiting_day ) = split (/-/, $num->{'waitingdate'});
-    ( $waiting_year, $waiting_month, $waiting_day ) =
-      Add_Delta_Days( $waiting_year, $waiting_month, $waiting_day,
-        GetMaxPickUpDelay($borrowernumber, $num->{'itemnumber'}));
-    my $calcDate = Date_to_Days( $waiting_year, $waiting_month, $waiting_day );
+    my @maxpickupdate=GetMaxPickupDate($num->{'waitingdate'},$borrowernumber, $num);
+    $getreserv{'maxpickupdate'} = sprintf("%d-%02d-%02d", @maxpickupdate);
+    my $calcDate = Date_to_Days( @maxpickupdate );
 
     $getreserv{'itemtype'}       = $itemtypeinfo->{'description'};
     $getreserv{'title'}          = $gettitle->{'title'};

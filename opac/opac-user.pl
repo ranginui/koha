@@ -196,7 +196,9 @@ foreach my $res (@reserves) {
     my $publictype = $res->{'publictype'};
     $res->{$publictype} = 1;
     $res->{'waiting'} = 1 if $res->{'found'} eq 'W';
-    $res->{'formattedwaitingdate'} = format_date($res->{'waitingdate'});
+    my @maxpickupdate=GetMaxPickupDate($res->{'waitingdate'},$borrowernumber, $res);
+    $res->{'maxpickupdate'} = sprintf("%d-%02d-%02d", @maxpickupdate);
+    $res->{'formattedwaitingdate'} = format_date($res->{'maxpickupdate'});
     $res->{'branch'} = $branches->{ $res->{'branchcode'} }->{'branchname'};
     my $biblioData = GetBiblioData($res->{'biblionumber'});
     $res->{'reserves_title'} = $biblioData->{'title'};
