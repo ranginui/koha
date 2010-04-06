@@ -94,6 +94,7 @@ BEGIN {
         &AddReserve
   
         &GetMaxPickUpDelay
+        &GetMaxPickUpDate
         &GetReservesFromItemnumber
         &GetReservesFromBiblionumber
         &GetReservesFromBorrowernumber
