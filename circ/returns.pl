@@ -224,7 +224,6 @@ if ($barcode and not $query->param('cancel')) {
             #unless($pid && $remotehost=~qr(^$ips$)){
             #if (!$pid && any{ $remotehost eq $_ }@ips ){
             if (any{ $remotehost eq $_ }@ips ){
-                warn $remotehost;
                 system("../services/magnetise.pl $remotehost in");
                 #die 0;
             }
