@@ -1015,7 +1015,7 @@ sub GetPendingIssues {
 
 =head2 GetAllIssues
 
-  ($count, $issues) = &GetAllIssues($borrowernumber, $sortkey, $limit);
+  $issues = &GetAllIssues($borrowernumber, $sortkey, $limit);
 
 Looks up what the patron with the given borrowernumber has borrowed,
 and sorts the results.
@@ -1026,11 +1026,9 @@ C<biblioitems>, or C<items> table in the Koha database.
 
 C<$limit> is the maximum number of results to return.
 
-C<&GetAllIssues> returns a two-element array. C<$issues> is a
-reference-to-array, where each element is a reference-to-hash; the
-keys are the fields from the C<issues>, C<biblio>, C<biblioitems>, and
-C<items> tables of the Koha database. C<$count> is the number of
-elements in C<$issues>
+C<&GetAllIssues> an arrayref, C<$issues>, of hashrefs, the keys of which
+are the fields from the C<issues>, C<biblio>, C<biblioitems>, and
+C<items> tables of the Koha database.
 
 =cut
 
@@ -1040,16 +1038,15 @@ sub GetAllIssues {
 
     #FIXME: sanity-check order and limit
     my $dbh   = C4::Context->dbh;
-    my $count = 0;
     my $query =
-  "SELECT *,issues.renewals AS renewals,items.renewals AS totalrenewals,items.timestamp AS itemstimestamp 
+  "SELECT *, issues.timestamp as issuestimestamp, issues.renewals AS renewals,items.renewals AS totalrenewals,items.timestamp AS itemstimestamp 
   FROM issues 
   LEFT JOIN items on items.itemnumber=issues.itemnumber
   LEFT JOIN biblio ON items.biblionumber=biblio.biblionumber
   LEFT JOIN biblioitems ON items.biblioitemnumber=biblioitems.biblioitemnumber
   WHERE borrowernumber=? 
   UNION ALL
-  SELECT *,old_issues.renewals AS renewals,items.renewals AS totalrenewals,items.timestamp AS itemstimestamp 
+  SELECT *, old_issues.timestamp as issuestimestamp, old_issues.renewals AS renewals,items.renewals AS totalrenewals,items.timestamp AS itemstimestamp 
   FROM old_issues 
   LEFT JOIN items on items.itemnumber=old_issues.itemnumber
   LEFT JOIN biblio ON items.biblionumber=biblio.biblionumber
@@ -1060,46 +1057,15 @@ sub GetAllIssues {
         $query .= " limit $limit";
     }
 
-    #print $query;
     my $sth = $dbh->prepare($query);
     $sth->execute($borrowernumber, $borrowernumber);
     my @result;
     my $i = 0;
     while ( my $data = $sth->fetchrow_hashref ) {
-        $result[$i] = $data;
-        $i++;
-        $count++;
+        push @result, $data;
     }
 
-    # get all issued items for borrowernumber from oldissues table
-    # large chunk of older issues data put into table oldissues
-    # to speed up db calls for issuing items
-    if ( C4::Context->preference("ReadingHistory") ) {
-        # FIXME oldissues (not to be confused with old_issues) is
-        # apparently specific to HLT.  Not sure if the ReadingHistory
-        # syspref is still required, as old_issues by design
-        # is no longer checked with each loan.
-        my $query2 = "SELECT * FROM oldissues
-                      LEFT JOIN items ON items.itemnumber=oldissues.itemnumber
-                      LEFT JOIN biblio ON items.biblionumber=biblio.biblionumber
-                      LEFT JOIN biblioitems ON items.biblioitemnumber=biblioitems.biblioitemnumber
-                      WHERE borrowernumber=? 
-                      ORDER BY $order";
-        if ( $limit != 0 ) {
-            $limit = $limit - $count;
-            $query2 .= " limit $limit";
-        }
-
-        my $sth2 = $dbh->prepare($query2);
-        $sth2->execute($borrowernumber);
-
-        while ( my $data2 = $sth2->fetchrow_hashref ) {
-            $result[$i] = $data2;
-            $i++;
-        }
-    }
-
-    return ( $i, \@result );
+    return \@result;
 }
 
 

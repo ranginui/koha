@@ -21,6 +21,9 @@
 	<a href="readingrec.pl?borrowernumber=<!-- TMPL_VAR name="borrowernumber" -->&amp;limit=full">Show All Items</a><!-- /TMPL_IF --></p>
 <table>
 <tr>
+    <th>
+        <a href="readingrec.pl?borrowernumber=<!-- TMPL_VAR name="borrowernumber" -->&amp;order=issuestimestamp&amp;limit=<!-- TMPL_VAR name="limit" -->">Date</a>
+    </th>
 	<th>
 		<a href="readingrec.pl?borrowernumber=<!-- TMPL_VAR name="borrowernumber" -->&amp;order=title&amp;limit=<!-- TMPL_VAR name="limit" -->">Title</a>
 	</th>
@@ -30,6 +33,8 @@
 	<th>Call No.</th>
 	<th>Barcode</th>
 	<th>Number of Renewals</th>
+	<th>Checked out on</th>
+	<th>Checked out from</th>
 	<th>Date Due</th>
 	<th>
 		<a href="readingrec.pl?borrowernumber=<!-- TMPL_VAR name="borrowernumber" -->&amp;order=returndate%20DESC&amp;limit=<!-- TMPL_VAR name="limit" -->">Return Date</a>
@@ -41,24 +46,27 @@
 <!-- TMPL_ELSE -->
     <!-- TMPL_IF NAME="returndate" --><tr><!-- TMPL_ELSE --><tr class="onissue"><!-- /TMPL_IF -->
 <!-- /TMPL_UNLESS -->
-
-            <td>
+        <td>
+            <!-- TMPL_VAR name="issuestimestamp" -->
+        </td>
+        <td>
             <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->">
                 <!-- TMPL_VAR name="title" escape="html" -->
             </a>
         </td>
 
-            <td>
-        <!-- TMPL_VAR name="author" --></td>
+        <td><!-- TMPL_VAR name="author" --></td>
 
-            <td>
-        <!-- TMPL_VAR NAME="classification" --></td>
+        <td><!-- TMPL_VAR NAME="classification" --></td>
 
-            <td>
-        <!-- TMPL_VAR NAME="barcode" --></td>
+        <td><!-- TMPL_VAR NAME="barcode" --></td>
 
             <td>
         <!-- TMPL_VAR NAME="renewals" --></td>
+            <td>
+        <!-- TMPL_VAR NAME="issuedate" --></td>
+            <td>
+        <!-- TMPL_VAR NAME="issuingbranch" --></td>
 			<td><!-- TMPL_IF NAME="date_due" --><!-- TMPL_VAR NAME="date_due" --><!-- TMPL_ELSE -->&nbsp;<!-- /TMPL_IF --></td>
             <td>
         <!-- TMPL_IF NAME="returndate" -->
