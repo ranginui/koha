@@ -59,7 +59,7 @@ function Dopop(link) {
 <!-- /TMPL_IF -->
 
 <!-- TMPL_IF NAME="wrongbranch" -->
-<div class="dialog alert"><h3>Cannot Check In</h3><p>This item must be checked in at its home library: <!-- TMPL_VAR Name="homebranch" -->. <strong>NOT CHECKED IN</strong></p>
+<div class="dialog alert"><h3>Cannot Check In</h3><p>This item must be checked in at its home library: <!-- TMPL_VAR Name="rightbranch" -->. <strong>NOT CHECKED IN</strong></p>
 	     <form method="post" action="returns.pl" class="confirm">
 
                 <input type="hidden" name="barcode" value="<!-- TMPL_VAR Name="barcode" -->" />
@@ -71,6 +71,7 @@ function Dopop(link) {
 		</form>
 </div>
 <!-- /TMPL_IF -->
+
 <!-- case of a mistake in transfer loop -->
 <!-- TMPL_IF Name="WrongTransfer" --><div class="dialog message"><!-- WrongTransfer --><h3>Please return <a href="/cgi-bin/koha/catalogue/detail.pl?type=intra&amp;biblionumber=<!-- TMPL_VAR NAME="itembiblionumber" -->"><!-- TMPL_VAR Name="title" escape="html" --></a> to <!-- TMPL_VAR Name="TransferWaitingAt" --></h3>
 <!-- TMPL_IF Name="wborcnum"--><h5>Hold for:</h5>
@@ -139,6 +140,7 @@ function Dopop(link) {
                 <input type="hidden" name="dropboxmode" value="<!-- TMPL_VAR Name="dropboxmode" -->" />
                 </form>
 	</div>
+    <!-- /waiting -->
     <!-- /TMPL_IF -->
 
     <!-- TMPL_IF Name="diffbranch" -->
@@ -248,6 +250,7 @@ function Dopop(link) {
 			<!-- TMPL_VAR Name="borcity" --> <!-- TMPL_VAR NAME="borzip" --></li>
             <!-- TMPL_IF NAME="borphone" --><li><!-- TMPL_VAR Name="borphone" --></li><!-- /TMPL_IF -->
             <!-- TMPL_IF NAME="boremail" --><li><!-- TMPL_IF name="transfertodo" --><!-- TMPL_VAR NAME="boremail" --><!-- TMPL_ELSE --><a id="boremail" href="mailto:<!-- TMPL_VAR NAME="boremail" -->"><!-- TMPL_VAR NAME="boremail" --></a><!-- /TMPL_IF --></li><!-- /TMPL_IF -->
+<!-- TMPL_IF NAME="lost" --><li class="error">Patron's card is lost <!-- TMPL_IF Name="lostcomment" -->(<!-- TMPL_VAR NAME="lostcomment" -->)<!-- /TMPL_IF --></li><!-- /TMPL_IF -->
 <!-- TMPL_IF NAME="debarred" --><li class="error">Patron is RESTRICTED <!-- TMPL_IF Name="debarredcomment" -->(<!-- TMPL_VAR NAME="debarredcomment" -->)<!-- /TMPL_IF --></li><!-- /TMPL_IF -->
 <!-- TMPL_IF NAME="gonenoaddress" --><li class="error">Patron's address is in doubt<!-- TMPL_IF Name="gonenoaddresscomment" -->(<!-- TMPL_VAR NAME="gonenoaddresscomment" -->)<!-- /TMPL_IF --></li><!-- /TMPL_IF --></ul>
         </ul>
@@ -277,8 +280,10 @@ function Dopop(link) {
             <input type="hidden" name="dropboxmode" value="<!-- TMPL_VAR Name="dropboxmode" -->" />
         </form>
 	</div>
+	<!--  /reserved  -->
     <!-- /TMPL_IF -->
-<!-- TMPL_ELSE -->
+<!--/found-->
+<!-- /TMPL_IF -->
 
 <!-- TMPL_IF NAME="errmsgloop" -->
     <div class="dialog alert">
@@ -414,7 +419,7 @@ function Dopop(link) {
             <!-- TMPL_IF Name="flag"-->
              <li><!-- TMPL_VAR Name="flag" --> <!-- TMPL_IF NAME="charges" --> of <!-- TMPL_VAR NAME="chargeamount" --> <!-- /TMPL_IF --> </li>
             <!-- /TMPL_IF -->
-                <!-- /TMPL_LOOP --></ul><!-- /TMPL_IF -->
+                <!-- /TMPL_LOOP --></ul>
 </div>
 <!-- /TMPL_IF -->
 <!-- TMPL_IF Name="riloop" -->
