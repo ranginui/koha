@@ -85,7 +85,6 @@ Returns a reference to an array of hashes:
 sub getFrameworkLanguages {
     # get a hash with all language codes, names, and locale names
     my $all_languages = getAllLanguages();
-    my @languages;
     
     # find the available directory names
     my $dir=C4::Context->config('intranetdir')."/installer/data/";
