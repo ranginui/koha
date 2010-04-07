@@ -477,12 +477,14 @@ sub patronflags {
         && $patroninformation->{'gonenoaddress'} == 1 )
     {
         my %flaginfo;
+        $flaginfo{'gonenoaddresscomment'}  = $patroninformation->{'gonenoaddresscomment'};
         $flaginfo{'message'}  = 'Borrower has no valid address.';
         $flaginfo{'noissues'} = 1;
         $flags{'GNA'}         = \%flaginfo;
     }
     if ( $patroninformation->{'lost'} && $patroninformation->{'lost'} == 1 ) {
         my %flaginfo;
+        $flaginfo{'lostcomment'}  = $patroninformation->{'lostcomment'};
         $flaginfo{'message'}  = 'Borrower\'s card reported lost.';
         $flaginfo{'noissues'} = 1;
         $flags{'LOST'}        = \%flaginfo;
@@ -499,7 +501,8 @@ sub patronflags {
     if ( $patroninformation->{'debarred'} && check_date(split(/-/,$patroninformation->{'debarred'})) ){
         if(Date_to_Days(Date::Calc::Today) < Date_to_Days(split(/-/,$patroninformation->{'debarred'}) )){
             my %flaginfo;
-            $flaginfo{'message'}  = 'Borrower is Debarred.';
+            $flaginfo{'debarredcomment'}  = $patroninformation->{'debarredcomment'};
+            $flaginfo{'message'}  = $patroninformation->{'debarredcomment'};
             $flaginfo{'noissues'} = 1;
             $flaginfo{'dateend'} = $patroninformation->{'debarred'};
             $flags{'DEBARRED'}     = \%flaginfo;
