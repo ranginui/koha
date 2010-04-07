@@ -1169,28 +1169,29 @@ sub BuildUnimarcHierarchies{
   } else {
     my $record = GetAuthority($authid);
     my $found;
-	if ($record){
-		foreach my $field ($record->field('550')){
-		  if ($field->subfield('5') && $field->subfield('5') eq 'g'){
-			my $parentrecord = GetAuthority($field->subfield('3'));
-			my $localresult=$hierarchies;
-			my $trees;
-			$trees = BuildUnimarcHierarchies($field->subfield('3'));
-			my @trees;
-			if ($trees=~/;/){
-			   @trees = split(/;/,$trees);
-			} else {
-			   push @trees, $trees;
-			}
-			foreach (@trees){
-			  $_.= ",$authid";
-			}
-			@globalresult = (@globalresult,@trees);
-			$found=1;
-		  }
-		  $hierarchies=join(";",@globalresult);
-		}
-	}
+    return unless $record;
+    foreach my $field ($record->field('5..')){
+      if ($field->subfield('5') && $field->subfield('5') eq 'g'){
+		my $subfauthid=_get_authid_subfield($field);
+        next if ($subfauthid eq $authid);
+        my $parentrecord = GetAuthority($subfauthid);
+        my $localresult=$hierarchies;
+        my $trees;
+        $trees = BuildUnimarcHierarchies($subfauthid);
+        my @trees;
+        if ($trees=~/;/){
+           @trees = split(/;/,$trees);
+        } else {
+           push @trees, $trees;
+        }
+        foreach (@trees){
+          $_.= ",$authid";
+        }
+        @globalresult = (@globalresult,@trees);
+        $found=1;
+      }
+      $hierarchies=join(";",@globalresult);
+    }
     #Unless there is no ancestor, I am alone.
     $hierarchies="$authid" unless ($hierarchies);
   }
