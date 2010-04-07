@@ -3651,6 +3651,34 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
 }
 
 
+
+$DBversion = "3.02.00.001";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+	$dbh->do("UPDATE `permissions` SET `code` = 'items_batchdel' WHERE `permissions`.`module_bit` =13 AND `permissions`.`code` = 'batchdel' LIMIT 1 ;");
+	$dbh->do("UPDATE `permissions` SET `code` = 'items_batchmod' WHERE `permissions`.`module_bit` =13 AND `permissions`.`code` = 'batchmod' LIMIT 1 ;");
+	print "Upgrade done (Change permissions names for item batch modification / deletion)\n";
+
+    SetVersion ($DBversion);
+}
+
+$DBversion = "3.02.00.002";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+	$dbh->do(q{
+    ALTER TABLE language_descriptions ADD INDEX LANG (subtag, type, lang);
+    });
+    print "Upgrade to $DBversion done (Adding index to language_descriptions table)\n";
+    SetVersion ($DBversion);
+}
+
+
+$DBversion = "3.02.00.003";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+	$dbh->do("INSERT INTO systempreferences SET variable='IndependentBranchPatron',value=0");
+	
+    print "Upgrade to $DBversion done (IndependentBranchPatron syspref added)\n";
+    SetVersion ($DBversion);
+}
+
 =item DropAllForeignKeys($table)
 
   Drop all foreign keys of the table $table

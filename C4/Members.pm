@@ -156,7 +156,7 @@ name.
 
 C<$filter> is assumed to be a list of elements to filter results on
 
-C<$showallbranches> is used in IndependantBranches Context to display all branches results.
+C<$showallbranches> is used in IndependentBranchPatron Context to display all branches results.
 
 C<&SearchMember> returns a two-element list. C<$borrowers> is a
 reference-to-array; each element is a reference-to-hash, whose keys
@@ -180,8 +180,20 @@ sub SearchMember {
     $query = "SELECT * FROM borrowers
         LEFT JOIN categories ON borrowers.categorycode=categories.categorycode
         ";
-    my $sth = $dbh->prepare("$query WHERE cardnumber = ?");
-    $sth->execute($searchstring);
+    my (@where_string, @bind_params);
+    push @where_string, "cardnumber=?";
+    push @bind_params, $searchstring;
+    if (C4::Context->preference("IndependentBranchPatron") && !$showallbranches){
+          if (C4::Context->userenv && (C4::Context->userenv->{flags} % 2) !=1 && C4::Context->userenv->{'branch'}){
+            unless (C4::Context->userenv->{'branch'} eq "insecure"){
+            	push @where_string,"borrowers.branchcode =?";
+            	push @bind_params,C4::Context->userenv->{'branch'};
+	    }
+          }
+    }
+    my $sth = $dbh->prepare("$query WHERE ".join(" AND ", @where_string));
+   
+    $sth->execute(@bind_params);
     my $data = $sth->fetchall_arrayref({});
     if (@$data){
         return ( scalar(@$data), $data );
@@ -191,8 +203,8 @@ sub SearchMember {
     {
         $query .= ($category_type ? " AND category_type = ".$dbh->quote($category_type) : ""); 
         $query .= " WHERE (surname LIKE ? OR cardnumber like ?) ";
-        if (C4::Context->preference("IndependantBranches") && !$showallbranches){
-          if (C4::Context->userenv && C4::Context->userenv->{flags} % 2 !=1 && C4::Context->userenv->{'branch'}){
+        if (C4::Context->preference("IndependentBranchPatron") && !$showallbranches){
+          if (C4::Context->userenv && (C4::Context->userenv->{flags} % 2) !=1 && C4::Context->userenv->{'branch'}){
             $query.=" AND borrowers.branchcode =".$dbh->quote(C4::Context->userenv->{'branch'}) unless (C4::Context->userenv->{'branch'} eq "insecure");
           }
         }
@@ -204,8 +216,8 @@ sub SearchMember {
         @data  = split( ' ', $searchstring );
         $count = @data;
         $query .= " WHERE ";
-        if (C4::Context->preference("IndependantBranches") && !$showallbranches){
-          if (C4::Context->userenv && C4::Context->userenv->{flags} % 2 !=1 && C4::Context->userenv->{'branch'}){
+        if (C4::Context->preference("IndependentBranchPatron") && !$showallbranches){
+          if (C4::Context->userenv && (C4::Context->userenv->{flags} %2 )!=1 && C4::Context->userenv->{'branch'}){
             $query.=" borrowers.branchcode =".$dbh->quote(C4::Context->userenv->{'branch'})." AND " unless (C4::Context->userenv->{'branch'} eq "insecure");
           }      
         }     
@@ -228,7 +240,7 @@ sub SearchMember {
 
             # FIXME - .= <<EOT;
         }
-        $query = $query . ") OR cardnumber LIKE ? ";
+        $query = $query . " OR cardnumber LIKE ? ) ";
         push( @bind, $searchstring );
         $query .= "order by $orderby";
 
