@@ -22,6 +22,7 @@ package C4::Reserves;
 
 use strict;
 #use warnings; FIXME - Bug 2505
+use Date::Calc qw( Add_Delta_Days Time_to_Date);
 use C4::Context;
 use C4::Biblio;
 use C4::Members;
@@ -93,8 +94,8 @@ BEGIN {
     @EXPORT = qw(
         &AddReserve
   
-        &GetMaxPickUpDelay
-        &GetMaxPickUpDate
+        &GetMaxPickupDelay
+        &GetMaxPickupDate
         &GetReservesFromItemnumber
         &GetReservesFromBiblionumber
         &GetReservesFromBorrowernumber
@@ -492,15 +493,15 @@ sub CanItemBeReserved{
     }
 }
 
-=item GetMaxPickUpDelay
+=item GetMaxPickupDelay
 
-$resallowed = &GetMaxPickUpDelay($borrowernumber, $itemnumber)
+$resallowed = &GetMaxPickupDelay($borrowernumber, $itemnumber)
 
 this function return the number of allowed reserves.
 
 =cut
 
-sub GetMaxPickUpDelay {
+sub GetMaxPickupDelay {
     my ($borrowernumber, $itemnumber) = @_;
     
     my $dbh             = C4::Context->dbh;
@@ -570,9 +571,9 @@ sub GetMaxPickUpDelay {
     return 0;
 }
 
-=item GetMaxPickUpDate
+=item GetMaxPickupDate
 
-$maxpickupdate = &GetMaxPickUpDate($date);
+$maxpickupdate = &GetMaxPickupDate($date);
 
 this function return the max pickup date.
 (e.g. : the date after which the hold will be considered cancelled)
@@ -583,10 +584,10 @@ sub GetMaxPickupDate{
     my $inputdate=shift;
     my $borrowernumber=shift;
     my $item=shift;
-    my @date = split (/-/, $inputdate);
+    my @date = split(/-/,$inputdate);
+    my $delay = GetMaxPickupDelay($borrowernumber, $item->{'itemnumber'});
     ( @date ) =
-      Add_Delta_Days( @date,
-        GetMaxPickUpDelay($borrowernumber, $item->{'itemnumber'}));
+      Add_Delta_Days( @date[0..2], $delay);
     return @date;
 }
 

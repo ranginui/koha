@@ -24,7 +24,7 @@ use CGI;
 use C4::Auth;
 use C4::Koha;
 use C4::Circulation;
-use C4::Reserves;
+use C4::Reserves;# qw/GetMaxPickupDate GetReservesFromBorrowernumber/; 
 use C4::Members;
 use C4::Output;
 use C4::Biblio;
@@ -185,6 +185,7 @@ $template->param( branchloop => \@branch_loop );
 # now the reserved items....
 my @reserves  = GetReservesFromBorrowernumber( $borrowernumber );
 foreach my $res (@reserves) {
+    warn $res->{'waitingdate'};
     $res->{'reservedate'} = format_date( $res->{'reservedate'} );
 
     if ( $res->{'expirationdate'} ne '0000-00-00' ) {
@@ -195,10 +196,12 @@ foreach my $res (@reserves) {
     
     my $publictype = $res->{'publictype'};
     $res->{$publictype} = 1;
-    $res->{'waiting'} = 1 if $res->{'found'} eq 'W';
-    my @maxpickupdate=GetMaxPickupDate($res->{'waitingdate'},$borrowernumber, $res);
-    $res->{'maxpickupdate'} = sprintf("%d-%02d-%02d", @maxpickupdate);
-    $res->{'formattedwaitingdate'} = format_date($res->{'maxpickupdate'});
+    if ($res->{'found'} eq 'W'){
+        $res->{'waiting'} = 1;
+        my @maxpickupdate = GetMaxPickupDate($res->{'waitingdate'},$borrowernumber, $res);
+        $res->{'maxpickupdate'} = sprintf("%d-%02d-%02d", @maxpickupdate);
+        $res->{'formattedwaitingdate'} = format_date($res->{'maxpickupdate'});
+    }
     $res->{'branch'} = $branches->{ $res->{'branchcode'} }->{'branchname'};
     my $biblioData = GetBiblioData($res->{'biblionumber'});
     $res->{'reserves_title'} = $biblioData->{'title'};

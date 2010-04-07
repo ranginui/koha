@@ -26,7 +26,7 @@ use C4::Branch; # GetBranchName
 use C4::Auth;
 use C4::Dates qw/format_date/;
 use C4::Circulation;
-use C4::Reserves qw/GetMaxPickUpDelay/;
+use C4::Reserves; # qw/GetMaxPickUpDelay/;
 use C4::Members;
 use C4::Biblio;
 use C4::Items;
@@ -113,12 +113,18 @@ foreach my $num (@getreserves) {
     $gettitle->{'itemtype'} = C4::Context->preference('item-level_itypes') ? $gettitle->{'itype'} : $gettitle->{'itemtype'};
     my $getborrower  = GetMemberDetails( $num->{'borrowernumber'} );
     my $itemtypeinfo = getitemtypeinfo( $gettitle->{'itemtype'} );  # using the fixed up itype/itemtype
-    $getreserv{'waitingdate'} = format_date( $num->{'waitingdate'} );
+    if ($num->{waitingdate}){
+	my @maxpickupdate=GetMaxPickupDate($num->{'waitingdate'},$borrowernumber, $num);
+	$getreserv{'waitingdate'} = format_date( $num->{'waitingdate'} );
 
-    my @maxpickupdate=GetMaxPickupDate($num->{'waitingdate'},$borrowernumber, $num);
-    $getreserv{'maxpickupdate'} = sprintf("%d-%02d-%02d", @maxpickupdate);
-    my $calcDate = Date_to_Days( @maxpickupdate );
+	$getreserv{'maxpickupdate'} = sprintf("%d-%02d-%02d", @maxpickupdate);
 
+	my $calcDate = Date_to_Days( @maxpickupdate );
+
+	if ($today > $calcDate) {
+	    $getreserv{'messcompa'} = 1;
+	}
+    }
     $getreserv{'itemtype'}       = $itemtypeinfo->{'description'};
     $getreserv{'title'}          = $gettitle->{'title'};
     $getreserv{'itemnumber'}     = $gettitle->{'itemnumber'};
