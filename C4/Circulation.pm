@@ -28,7 +28,7 @@ use C4::Biblio;
 use C4::Items;
 use C4::Members;
 use C4::IssuingRules;
-use C4::Dates;
+use C4::Dates qw/format_date/;
 use C4::Calendar;
 use C4::Accounts;
 use C4::Overdues ;
