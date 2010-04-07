@@ -387,7 +387,7 @@ if ( $messages->{'ResFound'}) {
         );
     } # else { ; }  # error?
 }
-
+$borrower->{'flags'}= C4::Members::patronflags($borrower);
 # Error Messages
 my @errmsgloop;
 foreach my $code ( keys %$messages ) {
@@ -477,14 +477,10 @@ $template->param( errmsgloop => \@errmsgloop );
 
 # patrontable ....
 if ($borrower) {
-    my $flags = $borrower->{'flags'};
     my @flagloop;
-    my $flagset;
+    my $flags=$borrower->{flags};
     foreach my $flag ( sort keys %$flags ) {
         my %flaginfo;
-        unless ($flagset) { $flagset = 1; }
-        $flaginfo{redfont} = ( $flags->{$flag}->{'noissues'} );
-        $flaginfo{flag}    = $flag;
         if ( $flag eq 'CHARGES' ) {
             $flaginfo{msg}            = $flag;
             $flaginfo{charges}        = 1;
@@ -499,13 +495,27 @@ if ($borrower) {
             foreach my $item (@$items) {
                 my $biblio = GetBiblioFromItemNumber( $item->{'itemnumber'});
                 push @waitingitemloop, {
-                    biblionum => $biblio->{'biblionumber'},
-                    barcode   => $biblio->{'barcode'},
-                    title     => $biblio->{'title'},
-                    brname    => $branches->{ $biblio->{'holdingbranch'} }->{'branchname'},
+                    biblionumber=> $biblio->{'biblionumber'},
+                    author      => $biblio->{'author'},
+                    itemtype    => $item->{'ccode'},
+                    reservedate => format_date($item->{'reservedate'}),
+                    waitingdate => format_date($item->{'waitingdate'}),
+                    barcode     => $item->{'barcode'},
+                    title       => $biblio->{'title'},
+                    brname      => $branches->{ $item->{'branchcode'} }->{'branchname'},
+                    waitinghere => ($item->{'branchcode'} eq $userenv_branch)
                 };
             }
             $flaginfo{itemloop} = \@waitingitemloop;
+        }
+        elsif ( $flag =~ /DEBARRED|LOST|GNA/ ) {
+            if ($flag ne "GNA"){
+                $flag=lc($flag);
+            }
+            else{
+                $flag="gonenoaddress";
+            }
+            %flaginfo=( $flag =>1, $flag."comment"=>$borrower->{$flag."comment"},dateend=>$flags->{uc($flag)}->{dateend});
         }
         elsif ( $flag eq 'ODUES' ) {
             my $items = $flags->{$flag}->{'itemlist'};
@@ -532,7 +542,6 @@ if ($borrower) {
         push( @flagloop, \%flaginfo );
     }
     $template->param(
-        flagset          => $flagset,
         flagloop         => \@flagloop,
         riborrowernumber => $borrower->{'borrowernumber'},
         riborcnum        => $borrower->{'cardnumber'},
@@ -543,7 +552,7 @@ if ($borrower) {
 }
 
 #set up so only the last 8 returned items display (make for faster loading pages)
-my $returned_counter = ( C4::Context->preference('numReturnedItemsToShow') ) ? C4::Context->preference('numReturnedItemsToShow') : 8;
+my $returned_counter = ( C4::Context->preference('numReturnedItemsToShow') ) ? C4::Context->preference('numReturnedItemsToShow') : 10;
 my $count = 0;
 my @riloop;
 foreach ( sort { $a <=> $b } keys %returneditems ) {
@@ -570,7 +579,6 @@ foreach ( sort { $a <=> $b } keys %returneditems ) {
         else {
             $ri{borrowernumber} = $riborrowernumber{$_};
         }
-
         #        my %ri;
         my $biblio = GetBiblioFromItemNumber(GetItemnumberFromBarcode($bar_code));
         my $item = GetItem(GetItemnumberFromBarcode($bar_code));
@@ -579,14 +587,14 @@ foreach ( sort { $a <=> $b } keys %returneditems ) {
         $ri{itembiblionumber} = $biblio->{'biblionumber'};
         $ri{itemtitle}        = $biblio->{'title'};
         $ri{itemauthor}       = $biblio->{'author'};
-        $ri{itemtype}         = $biblio->{'itemtype'};
         $ri{itemnote}         = $biblio->{'itemnotes'};
-        $ri{ccode}            = $biblio->{'ccode'};
         $ri{itemnumber}       = $biblio->{'itemnumber'};
-        $ri{barcode}          = $bar_code;
+        $ri{itemtype}         = $item->{'itype'};
+        $ri{ccode}            = $item->{'ccode'};
+        $ri{itemcallnumber}   = $item->{'itemcallnumber'};
         $ri{homebranch}       = $item->{'homebranch'};
         $ri{holdingbranch}    = $item->{'holdingbranch'};
-        $ri{barcode}          = $barcode;
+        $ri{barcode}          = $bar_code;
     }
     else {
         last;
