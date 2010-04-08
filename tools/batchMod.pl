@@ -92,71 +92,89 @@ if ($op eq "action") {
     my @tags      = $input->param('tag');
     my @subfields = $input->param('subfield');
     my @values    = $input->param('field_value');
+    my @disabled  = $input->param('disable_input');
     # build indicator hash.
     my @ind_tag   = $input->param('ind_tag');
     my @indicator = $input->param('indicator');
 
     # Is there something to modify ?
     # TODO : We shall use this var to warn the user in case no modification was done to the items
-    my $something_to_modify = scalar(grep {!/^$/} @values);
+    my $values_to_modify = scalar(grep {!/^$/} @values);
+    my $values_to_blank  = scalar(@disabled);
+    my $marcitem;
 
     # Once the job is done
     if ($completedJobID) {
-	# If we have a reasonable amount of items, we display them
-	if (scalar(@itemnumbers) <= 1000) {
-	    $items_display_hashref=BuildItemsData(@itemnumbers);
-	} else {
-	    # Else, we only display the barcode
-	    my @simple_items_display = map {{ itemnumber => $_, barcode => (GetBarcodeFromItemnumber($_) or ""), biblionumber => (GetBiblionumberFromItemnumber($_) or "") }} @itemnumbers;
-	    $template->param("simple_items_display" => \@simple_items_display);
-	}
+        # If we have a reasonable amount of items, we display them
+        if (scalar(@itemnumbers) <= 1000) {
+            $items_display_hashref=BuildItemsData(@itemnumbers);
+        } else {
+            # Else, we only display the barcode
+            my @simple_items_display = map {{ itemnumber => $_, barcode => (GetBarcodeFromItemnumber($_) or ""), biblionumber => (GetBiblionumberFromItemnumber($_) or "") }} @itemnumbers;
+            $template->param("simple_items_display" => \@simple_items_display);
+        }
 
-	# Setting the job as done
-	my $job = C4::BackgroundJob->fetch($sessionID, $completedJobID);
+        # Setting the job as done
+        my $job = C4::BackgroundJob->fetch($sessionID, $completedJobID);
 
-	# Calling the template
-        add_saved_job_results_to_template($template, $completedJobID);
+        # Calling the template
+            add_saved_job_results_to_template($template, $completedJobID);
 
-    # While the job is getting done
     } else {
+    # While the job is getting done
 
 	# Job size is the number of items we have to process
-	my $job_size = scalar(@itemnumbers);
-	my $job = undef;
-	my $callback = sub {};
+        my $job_size = scalar(@itemnumbers);
+        my $job = undef;
+        $dbh->{AutoCommit} = 0;
+        my $callback = sub {};
 
 	# If we asked for background processing
-	if ($runinbackground) {
-	    $job = put_in_background($job_size);
-	    $callback = progress_callback($job, $dbh);
-	}
+        if ($runinbackground) {
+            $job = put_in_background($job_size);
+            $callback = progress_callback($job, $dbh);
+        }
 
+    #initializing values for updates
+        my (  $itemtagfield,   $itemtagsubfield) = &GetMarcFromKohaField("items.itemnumber", "");
+        if ($values_to_modify){
+                    my $xml = TransformHtmlToXml(\@tags,\@subfields,\@values,\@indicator,\@ind_tag, 'ITEM');
+                    $marcitem = MARC::Record::new_from_xml($xml, 'UTF-8');
+        }
+        if ($values_to_blank){
+                foreach my $disabledsubf (@disabled){
+                    if ($marcitem && $marcitem->field($itemtagfield)){
+                        $marcitem->field($itemtagfield)->update($disabledsubf=>"");
+                    }
+                    else {
+                        $marcitem = MARC::Record->new();
+                        $marcitem->append_fields(MARC::Field->new($itemtagfield,'','',$disabledsubf=>""));
+                    }
+                }
+        } 
 	# For each item
-	my $i = 1; 
-	foreach my $itemnumber(@itemnumbers){
+    	my $i = 1; 
+        foreach my $itemnumber(@itemnumbers){
 
-		$job->progress($i) if $runinbackground;
-		my $itemdata=GetItem($itemnumber);
-		if ($input->param("del")){
-			my $return = DelItemCheck(C4::Context->dbh, $itemdata->{'biblionumber'}, $itemdata->{'itemnumber'});
-			if ($return == 1) {
-			    $deleted_items++;
-			} else {
-			    $not_deleted_items++;
-			    push @not_deleted, { biblionumber => $itemdata->{'biblionumber'}, itemnumber => $itemdata->{'itemnumber'}, barcode => $itemdata->{'barcode'}, title => $itemdata->{'title'}, $return => 1 };
-			}
-		} else {
-		    if ($something_to_modify) {
-			my $xml = TransformHtmlToXml(\@tags,\@subfields,\@values,\@indicator,\@ind_tag, 'ITEM');
-			my $marcitem = MARC::Record::new_from_xml($xml, 'UTF-8');
-			my $localitem = TransformMarcToKoha( $dbh, $marcitem, "", 'items' );
-			my $localmarcitem=Item2Marc($itemdata);
-			UpdateMarcWith($marcitem,$localmarcitem);
-			eval{my ($oldbiblionumber,$oldbibnum,$oldbibitemnum) = ModItemFromMarc($localmarcitem,$itemdata->{biblionumber},$itemnumber)};
-		    }
-		}
-		$i++;
-	}
+            $job->progress($i) if $runinbackground;
+            my $itemdata=GetItem($itemnumber);
+            if ($input->param("del")){
+                my $return = DelItemCheck(C4::Context->dbh, $itemdata->{'biblionumber'}, $itemdata->{'itemnumber'});
+                if ($return == 1) {
+                    $deleted_items++;
+                } else {
+                    $not_deleted_items++;
+                    push @not_deleted, { biblionumber => $itemdata->{'biblionumber'}, itemnumber => $itemdata->{'itemnumber'}, barcode => $itemdata->{'barcode'}, title => $itemdata->{'title'}, $return => 1 };
+                }
+            } else {
+            if ($values_to_modify||$values_to_blank) {
+                my $localmarcitem=Item2Marc($itemdata);
+                UpdateMarcWith($marcitem,$localmarcitem);
+                eval{my ($oldbiblionumber,$oldbibnum,$oldbibitemnum) = ModItemFromMarc($localmarcitem,$itemdata->{biblionumber},$itemnumber)};
+                }
+            }
+            $i++;
+        }
     }
 }
 #
@@ -500,7 +518,12 @@ sub UpdateMarcWith($$){
 	my @fields_to=$marcto->field($itemtag);
     foreach my $subfield ($fieldfrom->subfields()){
 		foreach my $field_to_update (@fields_to){
-				$field_to_update->update($$subfield[0]=>$$subfield[1]) if ($$subfield[1]);
+             if ($subfield->[1] ne ""){
+				$field_to_update->update($subfield->[0]=>$subfield->[1]);
+            }
+            else {
+				$field_to_update->delete_subfield(code=> $subfield->[0]);
+            }
 		}
     }
   #warn "TO edited:",$marcto->as_formatted;
