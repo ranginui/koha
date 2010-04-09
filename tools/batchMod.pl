@@ -27,7 +27,7 @@ use C4::Biblio;
 use C4::Items;
 use C4::Context;
 use C4::Koha; # XXX subfield_is_koha_internal_p
-use C4::Branch; # XXX subfield_is_koha_internal_p
+use C4::Branch; 
 use C4::BackgroundJob;
 use C4::ClassSource;
 use C4::Dates;
@@ -75,7 +75,7 @@ my $nextop="";
 my @errors; # store errors found while checking data BEFORE saving item.
 my $items_display_hashref;
 my $frameworkcode="";
-my $tagslib = &GetMarcStructure(1,$frameworkcode);
+my $tagslib = &GetMarcStructure(1,'');
 
 my $deleted_items = 0;     # Numbers of deleted items
 my $not_deleted_items = 0; # Numbers of items that could not be deleted
@@ -85,6 +85,7 @@ my %cookies = parse CGI::Cookie($cookie);
 my $sessionID = $cookies{'CGISESSID'}->value;
 my $dbh = C4::Context->dbh;
 
+my (  $itemtagfield,   $itemtagsubfield) = &GetMarcFromKohaField("items.itemnumber", "");
 
 #--- ----------------------------------------------------------------------------
 if ($op eq "action") {
@@ -136,7 +137,6 @@ if ($op eq "action") {
         }
 
     #initializing values for updates
-        my (  $itemtagfield,   $itemtagsubfield) = &GetMarcFromKohaField("items.itemnumber", "");
         if ($values_to_modify){
                     my $xml = TransformHtmlToXml(\@tags,\@subfields,\@values,\@indicator,\@ind_tag, 'ITEM');
                     $marcitem = MARC::Record::new_from_xml($xml, 'UTF-8');
@@ -250,154 +250,178 @@ unshift (@$branches, @nochange_branch);
 
 my $pref_itemcallnumber = C4::Context->preference('itemcallnumber');
 
-
 foreach my $tag (sort keys %{$tagslib}) {
     # loop through each subfield
+   	next if ($tag ne $itemtagfield);
     foreach my $subfield (sort keys %{$tagslib->{$tag}}) {
      	next if subfield_is_koha_internal_p($subfield);
-    	next if ($tagslib->{$tag}->{$subfield}->{'tab'} ne "10");
-        # barcode and stocknumber are not meant to be batch-modified
+        #field disabled
+     	next if (!defined ($tagslib->{$tag}->{$subfield}->{'tab'}) || $tagslib->{$tag}->{$subfield}->{'tab'} eq -1);
     	next if $tagslib->{$tag}->{$subfield}->{'kohafield'} eq 'items.barcode';
     	next if $tagslib->{$tag}->{$subfield}->{'kohafield'} eq 'items.stocknumber';
-	my %subfield_data;
- 
-	my $index_subfield = int(rand(1000000)); 
-	if ($subfield eq '@'){
-	    $subfield_data{id} = "tag_".$tag."_subfield_00_".$index_subfield;
-	} else {
-	    $subfield_data{id} = "tag_".$tag."_subfield_".$subfield."_".$index_subfield;
-	}
-	$subfield_data{tag}        = $tag;
-	$subfield_data{subfield}   = $subfield;
-	$subfield_data{random}     = int(rand(1000000));    # why do we need 2 different randoms?
-    #   $subfield_data{marc_lib}   = $tagslib->{$tag}->{$subfield}->{lib};
-	$subfield_data{marc_lib}   ="<span id=\"error$i\" title=\"".$tagslib->{$tag}->{$subfield}->{lib}."\">".$tagslib->{$tag}->{$subfield}->{lib}."</span>";
-	$subfield_data{mandatory}  = $tagslib->{$tag}->{$subfield}->{mandatory};
-	$subfield_data{repeatable} = $tagslib->{$tag}->{$subfield}->{repeatable};
-	my ($x,$value);
-	$value =~ s/"/&quot;/g;
-	unless ($value) {
-	    $value = $tagslib->{$tag}->{$subfield}->{defaultvalue};
-	    # get today date & replace YYYY, MM, DD if provided in the default value
-	    my ( $year, $month, $day ) = split ',', $today_iso;     # FIXME: iso dates don't have commas!
-	    $value =~ s/YYYY/$year/g;
-	    $value =~ s/MM/$month/g;
-	    $value =~ s/DD/$day/g;
-	}
-	$subfield_data{visibility} = "display:none;" if (($tagslib->{$tag}->{$subfield}->{hidden} > 4) || ($tagslib->{$tag}->{$subfield}->{hidden} < -4));
-	# testing branch value if IndependantBranches.
-
-	my $attributes_no_value = qq(tabindex="1" id="$subfield_data{id}" name="field_value" class="input_marceditor" size="67" maxlength="255" );
-	my $attributes          = qq($attributes_no_value value="$value" );
-
-	if ( $tagslib->{$tag}->{$subfield}->{authorised_value} ) {
-	my @authorised_values;
-	my %authorised_lib;
-	# builds list, depending on authorised value...
-  
-	if ( $tagslib->{$tag}->{$subfield}->{authorised_value} eq "branches" ) {
-	    foreach my $thisbranch (@$branches) {
-		push @authorised_values, $thisbranch->{value};
-		$authorised_lib{$thisbranch->{value}} = $thisbranch->{branchname};
-		$value = $thisbranch->{value} if $thisbranch->{selected};
-	    }
-	}
-	elsif ( $tagslib->{$tag}->{$subfield}->{authorised_value} eq "itemtypes" ) {
-	    push @authorised_values, "" unless ( $tagslib->{$tag}->{$subfield}->{mandatory} );
-	    my $sth = $dbh->prepare("select itemtype,description from itemtypes order by description");
-	    $sth->execute;
-	    while ( my ( $itemtype, $description ) = $sth->fetchrow_array ) {
-		push @authorised_values, $itemtype;
-		$authorised_lib{$itemtype} = $description;
-	    }
-
-          #---- class_sources
-      }
-      elsif ( $tagslib->{$tag}->{$subfield}->{authorised_value} eq "cn_source" ) {
-          push @authorised_values, "" unless ( $tagslib->{$tag}->{$subfield}->{mandatory} );
-            
-          my $class_sources = GetClassSources();
-          my $default_source = C4::Context->preference("DefaultClassificationSource");
-          
-          foreach my $class_source (sort keys %$class_sources) {
-              next unless $class_sources->{$class_source}->{'used'} or
-                          ($value and $class_source eq $value)      or
-                          ($class_source eq $default_source);
-              push @authorised_values, $class_source;
-              $authorised_lib{$class_source} = $class_sources->{$class_source}->{'description'};
-          }
-		  $value = $default_source unless ($value);
-
-          #---- "true" authorised value
-      }
-      else {
-          push @authorised_values, "" unless ( $tagslib->{$tag}->{$subfield}->{mandatory} );
-          $authorised_values_sth->execute( $tagslib->{$tag}->{$subfield}->{authorised_value} );
-          while ( my ( $value, $lib ) = $authorised_values_sth->fetchrow_array ) {
-              push @authorised_values, $value;
-              $authorised_lib{$value} = $lib;
-          }
-      }
-      $subfield_data{marc_value} =CGI::scrolling_list(      # FIXME: factor out scrolling_list
-          -name     => "field_value",
-          -values   => \@authorised_values,
-          -default  => $value,
-          -labels   => \%authorised_lib,
-          -override => 1,
-          -size     => 1,
-          -multiple => 0,
-          -tabindex => 1,
-          -id       => "tag_".$tag."_subfield_".$subfield."_".$index_subfield,
-          -class    => "input_marceditor",
-      );
-    # it's a thesaurus / authority field
-    }
-    elsif ( $tagslib->{$tag}->{$subfield}->{authtypecode} ) {
-        $subfield_data{marc_value} = "<input type=\"text\" $attributes />
-            <a href=\"#\" class=\"buttonDot\"
-                onclick=\"Dopop('/cgi-bin/koha/authorities/auth_finder.pl?authtypecode=".$tagslib->{$tag}->{$subfield}->{authtypecode}."&index=$subfield_data{id}','$subfield_data{id}'); return false;\" title=\"Tag Editor\">...</a>
-    ";
-    # it's a plugin field
-    }
-    elsif ( $tagslib->{$tag}->{$subfield}->{value_builder} ) {
-        # opening plugin
-        my $plugin = C4::Context->intranetdir . "/cataloguing/value_builder/" . $tagslib->{$tag}->{$subfield}->{'value_builder'};
-        if (do $plugin) {
-			my $temp;
-            my $extended_param = plugin_parameters( $dbh, $temp, $tagslib, $subfield_data{id}, \@loop_data );
-            my ( $function_name, $javascript ) = plugin_javascript( $dbh, $temp, $tagslib, $subfield_data{id}, \@loop_data );
-            $subfield_data{marc_value} = qq[<input $attributes
-                onfocus="Focus$function_name($subfield_data{random}, '$subfield_data{id}');"
-                 onblur=" Blur$function_name($subfield_data{random}, '$subfield_data{id}');" />
-                <a href="#" class="buttonDot" onclick="Clic$function_name('$subfield_data{id}'); return false;" title="Tag Editor">...</a>
-                $javascript];
+        my %subfield_data;
+     
+        my $index_subfield = int(rand(1000000)); 
+        if ($subfield eq '@'){
+            $subfield_data{id} = "tag_".$tag."_subfield_00_".$index_subfield;
         } else {
-            warn "Plugin Failed: $plugin";
-            $subfield_data{marc_value} = "<input $attributes />"; # supply default input form
+            $subfield_data{id} = "tag_".$tag."_subfield_".$subfield."_".$index_subfield;
         }
+        $subfield_data{tag}        = $tag;
+        $subfield_data{subfield}   = $subfield;
+        $subfield_data{random}     = int(rand(1000000));    # why do we need 2 different randoms?
+        #   $subfield_data{marc_lib}   = $tagslib->{$tag}->{$subfield}->{lib};
+        $subfield_data{marc_lib}   ="<span id=\"error$i\" title=\"".$tagslib->{$tag}->{$subfield}->{lib}."\">".$tagslib->{$tag}->{$subfield}->{lib}."</span>";
+        $subfield_data{mandatory}  = $tagslib->{$tag}->{$subfield}->{mandatory};
+        $subfield_data{repeatable} = $tagslib->{$tag}->{$subfield}->{repeatable};
+        my ($x,$value);
+        $value =~ s/"/&quot;/g;
+        unless ($value) {
+            $value = $tagslib->{$tag}->{$subfield}->{defaultvalue};
+            # get today date & replace YYYY, MM, DD if provided in the default value
+            my ( $year, $month, $day ) = split ',', $today_iso;     # FIXME: iso dates don't have commas!
+            $value =~ s/YYYY/$year/g;
+            $value =~ s/MM/$month/g;
+            $value =~ s/DD/$day/g;
+        }
+        #$subfield_data{visibility} = "display:none;" if (($tagslib->{$tag}->{$subfield}->{hidden} > 4) || ($tagslib->{$tag}->{$subfield}->{hidden} < -4));
+        # testing branch value if IndependantBranches.
+
+        my $attributes_no_value;
+        my $not_editable = 0;
+        # Disable barcode and stock numbers batch editing
+        my @not_editable_koha_fields = ( 'items.barcode', 'items.stocknumber' );
+        foreach (@not_editable_koha_fields) {
+            my ($bctag, $bcsubfield) = GetMarcFromKohaField($_, $frameworkcode);
+                if (($bctag eq $subfield_data{tag}) && ($bcsubfield eq $subfield_data{subfield})) {
+            $not_editable = 1;
+            }
+
+        }
+
+        my $attributes;
+        # If a field is found to be non-editable,
+        if ($not_editable) {
+            # We mark it as disabled, so the user won't be able to edit it
+                $attributes_no_value = qq(disabled="disabled"); 
+            $attributes = $attributes_no_value;
+            # We also remove it's data, so it won't be modified
+            undef($subfield_data{tag});
+            undef($subfield_data{subfield});
+        } else {
+            $attributes_no_value = qq(tabindex="1" id="$subfield_data{id}" name="field_value" class="input_marceditor" size="67" maxlength="255" );
+            $attributes          = qq($attributes_no_value value="$value" );
+        }
+
+        if ( $tagslib->{$tag}->{$subfield}->{authorised_value} ) {
+        my @authorised_values;
+        my %authorised_lib;
+        # builds list, depending on authorised value...
+      
+        if ( $tagslib->{$tag}->{$subfield}->{authorised_value} eq "branches" ) {
+            foreach my $thisbranch (@$branches) {
+            push @authorised_values, $thisbranch->{value};
+            $authorised_lib{$thisbranch->{value}} = $thisbranch->{branchname};
+            $value = $thisbranch->{value} if $thisbranch->{selected};
+            }
+        }
+        elsif ( $tagslib->{$tag}->{$subfield}->{authorised_value} eq "itemtypes" ) {
+            push @authorised_values, "" unless ( $tagslib->{$tag}->{$subfield}->{mandatory} );
+            my $sth = $dbh->prepare("select itemtype,description from itemtypes order by description");
+            $sth->execute;
+            while ( my ( $itemtype, $description ) = $sth->fetchrow_array ) {
+            push @authorised_values, $itemtype;
+            $authorised_lib{$itemtype} = $description;
+            }
+
+              #---- class_sources
+          }
+          elsif ( $tagslib->{$tag}->{$subfield}->{authorised_value} eq "cn_source" ) {
+              push @authorised_values, "" unless ( $tagslib->{$tag}->{$subfield}->{mandatory} );
+                
+              my $class_sources = GetClassSources();
+              my $default_source = C4::Context->preference("DefaultClassificationSource");
+              
+              foreach my $class_source (sort keys %$class_sources) {
+                  next unless $class_sources->{$class_source}->{'used'} or
+                              ($value and $class_source eq $value)      or
+                              ($class_source eq $default_source);
+                  push @authorised_values, $class_source;
+                  $authorised_lib{$class_source} = $class_sources->{$class_source}->{'description'};
+              }
+              $value = $default_source unless ($value);
+
+              #---- "true" authorised value
+          }
+          else {
+              push @authorised_values, "" unless ( $tagslib->{$tag}->{$subfield}->{mandatory} );
+              $authorised_values_sth->execute( $tagslib->{$tag}->{$subfield}->{authorised_value} );
+              while ( my ( $value, $lib ) = $authorised_values_sth->fetchrow_array ) {
+                  push @authorised_values, $value;
+                  $authorised_lib{$value} = $lib;
+              }
+          }
+          $subfield_data{marc_value} =CGI::scrolling_list(      # FIXME: factor out scrolling_list
+              -name     => "field_value",
+              -values   => \@authorised_values,
+              -default  => $value,
+              -labels   => \%authorised_lib,
+              -override => 1,
+              -size     => 1,
+              -multiple => 0,
+              -tabindex => 1,
+              -id       => "tag_".$tag."_subfield_".$subfield."_".$index_subfield,
+              -class    => "input_marceditor",
+          );
+        # it's a thesaurus / authority field
+        }
+        elsif ( $tagslib->{$tag}->{$subfield}->{authtypecode} ) {
+            $subfield_data{marc_value} = "<input type=\"text\" $attributes />
+                <a href=\"#\" class=\"buttonDot\"
+                    onclick=\"Dopop('/cgi-bin/koha/authorities/auth_finder.pl?authtypecode=".$tagslib->{$tag}->{$subfield}->{authtypecode}."&index=$subfield_data{id}','$subfield_data{id}'); return false;\" title=\"Tag Editor\">...</a>
+        ";
+        # it's a plugin field
+        }
+        elsif ( $tagslib->{$tag}->{$subfield}->{value_builder} ) {
+            # opening plugin
+            my $plugin = C4::Context->intranetdir . "/cataloguing/value_builder/" . $tagslib->{$tag}->{$subfield}->{'value_builder'};
+            if (do $plugin) {
+                my $temp;
+                my $extended_param = plugin_parameters( $dbh, $temp, $tagslib, $subfield_data{id}, \@loop_data );
+                my ( $function_name, $javascript ) = plugin_javascript( $dbh, $temp, $tagslib, $subfield_data{id}, \@loop_data );
+                $subfield_data{marc_value} = qq[<input $attributes
+                    onfocus="Focus$function_name($subfield_data{random}, '$subfield_data{id}');"
+                     onblur=" Blur$function_name($subfield_data{random}, '$subfield_data{id}');" />
+                    <a href="#" class="buttonDot" onclick="Clic$function_name('$subfield_data{id}'); return false;" title="Tag Editor">...</a>
+                    $javascript];
+            } else {
+                warn "Plugin Failed: $plugin";
+                $subfield_data{marc_value} = "<input $attributes />"; # supply default input form
+            }
+        }
+# Donot hide any field in edit
+#        elsif ( $tag eq '' ) {       # it's an hidden field
+#            $subfield_data{marc_value} = qq(<input type="hidden" $attributes />);
+#        }
+#        elsif ( $tagslib->{$tag}->{$subfield}->{'hidden'} ) {   # FIXME: shouldn't input type be "hidden" ?
+#            $subfield_data{marc_value} = qq(<input type="hidden" $attributes />);
+#        }
+        elsif ( length($value) > 100
+                or (C4::Context->preference("marcflavour") eq "UNIMARC" and
+                      300 <= $tag && $tag < 400 && $subfield eq 'a' )
+                or (C4::Context->preference("marcflavour") eq "MARC21"  and
+                      500 <= $tag && $tag < 600                     )
+              ) {
+            # oversize field (textarea)
+            $subfield_data{marc_value} = "<textarea $attributes_no_value>$value</textarea>\n";
+        } else {
+            # it's a standard field
+             $subfield_data{marc_value} = "<input $attributes />";
+        }
+    #   $subfield_data{marc_value}="<input type=\"text\" name=\"field_value\">";
+        push (@loop_data, \%subfield_data);
+        $i++
     }
-    elsif ( $tag eq '' ) {       # it's an hidden field
-        $subfield_data{marc_value} = qq(<input type="hidden" $attributes />);
-    }
-    elsif ( $tagslib->{$tag}->{$subfield}->{'hidden'} ) {   # FIXME: shouldn't input type be "hidden" ?
-        $subfield_data{marc_value} = qq(<input type="text" $attributes />);
-    }
-    elsif ( length($value) > 100
-            or (C4::Context->preference("marcflavour") eq "UNIMARC" and
-                  300 <= $tag && $tag < 400 && $subfield eq 'a' )
-            or (C4::Context->preference("marcflavour") eq "MARC21"  and
-                  500 <= $tag && $tag < 600                     )
-          ) {
-        # oversize field (textarea)
-        $subfield_data{marc_value} = "<textarea $attributes_no_value>$value</textarea>\n";
-    } else {
-        # it's a standard field
-         $subfield_data{marc_value} = "<input $attributes />";
-    }
-#   $subfield_data{marc_value}="<input type=\"text\" name=\"field_value\">";
-    push (@loop_data, \%subfield_data);
-    $i++
-  }
 } # -- End foreach tag
 
 
