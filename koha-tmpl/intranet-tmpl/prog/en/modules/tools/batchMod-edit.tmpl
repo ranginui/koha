@@ -24,16 +24,10 @@
 	    $("input[name='disable_input']").click(function() {
 		    if ($(this).is(":checked")){
                 $(this).val($(this).siblings("[name='subfield']").val());
-                $(this).siblings("[name='field_value']").attr('disabled',true);
-                $(this).siblings("[name='tag']").attr('disabled',true);
-                $(this).siblings("[name='subfield']").attr('disabled',true);
-                $(this).siblings("[name='mandatory']").attr('disabled',true);
+                $(this).siblings().attr('disabled',true);
             }
             else {
-                $(this).siblings("[name='field_value']").removeAttr('disabled');
-                $(this).siblings("[name='tag']").removeAttr('disabled');
-                $(this).siblings("[name='subfield']").removeAttr('disabled');
-                $(this).siblings("[name='mandatory']").removeAttr('disabled');
+                $(this).siblings().removeAttr('disabled');
             }
 	    });
 
