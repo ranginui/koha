@@ -31,6 +31,8 @@ use XML::Simple;
 use XML::Dumper;
 use Switch;
 use C4::Debug;
+use utf8;
+use open qw(:std :utf8);
 # use Smart::Comments;
 # use Data::Dumper;
 
