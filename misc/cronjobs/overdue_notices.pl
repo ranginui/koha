@@ -40,7 +40,9 @@ use C4::Dates qw/format_date/;
 use C4::Debug;
 use C4::Letters;
 use C4::Overdues qw(GetFine);
+use C4::Reports::Guided; #_get_column_defs
 use open qw(:std :utf8);
+use YAML;
 
 =head1 NAME
 
@@ -251,7 +253,11 @@ my $csvfilename;
 my $htmlfilename;
 my $triggered = 0;
 my $listall = 0;
+<<<<<<< HEAD:misc/cronjobs/overdue_notices.pl
 my $itemscontent = join( ',', qw( issuedate title barcode author biblionumber ) );
+=======
+my $itemscontent = join( ',', qw( author title barcode issuedate date_due ) );
+>>>>>>> MT2268 : Adding headers to overduenotices:misc/cronjobs/overdue_notices.pl
 my @myborcat;
 my @myborcatout;
 
@@ -273,6 +279,13 @@ GetOptions(
 pod2usage(1) if $help;
 pod2usage( -verbose => 2 ) if $man;
 
+my $columns_def_hashref = C4::Reports::Guided::_get_column_defs();
+foreach my $key (keys %$columns_def_hashref){
+    my $initkey=$key;
+    $key=~s/[^\.]*\.//;
+    $columns_def_hashref->{$key}=$columns_def_hashref->{$initkey};
+}
+print Dump($columns_def_hashref);
 if ( defined $csvfilename && $csvfilename =~ /^-/ ) {
     warn qq(using "$csvfilename" as filename, that seems odd);
 }
@@ -348,17 +361,21 @@ if ( defined $htmlfilename ) {
     open $html_fh, ">",File::Spec->catdir ($htmlfilename,"notices-".$today->output('iso').".html");
   }
   
-  print $html_fh "<html>\n";
-  print $html_fh "<head>\n";
-  print $html_fh "<style type='text/css'>\n";
-  print $html_fh "pre {page-break-after: always;}\n";
-  print $html_fh "pre {white-space: pre-wrap;}\n";
-  print $html_fh "pre {white-space: -moz-pre-wrap;}\n";
-  print $html_fh "pre {white-space: -o-pre-wrap;}\n";
-  print $html_fh "pre {word-wrap: break-work;}\n";
-  print $html_fh "</style>\n";
-  print $html_fh "</head>\n";
-  print $html_fh "<body>\n";
+  print $html_fh <<HEAD;
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <style type='text/css'>
+    pre {page-break-after: always;}
+    pre {white-space: pre-wrap;}
+    pre {white-space: -moz-pre-wrap;}
+    pre {white-space: -o-pre-wrap;}
+    pre {word-wrap: break-work;}
+  </style>
+</head>
+<body>
+HEAD
 }
 
 foreach my $branchcode (@branches) {
@@ -473,8 +490,19 @@ END_SQL
                 my @params = ($listall ? ( $borrowernumber , 1 , $MAX ) : ( $borrowernumber, $mindays, $maxdays ));
                 $sth2->execute(@params);
                 my $itemcount = 0;
+<<<<<<< HEAD:misc/cronjobs/overdue_notices.pl
                 my $titles = ($htmlfilename?"<table id='itemscontent$borrowernumber'>":"");
                 my @items = ();
+=======
+		my $titles;
+                if ($htmlfilename){
+		    $titles="<table id='itemscontent$borrowernumber'>";
+		    $titles.= "<thead><tr><th>".join("</th><th>",@$columns_def_hashref{@item_content_fields});
+		    warn @item_content_fields;
+		    warn map {"$columns_def_hashref->{$_};"} @item_content_fields;
+		    $titles.= "</th></tr></thead>";
+		}
+>>>>>>> MT2268 : Adding headers to overduenotices:misc/cronjobs/overdue_notices.pl
                 
                 my $i = 0;
                 my $exceededPrintNoticesMaxLines = 0;
@@ -493,7 +521,7 @@ END_SQL
                     $itemcount++;
                     push (@items, $item_info->{'biblionumber'});
                 }
-                $titles.="</table>" if ($htmlfilename);
+                $titles.="</tbody></table>" if ($htmlfilename);
 		$debug && warn $titles;
                 $sth2->finish;
                 $letter = parse_letter(
