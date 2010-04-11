@@ -1575,7 +1575,7 @@ sub CanHoldOnShelf {
     my $item = C4::Items::GetItem($itemnumber);
     my $itemtype = C4::Context->preference('item-level_itypes');
     $itemtype = $itemtype ? $item->{itype} : $item->{itemtype} ;
-    my $branch = $item->{C4::Context->preference('homeorholdingbranch')};
+    my $branch = $item->{C4::Context->preference('HomeOrHoldingBranch')};
     
     my $issuingrule = GetIssuingRule('*', $itemtype, $branch);
     return $issuingrule->{allowonshelfholds};
