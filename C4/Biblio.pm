@@ -134,7 +134,10 @@ eval {
             servers    => [$servers],
             key_prefix => C4::Context->config('memcached_namespace') || 'koha',
         };
-        memoize_memcached( 'GetMarcStructure', memcached => $memcached, expire_time => 600 );    #cache for 10 minutes
+        memoize_memcached( 'GetMarcStructure', memcached => $memcached, expire_time => 60000 );    #cache for 1000 minutes
+        memoize_memcached( 'GetAuthorisedValueDesc', memcached => $memcached, expire_time => 60000 );    #cache for 1000 minutes
+        memoize_memcached( 'GetMarcFromKohaField', memcached => $memcached, expire_time => 60000 );    #cache for 1000 minutes
+        memoize_memcached( 'get_biblio_authorised_values', memcached => $memcached, expire_time => 60000 );    #cache for 1000 minutes
     }
 };
 

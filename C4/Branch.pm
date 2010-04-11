@@ -24,6 +24,22 @@ use C4::Koha;
 
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
+eval {
+    my $servers = C4::Context->config('memcached_servers');
+    if ($servers) {
+        require Memoize::Memcached;
+        import Memoize::Memcached qw(memoize_memcached);
+ 
+        my $memcached = {
+            servers    => [ $servers ],
+            key_prefix => C4::Context->config('memcached_namespace') || 'koha',
+        };
+
+        memoize_memcached('GetBranches',memcached => $memcached, expire_time => 600000);
+        memoize_memcached('GetBranchName',memcached => $memcached, expire_time => 600000);
+    }
+};
+
 BEGIN {
 	# set the version for version checking
 	$VERSION = 3.02;

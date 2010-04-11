@@ -23,7 +23,6 @@ use strict;
 use C4::Context;
 use C4::Output;
 use URI::Split qw(uri_split);
-use Memoize;
 
 use vars qw($VERSION @ISA @EXPORT $DEBUG);
 
@@ -67,7 +66,24 @@ BEGIN {
 }
 
 # expensive functions
-memoize('GetAuthorisedValues');
+    
+eval {
+    my $servers = C4::Context->config('memcached_servers');
+    if ($servers) {
+        require Memoize::Memcached;
+        import Memoize::Memcached qw(memoize_memcached);
+ 
+        my $memcached = {
+            servers    => [ $servers ],
+            key_prefix => C4::Context->config('memcached_namespace') || 'koha',
+        };
+
+        memoize_memcached('GetKohaAuthorisedValues',memcached => $memcached, expire_time => 600000);
+        memoize_memcached('GetAuthorisedValues',memcached => $memcached, expire_time => 600000);
+        memoize_memcached('GetItemTypes',memcached => $memcached, expire_time => 600000);
+        memoize_memcached('getitemtypeimagelocation',memcached => $memcached, expire_time => 600000);
+    }
+};
 
 =head1 NAME
 

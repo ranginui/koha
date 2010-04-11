@@ -32,6 +32,7 @@ eval {
         };
 
         memoize_memcached('preference', memcached => $memcached, expire_time => 600000); #cache for 10 minutes
+        memoize_memcached('marcfromkohafield', memcached => $memcached, expire_time => 600000); #cache for 10 minutes
     }
 };
 
