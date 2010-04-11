@@ -28,10 +28,11 @@ sub check_sys_pref {
 					$variable =~s /\'|\"//g;
 					$sth->execute($variable);
 					if (my $data=$sth->fetchrow_hashref()){
+                        if ($data->{variable} eq $variable){
+                           next;
+                        }
 					}
-					else {
-						print "$name has a reference to $variable, this does not exist in the database\n";
-					}
+					print "$name has a reference to $variable, this does not exist in the database\n";
 				}
 			}
 			close FILE;
