@@ -13,9 +13,9 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
 =head1 NAME
@@ -122,12 +122,12 @@ $template->param(
 
 # my @blocs = split /\@/,$ISBD;
 # my @fields = $record->fields();
-my $res = GetISBDView($biblionumber);
+my $res = GetISBDView($biblionumber, "opac");
 
 my $reviews = getreviews( $biblionumber, 1 );
 foreach ( @$reviews ) {
     my $borrower_number_review = $_->{borrowernumber};
-    my $borrowerData           = GetMember($borrower_number_review,'borrowernumber');
+    my $borrowerData           = GetMember('borrowernumber' =>$borrower_number_review);
     # setting some borrower info into this hash
     $_->{title}     = $borrowerData->{'title'};
     $_->{surname}   = $borrowerData->{'surname'};

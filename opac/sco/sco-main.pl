@@ -31,6 +31,21 @@ use C4::Biblio;
 use C4::Items;
 
 my $query = new CGI;
+
+unless (C4::Context->preference('WebBasedSelfCheck')) {
+    # redirect to OPAC home if self-check is not enabled
+    print $query->redirect("/cgi-bin/koha/opac-main.pl");
+    exit;
+}
+
+if (C4::Context->preference('AutoSelfCheckAllowed')) 
+{
+	my $AutoSelfCheckID = C4::Context->preference('AutoSelfCheckID');
+	my $AutoSelfCheckPass = C4::Context->preference('AutoSelfCheckPass');
+	$query->param(-name=>'userid',-values=>[$AutoSelfCheckID]);
+	$query->param(-name=>'password',-values=>[$AutoSelfCheckPass]);
+    $query->param(-name=>'koha_login_context',-values=>['sco']);
+}
 my ($template, $loggedinuser, $cookie) = get_template_and_user({
     template_name   => "sco/sco-main.tmpl",
     authnotrequired => 0,

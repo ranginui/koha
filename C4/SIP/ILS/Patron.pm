@@ -38,7 +38,7 @@ sub new {
 	my ($class, $patron_id) = @_;
     my $type = ref($class) || $class;
     my $self;
-	$kp = GetMember($patron_id,'cardnumber');
+	$kp = GetMember(cardnumber=>$patron_id);
 	$debug and warn "new Patron (GetMember): " . Dumper($kp);
     unless (defined $kp) {
 		syslog("LOG_DEBUG", "new ILS::Patron(%s): no such patron", $patron_id);
@@ -50,11 +50,22 @@ sub new {
 	my $flags     = $kp->{flags};     # or warn "Warning: No flags from patron object for '$patron_id'"; 
 	my $debarred  = $kp->{debarred};  # 1 if ($kp->{flags}->{DBARRED}->{noissues});
 	$debug and warn sprintf("Debarred = %s : ", ($debarred||'undef')) . Dumper(%{$kp->{flags}});
+    my ($day, $month, $year) = (localtime)[3,4,5];
+    my $today    = sprintf '%04d-%02d-%02d', $year+1900, $month+1, $day;
+    my $expired  = ($today gt $kp->{dateexpiry}) ? 1 : 0;
+    if ($expired) {
+        if ($kp->{opacnote} ) {
+            $kp->{opacnote} .= q{ };
+        }
+        $kp->{opacnote} .= 'PATRON EXPIRED';
+    }
 	my %ilspatron;
 	my $adr     = $kp->{streetnumber} || '';
 	my $address = $kp->{address}      || ''; 
     my $dob     = $kp->{dateofbirth};
     $dob and $dob =~ s/-//g;    # YYYYMMDD
+    my $dexpiry     = $kp->{dateexpiry};
+    $dexpiry and $dexpiry =~ s/-//g;    # YYYYMMDD
 	$adr .= ($adr && $address) ? " $address" : $address;
     my $fines_amount = $flags->{CHARGES}->{amount};
     $fines_amount = ($fines_amount and $fines_amount > 0) ? $fines_amount : 0;
@@ -66,6 +77,8 @@ sub new {
         id   => $kp->{cardnumber},    # to SIP, the id is the BARCODE, not userid
         password        => $pw,
         ptype           => $kp->{categorycode},     # 'A'dult.  Whatever.
+        dateexpiry      => $dexpiry,
+        dateexpiry_iso  => $kp->{dateexpiry},
         birthdate       => $dob,
         birthdate_iso   => $kp->{dateofbirth},
         branchcode      => $kp->{branchcode},
@@ -74,10 +87,10 @@ sub new {
         address         => $adr,
         home_phone      => $kp->{phone},
         email_addr      => $kp->{email},
-        charge_ok       => ( !$debarred ),
-        renew_ok        => ( !$debarred ),
-        recall_ok       => ( !$debarred ),
-        hold_ok         => ( !$debarred ),
+        charge_ok       => ( !$debarred && !$expired ),
+        renew_ok        => ( !$debarred && !$expired ),
+        recall_ok       => ( !$debarred && !$expired ),
+        hold_ok         => ( !$debarred && !$expired ),
         card_lost       => ( $kp->{lost} || $kp->{gonenoaddress} || $flags->{LOST} ),
         claims_returned => 0,
         fines           => $fines_amount, # GetMemberAccountRecords($kp->{borrowernumber})
@@ -92,11 +105,12 @@ sub new {
         fine_items      => [],
         recall_items    => [],
         unavail_holds   => [],
-        inet            => ( !$debarred ),
+        inet            => ( !$debarred && !$expired ),
+        expired         => $expired,
     );
     }
     $debug and warn "patron fines: $ilspatron{fines} ... amountoutstanding: $kp->{amountoutstanding} ... CHARGES->amount: $flags->{CHARGES}->{amount}";
-	for (qw(CHARGES CREDITS GNA LOST DBARRED NOTES)) {
+	for (qw(EXPIRED CHARGES CREDITS GNA LOST DEBARRED NOTES)) {
 		($flags->{$_}) or next;
         if ($_ ne 'NOTES' and $flags->{$_}->{message}) {
             $ilspatron{screen_msg} .= " -- " . $flags->{$_}->{message};  # show all but internal NOTES
@@ -131,6 +145,8 @@ my %fields = (
     home_phone              => 0,
     birthdate               => 0,
     birthdate_iso           => 0,
+    dateexpiry              => 0,
+    dateexpiry_iso          => 0,
     ptype                   => 0,
     charge_ok               => 0,   # for patron_status[0] (inverted)
     renew_ok                => 0,   # for patron_status[1] (inverted)
@@ -203,6 +219,11 @@ sub fines_amount {
 sub language {
     my $self = shift;
     return $self->{language} || '000'; # Unspecified
+}
+
+sub expired {
+    my $self = shift;
+    return $self->{expired};
 }
 
 #

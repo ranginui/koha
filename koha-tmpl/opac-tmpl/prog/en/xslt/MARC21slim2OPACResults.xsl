@@ -410,6 +410,7 @@
                             <xsl:with-param name="codes">h</xsl:with-param>
                         </xsl:call-template>
                     </xsl:if>
+                <xsl:text> </xsl:text>
                     <xsl:call-template name="subfieldSelect">
                         <xsl:with-param name="codes">fgknps</xsl:with-param>
                      </xsl:call-template>
@@ -1007,6 +1008,12 @@
                    <span class="unavailable">
                        <xsl:text>In transit (</xsl:text>
                        <xsl:value-of select="count(key('item-by-status', 'In transit'))"/>
+                       <xsl:text>). </xsl:text>                   </span>
+                   </xsl:if>
+                    <xsl:if test="count(key('item-by-status', 'Waiting'))>0">
+                   <span class="unavailable">
+                       <xsl:text>On hold (</xsl:text>
+                       <xsl:value-of select="count(key('item-by-status', 'Waiting'))"/>
                        <xsl:text>). </xsl:text>                   </span>
                    </xsl:if>
                </span>

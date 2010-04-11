@@ -7,7 +7,7 @@
 	}); 
 //]]>
 </script>
-<!-- TMPL_IF NAME="XSLTDetailsDisplay" --><script type="text/javascript">
+<!-- TMPL_IF NAME="OPACXSLTDetailsDisplay" --><script type="text/javascript">
     var GB_ROOT_DIR = "/opac-tmpl/prog/en/lib/greybox/";
 </script>
 <script type="text/javascript" src="/opac-tmpl/prog/en/lib/greybox/AJS.js"></script>
@@ -16,7 +16,7 @@
 <link href="/opac-tmpl/prog/en/lib/greybox/gb_styles.css" rel="stylesheet" type="text/css" />
 <!-- /TMPL_IF -->
 </head>
-<body>
+<body id="opac-isbddetail">
 
 <div id="doc3" class="yui-t7">
    <div id="bd">
@@ -30,7 +30,7 @@
     <div id="catalogue_detail_biblio">
 	
      <h1 style="float:left;margin:0 1em 1em 0;">ISBD View</h1> <div id="views">
-	 <span class="view"><a id="Normalview" href="/cgi-bin/koha/opac-detail.pl?biblionumber=<!-- TMPL_VAR name="biblionumber" -->">Normal View</a></span> <!-- TMPL_IF NAME="XSLTDetailsDisplay" -->
+	 <span class="view"><a id="Normalview" href="/cgi-bin/koha/opac-detail.pl?biblionumber=<!-- TMPL_VAR name="biblionumber" -->">Normal View</a></span> <!-- TMPL_IF NAME="OPACXSLTDetailsDisplay" -->
 <span class="view"><a id="MARCviewPop" href="/cgi-bin/koha/opac-showmarc.pl?id=<!-- TMPL_VAR NAME="biblionumber" -->" title="MARC" rel="gb_page_center[600,500]">MARC View</a></span>
        <span class="view"><a id="MARCview" href="/cgi-bin/koha/opac-MARCdetail.pl?biblionumber=<!-- TMPL_VAR name="biblionumber" -->">Expanded MARC View</a></span>
 <!-- TMPL_ELSE -->
@@ -62,9 +62,7 @@
 	<!-- /TMPL_IF -->
     <!-- /TMPL_UNLESS -->
 <!-- /TMPL_UNLESS -->
-        <li><a class="print" href="/cgi-bin/koha/opac-detailprint.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->" onclick="Dopop('opac-detailprint.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->'); return false;">
-            Print
-        </a></li>
+        <li><a class="print" href="javascript:window.print();">Print</a></li>
 <!-- TMPL_IF name="virtualshelves" -->
    <!-- TMPL_IF NAME="opacuserlogin" --> <!-- TMPL_IF NAME="loggedinusername" -->
         <li><a class="addtoshelf" href="/cgi-bin/koha/opac-addbybiblionumber.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->" onclick="Dopop('opac-addbybiblionumber.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->'); return false;">
@@ -82,11 +80,14 @@
 		<label for="format">Save Record:</label>
 	    <select name="format" id="format">
 		<option value="">-- Choose Format --</option>
-        <option value="mods">MODS (XML)</option>
+ 	    <option value="bibtex">BibTex</option>
         <option value="dc">Dublin Core (XML)</option>
         <option value="marcxml">MARCXML</option>
         <option value="marc8">MARC (non-Unicode/MARC-8)</option>
-        <option value="utf8">MARC (Unicode/UTF-8)</option>    </select><input type="hidden" name="op" value="export" /><input type="hidden" name="bib" value="<!-- TMPL_VAR NAME="biblionumber" -->" />
+        <option value="utf8">MARC (Unicode/UTF-8)</option>
+        <option value="mods">MODS (XML)</option>
+ 	    <option value="ris">RIS</option>    
+		</select><input type="hidden" name="op" value="export" /><input type="hidden" name="bib" value="<!-- TMPL_VAR NAME="biblionumber" -->" />
 <input type="submit" name="save" value="Go" /></form></div>
 </div>
 </div>

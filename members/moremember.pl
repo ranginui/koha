@@ -13,9 +13,9 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
 =head1 moremember.pl
@@ -93,7 +93,7 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
 my $borrowernumber = $input->param('borrowernumber');
 
 #start the page and read in includes
-my $data           = GetMember( $borrowernumber ,'borrowernumber');
+my $data           = GetMember( 'borrowernumber' => $borrowernumber );
 my $reregistration = $input->param('reregistration');
 
 if ( not defined $data ) {
@@ -138,7 +138,7 @@ $data->{ "sex_".$data->{'sex'}."_p" } = 1;
 my $catcode;
 if ( $category_type eq 'C') {
 	if ($data->{'guarantorid'} ne '0' ) {
-    	my $data2 = GetMember( $data->{'guarantorid'} ,'borrowernumber');
+    	my $data2 = GetMember( 'borrowernumber' => $data->{'guarantorid'} );
     	foreach (qw(address city B_address B_city phone mobile zipcode country B_country)) {
     	    $data->{$_} = $data2->{$_};
     	}
@@ -178,7 +178,7 @@ if ( $category_type eq 'A' ) {
 }
 else {
     if ($data->{'guarantorid'}){
-	    my ($guarantor) = GetMember( $data->{'guarantorid'},'biblionumber');
+	    my ($guarantor) = GetMember( 'borrowernumber' =>$data->{'guarantorid'});
 		$template->param(guarantor => 1);
 		foreach (qw(borrowernumber cardnumber firstname surname)) {        
 			  $template->param("guarantor$_" => $guarantor->{$_});
@@ -359,6 +359,20 @@ foreach (@$alerts) {
     $_->{relatedto} = findrelatedto( $_->{type}, $_->{externalid} );
 }
 
+my $candeleteuser;
+my $userenv = C4::Context->userenv;
+if($userenv->{flags} % 2 == 1){
+    $candeleteuser = 1;
+}elsif ( C4::Context->preference("IndependantBranches") ) {
+    $candeleteuser = ( $data->{'branchcode'} eq $userenv->{branch} );
+}else{
+    if( C4::Auth::getuserflags( $userenv->{flags},$userenv->{number})->{borrowers} ) {
+        $candeleteuser = 1;
+    }else{
+        $candeleteuser = 0;
+    }
+}
+
 # check to see if patron's image exists in the database
 # basically this gives us a template var to condition the display of
 # patronimage related interface on
@@ -389,6 +403,7 @@ $template->param(
     detailview => 1,
     AllowRenewalLimitOverride => C4::Context->preference("AllowRenewalLimitOverride"),
     DHTMLcalendar_dateformat => C4::Dates->DHTMLcalendar(),
+    CANDELETEUSER    => $candeleteuser,
     roaddetails     => $roaddetails,
     borrowernumber  => $borrowernumber,
     categoryname    => $data->{'description'},

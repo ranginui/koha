@@ -10,16 +10,15 @@ use C4::Output;
 use C4::Bookseller;
 use C4::Context;
 use C4::Letters;
-
 my $input = new CGI;
 
 my $serialid = $input->param('serialid');
 my $op = $input->param('op');
 my $claimletter = $input->param('claimletter');
 my $supplierid = $input->param('supplierid');
+my $suppliername = $input->param('suppliername');
 my $order = $input->param('order');
-my %supplierlist = GetSuppliersWithLateIssues;
-my @select_supplier;
+my %supplierlist = GetSuppliersWithLateIssues();
 
 # open template first (security & userenv set here)
 my ($template, $loggedinuser, $cookie)
@@ -30,17 +29,19 @@ my ($template, $loggedinuser, $cookie)
             flagsrequired => {serials => 1},
             debug => 1,
             });
-
-foreach my $supplierid (sort {$supplierlist{$a} cmp $supplierlist{$b} } keys %supplierlist){
-        my ($count, @dummy) = GetLateOrMissingIssues($supplierid,"",$order);
-        my $counting = $count;
-        $supplierlist{$supplierid} = $supplierlist{$supplierid}." ($counting)";
-	push @select_supplier, $supplierid
+my $supplier_loop = [];
+foreach my $s_id (sort {$supplierlist{$a} cmp $supplierlist{$b} } keys %supplierlist){
+        my ($count) = GetLateOrMissingIssues($s_id,q{},$order);
+        push @{$supplier_loop}, {
+            id   => $s_id,
+            name => $supplierlist{$s_id} . "($count)",
+            selected => ( $supplierid && $supplierid == $s_id ),
+        };
 }
 
-my $letters = GetLetters("claimissues");
+my $letters = GetLetters('claimissues');
 my @letters;
-foreach (keys %$letters){
+foreach (keys %{$letters}){
     push @letters ,{code=>$_,name=> $letters->{$_}};
 }
 
@@ -49,14 +50,6 @@ my ($count2, @missingissues);
 if ($supplierid) {
     ($count2, @missingissues) = GetLateOrMissingIssues($supplierid,$serialid,$order);
 }
-
-my $CGIsupplier=CGI::scrolling_list( -name     => 'supplierid',
-			-id        => 'supplierid',
-			-values   => \@select_supplier,
-			-default  => $supplierid,
-			-labels   => \%supplierlist,
-			-size     => 1,
-			-multiple => 0 );
 
 my ($singlesupplier,@supplierinfo);
 if($supplierid){
@@ -70,19 +63,20 @@ if($supplierid){
 my $preview=0;
 if($op && $op eq 'preview'){
     $preview = 1;
-} else {
-    my @serialnums=$input->param('serialid');
-    if (@serialnums) { # i.e. they have been flagged to generate claims
-        SendAlerts('claimissues',\@serialnums,$input->param("letter_code"));
-        my $cntupdate=UpdateClaimdateIssues(\@serialnums);
-        ### $cntupdate SHOULD be equal to scalar(@$serialnums)  TODO so what do we do about it??
-    }
+}
+if ($op eq "send_alert"){
+  my @serialnums=$input->param("serialid");
+  SendAlerts('claimissues',\@serialnums,$input->param("letter_code"));
+  my $cntupdate=UpdateClaimdateIssues(\@serialnums);
+  ### $cntupdate SHOULD be equal to scalar(@$serialnums)
+  $template->param('SHOWCONFIRMATION' => 1);
+  $template->param('suppliername' => $suppliername);
 }
 
 $template->param('letters'=>\@letters,'letter'=>$letter);
 $template->param(
         order =>$order,
-        CGIsupplier => $CGIsupplier,
+        supplier_loop => $supplier_loop,
         phone => $supplierinfo[0]->{phone},
         booksellerfax => $supplierinfo[0]->{booksellerfax},
         bookselleremail => $supplierinfo[0]->{bookselleremail},
@@ -93,5 +87,6 @@ $template->param(
         singlesupplier => $singlesupplier,
         supplierloop => \@supplierinfo,
         dateformat    => C4::Context->preference("dateformat"),
+    	DHTMLcalendar_dateformat => C4::Dates->DHTMLcalendar(),
         );
 output_html_with_http_headers $input, $cookie, $template->output;

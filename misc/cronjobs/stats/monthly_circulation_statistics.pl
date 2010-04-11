@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl
 #-----------------------------------
 # Script Name: circstats.pl
 # Script Version: 1.0
@@ -30,6 +30,7 @@
 # Suite 330, Boston, MA  02111-1307 USA
 
 # use strict;
+use warnings;
 
 # UNCOMMENT the following lines if running from a command line
 # print "THIS SCRIPT produces a comma-separated values file of circulation statistics for a given month and year.\n\nDo you wish to continue? (y/n) ";
@@ -67,8 +68,8 @@ my $sth3 = $dbh->prepare ("SELECT COUNT(*) FROM biblioitems,items,statistics WHE
 
 # number of renewals for this library
 my $sth4 = $dbh->prepare ("SELECT COUNT(statistics.itemnumber) FROM statistics,items,biblioitems
-	WHERE YEAR(statistics.datetime)=YEAR(SUBDATE('2007-01-01',INTERVAL 1 MONTH))
-	AND MONTH(statistics.datetime)=MONTH(SUBDATE('2007-01-01',INTERVAL 1 MONTH))
+	WHERE YEAR(statistics.datetime)=YEAR(SUBDATE(CURDATE(),INTERVAL 1 MONTH))
+	AND MONTH(statistics.datetime)=MONTH(SUBDATE(CURDATE(),INTERVAL 1 MONTH))
 	AND statistics.itemnumber=items.itemnumber
 	AND biblioitems.ccode=?
         AND homebranch=?

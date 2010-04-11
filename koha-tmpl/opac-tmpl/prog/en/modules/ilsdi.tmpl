@@ -1,4 +1,4 @@
-<!-- TMPL_INCLUDE NAME="doc-head-open.inc" --><!-- TMPL_VAR NAME="LibraryNameTitle" DEFAULT="Koha Online" --> Catalog &rsaquo;  ISBD
+<!-- TMPL_INCLUDE NAME="doc-head-open.inc" --><!-- TMPL_VAR NAME="LibraryNameTitle" DEFAULT="Koha Online" --> &rsaquo; ILS-DI
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
 </head>
 <body>
@@ -366,8 +366,7 @@
                     <dd>the type of the identifier, possible values: 
                         <ul>
                             <li>cardnumber</li>
-                            <li>firstname</li>
-                            <li>userid</li>
+                            <li>surname</li>
                             <li>borrowernumber</li>
                         </ul>
                     </dd>
@@ -421,7 +420,7 @@
                     <dt><strong>show_holds</strong> (Optional, default 0)</dt>
                     <dd>whether or not to return hold request information in the response</dd>
                     <dt><strong>show_loans</strong> (Optional, default 0)</dt>
-                    <dd>whether or not to return loan information request information in the response</dd>
+                    <dd>whether or not to return loan information in the response</dd>
                 </dl>
                 <h4>Example Call</h4>
                 <a href="ilsdi.pl?service=GetPatronInfo&patron_id=1&show_contact=0&show_loans=1">
@@ -698,11 +697,11 @@
                     <li>HarvestAuthorityRecords <em>(Use OAI-PMH instead)</em></li>
                     <li>HarvestHoldingsRecords <em>(Use OAI-PMH instead)</em></li>
                     <li><a href="ilsdi.pl?service=Describe&verb=GetRecords">GetRecords</a></li>
-                    <li>Search</li>
-                    <li>Scan</li>
+                    <li>Search <em>(Use SRU instead)</em></li>
+                    <li>Scan <em>(Use SRU instead)</em></li>
                     <li><a href="ilsdi.pl?service=Describe&verb=GetAuthorityRecords">GetAuthorityRecords</a></li>
-                    <li>OutputRewritablePage</li>
-                    <li>OutputIntermediateFormat</li>
+                    <li>OutputRewritablePage <em>(Not supported yet)</em></li>
+                    <li>OutputIntermediateFormat <em>(Not supported yet)</em></li>
                 </ul>
                 <h2>Level 3: Elementary OPAC alternative</h2>
                 <ul>
@@ -720,8 +719,8 @@
                 </ul>
                 <h2>Level 4: Robust/domain specific discovery platforms</h2>
                 <ul>
-                    <li>SearchCourseReserves</li>
-                    <li>Explain</li>
+                    <li>SearchCourseReserves <em>(Not supported yet)</em></li>
+                    <li>Explain <em>(Not supported yet)</em></li>
                 </ul>
 
 <!-- /TMPL_IF -->

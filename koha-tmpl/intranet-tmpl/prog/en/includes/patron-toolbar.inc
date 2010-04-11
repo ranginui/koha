@@ -23,7 +23,9 @@
 
 		var newmenu = [
 <!--TMPL_IF Name="AddPatronLists_categorycode"-->
-<!--TMPL_LOOP Name="categories"-->{ text: "<!--TMPL_VAR Name="description"-->",  url: "/cgi-bin/koha/members/memberentry.pl?op=add&amp;categorycode=<!--TMPL_VAR Name="categorycode"-->" },<!--/TMPL_LOOP-->
+<!--TMPL_LOOP Name="categoryloop"-->
+{ text: "<!--TMPL_VAR Name="description"-->",  url: "/cgi-bin/koha/members/memberentry.pl?op=add&amp;categorycode=<!--TMPL_VAR Name="categorycode"-->" },
+<!--/TMPL_LOOP-->
 <!--TMPL_ELSE-->
 			{ text: _("Adult Patron"),  url: "/cgi-bin/koha/members/memberentry.pl?op=add&amp;category_type=A" },
 			{ text: _("Child Patron"),  url: "/cgi-bin/koha/members/memberentry.pl?op=add&amp;category_type=C" },
@@ -32,8 +34,8 @@
 			{ text: _("Staff"),  url: "/cgi-bin/koha/members/memberentry.pl?op=add&amp;category_type=S" },
 			{ text: _("Statistical"),  url: "/cgi-bin/koha/members/memberentry.pl?op=add&amp;category_type=X" },
 <!--/TMPL_IF-->
-		] 
-	
+		]
+
 	    new YAHOO.widget.Button({
 	        type: "menu",
 	        label: _("New"),
@@ -41,7 +43,7 @@
 	        menu: newmenu,
 	        container: "newmenuc"
 	    });
-	
+
 	}
 
 	//]]>
@@ -50,7 +52,7 @@
 	<li id="newmenuc">
 		<form action="/cgi-bin/koha/members/memberentry.pl" method="get">
 			<input type="hidden" name="op" value="add" />
-			<label for="categorycode">New Patron: </label><select name="categorycode" id="categorycode">
+			<label for="newcategorycode">New Patron: </label><select name="categorycode" id="newcategorycode">
 			<!--TMPL_IF Name="AddPatronLists_categorycode"-->
 				<!--TMPL_LOOP Name="categories"--><option value="<!--TMPL_VAR Name="categorycode"-->"><!--TMPL_VAR Name="description"--></option><!--/TMPL_LOOP-->
 			<!-- TMPL_ELSE -->

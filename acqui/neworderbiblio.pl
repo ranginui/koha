@@ -4,6 +4,7 @@
 #now script to do searching for acquisitions
 
 # Copyright 2000-2002 Katipo Communications
+# Copyright 2008-2009 BibLibre SARL
 #
 # This file is part of Koha.
 #
@@ -16,9 +17,9 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 =head1 NAME
 
@@ -55,11 +56,11 @@ the basket number to know on which basket this script have to add a new order.
 =cut
 
 use strict;
+
 use C4::Search;
 use CGI;
 use C4::Bookseller;
 use C4::Biblio;
-
 use C4::Auth;
 use C4::Output;
 use C4::Koha;
@@ -72,10 +73,9 @@ my $params = $input->Vars;
 my $page             = $params->{'page'} || 1;
 my $query            = $params->{'q'};
 my $results_per_page = $params->{'num'} || 20;
-
-my $booksellerid = $params->{'booksellerid'};
-my $basketno     = $params->{'basketno'};
-my $sub          = $params->{'sub'};
+my $booksellerid     = $params->{'booksellerid'};
+my $basketno         = $params->{'basketno'};
+my $sub              = $params->{'sub'};
 my $bookseller = GetBookSellerFromId($booksellerid);
 
 # getting the template
@@ -85,7 +85,7 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
-        flagsrequired   => { acquisition => 1 },
+        flagsrequired   => { acquisition => 'order_manage' },
     }
 );
 
@@ -106,18 +106,16 @@ if (defined $error) {
 
 my @results;
 
-foreach my $i ( 0 .. scalar @$marcresults ) {
-    my %resultsloop;
-    my $marcrecord = MARC::File::USMARC::decode($marcresults->[$i]);
-    my $biblio = TransformMarcToKoha(C4::Context->dbh,$marcrecord,'');
+if ($marcresults) {
+    foreach my $result ( @{$marcresults} ) {
+        my $marcrecord = MARC::File::USMARC::decode( $result );
+        my $biblio = TransformMarcToKoha( C4::Context->dbh, $marcrecord, '' );
 
-    #build the hash for the template.
-    %resultsloop=%$biblio;
-    $resultsloop{highlight}       = ($i % 2)?(1):(0);
-    $resultsloop{booksellerid} = $booksellerid;
-    push @results, \%resultsloop;
+        $biblio->{booksellerid} = $booksellerid;
+        push @results, $biblio;
+
+    }
 }
-
 $template->param(
     basketno             => $basketno,
     booksellerid     => $bookseller->{'id'},

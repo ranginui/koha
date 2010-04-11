@@ -4,13 +4,24 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link rel="shortcut icon" href="<!-- TMPL_VAR NAME="themelang" -->/includes/favicon.ico" type="image/x-icon" />
 <meta http-equiv="Content-Language" content="en-us" />
-<style type="text/css"> 
+<style type="text/css">
     @import url(<!-- TMPL_VAR NAME="themelang" -->/css/print.css);
 </style>
     <!-- TMPL_ELSE --><!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
 	<script type="text/javascript" src="<!-- TMPL_VAR name="themelang" -->/lib/jquery/plugins/jquery.checkboxes.min.js"></script>
+	<script type="text/javascript" src="<!-- TMPL_VAR name="themelang" -->/lib/jquery/plugins/jquery.tablesorter.min.js"></script>
 	<script type="text/javascript">
 	//<![CDATA[
+
+$(document).ready(function()
+    {
+        $("#itemst").tablesorter({
+                        headers: { 0: { sorter: false }}
+                });
+    }
+);
+
+<!-- TMPL_IF NAME="TagsEnabled" -->
 var MSG_NO_TAG_SPECIFIED = _("No tag was specified.");
 
 function tagSelected() {
@@ -56,15 +67,15 @@ function tagAdded() {
     KOHA.Tags.add_multitags_button(bibs, tag);
     return false;
 }
-
+<!-- /TMPL_IF -->
 	$(document).ready(function(){
 		$("#CheckAll").click(function(){
 		var checked = [];
 		$("#bookbag_form").checkCheckboxes("*", true).each(
 		    function() {
-				selRecord(this.value,true); 
+				selRecord(this.value,true);
 			}
-		); 
+		);
 	        return false;
 	    });
 	    $("#CheckNone").click(function(){
@@ -76,24 +87,15 @@ function tagAdded() {
 		);
 	        return false;
 	    });
-<!-- TMPL_IF NAME="RequestOnOpac" -->
-        $(".holdsep").text("| ");
-        $(".hold").text(_("Place Hold"));
-<!-- /TMPL_IF -->
-  
+
         <!-- TMPL_IF NAME="TagsEnabled" -->
-        <!-- TMPL_IF NAME="TagsInputOnList" -->
-          $(".tagsep").text("| ");
-          $("#tagsel_tag").text(_("Tag"));
           $("#tagsel_button").click(function(){
               tagAdded();
               return false;
           });
-          $("#tablehead").attr("colspan", $("#tablehead").attr("colspan") + 1);
-        <!-- /TMPL_IF -->
         <!-- /TMPL_IF -->
 	});
-
+<!-- TMPL_IF NAME="RequestOnOpac" -->
     function holdSel() {
         var items = document.getElementById('records').value;
         if (items) {
@@ -102,7 +104,7 @@ function tagAdded() {
             alert(MSG_NO_RECORD_SELECTED);
         }
     }
-
+<!-- /TMPL_IF -->
 	//]]>
 	</script>
 	<!-- /TMPL_IF -->
@@ -118,6 +120,7 @@ function tagAdded() {
 <ul>
 	<li><!-- TMPL_IF NAME="verbose" --><a href="opac-basket.pl" class="brief" onclick="showLess(); return false;">Brief Display</a><!-- TMPL_ELSE --><a href="opac-basket.pl" class="detail" onclick="showMore(); return false;">More Details</a><!-- /TMPL_IF --></li>
 	<li><a class="send" href="opac-basket.pl" onclick="sendBasket(); return false;">Send</a></li>
+	<li><a class="download" href="opac-basket.pl" onclick="downloadBasket(); return false;">Download</a></li>
 	<li><a class="print" href="opac-basket.pl" onclick="printBasket(); return false;">Print</a></li>
 	<li><a class="empty" href="opac-basket.pl" onclick="delBasket(); return false;">Empty and Close</a></li>
 	<li><a class="hide" href="opac-basket.pl" onclick="quit(); return false;">Hide Window</a></li>
@@ -132,10 +135,10 @@ function tagAdded() {
 <!-- TMPL_IF NAME="loggedinusername" -->
      | <a href="#" onclick="addSelToShelf(); return false;">Add to a list</a>
 <!-- /TMPL_IF -->
-     <span class="holdsep"></span>
-     <a href="#" onclick="holdSel(); return false;"><span class="hold"></span></a>
-     <span class="tagsep"></span>
-     <a href="#" onclick="tagSelected(); return false;"><span id="tagsel_tag"></span></a>
+
+     <!-- TMPL_IF NAME="RequestOnOpac" -->| <a href="#" onclick="holdSel(); return false;">Place hold</a><!-- /TMPL_IF -->
+     <!-- TMPL_IF NAME="TagsEnabled" -->
+     | <a href="#" onclick="tagSelected(); return false;">Tag</a><!-- /TMPL_IF -->
 </span>
      <span id="tagsel_form" style="display:none">
        <label for="tagsel_new" style="display:inline">New&nbsp;Tag:</label>
@@ -149,14 +152,14 @@ function tagAdded() {
     <!-- TMPL_LOOP NAME="BIBLIO_RESULTS" -->
     <h3>
         <!-- TMPL_IF NAME="print_basket" -->
-            <!-- TMPL_VAR NAME="title" -->
-                <!-- TMPL_IF name="subtitle" --> <!-- TMPL_VAR NAME="subtitle" --><!-- /TMPL_IF -->
-                <!-- TMPL_IF name="author" --> <!-- TMPL_VAR NAME="author" --><!-- /TMPL_IF -->
+            <!-- TMPL_VAR NAME="title" escape="html" -->
+                <!-- TMPL_IF name="subtitle" --> <!-- TMPL_LOOP NAME="subtitle" --><!-- TMPL_VAR NAME="subfield" escape="html" --><!-- /TMPL_LOOP --><!-- /TMPL_IF -->
+                <!-- TMPL_IF name="author" --> <!-- TMPL_VAR NAME="author" escape="html" --><!-- /TMPL_IF -->
         <!-- TMPL_ELSE -->
                 <input type="checkbox" value="<!-- TMPL_VAR NAME="biblionumber" -->" name="bib<!-- TMPL_VAR NAME="biblionumber" -->" id="bib<!-- TMPL_VAR NAME="biblionumber" -->" onclick="selRecord(value,checked)" />
                 <!-- TMPL_VAR NAME="title" escape="html" -->
-                <!-- TMPL_IF name="subtitle" --> <!-- TMPL_VAR NAME="subtitle" --><!-- /TMPL_IF -->
-                <!-- TMPL_IF name="author" --> <!-- TMPL_VAR NAME="author" --><!-- /TMPL_IF -->
+                <!-- TMPL_IF name="subtitle" --> <!-- TMPL_LOOP NAME="subtitle" --><!-- TMPL_VAR NAME="subfield" escape="html" --><!-- /TMPL_LOOP --><!-- /TMPL_IF -->
+                <!-- TMPL_IF name="author" --> <!-- TMPL_VAR NAME="author" escape="html"--><!-- /TMPL_IF -->
         <!-- /TMPL_IF -->
     </h3>
 	    <!-- COinS / OpenURL -->
@@ -188,7 +191,7 @@ function tagAdded() {
 	    </td>
         </tr>
         <!-- /TMPL_IF -->
-        
+
         <!-- TMPL_IF NAME="publishercode" -->
             <tr>
                 <th scope="row">Publisher</th>
@@ -208,7 +211,7 @@ function tagAdded() {
             <td> <!-- TMPL_VAR NAME="seriestitle" --></td>
         </tr>
         <!-- /TMPL_IF -->
-        
+
         <!-- TMPL_IF name="MARCSUBJCTS" -->
         <tr>
             <th scope="row">Subject(s)</th>
@@ -219,13 +222,13 @@ function tagAdded() {
                 <!-- /TMPL_LOOP --></td>
         </tr>
         <!-- /TMPL_IF -->
-    
+
         <!-- TMPL_IF name="copyrightdate" -->
             <tr><th scope="row">Copyright</th>
                 <td> <!-- TMPL_VAR NAME="copyrightdate" --></td>
             </tr>
         <!-- /TMPL_IF -->
-    
+
         <!-- TMPL_IF name="MARCNOTES" -->
         <tr>
             <th scope="row">Notes</th>
@@ -235,7 +238,7 @@ function tagAdded() {
             <!-- /TMPL_LOOP --></td>
         </tr>
         <!-- /TMPL_IF -->
-    
+
         <!-- TMPL_IF name="unititle" -->
         <tr>
             <th scope="row">Unified title</th>
@@ -266,25 +269,25 @@ function tagAdded() {
             <td> <!-- TMPL_VAR name="lccn" --></td>
         </tr>
         <!-- /TMPL_IF -->
-		
+
         <!-- TMPL_IF name="MARCURLS" -->
         <tr>
             <th scope="row">URL(s)</th>
             <td>
 	   <!-- TMPL_LOOP name="MARCURLS" -->
 		<p><!-- TMPL_IF NAME="part" --><!-- TMPL_VAR NAME="part" -->
-			<br /><!-- /TMPL_IF --> 
-	
+			<br /><!-- /TMPL_IF -->
+
 		<!-- TMPL_VAR NAME="MARCURL" -->
 			<!-- TMPL_IF NAME="notes" --><!-- TMPL_LOOP NAME="notes" --><!-- TMPL_VAR NAME="note" --><br /><!-- /TMPL_LOOP --><!-- /TMPL_IF -->
             <!-- /TMPL_LOOP --></p></td>
         </tr><!-- /TMPL_IF -->
-		
+
         <tr>
             <th scope="row">Location(s)</th>
             <td><!-- TMPL_IF NAME="ITEM_RESULTS" --><!-- TMPL_LOOP NAME="ITEM_RESULTS" -->
                 <p>
-                    <!-- TMPL_VAR NAME="branchname" --> <!-- TMPL_VAR NAME="location_description" -->
+                    <!-- TMPL_VAR NAME="branchname" --><!-- TMPL_IF NAME="location" -->, <!-- TMPL_VAR NAME="location" --><!-- /TMPL_IF -->
                     <!-- TMPL_IF name="itemcallnumber" -->
                         (<!-- TMPL_VAR NAME="itemcallnumber" -->)
                     <!-- /TMPL_IF -->
@@ -296,16 +299,20 @@ function tagAdded() {
             </form>
 
 <!-- TMPL_ELSE -->
+<!-- TMPL_UNLESS NAME="print_basket" -->
+<p style="border-top : 1px solid #E8E8E8;">
 	<form action="/cgi-bin/koha/opac-basket.pl" method="get" name="bookbag_form" id="bookbag_form">
-    <table>
-				<!-- TMPL_UNLESS NAME="print_basket" --><tr><td id="tablehead" colspan="3" style="padding-bottom: 7px;"><a id="CheckAll" href="#">Select All</a> <a id="CheckNone" href="#">Clear All</a> | <b>Selected items :</b>
-<span id="tag_hides">                
+    <a id="CheckAll" href="#">Select All</a>
+    <a id="CheckNone" href="#">Clear All</a>
+    | <b>Selected items :</b>
+<span id="tag_hides">
 <a href="#" onclick="delSelRecords(); return false;">Remove</a>
-<!-- TMPL_IF NAME="loggedinusername" -->
+<!-- TMPL_IF NAME="virtualshelves" --><!-- TMPL_IF NAME="loggedinusername" -->
      | <a href="#" onclick="addSelToShelf(); return false;">Add to a list</a>
-<!-- /TMPL_IF -->
-     <span class="holdsep"></span><a href="#" onclick="holdSel(); return false;"><span class="hold"></span></a>
-     <span class="tagsep"></span><a href="#" onclick="tagSelected(); return false;"><span id="tagsel_tag"></span></a>
+<!-- /TMPL_IF --><!-- /TMPL_IF -->
+     <!-- TMPL_IF NAME="RequestOnOpac" -->| <a href="#" onclick="holdSel(); return false;">Place hold</a><!-- /TMPL_IF -->
+     <!-- TMPL_IF NAME="TagsEnabled" -->
+     | <a href="#" onclick="tagSelected(); return false;">Tag</a><!-- /TMPL_IF -->
 </span>
      <span id="tagsel_form" style="display:none">
        <label for="tagsel_new" style="display:inline">New&nbsp;Tag:</label>
@@ -313,7 +320,17 @@ function tagAdded() {
        <input id="tagsel_button" name="tagsel_button" class="input tagsel_button" title="tagsel_button" type="submit" value="Add"  style="display:inline"/>
        <a href="#" id="tagsel_cancel" onclick="tagCanceled(); return false;" style="display:inline">Cancel</a>
      </span>
-</td></tr><!-- /TMPL_UNLESS -->
+<!-- /TMPL_UNLESS -->
+</p>
+    <table id="itemst">
+	<thead><tr>
+	    <th>&nbsp;</th>
+	    <th>Title</th>
+	    <th>Author</th>
+	    <th>Year</th>
+	    <th>Location</th>
+        </tr></thead>
+
         <!-- TMPL_LOOP NAME="BIBLIO_RESULTS" -->
             <!-- TMPL_IF NAME="even" -->
                 <tr class="highlight">
@@ -322,29 +339,27 @@ function tagAdded() {
             <!-- /TMPL_IF -->
             <!-- TMPL_UNLESS NAME="print_basket" --><td>
                         <input type="checkbox" value="<!-- TMPL_VAR NAME="biblionumber" -->" name="bib<!-- TMPL_VAR NAME="biblionumber" -->" id="bib<!-- TMPL_VAR NAME="biblionumber" -->" onclick="selRecord(value,checked);" />
-                   
+
                 </td> <!-- /TMPL_UNLESS -->
-            <td><a href="#" onclick="openBiblio('<!-- TMPL_VAR name="dest" -->',<!-- TMPL_VAR name="biblionumber" -->)">
-                        <!-- TMPL_VAR NAME="title" escape="html" -->
-                    </a>
-                        <!-- TMPL_VAR NAME="author" -->
-                        <p><!-- TMPL_IF name="publishercode" -->- <!-- TMPL_VAR name="publishercode" -->
-                        <!-- TMPL_IF name="place" --> <!-- TMPL_VAR name="place" --><!-- /TMPL_IF --><!-- /TMPL_IF -->
-                        <!-- TMPL_IF name="pages" --> - <!-- TMPL_VAR name="pages" --><!-- TMPL_IF name="size" --> <!-- TMPL_VAR name="size" -->
-                        <!-- /TMPL_IF -->
-                        <!-- /TMPL_IF --></p>
-                        <!-- TMPL_IF name="notes" -->
-                        <p><!-- TMPL_VAR name="notes" --></p>
-                        <!-- /TMPL_IF -->
-						    <!-- COinS / OpenURL -->
-    <span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.au=<!-- TMPL_VAR NAME="author" -->&amp;rft.btitle=<!-- TMPL_VAR NAME="title" ESCAPE="url" -->&amp;rft.date=<!-- TMPL_VAR NAME="publicationyear" -->&amp;rft.tpages=<!-- TMPL_VAR NAME="size" -->&amp;rft.isbn=<!-- TMPL_VAR NAME="isbn"  ESCAPE="url" -->&amp;rft.aucorp=&amp;rft.place=<!-- TMPL_VAR NAME="place" -->&amp;rft.pub=<!-- TMPL_VAR NAME="publisher" ESCAPE="url" -->&amp;rft.edition=<!-- TMPL_VAR NAME="edition" -->&amp;rft.series=<!-- TMPL_VAR NAME="series" -->&amp;rft.genre="></span>
-    <div id="newtag<!-- TMPL_VAR NAME="biblionumber">_status" class="tagstatus results_summary" style="display:none">Tag status here.</div>
-    
-						</td>
-            <td><!-- TMPL_VAR name="description" --></td>
+            <td>
+		<a href="#" onclick="openBiblio('<!-- TMPL_VAR name="dest" -->',<!-- TMPL_VAR name="biblionumber" -->)">
+                        <!-- TMPL_VAR NAME="title" escape="html" --><!-- TMPL_IF name="subtitle" --> <!-- TMPL_LOOP NAME="subtitle" --><!-- TMPL_VAR NAME="subfield" escape="html" --><!-- /TMPL_LOOP --><!-- /TMPL_IF -->
+                </a>
+                <!-- COinS / OpenURL -->
+		    <span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;rft.au=<!-- TMPL_VAR NAME="author" -->&amp;rft.btitle=<!-- TMPL_VAR NAME="title" ESCAPE="url" -->&amp;rft.date=<!-- TMPL_VAR NAME="publicationyear" -->&amp;rft.tpages=<!-- TMPL_VAR NAME="size" -->&amp;rft.isbn=<!-- TMPL_VAR NAME="isbn"  ESCAPE="url" -->&amp;rft.aucorp=&amp;rft.place=<!-- TMPL_VAR NAME="place" -->&amp;rft.pub=<!-- TMPL_VAR NAME="publisher" ESCAPE="url" -->&amp;rft.edition=<!-- TMPL_VAR NAME="edition" -->&amp;rft.series=<!-- TMPL_VAR NAME="series" -->&amp;rft.genre="></span>
+		    <div id="newtag<!-- TMPL_VAR NAME="biblionumber">_status" class="tagstatus results_summary" style="display:none">Tag status here.</div>
+    	    </td>
+	    <td><!-- TMPL_VAR NAME="author" --></td>
+	    <td>
+		<!-- TMPL_IF NAME="publicationyear" -->
+		    <!-- TMPL_VAR NAME="publicationyear" -->
+                <!-- TMPL_ELSE -->
+		    <!-- TMPL_VAR NAME="copyrightdate" -->
+                <!-- /TMPL_IF -->
+	    </td>
                 <td><!-- TMPL_IF NAME="ITEM_RESULTS" --><!-- TMPL_LOOP NAME="ITEM_RESULTS" -->
                     <p>
-                        <!-- TMPL_VAR NAME="branchname" --> <!-- TMPL_VAR NAME="location_description" -->
+                        <!-- TMPL_VAR NAME="branchname" --><!-- TMPL_IF NAME="location" -->, <!-- TMPL_VAR NAME="location" --><!-- /TMPL_IF -->
                         <!-- TMPL_IF name="itemcallnumber" -->
                             (<!-- TMPL_VAR NAME="itemcallnumber" -->)
                         <!-- /TMPL_IF -->

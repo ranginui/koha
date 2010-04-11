@@ -6,11 +6,8 @@ use warnings;
 use CGI;
 
 use C4::Debug;
-use C4::Labels::Batch 1.000000;
-use C4::Labels::Template 1.000000;
-use C4::Labels::Layout 1.000000;
-use C4::Labels::PDF 1.000000;
-use C4::Labels::Label 1.000000;
+use C4::Creators 1.000000;
+use C4::Labels 1.000000;
 
 my $cgi = new CGI;
 
@@ -29,7 +26,7 @@ print $cgi->header( -type       => 'application/pdf',
                     -attachment => "$pdf_file.pdf",
                   );
 
-my $pdf = C4::Labels::PDF->new(InitVars => 0);
+my $pdf = C4::Creators::PDF->new(InitVars => 0);
 my $batch = C4::Labels::Batch->retrieve(batch_id => $batch_id);
 my $template = C4::Labels::Template->retrieve(template_id => $template_id, profile_id => 1);
 my $layout = C4::Labels::Layout->retrieve(layout_id => $layout_id);
@@ -97,7 +94,7 @@ else {
 LABEL_ITEMS:
 foreach my $item (@{$items}) {
     my ($barcode_llx, $barcode_lly, $barcode_width, $barcode_y_scale_factor) = 0,0,0,0;
-    if ($layout->get_attr('printing_type') eq 'ALT') {  # we process the ALT style printing type here because it is not an atomic printing type 
+    if ($layout->get_attr('printing_type') eq 'ALT') {  # we process the ALT style printing type here because it is not an atomic printing type
         my $label_a = C4::Labels::Label->new(
                                         batch_id            => $batch_id,
                                         item_number         => $item->{'item_number'},
@@ -210,12 +207,12 @@ Copyright 2009 Foundations Bible College.
 =head1 LICENSE
 
 This file is part of Koha.
-       
+
 Koha is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software
 Foundation; either version 2 of the License, or (at your option) any later version.
 
-You should have received a copy of the GNU General Public License along with Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-Suite 330, Boston, MA  02111-1307 USA
+You should have received a copy of the GNU General Public License along with Koha; if not, write to the Free Software Foundation, Inc., 51 Franklin Street,
+Fifth Floor, Boston, MA 02110-1301 USA.
 
 =head1 DISCLAIMER OF WARRANTY
 

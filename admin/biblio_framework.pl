@@ -17,9 +17,9 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
 use warnings;
@@ -74,13 +74,16 @@ if ($op eq 'add_form') {
 ################## ADD_VALIDATE ##################################
 # called by add_form, used to insert/modify data in DB
 } elsif ($op eq 'add_validate') {
-    if ($input->param('modif')) {
-        my $sth=$dbh->prepare("UPDATE biblio_framework SET frameworktext=? WHERE frameworkcode=?");
-        $sth->execute($input->param('frameworktext'),$input->param('frameworkcode'));
-    } else {
-        my $sth=$dbh->prepare("INSERT into biblio_framework (frameworkcode,frameworktext) values (?,?)");
-        $sth->execute($input->param('frameworkcode'),$input->param('frameworktext'));
-    }
+	my $dbh = C4::Context->dbh;
+	if($input->param('frameworktext') and $input->param('frameworkcode')){
+        if ($input->param('modif')) {
+            my $sth=$dbh->prepare("UPDATE biblio_framework SET frameworktext=? WHERE frameworkcode=?");
+            $sth->execute($input->param('frameworktext'),$input->param('frameworkcode'));
+        } else {
+            my $sth=$dbh->prepare("INSERT into biblio_framework (frameworkcode,frameworktext) values (?,?)");
+            $sth->execute($input->param('frameworkcode'),$input->param('frameworktext'));
+        }
+	}
 	print $input->redirect($script_name);   # FIXME: unnecessary redirect
 	exit;
 													# END $OP eq ADD_VALIDATE

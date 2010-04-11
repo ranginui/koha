@@ -9,6 +9,7 @@ package ILS::Item;
 use strict;
 use warnings;
 
+use DateTime;
 use Sys::Syslog qw(syslog);
 use Carp;
 
@@ -97,12 +98,21 @@ sub new {
 
 	# check if its on issue and if so get the borrower
 	my $issue = GetItemIssue($item->{'itemnumber'});
-	my $borrower = GetMember($issue->{'borrowernumber'},'borrowernumber');
+    if ( $issue ) {
+        my $date = $issue->{ date_due };
+        my $dt = DateTime->new(
+            year  => substr($date, 0, 4),
+            month => substr($date,5,2),
+            day  => substr($date, 8, 2) );
+        $item->{ due_date } = $dt->epoch();
+    }
+	my $borrower = GetMember(borrowernumber=>$issue->{'borrowernumber'});
 	$item->{patron} = $borrower->{'cardnumber'};
     my ($whatever, $arrayref) = GetReservesFromBiblionumber($item->{biblionumber});
 	$item->{hold_queue} = [ sort priority_sort @$arrayref ];
 	$item->{hold_shelf}    = [( grep {   defined $_->{found}  and $_->{found} eq 'W' } @{$item->{hold_queue}} )];
 	$item->{pending_queue} = [( grep {(! defined $_->{found}) or  $_->{found} ne 'W' } @{$item->{hold_queue}} )];
+    $item->{due_date} = $issue->{date_due};
 	$self = $item;
 	bless $self, $type;
 
@@ -160,7 +170,7 @@ sub hold_patron_name {
     my $self = shift or return;
     # return $self->{hold_patron_name} if $self->{hold_patron_name};    TODO: consider caching
     my $borrowernumber = (@_ ? shift: $self->hold_patron_id()) or return;
-    my $holder = GetMember($borrowernumber, 'borrowernumber');
+    my $holder = GetMember(borrowernumber=>$borrowernumber);
     unless ($holder) {
         syslog("LOG_ERR", "While checking hold, GetMember failed for borrowernumber '$borrowernumber'");
         return;
@@ -179,7 +189,7 @@ sub hold_patron_name {
 sub hold_patron_bcode {
     my $self = shift or return;
     my $borrowernumber = (@_ ? shift: $self->hold_patron_id()) or return;
-    my $holder = GetMember($borrowernumber, 'borrowernumber');
+    my $holder = GetMember(borrowernumber => $borrowernumber);
     if ($holder) {
         if ($holder->{cardnumber}) {
             return $holder->{cardnumber};
@@ -335,7 +345,7 @@ sub available {
 sub _barcode_to_borrowernumber ($) {
     my $known = shift;
     (defined($known)) or return undef;
-    my $member = GetMember($known,'cardnumber') or return undef;
+    my $member = GetMember(cardnumber=>$known) or return undef;
     return $member->{borrowernumber};
 }
 sub barcode_is_borrowernumber ($$$) {    # because hold_queue only has borrowernumber...

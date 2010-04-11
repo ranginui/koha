@@ -119,13 +119,16 @@ $.tablesorter.addParser({
         <ul>
             <li><a href="/cgi-bin/koha/opac-user.pl#opac-user-checkouts">Checked Out</a></li>
             <!-- TMPL_IF NAME="overdues_count" --><li><a href="/cgi-bin/koha/opac-user.pl#opac-user-overdues">Overdue</a></li><!-- /TMPL_IF -->
+<!-- TMPL_IF NAME="OPACFinesTab" -->
             <!-- TMPL_IF NAME="amountoverfive" --><li><a href="/cgi-bin/koha/opac-user.pl#opac-user-fines">Fines</a></li><!-- /TMPL_IF -->
             <!-- TMPL_IF NAME="amountoverzero" --><li><a href="/cgi-bin/koha/opac-user.pl#opac-user-fines">Fines</a></li><!-- /TMPL_IF -->
             <!-- TMPL_IF NAME="amountlessthanzero" --><li><a href="/cgi-bin/koha/opac-user.pl#opac-user-fines">Credits</a></li><!-- /TMPL_IF -->
+<!-- /TMPL_IF -->
             <!-- TMPL_IF NAME="waiting_count" --><!-- TMPL_IF NAME="atdestination" --><li><a href="/cgi-bin/koha/opac-user.pl#opac-user-waiting">Waiting</a></li><!-- /TMPL_IF --><!-- /TMPL_IF -->
             <!-- TMPL_IF NAME="reserves_count" --><li><a href="/cgi-bin/koha/opac-user.pl#opac-user-holds">Holds</a></li><!-- /TMPL_IF -->
         </ul>
         
+<!-- TMPL_IF NAME="OPACFinesTab" -->
         <!-- FINES BOX -->
         <!-- TMPL_IF NAME="amountoverfive" -->
             <div id="opac-user-fines"> <h3>Fines and Charges</h3>
@@ -154,6 +157,7 @@ $.tablesorter.addParser({
             <tr><td>You have a credit of:</td><td><a href="/cgi-bin/koha/opac-account.pl"><!-- TMPL_VAR NAME="amountoutstanding" --></a></td></tr>
             </table></div>
         <!-- /TMPL_IF -->
+<!-- /TMPL_IF -->
     
     <!-- /TMPL_LOOP -->
 
@@ -198,7 +202,9 @@ $.tablesorter.addParser({
         <!-- TMPL_IF name="OpacRenewalAllowed" -->
         <!-- TMPL_UNLESS name="patron_flagged" --><th>Renew</th><!-- /TMPL_UNLESS -->
         <!-- /TMPL_IF -->
+<!-- TMPL_IF NAME="OPACFinesTab" -->
         <th>Fines</th>
+<!-- /TMPL_IF -->
         </tr></thead>
         <tbody>
 		<!-- FIXME: the styling for highlight overrides the overdue red background,
@@ -220,7 +226,7 @@ $.tablesorter.addParser({
 
 <!-- TMPL_IF NAME="BakerTaylorEnabled" --><!-- TMPL_IF NAME="normalized_isbn" --><a href="https://<!-- TMPL_VAR NAME="BakerTaylorBookstoreURL" ESCAPE="HTML" --><!-- TMPL_VAR NAME="normalized_isbn" -->"><img alt="See Baker &amp; Taylor" src="<!-- TMPL_VAR NAME="BakerTaylorImageURL" ESCAPE="HTML" --><!-- TMPL_VAR NAME="normalized_isbn" -->" /></a><!-- TMPL_ELSE --><span class="no-image">No cover image available</span><!-- BakerTaylor needs normalized_isbn! --><!-- /TMPL_IF --><!-- /TMPL_IF -->
 
-<!-- TMPL_IF NAME="SyndeticsCoverImages" --><img src="http://www.syndetics.com/index.aspx?isbn=<!-- TMPL_VAR NAME="normalized_isbn" -->/SC.GIF&amp;client=<!-- TMPL_VAR NAME="SyndeticsClientCode" --><!-- TMPL_IF NAME="normalized_upc" -->&amp;upc=<!-- TMPL_VAR NAME="normalized_upc" --><!-- /TMPL_IF --><!-- TMPL_IF NAME="normalized_oclc" -->&amp;oclc=<!-- TMPL_VAR NAME="normalized_oclc" --><!-- /TMPL_IF -->&amp;type=xw10" alt="" class="thumbnail"/><!-- /TMPL_IF -->
+<!-- TMPL_IF NAME="SyndeticsCoverImages" --><!-- TMPL_IF NAME="using_https" --><img src="https://secure.syndetics.com/index.aspx?isbn=<!-- TMPL_ELSE --><img src="http://www.syndetics.com/index.aspx?isbn=<!-- /TMPL_IF --><!-- TMPL_VAR NAME="normalized_isbn" -->/SC.GIF&amp;client=<!-- TMPL_VAR NAME="SyndeticsClientCode" --><!-- TMPL_IF NAME="normalized_upc" -->&amp;upc=<!-- TMPL_VAR NAME="normalized_upc" --><!-- /TMPL_IF --><!-- TMPL_IF NAME="normalized_oclc" -->&amp;oclc=<!-- TMPL_VAR NAME="normalized_oclc" --><!-- /TMPL_IF -->&amp;type=xw10" alt="" class="thumbnail"/><!-- /TMPL_IF -->
 
 </td><!-- /TMPL_IF -->
 
@@ -242,7 +248,9 @@ $.tablesorter.addParser({
                         <!-- /TMPL_IF --></td>
                     <!-- /TMPL_UNLESS -->
                 <!-- /TMPL_IF -->
+<!-- TMPL_IF NAME="OPACFinesTab" -->
                 <td><!-- TMPL_IF NAME="charges" -->Yes<!-- TMPL_ELSE -->No<!-- /TMPL_IF --></td>
+<!-- /TMPL_IF -->
             </tr>
         <!-- /TMPL_LOOP --></tbody>
         </table>
@@ -275,7 +283,9 @@ $.tablesorter.addParser({
 <th>Due</th>
 <!-- TMPL_IF name="OpacRenewalAllowed" -->
                     <!-- TMPL_UNLESS name="patron_flagged" --><th>Renew</th><!-- /TMPL_IF --><!-- /TMPL_UNLESS -->
+<!-- TMPL_IF NAME="OPACFinesTab" -->
 <th>Fines</th>
+<!-- /TMPL_IF -->
 </tr></thead>
 
 <tbody><!-- TMPL_LOOP NAME="OVERDUES" -->
@@ -288,7 +298,7 @@ $.tablesorter.addParser({
 
 <!-- TMPL_IF NAME="BakerTaylorEnabled" --><!-- TMPL_IF NAME="normalized_isbn" --><a href="https://<!-- TMPL_VAR NAME="BakerTaylorBookstoreURL" ESCAPE="HTML" --><!-- TMPL_VAR NAME="normalized_isbn" -->"><img alt="See Baker &amp; Taylor" src="<!-- TMPL_VAR NAME="BakerTaylorImageURL" ESCAPE="HTML" --><!-- TMPL_VAR NAME="normalized_isbn" -->" /></a><!-- TMPL_ELSE --><!-- BakerTaylor needs normalized_isbn! --><span class="no-image">No cover image available</span><!-- /TMPL_IF --><!-- /TMPL_IF -->
 
-<!-- TMPL_IF NAME="SyndeticsCoverImages" --><img src="http://www.syndetics.com/index.aspx?isbn=<!-- TMPL_VAR NAME="normalized_isbn" -->/SC.GIF&amp;client=<!-- TMPL_VAR NAME="SyndeticsClientCode" --><!-- TMPL_IF NAME="normalized_upc" -->&amp;upc=<!-- TMPL_VAR NAME="normalized_upc" --><!-- /TMPL_IF --><!-- TMPL_IF NAME="normalized_oclc" -->&amp;oclc=<!-- TMPL_VAR NAME="normalized_oclc" --><!-- /TMPL_IF -->&amp;type=xw10" alt="" class="thumbnail"/><!-- /TMPL_IF -->
+<!-- TMPL_IF NAME="SyndeticsCoverImages" --><!-- TMPL_IF NAME="using_https" --><img src="https://secure.syndetics.com/index.aspx?isbn=<!-- TMPL_ELSE --><img src="http://www.syndetics.com/index.aspx?isbn=<!-- /TMPL_IF --><!-- TMPL_VAR NAME="normalized_isbn" -->/SC.GIF&amp;client=<!-- TMPL_VAR NAME="SyndeticsClientCode" --><!-- TMPL_IF NAME="normalized_upc" -->&amp;upc=<!-- TMPL_VAR NAME="normalized_upc" --><!-- /TMPL_IF --><!-- TMPL_IF NAME="normalized_oclc" -->&amp;oclc=<!-- TMPL_VAR NAME="normalized_oclc" --><!-- /TMPL_IF -->&amp;type=xw10" alt="" class="thumbnail"/><!-- /TMPL_IF -->
 
 </td><!-- /TMPL_IF -->
 
@@ -307,7 +317,9 @@ $.tablesorter.addParser({
 <!-- TMPL_ELSE -->No renewals left
 <!-- /TMPL_IF -->
 </td><!-- /TMPL_IF --><!-- /TMPL_UNLESS -->
+<!-- TMPL_IF NAME="OPACFinesTab" -->
 <td><!-- TMPL_IF NAME="charges" -->Yes<!-- TMPL_ELSE -->No<!-- /TMPL_IF --></td>
+<!-- /TMPL_IF -->
 </tr>
 <!-- /TMPL_LOOP --></tbody>
 </table></div>
@@ -322,10 +334,11 @@ $.tablesorter.addParser({
             <thead><tr>
                 <th>Title</th>
                 <th>Placed On</th>
+		<th>Expires On</th>
                 <th>Pick Up Location</th>
-				<!-- TMPL_IF NAME="showpriority" -->
-				<th>Priority</th>
-				<!-- /TMPL_IF -->
+		<!-- TMPL_IF NAME="showpriority" -->
+			<th>Priority</th>
+		<!-- /TMPL_IF -->
                 <th>Status</th>
 		<th>Modify</th>
             </tr></thead>
@@ -348,6 +361,7 @@ $.tablesorter.addParser({
                     <!-- TMPL_VAR NAME="author" -->
                 </td>
                 <td><!-- TMPL_VAR NAME="reservedate" --></td>
+		<td><!-- TMPL_IF NAME="expirationdate" --><!-- TMPL_VAR NAME="expirationdate" --><!-- TMPL_ELSE -->Never Expires<!-- /TMPL_IF --></td>
                 <td><!-- TMPL_VAR NAME="branch" --></td>
 				<!-- TMPL_IF NAME="showpriority" -->
 				<td><!-- TMPL_VAR NAME="priority" --> </td>
@@ -374,9 +388,13 @@ $.tablesorter.addParser({
                     <!-- /TMPL_IF -->
                 </td>
 		<td>
-		<form action="/cgi-bin/koha/opac-modrequest.pl" method="post">
-		<input type="hidden" name="biblionumber" value="<!-- TMPL_VAR NAME="biblionumber" -->" />
-		<input type="submit" name="submit" class="icon delete cancel" value="Cancel" onclick="return confirmDelete('Are you sure you want to cancel this hold?');" /></form>
+		<!-- TMPL_IF NAME="cancelable" -->
+			<form action="/cgi-bin/koha/opac-modrequest.pl" method="post">
+			<input type="hidden" name="biblionumber" value="<!-- TMPL_VAR NAME="biblionumber" -->" />
+			<input type="submit" name="submit" class="icon delete cancel" value="Cancel" onclick="return confirmDelete('Are you sure you want to cancel this hold?');" /></form>
+		<!-- TMPL_ELSE -->
+			&nbsp;
+		<!-- /TMPL_IF -->
 		</td>
 
             </tr>

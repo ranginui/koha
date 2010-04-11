@@ -13,9 +13,9 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
 =head1 NAME
@@ -47,6 +47,7 @@ use strict;
 use warnings;
 
 use CGI;
+use Carp;
 use C4::Koha;
 use C4::Auth;
 use C4::Dates qw/format_date/;
@@ -72,11 +73,10 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
         debug           => 1,
     }
 );
-
 if ( $op eq "renew" ) {
     ReNewSubscription(
         $subscriptionid,             $loggedinuser,
-        $query->param('startdate'),  $query->param('numberlength'),
+        C4::Dates->new($query->param('startdate'))->output('iso'),  $query->param('numberlength'),
         $query->param('weeklength'), $query->param('monthlength'),
         $query->param('note')
     );
@@ -84,13 +84,13 @@ if ( $op eq "renew" ) {
 
 my $subscription = GetSubscription($subscriptionid);
 if ($subscription->{'cannotedit'}){
-  warn "Attempt to renew subscription $subscriptionid by ".C4::Context->userenv->{'id'}." not allowed";
+  carp "Attempt to renew subscription $subscriptionid by ".C4::Context->userenv->{'id'}." not allowed";
   print $query->redirect("/cgi-bin/koha/serials/subscription-detail.pl?subscriptionid=$subscriptionid");
 }
 
 $template->param(
     startdate => format_date(
-             GetExpirationDate($subscriptionid)
+             $subscription->{enddate}
           || POSIX::strftime( "%Y-%m-%d", localtime )
     ),
     numberlength   => $subscription->{numberlength},

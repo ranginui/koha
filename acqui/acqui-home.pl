@@ -1,5 +1,6 @@
 #!/usr/bin/perl
 
+# Copyright 2008 - 2009 BibLibre SARL
 # This file is part of Koha.
 #
 # Koha is free software; you can redistribute it and/or modify it under the
@@ -11,11 +12,9 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
-
-
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 =head1 NAME
 
@@ -23,108 +22,116 @@ acqui-home.pl
 
 =head1 DESCRIPTION
 
-this script is the main page for acqui/
-It presents the budget's dashboard, another table about differents currency with 
-their rates and the pending suggestions.
-
-=head1 CGI PARAMETERS
-
-=over 4
-
-=item $status
-C<$status> is the status a suggestion could has. Default value is 'ASKED'.
-thus, it can be REJECTED, ACCEPTED, ORDERED, ASKED, AVAIBLE
-
-=back
+this script is the main page for acqui
 
 =cut
 
 use strict;
+use warnings;
+use Number::Format;
+
 use CGI;
 use C4::Auth;
 use C4::Output;
-
-use C4::Suggestions;
-
 use C4::Acquisition;
-use C4::Bookfund;
+use C4::Budgets;
 use C4::Members;
+use C4::Branch;
+use C4::Debug;
 
-my $query = new CGI;
+my $query = CGI->new;
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => "acqui/acqui-home.tmpl",
+    {   template_name   => 'acqui/acqui-home.tmpl',
         query           => $query,
-        type            => "intranet",
+        type            => 'intranet',
         authnotrequired => 0,
-        flagsrequired   => { acquisition => 1 },
+        flagsrequired   => { acquisition => '*' },
         debug           => 1,
     }
 );
 
-# budget
-my $borrower= GetMember($loggedinuser);
-my ( $flags, $homebranch )= ($borrower->{'flags'},$borrower->{'branchcode'});
+my $user = GetMember( 'borrowernumber' => $loggedinuser );
+my $branchname = GetBranchName($user->{branchcode});
 
-my @results = GetBookFunds($homebranch);
-my $count = scalar @results;
 
-my $classlist   = '';
-my $total       = 0;
-my $totspent    = 0;
-my $totcomtd    = 0;
-my $totavail    = 0;
-my @loop_budget = ();
+my $num_formatter;
 
-for (my $i=0; $i<$count; $i++){
-	my ($spent,$comtd)=GetBookFundBreakdown($results[$i]->{'bookfundid'},$results[$i]->{'startdate'},$results[$i]->{'enddate'});
-	my $avail=$results[$i]->{'budgetamount'}-($spent+$comtd);
-	my %line;
-	$line{bookfundname} = $results[$i]->{'bookfundname'};
-	$line{budgetamount} = $results[$i]->{'budgetamount'};
-	$line{aqbudgetid} = $results[$i]->{'aqbudgetid'};
-	$line{bookfundid} = $results[$i]->{'bookfundid'};
-	$line{sdate} = $results[$i]->{'startdate'};
-	$line{edate} = $results[$i]->{'enddate'};
-	$line{spent} = sprintf  ("%.2f", $spent);
-	$line{comtd} = sprintf  ("%.2f",$comtd);
-	$line{avail}  = sprintf  ("%.2f",$avail);
-	push @loop_budget, \%line;
-	$total+=$results[$i]->{'budgetamount'};
-	$totspent+=$spent;
-	$totcomtd+=$comtd;
-	$totavail+=$avail;
+my $cur_format = C4::Context->preference("CurrencyFormat");
+if ( $cur_format eq 'FR' ) {
+    $num_formatter = Number::Format->new(
+        'decimal_fill'      => '2',
+        'decimal_point'     => ',',
+        'int_curr_symbol'   => '',
+        'mon_thousands_sep' => ' ',
+        'thousands_sep'     => ' ',
+        'mon_decimal_point' => ','
+    );
+} else {    # US by default..
+    $num_formatter = Number::Format->new(
+        'int_curr_symbol'   => '',
+        'mon_thousands_sep' => ',',
+        'mon_decimal_point' => '.'
+    );
 }
 
-# currencies
-my @rates = GetCurrencies();
-$count = scalar @rates;
+my $budget_arr =
+  GetBudgetHierarchy( '', $user->{branchcode},
+    $template->{param_map}->{'USER_INFO'}[0]->{'borrowernumber'} );
 
-my @loop_currency = ();
-for ( my $i = 0 ; $i < $count ; $i++ ) {
-    my %line;
-    $line{currency} = $rates[$i]->{'currency'};
-    $line{rate}     = $rates[$i]->{'rate'};
-    push @loop_currency, \%line;
+my $total      = 0;
+my $totspent   = 0;
+my $totordered = 0;
+my $totcomtd   = 0;
+my $totavail   = 0;
+
+foreach my $budget ( @{$budget_arr} ) {
+
+    $budget->{budget_code_indent} =~ s/\ /\&nbsp\;/g;
+
+    $budget->{'budget_branchname'} =
+      GetBranchName( $budget->{'budget_branchcode'} );
+
+    my $member = GetMember( borrowernumber => $budget->{budget_owner_id} );
+    if ($member) {
+        $budget->{budget_owner} =
+          $member->{'firstname'} . ' ' . $member->{'surname'};
+    }
+
+    if ( !defined $budget->{budget_amount} ) {
+        $budget->{budget_amount} = 0;
+    }
+
+    $budget->{'budget_ordered'} = GetBudgetOrdered( $budget->{'budget_id'} );
+    $budget->{'budget_spent'}   = GetBudgetSpent( $budget->{'budget_id'} );
+    if ( !defined $budget->{budget_spent} ) {
+        $budget->{budget_spent} = 0;
+    }
+    if ( !defined $budget->{budget_ordered} ) {
+        $budget->{budget_ordered} = 0;
+    }
+    $budget->{'budget_avail'} =
+      $budget->{'budget_amount'} - ( $budget->{'budget_spent'} + $budget->{'budget_ordered'} );
+
+    $total      += $budget->{'budget_amount'};
+    $totspent   += $budget->{'budget_spent'};
+    $totordered += $budget->{'budget_ordered'};
+    $totavail   += $budget->{'budget_avail'};
+
+    for my $field (qw( budget_amount budget_spent budget_ordered budget_avail ) ) {
+        $budget->{$field} = $num_formatter->format_price( $budget->{$field} );
+    }
 }
-
-# suggestions
-my $status           = $query->param('status') || "ASKED";
-my $suggestion       = CountSuggestion($status);
-my $suggestions_loop = &SearchSuggestion( '', '', '', '', $status, '' );
 
 $template->param(
-    classlist        => $classlist,
-    type             => 'intranet',
-    loop_budget      => \@loop_budget,
-    loop_currency    => \@loop_currency,
-    total            => sprintf( "%.2f", $total ),
-    suggestion       => $suggestion,
-    suggestions_loop => $suggestions_loop,
-    totspent         => sprintf( "%.2f", $totspent ),
-    totcomtd         => sprintf( "%.2f", $totcomtd ),
-    totavail         => sprintf( "%.2f", $totavail ),
-    nobudget         => $#results == -1 ? 1 : 0
+
+    type          => 'intranet',
+    loop_budget   => $budget_arr,
+    branchname    => $branchname,
+    total         => $num_formatter->format_price($total),
+    totspent      => $num_formatter->format_price($totspent),
+    totordered    => $num_formatter->format_price($totordered),
+    totcomtd      => $num_formatter->format_price($totcomtd),
+    totavail      => $num_formatter->format_price($totavail),
 );
 
 output_html_with_http_headers $query, $cookie, $template->output;

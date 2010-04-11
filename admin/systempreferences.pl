@@ -17,13 +17,13 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 =head1 systempreferences.pl
 
-ALGO :
+ALSO :
  this script use an $op to know what to do.
  if $op is empty or none of the above values,
     - the default screen is build (with all records, or filtered datas).
@@ -44,6 +44,7 @@ use strict;
 use warnings;
 
 use CGI;
+use MIME::Base64;
 use C4::Auth;
 use C4::Context;
 use C4::Koha;
@@ -67,9 +68,14 @@ use C4::Output;
 my %tabsysprefs;
 
 # Acquisitions
-$tabsysprefs{acquisitions}              = "Acquisitions";
-$tabsysprefs{gist}                      = "Acquisitions";
-$tabsysprefs{emailPurchaseSuggestions}  = "Acquisitions";
+    $tabsysprefs{acquisitions}="Acquisitions";
+    $tabsysprefs{gist}="Acquisitions";
+    $tabsysprefs{emailPurchaseSuggestions}="Acquisitions";
+    $tabsysprefs{RenewSerialAddsSuggestion}="Acquisitions";
+    $tabsysprefs{AcqCreateItem}="Acquisitions";
+    $tabsysprefs{OrderPdfFormat}="Acquisitions";
+    $tabsysprefs{OrderPdfTemplate}="Acquisitions";
+    $tabsysprefs{CurrencyFormat}="Acquisitions";
 
 # Admin
 $tabsysprefs{singleBranchMode}      = "Admin";
@@ -172,6 +178,7 @@ $tabsysprefs{NewItemsDefaultLocation}        = "Circulation";
 $tabsysprefs{ReturnToShelvingCart}           = "Circulation";
 $tabsysprefs{DisplayClearScreenButton}       = "Circulation";
 $tabsysprefs{AllowAllMessageDeletion}        = "Circulation";
+$tabsysprefs{OverdueNoticeBcc}               = "Circulation";
 
 # Staff Client
 $tabsysprefs{TemplateEncoding}        = "StaffClient";
@@ -192,7 +199,6 @@ $tabsysprefs{checkdigit}                   = "Patrons";
 $tabsysprefs{intranetreadinghistory}       = "Patrons";
 $tabsysprefs{NotifyBorrowerDeparture}      = "Patrons";
 $tabsysprefs{memberofinstitution}          = "Patrons";
-$tabsysprefs{ReadingHistory}               = "Patrons";
 $tabsysprefs{BorrowerMandatoryField}       = "Patrons";
 $tabsysprefs{borrowerRelationship}         = "Patrons";
 $tabsysprefs{BorrowersTitles}              = "Patrons";
@@ -258,8 +264,8 @@ $tabsysprefs{BakerTaylorPassword}     = 'EnhancedContent';
 $tabsysprefs{BakerTaylorUsername}     = 'EnhancedContent';
 
 # Library Thing for Libraries
-$tabsysprefs{LibraryThingForLibrariesID} = "EnhancedContent"; 
-$tabsysprefs{LibraryThingForLibrariesEnabled} = "EnhancedContent"; 
+$tabsysprefs{LibraryThingForLibrariesID} = "EnhancedContent";
+$tabsysprefs{LibraryThingForLibrariesEnabled} = "EnhancedContent";
 $tabsysprefs{LibraryThingForLibrariesTabbedView} = "EnhancedContent";
 
 # Syndetics
@@ -323,6 +329,9 @@ $tabsysprefs{OPACAllowHoldDateInFuture}  = "OPAC";
 $tabsysprefs{OPACPatronDetails}  = "OPAC";
 $tabsysprefs{OPACFinesTab}  = "OPAC";
 $tabsysprefs{DisplayOPACiconsXSLT}	 = "OPAC";
+$tabsysprefs{AutoSelfCheckAllowed}	 = "OPAC";
+$tabsysprefs{AutoSelfCheckID}		 = "OPAC";
+$tabsysprefs{AutoSelfCheckPass}		 = "OPAC";
 
 # OPAC
 $tabsysprefs{SearchMyLibraryFirst} = "OPAC";
@@ -350,6 +359,7 @@ $tabsysprefs{XSLTResultsDisplay}   = "OPAC";
 $tabsysprefs{OPACShowCheckoutName}   = "OPAC";
 
 # Serials
+$tabsysprefs{RoutingListAddReserves}  	   = "Serials";
 $tabsysprefs{OPACSerialIssueDisplayCount}  = "Serials";
 $tabsysprefs{StaffSerialIssueDisplayCount} = "Serials";
 $tabsysprefs{OPACDisplayExtendedSubInfo}   = "Serials";
@@ -375,6 +385,11 @@ $tabsysprefs{'OAI-PMH:Subset'}    = "OAI-PMH";
 
 # ILS-DI variables
 $tabsysprefs{'ILS-DI'} = "ILS-DI";
+
+# Creator variables
+
+$tabsysprefs{'ImageLimit'} = "Creators";
+
 sub StringSearch {
     my ( $searchstring, $type ) = @_;
     my $dbh = C4::Context->dbh;
@@ -406,8 +421,8 @@ sub StringSearch {
         if ( $type and $type eq 'all' ) {
             $sth = $dbh->prepare( "
             SELECT *
-              FROM systempreferences 
-              WHERE variable LIKE ? OR explanation LIKE ? 
+              FROM systempreferences
+              WHERE variable LIKE ? OR explanation LIKE ?
               ORDER BY VARIABLE" );
             $sth->execute( "%$searchstring%", "%$searchstring%" );
         } else {
@@ -451,6 +466,8 @@ sub GetPrefParams {
     if ( not defined( $data->{'type'} ) ) {
         $params->{'type-free'} = 1;
         $params->{'fieldlength'} = ( defined( $data->{'options'} ) and $data->{'options'} and $data->{'options'} > 0 );
+    } elsif ( $data->{'type'} eq 'Upload' ) {
+        $params->{'type-upload'} = 1;
     } elsif ( $data->{'type'} eq 'Choice' ) {
         $params->{'type-choice'} = 1;
     } elsif ( $data->{'type'} eq 'YesNo' ) {
@@ -683,6 +700,13 @@ if ( $op eq 'add_form' ) {
             $value = $params->{'value'};
         }
     }
+
+    if ( $input->param('preftype') eq 'Upload' ) {
+        my $lgtfh = $input->upload('value');
+        $value = join '', <$lgtfh>;
+        $value = encode_base64($value);
+    }
+
     if ( $sth->rows ) {
         unless ( C4::Context->config('demo') ) {
             my $sth = $dbh->prepare("update systempreferences set value=?,explanation=?,type=?,options=? where variable=?");

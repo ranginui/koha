@@ -13,9 +13,9 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
 use C4::Context;
@@ -52,8 +52,13 @@ my $mode = $input->param('mode');
 my $id   = $input->param('id');
 
 if ( $mode eq 'job_add' ) {
-    my $startdate =
-      join( '', ( split m|/|, $input->param('startdate') )[ 2, 0, 1 ] );
+
+    # Retrieving the date according to the dateformat syspref
+    my $c4date = C4::Dates->new($input->param('startdate'));
+
+    # Formatting it for Schedule::At
+    my $startdate = join('', (split /-/, $c4date->output("iso")));
+
     my $starttime = $input->param('starttime');
     my $recurring = $input->param('recurring');
     $starttime =~ s/\://g;

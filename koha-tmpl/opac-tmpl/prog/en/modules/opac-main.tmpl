@@ -2,7 +2,7 @@
 <!-- TMPL_IF NAME="LibraryNameTitle" --><!-- TMPL_VAR NAME="LibraryNameTitle" --><!-- TMPL_ELSE -->Koha Online<!-- /TMPL_IF --> Catalog
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
 </head>
-<body>
+<body id="opac-main">
 <!-- TMPL_IF NAME="OpacNav" --><div id="doc3" class="yui-t1"><!-- TMPL_ELSE --><div id="doc3" class="yui-t7"><!-- /TMPL_IF -->
    <div id="bd">
 <!--TMPL_INCLUDE NAME="masthead.inc" -->
@@ -41,6 +41,7 @@
 		
 	<!-- TMPL_IF NAME="opacuserlogin" -->
     <!-- TMPL_UNLESS NAME="loggedinusername" -->
+    <!-- TMPL_UNLESS NAME="casAuthentication" -->
     <div class="yui-u">
 	<div id="login" class="container">
 	<form action="/cgi-bin/koha/opac-user.pl" method="post" name="auth" id="auth">
@@ -56,6 +57,7 @@
 	</form>
 	</div>
 	 </div>
+    <!-- /TMPL_UNLESS -->
     <!-- /TMPL_UNLESS -->
 	
 <!-- /TMPL_IF -->

@@ -1,5 +1,5 @@
 #!/usr/bin/perl
- 
+
 # This file is part of Koha.
 #
 # Koha is free software; you can redistribute it and/or modify it under the
@@ -16,7 +16,7 @@
 # Suite 330, Boston, MA  02111-1307 USA
 
 use strict;
-
+use warnings;
 use C4::Output;    # contains gettemplate
 use C4::Auth;
 use C4::Context;
@@ -87,6 +87,7 @@ GD
 GD::Barcode::UPCE
 Getopt::Long
 Getopt::Std
+Graphics::Magick
 HTML::Template::Pro
 HTTP::Cookies
 HTTP::OAI
@@ -97,8 +98,10 @@ JSON
 LWP::Simple
 LWP::UserAgent
 Lingua::Stem
+Lingua::Stem::Snowball
 List::Util
 List::MoreUtils
+Locale::Currency::Format
 Locale::Language
 MARC::Crosswalk::DublinCore
 MARC::Charset
@@ -111,9 +114,12 @@ Mail::Sendmail
 Net::LDAP
 Net::LDAP::Filter
 Net::Z3950::ZOOM
+Number::Format
 PDF::API2
 PDF::API2::Page
 PDF::API2::Util
+PDF::API2::Simple
+PDF::Table
 PDF::Reuse
 PDF::Reuse::Barcode
 POE
@@ -126,6 +132,7 @@ Test::Harness
 Test::More
 Text::CSV
 Text::CSV_XS
+Text::CSV::Encoded
 Text::Iconv
 Text::Wrap
 Time::HiRes

@@ -15,15 +15,16 @@ package C4::Reserves;
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
 use strict;
 # use warnings;  # FIXME: someday
 use C4::Context;
 use C4::Biblio;
+use C4::Members;
 use C4::Items;
 use C4::Search;
 use C4::Circulation;
@@ -31,7 +32,7 @@ use C4::Accounts;
 
 # for _koha_notify_reserve
 use C4::Members::Messaging;
-use C4::Members qw( GetMember );
+use C4::Members qw();
 use C4::Letters;
 use C4::Branch qw( GetBranchDetail );
 use C4::Dates qw( format_date_in_iso );
@@ -110,22 +111,28 @@ BEGIN {
         &ModReserveMinusPriority
         
         &CheckReserves
+        &CanBookBeReserved
+	&CanItemBeReserved
         &CancelReserve
+        &CancelExpiredReserves
 
         &IsAvailableForItemLevelRequest
+        
+        &AlterPriority
+        &ToggleLowestPriority
     );
 }    
 
 =item AddReserve
 
-    AddReserve($branch,$borrowernumber,$biblionumber,$constraint,$bibitems,$priority,$notes,$title,$checkitem,$found)
+    AddReserve($branch,$borrowernumber,$biblionumber,$constraint,$bibitems,$priority,$resdate,$expdate,$notes,$title,$checkitem,$found)
 
 =cut
 
 sub AddReserve {
     my (
         $branch,    $borrowernumber, $biblionumber,
-        $constraint, $bibitems,  $priority, $resdate,  $notes,
+        $constraint, $bibitems,  $priority, $resdate, $expdate, $notes,
         $title,      $checkitem, $found
     ) = @_;
     my $fee =
@@ -135,6 +142,7 @@ sub AddReserve {
     my $const   = lc substr( $constraint, 0, 1 );
     $resdate = format_date_in_iso( $resdate ) if ( $resdate );
     $resdate = C4::Dates->today( 'iso' ) unless ( $resdate );
+    $expdate = format_date_in_iso( $expdate ) if ( $expdate );
     if ( C4::Context->preference( 'AllowHoldDateInFuture' ) ) {
 	# Make room in reserves for this before those of a later reserve date
 	$priority = _ShiftPriorityByDateAndPriority( $biblionumber, $resdate, $priority );
@@ -165,17 +173,44 @@ sub AddReserve {
     my $query = qq/
         INSERT INTO reserves
             (borrowernumber,biblionumber,reservedate,branchcode,constrainttype,
-            priority,reservenotes,itemnumber,found,waitingdate)
+            priority,reservenotes,itemnumber,found,waitingdate,expirationdate)
         VALUES
              (?,?,?,?,?,
-             ?,?,?,?,?)
+             ?,?,?,?,?,?)
     /;
     my $sth = $dbh->prepare($query);
     $sth->execute(
         $borrowernumber, $biblionumber, $resdate, $branch,
         $const,          $priority,     $notes,   $checkitem,
-        $found,          $waitingdate
+        $found,          $waitingdate,	$expdate
     );
+
+    # Send e-mail to librarian if syspref is active
+    if(C4::Context->preference("emailLibrarianWhenHoldIsPlaced")){
+        my $borrower = C4::Members::GetMember(borrowernumber => $borrowernumber);
+        my $biblio   = GetBiblioData($biblionumber);
+        my $letter = C4::Letters::getletter( 'reserves', 'HOLDPLACED');
+        my $admin_email_address = C4::Context->preference('KohaAdminEmailAddress');
+
+        my %keys = (%$borrower, %$biblio);
+        foreach my $key (keys %keys) {
+            my $replacefield = "<<$key>>";
+            $letter->{content} =~ s/$replacefield/$keys{$key}/g;
+            $letter->{title} =~ s/$replacefield/$keys{$key}/g;
+        }
+        
+        C4::Letters::EnqueueLetter(
+                            {   letter                 => $letter,
+                                borrowernumber         => $borrowernumber,
+                                message_transport_type => 'email',
+                                from_address           => $admin_email_address,
+                                to_address           => $admin_email_address,
+                            }
+                        );
+        
+
+    }
+
 
     #}
     ($const eq "o" || $const eq "e") or return;   # FIXME: why not have a useful return value?
@@ -189,6 +224,7 @@ sub AddReserve {
     foreach (@$bibitems) {
         $sth->execute($borrowernumber, $biblionumber, $resdate, $_);
     }
+        
     return;     # FIXME: why not have a useful return value?
 }
 
@@ -217,7 +253,9 @@ sub GetReservesFromBiblionumber {
                 constrainttype,
                 found,
                 itemnumber,
-                reservenotes
+                reservenotes,
+                expirationdate,
+                lowestPriority
         FROM     reserves
         WHERE biblionumber = ? ";
     unless ( $all_dates ) {
@@ -329,7 +367,178 @@ sub GetReservesFromBorrowernumber {
     return @$data;
 }
 #-------------------------------------------------------------------------------------
+=item CanBookBeReserved
 
+$error = &CanBookBeReserved($borrowernumber, $biblionumber)
+
+=cut
+
+sub CanBookBeReserved{
+    my ($borrowernumber, $biblionumber) = @_;
+
+    my $dbh           = C4::Context->dbh;
+    my $biblio        = GetBiblioData($biblionumber);
+    my $borrower      = C4::Members::GetMember(borrowernumber=>$borrowernumber);
+    my $controlbranch = C4::Context->preference('ReservesControlBranch');
+    my $itype         = C4::Context->preference('item-level_itypes');
+    my $reservesrights= 0;
+    my $reservescount = 0;
+    
+    # we retrieve the user rights
+    my @args;
+    my $rightsquery = "SELECT categorycode, itemtype, branchcode, reservesallowed 
+                       FROM issuingrules 
+                       WHERE categorycode IN (?, '*')";
+    push @args,$borrower->{categorycode};
+
+    if($controlbranch eq "ItemHomeLibrary"){
+        $rightsquery .= " AND branchcode = '*'";
+    }elsif($controlbranch eq "PatronLibrary"){
+        $rightsquery .= " AND branchcode IN (?,'*')";
+        push @args, $borrower->{branchcode};
+    }
+    
+    if(not $itype){
+        $rightsquery .= " AND itemtype IN (?,'*')";
+        push @args, $biblio->{itemtype};
+    }else{
+        $rightsquery .= " AND itemtype = '*'";
+    }
+    
+    $rightsquery .= " ORDER BY categorycode DESC, itemtype DESC, branchcode DESC";
+    my $sthrights = $dbh->prepare($rightsquery);
+    $sthrights->execute(@args);
+    
+    if(my $row = $sthrights->fetchrow_hashref()){
+       $reservesrights = $row->{reservesallowed};
+    }
+    
+    @args = ();
+    # we count how many reserves the borrower have
+    my $countquery = "SELECT count(*) as count
+                      FROM reserves
+                      LEFT JOIN items USING (itemnumber)
+                      LEFT JOIN biblioitems ON (reserves.biblionumber=biblioitems.biblionumber)
+                      LEFT JOIN borrowers USING (borrowernumber)
+                      WHERE borrowernumber = ?
+                    ";
+    push @args, $borrowernumber;
+    
+    if(not $itype){
+           $countquery .= "AND itemtype = ?";
+           push @args, $biblio->{itemtype};
+    }
+    
+    if($controlbranch eq "PatronLibrary"){
+        $countquery .= " AND borrowers.branchcode = ? ";
+        push @args, $borrower->{branchcode};
+    }
+    
+    my $sthcount = $dbh->prepare($countquery);
+    $sthcount->execute(@args);
+    
+    if(my $row = $sthcount->fetchrow_hashref()){
+       $reservescount = $row->{count};
+    }
+    if($reservescount < $reservesrights){
+        return 1;
+    }else{
+        return 0;
+    }
+    
+}
+
+=item CanItemBeReserved
+
+$error = &CanItemBeReserved($borrowernumber, $itemnumber)
+
+this function return 1 if an item can be issued by this borrower.
+
+=cut
+
+sub CanItemBeReserved{
+    my ($borrowernumber, $itemnumber) = @_;
+    
+    my $dbh             = C4::Context->dbh;
+    my $allowedreserves = 0;
+            
+    my $controlbranch = C4::Context->preference('ReservesControlBranch');
+    my $itype         = C4::Context->preference('item-level_itypes') ? "itype" : "itemtype";
+
+    # we retrieve borrowers and items informations #
+    my $item     = GetItem($itemnumber);
+    my $borrower = C4::Members::GetMember('borrowernumber'=>$borrowernumber);     
+    
+    # we retrieve user rights on this itemtype and branchcode
+    my $sth = $dbh->prepare("SELECT categorycode, itemtype, branchcode, reservesallowed 
+                             FROM issuingrules 
+                             WHERE (categorycode in (?,'*') ) 
+                             AND (itemtype IN (?,'*')) 
+                             AND (branchcode IN (?,'*')) 
+                             ORDER BY 
+                               categorycode DESC, 
+                               itemtype     DESC, 
+                               branchcode   DESC;"
+                           );
+                           
+    my $querycount ="SELECT 
+                            count(*) as count
+                            FROM reserves
+                                LEFT JOIN items USING (itemnumber)
+                                LEFT JOIN biblioitems ON (reserves.biblionumber=biblioitems.biblionumber)
+                                LEFT JOIN borrowers USING (borrowernumber)
+                            WHERE borrowernumber = ?
+                                ";
+    
+    
+    my $itemtype     = $item->{$itype};
+    my $categorycode = $borrower->{categorycode};
+    my $branchcode   = "";
+    my $branchfield  = "reserves.branchcode";
+    
+    if( $controlbranch eq "ItemHomeLibrary" ){
+        $branchfield = "items.homebranch";
+        $branchcode = $item->{homebranch};
+    }elsif( $controlbranch eq "PatronLibrary" ){
+        $branchfield = "borrowers.branchcode";
+        $branchcode = $borrower->{branchcode};
+    }
+    
+    # we retrieve rights 
+    $sth->execute($categorycode, $itemtype, $branchcode);
+    if(my $rights = $sth->fetchrow_hashref()){
+        $itemtype        = $rights->{itemtype};
+        $allowedreserves = $rights->{reservesallowed}; 
+    }else{
+        $itemtype = '*';
+    }
+    
+    # we retrieve count
+    
+    $querycount .= "AND $branchfield = ?";
+    
+    $querycount .= " AND $itype = ?" if ($itemtype ne "*");
+    my $sthcount = $dbh->prepare($querycount);
+    
+    if($itemtype eq "*"){
+        $sthcount->execute($borrowernumber, $branchcode);
+    }else{
+        $sthcount->execute($borrowernumber, $branchcode, $itemtype);
+    }
+    
+    my $reservecount = "0";
+    if(my $rowcount = $sthcount->fetchrow_hashref()){
+        $reservecount = $rowcount->{count};
+    }
+    
+    # we check if it's ok or not
+    if( $reservecount < $allowedreserves ){
+        return 1;
+    }else{
+        return 0;
+    }
+}
+#--------------------------------------------------------------------------------
 =item GetReserveCount
 
 $number = &GetReserveCount($borrowernumber);
@@ -658,6 +867,29 @@ sub CheckReserves {
     else {
         return ( 0, 0 );
     }
+}
+
+=item CancelExpiredReserves
+
+  CancelExpiredReserves();
+  
+  Cancels all reserves with an expiration date from before today.
+  
+=cut
+
+sub CancelExpiredReserves {
+
+    my $dbh = C4::Context->dbh;
+    my $sth = $dbh->prepare( "
+        SELECT * FROM reserves WHERE DATE(expirationdate) < DATE( CURDATE() ) 
+        AND expirationdate IS NOT NULL
+    " );
+    $sth->execute();
+
+    while ( my $res = $sth->fetchrow_hashref() ) {
+        CancelReserve( $res->{'biblionumber'}, '', $res->{'borrowernumber'} );
+    }
+  
 }
 
 =item CancelReserve
@@ -1165,9 +1397,69 @@ sub IsAvailableForItemLevelRequest {
     }
 }
 
+=item AlterPriority
+AlterPriority( $where, $borrowernumber, $biblionumber, $reservedate );
+
+This function changes a reserve's priority up, down, to the top, or to the bottom.
+Input: $where is 'up', 'down', 'top' or 'bottom'. Biblionumber, Date reserve was placed
+
+=cut
+sub AlterPriority {
+    my ( $where, $borrowernumber, $biblionumber ) = @_;
+
+    my $dbh = C4::Context->dbh;
+
+    ## Find this reserve
+    my $sth = $dbh->prepare('SELECT * FROM reserves WHERE biblionumber = ? AND borrowernumber = ? AND cancellationdate IS NULL');
+    $sth->execute( $biblionumber, $borrowernumber );
+    my $reserve = $sth->fetchrow_hashref();
+    $sth->finish();
+
+    if ( $where eq 'up' || $where eq 'down' ) {
+    
+      my $priority = $reserve->{'priority'};        
+      $priority = $where eq 'up' ? $priority - 1 : $priority + 1;
+      _FixPriority( $biblionumber, $borrowernumber, $priority )
+
+    } elsif ( $where eq 'top' ) {
+
+      _FixPriority( $biblionumber, $borrowernumber, '1' )
+
+    } elsif ( $where eq 'bottom' ) {
+
+      _FixPriority( $biblionumber, $borrowernumber, '999999' )
+
+    }
+}
+
+=item ToggleLowestPriority
+ToggleLowestPriority( $borrowernumber, $biblionumber );
+
+This function sets the lowestPriority field to true if is false, and false if it is true.
+=cut
+
+sub ToggleLowestPriority {
+    my ( $borrowernumber, $biblionumber ) = @_;
+
+    my $dbh = C4::Context->dbh;
+
+    my $sth = $dbh->prepare(
+        "UPDATE reserves SET lowestPriority = NOT lowestPriority
+         WHERE biblionumber = ?
+         AND borrowernumber = ?"
+    );
+    $sth->execute(
+        $biblionumber,
+        $borrowernumber,
+    );
+    $sth->finish;
+    
+    _FixPriority( $biblionumber, $borrowernumber, '999999' );
+}
+
 =item _FixPriority
 
-&_FixPriority($biblio,$borrowernumber,$rank);
+&_FixPriority($biblio,$borrowernumber,$rank,$ignoreSetLowestRank);
 
  Only used internally (so don't export it)
  Changed how this functions works #
@@ -1179,7 +1471,7 @@ sub IsAvailableForItemLevelRequest {
 =cut 
 
 sub _FixPriority {
-    my ( $biblio, $borrowernumber, $rank ) = @_;
+    my ( $biblio, $borrowernumber, $rank, $ignoreSetLowestRank ) = @_;
     my $dbh = C4::Context->dbh;
      if ( $rank eq "del" ) {
          CancelReserve( $biblio, undef, $borrowernumber );
@@ -1254,6 +1546,15 @@ sub _FixPriority {
             $priority[$j]->{'reservedate'}
         );
         $sth->finish;
+    }
+    
+    $sth = $dbh->prepare( "SELECT borrowernumber FROM reserves WHERE lowestPriority = 1 ORDER BY priority" );
+    $sth->execute();
+    
+    unless ( $ignoreSetLowestRank ) {
+      while ( my $res = $sth->fetchrow_hashref() ) {
+        _FixPriority( $biblio, $res->{'borrowernumber'}, '999999', 1 );
+      }
     }
 }
 
@@ -1387,9 +1688,19 @@ sub _koha_notify_reserve {
     my ($itemnumber, $borrowernumber, $biblionumber) = @_;
 
     my $dbh = C4::Context->dbh;
-    my $messagingprefs = C4::Members::Messaging::GetMessagingPreferences( { borrowernumber => $borrowernumber, message_name => 'Hold Filled' } );
+    my $borrower = C4::Members::GetMember( $borrowernumber );
+    my $letter_code;
+    my $print_mode = 0;
+    my $messagingprefs;
+    if ( $borrower->{'email'} || $borrower->{'smsalertnumber'} ) {
+        $messagingprefs = C4::Members::Messaging::GetMessagingPreferences( { borrowernumber => $borrowernumber, message_name => 'Hold Filled' } );
 
-    return if ( !defined( $messagingprefs->{'letter_code'} ) );
+        return if ( !defined( $messagingprefs->{'letter_code'} ) );
+        $letter_code = $messagingprefs->{'letter_code'};
+    } else {
+        $letter_code = 'HOLD_PRINT';
+        $print_mode = 1;
+    }
 
     my $sth = $dbh->prepare("
         SELECT *
@@ -1403,19 +1714,33 @@ sub _koha_notify_reserve {
 
     my $admin_email_address = $branch_details->{'branchemail'} || C4::Context->preference('KohaAdminEmailAddress');
 
-    my $letter = getletter( 'reserves', $messagingprefs->{'letter_code'} );
+    my $letter = getletter( 'reserves', $letter_code );
+    die "Could not find a letter called '$letter_code' in the 'reserves' module" unless( $letter );
 
     C4::Letters::parseletter( $letter, 'branches', $reserve->{'branchcode'} );
-    C4::Letters::parseletter( $letter, 'borrowers', $reserve->{'borrowernumber'} );
-    C4::Letters::parseletter( $letter, 'biblio', $reserve->{'biblionumber'} );
-    C4::Letters::parseletter( $letter, 'reserves', $reserve->{'borrowernumber'}, $reserve->{'biblionumber'} );
+    C4::Letters::parseletter( $letter, 'borrowers', $borrowernumber );
+    C4::Letters::parseletter( $letter, 'biblio', $biblionumber );
+    C4::Letters::parseletter( $letter, 'reserves', $borrowernumber, $biblionumber );
 
     if ( $reserve->{'itemnumber'} ) {
         C4::Letters::parseletter( $letter, 'items', $reserve->{'itemnumber'} );
     }
+    my $today = C4::Dates->new()->output();
+    $letter->{'title'} =~ s/<<today>>/$today/g;
+    $letter->{'content'} =~ s/<<today>>/$today/g;
     $letter->{'content'} =~ s/<<[a-z0-9_]+\.[a-z0-9]+>>//g; #remove any stragglers
 
-    if ( -1 !=  firstidx { $_ eq 'email' } @{$messagingprefs->{transports}} ) {
+    if ( $print_mode ) {
+        C4::Letters::EnqueueLetter( {
+            letter => $letter,
+            borrowernumber => $borrowernumber,
+            message_transport_type => 'print',
+        } );
+        
+        return;
+    }
+
+    if ( grep { $_ eq 'email' } @{$messagingprefs->{transports}} ) {
         # aka, 'email' in ->{'transports'}
         C4::Letters::EnqueueLetter(
             {   letter                 => $letter,
@@ -1426,7 +1751,7 @@ sub _koha_notify_reserve {
         );
     }
 
-    if ( -1 != firstidx { $_ eq 'sms' } @{$messagingprefs->{transports}} ) {
+    if ( grep { $_ eq 'sms' } @{$messagingprefs->{transports}} ) {
         C4::Letters::EnqueueLetter(
             {   letter                 => $letter,
                 borrowernumber         => $borrowernumber,

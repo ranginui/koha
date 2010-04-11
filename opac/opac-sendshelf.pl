@@ -13,9 +13,9 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
 use warnings;
@@ -31,6 +31,7 @@ use C4::Biblio;
 use C4::Items;
 use C4::Output;
 use C4::VirtualShelves;
+use C4::Members;
 
 my $query = new CGI;
 
@@ -97,11 +98,15 @@ if ( $email ) {
         push( @results, $dat );
     }
 
+    my $user = GetMember(borrowernumber => $borrowernumber); 
+
     $template2->param(
         BIBLIO_RESULTS => \@results,
         email_sender   => $email_from,
         comment        => $comment,
         shelfname      => $shelf[1],
+        firstname      => $user->{firstname},
+        surname        => $user->{surname},
     );
 
     # Getting template result

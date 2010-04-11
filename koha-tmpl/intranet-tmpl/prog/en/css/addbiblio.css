@@ -17,7 +17,6 @@
 }
 
 a.expandfield {
-	color : #000;
 	text-decoration : none;
 }
 
@@ -124,3 +123,12 @@ a.tagnum {
 #cataloguing_additem_newitem .input_marceditor {
 	width : auto;
 }
+
+.mandatory_marker {
+	color: red;
+}
+.linktools { display: block; white-space: nowrap; }
+.linktools a { font-size : 75%; display:block;text-decoration:none;}
+.linktools a {margin:0 2px;padding:2px;background-color:#FFF;text-align:center; }
+.linktools a:first-child { border-bottom: 1px solid #DDD; }
+.linktools a:hover { background-color: #FFC; }

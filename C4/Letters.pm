@@ -13,19 +13,23 @@ package C4::Letters;
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
 use warnings;
 
 use MIME::Lite;
 use Mail::Sendmail;
+use Encode;
+use Carp;
+
 use C4::Members;
 use C4::Log;
 use C4::SMS;
 use C4::Debug;
+use Date::Calc qw( Add_Delta_Days );
 use Encode;
 use Carp;
 
@@ -37,7 +41,7 @@ BEGIN {
 	$VERSION = 3.01;
 	@ISA = qw(Exporter);
 	@EXPORT = qw(
-	&GetLetters &getletter &addalert &getalert &delalert &findrelatedto &SendAlerts
+	&GetLetters &getletter &addalert &getalert &delalert &findrelatedto &SendAlerts GetPrintMessages
 	);
 }
 
@@ -271,7 +275,7 @@ sub SendAlerts {
 
             # and parse borrower ...
             my $innerletter = $letter;
-            my $borinfo = GetMember( $_->{'borrowernumber'}, 'borrowernumber' );
+            my $borinfo = GetMember( 'borrowernumber' => $_->{'borrowernumber'});
             parseletter( $innerletter, 'borrowers', $_->{'borrowernumber'} );
 
             # ... then send mail
@@ -283,7 +287,7 @@ sub SendAlerts {
                     Message => "" . $innerletter->{content},
                     'Content-Type' => 'text/plain; charset="utf8"',
                     );
-                sendmail(%mail);
+                sendmail(%mail) or carp $Mail::Sendmail::error;
 
 # warn "sending to $mail{To} From $mail{From} subj $mail{Subject} Mess $mail{Message}";
             }
@@ -344,7 +348,7 @@ sub SendAlerts {
                 Message        => "" . $innerletter->{content},
                 'Content-Type' => 'text/plain; charset="utf8"',
             );
-            sendmail(%mail);
+            sendmail(%mail) or carp $Mail::Sendmail::error;
             warn
 "sending to $mail{To} From $mail{From} subj $mail{Subject} Mess $mail{Message}";
         }
@@ -422,7 +426,7 @@ sub SendAlerts {
                 Message => $mail_msg,
                 'Content-Type' => 'text/plain; charset="utf8"',
             );
-            sendmail(%mail);
+            sendmail(%mail) or carp $Mail::Sendmail::error;
             logaction(
                 "ACQUISITION",
                 "CLAIM ISSUE",
@@ -453,7 +457,7 @@ sub SendAlerts {
                 Message => $letter->{'content'},
                 'Content-Type' => 'text/plain; charset="utf8"',
         );
-        sendmail(%mail);
+        sendmail(%mail) or carp $Mail::Sendmail::error;
     }
 }
 
@@ -483,9 +487,11 @@ sub parseletter_sth {
     ($table eq 'biblio'       ) ? "SELECT * FROM $table WHERE   biblionumber = ?"                      :
     ($table eq 'biblioitems'  ) ? "SELECT * FROM $table WHERE   biblionumber = ?"                      :
     ($table eq 'items'        ) ? "SELECT * FROM $table WHERE     itemnumber = ?"                      :
+    ($table eq 'suggestions'  ) ? "SELECT * FROM $table WHERE borrowernumber = ? and biblionumber = ?" :
     ($table eq 'reserves'     ) ? "SELECT * FROM $table WHERE borrowernumber = ? and biblionumber = ?" :
     ($table eq 'borrowers'    ) ? "SELECT * FROM $table WHERE borrowernumber = ?"                      :
     ($table eq 'branches'     ) ? "SELECT * FROM $table WHERE     branchcode = ?"                      :
+    ($table eq 'suggestions'  ) ? "SELECT * FROM $table WHERE borrowernumber = ? and biblionumber = ?" :
     ($table eq 'aqbooksellers') ? "SELECT * FROM $table WHERE             id = ?"                      : undef ;
     unless ($query) {
         warn "ERROR: No parseletter_sth query for table '$table'";
@@ -504,7 +510,6 @@ sub parseletter {
         carp "ERROR: parseletter() 1st argument 'letter' empty";
         return;
     }
-    # 	warn "Parseletter : ($letter, $table, $pk ...)";
     my $sth = parseletter_sth($table);
     unless ($sth) {
         warn "parseletter_sth('$table') failed to return a valid sth.  No substitution will be done for that table.";
@@ -517,16 +522,32 @@ sub parseletter {
     }
 
     my $values = $sth->fetchrow_hashref;
+    
+    # TEMPORARY hack until the expirationdate column is added to reserves
+    if ( $table eq 'reserves' && $values->{'waitingdate'} ) {
+        my @waitingdate = split /-/, $values->{'waitingdate'};
+
+        $values->{'expirationdate'} = C4::Dates->new(
+            sprintf(
+                '%04d-%02d-%02d',
+                Add_Delta_Days( @waitingdate, C4::Context->preference( 'ReservesMaxPickUpDelay' ) )
+            ),
+            'iso'
+        )->output();
+    }
+
 
     # and get all fields from the table
     my $columns = C4::Context->dbh->prepare("SHOW COLUMNS FROM $table");
     $columns->execute;
     while ( ( my $field ) = $columns->fetchrow_array ) {
         my $replacefield = "<<$table.$field>>";
+        $values->{$field} =~ s/\p{P}(?=$)//g if $values->{$field};
         my $replacedby   = $values->{$field} || '';
         ($letter->{title}  ) and $letter->{title}   =~ s/$replacefield/$replacedby/g;
         ($letter->{content}) and $letter->{content} =~ s/$replacefield/$replacedby/g;
     }
+    return $letter;
 }
 
 =head2 EnqueueLetter
@@ -643,6 +664,26 @@ sub GetRSSMessages {
     
     return _get_unsent_messages( { message_transport_type => 'rss',
                                    limit                  => $params->{'limit'},
+                                   borrowernumber         => $params->{'borrowernumber'}, } );
+}
+
+=head2 GetPrintMessages
+
+=over 4
+
+my $message_list = GetPrintMessages( { borrowernumber => $borrowernumber } )
+
+Returns a arrayref of all queued print messages (optionally, for a particular
+person).
+
+=back
+
+=cut
+
+sub GetPrintMessages {
+    my $params = shift || {};
+    
+    return _get_unsent_messages( { message_transport_type => 'print',
                                    borrowernumber         => $params->{'borrowernumber'}, } );
 }
 
@@ -768,12 +809,12 @@ ENDSQL
     return $sth->fetchall_arrayref({});
 }
 
-sub _send_message_by_email ($) {
+sub _send_message_by_email ($;$$$) {
     my $message = shift or return;
 
     my $to_address = $message->{to_address};
     unless ($to_address) {
-        my $member = C4::Members::GetMember( $message->{'borrowernumber'} );
+        my $member = C4::Members::GetMember( 'borrowernumber' => $message->{'borrowernumber'} );
         unless ($member) {
             warn "FAIL: No 'to_address' and INVALID borrowernumber ($message->{borrowernumber})";
             _set_message_status( { message_id => $message->{'message_id'},
@@ -798,26 +839,26 @@ sub _send_message_by_email ($) {
         Message => $content,
         'content-type' => $message->{'content_type'} || 'text/plain; charset="UTF-8"',
     );
+    if ( my $bcc = C4::Context->preference('OverdueNoticeBcc') ) {
+       $sendmail_params{ Bcc } = $bcc;
+    }
     
-    my $success = sendmail( %sendmail_params );
 
-    if ( $success ) {
-        # warn "Sendmail OK. Log says: " .  $Mail::Sendmail::log;
+    if ( sendmail( %sendmail_params ) ) {
         _set_message_status( { message_id => $message->{'message_id'},
-                               status     => 'sent' } );
-        return $success;
+                status     => 'sent' } );
+        return 1;
     } else {
-        # warn "Mail::Sendmail::error - " . $Mail::Sendmail::error;
-        # warn "Mail::Sendmail::log   - " . $Mail::Sendmail::log;
         _set_message_status( { message_id => $message->{'message_id'},
-                               status     => 'failed' } );
+                status     => 'failed' } );
+        carp $Mail::Sendmail::error;
         return;
     }
 }
 
 sub _send_message_by_sms ($) {
     my $message = shift or return undef;
-    my $member = C4::Members::GetMember( $message->{'borrowernumber'} );
+    my $member = C4::Members::GetMember( 'borrowernumber' => $message->{'borrowernumber'} );
     return unless $member->{'smsalertnumber'};
 
     my $success = C4::SMS->send_sms( { destination => $member->{'smsalertnumber'},

@@ -15,9 +15,9 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 =head1 returns.pl
 
@@ -43,17 +43,18 @@ use C4::Items;
 use C4::Members;
 use C4::Branch; # GetBranches GetBranchName
 use C4::Koha;   # FIXME : is it still useful ?
+use C4::RotatingCollections;
 
 my $query = new CGI;
 
 if (!C4::Context->userenv){
-	my $sessionID = $query->cookie("CGISESSID");
-	my $session = get_session($sessionID);
-	if ($session->param('branch') eq 'NO_LIBRARY_SET'){
-		# no branch set we can't return
-		print $query->redirect("/cgi-bin/koha/circ/selectbranchprinter.pl");
-		exit;
-	}
+    my $sessionID = $query->cookie("CGISESSID");
+    my $session = get_session($sessionID);
+    if ($session->param('branch') eq 'NO_LIBRARY_SET'){
+        # no branch set we can't return
+        print $query->redirect("/cgi-bin/koha/circ/selectbranchprinter.pl");
+        exit;
+    }
 } 
 
 #getting the template
@@ -72,7 +73,6 @@ my ( $template, $librarian, $cookie ) = get_template_and_user(
 my $branches = GetBranches();
 my $printers = GetPrinters();
 
-#my $branch  = C4::Context->userenv?C4::Context->userenv->{'branch'}:"";
 my $printer = C4::Context->userenv ? C4::Context->userenv->{'branchprinter'} : "";
 my $overduecharges = (C4::Context->preference('finesMode') && C4::Context->preference('finesMode') ne 'off');
 
@@ -87,16 +87,25 @@ my %riduedate;
 my %riborrowernumber;
 my @inputloop;
 foreach ( $query->param ) {
-    (next) unless (/ri-(\d*)/);
+    my $counter;
+    if (/ri-(\d*)/) {
+        $counter = $1;
+        if ($counter > 20) {
+            next;
+        }
+    }
+    else {
+        next;
+    }
+
     my %input;
-    my $counter = $1;
-    (next) if ( $counter > 20 );
     my $barcode        = $query->param("ri-$counter");
     my $duedate        = $query->param("dd-$counter");
     my $borrowernumber = $query->param("bn-$counter");
     $counter++;
 
     # decode barcode    ## Didn't we already decode them before passing them back last time??
+    $barcode =~ s/^\s*|\s*$//g; # remove leading/trailing whitespace
     $barcode = barcodedecode($barcode) if(C4::Context->preference('itemBarcodeInputFilter'));
 
     ######################
@@ -140,7 +149,7 @@ if ( $query->param('resbarcode') ) {
     if ( $messages->{'transfert'} ) {
         $template->param(
             itemtitle      => $iteminfo->{'title'},
-			itembiblionumber => $iteminfo->{'biblionumber'},
+            itembiblionumber => $iteminfo->{'biblionumber'},
             iteminfo       => $iteminfo->{'author'},
             tobranchname   => GetBranchName($messages->{'transfert'}),
             name           => $name,
@@ -163,19 +172,20 @@ my $exemptfine  = $query->param('exemptfine');
 my $dropboxmode = $query->param('dropboxmode');
 my $dotransfer  = $query->param('dotransfer');
 my $calendar    = C4::Calendar->new( branchcode => $userenv_branch );
-	#dropbox: get last open day (today - 1)
+#dropbox: get last open day (today - 1)
 my $today       = C4::Dates->new();
 my $today_iso   = $today->output('iso');
 my $dropboxdate = $calendar->addDate($today, -1);
 if ($dotransfer){
-	# An item has been returned to a branch other than the homebranch, and the librarian has chosen to initiate a transfer
-	my $transferitem = $query->param('transferitem');
-	my $tobranch     = $query->param('tobranch');
-	ModItemTransfer($transferitem, $userenv_branch, $tobranch); 
+# An item has been returned to a branch other than the homebranch, and the librarian has chosen to initiate a transfer
+    my $transferitem = $query->param('transferitem');
+    my $tobranch     = $query->param('tobranch');
+    ModItemTransfer($transferitem, $userenv_branch, $tobranch); 
 }
 
 # actually return book and prepare item table.....
 if ($barcode) {
+    $barcode =~ s/^\s*|\s*$//g; # remove leading/trailing whitespace
     $barcode = barcodedecode($barcode) if C4::Context->preference('itemBarcodeInputFilter');
     $itemnumber = GetItemnumberFromBarcode($barcode);
 
@@ -263,23 +273,23 @@ if ( $messages->{'WasTransfered'} ) {
 }
 
 if ( $messages->{'NeedsTransfer'} ){
-	$template->param(
-		found          => 1,
-		needstransfer  => 1,
-		itemnumber     => $itemnumber,
-	);
+    $template->param(
+        found          => 1,
+        needstransfer  => 1,
+        itemnumber     => $itemnumber,
+    );
 }
 
 if ( $messages->{'Wrongbranch'} ){
-	$template->param(
-		wrongbranch => 1,
-	);
+    $template->param(
+        wrongbranch => 1,
+    );
 }
 
 # case of wrong transfert, if the document wasn't transfered to the right library (according to branchtransfer (tobranch) BDD)
 
 if ( $messages->{'WrongTransfer'} and not $messages->{'WasTransfered'}) {
-	$template->param(
+    $template->param(
         WrongTransfer  => 1,
         TransferWaitingAt => $messages->{'WrongTransfer'},
         WrongTransferItem => $messages->{'WrongTransferItem'},
@@ -347,7 +357,7 @@ if ( $messages->{'ResFound'}) {
             debarred       => $borr->{'debarred'},
             gonenoaddress  => $borr->{'gonenoaddress'},
             barcode        => $barcode,
-            destbranch	   => $reserve->{'branchcode'},
+            destbranch     => $reserve->{'branchcode'},
             borrowernumber => $reserve->{'borrowernumber'},
             itemnumber     => $reserve->{'itemnumber'},
             reservenotes   => $reserve->{'reservenotes'},
@@ -401,7 +411,7 @@ foreach my $code ( keys %$messages ) {
     }
     elsif ( $code eq 'Wrongbranch' ) {
     }
-		
+
     else {
         die "Unknown error code $code";    # note we need all the (empty) elsif's above, or we die.
         # This forces the issue of staying in sync w/ Circulation.pm
@@ -487,32 +497,30 @@ my @riloop;
 foreach ( sort { $a <=> $b } keys %returneditems ) {
     my %ri;
     if ( $count++ < $returned_counter ) {
-        my $barcode = $returneditems{$_};
+        my $bar_code = $returneditems{$_};
         my $duedate = $riduedate{$_};
-        my $overduetext;
-        my $borrowerinfo;
         if ($duedate) {
             my @tempdate = split( /-/, $duedate );
             $ri{year}  = $tempdate[0];
             $ri{month} = $tempdate[1];
             $ri{day}   = $tempdate[2];
             $ri{duedate} = format_date($duedate);
-            my ($borrower) = GetMemberDetails( $riborrowernumber{$_}, 0 );
+            my ($b)      = GetMemberDetails( $riborrowernumber{$_}, 0 );
             $ri{return_overdue} = 1 if ($duedate lt $today->output('iso'));
-            $ri{borrowernumber} = $borrower->{'borrowernumber'};
-            $ri{borcnum}        = $borrower->{'cardnumber'};
-            $ri{borfirstname}   = $borrower->{'firstname'};
-            $ri{borsurname}     = $borrower->{'surname'};
-            $ri{bortitle}       = $borrower->{'title'};
-            $ri{bornote}        = $borrower->{'borrowernotes'};
-            $ri{borcategorycode}= $borrower->{'categorycode'};
+            $ri{borrowernumber} = $b->{'borrowernumber'};
+            $ri{borcnum}        = $b->{'cardnumber'};
+            $ri{borfirstname}   = $b->{'firstname'};
+            $ri{borsurname}     = $b->{'surname'};
+            $ri{bortitle}       = $b->{'title'};
+            $ri{bornote}        = $b->{'borrowernotes'};
+            $ri{borcategorycode}= $b->{'categorycode'};
         }
         else {
             $ri{borrowernumber} = $riborrowernumber{$_};
         }
 
         #        my %ri;
-        my $biblio = GetBiblioFromItemNumber(GetItemnumberFromBarcode($barcode));
+        my $biblio = GetBiblioFromItemNumber(GetItemnumberFromBarcode($bar_code));
         # fix up item type for display
         $biblio->{'itemtype'} = C4::Context->preference('item-level_itypes') ? $biblio->{'itype'} : $biblio->{'itemtype'};
         $ri{itembiblionumber} = $biblio->{'biblionumber'};
@@ -522,12 +530,12 @@ foreach ( sort { $a <=> $b } keys %returneditems ) {
         $ri{itemnote}         = $biblio->{'itemnotes'};
         $ri{ccode}            = $biblio->{'ccode'};
         $ri{itemnumber}       = $biblio->{'itemnumber'};
-        $ri{barcode}          = $barcode;
+        $ri{barcode}          = $bar_code;
     }
     else {
         last;
     }
-    push( @riloop, \%ri );
+    push @riloop, \%ri;
 }
 
 $template->param(
@@ -539,9 +547,21 @@ $template->param(
     errmsgloop     => \@errmsgloop,
     exemptfine     => $exemptfine,
     dropboxmode    => $dropboxmode,
-    dropboxdate	   => $dropboxdate->output(),
+    dropboxdate    => $dropboxdate->output(),
     overduecharges => $overduecharges,
+    soundon        => C4::Context->preference("SoundOn"),
 );
+
+my $itemnumber = GetItemnumberFromBarcode( $query->param('barcode') );
+if ( $itemnumber ) {
+    my ( $holdingBranch, $collectionBranch ) = GetCollectionItemBranches( $itemnumber );
+    if ( ! ( $holdingBranch eq $collectionBranch ) ) {
+        $template->param(
+          collectionItemNeedsTransferred => 1,
+          collectionBranch => GetBranchName($collectionBranch),
+        );
+    }
+}                                                                                                            
 
 # actually print the page!
 output_html_with_http_headers $query, $cookie, $template->output;

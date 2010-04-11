@@ -26,7 +26,7 @@
 
     function clear_entry(node) {
         var original = node.parentNode.parentNode;
-        $("input", original).attr('value', '');
+        $("input[type=text]", original).attr('value', '');
         $("select", original).attr('value', '');
     }
 
@@ -226,6 +226,7 @@
         </script>
         <!-- TMPL_IF NAME="mandatorydateofbirth" --><span class="required">Required</span><!-- /TMPL_IF -->
         <!-- TMPL_IF NAME="ERROR_dateofbirth" --><span class="required">(Error)</span><!-- /TMPL_IF -->
+		<div class="hint"><!-- TMPL_INCLUDE NAME="date-format.inc" --></div>
             </li>
             <li>
                 <!-- TMPL_IF NAME="mandatoryinitials" -->
@@ -439,7 +440,7 @@
       <!-- /TMPL_IF-->
       Phone (home): </label>
       <input type="text" id="phone" name="phone" value="<!-- TMPL_VAR NAME="phone" -->" />
-	  <!-- TMPL_IF NAME="mandatoryphone" --><span class="required">Required</span><!-- /TMPL_IF --><strong><em>Shows on transit slips</em></strong>
+	  <!-- TMPL_IF NAME="mandatoryphone" --><span class="required">Required</span><!-- /TMPL_IF --><div class="hint">Shows on transit slips</div>
 
     </li>
     <li>
@@ -470,7 +471,7 @@
       <!-- /TMPL_IF-->
       Email (home): </label>
       <input type="text" id="email" name="email" size="45" value="<!-- TMPL_VAR NAME="email" -->" />  
-	  <!-- TMPL_IF NAME="mandatoryemail" --><span class="required">Required</span><!-- /TMPL_IF --><strong><em>Shows on transit slips</em></strong>
+	  <!-- TMPL_IF NAME="mandatoryemail" --><span class="required">Required</span><!-- /TMPL_IF --><div class="hint">Shows on transit slips</div>
 
     </li>
     <li>
@@ -792,6 +793,7 @@
       </script>
 		<!-- TMPL_IF NAME="mandatorydateenrolled" --><span class="required">Required</span><!-- /TMPL_IF -->
 		<!-- TMPL_IF NAME="ERROR_dateenrolled" --><span class="required">(Error)</span><!-- /TMPL_IF -->
+		<div class="hint"><!-- TMPL_INCLUDE NAME="date-format.inc" --></div>
 		</li>
 		<li>
 			<!-- TMPL_IF NAME="mandatorydateexpiry" -->
@@ -813,6 +815,7 @@
       </script>
 		<!-- TMPL_IF NAME="mandatorydateexpiry" --><span class="required">Required</span><!-- /TMPL_IF -->
 		<!-- TMPL_IF NAME="ERROR_dateexpiry" --><span class="required">(Error)</span><!-- /TMPL_IF -->
+		<div class="hint"><!-- TMPL_INCLUDE NAME="date-format.inc" --></div>
 		</li>
 		<li>
 			<!-- TMPL_IF NAME="mandatoryopacnote" -->
@@ -936,8 +939,7 @@
             <td><!-- TMPL_VAR NAME="code" --> (<!-- TMPL_VAR NAME="description" -->)
             </td>
             <td>
-                <input type="hidden" id="<!-- TMPL_VAR NAME="form_id" -->_code" name="<!-- TMPL_VAR NAME="form_id" -->_code"
-                       value="<!-- TMPL_VAR NAME="code" ESCAPE="HTML" -->" />
+                <input type="hidden" id="<!-- TMPL_VAR NAME="form_id" -->_code" name="<!-- TMPL_VAR NAME="form_id" -->_code" value="<!-- TMPL_VAR NAME="code" ESCAPE="HTML" -->" />
                 <!-- TMPL_IF NAME="use_dropdown" -->
                     <select id="<!-- TMPL_VAR NAME="form_id" -->" name="<!-- TMPL_VAR NAME="form_id" -->">
                         <option value="" />

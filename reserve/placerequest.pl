@@ -17,9 +17,9 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
 use warnings;
@@ -49,8 +49,9 @@ my $startdate=$input->param('reserve_date') || '';
 my @rank=$input->param('rank-request');
 my $type=$input->param('type');
 my $title=$input->param('title');
-my $borrowernumber=GetMember($borrower,'cardnumber');
+my $borrowernumber=GetMember('cardnumber'=>$borrower);
 my $checkitem=$input->param('checkitem');
+my $expirationdate = $input->param('expiration_date');
 
 my $multi_hold = $input->param('multi_hold');
 my $biblionumbers = $multi_hold ? $input->param('biblionumbers') : ($biblionumber . '/');
@@ -98,17 +99,17 @@ if ($type eq 'str8' && $borrowernumber ne ''){
         if ($multi_hold) {
             my $bibinfo = $bibinfos{$biblionumber};
             AddReserve($branch,$borrowernumber->{'borrowernumber'},$biblionumber,'a',[$biblionumber],
-                       $bibinfo->{rank},$startdate,$notes,$bibinfo->{title},$checkitem,$found);
+                       $bibinfo->{rank},$startdate,$expirationdate,$notes,$bibinfo->{title},$checkitem,$found);
         } else {
             if ($input->param('request') eq 'any'){
                 # place a request on 1st available
-                AddReserve($branch,$borrowernumber->{'borrowernumber'},$biblionumber,'a',\@realbi,$rank[0],$startdate,$notes,$title,$checkitem,$found);
+                AddReserve($branch,$borrowernumber->{'borrowernumber'},$biblionumber,'a',\@realbi,$rank[0],$startdate,$expirationdate,$notes,$title,$checkitem,$found);
             } elsif ($reqbib[0] ne ''){
                 # FIXME : elsif probably never reached, (see top of the script)
                 # place a request on a given item
-                AddReserve($branch,$borrowernumber->{'borrowernumber'},$biblionumber,'o',\@reqbib,$rank[0],$startdate,$notes,$title,$checkitem, $found);
+                AddReserve($branch,$borrowernumber->{'borrowernumber'},$biblionumber,'o',\@reqbib,$rank[0],$startdate,$expirationdate,$notes,$title,$checkitem, $found);
             } else {
-                AddReserve($branch,$borrowernumber->{'borrowernumber'},$biblionumber,'a',\@realbi,$rank[0],$startdate,$notes,$title,$checkitem, $found);
+                AddReserve($branch,$borrowernumber->{'borrowernumber'},$biblionumber,'a',\@realbi,$rank[0],$startdate,$expirationdate,$notes,$title,$checkitem, $found);
             }
         }
     }

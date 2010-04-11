@@ -13,9 +13,9 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 =head1 updatechild.pl
 
@@ -79,7 +79,7 @@ if ( $op eq 'multi' ) {
 }
 
 elsif ( $op eq 'update' ) {
-    my $member = GetMember($borrowernumber);
+    my $member = GetMember('borrowernumber'=>$borrowernumber);
     $member->{'guarantorid'}  = '0';
     $member->{'categorycode'} = $catcode;
     my $borcat = GetBorrowercategory($catcode);

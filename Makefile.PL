@@ -11,9 +11,9 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 # Current maintainer MJR http://mjr.towers.org.uk/
 # See http://www.koha.org/wiki/?page=KohaInstaller
@@ -48,7 +48,7 @@ Makefile.PL - Koha packager and installer
     sudo make install
 
 =head2 UPGRADE INSTALLATION
-    
+
     NOTE: This option is only available if koha-install-log exists.
 
     perl Makefile.PL --prev-install-log /path/to/koha-install-log
@@ -117,7 +117,7 @@ contents will be copied to the installation target directory.
 =item If a subdirectory of a mapped directory is specified,
 its target overrides the parent's target for that subdirectory.
 
-=item The value of each map entry may either be a scalar containing 
+=item The value of each map entry may either be a scalar containing
 one target or a reference to a hash containing 'target' and 'trimdir'
 keys.
 
@@ -139,7 +139,7 @@ The permitted installation targets are:
 
 =over 4
 
-=item INTRANET_CGI_DIR 
+=item INTRANET_CGI_DIR
 
 CGI scripts for intranet (staff) interface.
 
@@ -213,7 +213,7 @@ contain information of interest to Koha developers.
 
 =item DOC_DIR
 
-Directory for Koha documentation accessed from the 
+Directory for Koha documentation accessed from the
 command-line, e.g., READMEs.
 
 =item LOG_DIR
@@ -241,6 +241,7 @@ my $target_map = {
   './acqui'                     => 'INTRANET_CGI_DIR',
   './admin'                     => 'INTRANET_CGI_DIR',
   './authorities'               => 'INTRANET_CGI_DIR',
+  './basket'                    => 'INTRANET_CGI_DIR',
   './C4'                        => 'PERL_MODULE_DIR',
   './C4/SIP/t'                  => 'NONE',
   './C4/SIP/koha_test'          => 'NONE',
@@ -255,7 +256,7 @@ my $target_map = {
   './etc'                       => { target => 'KOHA_CONF_DIR', trimdir => -1 },
   './etc/zebradb'               => { target => 'ZEBRA_CONF_DIR', trimdir => -1 },
   './etc/pazpar2'               => { target => 'PAZPAR2_CONF_DIR', trimdir => -1 },
-  './help.pl'                   => 'INTRANET_CGI_DIR', 
+  './help.pl'                   => 'INTRANET_CGI_DIR',
   './installer-CPAN.pl'         => 'NONE',
   './installer'                 => 'INTRANET_CGI_DIR',
   './errors'                    => {target => 'INTRANET_CGI_DIR'},
@@ -267,14 +268,15 @@ my $target_map = {
   './Makefile.PL'               => 'NONE',
   './MANIFEST.SKIP'             => 'NONE',
   './members'                   => 'INTRANET_CGI_DIR',
-  './misc'                      => { target => 'SCRIPT_NONDEV_DIR', trimdir => -1 }, 
-  './misc/bin'                  => { target => 'SCRIPT_DIR', trimdir => -1 }, 
+  './misc'                      => { target => 'SCRIPT_NONDEV_DIR', trimdir => -1 },
+  './misc/bin'                  => { target => 'SCRIPT_DIR', trimdir => -1 },
   './misc/release_notes'        => { target => 'DOC_DIR', trimdir => 2 },
-  './misc/translator'           => { target => 'MISC_DIR', trimdir => 2 }, 
+  './misc/translator'           => { target => 'MISC_DIR', trimdir => 2 },
   './misc/koha-install-log'     => { target => 'MISC_DIR', trimdir => -1 },
   './misc/installer_devel_notes' => 'NONE',
   './opac'                      => 'OPAC_CGI_DIR',
   './README.txt'                => 'NONE',
+  './patroncards'               => 'INTRANET_CGI_DIR',
   './reports'                   => 'INTRANET_CGI_DIR',
   './reserve'                   => 'INTRANET_CGI_DIR',
   './reviews'                   => 'INTRANET_CGI_DIR',
@@ -299,7 +301,7 @@ my $target_map = {
   './svc'                       => 'INTRANET_CGI_DIR',
   './t'                         => 'NONE',
   './tags'                      => 'INTRANET_CGI_DIR',
-  './tmp'                       => 'NONE', # FIXME need to determine whether 
+  './tmp'                       => 'NONE', # FIXME need to determine whether
                                            # Koha generates any persistent temp files
                                            # that should go in /var/tmp/koha
   './tools'                     => 'INTRANET_CGI_DIR',
@@ -320,7 +322,7 @@ The following configuration options are used by the installer.
 Specifies whether installation will be FHS-compliant (default,
 assumes user has root), put everything under
 a single directory (for users installing on a web host
-that allows CGI scripts and a MySQL database but not root 
+that allows CGI scripts and a MySQL database but not root
 access), or development (for a developer who wants to run
 Koha from a git clone with no fuss).
 
@@ -364,7 +366,7 @@ Specifies format of MARC records to be indexed by Zebra.
 
 =item ZEBRA_LANGUAGE
 
-Specifies primary language of records that will be 
+Specifies primary language of records that will be
 indexed by Zebra.
 
 =item ZEBRA_USER
@@ -391,13 +393,13 @@ System group that will own Koha's files.
 my %config_defaults = (
   'DB_TYPE'           => 'mysql',
   'DB_HOST'           => 'localhost',
-  'DB_NAME'           => 'koha',    
+  'DB_NAME'           => 'koha',
   'DB_USER'           => 'kohaadmin',
   'DB_PASS'           => 'katikoan',
   'INSTALL_ZEBRA'     => 'yes',
   'INSTALL_SRU'       => 'yes',
   'INSTALL_PAZPAR2'   => 'no',
-  'AUTH_INDEX_MODE'   => 'grs1',
+  'AUTH_INDEX_MODE'   => 'dom',
   'ZEBRA_MARC_FORMAT' => 'marc21',
   'ZEBRA_LANGUAGE'    => 'en',
   'ZEBRA_USER'        => 'kohauser',
@@ -507,7 +509,7 @@ if ($config{'INSTALL_ZEBRA'} eq "yes") {
         );
     }
     $config{'ZEBRA_AUTH_CFG'} = $config{'AUTH_INDEX_MODE'} eq 'dom' ? 'zebra-authorities-dom.cfg' : 'zebra-authorities.cfg';
-    $config{'AUTH_RETRIEVAL_CFG'} = 
+    $config{'AUTH_RETRIEVAL_CFG'} =
         $config{'AUTH_INDEX_MODE'} eq 'dom' ? 'retrieval-info-auth-dom.xml' : 'retrieval-info-auth-grs1.xml';
 }
 
@@ -527,7 +529,7 @@ my %test_suite_override_dirs = (
     ZEBRA_DATA_DIR => ['var', 'lib', 'zebradb'],
     ZEBRA_RUN_DIR  => ['var', 'run', 'zebradb'],
 );
- 
+
 WriteMakefile(
               NAME         => 'koha',
               #VERSION     => strftime('2.9.%Y%m%d%H',gmtime),
@@ -537,6 +539,7 @@ WriteMakefile(
               NO_META      => 1,
               PREREQ_PM => {
                             'Algorithm::CheckDigits'           => 0.50,
+							'Authen::CAS::Client'              => 0.05,
                             'Biblio::EndnoteStyle'             => 0.05,
                             'CGI'                              => 3.15,
                             'CGI::Carp'                        => 1.29,
@@ -556,8 +559,9 @@ WriteMakefile(
                             'Digest::SHA'                      => 5.43,
                             'Email::Date'                      => 1.103,
                             'File::Temp'                       => 0.16,
-                            'GD'                               => 2.39,    #optional
+                            'GD'                               => 2.39,    #optional, used for patron image feature
                             'GD::Barcode::UPCE'                => 1.1,
+                            'Graphics::Magick'                 => 1.3.7,   #optional, used for patron cards creator
                             'Getopt::Long'                     => 2.35,
                             'Getopt::Std'                      => 1.05,
                             'HTML::Template::Pro'              => 0.69,
@@ -570,9 +574,12 @@ WriteMakefile(
                             'LWP::Simple'                      => 1.41,
                             'LWP::UserAgent'                   => 2.033,
                             'Lingua::Stem'                     => 0.82,
+			    'Lingua::Stem::Snowball'	       => 0.952,
                             'List::Util'                       => 1.18,
                             'List::MoreUtils'                  => 0.21,
+                            'Locale::Currency::Format'         => 1.28,
                             'Locale::Language'                 => 2.07,
+                            'Locale::PO'                       => 0.17,
                             'MARC::Charset'                    => 0.98,
                             'MARC::Crosswalk::DublinCore'      => 0.02,
                             'MARC::File::XML'                  => 0.88,
@@ -585,14 +592,18 @@ WriteMakefile(
                             'Net::LDAP'                        => 0.33, # optional
                             'Net::LDAP::Filter'                => 0.14, # optional
                             'Net::Z3950::ZOOM'                 => 1.16,
+                            'Number::Format'                   => 1.52,
                             'PDF::API2'                        => 2.000,
                             'PDF::API2::Page'                  => 2.000,
                             'PDF::API2::Util'                  => 2.000,
+                            'PDF::API2::Simple'                => 1.000,
+                            'PDF::Table'                       => 0.9.3,
                             'PDF::Reuse'                       => 0.33,
                             'PDF::Reuse::Barcode'              => 0.05,
                             'POE'                              => 0.9999,
                             'POSIX'                            => 1.09,
                             'Schedule::At'                     => 1.06,
+                            'Storable'	                       => 2.20,
                             'SMS::Send'                        => 0.05, # optional
                             'Term::ANSIColor'                  => 1.10,
                             'Test'                             => 1.25,
@@ -600,6 +611,7 @@ WriteMakefile(
                             'Test::More'                       => 0.80,
                             'Text::CSV'                        => 0.01,
                             'Text::CSV_XS'                     => 0.32,
+                            'Text::CSV::Encoded'               => 0.09,
                             'Text::Iconv'                      => 1.7,
                             'Text::Wrap'                       => 2005.082401,
                             'Time::HiRes'                      => 1.86,
@@ -650,7 +662,7 @@ sub hashdir{
     return $tree;
 }
 
-=head2 get_file_map 
+=head2 get_file_map
 
 This function combines the target_map and file hash to
 map each source file to its destination relative to
@@ -764,7 +776,7 @@ sub _add_to_file_map {
         # spaces and shell metacharacters from all file names
         $source =~ s/ /\\ /g;
         $destination =~ s/ /\\ /g;
-      
+
         $file_map->{$source} = $destination unless (!$install_zebra and $targetdir =~ /ZEBRA/);
     }
 }
@@ -779,7 +791,7 @@ Reads value from the Koha install log specified by
 sub get_install_log_values {
     my $install_log = shift;
     my $values = shift;
-    
+
     open LOG, "<$install_log" or die "Cannot open install log $install_log: $!\n";
     while (<LOG>) {
         chomp;
@@ -819,7 +831,7 @@ By default, Koha can be installed in one of three ways:
 standard: Install files in conformance with the Filesystem
           Hierarchy Standard (FHS).  This is the default mode
           and should be used when installing a production
-          Koha system.  On Unix systems, root access is 
+          Koha system.  On Unix systems, root access is
           needed to complete a standard installation.
 
 single:   Install files under a single directory.  This option
@@ -849,13 +861,16 @@ be run from the current directory.
 
 Configuration directory:);
         # FIXME - home directory portability consideration apply
-        $install_base_default = (exists $ENV{'HOME'}) ? "$ENV{'HOME'}/koha-dev" : "$defaults->{'INSTALL_BASE'}-dev";
+        $install_base_default =
+	    $ENV{DESTDIR}
+	    || ( exists $ENV{HOME} ? "$ENV{HOME}/koha-dev" : "$defaults->{'INSTALL_BASE'}-dev" )
+	;
     } elsif ($config{'INSTALL_MODE'} eq 'single') {
         $msg = "\nPlease specify the directory in which to install Koha";
         # FIXME -- we're assuming under a 'single' mode install
         # that user will likely want to install under the home
         # directory.  This is OK in and of itself, but we should
-        # use File::HomeDir to locate the home directory portably.  
+        # use File::HomeDir to locate the home directory portably.
         # This is deferred for now because File::HomeDir is not yet
         # core.
 		# --we must also keep this portable to the major OS's -fbcit
@@ -863,10 +878,10 @@ Configuration directory:);
     } else {
         # must be standard
         $msg = q(
-Please specify the directory under which most Koha files 
+Please specify the directory under which most Koha files
 will be installed.
 
-Note that if you are planning in installing more than 
+Note that if you are planning in installing more than
 one instance of Koha, you may want to modify the last
 component of the directory path, which will be used
 as the package name in the FHS layout.
@@ -882,7 +897,7 @@ Base installation directory);
 Since you are using the 'standard' install
 mode, you should run 'make install' as root.
 However, it is recommended that a non-root
-user (on Unix and Linux platforms) have 
+user (on Unix and Linux platforms) have
 ownership of Koha's files, including the
 Zebra indexes if applicable.
 
@@ -918,8 +933,8 @@ DBMS to use);
     $config{'DB_TYPE'} = _get_value('DB_TYPE', $msg, $defaults->{'DB_TYPE'}, $valid_values, $install_log_values);
 
     $msg = q(
-Please specify the name or address of your 
-database server.  Note that the database 
+Please specify the name or address of your
+database server.  Note that the database
 does not have to exist at this point, it
 can be created after running 'make install'
 and before you try using Koha for the first time.
@@ -944,7 +959,7 @@ used by Koha);
     $config{'DB_USER'} = _get_value('DB_USER', $msg, $defaults->{'DB_USER'}, $valid_values, $install_log_values);
 
     $msg = q(
-Please specify the password of the user that owns the 
+Please specify the password of the user that owns the
 database to be used by Koha);
     $config{'DB_PASS'} = _get_value('DB_PASS', $msg, $defaults->{'DB_PASS'}, $valid_values, $install_log_values);
 
@@ -952,7 +967,7 @@ database to be used by Koha);
 Koha can use the Zebra search engine for high-performance
 searching of bibliographic and authority records.  If you
 have installed the Zebra software and would like to use it,
-please answer 'yes' to the following question.  Otherwise, 
+please answer 'yes' to the following question.  Otherwise,
 Koha will default to using its internal search engine.
 
 Please note that if you choose *NOT* to install Zebra,
@@ -998,12 +1013,12 @@ records.
 Primary language for Zebra indexing);
         $msg .= _add_valid_values_disp('ZEBRA_LANGUAGE', $valid_values);
         $config{'ZEBRA_LANGUAGE'} = _get_value('ZEBRA_LANGUAGE', $msg, $defaults->{'ZEBRA_LANGUAGE'}, $valid_values, $install_log_values);
-   
+
         $msg = q(
-Koha can use one of  two different indexing modes 
+Koha can use one of  two different indexing modes
 for the MARC authorities records:
 
-grs1 - uses the Zebra GRS-1 filter, available 
+grs1 - uses the Zebra GRS-1 filter, available
        for legacy support
 dom  - uses the DOM XML filter; offers improved
        functionality.
@@ -1011,7 +1026,7 @@ dom  - uses the DOM XML filter; offers improved
 Authorities indexing mode);
         $msg .= _add_valid_values_disp('AUTH_INDEX_MODE', $valid_values);
         $config{'AUTH_INDEX_MODE'} = _get_value('AUTH_INDEX_MODE', $msg, $defaults->{'AUTH_INDEX_MODE'}, $valid_values, $install_log_values);
-       
+
         $msg = q(
 Please specify Zebra database user);
         $config{'ZEBRA_USER'} = _get_value('ZEBRA_USER', $msg, $defaults->{'ZEBRA_USER'}, $valid_values, $install_log_values);
@@ -1089,8 +1104,8 @@ PazPar2 port?);
         }
     }
   $msg = q(
-Use memcached and memoize to cache the results of some function calls? 
-This provides a signficant performance improvement. 
+Use memcached and memoize to cache the results of some function calls?
+This provides a signficant performance improvement.
 You will need a Memcached server running.);
   $msg .= _add_valid_values_disp('USE_MEMCACHED', $valid_values);
   $config{'USE_MEMCACHED'} = _get_value('USE_MEMCACHED', $msg, $defaults->{'USE_MEMCACHED'}, $valid_values, $install_log_values);
@@ -1101,7 +1116,7 @@ Since you've chosen to use caching, you must specify the memcached servers and t
       $msg = q(
 Memcached server address?);
       $config{'MEMCACHED_SERVERS'} = _get_value('MEMCACHED_SERVERS', $msg, $defaults->{'MEMCACHED_SERVERS'}, $valid_values, $install_log_values);
-       
+
       $msg = q(
 Memcached namespace?);
       $config{'MEMCACHED_NAMESPACE'} = _get_value('MEMCACHED_NAMESPACE', $msg, $defaults->{'MEMCACHED_NAMESPACE'}, $valid_values, $install_log_values);
@@ -1129,7 +1144,7 @@ doing it in a database that you don't want to lose.
 
 Please specify the name of the test database to be
 used by Koha);
-      
+
       $config{'TEST_DB_NAME'} = _get_value('TEST_DB_NAME', $msg, $defaults->{'TEST_DB_NAME'}, $valid_values, $install_log_values);
       while ( $config{'TEST_DB_NAME'} eq $config{'DB_NAME'} ) {
           $msg = q(Please do not use the same database for testing as you do for production. You run the severe risk of data loss.);
@@ -1140,9 +1155,9 @@ used by Koha);
 Please specify the user that owns the database to be
 used by Koha);
     $config{'TEST_DB_USER'} = _get_value('TEST_DB_USER', $msg, $defaults->{'TEST_DB_USER'}, $valid_values, $install_log_values);
-      
+
       $msg = q(
-Please specify the password of the user that owns the 
+Please specify the password of the user that owns the
 database to be used by Koha);
       $config{'TEST_DB_PASS'} = _get_value('TEST_DB_PASS', $msg, $defaults->{'TEST_DB_PASS'}, $valid_values, $install_log_values);
   }
@@ -1163,7 +1178,7 @@ database to be used by Koha);
 sub _add_valid_values_disp {
     my $key = shift;
     my $valid_values = shift;
-   
+
     my $disp = "";
     if (exists $valid_values->{$key}) {
         $disp = " (" . join(", ", sort keys %{ $valid_values->{$key} }) . ")";
@@ -1180,6 +1195,7 @@ sub _get_value {
 
     # take value from install log if present
     if (exists $install_log_values{$key}) {
+        $install_log_values{$key} =~ s/\$/\$\$/g;
         return $install_log_values{$key};
     }
 
@@ -1191,7 +1207,7 @@ sub _get_value {
 
     my $val = prompt($msg, $default);
 
-    while (exists $valid_values->{$key} and 
+    while (exists $valid_values->{$key} and
            $val ne $default and
            not exists $valid_values->{$key}->{$val}) {
         my $retry_msg = "Value '$val' is not a valid option.\n";
@@ -1199,15 +1215,16 @@ sub _get_value {
         $retry_msg .= _add_valid_values_disp($key, $valid_values);
         $val = prompt($retry_msg, $default);
     }
+    $val =~ s/\$/\$\$/g;
     return $val;
 }
 
-=head2 get_target_directories 
+=head2 get_target_directories
 
 Creates a hash mapping from symbols for installation target
 directories to actual directory paths.
 
-Also returns a hash indicating targets for which 
+Also returns a hash indicating targets for which
 files need not be copied -- this is used for the 'dev'
 mode installation, where some files are installed in place.
 
@@ -1308,12 +1325,12 @@ sub get_target_directories {
 
     _get_env_overrides(\%dirmap);
     _get_argv_overrides(\%dirmap);
-    _add_destdir(\%dirmap);
+    _add_destdir(\%dirmap) unless ($^O eq 'MSWin32');
 
     return \%dirmap, \%skipdirs;
 }
 
-=head2 get_test_dir 
+=head2 get_test_dir
 
 Map a directory target to the corresponding path for
 the test suite.
@@ -1322,14 +1339,14 @@ the test suite.
 
 sub get_test_dir {
     my ($dirname) = @_;
-  
-    my @basedir = (File::Spec->rel2abs(File::Spec->curdir()), 't', 'run'); 
+
+    my @basedir = (File::Spec->rel2abs(File::Spec->curdir()), 't', 'run');
     if (exists $test_suite_override_dirs{$dirname}) {
         return File::Spec->catdir(@basedir, @{ $test_suite_override_dirs{$dirname} });
     } else {
         return;
     }
-    
+
 }
 
 sub _get_env_overrides {
@@ -1345,7 +1362,7 @@ sub _get_env_overrides {
 
 sub _get_argv_overrides {
     my $dirmap = shift;
-    
+
     my @new_argv = ();
     for (my $i = 0; $i <= $#ARGV; $i++) {
         if ($ARGV[$i] =~ /^([^=]+)=([^=]+)$/ and exists $dirmap->{$1}) {
@@ -1433,14 +1450,14 @@ sub test {
     my $test = $self->SUPER::test(@_);
     $test =~ s!\$\(INST_LIB\)!blib/PERL_MODULE_DIR!g;
 
-    # set KOHA_CONF 
+    # set KOHA_CONF
     $test =~ s!\$\(FULLPERLRUN\)!KOHA_CONF=blib/KOHA_CONF_DIR/koha-conf.xml \$(FULLPERLRUN)!g;
     return $test;
 }
 
 sub install {
     my $self = shift;
-    my $install = ""; 
+    my $install = "";
     # NOTE: we're *not* doing this: my $install = $self->SUPER::install(@_);
     # This means that we're completely overriding EU::MM's default
     # installation and uninstallation targets.
@@ -1457,10 +1474,10 @@ KOHA_DEST_$key = $target_directories->{$key}
 install :: all install_koha set_koha_ownership set_koha_permissions warn_koha_env_vars
 \t\$(NOECHO) \$(NOOP)
 );
-			$install .= "install_koha ::\n";      
+			$install .= "install_koha ::\n";
 			$install .= "\t\$(NOECHO) umask 022; \$(MOD_INSTALL) \\\n";
 			foreach my $key (sort keys %$target_directories) {
-				$install .= "\t\t\$(KOHA_INST_$key) \$(KOHA_DEST_$key) \\\n" 
+				$install .= "\t\t\$(KOHA_INST_$key) \$(KOHA_DEST_$key) \\\n"
 					unless ($config{'INSTALL_ZEBRA'} ne "yes" and $key =~ /ZEBRA/) or exists $skip_directories->{$key};
 			}
 			$install .= "\t\t\$(INST_MAN1DIR) \$(DESTINSTALLMAN1DIR) \\\n";
@@ -1504,7 +1521,7 @@ install :: all install_koha warn_koha_env_vars
 		$install .= "install_koha ::\n";
 		$install .= "\t\$(MOD_INSTALL) \\\n";
 		foreach my $key (sort keys %$target_directories) {
-			$install .= "\t\t\$(KOHA_INST_$key) \$(KOHA_DEST_$key) \\\n" 
+			$install .= "\t\t\$(KOHA_INST_$key) \$(KOHA_DEST_$key) \\\n"
 				unless ($config{'INSTALL_ZEBRA'} ne "yes" and $key =~ /ZEBRA/) or exists $skip_directories->{$key};
 		}
 	}
@@ -1553,7 +1570,7 @@ sub _update_zebra_conf_target {
 }
 
 sub upgrade {
-    my $upgrade = ""; 
+    my $upgrade = "";
 
     my $backup_suffix;
     if (exists $install_log_values{'KOHA_INSTALLED_VERSION'}) {
@@ -1574,7 +1591,7 @@ make_upgrade_backup ::
 /;
     foreach my $key (qw/KOHA_CONF_DIR INTRANET_TMPL_DIR INTRANET_WWW_DIR OPAC_TMPL_DIR OPAC_WWW_DIR
                      PAZPAR2_CONF_DIR ZEBRA_CONF_DIR/) {
-    	$upgrade .= "\t\t\$(KOHA_INST_$key) \$(KOHA_DEST_$key) \\\n" 
+    	$upgrade .= "\t\t\$(KOHA_INST_$key) \$(KOHA_DEST_$key) \\\n"
             unless ($config{'INSTALL_ZEBRA'} ne "yes" and $key =~ /ZEBRA/) or
                    exists $skip_directories->{$key} or
                    not exists $target_directories->{$key};
@@ -1590,27 +1607,20 @@ sub postamble {
     # variables -- this is for the use of
     # rewrite-confg.PL
 
-    # quote '$' in the two password parameters
-    my %config = %config;
-    $config{'DB_PASS'} =~ s/\$/\$\$/g;
-    if ($config{'INSTALL_ZEBRA'} eq "yes") {
-        $config{'ZEBRA_PASS'} =~ s/\$/\$\$/g;
-    }
-
     my $env;
 	# Hereagain, we must alter syntax per platform...
 	if ( $^O eq 'MSWin32' ) {
 		# NOTE: it is imperative that there be no whitespaces in ENV=value...
-		$env = join("\n", map { "__${_}__=$target_directories->{$_}" } keys %$target_directories); 
+		$env = join("\n", map { "__${_}__=$target_directories->{$_}" } keys %$target_directories);
 		$env .= "\n\n";
 		$env .= join("\n", map { "__${_}__=$config{$_}" } keys %config);
 	}
     else {
-		$env = join("\n", map { "export __${_}__ := $target_directories->{$_}" } keys %$target_directories); 
+		$env = join("\n", map { "export __${_}__ := $target_directories->{$_}" } keys %$target_directories);
 		$env .= "\n\n";
 		$env .= join("\n", map { "export __${_}__ := $config{$_}" } keys %config);
 	}
-    
+
     if ( $config{'RUN_DATABASE_TESTS'} eq 'yes' ) {
         if ( open( my $confhandle, '>', 't/test-config.txt' ) ) {
             print $confhandle "# This configuration file lets the t/Makefile prepare a test koha-conf.xml file.\n";
@@ -1632,7 +1642,7 @@ sub postamble {
         } else {
             warn 'unable to open conf file for database dependent tests: $!';
         }
-          
+
     }
     return "$env\n";
 }

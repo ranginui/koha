@@ -14,9 +14,9 @@ package C4::Input; #assumes C4/Input
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
 use warnings;
@@ -128,22 +128,22 @@ sub buildCGIsort {
 	if ($sth->rows>0){
 		my @values;
 		my %labels;
-		
+
 		for (my $i =0;$i<$sth->rows;$i++){
 			my $results = $sth->fetchrow_hashref;
- 			push @values, $results->{authorised_value};
- 			$labels{$results->{authorised_value}}=$results->{lib};
+			push @values, $results->{authorised_value};
+			$labels{$results->{authorised_value}}=$results->{lib};
 		}
- 		unshift(@values,"");
 		$CGISort= CGI::scrolling_list(
- 					-name => $input_name,
- 					-values => \@values,
- 					-labels => \%labels,
+					-name => $input_name,
+					-id =>   $input_name,
+					-values => \@values,
+					-labels => \%labels,
 					-default=> $data,
- 					-size => 1,
- 					-multiple => 0);
+					-size => 1,
+					-multiple => 0);
 	}
-	$sth->finish; 
+	$sth->finish;
 	return $CGISort;
 }
 END { }       # module clean-up code here (global destructor)

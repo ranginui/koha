@@ -14,9 +14,9 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
 use C4::AuthoritiesMarc;
@@ -134,13 +134,20 @@ my ($input) = @_;
         my ($results,$total) = SearchAuthorities( \@tags,\@and_or,
                                             \@excluding, \@operator, \@value,
                                             $startfrom*$resultsperpage, $resultsperpage,$authtypecode, $orderby);
-                                            
+
+	# Getting the $b if it exists
+	foreach my $_ (@$results) {
+		if ($_->{reported_tag} =~ m/^\$b/) {
+		    $_->{to_report} = substr($_->{reported_tag}, 2);
+	    }
+ 	}
+
         ($template, $loggedinuser, $cookie)
             = get_template_and_user({template_name => "cataloguing/value_builder/unimarc_field_210c.tmpl",
                     query => $query,
                     type => 'intranet',
                     authnotrequired => 0,
-                    flagsrequired => {editcatalogue => 1},
+                    flagsrequired => {editcatalogue => '*'},
                     debug => 1,
                     });
     
@@ -202,7 +209,7 @@ my ($input) = @_;
                     query => $query,
                     type => 'intranet',
                     authnotrequired => 0,
-                    flagsrequired => {editcatalogue => 1},
+                    flagsrequired => {editcatalogue => '*'},
                     debug => 1,
                     });
     

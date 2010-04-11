@@ -14,9 +14,9 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 =head1 cataloguing:addbooks.pl
 
@@ -49,7 +49,7 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
-        flagsrequired   => { editcatalogue => 1 },
+        flagsrequired   => { editcatalogue => 'edit_catalogue' },
         debug           => 1,
     }
 );
@@ -57,7 +57,7 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
 # get framework list
 my $frameworks = getframeworks;
 my @frameworkcodeloop;
-foreach my $thisframeworkcode ( keys %{$frameworks} ) {
+foreach my $thisframeworkcode ( sort {$frameworks->{$a} cmp $frameworks->{$b}}keys %{$frameworks} ) {
     push @frameworkcodeloop, {
         value         => $thisframeworkcode,
         frameworktext => $frameworks->{$thisframeworkcode}->{'frameworktext'},
@@ -68,8 +68,13 @@ foreach my $thisframeworkcode ( keys %{$frameworks} ) {
 # Searching the catalog.
 if ($query) {
 
+    # build query
+    my @operands = $query;
+    my (@operators, @indexes, @sort_by, @limits) = ();
+    my ( $builterror,$builtquery,$simple_query,$query_cgi,$query_desc,$limit,$limit_cgi,$limit_desc,$stopwords_removed,$query_type) = buildQuery(\@operators,\@operands,\@indexes,@limits,\@sort_by,undef,undef);
+
     # find results
-    my ( $error, $marcresults, $total_hits ) = SimpleSearch($query, $results_per_page * ($page - 1), $results_per_page);
+    my ( $error, $marcresults, $total_hits ) = SimpleSearch($builtquery, $results_per_page * ($page - 1), $results_per_page);
 
     if ( defined $error ) {
         $template->param( error => $error );

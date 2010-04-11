@@ -13,9 +13,9 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 =head1 NAME
 
@@ -39,6 +39,7 @@ parameters tables.
 
 
 use strict;
+use warnings;
 
 use C4::AuthoritiesMarc;
 use C4::Auth;
@@ -73,7 +74,6 @@ my ($template, $loggedinuser, $cookie)
 
 # fill arrays
 my @loop_data =();
-my $tag;
 # loop through each tab 0 through 9
 # for (my $tabloop = 0; $tabloop<=10;$tabloop++) {
 # loop through each tag
@@ -121,9 +121,8 @@ my @fields = $record->fields();
 my $authtypes = getauthtypes;
 my @authtypesloop;
 foreach my $thisauthtype (keys %$authtypes) {
-	my $selected = 1 if $thisauthtype eq $authtypecode;
 	my %row =(value => $thisauthtype,
-				selected => $selected,
+				selected => $thisauthtype eq $authtypecode,
 				authtypetext => $authtypes->{$thisauthtype}{'authtypetext'},
 			);
 	push @authtypesloop, \%row;

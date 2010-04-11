@@ -52,7 +52,7 @@
     function changeSelection (newCopiesRowId, isSpecific) {
         if (copiesRowId && ((copiesRowId != newCopiesRowId) || (wasSpecific != isSpecific))) {
             var biblioNum = suffixOf(copiesRowId, "_");
-            
+
             // If the 'specific copy' radio button was checked
               if (wasSpecific && (copiesRowId != newCopiesRowId)) {
                 // Find the selected copy
@@ -79,7 +79,7 @@
             return false;
         }
         $(".copiesrow:not(" + newCopiesRowId + ")").hide();
-        
+
         // Show the specific copy table for this radio button.
         $(newCopiesRowId).show();
     });
@@ -154,13 +154,13 @@
 </script>
 </head>
 
-<body>
+<body id="opac-holds">
   <div id="doc3" class="yui-t7">
     <!--TMPL_INCLUDE NAME="masthead.inc" -->
     <div id="bd">
 	  <div id="yui-g">
         <div id="holds" class="container">
-      
+
           <!-- TMPL_IF NAME="message" -->
             <!-- TMPL_IF NAME="GNA" -->
               <div class="dialog alert">
@@ -238,10 +238,13 @@
                   <!-- TMPL_UNLESS NAME="item-level_itypes" -->
                     <th>Item Type</th>
                   <!-- /TMPL_UNLESS -->
+                  <!-- TMPL_IF NAME="showpriority" -->
                   <th>Priority</th>
+                  <!-- /TMPL_IF -->
 		  <!-- TMPL_IF NAME="reserve_in_future" -->
 		  <th>Hold Starts on Date</th>
 		  <!-- /TMPL_IF -->
+		  <th>Hold Not Needed After</th>
                   <!-- TMPL_IF NAME="OPACItemHolds" -->
                     <th id="place_on_hdr" style="display:none">Place On</th>
                   <!-- /TMPL_IF -->
@@ -288,7 +291,7 @@
                     </td>
                       <!-- /TMPL_IF -->
                     <td>
-                      <a href="/cgi-bin/koha/opac-detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->"><!-- TMPL_VAR NAME="title" escape="html" --><!-- TMPL_IF NAME="subtitle" --> <!-- TMPL_VAR NAME="subtitle" ESCAPE="html" --><!-- /TMPL_IF --></a>
+                      <a href="/cgi-bin/koha/opac-detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->"><!-- TMPL_VAR NAME="title" escape="html" --><!-- TMPL_IF NAME="subtitle" --> <!-- TMPL_LOOP NAME="subtitle" --><!--TMPL VAR Name="subfield"--><!--/TMPL_LOOP--><!-- /TMPL_IF --></a>
                       <!-- TMPL_IF NAME="author" -->,  by <!-- TMPL_VAR NAME="author" --><!-- /TMPL_IF -->
                     </td>
                     <!-- TMPL_UNLESS NAME="item-level_itypes" -->
@@ -297,7 +300,7 @@
 						<!-- TMPL_VAR NAME="description" -->
                       </td>
                     <!-- /TMPL_UNLESS -->
-                    <td><!-- TMPL_VAR name="rank" --> out of <!-- TMPL_VAR NAME="reservecount" --></td>
+                    <!-- TMPL_IF NAME="showpriority" --><td><!-- TMPL_VAR name="rank" --> out of <!-- TMPL_VAR NAME="reservecount" --></td><!-- /TMPL_IF -->
 		    <!-- TMPL_IF NAME="reserve_in_future" -->
 		    <td>
 			<input name="reserve_date_<!-- TMPL_VAR NAME="biblionumber" -->" id="reserve_date_<!-- TMPL_VAR NAME="biblionumber" -->" size="10">
@@ -337,7 +340,39 @@
 			//]]>
 			</script>
 		    </td>
+
 		    <!-- /TMPL_IF -->
+	<td>
+	    <input name="expiration_date_<!-- TMPL_VAR NAME="biblionumber" -->" id="expiration_date_<!-- TMPL_VAR NAME="biblionumber" -->" size="10" readonly="readonly" />
+	    <img src="<!-- TMPL_VAR NAME="themelang" -->/lib/calendar/cal.gif" alt="Show Calendar" border="0" id="CalendarExpirationDate" style="cursor: pointer;" />
+	    <script language="JavaScript" type="text/javascript">
+		//<![CDATA[
+		function validate1(date) {
+			var today = new Date();
+			if ( (date > today) ||
+                    ( date.getDate() == today.getDate() &&
+                      date.getMonth() == today.getMonth() &&
+                      date.getFullYear() == today.getFullYear() ) ) {
+				return false;
+			} else {
+				return true;
+			}
+		};
+		Calendar.setup(
+			{
+				inputField : "expiration_date_<!-- TMPL_VAR NAME="biblionumber" -->",
+				ifFormat : "<!-- TMPL_VAR NAME="DHTMLcalendar_dateformat" -->",
+				button : "CalendarExpirationDate",
+				disableFunc : validate1,
+				dateStatusFunc : validate1,
+			}
+		);
+		//]]>
+	    </script>
+		<br/>
+		<a href='#' onclick="document.getElementById('expiration_date_<!-- TMPL_VAR NAME="biblionumber" -->').value='';">Clear Date</a>
+	</td>
+
                     <!-- TMPL_IF NAME="OPACItemHolds" -->
                       <td class="place_on_type" style="display:none">
                         <table>
@@ -465,7 +500,7 @@
                                   <span class="notforloan">Not for loan (<!-- TMPL_VAR NAME="notforloanvalue" -->)</span>
                                 <!-- /TMPL_IF -->
                                 <!-- TMPL_IF NAME="reservedate"-->
-                                  <span class="waiting"><!-- TMPL_IF NAME="waitingdate" -->Waiting<!-- TMPL_ELSE -->On hold<!-- /TMPL_IF --> for patron 
+                                  <span class="waiting"><!-- TMPL_IF NAME="waitingdate" -->Waiting<!-- TMPL_ELSE -->On hold<!-- /TMPL_IF --> for patron
                                     <!-- TMPL_IF NAME="waitingdate" -->at<!-- TMPL_ELSE -->expected at<!-- /TMPL_IF --> <!-- TMPL_VAR NAME="ExpectedAtLibrary" -->
                                     since
                                     <!-- TMPL_IF NAME="waitingdate" --><!-- TMPL_VAR NAME="waitingdate" --><!-- TMPL_ELSE --><!-- TMPL_IF name="reservedate" --><!-- TMPL_VAR NAME="reservedate" --><!-- /TMPL_IF --><!-- /TMPL_IF -->.

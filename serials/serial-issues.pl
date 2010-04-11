@@ -13,9 +13,9 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
 =head1 NAME
@@ -57,7 +57,6 @@ my $dbh = C4::Context->dbh;
 my $selectview = $query->param('selectview');
 $selectview = C4::Context->preference("SubscriptionHistory") unless $selectview;
 
-my $sth;
 my ($template, $loggedinuser, $cookie);
 my $biblionumber = $query->param('biblionumber');
 if ($selectview eq "full"){

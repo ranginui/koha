@@ -188,7 +188,7 @@ sub GetItemsAvailableToFillHoldRequestsForBib {
                            AND itemnumber IS NOT NULL
                            AND (found IS NOT NULL OR priority = 0)
                         )
-                       AND biblionumber = ?";
+                       AND items.biblionumber = ?";
     my @params = ($biblionumber, $biblionumber);
     if ($#branches_to_use > -1) {
         $items_query .= " AND holdingbranch IN (" . join (",", map { "?" } @branches_to_use) . ")";
@@ -354,7 +354,7 @@ sub CreatePicklistFromItemMap {
         my $barcode = $item->{barcode};
         my $itemcallnumber = $item->{itemcallnumber};
 
-        my $borrower = GetMember($borrowernumber);
+        my $borrower = GetMember('borrowernumber'=>$borrowernumber);
         my $cardnumber = $borrower->{'cardnumber'};
         my $surname = $borrower->{'surname'};
         my $firstname = $borrower->{'firstname'};

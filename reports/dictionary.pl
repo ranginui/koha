@@ -13,9 +13,9 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 use CGI::Carp qw(fatalsToBrowser warningsToBrowser);
 use strict;
 use warnings;
@@ -48,7 +48,7 @@ my 	( $template, $borrowernumber, $cookie ) = get_template_and_user(
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
-        flagsrequired   => { reports => 1 },
+        flagsrequired   => { reports => '*' },
         debug           => 1,
     }
 	);
@@ -56,6 +56,9 @@ my 	( $template, $borrowernumber, $cookie ) = get_template_and_user(
 if ($phase eq 'View Dictionary'){
 	# view the dictionary we use to set up abstract variables such as all borrowers over fifty who live in a certain town
 	my $areas = get_report_areas();
+    foreach (@{ $areas }) {
+        $_->{selected} = 1 if $_->{id} eq $area; # mark active area
+    }
 	my $definitions = get_from_dictionary($area);
 	$template->param( 'areas' => $areas ,
 		'start_dictionary' => 1,

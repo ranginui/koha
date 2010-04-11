@@ -131,11 +131,17 @@ function AreMandatoriesNotOk(){
 	    	for(var j=0,len2=eleminputs.length; j<len2; j++){
 	
 	    		if(eleminputs[j].name.match(varegexp) && eleminputs[j].value){
-					/* tag_801_subfield_c_841304_545657 */
 					inputregexp = new RegExp("^tag_" + arr[0] + "_subfield_" + eleminputs[j].value + "_" + arr[2]);
 					
 					for( var k=0; k<len2; k++){
 						if(eleminputs[k].id.match(inputregexp) && eleminputs[k].value){
+							isempty = false
+						}
+					}
+					
+					elemselect = elem.getElementsByTagName('select');
+					for( var k=0; k<elemselect.length; k++){
+						if(elemselect[k].id.match(inputregexp) && elemselect[k].value){
 							isempty = false
 						}
 					}
@@ -147,7 +153,7 @@ function AreMandatoriesNotOk(){
     	
     	if(isempty){
     		flag = 1;
-    		StrAlert += "\t* Field " + arr[0] + " is mandatory, at least one of its subfields must be filled.\n";
+    		StrAlert += _("\t* Field ") + arr[0] + _(" is mandatory, at least one of its subfields must be filled.\n");
     	}
     	
     }
@@ -633,7 +639,7 @@ function unHideSubfield(index,labelindex) { // FIXME :: is it used ?
 		new YAHOO.widget.Button({
                                             id: "z3950search", 
                                             type: "button", 
-                                            label: _("z39.50 Search"), 
+                                            label: _("Z39.50 Search"), 
                                             container: "z3950searchc",
 											onclick: {fn:function(){PopupZ3950()}}
                                         });
@@ -644,7 +650,7 @@ function unHideSubfield(index,labelindex) { // FIXME :: is it used ?
 
 		<ul class="toolbar">
 			<li><input id="addbiblio" type="submit" value="Save" /></li>
-			<li id="z3950searchc"><input type="button" id="z3950search" value="z39.50 Search" onclick="PopupZ3950(); return false;" /></li>
+			<li id="z3950searchc"><input type="button" id="z3950search" value="Z39.50 Search" onclick="PopupZ3950(); return false;" /></li>
 			<li id="changeframework"><label for="Frameworks">Change framework: </label>
 			<select name="Frameworks" id="Frameworks" onchange="Changefwk(this);">
 			                <option value="">Default</option>                
@@ -715,10 +721,8 @@ function unHideSubfield(index,labelindex) { // FIXME :: is it used ?
             <!-- /TMPL_UNLESS -->
             <!-- TMPL_IF name="repeatable" -->
                 <a href="#" tabindex="1" class="buttonPlus" onclick="CloneField('tag_<!-- TMPL_VAR name="tag"-->_<!-- TMPL_VAR NAME='index'--><!-- TMPL_VAR name="random" -->'); return false;" title="Repeat this Tag">+</a>
-            <!-- /TMPL_IF -->
-            <!-- TMPL_UNLESS name="mandatory" -->
                 <a href="#" tabindex="1" class="buttonMinus" onclick="UnCloneField('tag_<!-- TMPL_VAR name="tag"-->_<!-- TMPL_VAR NAME='index'--><!-- TMPL_VAR name="random" -->'); return false;" title="Delete this Tag">&#8722;</a>
-            <!-- /TMPL_UNLESS -->
+            <!-- /TMPL_IF -->
             
         </div>
 	
@@ -746,6 +750,7 @@ function unHideSubfield(index,labelindex) { // FIXME :: is it used ?
                 <!-- TMPL_UNLESS NAME="advancedMARCEditor" -->
                     <!-- TMPL_IF name="mandatory" --><span class="subfield subfield_mandatory"><!-- TMPL_ELSE --><span class="subfield"><!-- /TMPL_IF -->
                         <!-- TMPL_VAR NAME="marc_lib_plain" -->
+                        <!-- TMPL_IF NAME="mandatory" --><span class="mandatory_marker" title="This field is mandatory">*</span><!-- /TMPL_IF -->
                     </span>
                     </label>
                 <!-- /TMPL_UNLESS -->
@@ -754,10 +759,9 @@ function unHideSubfield(index,labelindex) { // FIXME :: is it used ?
                 
                 <!-- TMPL_IF NAME="repeatable" -->
                     <span class="buttonPlus" onclick="CloneSubfield('subfield<!-- TMPL_VAR NAME='tag' --><!-- TMPL_VAR NAME='subfield' --><!-- TMPL_VAR name="random" -->')">+</span>
-                <!-- /TMPL_IF -->
-                <!-- TMPL_UNLESS NAME="mandatory" -->
                     <span class="buttonMinus" onclick="UnCloneField('subfield<!-- TMPL_VAR NAME='tag' --><!-- TMPL_VAR NAME='subfield' --><!-- TMPL_VAR name="random" -->')">&#8722;</span>
-                <!-- /TMPL_UNLESS -->
+                <!-- /TMPL_IF -->
+
                 
             </div>
             <!-- End of the line -->

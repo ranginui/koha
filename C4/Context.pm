@@ -12,9 +12,9 @@ package C4::Context;
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
 use warnings;
@@ -71,7 +71,7 @@ BEGIN {
 				}       
                 print "</body></html>";
 			}
-		CGI::Carp::set_message(\&handle_errors);
+		#CGI::Carp::set_message(\&handle_errors);
 		## give a stack backtrace if KOHA_BACKTRACES is set
 		## can't rely on DebugLevel for this, as we're not yet connected
 		if ($ENV{KOHA_BACKTRACES}) {
@@ -505,6 +505,37 @@ sub boolean_preference ($) {
 
 sub clear_syspref_cache {
     %sysprefs = ();
+}
+
+=item set_preference
+
+  C4::Context->set_preference( $variable, $value );
+
+  This updates a preference's value both in the systempreferences table and in
+  the sysprefs cache.
+
+=cut
+
+sub set_preference {
+    my $self = shift;
+    my $var = shift;
+    my $value = shift;
+
+    my $dbh = C4::Context->dbh or return 0;
+
+    my $type = $dbh->selectrow_array( "SELECT type FROM systempreferences WHERE variable = ?", {}, $var );
+
+    $value = 0 if ( $type && $type eq 'YesNo' && $value eq '' );
+
+    my $sth = $dbh->prepare( "
+      INSERT INTO systempreferences
+        ( variable, value )
+        VALUES( ?, ? )
+        ON DUPLICATE KEY UPDATE value = VALUES(value)
+    " );
+
+    $sth->execute( $var, $value );
+    $sth->finish;
 }
 
 # AUTOLOAD

@@ -17,19 +17,20 @@ package C4::Output;
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
 # NOTE: I'm pretty sure this module is deprecated in favor of
 # templates.
 
 use strict;
-use warnings;
 
 use C4::Context;
 use C4::Languages qw(getTranslatedLanguages get_bidi regex_lang_subtags language_get_description accept_language );
+use C4::Dates qw(format_date);
+use C4::Budgets qw(GetCurrency);
 
 use HTML::Template::Pro;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
@@ -46,10 +47,10 @@ BEGIN {
 					html =>[qw(&output_with_http_headers &output_html_with_http_headers)]
 				);
     push @EXPORT, qw(
-        &themelanguage &gettemplate setlanguagecookie pagination_bar
+        &themelanguage &gettemplate setlanguagecookie getlanguagecookie pagination_bar
     );
     push @EXPORT, qw(
-        &output_html_with_http_headers &output_with_http_headers
+        &output_html_with_http_headers &output_with_http_headers FormatData FormatNumber
     );
 }
 
@@ -69,18 +70,12 @@ my $path = C4::Context->config('intrahtdocs') . "/prog/en/includes/";
 
 #---------------------------------------------------------------------------------------------------------
 # FIXME - POD
-sub gettemplate {
+
+sub _get_template_file {
     my ( $tmplbase, $interface, $query ) = @_;
-    ($query) or warn "no query in gettemplate";
-    my $htdocs;
-    if ( $interface ne "intranet" ) {
-        $htdocs = C4::Context->config('opachtdocs');
-    }
-    else {
-        $htdocs = C4::Context->config('intrahtdocs');
-    }
-    my $path = C4::Context->preference('intranet_includes') || 'includes';
+    my $htdocs = C4::Context->config( $interface ne 'intranet' ? 'opachtdocs' : 'intrahtdocs' );
     my ( $theme, $lang ) = themelanguage( $htdocs, $tmplbase, $interface, $query );
+    my $opacstylesheet = C4::Context->preference('opacstylesheet');
 
     # if the template doesn't exist, load the English one as a last resort
     my $filename = "$htdocs/$theme/$lang/modules/$tmplbase";
@@ -88,6 +83,17 @@ sub gettemplate {
         $lang = 'en';
         $filename = "$htdocs/$theme/$lang/modules/$tmplbase";
     }
+
+    return ( $htdocs, $theme, $lang, $filename );
+}
+
+sub gettemplate {
+    my ( $tmplbase, $interface, $query ) = @_;
+    ($query) or warn "no query in gettemplate";
+    my $path = C4::Context->preference('intranet_includes') || 'includes';
+    my $opacstylesheet = C4::Context->preference('opacstylesheet');
+    my ( $htdocs, $theme, $lang, $filename ) = _get_template_file( $tmplbase, $interface, $query );
+
     my $template       = HTML::Template::Pro->new(
         filename          => $filename,
         die_on_bad_params => 1,
@@ -141,7 +147,7 @@ sub themelanguage {
               getTranslatedLanguages($interface,'prog') )
       if $http_accept_language;
     # But, if there's a cookie set, obey it
-    $lang = $query->cookie('KohaOpacLanguage') if $query->cookie('KohaOpacLanguage');
+    $lang = $query->cookie('KohaOpacLanguage') if (defined $query and $query->cookie('KohaOpacLanguage'));
     # Fall back to English
     my @languages;
     if ($interface eq 'intranet') {
@@ -200,6 +206,60 @@ sub setlanguagecookie {
         -uri    => $uri,
         -cookie => $cookie
     );
+}
+
+sub getlanguagecookie {
+    my ($query) = @_;
+    my $lang;
+    if ($query->cookie('KohaOpacLanguage')){
+        $lang = $query->cookie('KohaOpacLanguage') ;
+    }else{
+        $lang = $ENV{HTTP_ACCEPT_LANGUAGE};
+        
+    }
+    $lang = substr($lang, 0, 2);
+
+    return $lang;
+}
+
+=item FormatNumber
+=cut
+sub FormatNumber{
+my $cur  =  GetCurrency;
+my $cur_format = C4::Context->preference("CurrencyFormat");
+my $num;
+
+if ( $cur_format eq 'FR' ) {
+    $num = new Number::Format(
+        'decimal_fill'      => '2',
+        'decimal_point'     => ',',
+        'int_curr_symbol'   => $cur->{symbol},
+        'mon_thousands_sep' => ' ',
+        'thousands_sep'     => ' ',
+        'mon_decimal_point' => ','
+    );
+} else {  # US by default..
+    $num = new Number::Format(
+        'int_curr_symbol'   => '',
+        'mon_thousands_sep' => ',',
+        'mon_decimal_point' => '.'
+    );
+}
+return $num;
+}
+
+=item FormatData
+
+FormatData($data_hashref)
+C<$data_hashref> is a ref to data to format
+
+Format dates of data those dates are assumed to contain date in their noun
+Could be used in order to centralize all the formatting for HTML output
+=cut
+
+sub FormatData{
+		my $data_hashref=shift;
+        $$data_hashref{$_} = format_date( $$data_hashref{$_} ) for grep{/date/} keys (%$data_hashref);
 }
 
 =item pagination_bar
@@ -392,12 +452,15 @@ sub output_with_http_headers($$$$;$) {
         $options->{'Content-Style-Type' } = 'text/css';
         $options->{'Content-Script-Type'} = 'text/javascript';
     }
+    # remove SUDOC specific NSB NSE
+    $data =~ s/\x{C2}\x{98}|\x{C2}\x{9C}/ /g;
+    $data =~ s/\x{C2}\x{88}|\x{C2}\x{89}/ /g;
     print $query->header($options), $data;
 }
 
-sub output_html_with_http_headers ($$$) {
-    my ( $query, $cookie, $data ) = @_;
-    output_with_http_headers( $query, $cookie, $data, 'html' );
+sub output_html_with_http_headers ($$$;$) {
+    my ( $query, $cookie, $data, $status ) = @_;
+    output_with_http_headers( $query, $cookie, $data, 'html', $status );
 }
 
 sub is_ajax () {

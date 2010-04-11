@@ -13,9 +13,9 @@ package C4::Accounts;
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
 use strict;
@@ -266,7 +266,7 @@ EOT
 sub returnlost{
     my ( $borrowernumber, $itemnum ) = @_;
     C4::Circulation::MarkIssueReturned( $borrowernumber, $itemnum );
-    my $borrower = C4::Members::GetMember( $borrowernumber, 'borrowernumber' );
+    my $borrower = C4::Members::GetMember( 'borrowernumber'=>$borrowernumber );
     my @datearr = localtime(time);
     my $date = ( 1900 + $datearr[5] ) . "-" . ( $datearr[4] + 1 ) . "-" . $datearr[3];
     my $bor = "$borrower->{'firstname'} $borrower->{'surname'} $borrower->{'cardnumber'}";
@@ -283,7 +283,11 @@ sub chargelostitem{
    
     my $dbh = C4::Context->dbh();
     my ($itemnumber) = @_;
-    my $sth=$dbh->prepare("SELECT * FROM issues, items WHERE issues.itemnumber=items.itemnumber and  issues.itemnumber=?");
+    my $sth=$dbh->prepare("SELECT issues.*,items.*,biblio.title 
+                           FROM issues 
+                           JOIN items USING (itemnumber) 
+                           JOIN biblio USING (biblionumber)
+                           WHERE issues.itemnumber=?");
     $sth->execute($itemnumber);
     my $issues=$sth->fetchrow_hashref();
 

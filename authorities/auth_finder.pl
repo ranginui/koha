@@ -14,11 +14,12 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+use warnings;
 
 use CGI;
 use C4::Output;
@@ -44,16 +45,16 @@ my $resultsperpage;
 my $authtypes = getauthtypes;
 my @authtypesloop;
 foreach my $thisauthtype ( keys %$authtypes ) {
-    my $selected = 1 if $thisauthtype eq $authtypecode;
     my %row = (
         value        => $thisauthtype,
-        selected     => $selected,
+        selected     => ($thisauthtype eq $authtypecode),
         authtypetext => $authtypes->{$thisauthtype}{'authtypetext'},
         index        => $index,
     );
     push @authtypesloop, \%row;
 }
 
+$op ||= q{};
 if ( $op eq "do_search" ) {
     my @marclist  = $query->param('marclist');
     my @and_or    = $query->param('and_or');

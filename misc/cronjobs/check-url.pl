@@ -3,9 +3,20 @@
 #
 # Copyright 2009 Tamil s.a.r.l.
 #
-# This software is placed under the gnu General Public License, v2 
-# (http://www.gnu.org/licenses/gpl.html)
+# This file is part of Koha.
 #
+# Koha is free software; you can redistribute it and/or modify it under the
+# terms of the GNU General Public License as published by the Free Software
+# Foundation; either version 2 of the License, or (at your option) any later
+# version.
+#
+# Koha is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+# A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
 
@@ -74,9 +85,12 @@ use C4::Biblio;
 sub new {
 
     my $self = {};
-    my $class = shift;
+    my ($class, $timeout) = @_;
     
-    $self->{ user_agent } = new LWP::UserAgent;
+    my $uagent = new LWP::UserAgent;
+    $uagent->timeout( $timeout) if $timeout;
+    $self->{ user_agent } = $uagent;
+    $self->{ bad_url    } = { };
     
     bless $self, $class;
     return $self;
@@ -88,6 +102,7 @@ sub check_biblio {
     my $biblionumber    = shift;
     my $uagent          = $self->{ user_agent   };
     my $host            = $self->{ host_default };
+    my $bad_url         = $self->{ bad_url      };
 
     my $record = GetMarcBiblio( $biblionumber ); 
     return unless $record->field('856');
@@ -98,17 +113,24 @@ sub check_biblio {
         next unless $url; 
         $url = "$host/$url" unless $url =~ /^http/;
         my $check = { url => $url };
-        my $req = HTTP::Request->new( GET => $url );
-        my $res = $uagent->request( $req, sub { die }, 1 );
-        if ( $res->is_success ) {
+        if ( $bad_url->{ $url } ) {
             $check->{ is_success } = 1;
-            $check->{ status     } = 'ok';
+            $check->{ status     } = '500 Site already checked';
         }
         else {
-            $check->{ is_success } = 0;
-            $check->{ status     } = $res->status_line;
+            my $req = HTTP::Request->new( GET => $url );
+            my $res = $uagent->request( $req, sub { die }, 1 );
+            if ( $res->is_success ) {
+                $check->{ is_success } = 1;
+                $check->{ status     } = 'ok';
+            }
+            else {
+                $check->{ is_success } = 0;
+                $check->{ status     } = $res->status_line;
+                $bad_url->{ $url     } = 1;
+            }
         }
-        push( @urls, $check );       
+        push @urls, $check;
     }
     return \@urls;
 }
@@ -134,12 +156,14 @@ my $host        = '';
 my $host_pro    = '';
 my $html        = 0;
 my $uriedit     = "/cgi-bin/koha/cataloguing/addbiblio.pl?biblionumber=";
+my $timeout     = 15;
 GetOptions( 
     'verbose'       => \$verbose,
     'html'          => \$html,
     'help'          => \$help,
     'host=s'        => \$host,
     'host-pro=s'    => \$host_pro,
+    'timeout=i',    => \$timeout,
 );
 
 
@@ -160,7 +184,7 @@ sub bibediturl {
 # Check all URLs from all current Koha biblio records
 #
 sub check_all_url {
-    my $checker = C4::URL::Checker->new();
+    my $checker = C4::URL::Checker->new($timeout);
     $checker->{ host_default }  = $host;
     
     my $context = new C4::Context(  );  
@@ -168,7 +192,13 @@ sub check_all_url {
     my $sth = $dbh->prepare( 
         "SELECT biblionumber FROM biblioitems WHERE url <> ''" );
     $sth->execute;
-    print "<html>\n<body>\n<table>\n" if $html;
+    if ( $html ) {
+        print <<EOS;
+<html>
+<body>
+<table>
+EOS
+    }
     while ( my ($biblionumber) = $sth->fetchrow ) {
         my $result = $checker->check_biblio( $biblionumber );  
         next unless $result;  # No URL
@@ -243,6 +273,10 @@ record in edit mode. With this parameter B<--host-pro> is required.
 =item B<--host-pro=http://koha-pro.tld>
 
 Server host used to link to biblio record editing page.
+
+=item B<--timeout=15>
+
+Timeout for fetching URLs. By default 15 seconds.
 
 =item B<--help|-h>
 

@@ -19,14 +19,14 @@ $.tablesorter.addParser({
 	 $(document).ready(function() {
  		$('#patronlists > ul').tabs();
 		$.tablesorter.defaults.widgets = ['zebra'];
-		$("#issuest").tablesorter({<!-- TMPL_IF EXPR="dateformat eq 'metric'" -->
+		$("#issuest").tablesorter({<!-- TMPL_IF NAME="dateformat_metric" -->
 		dateFormat: 'uk',<!-- /TMPL_IF -->
 		headers: { 1: { sorter: 'articles' },5: { sorter: false },6:{sorter:false},7:{sorter:false},8:{sorter:false}}
 		});
 		$("#issuest").bind("sortEnd",function() {
         	$("#previous").parents("tr").remove();  // 'previous checkouts' header chokes table sorter
 	    });
-		$("#holdst").tablesorter({<!-- TMPL_IF EXPR="dateformat eq 'metric'" -->
+		$("#holdst").tablesorter({<!-- TMPL_IF NAME="dateformat_metric" -->
 		dateFormat: 'uk',<!-- /TMPL_IF -->
 			sortList: [[0,0]],
 			headers: { 1: { sorter: 'articles' }}
@@ -281,6 +281,11 @@ function refocus(calendar) {
 <!-- /TMPL_IF --> <!-- NEEDSCONFIRMATION -->
 
         <!-- TMPL_IF NAME="IMPOSSIBLE" -->
+
+<!-- TMPL_IF NAME="soundon" -->
+<audio src="/intranet-tmpl/prog/sound/critical.ogg" autoplay="autoplay" autobuffer="autobuffer"></audio>
+<!-- /TMPL_IF -->        
+
 <div class="yui-g">
 <div id="circ_impossible" class="dialog alert">
 <!-- RESULT OF ISSUING REQUEST -->
@@ -339,6 +344,10 @@ function refocus(calendar) {
     <!-- /TMPL_IF -->
 
 </div></div>
+<!-- TMPL_ELSE -->
+<!-- TMPL_IF NAME="soundon" -->
+<audio src="/intranet-tmpl/prog/sound/beep.ogg" autoplay="autoplay" autobuffer="autobuffer"></audio>
+<!-- /TMPL_IF -->
     <!--/TMPL_IF --> <!-- /impossible -->
 
 <!-- TMPL_IF NAME="issued" -->
@@ -400,7 +409,7 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
 	<input type="text" name="barcode" id="barcode" class="barcode focus" size="14" /> <input type="submit" value="Check Out" />
 
     <!-- TMPL_IF NAME="SpecifyDueDate" --><div class="date-select">
-        <div class="hint">Specify Due Date:</div>
+        <div class="hint">Specify Due Date <!-- TMPL_INCLUDE NAME="date-format.inc" -->: </div>
 		<!-- TMPL_IF NAME="duedatespec" --><input type="text" size="10" id="duedatespec" name="duedatespec" value="<!-- TMPL_VAR NAME="duedatespec" -->" /><!-- TMPL_ELSE --><input type="text" size="10" id="duedatespec" name="duedatespec" value="" />
 <!-- /TMPL_IF -->
 		<img src="<!-- TMPL_VAR Name="themelang" -->/lib/calendar/cal.gif" alt="Show Calendar"  border="0" id="CalendarDueDate" style="cursor: pointer;" />
@@ -514,7 +523,9 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
 			<!-- /TMPL_IF -->
 
         	<!-- TMPL_IF NAME="credits" -->
-			<li><span class="circ-hlt">Credits:</span> Patron has a credit</li>
+			<li>
+                <span class="circ-hlt">Credits:</span> Patron has a credit<!-- TMPL_IF NAME="creditsamount" --> of <!-- TMPL_VAR name="creditsamount" --><!-- /TMPL_IF -->
+            </li>
 			<!-- /TMPL_IF -->
 
 
@@ -660,6 +671,9 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
         <td><!-- TMPL_VAR NAME="itemcallnumber" --></td>
             <td><!-- TMPL_VAR NAME="charge" --></td>
             <td><!-- TMPL_VAR NAME="replacementprice" --></td>
+      <!-- TMPL_IF NAME="renew_failed" -->
+            <td class="problem">Renewal Failed</td>
+      <!-- TMPL_ELSE -->
         <td><span style="padding: 0 1em;"><!-- TMPL_VAR NAME="renewals" --></span>
         <!-- TMPL_IF NAME="can_renew" -->
         <input type="checkbox" name="all_items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" checked="checked" style="display: none;" />
@@ -690,6 +704,7 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
             <!-- /TMPL_IF -->
         <!-- /TMPL_IF -->
         </td>
+        <!-- /TMPL_IF -->
   <!-- TMPL_IF NAME="return_failed" -->
             <td class="problem">Checkin Failed</td>
       <!--TMPL_ELSE-->
@@ -697,9 +712,6 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
                 <input type="checkbox" name="all_barcodes[]" value="<!-- TMPL_VAR NAME="barcode" -->" checked="checked" style="display: none;" />
             </td>
       <!-- /TMPL_IF -->
-		<!-- TMPL_IF NAME="renew_failed" -->
-		<td>Renewal Failed</td>
-		<!-- /TMPL_IF -->
     </tr>
     <!-- /TMPL_LOOP --> <!-- /loop todayissues -->
     <!-- /if todayissues --><!-- /TMPL_IF -->
@@ -721,10 +733,13 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
         <td>
             <!-- TMPL_VAR NAME="itemtype" -->
         </td>
-        <td><!-- TMPL_VAR NAME="issuedate" --></td>
+        <td><!-- TMPL_VAR NAME="displaydate" --></td>
         <td><!-- TMPL_VAR NAME="itemcallnumber" --></td>
         <td><!-- TMPL_VAR NAME="charge" --></td>
         <td><!-- TMPL_VAR NAME="replacementprice" --></td>
+      <!-- TMPL_IF NAME="renew_failed" -->
+            <td class="problem">Renewal Failed</td>
+      <!-- TMPL_ELSE -->
         <td><span style="padding: 0 1em;"><!-- TMPL_IF NAME="renewals" --><!-- TMPL_VAR NAME="renewals" --><!-- TMPL_ELSE -->0<!-- /TMPL_IF --></span>
         <!-- TMPL_IF NAME="can_renew" -->
         <input type="checkbox" name="all_items[]" value="<!-- TMPL_VAR NAME="itemnumber" -->" checked="checked" style="display: none;" />
@@ -755,17 +770,14 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
             <!-- /TMPL_IF -->
         <!-- /TMPL_IF -->
         </td>
-		      <!-- TMPL_IF NAME="return_failed" -->
+        <!-- /TMPL_IF -->
+		  <!-- TMPL_IF NAME="return_failed" -->
             <td class="problem">Checkin Failed</td>
-      <!--TMPL_ELSE-->
+        <!--TMPL_ELSE-->
             <td><input type="checkbox" name="barcodes[]"  value="<!-- TMPL_VAR NAME="barcode" -->" onclick="uncheck_sibling(this);" />
                 <input type="checkbox" name="all_barcodes[]" value="<!-- TMPL_VAR NAME="barcode" -->" checked="checked" style="display: none;" />
             </td>
       <!-- /TMPL_IF -->
-		<!-- TMPL_IF NAME="renew_failed" -->
-		<td>Renewal Failed</td>
-		<!-- /TMPL_IF -->
-
     </tr>
     <!-- /loop previssues --><!-- /TMPL_LOOP -->
 <!--/if previssues --><!-- /TMPL_IF -->

@@ -4,7 +4,7 @@
 # Parts Copyright 2009 Foundations Bible College.
 #
 # This file is part of Koha.
-#       
+#
 # Koha is free software; you can redistribute it and/or modify it under the
 # terms of the GNU General Public License as published by the Free Software
 # Foundation; either version 2 of the License, or (at your option) any later
@@ -14,9 +14,9 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
 use warnings;
@@ -25,8 +25,8 @@ use CGI;
 
 use C4::Auth qw(get_template_and_user);
 use C4::Output qw(output_html_with_http_headers);
-use C4::Labels::Lib 1.000000 qw(get_all_templates get_unit_values);
-use C4::Labels::Profile 1.000000;
+use C4::Creators 1.000000;
+use C4::Labels 1.000000;
 
 my $cgi = new CGI;
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
@@ -50,7 +50,7 @@ my $units = get_unit_values();
 
 if ($op eq 'edit') {
     $profile = C4::Labels::Profile->retrieve(profile_id => $profile_id);
-    $template_list = get_all_templates(field_list => 'template_id,template_code, profile_id');
+    $template_list = get_all_templates(table_name => 'creator_templates', field_list => 'template_id,template_code, profile_id');
 }
 elsif ($op eq 'save') {
     my @params = (
@@ -79,7 +79,9 @@ else {  # if we get here, this is a new layout
 }
 
 if ($profile_id) {
-    @label_template = grep{($_->{'profile_id'} == $profile->get_attr('profile_id')) && ($_->{'template_id'} == $profile->get_attr('template_id'))} @$template_list;
+    @label_template = grep {
+        ($_->{'profile_id'} == $profile->get_attr('profile_id')) && ($_->{'template_id'} == $profile->get_attr('template_id'));
+        } @$template_list;
 }
 
 foreach my $unit (@$units) {

@@ -24,6 +24,7 @@ a.overdue,.overdue {
 body {
 	text-align : left;
   	padding:0 0 2.5em 0;
+  font-family: arial, verdana, helvetica, sans-serif;
 }
 
 br.clear {
@@ -231,13 +232,11 @@ table {
 	border-right : 1px solid #BCBCBC;
 }
 
-table.borderless {
-    border-collapse : separate;
-    border: 0 none;
+table.invis{
+	border : white;
 }
-
-#label-search-results {
-        width: 700px;
+table.invis tr,table.invis td {
+	border : white;
 }
 
 td, th {
@@ -253,6 +252,12 @@ td {
 td.borderless {
     border-collapse : separate;
     border : 0 none;
+}
+
+td.data,
+th.data {
+	font-family : "Courier New", Courier, monospace;
+	text-align : right;
 }
 
 th {
@@ -296,6 +301,15 @@ tr.onissue td {
 
 tr.highlight.onissue td {
 	background-color: #FFFFE1;
+}
+
+tfoot td {
+	background-color : #f3f3f3;
+	font-weight : bold;
+}
+
+td.total {
+	text-align : right;
 }
 
 caption {
@@ -495,8 +509,12 @@ fieldset.brief ol, fieldset.brief li {
 	list-style-type : none;
 }
 
-fieldset.brief div.hint, fieldset.rows div.hint, div.yui-u div.hint {
+.hint {
 	color : #999999;
+	font-size : 95%;
+}
+
+fieldset.brief div.hint, fieldset.rows div.hint, div.yui-u div.hint {
 	font-size : 95%;
 	margin-bottom : .4em;
 }
@@ -513,6 +531,16 @@ div.yui-b fieldset.brief ol {
 
 div.yui-b fieldset.brief select {
 	width: 12em;
+}
+div.yui-b fieldset.brief li.radio {
+	padding : .7em 0;
+}
+div.yui-b fieldset.brief li.radio label {
+	display : inline;
+}
+
+div.yui-b fieldset.brief li.radio input {
+	padding:0.3em 0;
 }
 
 fieldset.rows {  
@@ -685,8 +713,9 @@ fieldset.rows label.inline {
 }
 
 fieldset.rows .inputnote {
+	clear : left;
 	float : left;
-	margin : .5em 0 0 10em;
+	margin : .5em 0 0 11em;
 }
 
 .ui-tabs-nav li {
@@ -798,7 +827,7 @@ fieldset.rows .inputnote {
     visibility:visible; /* you propably don't need to change this one */
     display:block;
 }
-#newbiblio a, #addchild a, #newentry a, #newshelf a, #newmenuc .first-child, #newsupplier .first-child, #newlabel a, #newtemplate a, #newbatch a, #newprofile a, #newsubscription a, #newdictionary a, #neworder a {
+#newbiblio a, #addchild a, #newentry a, #newshelf a, #newmenuc .first-child, #newsupplier .first-child, #newlabel a, #newtemplate a, #newlabelbatch a, #newpatroncardbatch a, #newprofile a, #newsubscription a, #newdictionary a, #newbasket a, #newrootbudget-button, #budgets_menuc .first-child, #periods_menuc .first-child {
 	padding-left : 34px;
 	background-image: url("../../img/toolbar-new.gif");
 	background-position : center left;
@@ -894,7 +923,7 @@ fieldset.rows .inputnote {
 	background-repeat : no-repeat;
 }
 
-#editmenuc .first-child, #deleteshelf .first-child,#newmenuc .first-child, #addbiblio .first-child, #z3950search .first-child, #printmenuc .first-child, #newsupplier .first-child, #savemenuc .first-child {
+#editmenuc .first-child, #deleteshelf .first-child,#newmenuc .first-child, #addbiblio .first-child, #z3950search .first-child, #printmenuc .first-child, #newsupplier .first-child, #savemenuc .first-child, #budgets_menuc .first-child, #periods_menuc .first-child {
 	padding-left : 15px;
 }
 
@@ -1423,17 +1452,33 @@ div.pages a {
 	text-decoration: none;
 }
 
-div.pages a:link {
+div.pages a:link,
+div.pages a:visited {
 	background-color : #eeeeee;
 	color : #3366CC;
 }
 
 div.pages a:hover {
-	background-color : #e8f0f6;
+	background-color : #FFC;
 }
 
 div.pages a:active {
 	background-color : #ffc;
+}
+
+div.pages .current,
+div.pages .currentPage {
+	background-color : #e6fcb7;
+	color : #666;
+	font-weight: bold;
+	padding: 1px 5px 1px 5px;
+}
+
+div.pages .inactive {
+	background-color : #f3f3f3;
+	color : #BCBCBC;
+	font-weight: bold;
+	padding: 1px 5px 1px 5px;
 }
 
 div.browse {
@@ -1448,33 +1493,15 @@ div#header_search input.submit {
 	font-size : 1em;
 }
 
-input[type=submit], input[type=button] {
-	border: 1px outset #999999;
-	border-top-color: #666;
-	border-left-color: #666;
-	padding: 0.25em;
-	background : #E8E8E8 url(../../img/button-bg.gif) top left repeat-x;
-	color: #333333;
-}
-
-input.submit,button.submit {
-	border: 1px solid #999999;
-	border-top-color: #666;
-	border-left-color: #666;
-	padding: 0.25em;
-	background : #E8E8E8 url(../../img/button-bg.gif) top left repeat-x;
-	color: #333333;
-}
-
 *html input.submit {
 	padding : .1em;
 }
 
-input[type=submit]:active, input[type=button]:active {
+input[type=submit]:active, input[type=button]:active, button.submit:active {
 	border : 1px inset #999999;
 }
 
-input[type=reset], input[type=button], input.submit, button.submit {
+input[type=submit], input[type=reset], input[type=button], input.submit, button.submit {
 	border: 1px outset #999999;
 	border-top-color: #666;
 	border-left-color: #666;
@@ -1520,6 +1547,7 @@ a.yuimenuitemlabel:hover {
 #toplevelnav {
 	float : left;
 	margin-left : .5em;
+	width : 30em;
 }
 
 ul#toplevelmenu {
@@ -1789,3 +1817,51 @@ h1#xml a {
 	padding:44px 0 0;
 	text-decoration:none;
 	width:35px;
+}
+
+#cartDetails {
+	background-color : #FFF;
+	border: 1px solid #739acf;
+	border-right-width : 2px;
+	border-bottom-width : 2px;
+	color : black;
+	display : none;
+	margin : 0;
+	padding : 10px;
+	text-align : center;
+	width : 180px;
+}
+#cartmenulink {
+        background: transparent url("../../img/cart-small.gif") 0 3px no-repeat;
+        padding-left : 15px;
+}
+#cartmenulink span#basketcount span {
+	display : inline;
+	font-size : 90%;
+	font-weight : normal;
+	padding : 0;
+}
+#moremenu {
+        display : none;
+}
+
+.results_summary {
+  display: block;
+  font-size : 85%; 
+  color: #707070;
+  padding : 0 0 .5em 0;
+}
+.results_summary .label {
+  color: #202020;
+}
+.results_summary a {
+  font-weight: normal;
+}
+
+img.spinner {
+    vertical-align: middle;
+    padding-right: 0.3em;
+}
+#cataloguing_additem_itemlist div {
+	overflow : scroll;
+}

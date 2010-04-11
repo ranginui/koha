@@ -68,20 +68,14 @@ foreach my $biblionumber ( @bibs ) {
     my $marcseriesarray  = GetMarcSeries  ($record,$marcflavour);
     my $marcurlsarray    = GetMarcUrls    ($record,$marcflavour);
     my @items            = &GetItemsInfo( $biblionumber, 'opac' );
+    my $subtitle         = GetRecordValue('subtitle', $record, GetFrameworkCode($biblionumber));
 
     my $hasauthors = 0;
     if($dat->{'author'} || @$marcauthorsarray) {
       $hasauthors = 1;
     }
-	
-    my $shelflocations =GetKohaAuthorisedValues('items.location',$dat->{'frameworkcode'});
-    my $collections =  GetKohaAuthorisedValues('items.ccode',$dat->{'frameworkcode'} );
+    my $collections =  GetKohaAuthorisedValues('items.ccode',$dat->{'frameworkcode'}, 'opac');
 
-	for my $itm (@items) {
-	    if ($itm->{'location'}){
-	    $itm->{'location_description'} = $shelflocations->{$itm->{'location'} };
-		}
-	}
 	# COinS format FIXME: for books Only
         my $coins_format;
         my $fmt = substr $record->leader(), 6,2;
@@ -102,6 +96,7 @@ foreach my $biblionumber ( @bibs ) {
     $dat->{MARCSERIES}  = $marcseriesarray;
     $dat->{MARCURLS}    = $marcurlsarray;
     $dat->{HASAUTHORS}  = $hasauthors;
+    $dat->{subtitle} = $subtitle;
 
     if ( C4::Context->preference("BiblioDefaultView") eq "normal" ) {
         $dat->{dest} = "opac-detail.pl";

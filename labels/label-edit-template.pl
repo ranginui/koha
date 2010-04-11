@@ -14,9 +14,9 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
 use warnings;
@@ -25,8 +25,8 @@ use CGI;
 
 use C4::Auth qw(get_template_and_user);
 use C4::Output qw(output_html_with_http_headers);
-use C4::Labels::Lib 1.000000 qw(get_all_profiles get_unit_values);
-use C4::Labels::Template 1.000000;
+use C4::Creators 1.000000;
+use C4::Labels 1.000000;
 
 my $cgi = new CGI;
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
@@ -72,14 +72,29 @@ elsif ($op eq 'save') {
                         );
     if ($template_id) {   # if a label_id was passed in, this is an update to an existing layout
         $label_template = C4::Labels::Template->retrieve(template_id => $template_id);
-        my $old_profile = C4::Labels::Profile->retrieve(profile_id => $label_template->get_attr('profile_id'));
-        my $new_profile = C4::Labels::Profile->retrieve(profile_id => $cgi->param('profile_id'));
-        if ($label_template->get_attr('template_id') != $new_profile->get_attr('template_id')) {
+        if ($cgi->param('profile_id') && ($label_template->get_attr('template_id') != $cgi->param('profile_id'))) {
+            if ($label_template->get_attr('profile_id') > 0) {   # no need to get the old one if there was no profile associated
+                my $old_profile = C4::Labels::Profile->retrieve(profile_id => $label_template->get_attr('profile_id'));
+                $old_profile->set_attr(template_id => 0);
+                $old_profile->save();
+            }
+            my $new_profile = C4::Labels::Profile->retrieve(profile_id => $cgi->param('profile_id'));
             $new_profile->set_attr(template_id => $label_template->get_attr('template_id'));
-            $old_profile->set_attr(template_id => 0);
             $new_profile->save();
-            $old_profile->save();
         }
+
+#        if ($cgi->param('profile_id')) {
+#            my $old_profile = ($label_template->get_attr('profile_id') ? C4::Labels::Profile->retrieve(profile_id => $label_template->get_attr('profile_id')) : undef);
+#            my $new_profile = C4::Labels::Profile->retrieve(profile_id => $cgi->param('profile_id'));
+#            if ($label_template->get_attr('template_id') != $new_profile->get_attr('template_id')) {
+#                $new_profile->set_attr(template_id => $label_template->get_attr('template_id'));
+#                $new_profile->save();
+#                if ($old_profile) {
+#                    $old_profile->set_attr(template_id => 0);
+#                    $old_profile->save();
+#                }
+#            }
+#        }
         $label_template->set_attr(@params);
         $label_template->save();
     }

@@ -1,5 +1,5 @@
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('acquisitions','normal','Choose Normal, budget-based acquisitions, or Simple bibliographic-data acquisitions','simple|normal','Choice');
-INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('advancedMARCeditor',0,'If ON, the MARC editor won\'t display field/subfield descriptions','','YesNo');
+INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('advancedMARCeditor',0,"If ON, the MARC editor won't display field/subfield descriptions",'','YesNo');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES ('AllowHoldDateInFuture','0','If set a date field is displayed on the Hold screen of the Staff Interface, allowing the hold date to be set in the future.','','YesNo');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES ('OPACAllowHoldDateInFuture','0','If set, along with the AllowHoldDateInFuture system preference, OPAC users can set the date of a hold to be in the future.','','YesNo');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('AmazonEnabled',0,'Turn ON Amazon Content - You MUST set AWSAccessKeyID, AWSPrivateKey, and AmazonAssocTag if enabled','','YesNo');
@@ -22,6 +22,9 @@ INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('BorrowerMandatoryField','zipcode|surname|cardnumber','Choose the mandatory fields for a patron\'s account',NULL,'free');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('borrowerRelationship','father|mother','Define valid relationships between a guarantor & a guarantee (separated by | or ,)','','free');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('BorrowersLog',1,'If ON, log edit/create/delete actions on patron data',NULL,'YesNo');
+INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('casAuthentication', '0', 'Enable or disable CAS authentication', '', 'YesNo');
+INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('casLogout', '0', 'Does a logout from Koha should also log the user out of CAS?', '', 'YesNo');
+INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('casServerUrl', 'https://localhost:8443/cas', 'URL of the cas server', '', 'Free');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('CataloguingLog',1,'If ON, log edit/create/delete actions on bibliographic data. WARNING: this feature is very resource consuming.',NULL,'YesNo');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('checkdigit','none','If ON, enable checks on patron cardnumber: none or \"Katipo\" style checks','none|katipo','Choice');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('delimiter',';','Define the default separator character for exporting reports',';|tabulation|,|/|\\|#|\|','Choice');
@@ -35,7 +38,7 @@ INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('IntranetBiblioDefaultView','normal','Choose the default detail view in the staff interface; choose between normal, labeled_marc, marc or isbd','normal|marc|isbd|labeled_marc','Choice');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('intranetcolorstylesheet','','Define the color stylesheet to use in the Staff Client','50','free');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('IntranetmainUserblock','','Add a block of HTML that will display on the intranet home page','70|10','Textarea');
-INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('IntranetNav','','Use HTML tabs to add navigational links to the left-hand navigational bar in the Staff Client','70|10','Textarea');
+INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('IntranetNav','','Use HTML tabs to add navigational links to the top-hand navigational bar in the Staff Client','70|10','Textarea');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('intranetreadinghistory',1,'If ON, Reading History is enabled for all patrons','','YesNo');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('intranetstylesheet','','Enter a complete URL to use an alternate layout stylesheet in Intranet','50','free');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('intranetuserjs','','Custom javascript for inclusion in Intranet','70|10','Textarea');
@@ -65,10 +68,12 @@ INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('NotifyBorrowerDeparture',30,'Define number of days before expiry where circulation is warned about patron account expiry',NULL,'Integer');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('OpacAuthorities',1,'If ON, enables the search authorities link on OPAC',NULL,'YesNo');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('opacbookbag',1,'If ON, enables display of Cart feature','','YesNo');
+INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES ('intranetbookbag','1','If ON, enables display of Cart feature in the intranet','','YesNo');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('OpacBrowser',0,'If ON, enables subject authorities browser on OPAC (needs to set misc/cronjob/sbuild_browser_and_cloud.pl)',NULL,'YesNo');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('OpacCloud',0,'If ON, enables subject cloud on OPAC',NULL,'YesNo');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('opaccolorstylesheet','colors.css','Define the color stylesheet to use in the OPAC','','free');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('opaccredits','','Define HTML Credits at the bottom of the OPAC page','70|10','Textarea');
+INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('opacSerialDefaultTab', 'subscriptions', 'Define the default tab for serials in OPAC.', 'holdings|serialcollection|subscriptions', 'Choice');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('opacheader','','Add HTML to be included as a custom header in the OPAC','70|10','Textarea');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('opaclayoutstylesheet','opac.css','Enter the name of the layout CSS stylesheet to use in the OPAC','','free');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('OpacMaintenance',0,'If ON, enables maintenance warning in OPAC','','YesNo');
@@ -105,7 +110,7 @@ INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('ReservesNeedReturns',1,'If ON, a hold placed on an item available in this library must be checked-in, otherwise, a hold on a specific item, that is in the library & available is considered available','','YesNo');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type)  VALUES ('DebugLevel',2,'Define the level of debugging information sent to the browser when errors are encountered (set to 0 in production). 0=none, 1=some, 2=most','0|1|2','Choice');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES ('NoZebra',1,'If ON, Zebra indexing is turned off, simpler setup, but slower searches. WARNING: using NoZebra on even modest sized collections is very slow.','','YesNo');
-INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES ('SessionStorage','mysql','Use database or a temporary file for storing session data','mysql|Pg|tmp','Choice');  
+INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES ('SessionStorage','mysql','Use database or a temporary file for storing session data','mysql|Pg|tmp','Choice');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES ('CircAutocompl',1,'If ON, autocompletion is enabled for the Circulation input',NULL,'YesNo');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES ('RoutingSerials',1,'If ON, serials routing is enabled',NULL,'YesNo');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES ('SearchMyLibraryFirst',0,'If ON, OPAC searches return results limited by the user\'s library by default if they are logged in',NULL,'YesNo');
@@ -177,7 +182,7 @@ INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('OAI-PMH:archiveID','KOHA-OAI-TEST','OAI-PMH archive identification',NULL,'Free');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('OAI-PMH:MaxCount','50','OAI-PMH maximum number of records by answer to ListRecords and ListIdentifiers queries',NULL,'Integer');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('OAI-PMH:Set','SET,Experimental set\r\nSET:SUBSET,Experimental subset','OAI-PMH exported set, the set name is followed by a comma and a short description, one set by line','30|10','Textarea');
-INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('OAI-PMH:Subset','itemtype=\'BOOK\'','Restrict answer to matching raws of the biblioitems table EXPERIMENTAL',NULL,'Free');
+INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('OAI-PMH:ConfFile','','If empty, Koha OAI Server operates in normal mode, otherwise it operates in extended mode.',NULL,'File');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('OPACItemHolds','1','Allow OPAC users to place hold on specific items. If OFF, users can only request next available copy.','','YesNo');
 
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('GranularPermissions','0','Use detailed staff user permissions',NULL,'YesNo');
@@ -207,14 +212,20 @@ INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES
 
 INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('OPACShelfBrowser','1','','Enable/disable Shelf Browser on item details page. WARNING: this feature is very resource consuming on collections with large numbers of items.','YesNo');
 INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES
-('XSLTDetailsDisplay','0','','Enable XSL stylesheet control over details page display on OPAC WARNING: MARC21 Only','YesNo'),
-('XSLTResultsDisplay','0','','Enable XSL stylesheet control over results page display on OPAC WARNING: MARC21 Only','YesNo');
+('OPACXSLTDetailsDisplay','0','','Enable XSL stylesheet control over details page display on OPAC','YesNo'),
+('OPACXSLTResultsDisplay','0','','Enable XSL stylesheet control over results page display on OPAC','YesNo'),
+('XSLTDetailsDisplay','0','','Enable XSL stylesheet control over details page display on intranet','YesNo'),
+('XSLTResultsDisplay','0','','Enable XSL stylesheet control over results page display on intranet','YesNo');
 INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('AdvancedSearchTypes','itemtypes','itemtypes|ccode','Select which set of fields comprise the Type limit in the advanced search','Choice');
 INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('AllowOnShelfHolds', '0', '', 'Allow hold requests to be placed on items that are not on loan', 'YesNo');
 INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('AllowHoldsOnDamagedItems', '1', '', 'Allow hold requests to be placed on damaged items', 'YesNo');
 INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('OpacSuppression', '0', '', 'Turn ON the OPAC Suppression feature, requires further setup, ask your system administrator for details', 'YesNo');
--- FIXME: add FrameworksLoaded, noOPACUserLogin, ReadingHistory ?
+-- FIXME: add FrameworksLoaded, noOPACUserLogin?
 INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES ('SMSSendDriver','','','Sets which SMS::Send driver is used to send SMS messages.','free');
+INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES ('OrderPdfFormat','pdfformat::layout3pages','Controls what script is used for printing (basketgroups)','','free');
+INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('OrderPdfTemplate','','Uploads a PDF template to use for printing baskets','NULL','Upload');
+INSERT INTO `systempreferences` (variable,value,options,explanation,type)  VALUES ('CurrencyFormat','US','US|FR','Determines the display format of currencies. eg: \'36000\' is displayed as \'360 000,00\'  in \'FR\' or \'360,000.00\'  in \'US\'.','Choice');
+INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES ('AcqCreateItem','ordering','ordering|receiving|cataloguing','Define when the item is created : when ordering, when receiving, or in cataloguing module','Choice');
 INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES('AllowRenewalLimitOverride', '0', 'if ON, allows renewal limits to be overridden on the circulation screen',NULL,'YesNo');
 INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES ('OPACDisplayRequestPriority','0','','Show patrons the priority level on holds in the OPAC','YesNo');
 INSERT INTO `systempreferences` ( `variable` , `value` , `options` , `explanation` , `type` ) VALUES ( 'UseBranchTransferLimits', '0', '', 'If ON, Koha will will use the rules defined in branch_transfer_limits to decide if an item transfer should be allowed.', 'YesNo');
@@ -238,8 +249,8 @@ INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES (
 INSERT INTO `systempreferences` ( `variable` , `value` , `options` , `explanation` , `type` ) VALUES ( 'StaffSerialIssueDisplayCount', '3', '', 'Number of serial issues to display per subscription in the Staff client', 'Integer');
 INSERT INTO `systempreferences` ( `variable` , `value` , `options` , `explanation` , `type` ) VALUES ( 'OPACSerialIssueDisplayCount', '3', '', 'Number of serial issues to display per subscription in the OPAC', 'Integer');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('OPACShowCheckoutName','0','Displays in the OPAC the name of patron who has checked out the material. WARNING: Most sites should leave this off. It is intended for corporate or special sites which need to track who has the item.','','YesNo');
-INSERT INTO systempreferences (variable,value,explanation,options,type)VALUES('LibraryThingForLibrariesID','','See:http://librarything.com/forlibraries/','','free'); 
-INSERT INTO systempreferences (variable,value,explanation,options,type)VALUES('LibraryThingForLibrariesEnabled','0','Enable or Disable Library Thing for Libraries Features','','YesNo'); 
+INSERT INTO systempreferences (variable,value,explanation,options,type)VALUES('LibraryThingForLibrariesID','','See:http://librarything.com/forlibraries/','','free');
+INSERT INTO systempreferences (variable,value,explanation,options,type)VALUES('LibraryThingForLibrariesEnabled','0','Enable or Disable Library Thing for Libraries Features','','YesNo');
 INSERT INTO systempreferences (variable,value,explanation,options,type)VALUES('LibraryThingForLibrariesTabbedView','0','Put LibraryThingForLibraries Content in Tabs.','','YesNo');
 INSERT INTO `systempreferences` ( `variable` , `value` , `options` , `explanation` , `type` ) VALUES ( 'AllowNotForLoanOverride', '0', '', 'If ON, Koha will allow the librarian to loan a not for loan item.', 'YesNo');
 INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES('RenewalPeriodBase', 'date_due', 'Set whether the renewal date should be counted from the date_due or from the moment the Patron asks for renewal ','date_due|now','Choice');
@@ -251,6 +262,7 @@ INSERT INTO systempreferences (variable,value,options,explanation,type)VALUES('S
 INSERT INTO systempreferences (variable,value,options,explanation,type)VALUES('SpineLabelAutoPrint', '0', '', 'If this setting is turned on, a print dialog will automatically pop up for the quick spine label printer.', 'YesNo');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('AWSPrivateKey','','See:  http://aws.amazon.com.  Note that this is required after 2009/08/15 in order to retrieve any enhanced content other than book covers from Amazon.','','free');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('OPACFineNoRenewals','100','Fine limit above which user cannot renew books via OPAC','','Integer');
+INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('OverdueNoticeBcc','','Email address to bcc outgoing overdue notices sent by email','','free');
 INSERT INTO `systempreferences` ( `variable` , `value` , `options` , `explanation` , `type` ) VALUES ( 'NewItemsDefaultLocation', '', '', 'If set, all new items will have a location of the given Location Code ( Authorized Value type LOC )', '');
 INSERT INTO `systempreferences` ( `variable` , `value` , `options` , `explanation` , `type` ) VALUES ( 'InProcessingToShelvingCart', '0', '', 'If set, when any item with a location code of PROC is ''checked in'', it''s location code will be changed to CART.', 'YesNo');
 INSERT INTO `systempreferences` ( `variable` , `value` , `options` , `explanation` , `type` ) VALUES ( 'ReturnToShelvingCart', '0', '', 'If set, when any item is ''checked in'', it''s location code will be changed to CART.', 'YesNo');
@@ -262,3 +274,15 @@ INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES
 INSERT INTO systempreferences (variable,value,options,explanation,type)VALUES('DisplayOPACiconsXSLT', '1', '', 'If ON, displays the format, audience, type icons in XSLT MARC21 results and display pages.', 'YesNo');
 INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES('AllowAllMessageDeletion','0','Allow any Library to delete any message','','YesNo');
 INSERT INTO systempreferences (variable,value,explanation,options,type)VALUES('ShowPatronImageInWebBasedSelfCheck', '0', 'If ON, displays patron image when a patron uses web-based self-checkout', '', 'YesNo');
+INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES ('EnableOpacSearchHistory', '1', 'Enable or disable opac search history', 'YesNo','');
+INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES ('RoutingListAddReserves','1','If ON the patrons on routing lists are automatically added to holds on the issue.','','YesNo');
+INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES ( 'OpacAddMastheadLibraryPulldown', '0', '', 'Adds a pulldown menu to select the library to search on the opac masthead.', 'YesNo' );
+INSERT INTO systempreferences VALUES ('ImageLimit',5,'','Limit images stored in the database by the Patron Card image manager to this number.','Integer');
+INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES ('SpineLabelShowPrintOnBibDetails', '0', '', 'If turned on, a "Print Label" link will appear for each item on the bib details page in the staff interface.', 'YesNo');
+INSERT INTO systempreferences (variable,value,explanation,options,type)VALUES('AutoSelfCheckAllowed', '0', 'For corporate and special libraries which want web-based self-check available from any PC without the need for a manual staff login. Most libraries will want to leave this turned off. If on, requires self-check ID and password to be entered in AutoSelfCheckID and AutoSelfCheckPass sysprefs.', '', 'YesNo');
+INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('AutoSelfCheckID','','Staff ID with circulation rights to be used for automatic web-based self-check. Only applies if AutoSelfCheckAllowed syspref is turned on.','','free');
+INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('AutoSelfCheckPass','','Password to be used for automatic web-based self-check. Only applies if AutoSelfCheckAllowed syspref is turned on.','','free');
+INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('soundon','0','Enable circulation sounds during checkin and checkout in the staff interface.  Not supported by all web browsers yet.','','YesNo');
+INSERT INTO `systempreferences` ( `variable` , `value` , `options` , `explanation` , `type` ) VALUES ( 'PrintNoticesMaxLines', '0', '', 'If greater than 0, sets the maximum number of lines an overdue notice will print. If the number of items is greater than this number, the notice will end with a warning asking the borrower to check their online account for a full list of overdue items.', 'Integer' );
+INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('ILS-DI','0','Enables ILS-DI services at OPAC.','','YesNo');
+INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('ILS-DI:Authorized_IPs','','.','Restricts usage of ILS-DI to some IPs','Free');

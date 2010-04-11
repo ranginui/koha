@@ -1,19 +1,19 @@
 <!-- TMPL_INCLUDE NAME="doc-head-open.inc" -->
-<!-- TMPL_IF NAME="LibraryNameTitle" --><!-- TMPL_VAR NAME="LibraryNameTitle" --><!-- TMPL_ELSE -->Koha Online<!-- /TMPL_IF --> Catalog &rsaquo; 
+<!-- TMPL_IF NAME="LibraryNameTitle" --><!-- TMPL_VAR NAME="LibraryNameTitle" --><!-- TMPL_ELSE -->Koha Online<!-- /TMPL_IF --> Catalog &rsaquo;
 <!-- TMPL_IF NAME="searchdesc" -->
-	Results of Search <!-- TMPL_IF NAME="query_desc" -->for '<!-- TMPL_VAR NAME="query_desc" -->'<!-- /TMPL_IF --><!-- TMPL_IF NAME="limit_desc" -->&nbsp;with limit(s):&nbsp;'<!-- TMPL_VAR NAME="limit_desc" -->'<!-- /TMPL_IF --> 
+	Results of Search <!-- TMPL_IF NAME="query_desc" -->for '<!-- TMPL_VAR NAME="query_desc" -->'<!-- /TMPL_IF --><!-- TMPL_IF NAME="limit_desc" -->&nbsp;with limit(s):&nbsp;'<!-- TMPL_VAR NAME="limit_desc" -->'<!-- /TMPL_IF -->
 <!-- TMPL_ELSE -->
     You did not specify any search criteria.
 <!-- /TMPL_IF -->
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
-<link rel="alternate" type="application/rss+xml" title="<!-- TMPL_VAR NAME="LibraryName" --> Search RSS Feed" href="<!-- TMPL_VAR NAME="OPACBaseURL" -->/cgi-bin/koha/opac-search.pl?<!-- TMPL_VAR name="query_cgi" ESCAPE="HTML" --><!-- TMPL_VAR NAME="limit_cgi"  ESCAPE="HTML" -->&amp;format=rss2" />
+<link rel="alternate" type="application/rss+xml" title="<!-- TMPL_VAR NAME="LibraryName" --> Search RSS Feed" href="<!-- TMPL_VAR NAME="OPACBaseURL" -->/cgi-bin/koha/opac-search.pl?<!-- TMPL_VAR name="query_cgi" ESCAPE="HTML" --><!-- TMPL_VAR NAME="limit_cgi" ESCAPE="HTML" --><!-- TMPL_IF NAME="sort_by" -->&amp;sort_by=<!-- TMPL_VAR NAME="sort_by" ESCAPE="HTML" --><!-- /TMPL_IF -->&amp;format=rss2" />
 
 
 <script type="text/javascript" src="<!-- TMPL_VAR name="themelang" -->/lib/jquery/plugins/jquery.checkboxes.min.js"></script>
-<script type="text/javascript" src="<!-- TMPL_VAR name="themelang" -->/lib/jquery/plugins/jquery.highlight-3.js"></script>
-<script type="text/javascript">
+<!-- TMPL_IF NAME="OpacHighlightedWords" --><script type="text/javascript" src="<!-- TMPL_VAR name="themelang" -->/lib/jquery/plugins/jquery.highlight-3.js"></script>
+<!-- /TMPL_IF --><script type="text/javascript">
 //<![CDATA[
-
+<!-- TMPL_IF name="RequestOnOpac" -->
 function holdMultiple() {
     var checkedBiblioNums = ""; // Separated by "/"
     var checkedCount = 0;
@@ -29,7 +29,7 @@ function holdMultiple() {
     if (checkedCount > 0) {
         holdBiblioNums(checkedBiblioNums);
     } else {
-        alert(MSG_NO_RECORD_SELECTED);   
+        alert(MSG_NO_RECORD_SELECTED);
     }
 }
 
@@ -37,9 +37,9 @@ function holdBiblioNums(numList) {
     // numList: biblio numbers separated by "/"
     $("#hold_form_biblios").attr("value", numList);
     $("#hold_form").submit();
-}
+}<!-- /TMPL_IF -->
 
-
+<!-- TMPL_IF NAME="TagsEnabled" -->
 function tagSelected() {
     var checkedBoxes = $(".searchresults :checkbox:checked");
     if ($(checkedBoxes).size() == 0) {
@@ -77,8 +77,8 @@ function tagAdded() {
 
     KOHA.Tags.add_multitags_button(bibs, tag);
     return false;
-}
-
+}<!-- /TMPL_IF -->
+<!-- TMPL_IF NAME="OpacHighlightedWords" -->
 var q_array = new Array();  // holds search terms if available
 
 function highlightOff() {
@@ -88,13 +88,18 @@ function highlightOff() {
 function highlightOn() {
     var x;
     for (x in q_array) {
-        $("td").highlight(q_array[x]);
+    	$(".title").highlight(q_array[x]);
+    	$(".author").highlight(q_array[x]);
+        $(".result_summary").highlight(q_array[x]);
     }
     $(".highlight_toggle").toggle();
 }
-
+<!-- /TMPL_IF -->
 $(document).ready(function(){
-	$(".addtocart").show();
+	<!-- TMPL_IF name="opacbookbag" -->$(".addtocart").show();<!-- /TMPL_IF -->
+
+<!-- TMPL_IF NAME="opacbookbag" -->
+	<!-- TMPL_IF NAME="virtualshelves" -->
 	var param1 = "<label for=\"addto\">"+_("Add to: ")+"<\/label><select name=\"addto\" id=\"addto\"><option value=\"\"><\/option>";
 	<!-- TMPL_IF name="opacbookbag" -->	param1 += "<option value=\"addtocart\">"+_("Cart")+"<\/option>";
 	<!-- /TMPL_IF --><!-- TMPL_IF NAME="virtualshelves" --><!-- TMPL_IF NAME="loggedinusername" --><!-- TMPL_IF NAME="addbarshelves" -->
@@ -106,13 +111,31 @@ $(document).ready(function(){
 	<!-- /TMPL_IF -->
 	<!-- /TMPL_IF -->
 	param1 += "<\/select> <input type=\"submit\" class=\"submit\" value=\""+_("Save")+"\" />";
+	<!-- TMPL_ELSE -->
+		var param1 = "<a id=\"addto\" class=\"addtocart\" href=\"#\">Add to Cart<\/a>";
+	<!-- /TMPL_IF -->
+<!-- TMPL_ELSE -->
+		var param1 = "<label for=\"addto\">"+_("Add to list: ")+"<\/label><select name=\"addto\" id=\"addto\"><option value=\"\"><\/option>";
+<!-- TMPL_IF NAME="virtualshelves" --><!-- TMPL_IF NAME="loggedinusername" --><!-- TMPL_IF NAME="addbarshelves" -->
+	param1 += "<optgroup label=\""+_("Your Lists:")+"\">";<!-- TMPL_LOOP NAME="addbarshelvesloop" -->
+	param1 += "<option id=\"s<!-- TMPL_VAR NAME="shelfnumber" -->\" value=\"addtolist\"><!-- TMPL_VAR NAME="shelfname" ESCAPE="html"--><\/option>";<!-- /TMPL_LOOP -->
+	param1 += "<\/optgroup>";<!-- /TMPL_IF -->
+	<!-- TMPL_IF NAME="addpubshelves" -->param1 += "<optgroup label=\""+_("Public Lists:")+"\">"<!-- TMPL_LOOP NAME="addpubshelvesloop" -->+"<option id=\"s<!-- TMPL_VAR NAME="shelfnumber" -->\" value=\"addtolist\"><!-- TMPL_VAR NAME="shelfname" ESCAPE="html"--><\/option>"<!-- /TMPL_LOOP --><!-- /TMPL_IF -->
+	param1 +="<\/optgroup><option value=\"newlist\">[ "+_("New List")+" ]<\/option>"
+	<!-- /TMPL_IF -->
+	<!-- /TMPL_IF -->
+	param1 += "<\/select> <input type=\"submit\" class=\"submit\" value=\""+_("Save")+"\" />";
+<!-- /TMPL_IF -->
+
 	$('#sortsubmit').hide();
     $('#sort_by').change(function() {
         $('#bookbag_form').submit();
     });
 	$("span.clearall").html("<a id=\"CheckNone\" href=\"#\">"+_("Clear All")+"<\/a>");
 	$("span.checkall").html("<a id=\"CheckAll\" href=\"#\">"+_("Select All")+"<\/a>");
-	$("span.addto").html(param1);
+<!-- TMPL_IF NAME="opacbookbag" -->$("span.addto").html(param1);<!-- TMPL_ELSE --><!-- TMPL_IF NAME="virtualshelves" --><!-- TMPL_IF NAME="loggedinusername" -->$("span.addto").html(param1);<!-- /TMPL_IF --><!-- /TMPL_IF --><!-- /TMPL_IF -->
+<!-- TMPL_IF NAME="opacbookbag" -->
+	<!-- TMPL_IF NAME="virtualshelves" -->
 	$("#addto").change(function(){
 		cartList();
 	});
@@ -120,23 +143,29 @@ $(document).ready(function(){
 		cartList();
 		return false;
 	});
-
+	<!-- TMPL_ELSE -->
+	$("#addto").click(function(){
+		cartList();
+		return false;
+	});
+	<!-- /TMPL_IF -->
+<!-- /TMPL_IF -->
     $("#tagsel_span").html("<input id=\"tagsel_tag\" class=\"submit\" type=\"submit\" value=\"Tag\"/>");
-    
+
 	function cartList(){
 			if($("#addto").find("option:selected").attr("value") == "addtolist"){
 			var shelfnumber = $("#addto").find("option:selected").attr("id").replace("s","");
 			if (vShelfAdd()) {
 			Dopop('/cgi-bin/koha/opac-addbybiblionumber.pl?selectedshelf='+shelfnumber+'&' + vShelfAdd());
 			}
-			return false;			
+			return false;
 		} else if($("#addto").find("option:selected").attr("value") == "newlist"){
 			<!-- TMPL_IF NAME="loggedinusername" -->if (vShelfAdd()) {
 			Dopop('/cgi-bin/koha/opac-addbybiblionumber.pl?newshelf=1&' + vShelfAdd());
 			}<!-- TMPL_ELSE --> alert('You must be logged in to create or add to Lists'); <!-- /TMPL_IF -->
-			return false;	
+			return false;
 		}
-		if($("#addto").find("option:selected").attr("value") == "addtocart"){
+		if($("#addto").find("option:selected").attr("value") == "addtocart" || $("#addto").attr("class") == "addtocart"){
 			addMultiple();
 			return false;
 		 }
@@ -160,13 +189,11 @@ $(document).ready(function(){
 <!-- /TMPL_IF -->
     $("#holdDetails").hide();
 
-    <!-- TMPL_IF NAME="query_desc" -->
-        var query_desc = "<!-- TMPL_VAR NAME="query_desc" ESCAPE="JS"-->";
+<!-- TMPL_IF NAME="query_desc" --><!-- TMPL_IF NAME="OpacHighlightedWords" -->var query_desc = "<!-- TMPL_VAR NAME="query_desc" ESCAPE="JS"-->";
         q_array = query_desc.split(" ");
         highlightOn();
         $("#highlight_toggle_on" ).hide().click(function() {highlightOn() ;});
-        $("#highlight_toggle_off").show().click(function() {highlightOff();});
-    <!-- /TMPL_IF -->
+        $("#highlight_toggle_off").show().click(function() {highlightOff();});<!-- /TMPL_IF --><!-- /TMPL_IF -->
 
 	<!-- TMPL_IF NAME="TagsEnabled" -->
         $(".tagbutton").click(KOHA.Tags.add_tag_button);
@@ -223,8 +250,8 @@ $(document).ready(function(){
 	<h4>Error:</h4>
     <!-- TMPL_VAR NAME="query_error" -->
 </div>
-<!-- /TMPL_IF -->	
-	
+<!-- /TMPL_IF -->
+
 <!-- Search Results Table -->
 <!-- TMPL_IF NAME="total" -->
 <!-- TMPL_IF NAME="scan" -->
@@ -259,7 +286,7 @@ $(document).ready(function(){
             </tr>
         </table>
     </form>
-    
+
     <form action="/cgi-bin/koha/opac-search.pl" method="get">
         <table>
             <tr>
@@ -273,7 +300,7 @@ $(document).ready(function(){
 			<tr>
 			<!-- /TMPL_IF -->
                 <td>
-                    <a href="/cgi-bin/koha/opac-search.pl?q=<!-- TMPL_VAR NAME="scan_use" escape="url" -->&quot;<!-- TMPL_VAR NAME="title"  ESCAPE="URL" -->&quot;"><!-- TMPL_IF NAME="title" --><!-- TMPL_VAR NAME="title" --><!-- TMPL_ELSE -->No title<!-- /TMPL_IF --></a>
+                    <a href="/cgi-bin/koha/opac-search.pl?q=<!-- TMPL_VAR NAME="scan_use" escape="url" -->&quot;<!-- TMPL_VAR NAME="title"  ESCAPE="URL" -->&quot;"><!-- TMPL_IF NAME="title" --><!-- TMPL_VAR NAME="title" ESCAPE="html" --><!-- TMPL_ELSE -->No title<!-- /TMPL_IF --></a>
                 </td>
                 <td>
                     <!-- TMPL_VAR NAME="author" -->
@@ -288,10 +315,10 @@ $(document).ready(function(){
 	<form action="/cgi-bin/koha/opac-search.pl" method="get" name="bookbag_form" id="bookbag_form">
 		<!-- TMPL_IF NAME="searchdesc" -->
 		<!-- TMPL_LOOP NAME="QUERY_INPUTS"-->
-		<input type="hidden" name="<!-- TMPL_VAR NAME="input_name" -->" value="<!-- TMPL_VAR NAME="input_value" -->"/>
+		<input type="hidden" name="<!-- TMPL_VAR ESCAPE=HTML NAME="input_name" -->" value="<!-- TMPL_VAR ESCAPE=HTML NAME="input_value" -->"/>
 		<!-- /TMPL_LOOP -->
 		<!-- TMPL_LOOP NAME="LIMIT_INPUTS"-->
-		<input type="hidden" name="<!-- TMPL_VAR NAME="input_name" -->" value="<!-- TMPL_VAR NAME="input_value" -->"/>
+		<input type="hidden" name="<!-- TMPL_VAR ESCAPE=HTML NAME="input_name" -->" value="<!-- TMPL_VAR ESCAPE=HTML NAME="input_value" -->"/>
 		<!-- /TMPL_LOOP -->
 		<!-- /TMPL_IF -->
 
@@ -338,7 +365,9 @@ $(document).ready(function(){
                 <tr>
             <!-- /TMPL_UNLESS -->
 
-                <td class="select selectcol"><!--TMPL_IF EXPR="opacbookbag || virtualshelves" --><input type="checkbox" id="bib<!-- TMPL_VAR NAME="biblionumber" -->" name="biblionumber" value="<!-- TMPL_VAR NAME="biblionumber" -->" title="Click to add to cart" /> <label for="bib<!-- TMPL_VAR NAME="biblionumber" -->"></label><!-- /TMPL_IF --></td>
+                <td class="select selectcol"><!--TMPL_IF NAME="opacbookbag" --><input type="checkbox" id="bib<!-- TMPL_VAR NAME="biblionumber" -->" name="biblionumber" value="<!-- TMPL_VAR NAME="biblionumber" -->" title="Click to add to cart" /> <label for="bib<!-- TMPL_VAR NAME="biblionumber" -->"></label><!-- TMPL_ELSE -->
+<!-- TMPL_IF NAME="virtualshelves" --><input type="checkbox" id="bib<!-- TMPL_VAR NAME="biblionumber" -->" name="biblionumber" value="<!-- TMPL_VAR NAME="biblionumber" -->" title="Click to add to cart" /> <label for="bib<!-- TMPL_VAR NAME="biblionumber" -->"></label><!-- TMPL_ELSE -->
+<!-- TMPL_IF NAME="RequestOnOpac" --><!-- TMPL_UNLESS NAME="norequests" --><!-- TMPL_IF NAME="opacuserlogin" --><input type="checkbox" id="bib<!-- TMPL_VAR NAME="biblionumber" -->" name="biblionumber" value="<!-- TMPL_VAR NAME="biblionumber" -->" title="Click to add to cart" /> <label for="bib<!-- TMPL_VAR NAME="biblionumber" -->"></label><!-- /TMPL_IF --><!-- /TMPL_UNLESS --><!-- /TMPL_IF --><!-- /TMPL_IF --><!-- /TMPL_IF --></td>
                 <td class="select selectcol"><!-- TMPL_VAR NAME="result_number" -->.</td>
 
 				<!-- TMPL_UNLESS NAME="item-level_itypes" -->
@@ -362,16 +391,17 @@ $(document).ready(function(){
                     <!-- COinS / OpenURL --><span class="Z3988" title="<!-- TMPL_VAR NAME="coins" -->"></span>
                 <!-- /TMPL_IF -->
 
-				<!-- TMPL_IF NAME="XSLTResultsDisplay" -->
+				<!-- TMPL_IF NAME="OPACXSLTResultsDisplay" -->
                 <!-- TMPL_VAR NAME="XSLTResultsRecord" -->
 				<!-- TMPL_ELSE -->
-				<!-- TMPL_IF name="BiblioDefaultViewmarc" --><a class="title" href="/cgi-bin/koha/opac-MARCdetail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" ESCAPE="URL" -->" title="View details for this title"><!-- TMPL_IF NAME="title" --><!-- TMPL_VAR NAME="title" --><!-- TMPL_ELSE -->No title<!-- /TMPL_IF --> <!-- TMPL_VAR NAME="subtitle" --></a>
+				<!-- TMPL_IF name="BiblioDefaultViewmarc" --><a class="title" href="/cgi-bin/koha/opac-MARCdetail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" ESCAPE="URL" -->" title="View details for this title">
                                 <!-- TMPL_ELSE -->
-                                <!-- TMPL_IF name="BiblioDefaultViewisbd" --><a class="title" href="/cgi-bin/koha/opac-ISBDdetail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" ESCAPE="URL" -->" title="View details for this title"><!-- TMPL_IF NAME="title" --><!-- TMPL_VAR NAME="title" --><!-- TMPL_ELSE -->No title<!-- /TMPL_IF --> <!-- TMPL_VAR NAME="subtitle"  --></a>
-                                <!-- TMPL_ELSE --><a class="title" href="/cgi-bin/koha/opac-detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" ESCAPE="URL" -->" title="View details for this title"><!-- TMPL_IF NAME="title" --><!-- TMPL_VAR NAME="title" --><!-- TMPL_ELSE -->No title<!-- /TMPL_IF --> <!-- TMPL_VAR NAME="subtitle"  --></a>
+                                <!-- TMPL_IF name="BiblioDefaultViewisbd" --><a class="title" href="/cgi-bin/koha/opac-ISBDdetail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" ESCAPE="URL" -->" title="View details for this title">
+                                <!-- TMPL_ELSE --><a class="title" href="/cgi-bin/koha/opac-detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" ESCAPE="URL" -->" title="View details for this title">
                                 <!-- /TMPL_IF -->
                                 <!-- /TMPL_IF -->
-                                <!-- TMPL_IF NAME="author" -->by <a href="/cgi-bin/koha/opac-search.pl?q=au:<!-- TMPL_VAR NAME="author" ESCAPE="URL" -->" title="Search for works by this author"><!-- TMPL_VAR NAME="author" --></a>
+								<!-- TMPL_IF NAME="title" --><!-- TMPL_VAR NAME="title" ESCAPE="html" --><!-- TMPL_ELSE -->No title<!-- /TMPL_IF --> <!-- TMPL_LOOP NAME="subtitle"  --><!--TMPL_VAR Name="subfield"--><!--/TMPL_LOOP--></a>
+                                <!-- TMPL_IF NAME="author" -->by <a href="/cgi-bin/koha/opac-search.pl?q=au:<!-- TMPL_VAR NAME="author" ESCAPE="URL" -->" title="Search for works by this author" class="author"><!-- TMPL_VAR NAME="author" --></a>
                                 <!-- TMPL_ELSE -->&nbsp;
                                 <!-- /TMPL_IF -->
 				<span class="results_summary"><span class="label">Publication:</span>
@@ -417,12 +447,13 @@ $(document).ready(function(){
                     <!-- TMPL_UNLESS NAME="hidelostitems" --><!-- TMPL_IF NAME="itemlostcount" --> Lost (<!-- TMPL_VAR NAME="itemlostcount" -->),<!-- /TMPL_IF --><!-- /TMPL_UNLESS -->
                     <!-- TMPL_IF NAME="damagedcount" --> Damaged (<!-- TMPL_VAR NAME="damagedcount" -->),<!-- /TMPL_IF -->
                     <!-- TMPL_IF NAME="orderedcount" --> On order (<!-- TMPL_VAR NAME="orderedcount" -->),<!-- /TMPL_IF -->
+                    <!-- TMPL_IF NAME="onholdcount" --> On hold (<!-- TMPL_VAR NAME="onholdcount" -->),<!-- /TMPL_IF -->
                     <!-- TMPL_IF NAME="intransitcount" --> In transit (<!-- TMPL_VAR NAME="intransitcount" -->),<!-- /TMPL_IF -->
                     </span>
                 </span>
 
 				<!-- /TMPL_IF -->
-				<!-- TMPL_IF NAME="LibraryThingForLibrariesID" --><div class="ltfl_reviews"></div><!-- /TMPL_IF --> 
+				<!-- TMPL_IF NAME="LibraryThingForLibrariesID" --><div class="ltfl_reviews"></div><!-- /TMPL_IF -->
 				<!-- TMPL_IF NAME="TagsEnabled" -->
                 <!-- TMPL_IF NAME="TagsShowOnList" -->
                 <!-- TMPL_IF NAME="TagLoop" -->
@@ -475,7 +506,7 @@ $(document).ready(function(){
 					<a class="p1" href="/cgi-bin/koha/opac-detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->">
                     <!-- TMPL_IF NAME="OPACAmazonEnabled" --><!-- TMPL_IF NAME="OPACAmazonCoverImages" --><!-- TMPL_IF NAME="normalized_isbn" --><img src="http://images.amazon.com/images/P/<!-- TMPL_VAR NAME="normalized_isbn" -->.01.TZZZZZZZ.jpg" alt="" class="thumbnail" /><!-- TMPL_ELSE --><span class="no-image">No cover image available</span><!-- /TMPL_IF --><!-- /TMPL_IF --><!-- /TMPL_IF -->
 
-					<!-- TMPL_IF NAME="SyndeticsEnabled" --><!-- TMPL_IF NAME="SyndeticsCoverImages" --><!-- TMPL_IF NAME="content_identifier_exists" --><img src="http://www.syndetics.com/index.aspx?isbn=<!-- TMPL_VAR NAME="normalized_isbn" -->/SC.GIF&amp;client=<!-- TMPL_VAR NAME="SyndeticsClientCode" -->&amp;type=xw10<!-- TMPL_IF NAME="normalized_upc" -->&amp;upc=<!-- TMPL_VAR NAME="normalized_upc" --><!-- /TMPL_IF --><!-- TMPL_IF NAME="normalized_oclc" -->&amp;oclc=<!-- TMPL_VAR NAME="normalized_oclc" --><!-- /TMPL_IF -->" alt="" class="thumbnail" /><!-- TMPL_ELSE --><span class="no-image">No cover image available</span><!-- /TMPL_IF --><!-- /TMPL_IF --><!-- /TMPL_IF -->
+					<!-- TMPL_IF NAME="SyndeticsEnabled" --><!-- TMPL_IF NAME="SyndeticsCoverImages" --><!-- TMPL_IF NAME="content_identifier_exists" --><!-- TMPL_IF NAME="using_https" --><img src="https://secure.syndetics.com/index.aspx?isbn=<!-- TMPL_ELSE --><img src="http://www.syndetics.com/index.aspx?isbn=<!-- /TMPL_IF --><!-- TMPL_VAR NAME="normalized_isbn" -->/SC.GIF&amp;client=<!-- TMPL_VAR NAME="SyndeticsClientCode" -->&amp;type=xw10<!-- TMPL_IF NAME="normalized_upc" -->&amp;upc=<!-- TMPL_VAR NAME="normalized_upc" --><!-- /TMPL_IF --><!-- TMPL_IF NAME="normalized_oclc" -->&amp;oclc=<!-- TMPL_VAR NAME="normalized_oclc" --><!-- /TMPL_IF -->" alt="" class="thumbnail" /><!-- TMPL_ELSE --><span class="no-image">No cover image available</span><!-- /TMPL_IF --><!-- /TMPL_IF --><!-- /TMPL_IF -->
                     <!-- TMPL_IF NAME="GoogleJackets" --><!-- TMPL_IF NAME="normalized_isbn" --><div style="block" title="<!-- TMPL_VAR NAME="biblionumber" ESCAPE="URL" -->" class="<!-- TMPL_VAR name="normalized_isbn" -->" id="gbs-thumbnail<!--TMPL_VAR NAME="__counter__"-->"></div><!-- TMPL_ELSE --><span class="no-image">No cover image available</span><!-- /TMPL_IF --><!-- /TMPL_IF -->
                     </a>
                     <!-- TMPL_IF NAME="BakerTaylorEnabled" --><!-- TMPL_IF NAME="normalized_isbn" --><a href="https://<!-- TMPL_VAR name="BakerTaylorBookstoreURL" ESCAPE="HTML" --><!-- TMPL_VAR name="normalized_isbn" -->"><img alt="See Baker &amp; Taylor" src="<!-- TMPL_VAR name="BakerTaylorImageURL" ESCAPE="HTML" --><!-- TMPL_VAR name="normalized_isbn" -->" /></a><!-- TMPL_ELSE --><span class="no-image">No cover image available</span><!-- /TMPL_IF --><!-- /TMPL_IF -->
@@ -498,7 +529,7 @@ $(document).ready(function(){
 	<!-- TMPL_IF name="suggestion" -->
 <!-- TMPL_IF NAME="AnonSuggestions" --><div class="suggestion">Not finding what you're looking for?<br />  Make a <a href="/cgi-bin/koha/opac-suggestions.pl?op=add">purchase suggestion</a></div><!-- TMPL_ELSE --><!-- TMPL_IF NAME="loggedinusername" --><div class="suggestion">Not finding what you're looking for?<br />  Make a <a href="/cgi-bin/koha/opac-suggestions.pl?op=add">purchase suggestion</a></div><!-- /TMPL_IF --><!-- /TMPL_IF -->
 <!-- /TMPL_IF -->
-</div>    
+</div>
 </div>
 </div>
         <!-- TMPL_IF NAME="opacfacets" -->
@@ -510,7 +541,7 @@ $(document).ready(function(){
         <!-- /TMPL_IF -->
 </div>
 
-<!-- TMPL_IF NAME="LibraryThingForLibrariesID" --> 
-<script src="http://ltfl.librarything.com/forlibraries/widget.js?id=<!--TMPL_VAR NAME="LibraryThingForLibrariesID" -->&systype=koha" type="text/javascript"></script> 
-<!-- /TMPL_IF --> 
+<!-- TMPL_IF NAME="LibraryThingForLibrariesID" -->
+<!-- TMPL_IF NAME="using_https" --><script src="https://ltfl.librarything.com/forlibraries/widget.js?id=<!-- TMPL_ELSE --><script src="http://ltfl.librarything.com/forlibraries/widget.js?id=<!-- /TMPL_IF --><!--TMPL_VAR NAME="LibraryThingForLibrariesID" -->&systype=koha" type="text/javascript"></script>
+<!-- /TMPL_IF -->
 <!-- TMPL_INCLUDE NAME="opac-bottom.inc" -->

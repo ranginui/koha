@@ -13,9 +13,9 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
 use strict;
@@ -31,6 +31,7 @@ use C4::Biblio;
 use C4::Koha;
 use MARC::Record;
 use C4::Branch;    # GetBranches
+use C4::ItemType;
 
 sub plugin_parameters {
     my ( $dbh, $record, $tagslib, $i, $tabloop ) = @_;
@@ -94,7 +95,7 @@ sub plugin {
                 query           => $query,
                 type            => "intranet",
                 authnotrequired => 0,
-                flagsrequired   => { editcatalogue => 1 },
+                flagsrequired   => { editcatalogue => '*' },
                 debug           => 1,
             }
         );
@@ -327,9 +328,11 @@ sub plugin {
     }
     elsif ( $op eq "do_search" ) {
         my $search         = $query->param('search');
+        my $itype          = $query->param('itype');
         my $startfrom      = $query->param('startfrom');
         my $resultsperpage = $query->param('resultsperpage') || 20;
         my $orderby;
+        $search = 'kw,wrdl='.$search.' and mc-itemtype='.$itype if $itype;
         my ( $errors, $results, $total_hits ) = SimpleSearch($search, $startfrom * $resultsperpage, $resultsperpage );
         my $total = scalar(@$results);
 
@@ -530,10 +533,13 @@ sub plugin {
 #         }
 #         $sth->finish;
 
+        my @itemtypes = C4::ItemType->all;
+
         $template->param(    #classlist => $classlist,
             CGIitemtype  => $CGIitemtype,
             CGIbranch    => $CGIbranch,
             CGIPublisher => $CGIpublisher,
+            itypeloop    => \@itemtypes,
             index        => $query->param('index'),
             Search       => 1,
         );

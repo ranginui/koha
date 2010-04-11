@@ -15,9 +15,9 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 =head1 request.pl
 
@@ -51,7 +51,7 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
-        flagsrequired   => { reserveforothers => 1 },
+        flagsrequired   => { reserveforothers => 'place_holds' },
     }
 );
 
@@ -91,6 +91,24 @@ my $warnings;
 my $messages;
 
 my $date = C4::Dates->today('iso');
+my $action = $input->param('action');
+
+if ( $action eq 'move' ) {
+  my $where = $input->param('where');
+  my $borrowernumber = $input->param('borrowernumber');
+  my $biblionumber = $input->param('biblionumber');
+                     
+  AlterPriority( $where, $borrowernumber, $biblionumber );
+
+} elsif ( $action eq 'cancel' ) {
+  my $borrowernumber = $input->param('borrowernumber');
+  my $biblionumber = $input->param('biblionumber');
+  CancelReserve( $biblionumber, '', $borrowernumber );
+} elsif ( $action eq 'setLowestPriority' ) {
+  my $borrowernumber = $input->param('borrowernumber');
+  my $biblionumber   = $input->param('biblionumber');
+  ToggleLowestPriority( $borrowernumber, $biblionumber );
+}
 
 if ($findborrower) {
     my ( $count, $borrowers ) =
@@ -215,9 +233,14 @@ my @biblioloop = ();
 foreach my $biblionumber (@biblionumbers) {
 
     my %biblioloopiter = ();
+	my $maxreserves;
 
     my $dat          = GetBiblioData($biblionumber);
 
+    if ( not CanBookBeReserved($borrowerinfo->{borrowernumber}, $biblionumber) ) {
+ 		$warnings = 1;
+        $maxreserves = 1;
+    }
     # get existing reserves .....
     my ( $count, $reserves ) = GetReservesFromBiblionumber($biblionumber,1);
     my $totalcount = $count;
@@ -238,7 +261,9 @@ foreach my $biblionumber (@biblionumbers) {
 
     $template->param( alreadyreserved => $alreadyreserved,
                       messages => $messages,
-                      warnings => $warnings );
+                      warnings => $warnings,
+					  maxreserves=>$maxreserves
+					  );
     
     
     # FIXME think @optionloop, is maybe obsolete, or  must be switchable by a systeme preference fixed rank or not
@@ -390,7 +415,9 @@ foreach my $biblionumber (@biblionumbers) {
                 }
             }
             
-            my $branchitemrule = GetBranchItemRule( $item->{'homebranch'}, $item->{'itype'} );
+            my $branch = C4::Circulation::_GetCircControlBranch($item, $borrowerinfo);
+
+            my $branchitemrule = GetBranchItemRule( $branch, $item->{'itype'} );
             my $policy_holdallowed = 1;
             
             $item->{'holdallowed'} = $branchitemrule->{'holdallowed'};
@@ -400,7 +427,7 @@ foreach my $biblionumber (@biblionumbers) {
                 $policy_holdallowed = 0;
             }
             
-            if (IsAvailableForItemLevelRequest($itemnumber) and not $item->{cantreserve}) {
+            if (IsAvailableForItemLevelRequest($itemnumber) and not $item->{cantreserve} and CanItemBeReserved($borrowerinfo->{borrowernumber}, $itemnumber) ) {
                 if ( not $policy_holdallowed and C4::Context->preference( 'AllowHoldPolicyOverride' ) ) {
                     $item->{override} = 1;
                     $num_override++;
@@ -482,6 +509,8 @@ foreach my $biblionumber (@biblionumbers) {
 	    $reserve{'hidename'} = 1;
 	    $reserve{'cardnumber'} = $reserveborrowerinfo->{'cardnumber'};
 	}
+        $reserve{'expirationdate'} = format_date( $res->{'expirationdate'} ) 
+            unless ( !defined($res->{'expirationdate'}) || $res->{'expirationdate'} eq '0000-00-00' );
         $reserve{'date'}           = format_date( $res->{'reservedate'} );
         $reserve{'borrowernumber'} = $res->{'borrowernumber'};
         $reserve{'biblionumber'}   = $res->{'biblionumber'};
@@ -497,6 +526,7 @@ foreach my $biblionumber (@biblionumbers) {
         $reserve{'ccode'}           = $res->{'ccode'};
         $reserve{'barcode'}         = $res->{'barcode'};
         $reserve{'priority'}    = $res->{'priority'};
+        $reserve{'lowestPriority'}    = $res->{'lowestPriority'};
         $reserve{'branchloop'} = GetBranchesLoop($res->{'branchcode'});
         $reserve{'optionloop'} = \@optionloop;
         
@@ -549,16 +579,14 @@ foreach my $biblionumber (@biblionumbers) {
 
 $template->param( biblioloop => \@biblioloop );
 $template->param( biblionumbers => $biblionumbers );
+$template->param( DHTMLcalendar_dateformat  => C4::Dates->DHTMLcalendar() );
 
 if ($multihold) {
     $template->param( multi_hold => 1 );
 }
 
 if ( C4::Context->preference( 'AllowHoldDateInFuture' ) ) {
-    $template->param(
-	reserve_in_future         => 1,
-	DHTMLcalendar_dateformat  => C4::Dates->DHTMLcalendar(),
-	);
+    $template->param( reserve_in_future => 1 );
 }
     
 # printout the page

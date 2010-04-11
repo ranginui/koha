@@ -13,9 +13,9 @@ package C4::XSLT;
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
 use warnings;
@@ -26,6 +26,7 @@ use C4::Items;
 use C4::Koha;
 use C4::Biblio;
 use C4::Circulation;
+use C4::Reserves;
 use Encode;
 use XML::LibXML;
 use XML::LibXSLT;
@@ -118,13 +119,15 @@ sub getAuthorisedValues4MARCSubfields {
 my $stylesheet;
 
 sub XSLTParse4Display {
-    my ( $biblionumber, $orig_record, $xsl_suffix ) = @_;
+    my ( $biblionumber, $orig_record, $xsl_suffix, $interface ) = @_;
+    $interface = 'opac' unless $interface;
     # grab the XML, run it through our stylesheet, push it out to the browser
     my $record = transformMARCXML4XSLT($biblionumber, $orig_record);
     #return $record->as_formatted();
     my $itemsxml  = buildKohaItemsNamespace($biblionumber);
-    my $xmlrecord = $record->as_xml();
+    my $xmlrecord = $record->as_xml(C4::Context->preference('marcflavour'));
     my $sysxml = "<sysprefs>\n";
+#    warn $xmlrecord;
     foreach my $syspref ( qw/OPACURLOpenInNewWindow DisplayOPACiconsXSLT URLLinkText/ ) {
         $sysxml .= "<syspref name=\"$syspref\">" .
                    C4::Context->preference( $syspref ) .
@@ -132,17 +135,27 @@ sub XSLTParse4Display {
     }
     $sysxml .= "</sysprefs>\n";
     $xmlrecord =~ s/\<\/record\>/$itemsxml$sysxml\<\/record\>/;
+    $xmlrecord =~ s/\& /\&amp\; /;
+    $xmlrecord=~ s/\&amp\;amp\; /\&amp\; /;
 
     my $parser = XML::LibXML->new();
     # don't die when you find &, >, etc
-    $parser->recover_silently(1);
+    $parser->recover_silently(0);
     my $source = $parser->parse_string($xmlrecord);
     unless ( $stylesheet ) {
         my $xslt = XML::LibXSLT->new();
-        my $xslfile = C4::Context->config('opachtdocs') . 
+        my $xslfile;
+        if ($interface eq 'intranet') {
+            $xslfile = C4::Context->config('intrahtdocs') . 
+                      "/prog/en/xslt/" .
+                      C4::Context->preference('marcflavour') .
+                      "slim2intranet$xsl_suffix.xsl";
+        } else {
+            $xslfile = C4::Context->config('opachtdocs') . 
                       "/prog/en/xslt/" .
                       C4::Context->preference('marcflavour') .
                       "slim2OPAC$xsl_suffix.xsl";
+        }
         my $style_doc = $parser->parse_file($xslfile);
         $stylesheet = $xslt->parse_stylesheet($style_doc);
     }
@@ -162,8 +175,10 @@ sub buildKohaItemsNamespace {
 
         my ( $transfertwhen, $transfertfrom, $transfertto ) = C4::Circulation::GetTransfers($item->{itemnumber});
 
-        if ( $itemtypes->{ $item->{itype} }->{notforloan} || $item->{notforloan} || $item->{onloan} || $item->{wthdrawn} || $item->{itemlost} || $item->{damaged} ||
-             (defined $transfertwhen && $transfertwhen ne '') || $item->{itemnotforloan} ) {
+	my ( $reservestatus, $reserveitem ) = C4::Reserves::CheckReserves($item->{itemnumber});
+
+        if ( $itemtypes->{ $item->{itype} }->{notforloan} || $item->{notforloan} || $item->{onloan} || $item->{wthdrawn} || $item->{itemlost} || $item->{damaged} || 
+             (defined $transfertwhen && $transfertwhen ne '') || $item->{itemnotforloan} || (defined $reservestatus && $reservestatus eq "Waiting") ){ 
             if ( $item->{notforloan} < 0) {
                 $status = "On order";
             } 
@@ -184,6 +199,9 @@ sub buildKohaItemsNamespace {
             }
             if (defined $transfertwhen && $transfertwhen ne '') {
                 $status = 'In transit';
+            }
+            if (defined $reservestatus && $reservestatus eq "Waiting") {
+                $status = 'Waiting';
             }
         } else {
             $status = "available";

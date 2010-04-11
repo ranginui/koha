@@ -13,9 +13,9 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # pragma
 use strict;
@@ -101,7 +101,7 @@ foreach (@field_check) {
 }
 $template->param("add"=>1) if ($op eq 'add');
 $template->param("checked" => 1) if (defined($nodouble) && $nodouble eq 1);
-($borrower_data = GetMember($borrowernumber,'borrowernumber')) if ($op eq 'modify' or $op eq 'save');
+($borrower_data = GetMember( 'borrowernumber'=>$borrowernumber )) if ($op eq 'modify' or $op eq 'save');
 my $categorycode  = $input->param('categorycode') || $borrower_data->{'categorycode'};
 my $category_type = $input->param('category_type');
 my $new_c_type = $category_type; #if we have input param, then we've already chosen the cat_type.
@@ -202,7 +202,7 @@ if ( defined($guarantorid) and
      ( $category_type eq 'C' || $category_type eq 'P' ) and
      $guarantorid ne ''  and
      $guarantorid ne '0' ) {
-    if (my $guarantordata=GetMember($guarantorid)) {
+    if (my $guarantordata=GetMember(borrowernumber => $guarantorid)) {
         $guarantorinfo=$guarantordata->{'surname'}." , ".$guarantordata->{'firstname'};
         if ( !defined($data{'contactname'}) or $data{'contactname'} eq '' or
              $data{'contactname'} ne $guarantordata->{'surname'} ) {

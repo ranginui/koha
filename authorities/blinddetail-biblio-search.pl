@@ -13,9 +13,9 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 =head1 NAME
 
@@ -38,6 +38,7 @@ parameters tables.
 =cut
 
 use strict;
+use warnings;
 
 use C4::AuthoritiesMarc;
 use C4::Auth;
@@ -58,7 +59,10 @@ my $authtypecode = &GetAuthTypeCode($authid);
 my $tagslib      = &GetTagsLabels( 1, $authtypecode );
 
 my $auth_type = GetAuthType($authtypecode);
-my $record = GetAuthority($authid) if $authid;
+my $record;
+if ($authid) {
+    $record = GetAuthority($authid);
+}
 
 # open template
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
@@ -67,12 +71,11 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
         query           => $query,
         type            => "intranet",
         authnotrequired => 0,
-        flagsrequired   => { editcatalogue => 1 },
+        flagsrequired   => { editcatalogue => 'edit_catalogue' },
     }
 );
 
 # fill arrays
-my $tag;
 my @loop_data = ();
 if ($authid) {
     foreach my $field ( $record->field( $auth_type->{auth_tag_to_report} ) ) {

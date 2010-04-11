@@ -13,9 +13,9 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
 use warnings;
@@ -86,7 +86,7 @@ if ($op eq 'save') {
     my $sth_delete=$dbh->prepare("DELETE FROM overduerules WHERE branchcode=? AND categorycode=?");
     foreach my $key (@names){
             # ISSUES
-            if ($key =~ /(.*)([1-3])-(.*)/) {
+            if ($key =~ /(delay|letter)([1-3])-(.*)/) {
                     my $type = $1; # data type
                     my $num = $2; # From 1 to 3
                     my $bor = $3; # borrower category

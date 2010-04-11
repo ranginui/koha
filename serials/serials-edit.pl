@@ -13,9 +13,9 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
 =head1 NAME
@@ -140,12 +140,13 @@ my @subscriptionloop;
 my %processedsubscriptionid;
 foreach my $subscriptionid (@subscriptionids){
     #Donot process subscriptionid twice if it was already processed.
+    my $subscriptiondetail = GetSubscription($subscriptionid);
     next unless (defined($subscriptionid) && !$processedsubscriptionid{$subscriptionid});
     my $cell;
     if ($serialdatalist[0]->{'serialsadditems'}){
     #Create New empty item
         $cell =
-        PrepareItemrecordDisplay( $serialdatalist[0]->{'biblionumber'},'', GetSubscription($subscriptionid));
+        PrepareItemrecordDisplay( $serialdatalist[0]->{'biblionumber'},'', $subscriptiondetail);
         $cell->{serialsadditems} = 1;
     }
     $cell->{'subscriptionid'}=$subscriptionid;
@@ -158,6 +159,10 @@ foreach my $subscriptionid (@subscriptionids){
                             'subscriptionexpired'=>HasSubscriptionExpired($subscriptionid),
     };
     $processedsubscriptionid{$subscriptionid}=1;
+    $template->param(bibliotitle  => $subscriptiondetail->{'bibliotitle'},
+                        callnumber => $subscriptiondetail->{'callnumber'},
+                );
+
 }
 $template->param(newserialloop=>\@newserialloop);
 $template->param(subscriptions=>\@subscriptionloop);
@@ -228,8 +233,8 @@ if ($op and $op eq 'serialchangestatus') {
           my $xml = TransformHtmlToXml( $itemhash{$item}->{'tags'},
                                   $itemhash{$item}->{'subfields'},
                                   $itemhash{$item}->{'field_values'},
-                                  $itemhash{$item}->{'ind_tag'},
-                                  $itemhash{$item}->{'indicator'});
+                                  $itemhash{$item}->{'indicator'},
+                                  $itemhash{$item}->{'ind_tag'});
   #           warn $xml;
           my $record=MARC::Record::new_from_xml($xml, 'UTF-8');
           if ($item=~/^N/){
@@ -293,9 +298,8 @@ if ($op and $op eq 'serialchangestatus') {
 }
 
 $template->param(
-	serialsadditems => $serialdatalist[0]->{'serialsadditems'},
-	bibliotitle  => $bibdata->{'title'},
-	biblionumber => $serialdatalist[0]->{'biblionumber'},
-	serialslist  => \@serialdatalist,
+    serialsadditems => $serialdatalist[0]->{'serialsadditems'},
+    biblionumber => $serialdatalist[0]->{'biblionumber'},
+    serialslist  => \@serialdatalist,
 );
 output_html_with_http_headers $query, $cookie, $template->output;

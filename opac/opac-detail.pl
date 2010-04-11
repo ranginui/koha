@@ -13,9 +13,9 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
 use strict;
@@ -40,6 +40,7 @@ use C4::Serials;
 use C4::Members;
 use C4::VirtualShelves;
 use C4::XSLT;
+use Switch;
 
 BEGIN {
 	if (C4::Context->preference('BakerTaylorEnabled')) {
@@ -65,11 +66,15 @@ $template->param( 'AllowOnShelfHolds' => C4::Context->preference('AllowOnShelfHo
 $template->param( 'ItemsIssued' => CountItemsIssued( $biblionumber ) );
 
 my $record       = GetMarcBiblio($biblionumber);
+if ( ! $record ) {
+    print $query->redirect("/cgi-bin/koha/errors/404.pl");
+    exit;
+}
 $template->param( biblionumber => $biblionumber );
 # XSLT processing of some stuff
-if (C4::Context->preference("XSLTDetailsDisplay") ) {
+if (C4::Context->preference("OPACXSLTDetailsDisplay") ) {
     $template->param(
-        'XSLTBloc' => XSLTParse4Display($biblionumber, $record, 'Detail') );
+        'XSLTBloc' => XSLTParse4Display($biblionumber, $record, 'Detail'),'opac' );
 }
 
 $template->param('OPACShowCheckoutName' => C4::Context->preference("OPACShowCheckoutName") ); 
@@ -86,10 +91,6 @@ if (C4::Context->preference('hidelostitems')) {
 }
 my $dat = &GetBiblioData($biblionumber);
 
-if (!$dat) {
-    print $query->redirect("/cgi-bin/koha/errors/404.pl");
-    exit;
-}
 my $itemtypes = GetItemTypes();
 # imageurl:
 my $itemtype = $dat->{'itemtype'};
@@ -97,8 +98,8 @@ if ( $itemtype ) {
     $dat->{'imageurl'}    = getitemtypeimagelocation( 'opac', $itemtypes->{$itemtype}->{'imageurl'} );
     $dat->{'description'} = $itemtypes->{$itemtype}->{'description'};
 }
-my $shelflocations =GetKohaAuthorisedValues('items.location',$dat->{'frameworkcode'});
-my $collections =  GetKohaAuthorisedValues('items.ccode',$dat->{'frameworkcode'} );
+my $shelflocations =GetKohaAuthorisedValues('items.location',$dat->{'frameworkcode'}, 'opac');
+my $collections =  GetKohaAuthorisedValues('items.ccode',$dat->{'frameworkcode'}, 'opac');
 
 #coping with subscriptions
 my $subscriptionsnumber = CountSubscriptionFromBiblionumber($biblionumber);
@@ -111,6 +112,10 @@ foreach my $subscription (@subscriptions) {
     my %cell;
     $cell{subscriptionid}    = $subscription->{subscriptionid};
     $cell{subscriptionnotes} = $subscription->{notes};
+    $cell{missinglist}       = $subscription->{missinglist};
+    $cell{opacnote}          = $subscription->{opacnote};
+    $cell{histstartdate}     = format_date($subscription->{histstartdate});
+    $cell{histenddate}       = format_date($subscription->{histenddate});
     $cell{branchcode}        = $subscription->{branchcode};
     $cell{branchname}        = GetBranchName($subscription->{branchcode});
     $cell{hasalert}          = $subscription->{hasalert};
@@ -124,6 +129,14 @@ foreach my $subscription (@subscriptions) {
 }
 
 $dat->{'count'} = scalar(@items);
+
+# If there is a lot of items, and the user has not decided
+# to view them all yet, we first warn him
+# TODO: The limit of 50 could be a syspref
+my $viewallitems = $query->param('viewallitems');
+if ($dat->{'count'} >= 50 && !$viewallitems) {
+    $template->param('lotsofitems' => 1);
+}
 
 my $biblio_authorised_value_images = C4::Items::get_authorised_value_images( C4::Biblio::get_biblio_authorised_values( $biblionumber, $record ) );
 
@@ -191,7 +204,7 @@ my $marcauthorsarray = GetMarcAuthors ($record,$marcflavour);
 my $marcsubjctsarray = GetMarcSubjects($record,$marcflavour);
 my $marcseriesarray  = GetMarcSeries  ($record,$marcflavour);
 my $marcurlsarray    = GetMarcUrls    ($record,$marcflavour);
-my $subtitle         = C4::Biblio::get_koha_field_from_marc('bibliosubtitle', 'subtitle', $record, '');
+my $subtitle         = GetRecordValue('subtitle', $record, GetFrameworkCode($biblionumber));
 
     $template->param(
                      MARCNOTES               => $marcnotesarray,
@@ -238,7 +251,7 @@ $template->param(
 my $reviews = getreviews( $biblionumber, 1 );
 my $loggedincommenter;
 foreach ( @$reviews ) {
-    my $borrowerData   = GetMember($_->{borrowernumber},'borrowernumber');
+    my $borrowerData   = GetMember('borrowernumber' => $_->{borrowernumber});
     # setting some borrower info into this hash
     $_->{title}     = $borrowerData->{'title'};
     $_->{surname}   = $borrowerData->{'surname'};
@@ -283,6 +296,28 @@ if (C4::Context->preference("OPACFRBRizeEditions")==1) {
     };
     if ($@) { warn "XISBN Failed $@"; }
 }
+
+# Serial Collection
+my @sc_fields = $record->field(955);
+my @serialcollections = ();
+
+foreach my $sc_field (@sc_fields) {
+    my %row_data;
+
+    $row_data{text}    = $sc_field->subfield('r');
+    $row_data{branch}  = $sc_field->subfield('9');
+
+    if ($row_data{text} && $row_data{branch}) { 
+	push (@serialcollections, \%row_data);
+    }
+}
+
+if (scalar(@serialcollections) > 0) {
+    $template->param(
+	serialcollection  => 1,
+	serialcollections => \@serialcollections);
+}
+
 # Amazon.com Stuff
 if ( C4::Context->preference("OPACAmazonEnabled") ) {
     $template->param( AmazonTld => get_amazon_tld() );
@@ -290,11 +325,9 @@ if ( C4::Context->preference("OPACAmazonEnabled") ) {
     my $amazon_similars = C4::Context->preference("OPACAmazonSimilarItems");
     my @services;
     if ( $amazon_reviews ) {
-        $template->param( OPACAmazonReviews => 1 );
         push( @services, 'EditorialReview', 'Reviews' );
     }
     if ( $amazon_similars ) {
-        $template->param( OPACAmazonSimilarItems => 1 );
         push( @services, 'Similarities' );
     }
     my $amazon_details = &get_amazon_details( $isbn, $record, $marcflavour, \@services );
@@ -331,9 +364,11 @@ if ( C4::Context->preference("OPACAmazonEnabled") ) {
 my $syndetics_elements;
 
 if ( C4::Context->preference("SyndeticsEnabled") ) {
+    $template->param("SyndeticsEnabled" => 1);
+    $template->param("SyndeticsClientCode" => C4::Context->preference("SyndeticsClientCode"));
 	eval {
-    $syndetics_elements = &get_syndetics_index($isbn,$upc,$oclc);
-	for my $element (values %$syndetics_elements) {
+	    $syndetics_elements = &get_syndetics_index($isbn,$upc,$oclc);
+	    for my $element (values %$syndetics_elements) {
 		$template->param("Syndetics$element"."Exists" => 1 );
 		#warn "Exists: "."Syndetics$element"."Exists";
 	}
@@ -345,8 +380,8 @@ if ( C4::Context->preference("SyndeticsEnabled")
         && C4::Context->preference("SyndeticsSummary")
         && ( exists($syndetics_elements->{'SUMMARY'}) || exists($syndetics_elements->{'AVSUMMARY'}) ) ) {
 	eval {
-	my $syndetics_summary = &get_syndetics_summary($isbn,$upc,$oclc, $syndetics_elements);
-	$template->param( SYNDETICS_SUMMARY => $syndetics_summary );
+	    my $syndetics_summary = &get_syndetics_summary($isbn,$upc,$oclc, $syndetics_elements);
+	    $template->param( SYNDETICS_SUMMARY => $syndetics_summary );
 	};
 	warn $@ if $@;
 
@@ -422,7 +457,7 @@ if (C4::Context->preference("OPACShelfBrowser")) {
         $starting_homebranch->{code} = $result->{'homebranch'};
         $starting_homebranch->{description} = $branches->{$result->{'homebranch'}}{branchname};
         $starting_location->{code} = $result->{'location'};
-        $starting_location->{description} = GetAuthorisedValueDesc('','',   $result->{'location'} ,'','','LOC');
+        $starting_location->{description} = GetAuthorisedValueDesc('','',   $result->{'location'} ,'','','LOC', 'opac');
     
     }
     
@@ -552,11 +587,55 @@ if (C4::Context->preference('TagsEnabled') and $tag_quantity = C4::Context->pref
 
 #Search for title in links
 if (my $search_for_title = C4::Context->preference('OPACSearchForTitleIn')){
-    $search_for_title =~ s/{AUTHOR}/$dat->{author}/g;
-    $search_for_title =~ s/{TITLE}/$dat->{title}/g;
-    $search_for_title =~ s/{ISBN}/$isbn/g;
+    $dat->{author} ? $search_for_title =~ s/{AUTHOR}/$dat->{author}/g : $search_for_title =~ s/{AUTHOR}//g;
+    $dat->{title} =~ s/\/+$//; # remove trailing slash
+    $dat->{title} =~ s/\s+$//; # remove trailing space
+    $dat->{title} ? $search_for_title =~ s/{TITLE}/$dat->{title}/g : $search_for_title =~ s/{TITLE}//g;
+    $isbn ? $search_for_title =~ s/{ISBN}/$isbn/g : $search_for_title =~ s/{ISBN}//g;
  $template->param('OPACSearchForTitleIn' => $search_for_title);
 }
+
+# We try to select the best default tab to show, according to what
+# the user wants, and what's available for display
+my $defaulttab;
+switch (C4::Context->preference('opacSerialDefaultTab')) {
+
+    # If the user wants subscriptions by default
+    case "subscriptions" { 
+	# And there are subscriptions, we display them
+	if ($subscriptionsnumber) {
+	    $defaulttab = 'subscriptions';
+	} else {
+	   # Else, we try next option
+	   next; 
+	}
+    }
+
+    case "serialcollection" {
+	if (scalar(@serialcollections) > 0) {
+	    $defaulttab = 'serialcollection' ;
+	} else {
+	    next;
+	}
+    }
+
+    case "holdings" {
+	if ($dat->{'count'} > 0) {
+	   $defaulttab = 'holdings'; 
+	} else {
+	     # As this is the last option, we try other options if there are no items
+	     if ($subscriptionsnumber) {
+		$defaulttab = 'subscriptions';
+	     } elsif (scalar(@serialcollections) > 0) {
+		$defaulttab = 'serialcollection' ;
+	     }
+	}
+
+    }
+
+}
+$template->param('defaulttab' => $defaulttab);
+
 
 
 output_html_with_http_headers $query, $cookie, $template->output;

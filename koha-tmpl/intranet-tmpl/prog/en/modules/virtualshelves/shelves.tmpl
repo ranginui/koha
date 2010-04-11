@@ -24,11 +24,26 @@ $(document).ready(function(){
 
 	function confirmDelete(message){
 		if (window.confirm(message)) {
-			location.href="/cgi-bin/koha/virtualshelves/shelves.pl?<!-- TMPL_IF NAME="showprivateshelves" -->display=privateshelves&<!-- /TMPL_IF -->shelves=1&amp;DEL-<!-- TMPL_VAR NAME="shelfnumber" -->=1";
+			location.href="/cgi-bin/koha/virtualshelves/shelves.pl?<!-- TMPL_IF NAME="showprivateshelves" -->display=privateshelves&<!-- /TMPL_IF -->shelves=1&DEL-<!-- TMPL_VAR NAME="shelfnumber" -->=1";
 		} else { 
 			return false;
 		}
 	}
+
+    /**
+     * This function checks if the adequate number of records are checked for merging
+     */
+    function MergeItems() {
+	var checkboxes = $("input:checkbox:checked");
+        var nbCheckbox = checkboxes.length;
+	if (nbCheckbox != 2) {
+	    alert(_('Two records must be selected for merging.'));
+	} else {
+	    location.href='/cgi-bin/koha/cataloguing/merge.pl?biblionumber=' + checkboxes[0].value + '&amp;biblionumber=' + checkboxes[1].value;
+	}
+	return false;
+    }
+
     /**
      * This function checks all checkboxes if all are empty,
      * or unchecks all if any already checked.
@@ -73,6 +88,26 @@ function placeHold () {
     $("#hold_form").submit();
     return false;
 }
+    /**
+     * This function checks to make sure a list title is assigned
+     */
+      function Check(f) {
+		var _alertString="";
+		var alertString2;
+
+	    if(f.addshelf.value.length ==0){
+			_alertString += _("- You must enter a List Name\n");
+		}
+
+		if (_alertString.length==0) {
+			document.Aform.submit();
+		} else {
+			alertString2 = _("Form not submitted because of the following problem(s)\n");
+			alertString2 += "------------------------------------------------------------------------------------\n\n";
+			alertString2 += _alertString;
+			alert(alertString2);
+		}
+	}
 //]]>
 </script>
 </head>
@@ -120,17 +155,17 @@ function placeHold () {
    <div class="yui-g">
     <!-- TMPL_IF NAME="itemsloop" -->
 
-<form action="/cgi-bin/koha/virtualshelves/shelves.pl" method="post" class="checkboxed">
+	<form action="/cgi-bin/koha/virtualshelves/shelves.pl" method="post" class="checkboxed">
         <input type="hidden" name="viewshelf" value="<!-- TMPL_VAR NAME="shelfnumber" -->" />
         <input type="hidden" name="modifyshelfcontents" value="1" />
  <fieldset>
   <legend>Contents of <i><!-- TMPL_VAR NAME="shelfname" --></i></legend>
+   
  <!--TMPL_IF NAME="manageshelf" -->
-   <p>
-     <span class="checkall"></span>
-     <span class="clearall"></span>
-   </p>
+     <p><span class="checkall"></span> |
+     <span class="clearall"></span></p>
  <!-- /TMPL_IF -->
+	
  <!-- TMPL_VAR name='pagination_bar'-->
     <table>
             <tr>
@@ -168,7 +203,7 @@ function placeHold () {
             <!-- TMPL_ELSE -->
 				<a class="title" href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" ESCAPE="URL" -->">
 			<!-- /TMPL_IF -->
-			<!-- TMPL_VAR NAME="title" escape="html" --> <!-- TMPL_VAR NAME="subtitle" --></a>
+			<!-- TMPL_VAR NAME="title" escape="html" --><!-- TMPL_LOOP NAME="subtitle" --> <!-- TMPL_VAR NAME="subfield" --><!-- /TMPL_LOOP --></a>
 			</td>
 			<td><!-- TMPL_VAR NAME="author" --></td>
 			<td><!-- TMPL_VAR NAME="dateadded" --></td>
@@ -179,14 +214,15 @@ function placeHold () {
 			</td>
 			</tr>
 		<!-- /TMPL_LOOP --><!-- /itemsloop -->
-    </table>
- </fieldset>
- <fieldset class="action">
+    </table><fieldset class="action">
         <!-- TMPL_IF name="manageshelf" -->
-            <input type="button" id="placehold" style="display:none" onclick="placeHold(); return false;" value="Place Hold"/>
-            <input type="submit" value="Remove selected Items" onclick='return confirm(_("Are you sure you want to remove these items from the shelf?"))' />
+            <input type="button" id="placehold" style="display:none" onclick="placeHold(); return false;" value="Place Holds" />
+            <input type="submit" value="Remove selected Items" onclick="return confirm(_('Are you sure you want to remove these items from the shelf?'));" />
+            <input type="submit" value="Merge selected Items" onclick="return MergeItems();" />
         <!-- /TMPL_IF -->
  </fieldset>
+ </fieldset>
+ 
 </form>
 	<!-- /TMPL_IF -->
    </div>
@@ -226,7 +262,7 @@ function placeHold () {
         <input type="hidden" name="shelves" value="1" />
         <legend>Create a new List</legend>
         <ol>
-        <li><label for="addshelf">Name: </label><input id="addshelf" type="text" name="addshelf" size="25" /></li>
+        <li><label class="required" for="addshelf">List Name:</label><input id="addshelf" type="text" name="addshelf" size="25" /></li>
         <li><span class="label">Owner: </span><input type="hidden" name="owner" id="owner" value="<!-- TMPL_VAR name="loggedinuser" -->" /><!-- TMPL_VAR name="loggedinusername" --></li>
 		<li><label for="sortfield" >Sort this list by: </label>
 		<select name="sortfield">
@@ -276,7 +312,7 @@ function placeHold () {
 	<!-- /TMPL_IF -->
 
 		</fieldset>
-		<fieldset class="action"><input type="submit" value="Save" /><a href="/cgi-bin/koha/virtualshelves/shelves.pl" class="cancel">Cancel</a></fieldset>
+		<fieldset class="action"><input type="submit" onclick="Check(this.form); return false;" value="Save" class="submit" /><a href="/cgi-bin/koha/virtualshelves/shelves.pl" class="cancel">Cancel</a></fieldset>
     </form>
     </div>
     <div class="yui-u">
@@ -324,6 +360,9 @@ function placeHold () {
 		</td>
         <td>
             <!-- TMPL_IF NAME="mine" -->
+				<form action="merge.pl" method="get">
+					<input type="hidden" name="shelf" value="<!-- TMPL_VAR NAME="shelf" -->" />
+				</form>
 				<form action="shelves.pl" method="get">
 					<input type="hidden" name="shelfnumber" value="<!-- TMPL_VAR NAME="shelf" -->" />
 					<input type="hidden" name="op" value="modif" />
@@ -346,10 +385,10 @@ function placeHold () {
 		</td>
 		</tr>
                 <!-- /TMPL_LOOP -->
-            <!-- TMPL_ELSE -->
-            <tr><td colspan="4">No Private Lists.</td></tr>
-            <!-- /TMPL_IF --><!-- /shelveslooppriv -->
         </table>
+            <!-- TMPL_ELSE -->
+            <p>No Private Lists.</p>
+            <!-- /TMPL_IF --><!-- /shelveslooppriv -->
 		</div><!-- /privateshelves -->
 
         <!-- TMPL_IF NAME="showpublicshelves" -->

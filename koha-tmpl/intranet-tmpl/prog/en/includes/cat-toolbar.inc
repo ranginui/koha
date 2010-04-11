@@ -2,7 +2,7 @@
 	
 	<script type="text/javascript">
 	//<![CDATA[
-	<!-- TMPL_IF NAME="CAN_user_editcatalogue" -->
+	<!-- TMPL_IF NAME="CAN_user_editcatalogue_edit_catalogue" -->
 	/* this function open a popup to search on z3950 server.  */
 	function PopupZ3950() {
 		var strQuery = GetZ3950Terms();
@@ -20,6 +20,7 @@
 		return strQuery;
 	}
 	<!-- /TMPL_IF -->
+	function addToCart() { addRecord('<!-- TMPL_VAR NAME="biblionumber" -->'); }
 	function addToShelf() {	window.open('/cgi-bin/koha/virtualshelves/addbybiblionumber.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->','Add_to_virtualshelf','width=500,height=400,toolbar=false,scrollbars=yes');
 	}
 	function printBiblio() {window.open('/cgi-bin/koha/catalogue/detailprint.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->','Print_Biblio','width=700,height=500,toolbar=false,scrollbars=yes');
@@ -43,7 +44,16 @@ function confirm_deletion() {
 		return false;
 	}
 }
-
+function confirm_items_deletion() {
+        var count = <!-- TMPL_VAR NAME="count" -->;
+        if(count > 0){
+            if(confirm(_('Are you sure you want to delete the ' + count + ' attached items? '))){
+                window.location="/cgi-bin/koha/cataloguing/additem.pl?op=delallitems&amp;biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->";
+            }else{
+                return false;
+            }
+		}
+}
 	// prepare DOM for YUI Toolbar
 
 	 $(document).ready(function() {
@@ -74,8 +84,10 @@ function confirm_deletion() {
 	    var editmenu = [
 	        { text: _("Edit Record"), url: "/cgi-bin/koha/cataloguing/addbiblio.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->&amp;frameworkcode=&amp;op=" },
 	        { text: _("Edit Items"), url: "/cgi-bin/koha/cataloguing/additem.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->" },
+	        { text: _("Attach Item"), url: "/cgi-bin/koha/cataloguing/moveitem.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->" },
 	        { text: _("Edit as New (Duplicate)"), url: "/cgi-bin/koha/cataloguing/addbiblio.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->&amp;frameworkcode=&amp;op=duplicate" },
-			{ text: _("Delete Record"), onclick: {fn: confirm_deletion }<!-- TMPL_IF NAME="count" -->,id:'disabled'<!-- /TMPL_IF --> }
+			{ text: _("Delete Record"), onclick: {fn: confirm_deletion }<!-- TMPL_IF NAME="count" -->,id:'disabled'<!-- /TMPL_IF --> },
+            { text: _("Delete all Items"), onclick: {fn: confirm_items_deletion } }
 	    ];
 		
 		var savemenu = [
@@ -86,6 +98,11 @@ function confirm_deletion() {
 		{ text: _("MARC (Unicode/UTF-8)"), url: "/cgi-bin/koha/catalogue/export.pl?format=utf8&op=export&bib=<!-- TMPL_VAR NAME="biblionumber" -->" }
 		];
 
+		var addtomenu = [
+		{ text: _("Cart"), onclick: { fn: addToCart } },
+		{ text: _("List"),  onclick: { fn: addToShelf } }
+		];
+
 	    new YAHOO.widget.Button({
 	        type: "menu",
 	        label: _("Save"),
@@ -93,7 +110,7 @@ function confirm_deletion() {
 	        menu: savemenu,
 	        container: "savemenuc"
 	    });
-	    
+
 		new YAHOO.widget.Button({
 	        type: "menu",
 	        label: _("Edit"),
@@ -101,7 +118,7 @@ function confirm_deletion() {
 	        menu: editmenu,
 	        container: "editmenuc"
 	    });
-	    
+
 		new YAHOO.widget.Button({
 	        type: "menu",
 	        label: _("New"),
@@ -109,23 +126,23 @@ function confirm_deletion() {
 	        menu: newmenu,
 	        container: "newmenuc"
 	    });
-		
+
+		new YAHOO.widget.Button({
+	        type: "menu",
+	        label: _("Add to"),
+	        name: "addtomenubutton",
+	        menu: addtomenu,
+	        container: "addtoshelfc"
+	    });
+
 		new YAHOO.widget.Button({
 			id: "z3950search", 
 			type: "button", 
-			label: _("z39.50 Search"), 
+			label: _("Z39.50 Search"), 
 			container: "z3950searchc",
 			onclick: {fn:function(){PopupZ3950()}}
 		});
 
-		var addtoshelfButton = new YAHOO.widget.Button({
-                                            id: "addtoshelf", 
-                                            type: "button", 
-                                            label: _("Add to List"), 
-                                            container: "addtoshelfc",
-											onclick: {fn: addToShelf }
-                                        });
-										
 		var printbiblioButton = new YAHOO.widget.Button({
                                             id: "printbiblio", 
                                             type: "button", 
@@ -145,7 +162,7 @@ function confirm_deletion() {
 <form method="post" name="f" id="f" action="/cgi-bin/koha/cataloguing/addbiblio.pl" onsubmit="return Check();">
 
 <ul class="toolbar">
-	<!-- TMPL_IF NAME="CAN_user_editcatalogue" -->
+	<!-- TMPL_IF NAME="CAN_user_editcatalogue_edit_catalogue" -->
 	<li id="newmenuc"><a id="newbiblio" href="/cgi-bin/koha/cataloguing/addbiblio.pl">New Record</a></li>
 	<li><a id="newitem" href="/cgi-bin/koha/cataloguing/additem.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->">New Item</a></li>
 	<li><a id="newsub" href="/cgi-bin/koha/serials/subscription-add.pl?biblionumber_for_new_subscription=<!-- TMPL_VAR NAME="biblionumber" -->">New Subscription</a></li>
@@ -160,7 +177,7 @@ function confirm_deletion() {
         <!-- TMPL_UNLESS name="bi_notforloan" -->
 	<!-- TMPL_UNLESS NAME="norequests" --><li><a id="placehold" href="/cgi-bin/koha/reserve/request.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->">Place Hold</a></li><!-- /TMPL_UNLESS --><!-- /TMPL_UNLESS -->
 	<!-- /TMPL_IF -->
-	<!-- TMPL_IF NAME="CAN_user_editcatalogue" --><li id="z3950searchc"><input type="button" id="z3950search" value="z39.50 Search" onclick="PopupZ3950(); return false;" /></li><!-- /TMPL_IF -->
+	<!-- TMPL_IF NAME="CAN_user_editcatalogue_edit_catalogue" --><li id="z3950searchc"><input type="button" id="z3950search" value="Z39.50 Search" onclick="PopupZ3950(); return false;" /></li><!-- /TMPL_IF -->
     </ul>
 </form>
 </div>

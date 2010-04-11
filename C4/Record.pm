@@ -14,9 +14,9 @@ package C4::Record;
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 #
 use strict;# use warnings; #FIXME: turn off warnings before release
@@ -29,6 +29,11 @@ use Biblio::EndnoteStyle;
 use Unicode::Normalize; # _entity_encode
 use XML::LibXSLT;
 use XML::LibXML;
+use C4::Biblio; #marc2bibtex
+use C4::Csv; #marc2csv
+use C4::Koha; #marc2csv
+use YAML; #marcrecords2csv
+use Text::CSV::Encoded; #marc2csv
 
 use vars qw($VERSION @ISA @EXPORT);
 
@@ -46,7 +51,8 @@ $VERSION = 3.00;
   &marcxml2marc
   &marc2dcxml
   &marc2modsxml
-
+  &marc2bibtex
+  &marc2csv
   &html2marcxml
   &html2marc
   &changeEncoding
@@ -322,6 +328,213 @@ sub marc2endnote {
 	
 }
 
+=head2 marc2csv - Convert several records from UNIMARC to CSV
+Pre and postprocessing can be done through a YAML file
+
+=over 4
+
+my ($csv) = marc2csv($biblios, $csvprofileid);
+
+Returns a CSV scalar
+
+=over 2
+
+C<$biblio> - a list of biblionumbers
+
+C<$csvprofileid> - the id of the CSV profile to use for the export (see export_format.export_format_id and the GetCsvProfiles function in C4::Csv)
+
+=back
+
+=back
+
+=cut
+sub marc2csv {
+    my ($biblios, $id) = @_;
+    my $output;
+    my $csv = Text::CSV::Encoded->new();
+
+    # Getting yaml file
+    my $configfile = "../tools/csv-profiles/$id.yaml";
+    my ($preprocess, $postprocess, $fieldprocessing);
+    if (-e $configfile){
+        ($preprocess,$postprocess, $fieldprocessing) = YAML::LoadFile($configfile);
+    }
+
+    warn $fieldprocessing;
+    # Preprocessing
+    eval $preprocess if ($preprocess);
+
+    my $firstpass = 1;
+    foreach my $biblio (@$biblios) {
+	$output .= marcrecord2csv($biblio, $id, $firstpass, $csv, $fieldprocessing) ;
+	$firstpass = 0;
+    }
+
+    # Postprocessing
+    eval $postprocess if ($postprocess);
+
+    return $output;
+}
+
+=head2 marcrecord2csv - Convert a single record from UNIMARC to CSV
+
+=over 4
+
+my ($csv) = marcrecord2csv($biblio, $csvprofileid, $header);
+
+Returns a CSV scalar
+
+=over 2
+
+C<$biblio> - a biblionumber
+
+C<$csvprofileid> - the id of the CSV profile to use for the export (see export_format.export_format_id and the GetCsvProfiles function in C4::Csv)
+
+C<$header> - true if the headers are to be printed (typically at first pass)
+
+C<$csv> - an already initialised Text::CSV object
+
+=back
+
+=back
+
+=cut
+
+
+sub marcrecord2csv {
+    my ($biblio, $id, $header, $csv, $fieldprocessing) = @_;
+    my $output;
+
+    # Getting the record
+    my $record = GetMarcBiblio($biblio);
+
+    # Getting the framework
+    my $frameworkcode = GetFrameworkCode($biblio);
+
+    # Getting information about the csv profile
+    my $profile = GetCsvProfile($id);
+
+    # Getting output encoding
+    my $encoding          = $profile->{encoding} || 'utf8';
+    # Getting separators
+    my $csvseparator      = $profile->{csv_separator}      || ',';
+    my $fieldseparator    = $profile->{field_separator}    || '#';
+    my $subfieldseparator = $profile->{subfield_separator} || '|';
+
+    # TODO: Be more generic (in case we have to handle other protected chars or more separators)
+    if ($csvseparator eq '\t') { $csvseparator = "\t" }
+    if ($fieldseparator eq '\t') { $fieldseparator = "\t" }
+    if ($subfieldseparator eq '\t') { $subfieldseparator = "\t" }
+    if ($csvseparator eq '\n') { $csvseparator = "\n" }
+    if ($fieldseparator eq '\n') { $fieldseparator = "\n" }
+    if ($subfieldseparator eq '\n') { $subfieldseparator = "\n" }
+
+    $csv = $csv->encoding_out($encoding) ;
+    $csv->sep_char($csvseparator);
+
+    # Getting the marcfields
+    my $marcfieldslist = $profile->{marcfields};
+
+    # Getting the marcfields as an array
+    my @marcfieldsarray = split('\|', $marcfieldslist);
+
+   # Separating the marcfields from the the user-supplied headers
+    my @marcfields;
+    foreach (@marcfieldsarray) {
+        my @result = split('=', $_);
+        if (scalar(@result) == 2) {
+           push @marcfields, { header => $result[0], field => $result[1] }; 
+        } else {
+           push @marcfields, { field => $result[0] }
+        }
+    }
+
+    # If we have to insert the headers
+    if ($header) {
+	my @marcfieldsheaders;
+	my $dbh   = C4::Context->dbh;
+
+	# For each field or subfield
+	foreach (@marcfields) {
+
+	    my $field = $_->{field};
+
+	    # If we have a user-supplied header, we use it
+	    if (exists $_->{header}) {
+		    push @marcfieldsheaders, $_->{header};
+	    } else {
+		# If not, we get the matching tag name from koha
+		if (index($field, '$') > 0) {
+		    my ($fieldtag, $subfieldtag) = split('\$', $field);
+		    my $query = "SELECT liblibrarian FROM marc_subfield_structure WHERE tagfield=? AND tagsubfield=?";
+		    my $sth = $dbh->prepare($query);
+		    $sth->execute($fieldtag, $subfieldtag);
+		    my @results = $sth->fetchrow_array();
+		    push @marcfieldsheaders, $results[0];
+		} else {
+		    my $query = "SELECT liblibrarian FROM marc_tag_structure WHERE tagfield=?";
+		    my $sth = $dbh->prepare($query);
+		    $sth->execute($field);
+		    my @results = $sth->fetchrow_array();
+		    push @marcfieldsheaders, $results[0];
+		}
+	    }
+	}
+	$csv->combine(@marcfieldsheaders);
+	$output = $csv->string() . "\n";	
+    }
+
+    # For each marcfield to export
+    my @fieldstab;
+    foreach (@marcfields) {
+	my $marcfield = $_->{field};
+	# If it is a subfield
+	if (index($marcfield, '$') > 0) {
+	    my ($fieldtag, $subfieldtag) = split('\$', $marcfield);
+	    my @fields = $record->field($fieldtag);
+	    my @tmpfields;
+
+	    # For each field
+	    foreach my $field (@fields) {
+
+		# We take every matching subfield
+		my @subfields = $field->subfield($subfieldtag);
+		foreach my $subfield (@subfields) {
+
+		    # Getting authorised value
+		    my $authvalues = GetKohaAuthorisedValuesFromField($fieldtag, $subfieldtag, $frameworkcode, undef);
+		    push @tmpfields, (defined $authvalues->{$subfield}) ? $authvalues->{$subfield} : $subfield;
+		}
+	    }
+	    push (@fieldstab, join($subfieldseparator, @tmpfields));  		
+	# Or a field
+	} else {
+	    my @fields = ($record->field($marcfield));
+	    my $authvalues = GetKohaAuthorisedValuesFromField($marcfield, undef, $frameworkcode, undef);
+
+	    my @valuesarray;
+	    foreach (@fields) {
+		my $value;
+
+		# Getting authorised value
+		$value = defined $authvalues->{$_->as_string} ? $authvalues->{$_->as_string} : $_->as_string;
+
+		# Field processing
+		eval $fieldprocessing if ($fieldprocessing);
+
+		push @valuesarray, $value;
+	    }
+	    push (@fieldstab, join($fieldseparator, @valuesarray)); 
+	 }
+    };
+
+    $csv->combine(@fieldstab);
+    $output .= $csv->string() . "\n";
+
+    return $output;
+
+}
+
 
 =head2 html2marcxml
 
@@ -563,6 +776,94 @@ sub changeEncoding {
 	}
 	return ($error,$newrecord);
 }
+
+=head2 marc2bibtex - Convert from MARC21 and UNIMARC to BibTex
+
+=over 4
+
+my ($bibtex) = marc2bibtex($record, $id);
+
+Returns a BibTex scalar
+
+=over 2
+
+C<$record> - a MARC::Record object
+
+C<$id> - an id for the BibTex record (might be the biblionumber)
+
+=back
+
+=back
+
+=cut
+
+
+sub marc2bibtex {
+    my ($record, $id) = @_;
+    my $tex;
+
+    # Authors
+    my $marcauthors = GetMarcAuthors($record,C4::Context->preference("marcflavour"));
+    my $author;
+    for my $authors ( map { map { @$_ } values %$_  } @$marcauthors  ) {  
+	$author .= " and " if ($author && $$authors{value});
+	$author .= $$authors{value} if ($$authors{value}); 
+    }
+
+    # Defining the conversion hash according to the marcflavour
+    my %bh;
+    if (C4::Context->preference("marcflavour") eq "UNIMARC") {
+	
+	# FIXME, TODO : handle repeatable fields
+	# TODO : handle more types of documents
+
+	# Unimarc to bibtex hash
+	%bh = (
+
+	    # Mandatory
+	    author    => $author,
+	    title     => $record->subfield("200", "a") || "",
+	    editor    => $record->subfield("210", "g") || "",
+	    publisher => $record->subfield("210", "c") || "",
+	    year      => $record->subfield("210", "d") || $record->subfield("210", "h") || "",
+
+	    # Optional
+	    volume  =>  $record->subfield("200", "v") || "",
+	    series  =>  $record->subfield("225", "a") || "",
+	    address =>  $record->subfield("210", "a") || "",
+	    edition =>  $record->subfield("205", "a") || "",
+	    note    =>  $record->subfield("300", "a") || "",
+	    url     =>  $record->subfield("856", "u") || ""
+	);
+    } else {
+
+	# Marc21 to bibtex hash
+	%bh = (
+
+	    # Mandatory
+	    author    => $author,
+	    title     => $record->subfield("245", "a") || "",
+	    editor    => $record->subfield("260", "f") || "",
+	    publisher => $record->subfield("260", "b") || "",
+	    year      => $record->subfield("260", "c") || $record->subfield("260", "g") || "",
+
+	    # Optional
+	    # unimarc to marc21 specification says not to convert 200$v to marc21
+	    series  =>  $record->subfield("490", "a") || "",
+	    address =>  $record->subfield("260", "a") || "",
+	    edition =>  $record->subfield("250", "a") || "",
+	    note    =>  $record->subfield("500", "a") || "",
+	    url     =>  $record->subfield("856", "u") || ""
+	);
+    }
+
+    $tex .= "\@book{";
+    $tex .= join(",\n", $id, map { $bh{$_} ? qq(\t$_ = "$bh{$_}") : () } keys %bh);
+    $tex .= "\n}\n";
+
+    return $tex;
+}
+
 
 =head1 INTERNAL FUNCTIONS
 

@@ -132,6 +132,7 @@ April 12 2003	 Koha 1.9.2 released
 April 16 2003	 Paul Poulain presents on Koha at "Open Source Software in Libraries" at enssib (the French National School for librarians - www.enssib.fr) 
 May 3 2003	Dorian Meid translate the opac into German	translation, german
 May 9 2003	 Ingrid resigns as QA manager
+May 6 2003	software.coop (then TTLLP) offer Koha support
 May 15 2003	 Pat Eyler, Steve Tonnesen and Chris Cormack add RSS support to Koha
 May 21 2003	 M J Ray becomes the 22nd committer to Koha
 May 22 2003	 Paul Poulain commits new bulkmarcimport tool to Koha
@@ -431,14 +432,49 @@ May 28 2009	Zeno Tajoli becomes the 93rd committer to have a patch accepted	deve
 May 29 2009	Matthias Meusburger becomes the 94th committer to have patch accepted	developer
 May 29 2009	First feature sponsored by Plano Independent School District committed	sponsor
 June 3 2009	Savitra Sirohi becomes the 95th committer to have a patch accepted	developer,India
+June 3 2009	IRC general Meeting http://wiki.koha.org/doku.php?id=en:events:meetings:irc_meetings:meetingnotes09jun3
 June 4 2009	Koha 3.0.2 released	releases
 June 8 2009	Koha passed 10,000 commits in the master branch (since December 2000)	statistics
 June 26 2009	Koha 3.0.3 released	releases
+July 1 2009	IRC general Meeting http://wiki.koha.org/doku.php?id=en:events:meetings:irc_meetings:meetingnotes09jul01
 July 27 2009	Feature sponsored by East Brunswick Public Library, East Brunswick, NJ USA and Middletown Township Public Library, Middletown, NJ USA committed	sponsor
 July 30	2009	First message to koha-commits mailing list
 August 1 2009	Sébastien Hinderer becomes the 96th committer to have a patched accepted	developer,france
+August 5 2009	IRC general meeting http://wiki.koha.org/doku.php?id=en:events:meetings:irc_meetings:meetingnotes09aug05
 August 30 2009	John A. Graziano Memorial Library contributes a icon for Bridge Icon set
+September 2 2009	IRC general meeting http://wiki.koha.org/doku.php?id=en:events:meetings:irc_meetings:meetingnotes09sep02
 September 5 2009	UNIMARC XSLT cleanup and new features Sponsored by BULAC, www.bulac.fr
 September 5 2009	Labels rewrite committed, sponsored by Foundations Bible College & Seminary, Dunn, NC USA
 September 6 2009  Katrin Fischer becomes the 97th committer to have a patch accepted  developer
 September 6 2009  Wolfgang Heymans becomes the 98th committer to have a patch accepted  developer
+September 15 2009	Foundation forming meeting http://wiki.koha.org/doku.php?id=en:events:meetings:irc_meetings:meetingnotes09sep15
+October 7 2009	IRC general meeting http://wiki.koha.org/doku.php?id=en:events:meetings:irc_meetings:meetingnotes09oct07
+October 22 2009	Koha 3.0.4 released	releases
+October 29 2009	Foundation Forming meeting http://wiki.koha.org/doku.php?id=en:events:meetings:irc_meetings:meetingnotes09oct29
+November 4 2009	General meeting http://wiki.koha.org/doku.php?id=en:events:meetings:irc_meetings:meetingnotes09nov04
+December 2 2009 KUDOS meeting http://wiki.koha.org/doku.php?id=en:events:meetings:irc_meetings:kudosmeetingnotes09dec02
+December 2 2009 General meeting http://wiki.koha.org/doku.php?id=en:events:meetings:irc_meetings:meetingnotes09dec02
+December 3 2009	Foundation meeting http://wiki.koha.org/doku.php?id=en:events:meetings:irc_meetings:meetingnotes09dec03
+December 9 2009	Piotr Wejman becomes the 99th committer to have a patch accepted	developer
+December 19 2009	Koha 3.0.5 released	releases
+December 20 2009 NYUHSL becomes the 100th committer to have a patch accepted	developer
+December 23 2009	Sharon Moreland becomes the 101st committer to have a patch accepted (sent via Liz Rea)	developer
+December 23 2009	Nicolas Morin becomes the 102 committed to have a patch accepted	developer
+January 13 2010	IRC General Meeting http://wiki.koha.org/doku.php?id=en:events:meetings:irc_meetings:meetingnotes10jan13
+January 14 2010	Bywater Solutions and Biblibre partner to offer support in the US
+January 14 2010	Chris Cormack elected Release Manager for 3.4.0
+January 15 2010	PTFS announce intention to buy Liblime
+January 26 2010	Biblibre and Libriotech partner to offer support in Norway
+February 2 2010	Community Handover meeting http://wiki.koha.org/doku.php?id=en:events:meetings:irc_meetings:meetingnotes10feb02
+February 2 2010	koha-community.org website started
+February 3 2010	Koha 3.2.0 Alpha released
+February 9 2010	General IRC meeting http://wiki.koha.org/doku.php?id=en:events:meetings:irc_meetings:meetingnotes10feb09
+February 10 2010	Magnus Enger becomes the 103rd committer to have a patch accepted
+February 11 2010	Acquisition of Liblime by PTFS called off
+February 11 2010	Equinox begin to offer Koha support
+February 15 2010	Will Stokes becomes the 104th committer to have a patch accepted
+February 16 2010	Kohacon10 IRC meeting http://wiki.koha.org/doku.php?id=en:kohacon2010:meetingminutes16feb
+March 2	2010	Community Handover meeting http://wiki.koha.org/doku.php?id=en:events:meetings:irc_meetings:meetingnotes10mar02
+March 3 2010	General IRC meeting http://wiki.koha.org/doku.php?id=en:events:meetings:irc_meetings:meetingnotes10mar03
+March 15 2010	PTFS acquires LibLime after all
+March 16 2010	Lars Wirzenius becomes the 105th committer to have a patch accepted

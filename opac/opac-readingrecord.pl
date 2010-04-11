@@ -17,11 +17,13 @@
 
 
 use strict;
+use warnings;
 
 use CGI;
 
 use C4::Auth;
 use C4::Koha;
+use C4::Biblio;
 use C4::Circulation;
 use C4::Dates qw/format_date/;
 use C4::Members;
@@ -48,22 +50,21 @@ $template->param($borr);
 my $itemtypes = GetItemTypes();
 
 # get the record
-my $order  = $query->param('order');
-my $order2 = $order;
-if ( $order2 eq '' ) {
-    $order2 = "date_due desc";
+my $order  = $query->param('order') || '';
+if ( $order eq '' ) {
+    $order = "date_due desc";
     $template->param( orderbydate => 1 );
 }
 
-if ( $order2 eq 'title' ) {
+if ( $order eq 'title' ) {
     $template->param( orderbytitle => 1 );
 }
 
-if ( $order2 eq 'author' ) {
+if ( $order eq 'author' ) {
     $template->param( orderbyauthor => 1 );
 }
 
-my $limit = $query->param('limit');
+my $limit = $query->param('limit') || 50;
 if ( $limit eq 'full' ) {
     $limit = 0;
 }
@@ -71,32 +72,35 @@ else {
     $limit = 50;
 }
 
-my ( $count, $issues ) = GetAllIssues( $borrowernumber, $order2, $limit );
+my ( $issues ) = GetAllIssues( $borrowernumber, $order, $limit );
 
-my $borr = GetMemberDetails( $borrowernumber );
 my @bordat;
 $bordat[0] = $borr;
 $template->param( BORROWER_INFO => \@bordat );
 
 my @loop_reading;
 
-for ( my $i = 0 ; $i < $count ; $i++ ) {
+foreach my $issue (@{$issues} ) {
     my %line;
 	
+    my $record = GetMarcBiblio($issue->{'biblionumber'});
+
 	# XISBN Stuff
-	my $isbn = GetNormalizedISBN($issues->[$i]->{'isbn'});
+	my $isbn               = GetNormalizedISBN($issue->{'isbn'});
 	$line{normalized_isbn} = $isbn;
-    $line{biblionumber}   = $issues->[$i]->{'biblionumber'};
-    $line{title}          = $issues->[$i]->{'title'};
-    $line{author}         = $issues->[$i]->{'author'};
-    $line{itemcallnumber} = $issues->[$i]->{'itemcallnumber'};
-    $line{date_due}       = format_date( $issues->[$i]->{'date_due'} );
-    $line{returndate}     = format_date( $issues->[$i]->{'returndate'} );
-    $line{volumeddesc}    = $issues->[$i]->{'volumeddesc'};
-    $line{counter}        = $i + 1;
-    $line{'description'} = $itemtypes->{ $issues->[$i]->{'itemtype'} }->{'description'};
-    $line{imageurl}       = getitemtypeimagelocation( 'opac', $itemtypes->{ $issues->[$i]->{'itemtype'}  }->{'imageurl'} );
+    $line{biblionumber}    = $issue->{'biblionumber'};
+    $line{title}           = $issue->{'title'};
+    $line{author}          = $issue->{'author'};
+    $line{itemcallnumber}  = $issue->{'itemcallnumber'};
+    $line{date_due}        = format_date( $issue->{'date_due'} );
+    $line{returndate}      = format_date( $issue->{'returndate'} );
+    $line{volumeddesc}     = $issue->{'volumeddesc'};
+    if($issue->{'itemtype'}) {
+        $line{'description'}   = $itemtypes->{ $issue->{'itemtype'} }->{'description'};
+        $line{imageurl}        = getitemtypeimagelocation( 'opac', $itemtypes->{ $issue->{'itemtype'}  }->{'imageurl'} );
+    }
     push( @loop_reading, \%line );
+    $line{subtitle} = GetRecordValue('subtitle', $record, GetFrameworkCode($issue->{'biblionumber'}));
 }
 
 if (C4::Context->preference('BakerTaylorEnabled')) {
@@ -123,12 +127,11 @@ for(qw(AmazonCoverImages GoogleJackets)) {	# BakerTaylorEnabled handled above
 }
 
 $template->param(
-    count          => $count,
     READING_RECORD => \@loop_reading,
     limit          => $limit,
     showfulllink   => 1,
-	readingrecview => 1
+	readingrecview => 1,
+	count          => scalar @loop_reading,
 );
 
 output_html_with_http_headers $query, $cookie, $template->output;
-

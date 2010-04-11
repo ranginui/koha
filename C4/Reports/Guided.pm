@@ -13,9 +13,9 @@ package C4::Reports::Guided;
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
 # use warnings;  # FIXME: this module needs a lot of repair to run clean under warnings
@@ -29,6 +29,7 @@ use C4::Output;
 use C4::Dates;
 use XML::Simple;
 use XML::Dumper;
+use Switch;
 use C4::Debug;
 # use Smart::Comments;
 # use Data::Dumper;
@@ -74,18 +75,29 @@ $keys{'5'} = ['borrowers.borrowernumber=accountlines.borrowernumber'];
 # have to do someting here to know if its dropdown, free text, date etc
 
 our %criteria;
+# reports on circulation
 $criteria{'1'} = [
     'statistics.type',   'borrowers.categorycode',
     'statistics.branch',
     'biblioitems.publicationyear|date',
     'items.dateaccessioned|date'
 ];
+# reports on catalogue
 $criteria{'2'} =
-  [ 'items.holdingbranch', 'items.homebranch' ,'items.itemlost', 'items.location', 'items.ccode'];
-$criteria{'3'} = ['borrowers.branchcode'];
+  [ 'items.itemnumber|textrange',   'items.biblionumber|textrange',   'items.barcode|textrange', 
+    'biblio.frameworkcode',         'items.holdingbranch',            'items.homebranch', 
+  'biblio.datecreated|daterange',   'biblio.timestamp|daterange',     'items.onloan|daterange', 
+  'items.ccode',                    'items.itemcallnumber|textrange', 'items.itype', 
+  'items.itemlost',                 'items.location' ];
+# reports on borrowers
+$criteria{'3'} = ['borrowers.branchcode', 'borrowers.categorycode'];
+# reports on acquisition
 $criteria{'4'} = ['aqorders.datereceived|date'];
-$criteria{'5'} = ['borrowers.branchcode'];
 
+# reports on accounting
+$criteria{'5'} = ['borrowers.branchcode', 'borrowers.categorycode'];
+
+# Adds itemtypes to criteria, according to the syspref
 if (C4::Context->preference('item-level_itypes')) {
     unshift @{ $criteria{'1'} }, 'items.itype';
     unshift @{ $criteria{'2'} }, 'items.itype';
@@ -243,7 +255,6 @@ sub _build_query {
     my $dbh           = C4::Context->dbh();
     my $joinedtables  = join( ',', @$tables );
     my $joinedcolumns = join( ',', @$columns );
-    my $joinedkeys    = join( ' AND ', @$keys );
     my $query =
       "SELECT $totals $joinedcolumns FROM $tables->[0] ";
 	for (my $i=1;$i<@$tables;$i++){
@@ -305,31 +316,65 @@ sub get_criteria {
     foreach my $localcrit (@$crit) {
         my ( $value, $type )   = split( /\|/, $localcrit );
         my ( $table, $column ) = split( /\./, $value );
-        if ( $type eq 'date' ) {
-			my %temp;
-            $temp{'name'}   = $value;
-            $temp{'date'}   = 1;
-			$temp{'description'} = $column_defs->{$value};
-            push @criteria_array, \%temp;
-        }
-        else {
+	switch ($type) {
+	    case 'textrange' {
+		my %temp;
+		$temp{'name'}        = $value;
+		$temp{'from'}        = "from_" . $value;
+		$temp{'to'}          = "to_" . $value;
+		$temp{'textrange'}   = 1;
+		$temp{'description'} = $column_defs->{$value};
+		push @criteria_array, \%temp;
+	    }
 
-            my $query =
-              "SELECT distinct($column) as availablevalues FROM $table";
-            my $sth = $dbh->prepare($query);
-            $sth->execute();
-            my @values;
-            while ( my $row = $sth->fetchrow_hashref() ) {
-                push @values, $row;
-                ### $row;
-            }
-            $sth->finish();
-            my %temp;
-            $temp{'name'}   = $value;
-			$temp{'description'} = $column_defs->{$value};
-            $temp{'values'} = \@values;
-            push @criteria_array, \%temp;
-        }
+	    case 'date' {
+		my %temp;
+		$temp{'name'}        = $value;
+		$temp{'date'}        = 1;
+		$temp{'description'} = $column_defs->{$value};
+		push @criteria_array, \%temp;
+	    }
+
+	    case 'daterange' {
+		my %temp;
+		$temp{'name'}        = $value;
+		$temp{'from'}        = "from_" . $value;
+		$temp{'to'}          = "to_" . $value;
+		$temp{'daterange'}   = 1;
+		$temp{'description'} = $column_defs->{$value};
+		push @criteria_array, \%temp;
+	    }
+
+	    else {
+		my $query =
+		  "SELECT distinct($column) as availablevalues FROM $table";
+		my $sth = $dbh->prepare($query);
+		$sth->execute();
+		my @values;
+        # push the runtime choosing option
+        my $list;
+        $list='branches' if $column eq 'branchcode' or $column eq 'holdingbranch' or $column eq 'homebranch';
+        $list='categorycode' if $column eq 'categorycode';
+        $list='itemtype' if $column eq 'itype';
+        $list='ccode' if $column eq 'ccode';
+        # TODO : improve to let the librarian choose the description at runtime
+        push @values, { availablevalues => "<<$column".($list?"|$list":'').">>" };
+		while ( my $row = $sth->fetchrow_hashref() ) {
+		    push @values, $row;
+		    if ($row->{'availablevalues'} eq '') { $row->{'default'} = 1 };
+		}
+		$sth->finish();
+
+		my %temp;
+		$temp{'name'}        = $value;
+	    	$temp{'description'} = $column_defs->{$value};
+		$temp{'values'}      = \@values;
+		
+		push @criteria_array, \%temp;
+     
+	    }
+
+	}
     }
     return ( \@criteria_array );
 }
@@ -382,8 +427,8 @@ sub select_2_select_count ($) {
 sub strip_limit ($) {
     my $sql = shift or return;
     ($sql =~ /\bLIMIT\b/i) or return ($sql, 0, undef);
-    $sql =~ s/\bLIMIT\b\s*\d+(\,\s*\d+)?\s*/ /ig;
-    return ($sql, (defined $1 ? $1 : 0), $2);   # offset can default to 0, LIMIT cannot!
+    $sql =~ s/\bLIMIT\b\s*(\d+)(\s*\,\s*(\d+))?\s*/ /ig;
+    return ($sql, (defined $2 ? $1 : 0), (defined $3 ? $3 : $1));   # offset can default to 0, LIMIT cannot!
 }
 
 sub execute_query ($;$$$) {
@@ -412,13 +457,12 @@ sub execute_query ($;$$$) {
         $useroffset,
         (defined($userlimit ) ? $userlimit  : 'UNDEF');
     $offset += $useroffset;
-    my $total;
     if (defined($userlimit)) {
         if ($offset + $limit > $userlimit ) {
             $limit = $userlimit - $offset;
+        } elsif ( ! $offset && $limit > $userlimit ) {
+            $limit = $userlimit;
         }
-        $total = $userlimit if $userlimit < $total;     # we will never exceed a user defined LIMIT and...
-        $userlimit = $total if $userlimit > $total;     # we will never exceed the total number of records available to satisfy the query
     }
     $sql .= " LIMIT ?, ?";
 
@@ -523,7 +567,7 @@ sub get_saved_reports {
     foreach (@$result){
         $_->{date_created} = format_date($_->{date_created}); 
         
-        my $member = C4::Members::GetMember($_->{borrowernumber});
+        my $member = C4::Members::GetMember(borrowernumber=>$_->{borrowernumber});
         $_->{borrowerfirstname} = $member->{firstname};
         $_->{borrowersurname}   = $member->{surname};
     }

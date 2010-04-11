@@ -14,9 +14,9 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 =head1 SYNOPSIS
 
@@ -81,6 +81,9 @@ sub plugin_javascript {
             var inputs = document.getElementsByTagName('input');
             
             for(var i=0 , len=inputs.length ; i \< len ; i++ ){
+                if(inputs[i].id.match(/^tag_010_subfield_a_.*/)){
+                    isbn_found = inputs[i].value;
+                }
                 if(inputs[i].id.match(/^tag_210_subfield_c_.*/)){
                     editor_found = inputs[i].value;
                 }
@@ -113,7 +116,7 @@ sub plugin {
             query           => $input,
             type            => "intranet",
             authnotrequired => 0,
-            flagsrequired   => { editcatalogue => 1 },
+            flagsrequired   => { editcatalogue => '*' },
             debug           => 1,
         }
     );
@@ -138,8 +141,8 @@ sub plugin {
             push @collections, $col;
         }
             
-    }
-
+    } 
+    @collections = sort @collections;
     #	my @collections = ["test"];
     my $collection = CGI::scrolling_list(
         -name     => 'f1',

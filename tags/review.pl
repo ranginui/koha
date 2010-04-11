@@ -15,9 +15,9 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use warnings;
 use strict;
@@ -35,7 +35,7 @@ use C4::Debug;
 use C4::Tags 0.03 qw(get_tags get_approval_rows approval_counts whitelist blacklist is_approved);
 
 my $script_name = "/cgi-bin/koha/tags/review.pl";
-my $needed_flags = { tools => 'moderate_comments' };	# FIXME: replace when more specific permission is created.
+my $needed_flags = { tools => 'moderate_tags' };	# FIXME: replace when more specific permission is created.
 
 sub ajax_auth_cgi ($) {		# returns CGI object
 	my $needed_flags = shift;
@@ -178,11 +178,12 @@ if ($filter = $input->param('to')) {
 	}
 }
 if ($filter = $input->param('approver')) {		# name (or borrowernumber) from input box
-	if (($filter =~ /^\d+$/ and $filter > 0) or
-		(1) ){	# $filter=get borrowernumber from name
+	if ($filter =~ /^\d+$/ and $filter > 0) {
+		# $filter=get borrowernumber from name
+		# FIXME: get borrowernumber from name not implemented.
 		$template->param(filter_approver=>$filter);
 		$filters{approved_by} = $filter;
-	# } else {
+	} else {
 		push @errors, {approver=>$filter};
 	}
 }

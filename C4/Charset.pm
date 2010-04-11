@@ -13,15 +13,17 @@ package C4::Charset;
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
 use warnings;
 
 use MARC::Charset qw/marc8_to_utf8/;
 use Text::Iconv;
+use C4::Debug;
+use Unicode::Normalize;
 
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
@@ -33,6 +35,7 @@ BEGIN {
     @EXPORT = qw(
         IsStringUTF8ish
         MarcToUTF8Record
+        SetUTF8Flag
         SetMarcUnicodeFlag
         StripNonXmlChars
     );
@@ -110,6 +113,87 @@ sub IsStringUTF8ish {
     return utf8::decode($str);
 }
 
+=head2 SetUTF8Flag
+
+=over 4
+
+my $marc_record = SetUTF8Flag($marc_record);
+
+=back
+
+This function sets the PERL UTF8 flag for data.
+It is required when using new_from_usmarc 
+since MARC::File::USMARC does not handle PERL UTF8 setting.
+When editing unicode marc records fields and subfields, you
+would end up in double encoding without using this function. 
+
+FIXME
+In my opinion, this function belongs to MARC::Record and not
+to this package.
+But since it handles charset, and MARC::Record, it finds its way in that package
+
+=cut
+
+sub SetUTF8Flag{
+	my ($record)=@_;
+	return unless ($record && $record->fields());
+	foreach my $field ($record->fields()){
+		if ($field->tag()>=10){
+			my @subfields;
+			foreach my $subfield ($field->subfields()){
+				push @subfields,($$subfield[0],NormalizeString($$subfield[1]));
+			}
+			my $newfield=MARC::Field->new(
+							$field->tag(),
+							$field->indicator(1),
+							$field->indicator(2),
+							@subfields
+						);
+			$field->replace_with($newfield);
+		}
+	}
+}
+
+=head2 NormalizeString
+
+=over 4
+
+    my $normalized_string=NormalizeString($string);
+
+=back
+
+	Given 
+	    a string
+        nfc : If you want to set NFC and not NFD
+        transform : If you expect all the signs to be removed
+    Sets the PERL UTF8 Flag on your initial data if need be
+    and applies cleaning if required 
+    
+	Returns a utf8 NFD normalized string
+	
+	Sample code :
+	my $string=NormalizeString ("l'ornithoptère");
+    #results into ornithoptère in NFD form and sets UTF8 Flag
+=cut
+
+sub NormalizeString{
+	my ($string,$nfc,$transform)=@_;
+	utf8::decode($string) unless (utf8::is_utf8($string));
+	if ($nfc){
+		$string= NFD($string);
+	}
+	else {
+		$string=NFC($string);
+	}
+	if ($transform){
+    $string=~s/\<|\>|\^|\;|\.|\?|,|\-|\(|\)|\[|\]|\{|\}|\$|\%|\!|\*|\:|\\|\/|\&|\"|\'/ /g;
+	#removing one letter words "d'" "l'"  was changed into "d " "l " 
+    $string=~s/\b\S\b//g;
+    $string=~s/\s+$//g;
+	}
+    return $string; 
+}
+
 =head2 MarcToUTF8Record
 
 =over 4
@@ -138,7 +222,6 @@ sub MarcToUTF8Record {
     my $marc = shift;
     my $marc_flavour = shift;
     my $source_encoding = shift;
-
     my $marc_record;
     my $marc_blob_is_utf8 = 0;
     if (ref($marc) eq 'MARC::Record') {
@@ -192,7 +275,7 @@ sub MarcToUTF8Record {
         } else {
             if ($marc_flavour eq 'MARC21') {
                 return _default_marc21_charconv_to_utf8($marc_record, $marc_flavour);
-            } elsif ($marc_flavour eq 'UNIMARC') {
+            } elsif ($marc_flavour =~/UNIMARC/) {
                 return _default_unimarc_charconv_to_utf8($marc_record, $marc_flavour);
             } else {
                 return _default_marc21_charconv_to_utf8($marc_record, $marc_flavour);
@@ -215,7 +298,7 @@ sub MarcToUTF8Record {
             @errors = _marc_iso5426_to_utf8($marc_record, $marc_flavour);
         } else {
             # assume any other character encoding is for Text::Iconv
-            @errors = _marc_to_utf8_via_text_iconv($marc_record, $marc_flavour, 'iso-8859-1');
+            @errors = _marc_to_utf8_via_text_iconv($marc_record, $marc_flavour, $source_encoding);
         }
 
         if (@errors) {
@@ -253,18 +336,27 @@ sub SetMarcUnicodeFlag {
         my $leader = $marc_record->leader();
         substr($leader, 9, 1) = 'a';
         $marc_record->leader($leader); 
-    } elsif ($marc_flavour eq "UNIMARC") {
-        if (my $field = $marc_record->field('100')) {
-            my $sfa = $field->subfield('a');
-            
-            my $subflength = 36;
-            # fix the length of the field
-            $sfa = substr $sfa, 0, $subflength if (length($sfa) > $subflength);
-            $sfa = sprintf( "%-*s", 35, $sfa ) if (length($sfa) < $subflength);
-            
-            substr($sfa, 26, 4) = '50  ';
-            $field->update('a' => $sfa);
+    } elsif ($marc_flavour =~/UNIMARC/) {
+        my $string; 
+		my ($subflength,$encodingposition)=($marc_flavour=~/AUTH/?(21,9):(36,22));
+		$string=$marc_record->subfield( 100, "a" );
+        if (defined $string && length($string)==$subflength) { 
+			$string = substr $string, 0,$subflength if (length($string)>$subflength);
+        } 
+        else { 
+            $string = POSIX::strftime( "%Y%m%d", localtime ); 
+            $string =~ s/\-//g; 
+            $string = sprintf( "%-*s", $subflength, $string ); 
+        } 
+        substr( $string, $encodingposition, 8, "frey50  " ); 
+        if ( $marc_record->subfield( 100, "a" ) ) { 
+			$marc_record->field('100')->update(a=>$string);
+		}
+		else {
+            $marc_record->insert_grouped_field( 
+                MARC::Field->new( 100, '', '', "a" => $string ) ); 
         }
+		$debug && warn "encodage: ", substr( $marc_record->subfield(100, 'a'), $encodingposition, 8 );
     } else {
         warn "Unrecognized marcflavour: $marc_flavour";
     }
@@ -659,11 +751,14 @@ $chars{0xb2}=0x00e0;#3/2leftlowsinglequotationmark
 $chars{0xb3}=0x00e7;#3/2leftlowsinglequotationmark
 # $chars{0xb4}='è';
 $chars{0xb4}=0x00e8;
+$chars{0xbd}=0x02b9;
+$chars{0xbe}=0x02ba;
 # $chars{0xb5}='é';
 $chars{0xb5}=0x00e9;
 $chars{0x97}=0x003c;#3/2leftlowsinglequotationmark
 $chars{0x98}=0x003e;#3/2leftlowsinglequotationmark
-$chars{0xfa}=0x0153;#oe
+$chars{0xfa}=0x0153; #oe
+$chars{0xea}=0x0152; #oe
 $chars{0x81d1}=0x00b0;
 
 ####

@@ -13,9 +13,9 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 =head1 NAME
 
@@ -39,6 +39,7 @@ parameters tables.
 
 
 use strict;
+use warnings;
 
 use C4::AuthoritiesMarc;
 use C4::Auth;
@@ -324,12 +325,11 @@ sub build_tabs ($$$$$) {
         foreach my $tag (sort @tab_data) {
             $i++;
             next if ! $tag;
-            my $indicator;
             my $index_tag = CreateKey;
 
             # if MARC::Record is not empty =>use it as master loop, then add missing subfields that should be in the tab.
             # if MARC::Record is empty => use tab as master loop.
-            if ( $record ne -1 && ( $record->field($tag) || $tag eq '000' ) ) {
+            if ( $record != -1 && ( $record->field($tag) || $tag eq '000' ) ) {
                 my @fields;
                 if ( $tag ne '000' ) {
                     @fields = $record->field($tag);
@@ -439,7 +439,6 @@ if (C4::Context->preference("AuthDisplayHierarchy")){
     my $cnt=0;
     my @loophierarchy;
     foreach my $element (@tree){
-      my $cell;
       my $elementdata = GetAuthority($element);
       $record= $elementdata if ($authid==$element);
       push @loophierarchy, BuildUnimarcHierarchy($elementdata,"child".$cnt, $authid);
@@ -477,9 +476,8 @@ my $tag;
 my $authtypes = getauthtypes;
 my @authtypesloop;
 foreach my $thisauthtype (sort { $authtypes->{$b} cmp $authtypes->{$a} } keys %$authtypes) {
-	my $selected = 1 if $thisauthtype eq $authtypecode;
 	my %row =(value => $thisauthtype,
-				selected => $selected,
+				selected => $thisauthtype eq $authtypecode,
 				authtypetext => $authtypes->{$thisauthtype}{'authtypetext'},
 			);
 	push @authtypesloop, \%row;

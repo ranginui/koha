@@ -17,9 +17,9 @@ package C4::VirtualShelves;
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
 use warnings;
@@ -204,9 +204,9 @@ sub GetRecentShelves ($$$) {
     my (@shelflist);
 	my $total = _shelf_count($owner, $mincategory);
 	my @params = ($owner, $mincategory, 0, $row_count);	 #FIXME: offset is hardcoded here, but could be passed in for enhancements
-	shift @params if !$owner;
+	shift @params if (not defined $owner);
 	my $query = "SELECT * FROM virtualshelves";
-	$query .= ($owner ? " WHERE owner = ? AND category = ?" : " WHERE category >= ? ");
+	$query .= ((defined $owner) ? " WHERE owner = ? AND category = ?" : " WHERE category >= ? ");
 	$query .= " ORDER BY lastmodified DESC LIMIT ?, ?";
 	my $sth = $dbh->prepare($query);
 	$sth->execute(@params);
@@ -476,6 +476,7 @@ sub ShelfPossibleAction {
     $sth->execute($shelfnumber);
     my ( $owner, $category ) = $sth->fetchrow;
 	my $borrower = GetMemberDetails($user);
+	return 0 if not defined($user);
 	return 1 if ( $category >= 3);							# open list
     return 1 if (($category >= 2) and
 				defined($action) and $action eq 'view');	# public list, anybody can view
@@ -602,6 +603,26 @@ sub _shelf_count ($$) {
 	$sth->execute(@params);
 	my $total = $sth->fetchrow;
 	return $total;
+}
+
+sub _biblionumber_sth {
+    my ($shelf) = @_;
+    my $query = 'select biblionumber from virtualshelfcontents where shelfnumber = ?';
+    my $dbh = C4::Context->dbh;
+    my $sth = $dbh->prepare($query)
+	or die $dbh->errstr;
+    $sth->execute( $shelf )
+	or die $sth->errstr;
+    $sth;
+}
+
+sub each_biblionumbers (&$) {
+    my ($code,$shelf) = @_;
+    my $ref =  _biblionumber_sth($shelf)->fetchall_arrayref;
+    map {
+	$_=$$_[0];
+	$code->();
+    } @$ref;
 }
 
 1;

@@ -40,7 +40,7 @@ my $member=$input->param('member');
 my $cardnumber = $input->param('cardnumber');
 my $destination = $input->param('destination');
 my $errormsg;
-my ($bor)=GetMember($member);
+my ($bor)=GetMember('borrowernumber' => $member);
 if(( $member ne $loggedinuser ) && ($bor->{'category_type'} eq 'S' ) ) {
 	$errormsg = 'NOPERMISSION' unless($staffflags->{'superlibrarian'} || $staffflags->{'staffaccess'} );
 	# need superlibrarian for koha-conf.xml fakeuser.
@@ -73,7 +73,7 @@ if ( $newpassword  && ! $errormsg ) {
     my $userid = $bor->{'userid'};
 
     my $chars='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    my $length=int(rand(2))+4;
+    my $length=int(rand(2))+C4::Context->preference("minPasswordLength");
     my $defaultnewpassword='';
     for (my $i=0; $i<$length; $i++) {
 	$defaultnewpassword.=substr($chars, int(rand(length($chars))),1);

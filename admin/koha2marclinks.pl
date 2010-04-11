@@ -13,11 +13,12 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+use warnings;
 use C4::Output;
 use C4::Auth;
 use CGI;
@@ -54,6 +55,7 @@ else {
         script_name => $script_name,
         else        => 1
     );    # we show only the TMPL_VAR names $op
+    $op = q{};
 }
 
 my $dbh = C4::Context->dbh;
@@ -64,7 +66,7 @@ if ( $op eq 'add_form' ) {
     my $data;
     my $sth =
       $dbh->prepare(
-"select tagfield,tagsubfield,liblibrarian as lib,tab from marc_subfield_structure where kohafield=?"
+"select tagfield,tagsubfield,liblibrarian as lib,tab from marc_subfield_structure where kohafield=? AND frameworkcode=''"
       );
     $sth->execute( $tablename . "." . $kohafield );
     my ( $defaulttagfield, $defaulttagsubfield, $defaultliblibrarian ) =
@@ -73,7 +75,7 @@ if ( $op eq 'add_form' ) {
     for ( my $i = 0 ; $i <= 9 ; $i++ ) {
         my $sth2 =
           $dbh->prepare(
-"select tagfield,tagsubfield,liblibrarian as lib,tab from marc_subfield_structure where tagfield like ?"
+"select tagfield,tagsubfield,liblibrarian as lib,tab from marc_subfield_structure where tagfield like ? AND frameworkcode=''"
           );
         $sth2->execute("$i%");
         my @marcarray;
@@ -84,8 +86,8 @@ if ( $op eq 'add_form' ) {
             push @marcarray, "$field $tagsubfield - $liblibrarian";
         }
         my $marclist = CGI::scrolling_list(
-            -name    => "marc",
-            -values  => \@marcarray,
+            -name   => 'marc',
+            -values => \@marcarray,
             -default =>
               "$defaulttagfield $defaulttagsubfield - $defaultliblibrarian",
             -size     => 1,
@@ -124,13 +126,12 @@ elsif ( $op eq 'add_validate' ) {
 else {    # DEFAULT
     my $sth =
       $dbh->prepare(
-"Select tagfield,tagsubfield,liblibrarian,kohafield from marc_subfield_structure"
+q|select tagfield,tagsubfield,liblibrarian,kohafield from marc_subfield_structure where kohafield is not NULL and kohafield != ''|
       );
     $sth->execute;
     my %fields;
     while ( ( my $tagfield, my $tagsubfield, my $liblibrarian, my $kohafield ) =
-        $sth->fetchrow )
-    {
+        $sth->fetchrow ) {
         $fields{$kohafield}->{tagfield}     = $tagfield;
         $fields{$kohafield}->{tagsubfield}  = $tagsubfield;
         $fields{$kohafield}->{liblibrarian} = $liblibrarian;
@@ -149,7 +150,7 @@ else {    # DEFAULT
         $row_data{liblibrarian} =
           $fields{ $tablename . "." . $field }->{liblibrarian};
         $row_data{kohafield} = $field;
-        $row_data{edit}      =
+        $row_data{edit} =
 "$script_name?op=add_form&amp;tablename=$tablename&amp;kohafield=$field";
         push( @loop_data, \%row_data );
     }

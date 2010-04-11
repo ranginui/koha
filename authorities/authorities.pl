@@ -14,11 +14,12 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+use warnings;
 use CGI;
 use C4::Auth;
 use C4::Output;
@@ -131,6 +132,9 @@ sub create_input {
     # if there is no value provided but a default value in parameters, get it
     unless ($value) {
         $value = $tagslib->{$tag}->{$subfield}->{defaultvalue};
+        if (!defined $value) {
+            $value = q{};
+        }
 
         # get today date & replace YYYY, MM, DD if provided in the default value
         my ( $year, $month, $day ) = Today();
@@ -185,10 +189,9 @@ sub create_input {
     value=\"$value\"
     class=\"input_marceditor\"
     tabindex=\"1\"                     
-    disabled=\"disabled\"
         readonly=\"readonly\" \/>
-    <span class=\"buttonDot\"
-        onclick=\"Dopop('/cgi-bin/koha/authorities/auth_finder.pl?authtypecode=".$tagslib->{$tag}->{$subfield}->{authtypecode}."&index=$subfield_data{id}','$subfield_data{id}')\">...</span>
+    <a href=\"#\" class=\"buttonDot\"
+        onclick=\"openAuth(this.parentNode.getElementsByTagName('input')[1].id,'".$tagslib->{$tag}->{$subfield}->{authtypecode}."'); return false;\" tabindex=\"1\" title=\"Tag Editor\">...</a>
     ";
     # it's a plugin field
     }
@@ -352,7 +355,7 @@ sub build_tabs ($$$$$) {
 
             # if MARC::Record is not empty =>use it as master loop, then add missing subfields that should be in the tab.
             # if MARC::Record is empty => use tab as master loop.
-            if ( $record ne -1 && ( $record->field($tag) || $tag eq '000' ) ) {
+            if ( $record != -1 && ( $record->field($tag) || $tag eq '000' ) ) {
                 my @fields;
                 if ( $tag ne '000' ) {
                                 @fields = $record->field($tag);
@@ -553,7 +556,7 @@ if ($authid) {
     ($oldauthnumtagfield,$oldauthnumtagsubfield) = &GetAuthMARCFromKohaField("auth_header.authid",$authtypecode);
     ($oldauthtypetagfield,$oldauthtypetagsubfield) = &GetAuthMARCFromKohaField("auth_header.authtypecode",$authtypecode);
 }
-
+$op ||= q{};
 #------------------------------------------------------------------------------------------------------------------------------
 if ($op eq "add") {
 #------------------------------------------------------------------------------------------------------------------------------
@@ -578,7 +581,8 @@ if ($op eq "add") {
         }    
     }
 
-    my ($duplicateauthid,$duplicateauthvalue) = FindDuplicateAuthority($record,$authtypecode) if ($op eq "add") && (!$is_a_modif);
+    my ($duplicateauthid,$duplicateauthvalue);
+     ($duplicateauthid,$duplicateauthvalue) = FindDuplicateAuthority($record,$authtypecode) if ($op eq "add") && (!$is_a_modif);
     my $confirm_not_duplicate = $input->param('confirm_not_duplicate');
     # it is not a duplicate (determined either by Koha itself or by user checking it's not a duplicate)
     if (!$duplicateauthid or $confirm_not_duplicate) {
@@ -627,9 +631,8 @@ $template->param(authid                       => $authid,
 my $authtypes = getauthtypes;
 my @authtypesloop;
 foreach my $thisauthtype (keys %$authtypes) {
-    my $selected = 1 if $thisauthtype eq $authtypecode;
     my %row =(value => $thisauthtype,
-                selected => $selected,
+                selected => $thisauthtype eq $authtypecode,
                 authtypetext => $authtypes->{$thisauthtype}{'authtypetext'},
             );
     push @authtypesloop, \%row;

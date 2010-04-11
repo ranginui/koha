@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl
 
 # Copyright 2008 Liblime
 #
@@ -13,12 +13,13 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
 use warnings;
+use utf8;
 
 BEGIN {
 
@@ -28,14 +29,17 @@ BEGIN {
     eval { require "$FindBin::Bin/../kohalib.pl" };
 }
 
+use Getopt::Long;
+use Pod::Usage;
+use Text::CSV_XS;
+use Locale::Currency::Format 1.28;
+use Encode;
+
 use C4::Context;
 use C4::Dates qw/format_date/;
 use C4::Debug;
 use C4::Letters;
-
-use Getopt::Long;
-use Pod::Usage;
-use Text::CSV_XS;
+use C4::Overdues qw(GetFine);
 
 =head1 NAME
 
@@ -43,16 +47,19 @@ overdue_notices.pl - prepare messages to be sent to patrons for overdue items
 
 =head1 SYNOPSIS
 
-overdue_notices.pl [ -n ] [ -library <branchcode> ] [ -max <number of days> ] [ -csv [ <filename> ] ] [ -itemscontent <field list> ]
+overdue_notices.pl [ -n ] [ -library <branchcode> ] [ -library <branchcode>...] [ -max <number of days> ] [ -csv [ <filename> ] ] [ -itemscontent <field list> ]
 
  Options:
    -help                          brief help message
    -man                           full documentation
    -n                             No email will be sent
    -max          <days>           maximum days overdue to deal with
-   -library      <branchname>     only deal with overdues from this library
+   -library      <branchname>     only deal with overdues from this library (repeatable : several libraries can be given)
    -csv          <filename>       populate CSV file
+   -html         <filename>       Output html to file
    -itemscontent <list of fields> item information in templates
+   -borcat       <categorycode>   category code that must be included
+   -borcatout    <categorycode>   category code that must be excluded
 
 =head1 OPTIONS
 
@@ -87,7 +94,8 @@ any CSV files. Defaults to 90 to match F<longoverdues.pl>.
 =item B<-library>
 
 select overdues for one specific library. Use the value in the
-branches.branchcode table.
+branches.branchcode table. This option can be repeated in order 
+to select overdues for a group of libraries.
 
 =item B<-csv>
 
@@ -103,6 +111,14 @@ defaults to issuedate,title,barcode,author
 
 Other possible values come from fields in the biblios, items, and
 issues tables.
+
+=item B<-borcat>
+
+Repetable field, that permit to select only few of patrons categories.
+
+=item B<-borcatout>
+
+Repetable field, permis to exclude some patrons categories.
 
 =item B<-t> | B<--triggered>
 
@@ -223,16 +239,20 @@ alert them of items that have just become due.
 
 # These variables are set by command line options.
 # They are initially set to default values.
+my $dbh = C4::Context->dbh();
 my $help    = 0;
 my $man     = 0;
 my $verbose = 0;
 my $nomail  = 0;
 my $MAX     = 90;
-my $mybranch;
+my @branchcodes; # Branch(es) passed as parameter
 my $csvfilename;
+my $htmlfilename;
 my $triggered = 0;
 my $listall = 0;
-my $itemscontent = join( ',', qw( issuedate title barcode author ) );
+my $itemscontent = join( ',', qw( issuedate title barcode author biblionumber ) );
+my @myborcat;
+my @myborcatout;
 
 GetOptions(
     'help|?'         => \$help,
@@ -240,11 +260,14 @@ GetOptions(
     'v'              => \$verbose,
     'n'              => \$nomail,
     'max=s'          => \$MAX,
-    'library=s'      => \$mybranch,
+    'library=s'      => \@branchcodes,
     'csv:s'          => \$csvfilename,    # this optional argument gets '' if not supplied.
+    'html:s'          => \$htmlfilename,    # this optional argument gets '' if not supplied.
     'itemscontent=s' => \$itemscontent,
     'list-all'      => \$listall,
     't|triggered'             => \$triggered,
+    'borcat=s'      => \@myborcat,
+    'borcatout=s'   => \@myborcatout,
 ) or pod2usage(2);
 pod2usage(1) if $help;
 pod2usage( -verbose => 2 ) if $man;
@@ -253,24 +276,40 @@ if ( defined $csvfilename && $csvfilename =~ /^-/ ) {
     warn qq(using "$csvfilename" as filename, that seems odd);
 }
 
-my @branches    = C4::Overdues::GetBranchcodesWithOverdueRules();
-my $branchcount = scalar(@branches);
+my @overduebranches    = C4::Overdues::GetBranchcodesWithOverdueRules();	# Branches with overdue rules
+my @branches;									# Branches passed as parameter with overdue rules
+my $branchcount = scalar(@overduebranches);
+
+my $overduebranch_word = scalar @overduebranches > 1 ? 'branches' : 'branch';
+my $branchcodes_word = scalar @branchcodes > 1 ? 'branches' : 'branch';
+
+my $PrintNoticesMaxLines = C4::Context->preference('PrintNoticesMaxLines');
+
 if ($branchcount) {
-    my $branch_word = scalar @branches > 1 ? 'branches' : 'branch';
-    $verbose and warn "Found $branchcount $branch_word with first message enabled: " . join( ', ', map { "'$_'" } @branches ), "\n";
+    $verbose and warn "Found $branchcount $overduebranch_word with first message enabled: " . join( ', ', map { "'$_'" } @overduebranches ), "\n";
 } else {
     die 'No branches with active overduerules';
 }
 
-if ($mybranch) {
-    $verbose and warn "Branch $mybranch selected\n";
-    if ( scalar grep { $mybranch eq $_ } @branches ) {
-        @branches = ($mybranch);
+if (@branchcodes) {
+    $verbose and warn "$branchcodes_word @branchcodes passed on parameter\n";
+    
+    # Getting libraries which have overdue rules
+    my %seen = map { $_ => 1 } @branchcodes;
+    @branches = grep { $seen{$_} } @overduebranches;
+    
+    
+    if (@overduebranches) {
+
+    	my $branch_word = scalar @branches > 1 ? 'branches' : 'branch';
+	$verbose and warn "$branch_word @branches have overdue rules\n";
+
     } else {
-        $verbose and warn "No active overduerules for branch '$mybranch'\n";
+    
+        $verbose and warn "No active overduerules for $branchcodes_word  '@branchcodes'\n";
         ( scalar grep { '' eq $_ } @branches )
           or die "No active overduerules for DEFAULT either!";
-        $verbose and warn "Falling back on default rules for $mybranch\n";
+        $verbose and warn "Falling back on default rules for @branchcodes\n";
         @branches = ('');
     }
 }
@@ -278,13 +317,14 @@ if ($mybranch) {
 # these are the fields that will be substituted into <<item.content>>
 my @item_content_fields = split( /,/, $itemscontent );
 
-my $dbh = C4::Context->dbh();
 binmode( STDOUT, ":utf8" );
+
 
 our $csv;       # the Text::CSV_XS object
 our $csv_fh;    # the filehandle to the CSV file.
 if ( defined $csvfilename ) {
-    $csv = Text::CSV_XS->new( { binary => 1 } );
+    my $sep_char = C4::Context->preference('delimiter') || ',';
+    $csv = Text::CSV_XS->new( { binary => 1 , sep_char => $sep_char } );
     if ( $csvfilename eq '' ) {
         $csv_fh = *STDOUT;
     } else {
@@ -295,6 +335,29 @@ if ( defined $csvfilename ) {
     } else {
         $verbose and warn 'combine failed on argument: ' . $csv->error_input;
     }
+}
+
+@branches = @overduebranches unless @branches;
+our $html_fh;
+if ( defined $htmlfilename ) {
+  if ( $htmlfilename eq '' ) {
+    $html_fh = *STDOUT;
+  } else {
+    my $today = C4::Dates->new();
+    open $html_fh, ">",File::Spec->catdir ($htmlfilename,"notices-".$today->output('iso').".html");
+  }
+  
+  print $html_fh "<html>\n";
+  print $html_fh "<head>\n";
+  print $html_fh "<style type='text/css'>\n";
+  print $html_fh "pre {page-break-after: always;}\n";
+  print $html_fh "pre {white-space: pre-wrap;}\n";
+  print $html_fh "pre {white-space: -moz-pre-wrap;}\n";
+  print $html_fh "pre {white-space: -o-pre-wrap;}\n";
+  print $html_fh "pre {word-wrap: break-work;}\n";
+  print $html_fh "</style>\n";
+  print $html_fh "</head>\n";
+  print $html_fh "<body>\n";
 }
 
 foreach my $branchcode (@branches) {
@@ -314,8 +377,23 @@ SELECT biblio.*, items.*, issues.*, TO_DAYS(NOW())-TO_DAYS(date_due) AS days_ove
     AND TO_DAYS(NOW())-TO_DAYS(date_due) BETWEEN ? and ?
 END_SQL
 
-    my $rqoverduerules = $dbh->prepare("SELECT * FROM overduerules WHERE delay1 IS NOT NULL AND branchcode = ? ");
-    $rqoverduerules->execute($branchcode);
+    my $query = "SELECT * FROM overduerules WHERE delay1 IS NOT NULL AND branchcode = ? ";
+    $query .= " AND categorycode IN (".join( ',' , ('?') x @myborcat ).") " if (@myborcat);
+    $query .= " AND categorycode NOT IN (".join( ',' , ('?') x @myborcatout ).") " if (@myborcatout);
+    
+    my $rqoverduerules =  $dbh->prepare($query);
+    $rqoverduerules->execute($branchcode, @myborcat, @myborcatout);
+    
+    # We get default rules is there is no rule for this branch
+    if($rqoverduerules->rows == 0){
+        $query = "SELECT * FROM overduerules WHERE delay1 IS NOT NULL AND branchcode = '' ";
+        $query .= " AND categorycode IN (".join( ',' , ('?') x @myborcat ).") " if (@myborcat);
+        $query .= " AND categorycode NOT IN (".join( ',' , ('?') x @myborcatout ).") " if (@myborcatout);
+        
+        $rqoverduerules = $dbh->prepare($query);
+        $rqoverduerules->execute(@myborcat, @myborcatout);
+    }
+
     # my $outfile = 'overdues_' . ( $mybranch || $branchcode || 'default' );
     while ( my $overdue_rules = $rqoverduerules->fetchrow_hashref ) {
       PERIOD: foreach my $i ( 1 .. 3 ) {
@@ -369,10 +447,14 @@ END_SQL
             $sth->execute(@borrower_parameters);
             $verbose and warn $borrower_sql . "\n $branchcode | " . $overdue_rules->{'categorycode'} . "\n ($mindays, $maxdays)\nreturns " . $sth->rows . " rows";
 
-            while( my ( $itemcount, $borrowernumber, $firstname, $lastname, $address1, $address2, $city, $postcode, $email ) = $sth->fetchrow ) {
+            while ( my ($itemcount, $borrowernumber, $firstname, $lastname,
+                    $address1, $address2, $city, $postcode, $country, $email,
+                    $longest_issue ) = $sth->fetchrow )
+            {
                 $verbose and warn "borrower $firstname, $lastname ($borrowernumber) has $itemcount items triggering level $i.";
     
                 my $letter = C4::Letters::getletter( 'circulation', $overdue_rules->{"letter$i"} );
+
                 unless ($letter) {
                     $verbose and warn "Message '$overdue_rules->{letter$i}' content not found";
     
@@ -387,27 +469,42 @@ END_SQL
                     C4::Members::DebarMember($borrowernumber);
                     $verbose and warn "debarring $borrowernumber $firstname $lastname\n";
                 }
-                $sth2->execute( ($listall) ? ( $borrowernumber , 1 , $MAX ) : ( $borrowernumber, $mindays, $maxdays ) );
+                my @params = ($listall ? ( $borrowernumber , 1 , $MAX ) : ( $borrowernumber, $mindays, $maxdays ));
+                $sth2->execute(@params);
                 my $itemcount = 0;
                 my $titles = "";
+                my @items = ();
+                
+                my $i = 0;
+                my $exceededPrintNoticesMaxLines = 0;
                 while ( my $item_info = $sth2->fetchrow_hashref() ) {
+                    if ( ( !$email || $nomail ) && $PrintNoticesMaxLines && $i >= $PrintNoticesMaxLines ) {
+                      $exceededPrintNoticesMaxLines = 1;
+                      last;
+                    }
+                    $i++;
                     my @item_info = map { $_ =~ /^date|date$/ ? format_date( $item_info->{$_} ) : $item_info->{$_} || '' } @item_content_fields;
                     $titles .= join("\t", @item_info) . "\n";
                     $itemcount++;
+                    push (@items, $item_info->{'biblionumber'});
                 }
                 $sth2->finish;
-    
                 $letter = parse_letter(
-                    {   letter         => $letter,
-                        borrowernumber => $borrowernumber,
-                        branchcode     => $branchcode,
-                        substitute     => {
-                            bib             => $branch_details->{'branchname'},
-                            'items.content' => $titles
-                        }
+                    {   letter          => $letter,
+                        borrowernumber  => $borrowernumber,
+                        branchcode      => $branchcode,
+                        biblionumber    => \@items,
+                        substitute      => {    # this appears to be a hack to overcome incomplete features in this code.
+                                            bib             => $branch_details->{'branchname'}, # maybe 'bib' is a typo for 'lib<rary>'?
+                                            'items.content' => $titles
+                                           }
                     }
                 );
-    
+                
+                if ( $exceededPrintNoticesMaxLines ) {
+                  $letter->{'content'} .= "List too long for form; please check your account online for a complete list of your overdue items.";
+                }
+
                 my @misses = grep { /./ } map { /^([^>]*)[>]+/; ( $1 || '' ); } split /\</, $letter->{'content'};
                 if (@misses) {
                     $verbose and warn "The following terms were not matched and replaced: \n\t" . join "\n\t", @misses;
@@ -430,7 +527,7 @@ END_SQL
                             email          => $email,
                             itemcount      => $itemcount,
                             titles         => $titles,
-                            outputformat   => defined $csvfilename ? 'csv' : '',
+                            outputformat   => defined $csvfilename ? 'csv' : defined $htmlfilename ? 'html' : '',
                         }
                       );
                 } else {
@@ -458,7 +555,7 @@ END_SQL
                                 email          => $email,
                                 itemcount      => $itemcount,
                                 titles         => $titles,
-                                outputformat   => defined $csvfilename ? 'csv' : '',
+                                outputformat   => defined $csvfilename ? 'csv' : defined $htmlfilename ? 'html' : '',
                             }
                           );
                     }
@@ -472,11 +569,17 @@ END_SQL
         if ($nomail) {
             if ( defined $csvfilename ) {
                 print $csv_fh @output_chunks;
+            } elsif ( defined $htmlfilename ) {
+                print $html_fh @output_chunks;
             } else {
                 local $, = "\f";    # pagebreak
                 print @output_chunks;
             }
-        } else {
+        } 
+        elsif ( defined $htmlfilename ) {
+            print $html_fh @output_chunks;        
+        }
+        else {
             my $attachment = {
                 filename => defined $csvfilename ? 'attachment.csv' : 'attachment.txt',
                 type => 'text/plain',
@@ -500,10 +603,15 @@ END_SQL
 
 }
 if ($csvfilename) {
-
     # note that we're not testing on $csv_fh to prevent closing
     # STDOUT.
     close $csv_fh;
+}
+
+if ( defined $htmlfilename ) {
+  print $html_fh "</body>\n";
+  print $html_fh "</html>\n";
+  close $html_fh;
 }
 
 =head1 INTERNAL METHODS
@@ -527,32 +635,52 @@ substituted keys and values.
 
 =cut
 
-sub parse_letter {
+sub parse_letter { # FIXME: this code should probably be moved to C4::Letters:parseletter
     my $params = shift;
     foreach my $required (qw( letter borrowernumber )) {
         return unless exists $params->{$required};
     }
 
+
     if ( $params->{'substitute'} ) {
         while ( my ( $key, $replacedby ) = each %{ $params->{'substitute'} } ) {
             my $replacefield = "<<$key>>";
-
             $params->{'letter'}->{title}   =~ s/$replacefield/$replacedby/g;
             $params->{'letter'}->{content} =~ s/$replacefield/$replacedby/g;
         }
     }
 
-    C4::Letters::parseletter( $params->{'letter'}, 'borrowers', $params->{'borrowernumber'} );
+    $params->{'letter'} = C4::Letters::parseletter( $params->{'letter'}, 'borrowers', $params->{'borrowernumber'} );
 
     if ( $params->{'branchcode'} ) {
-        C4::Letters::parseletter( $params->{'letter'}, 'branches', $params->{'branchcode'} );
+        $params->{'letter'} = C4::Letters::parseletter( $params->{'letter'}, 'branches', $params->{'branchcode'} );
     }
 
     if ( $params->{'biblionumber'} ) {
-        C4::Letters::parseletter( $params->{'letter'}, 'biblio',      $params->{'biblionumber'} );
-        C4::Letters::parseletter( $params->{'letter'}, 'biblioitems', $params->{'biblionumber'} );
-    }
+        my $item_format = '';
+        PROCESS_ITEMS:
+        while (scalar(@{$params->{'biblionumber'}}) > 0) {
+            my $item = shift @{$params->{'biblionumber'}};
+            my $fine = GetFine($item, $params->{'borrowernumber'});
+            if (!$item_format) {
+                $params->{'letter'}->{'content'} =~ m/(<item>.*<\/item>)/;
+                $item_format = $1;
+            }
+            if ($params->{'letter'}->{'content'} =~ m/<fine>(.*)<\/fine>/) { # process any fine tags...
+                no strict; # currency_format behaves badly if we quote the bareword for some reason...
+                my $formatted_fine = currency_format("$1", "$fine", FMT_SYMBOL);
+                use strict;
+                $formatted_fine = Encode::encode("utf8", $formatted_fine);
+                $params->{'letter'}->{'content'} =~ s/<fine>.*<\/fine>/$formatted_fine/;
+            }
+            $params->{'letter'} = C4::Letters::parseletter( $params->{'letter'}, 'biblio',      $item );
+            $params->{'letter'} = C4::Letters::parseletter( $params->{'letter'}, 'biblioitems', $item );
+            $params->{'letter'} = C4::Letters::parseletter( $params->{'letter'}, 'items', $item );
+            $params->{'letter'}->{'content'} =~ s/(<item>.*<\/item>)/$1\n$item_format/ if scalar(@{$params->{'biblionumber'}} > 0);
 
+        }
+    }
+    $params->{'letter'}->{'content'} =~ s/<\/{0,1}?item>//g; # strip all remaining item tags...
     return $params->{'letter'};
 }
 
@@ -592,6 +720,10 @@ sub prepare_letter_for_printing {
         } else {
             $verbose and warn 'combine failed on argument: ' . $csv->error_input;
         }
+    } elsif ( exists $params->{'outputformat'} && $params->{'outputformat'} eq 'html' ) {
+      $return = "<pre>\n";
+      $return .= "$params->{'letter'}->{'content'}\n";
+      $return .= "\n</pre>\n";
     } else {
         $return .= "$params->{'letter'}->{'content'}\n";
 
