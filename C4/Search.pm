@@ -1525,10 +1525,9 @@ sub searchResults {
 	my $item_onhold_count     = 0;
         my $items_count           = scalar(@fields);
         my $maxitems =
-          ( C4::Context->preference('maxItemsinSearchResults') )
-          ? C4::Context->preference('maxItemsinSearchResults') - 1
+          ( C4::Context->preference('maxItemsInSearchResults') )
+          ? C4::Context->preference('maxItemsInSearchResults') - 1
           : 1;
-
         # loop through every item
         foreach my $field (@fields) {
             my $item;
@@ -1647,10 +1646,6 @@ sub searchResults {
             }
         }    # notforloan, item level and biblioitem level
         my ( $availableitemscount, $onloanitemscount, $otheritemscount );
-        $maxitems =
-          ( C4::Context->preference('maxItemsinSearchResults') )
-          ? C4::Context->preference('maxItemsinSearchResults') - 1
-          : 1;
         for my $key ( sort keys %$onloan_items ) {
             (++$onloanitemscount > $maxitems) and last;
             push @onloan_items_loop, $onloan_items->{$key};
