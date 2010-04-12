@@ -355,6 +355,7 @@ $tabsysprefs{OPACGroupResults}     = "OPAC";
 $tabsysprefs{XSLTDetailsDisplay}   = "OPAC";
 $tabsysprefs{XSLTResultsDisplay}   = "OPAC";
 $tabsysprefs{OPACShowCheckoutName} = "OPAC";
+$tabsysprefs{OPACSearchReboundBy}  = "OPAC";
 
 # Serials
 $tabsysprefs{RoutingListAddReserves}       = "Serials";

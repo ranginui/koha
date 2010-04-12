@@ -44,6 +44,95 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
 	
 //]]>
 </script>
+<script type="text/JavaScript" language="JavaScript">
+    function showAuthors(element, value){
+        check("#authorsList", value);
+        makeAuthorRequest();
+        var left = element.offsetLeft || 0;
+        var top = element.offsetTop || 0;
+        $('.authorSearch').css('display', 'block');
+        $('.authorSearch').css('left', left);
+        $('.authorSearch').css('top', top + 15);
+    }
+
+    function hideMenu(elem) {
+        $(elem).css('display', 'none');
+    }
+    
+    function check(elem, value) {
+        $(elem).find("li").each(function (){
+            if ($(this).find("input").val() == value) { $(this).find("input").attr("checked", "true"); }
+            else { $(this).find("input").attr("checked", ""); }
+        });
+    }
+    
+    function checkAll(elem) {
+        var check = "";
+        if ($(elem).find("li:first").find("input").attr("checked")){ check = true; }
+        $(elem).find("li").not(":first").each(function (){
+            $(this).find("input").attr("checked", check);
+        });
+        elem == "#authorsList" ? makeAuthorRequest() : makeSubjectRequest();
+    }
+    
+    function makeAuthorRequest(){
+        var request = "/cgi-bin/koha/opac-search.pl?q=";
+        var alreadyFound = false;
+        $("#authorsList").find("li").each(function (){ 
+            if ($(this).find("input").attr("checked") && $(this).find("input").attr("name") == "checkbox") {
+                value = $(this).find("input").val();
+                if (alreadyFound){ request += " and " + value; }
+                else { 
+                    request += value; 
+                    alreadyFound = true;
+                }  
+            }
+        });
+        if (alreadyFound) {
+            $("#validAuthorSearch").attr("href", request);
+        }else {
+            $("#validAuthorSearch").removeAttr("href");
+        }
+        
+    }
+    //Subjects
+    function showSubjects(element, value, code){
+        $("#subjectsList").find("li").each(function (){
+            $(this).find("input").attr("checked", "");
+        });
+        $("#subjectsList").find("li").each(function (){
+            if ($(this).find("input").val() == value && $(this).find("input").attr("code") == code) { 
+                $(this).find("input").attr("checked", "true");
+                var elem = this;
+                while ($(elem).prev("li").children().attr("id") == "checkbox") {
+                    $(elem).prev("li").find("input").attr("checked", "true");
+                    elem = $(elem).prev("li");
+                } 
+            }
+        });
+        makeSubjectRequest();
+        var left = element.offsetLeft || 0;
+        var top = element.offsetTop || 0;
+        $('.subjectSearch').css('display', 'block');
+        $('.subjectSearch').css('left', left);
+        $('.subjectSearch').css('top', top + 15);
+    }
+    function makeSubjectRequest() {
+        var request = "/cgi-bin/koha/opac-search.pl?q=";
+        var alreadyFound = false;
+        $("#subjectsList").find("li").each(function (){
+            if ($(this).find("input").attr("checked") && $(this).find("input").attr("name") == "checkbox") {
+                value = $(this).find("input").val();
+                if (alreadyFound){ request += " and " + value; }
+                else { 
+                    request += value; 
+                    alreadyFound = true;
+                }  
+            }
+        });
+        alreadyFound ? $("#validSubjectSearch").attr("href", request) : $("#validSubjectSearch").removeAttr("href");
+    }
+</script>
 <style type="text/css">
     #addtagl { display: none; }
 </style>
@@ -126,12 +215,26 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
     </span>
 
     <!-- TMPL_IF name="MARCAUTHORS" -->
-    <span class="results_summary"><span class="label">Authors:</span>
-                <!-- TMPL_LOOP NAME="MARCAUTHORS" -->
-                <!-- TMPL_LOOP NAME="MARCAUTHOR_SUBFIELDS_LOOP" --><!-- TMPL_VAR NAME="separator" --><a title="&#8225;<!-- TMPL_VAR NAME=code --> <!-- TMPL_VAR NAME=value -->" href="/cgi-bin/koha/opac-search.pl?q=<!-- TMPL_LOOP NAME=link_loop --><!-- TMPL_VAR NAME=operator ESCAPE="URL" --><!-- TMPL_VAR NAME='limit' ESCAPE="URL" -->:<!-- TMPL_VAR NAME=link ESCAPE="URL" --><!-- /TMPL_LOOP -->"><!-- TMPL_VAR NAME="value" --></a><!-- /TMPL_LOOP --> 
-        <!-- TMPL_UNLESS NAME="__last__" -->|
-<!-- /TMPL_UNLESS -->
+    <span class="results_summary">
+                <span class="label">Authors:</span>
+                <div class="authorSearch">
+                    <span><b>Select the item(s) to search :</b></span>
+                    <ul id="authorsList">
+                        <li><input type="checkbox" onchange="checkAll('#authorsList')"> <b>all</b></li>
+                        <!-- TMPL_LOOP NAME="bouncemarcauthorsarray" -->
+                                <li><input type="checkbox" name="checkbox" onclick="makeAuthorRequest()" value="<!-- TMPL_IF name="searchbyauthority" --><!-- TMPL_IF name="authoritylink" -->an:<!-- TMPL_VAR name="authoritylink" --><!-- TMPL_ELSE -->au,wrdl:<!-- TMPL_LOOP name="term" --><!-- TMPL_VAR name="value" --><!-- TMPL_UNLESS NAME="__last__" -->+<!-- /TMPL_UNLESS --><!-- /TMPL_LOOP --><!-- /TMPL_IF --><!-- TMPL_ELSE -->au,wrdl:<!-- TMPL_LOOP name="term" --><!-- TMPL_VAR name="value" --><!-- TMPL_UNLESS NAME="__last__" -->+<!-- /TMPL_UNLESS --><!-- /TMPL_LOOP --><!-- /TMPL_IF -->"><!-- TMPL_LOOP name="term" --> <!-- TMPL_VAR name="value" --> <!-- /TMPL_LOOP --></li>
+                        <!-- /TMPL_LOOP -->
+                    </ul>
+                        <a href="#" onclick="hideMenu('.authorSearch');">Cancel</a>&nbsp;|&nbsp;<a id="validAuthorSearch"href="#">Search</a>
+                </div>
+                <!-- TMPL_LOOP NAME="bouncemarcauthorsarray" -->
+                    <a href="<!-- TMPL_IF name="authoritylink" -->/cgi-bin/koha/opac-authoritiesdetail.pl?authid=<!-- TMPL_VAR name="authoritylink" --><!-- TMPL_ELSE --><!-- /TMPL_IF -->" >
+                        <img height="15" src="/opac-tmpl/prog/images/filefind.png">
+                    </a>
+                    <a href="#" onclick="showAuthors(this, '<!-- TMPL_IF name="searchbyauthority" --><!-- TMPL_IF name="authoritylink" -->an:<!-- TMPL_VAR name="authoritylink" --><!-- TMPL_ELSE -->au,wrdl:<!-- TMPL_LOOP name="term" --><!-- TMPL_VAR name="value" --><!-- TMPL_UNLESS NAME="__last__" -->+<!-- /TMPL_UNLESS --><!-- /TMPL_LOOP --><!-- /TMPL_IF --><!-- TMPL_ELSE -->au,wrdl:<!-- TMPL_LOOP name="term" --><!-- TMPL_VAR name="value" --><!-- TMPL_UNLESS NAME="__last__" -->+<!-- /TMPL_UNLESS --><!-- /TMPL_LOOP --><!-- /TMPL_IF -->')"><!-- TMPL_LOOP name="term" --><!-- TMPL_VAR name="value" --> <!-- /TMPL_LOOP --></a>&nbsp;|&nbsp;
                 <!-- /TMPL_LOOP -->
+    <!-- /TMPL_UNLESS -->
+    <!-- /TMPL_LOOP -->
     </span>
     <!-- /TMPL_IF -->
 
@@ -181,12 +284,30 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
     <!-- /TMPL_IF -->
 
     <!-- TMPL_IF NAME="MARCSUBJCTS" -->
-            <span class="results_summary"><span class="label">Subject(s):</span> 
+            <span class="results_summary"><span class="label">Subject(s):</span>
+                <div class="subjectSearch" >
+                    <span><b>Select the item(s) to search :</b></span>
+                    <ul id="subjectsList">
+                        <li><input id="all" type="checkbox" onchange="checkAll('#subjectsList')"> <b>all</b></li>
+                        <!-- TMPL_LOOP NAME="MARCSUBJCTS" -->
+                            <!-- TMPL_LOOP NAME="MARCSUBJECT_SUBFIELDS_LOOP" -->
+                                <li><input type="checkbox" onclick="makeSubjectRequest()" name="checkbox" id="checkbox" code="<!-- TMPL_VAR name="value" -->" value="<!-- TMPL_IF name="searchbyauthority" -->an:<!-- TMPL_LOOP name="link_loop" --><!-- TMPL_VAR name="link" --><!-- /TMPL_LOOP --><!-- TMPL_ELSE -->su,wrdl:<!-- TMPL_VAR name="value" --><!-- /TMPL_IF -->"> <!-- TMPL_VAR name="value" --></li>
+                            <!-- /TMPL_LOOP -->
+                                <li><hr id="trait"></li>
+                        <!-- /TMPL_LOOP -->
+                    </ul>
+                    <a href="#" onclick="hideMenu('.subjectSearch')">Cancel</a>&nbsp;|&nbsp;<a id="validSubjectSearch"href="#">Search</a>
+                </div>
                 <!-- TMPL_LOOP NAME="MARCSUBJCTS" -->
                     <!-- TMPL_LOOP NAME="MARCSUBJECT_SUBFIELDS_LOOP" -->
-                        <!-- TMPL_VAR NAME="separator" --><a title="$<!-- TMPL_VAR NAME="code" --> <!-- TMPL_VAR NAME="value" -->" href="/cgi-bin/koha/opac-search.pl?q=<!-- TMPL_LOOP NAME="link_loop" --><!-- TMPL_VAR NAME="operator" ESCAPE="URL" --><!-- TMPL_VAR NAME="limit" ESCAPE="URL" -->:<!-- TMPL_VAR NAME="link" ESCAPE="URL" --><!-- /TMPL_LOOP -->"><!-- TMPL_VAR NAME="value" --></a><!-- /TMPL_LOOP -->
-        <!-- TMPL_IF NAME="__LAST__" --><!-- TMPL_ELSE -->|<!-- /TMPL_IF -->
-                <!-- /TMPL_LOOP --></span>
+                        <!-- TMPL_VAR NAME="separator" -->
+                        <span>
+                            <a href="/cgi-bin/koha/opac-authoritiesdetail.pl?authid=<!-- TMPL_LOOP NAME="link_loop" --><!-- TMPL_VAR NAME="link" ESCAPE="URL" --><!-- /TMPL_LOOP -->"><img height="15" src="/opac-tmpl/prog/images/filefind.png"></a>                           
+                        </span>
+                        <a href="#" onclick="showSubjects(this, '<!-- TMPL_IF name="searchbyauthority" -->an:<!-- TMPL_LOOP name="link_loop" --><!-- TMPL_VAR name="link" --><!-- /TMPL_LOOP --><!-- TMPL_ELSE -->su,wrdl:<!-- TMPL_VAR name="value" --><!-- /TMPL_IF -->', '<!-- TMPL_VAR name="value" -->')"><!-- TMPL_VAR NAME="value" --></a><!-- /TMPL_LOOP -->
+                        <!-- TMPL_IF NAME="__LAST__" --><!-- TMPL_ELSE -->|<!-- /TMPL_IF -->
+                <!-- /TMPL_LOOP -->
+            </span>
     <!-- TMPL_ELSE -->
     <!-- TMPL_IF name="subjects" --><span class="results_summary"><span class="label">Subject(s):</span> <!-- TMPL_LOOP name="subjects" --><a href="/cgi-bin/koha/opac-search.pl?q=su:<!-- TMPL_VAR NAME="subject" escape="URL" -->"><!-- TMPL_VAR NAME="subject" --></a> | <!-- /TMPL_LOOP --></span><!-- /TMPL_IF -->
     <!-- /TMPL_IF -->

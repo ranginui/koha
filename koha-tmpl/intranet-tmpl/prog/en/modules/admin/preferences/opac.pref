@@ -239,6 +239,12 @@ OPAC:
                   yes: Allow
                   no: "Don't allow"
             - patrons to place holds on items from the OPAC.
+        -
+            - Do search rebound on
+            - pref: OPACSearchReboundBy
+              choices:
+                  authority: Authority
+                  term: Term
     Policy:
         -
             - pref: singleBranchMode

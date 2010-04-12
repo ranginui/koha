@@ -287,6 +287,38 @@ my $marcseriesarray  = GetMarcSeries( $record, $marcflavour );
 my $marcurlsarray    = GetMarcUrls( $record, $marcflavour );
 my $subtitle         = GetRecordValue( 'subtitle', $record, GetFrameworkCode($biblionumber) );
 
+#search rebound parameter
+my $searchByauthority = 0;
+if ( C4::Context->preference("OPACSearchReboundBy") eq "authority" ) {
+    $searchByauthority = 1;
+}
+
+#search rebound on author
+my @reboundmarcauthorsarray;
+foreach my $author (@$marcauthorsarray) {
+    my ( $a, $b, $authoritylink, @term );
+    foreach my $subfield ( @{ $author->{'MARCAUTHOR_SUBFIELDS_LOOP'} } ) {
+        if ( $subfield->{'code'} eq "a" && @{ $subfield->{'link_loop'} }[0]->{"limit"} eq "an" ) {
+            $authoritylink = @{ $subfield->{'link_loop'} }[0]->{"link"};
+        }
+        unless ( $subfield->{'code'} eq "3" || $subfield->{'code'} eq "4" ) { push( @term, { value => $subfield->{'value'} } ); }
+    }
+    push(
+        @reboundmarcauthorsarray,
+        {   term              => \@term,
+            authoritylink     => $authoritylink,
+            searchbyauthority => $searchByauthority,
+        }
+    );
+}
+
+#search rebound on subject
+foreach my $subject (@$marcsubjctsarray) {
+    foreach my $subfield ( @{ $subject->{'MARCSUBJECT_SUBFIELDS_LOOP'} } ) {
+        $subfield->{'searchbyauthority'} = $searchByauthority;
+    }
+}
+
 $template->param(
     MARCNOTES               => $marcnotesarray,
     MARCSUBJCTS             => $marcsubjctsarray,
@@ -302,6 +334,7 @@ $template->param(
     itemdata_itemnotes      => $itemfields{itemnotes},
     authorised_value_images => $biblio_authorised_value_images,
     subtitle                => $subtitle,
+    bouncemarcauthorsarray  => \@reboundmarcauthorsarray,
 );
 
 foreach ( keys %{$dat} ) {
