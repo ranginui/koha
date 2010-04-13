@@ -368,12 +368,14 @@ BRECORD: while ( my $bib = $sth->fetchrow_hashref() ) {
         }
 
     }
+    $mref->{'999'}->add_subfields( 'e' => $oldbib ); # store the old number in case we need it
     if ($oldbib == $biblionumber){
 	$biblionumber='';
     }
     else {
 	$oldbib = $biblionumber;
     }
+
     $mref->{'999'}->add_subfields( 'c' => $biblionumber )
       if defined $biblionumber;    #bibnum
     $mref->{'999'}->add_subfields( 'd' => $biblionumber )
