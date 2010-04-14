@@ -222,7 +222,7 @@ my $sth_item =
 my $sth4 = $dbh->prepare(
     "select count(*) as cnt from items where biblioitemnumber = ? ");
 
-open( MARCOUT, '> /mnt/hlt/record.dat' ) or die "\nFail- open marcoutput: $!";
+open( MARCOUT, '> /tmp/record.dat' ) or die "\nFail- open marcoutput: $!";
 my $cnt;
 my @marcdata;
 
