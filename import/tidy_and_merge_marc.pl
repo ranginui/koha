@@ -368,7 +368,7 @@ BRECORD: while ( my $bib = $sth->fetchrow_hashref() ) {
         }
 
     }
-    $mref->{'999'}->add_subfields( 'e' => $oldbib ); # store the old number in case we need it
+    $mref->{'999'}->add_subfields( 'e' => $biblionumber ); # store the old number in case we need it
     if ($oldbib == $biblionumber){
 	$biblionumber='';
     }
