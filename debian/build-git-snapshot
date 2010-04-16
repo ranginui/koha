@@ -17,7 +17,7 @@ die()
 
 everything_is_commited()
 {
-    if git status --short | grep -q '^'
+    if git status | grep -q '^'
     then
         return 1
     else

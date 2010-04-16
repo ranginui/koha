@@ -3,7 +3,7 @@ Maintainer: Lars Wirzenius <lars@catalyst.net.nz>
 Section: web
 Priority: optional
 Standards-Version: 3.8.4
-Build-Depends: koha-dev-env, debhelper (>= 7.0.50), gettext
+Build-Depends:  debhelper (>= 7.0.50), gettext
 
 Package: koha
 Architecture: all

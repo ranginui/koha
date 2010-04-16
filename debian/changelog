@@ -1,3 +1,33 @@
+koha (3.2.git20100416205918.f966c0f8-1) karmic; urgency=low
+
+  * Building git snapshot.
+
+ -- Chris Cormack <chris@bigballofwax.co.nz>  Fri, 16 Apr 2010 20:59:19 +1200
+
+koha (3.2.git20100416205833.f966c0f8-1) karmic; urgency=low
+
+  * Building git snapshot.
+
+ -- Chris Cormack <chris@bigballofwax.co.nz>  Fri, 16 Apr 2010 20:58:34 +1200
+
+koha (3.2.git20100416205321.f966c0f8-1) karmic; urgency=low
+
+  * Building git snapshot.
+
+ -- Chris Cormack <chris@bigballofwax.co.nz>  Fri, 16 Apr 2010 20:53:22 +1200
+
+koha (3.2.git20100416204627.f966c0f8-1) karmic; urgency=low
+
+  * Building git snapshot.
+
+ -- Chris Cormack <chris@bigballofwax.co.nz>  Fri, 16 Apr 2010 20:46:29 +1200
+
+koha (3.2.git20100416204235.f966c0f8-1) karmic; urgency=low
+
+  * Building git snapshot.
+
+ -- Chris Cormack <chris@bigballofwax.co.nz>  Fri, 16 Apr 2010 20:42:38 +1200
+
 koha (3.01.00.128-1~) squeeze; urgency=low
 
   * Initial release.
