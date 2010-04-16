@@ -46,7 +46,6 @@ function Dopop(link) {
 <!-- TMPL_INCLUDE NAME="checkin-search.inc" -->
 
 <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/circ/circulation-home.pl">Circulation</a> &rsaquo; Check In</div>
-
 <div id="doc" class="yui-t7">
 
    <div id="bd">
@@ -385,41 +384,45 @@ function Dopop(link) {
         </div>
     </form>
 </div>
-
 <!-- TMPL_IF Name="flagloop" -->
 <div class="yui-g dialog message">    
                 <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=<!-- TMPL_VAR Name="riborrowernumber" -->"><!-- TMPL_VAR Name="riborsurname" -->, <!-- TMPL_VAR Name="ribortitle" --> <!-- TMPL_VAR Name="riborfirstname" --></a> (<!-- TMPL_VAR Name="riborcnum" -->)
-            <!-- TMPL_IF NAME="flagloop"--><ul><!-- TMPL_LOOP Name="flagloop" -->
-            <!-- TMPL_IF NAME="gonenoaddress" -->
-                <li>Patron's address is in doubt<!-- TMPL_IF NAME="gonenoaddresscomment" -->: <!-- TMPL_VAR NAME="gonenoaddresscomment" --><!-- /TMPL_IF --></li>
-            <!-- /TMPL_IF -->
+            <!-- TMPL_IF NAME="flagloop"-->
+		<ul>
+		    <!-- TMPL_LOOP Name="flagloop" -->
+			<!-- TMPL_IF NAME="gonenoaddress" -->
+			    <li>Patron's address is in doubt<!-- TMPL_IF NAME="gonenoaddresscomment" -->: <!-- TMPL_VAR NAME="gonenoaddresscomment" --><!-- /TMPL_IF --></li>
+			<!-- /TMPL_IF -->
 
-            <!-- TMPL_IF NAME="lost" -->
-                <li>Patron's card is lost<!-- TMPL_IF NAME="lostcomment" -->: <!-- TMPL_VAR NAME="lostcomment" --><!-- /TMPL_IF --></li>
-            <!-- /TMPL_IF -->
+			<!-- TMPL_IF NAME="lost" -->
+			    <li>Patron's card is lost<!-- TMPL_IF NAME="lostcomment" -->: <!-- TMPL_VAR NAME="lostcomment" --><!-- /TMPL_IF --></li>
+			<!-- /TMPL_IF -->
 
-            <!-- TMPL_IF NAME="debarred" -->
-                <li>Patron is restricted <!--TMPL_IF NAME="dateend"-->until <!--TMPL_VAR Name="dateend"--><!--/TMPL_IF--><!-- TMPL_IF NAME="debarredcomment" -->: <!-- TMPL_VAR NAME="debarredcomment" --><!-- /TMPL_IF --></li>
-            <!-- /TMPL_IF -->
+			<!-- TMPL_IF NAME="debarred" -->
+			    <li>Patron is restricted <!--TMPL_IF NAME="dateend"-->until <!--TMPL_VAR Name="dateend"--><!--/TMPL_IF--><!-- TMPL_IF NAME="debarredcomment" -->: <!-- TMPL_VAR NAME="debarredcomment" --><!-- /TMPL_IF --></li>
+			<!-- /TMPL_IF -->
 
-            <!-- TMPL_IF Name="waiting"-->
-			<li><div id="holdswaiting" class="circmessage">
-		    <h4>Holds waiting:</h4>
-			        <!-- TMPL_LOOP NAME="itemloop" -->
-			            <ul>
-			                <li> <a href="/cgi-bin/koha/reserve/request.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->"><!-- TMPL_VAR NAME="title" escape="html" --></a> (<!-- TMPL_VAR NAME="itemtype"-->), <!-- TMPL_IF NAME="author" -->by <!-- TMPL_VAR NAME="author"--><!-- /TMPL_IF --> Hold placed on <!-- TMPL_VAR NAME="reservedate"--> available since <!-- TMPL_VAR NAME="waitingdate" -->.
-			            <!-- TMPL_IF NAME="brname" -->
-			                <br /><!-- TMPL_IF NAME="waitinghere" --><strong class="waitinghere"><!-- TMPL_ELSE --><strong><!-- /TMPL_IF -->Waiting at <!-- TMPL_VAR NAME="brname" --></strong>
-			            <!-- /TMPL_IF -->
-			                </li>
-			            </ul>
-			    <!-- /TMPL_LOOP -->
-			</div></li>
+			<!-- TMPL_IF Name="waiting"-->
+			    <li><div id="holdswaiting" class="circmessage">
+				<h4>Holds waiting:</h4>
+				    <!-- TMPL_LOOP NAME="itemloop" -->
+					<ul>
+					    <li> <a href="/cgi-bin/koha/reserve/request.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->"><!-- TMPL_VAR NAME="title" escape="html" --></a> (<!-- TMPL_VAR NAME="itemtype"-->), <!-- TMPL_IF NAME="author" -->by <!-- TMPL_VAR NAME="author"--><!-- /TMPL_IF --> Hold placed on <!-- TMPL_VAR NAME="reservedate"--> available since <!-- TMPL_VAR NAME="waitingdate" -->.
+					    <!-- TMPL_IF NAME="brname" -->
+						<br /><!-- TMPL_IF NAME="waitinghere" --><strong class="waitinghere"><!-- TMPL_ELSE --><strong><!-- /TMPL_IF -->Waiting at <!-- TMPL_VAR NAME="brname" --></strong>
+					    <!-- /TMPL_IF -->
+					    </li>
+					</ul>
+				    <!-- /TMPL_LOOP -->
+			    </div></li>
 			<!-- /If waiting --><!-- /TMPL_IF -->
-            <!-- TMPL_IF Name="flag"-->
-             <li><!-- TMPL_VAR Name="flag" --> <!-- TMPL_IF NAME="charges" --> of <!-- TMPL_VAR NAME="chargeamount" --> <!-- /TMPL_IF --> </li>
+
+			<!-- TMPL_IF Name="flag"-->
+			    <li><!-- TMPL_VAR Name="flag" --> <!-- TMPL_IF NAME="charges" --> of <!-- TMPL_VAR NAME="chargeamount" --> <!-- /TMPL_IF --> </li>
+			<!-- /TMPL_IF -->
+		    <!-- /TMPL_LOOP -->
+		</ul>
             <!-- /TMPL_IF -->
-                <!-- /TMPL_LOOP --></ul>
 </div>
 <!-- /TMPL_IF -->
 <!-- TMPL_IF Name="riloop" -->
