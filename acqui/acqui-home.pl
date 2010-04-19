@@ -75,7 +75,7 @@ if ( $cur_format eq 'FR' ) {
 }
 
 my $budget_arr =
-  GetBudgetHierarchy( 2, $user->{branchcode},
+  GetBudgetHierarchy( '', $user->{branchcode},
     $template->{param_map}->{'USER_INFO'}[0]->{'borrowernumber'} );
 
 my $total      = 0;
