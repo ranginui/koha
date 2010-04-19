@@ -124,6 +124,9 @@ h1#libraryname A {
 }
 
 #searchsubmit {
+	font-size : 100%;
+	font-weight : bold;
+	padding: 9px 10px;
 	margin: 8px 0 0 2px;
 	_margin: 0px 0 0 2px;
 }
