@@ -1,7 +1,35 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl
+
+# Copyright 2008 - 2009 BibLibre SARL
+# This file is part of Koha.
+#
+# Koha is free software; you can redistribute it and/or modify it under the
+# terms of the GNU General Public License as published by the Free Software
+# Foundation; either version 2 of the License, or (at your option) any later
+# version.
+#
+# Koha is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+# A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+=head1 NAME
+
+committed.pl
+  
+=head1 DESCRIPTION
+
+this script is to show orders ordered but not yet received
+  
+=cut
+
 
 use C4::Context;
 use strict;
+use warnings;
 use CGI;
 use C4::Auth;
 use C4::Interface::CGI::Output;
@@ -24,11 +52,11 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
 );
 
 my $query =
-"Select quantity,datereceived,freight,unitprice,listprice,ecost,quantityreceived                                      
-as qrev,subscription,title,itemtype,aqorders.biblionumber,aqorders.booksellerinvoicenumber,                                 
+"Select quantity,datereceived,freight,unitprice,listprice,ecost,quantityreceived
+as qrev,subscription,title,itemtype,aqorders.biblionumber,aqorders.booksellerinvoicenumber,
 quantity-quantityreceived as tleft,aqorders.ordernumber
-as ordnum,entrydate,budgetdate,booksellerid,aqbasket.basketno                                                               
-from (aqorders,aqorderbreakdown,aqbasket)                                
+as ordnum,entrydate,budgetdate,booksellerid,aqbasket.basketno
+from (aqorders,aqorderbreakdown,aqbasket)
 left join biblioitems on  biblioitems.biblioitemnumber=aqorders.biblioitemnumber
 where bookfundid=? and aqorders.ordernumber=aqorderbreakdown.ordernumber and
 aqorders.basketno=aqbasket.basketno and (budgetdate >= ? and budgetdate < ?)
