@@ -32,7 +32,7 @@ use strict;
 use warnings;
 use CGI;
 use C4::Auth;
-use C4::Interface::CGI::Output;
+use C4::Output;
 
 my $dbh      = C4::Context->dbh;
 my $input    = new CGI;
@@ -42,7 +42,7 @@ my $end      = $input->param('end');
 
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
     {
-        template_name   => "acqui/bookfund.tmpl",
+        template_name   => "acqui/committed.tmpl",
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
