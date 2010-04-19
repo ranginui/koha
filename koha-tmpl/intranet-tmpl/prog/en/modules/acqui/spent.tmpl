@@ -1,0 +1,112 @@
+<TMPL_INCLUDE name="acquisitions-top.inc">
+
+<div class="breadcrumb"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &gt; Acquisitions</div>
+<h1>Budgets &amp; Bookfunds</h1>
+<h2>Spent</h2>
+
+<br /><br />
+
+
+<table cellspacing="0" cellpadding="0" border="0" id="spent" class="collapse">
+<tr valign="top">
+   <td class="cell-header">
+	 	Title
+	</td>
+	<td class="cell-header">
+	 	Order
+	</td>
+	<td class="cell-header">
+	 	Supplier
+	</td>
+	<td class="cell-header">
+		Invoice
+	</td>
+	<td class="cell-header">
+		Itemtype
+	</td>
+	<td class="cell-header">
+		Receieved
+	</td>
+	<td class="cell-header">
+		Unit Price
+	</td>
+	<td class="cell-header">
+		Date Received
+	</td>
+	<td class="cell-header">
+		Subtotal
+	</td>
+</tr>
+
+<!--TMPL_LOOP NAME="SPENTLOOP"-->
+	<!--TMPL_IF name="toggle"-->
+		<tr valign="top" class="hilighted">
+	<!--TMPL_ELSE-->
+		<tr valign="top" class="hilighted2">
+	<!--/TMPL_IF-->
+	
+		<td class="cell">
+			<!--TMPL_VAR NAME="title"-->	
+		</td>
+		<td class="cell">
+                  <a href="/cgi-bin/koha/acqui/acquire.pl?recieve=<!--TMPL_VAR NAME="ordnum"-->&biblio=<!--TMPL_VAR NAME="biblionumber"-->&invoice=<!--TMPL_VAR NAME="booksellerinvoicenumber"-->&supplierid=<!--TMPL_VAR NAME="booksellerid"-->&catview=yes"><TMPL_VAR NAME="ordnum"--></a>
+		</td>
+		<td class="cell">
+			<!--TMPL_VAR NAME="booksellerid"-->	
+		</td>
+		<td class="cell">
+				<a href=/cgi-bin/koha/acqui/receive.pl?invoice=<!--TMPL_VAR NAME="booksellerinvoicenumber"-->&supplierid=<!--TMPL_VAR NAME="booksellerid"-->><!--TMPL_VAR NAME="booksellerinvoicenumber"--></a>
+		</td>
+		<td class="cell">
+			<!--TMPL_VAR NAME="itemtype"-->	
+		</td>
+		<td class="cell">
+			<!--TMPL_VAR NAME="qrev"-->	
+		</td>
+		<td class="cell">
+			<!--TMPL_VAR NAME="unitprice"-->		
+		</td>
+		<td class="cell">
+			<!--TMPL_VAR NAME="datereceived"-->		
+		</td>
+		<td class="cell">
+			<!--TMPL_VAR NAME="subtotal"-->		
+		</td>
+</tr>
+<!--/TMPL_LOOP-->
+
+<tr valign="top">
+   <td class="cell-header">
+	 	Total
+	</td>
+	<td class="cell-header">
+	 	
+	</td>
+	<td class="cell-header">
+	 	
+	</td>
+	<td class="cell-header">
+		
+	</td>
+	<td class="cell-header">
+		
+	</td>
+	<td class="cell-header">
+		
+	</td>
+	<td class="cell-header">
+		
+	</td>
+	<td class="cell-header">
+		
+	</td>
+	<td class="cell-header">
+		<!--TMPL_VAR NAME="total"-->
+	</td>
+</tr>
+
+</table>
+
+
+
+<TMPL_INCLUDE NAME="acquisitions-bottom.inc">
