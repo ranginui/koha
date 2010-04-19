@@ -206,7 +206,8 @@ my $sth = $dbh->prepare("select * from biblio,biblioitems where
       and biblioitems.itemtype <> 'PYP')
   order by biblio.biblionumber ");
 
-# my $sth = $dbh->prepare("select * from biblio,biblioitems where biblioitems.biblionumber=biblio.biblionumber and biblio.biblionumber = 11234 ") ;
+# my $sth = $dbh->prepare("select * from biblio,biblioitems 
+#  where biblioitems.biblionumber=biblio.biblionumber and biblio.biblionumber = 148719 ") ;
 
 # my $sth = $dbh->prepare("select * from biblio where biblionumber <  100  ") ;
 # my $sth = $dbh->prepare("select * from biblio where biblionumber >   34700  and  biblionumber <    34800  ") ;
@@ -232,7 +233,7 @@ BRECORD: while ( my $bib = $sth->fetchrow_hashref() ) {
     my $itmcnt = 0;
 
     $i++;
-#    print ".";
+    print ".";
 #    print "$i" unless $i % 100;
 
     ## ## $bib
@@ -290,7 +291,7 @@ BRECORD: while ( my $bib = $sth->fetchrow_hashref() ) {
     my $copyrightdate = $bib->{'copyrightdate'};
     my $abstract      = $bib->{'abstract'};
 
-    #    print "$bib->{'biblionumber'}\n";
+        print "$bib->{'biblionumber'}\n";
     $sth_tags->execute( $bibid->{'bibid'} );
 
     my (@tags_arr);
@@ -706,7 +707,7 @@ BRECORD: while ( my $bib = $sth->fetchrow_hashref() ) {
     }
 ### $itmcnt
 
-    next BRECORD if $itmcnt == 0;    # if not items skipp to next bib!!
+#    next BRECORD if $itmcnt == 0;    # if not items skipp to next bib!!
 
     while ( my ( $key, $value ) = each(%$mref) ) {
 
