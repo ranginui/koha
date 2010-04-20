@@ -36,7 +36,7 @@ use C4::Output;
 
 my $dbh      = C4::Context->dbh;
 my $input    = new CGI;
-my $bookfund = $input->param('bookfund');
+my $bookfund = $input->param('fund');
 my $start    = $input->param('start');
 my $end      = $input->param('end');
 
