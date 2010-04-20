@@ -5,6 +5,7 @@
 
 # Copyright 2000-2002 Katipo Communications
 # Copyright 2008-2009 BibLibre SARL
+# Copyright 2010 Catalyst IT
 #
 # This file is part of Koha.
 #
@@ -70,7 +71,9 @@ my $supplierid=$input->param('supplierid');
 my $bookseller=GetBookSellerFromId($supplierid);
 
 my $invoice=$input->param('invoice') || '';
-my $freight=$input->param('freight');
+my $freight=$input->param('freight') || '';
+
+
 my $gst= $input->param('gst') || $bookseller->{gstrate} || C4::Context->preference("gist") || 0;
 my $datereceived =  ($input->param('op') eq 'new') ? C4::Dates->new($input->param('datereceived')) 
 					:  C4::Dates->new($input->param('datereceived'), 'iso')   ;
