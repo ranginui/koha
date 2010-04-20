@@ -42,7 +42,7 @@ my $end      = $input->param('end');
 
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
     {
-        template_name   => "acqui/committed.tmpl",
+        template_name   => "acqui/ordered.tmpl",
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
