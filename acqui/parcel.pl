@@ -113,9 +113,10 @@ if($input->param('format') eq "json"){
             $data->{title} = $order->{title};
             $data->{author} = $order->{author};
             $data->{biblionumber} = $order->{biblionumber};
-            $data->{freight} = $order->{freight} || $freight;
+            $data->{freight} = $freight;
             $data->{quantity} = $order->{quantity};
             $data->{ecost} = $order->{ecost};
+	    $data->{gst} = $order->{gst};
             $data->{ordertotal} = sprintf("%.2f",$order->{ecost}*$order->{quantity});
             push @datas, $data;
         }
@@ -207,7 +208,7 @@ for (my $i = 0 ; $i < $countlines ; $i++) {
     my %line;
     %line          = %{ $parcelitems[$i] };
     $line{invoice} = $invoice;
-    $line{gst}     = $gst;
+    $line{gst}     = $line{gst};
     $line{freight} = $freight;
     $line{total} = sprintf($cfstr, $total);
     $line{supplierid} = $supplierid;
@@ -221,7 +222,9 @@ for (my $i = 0 ; $i < $countlines ; $i++) {
     if ($i > 0 && $totalfreight != $parcelitems[$i]->{'freight'}) {
         warn "FREIGHT CHARGE MISMATCH!!";
     }
-    $totalfreight = $parcelitems[$i]->{'freight'};
+    if ($parcelitems[$i]->{'freight'}; > 0){
+	$totalfreight = $parcelitems[$i]->{'freight'};
+    }
     $totalquantity += $parcelitems[$i]->{'quantityreceived'};
     $tototal       += $total;
 }
@@ -247,13 +250,13 @@ for (my $i = 0 ; $i < $countpendings ; $i++) {
     $line{ordertotal} = sprintf("%.2f",$line{ecost}*$line{quantity});
     $line{unitprice} = sprintf("%.2f",$line{unitprice});
     $line{invoice} = $invoice;
-    $line{gst} = $gst;
+    $line{gst} = $line{gst};
     $line{total} = $total;
     $line{supplierid} = $supplierid;
     $ordergrandtotal += $line{ecost} * $line{quantity};
     push @loop_orders, \%line if ($i >= $startfrom and $i < $startfrom + $resultsperpage);
 }
-$freight = $totalfreight unless $freight;
+$freight = $totalfreight unless $freight > 0;
 
 my $count = $countpendings;
 
@@ -289,7 +292,7 @@ if ($count>$resultsperpage){
 }
 
 #$totalfreight=$freight;
-$tototal = $tototal + $freight;
+$tototal = $tototal + $totalfreight;
 
 $template->param(
     invoice               => $invoice,
