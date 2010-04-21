@@ -91,8 +91,8 @@
                 <td align="center"><!-- TMPL_VAR name="budget_owner" --></td>
                 <td align="center"><!-- TMPL_VAR name="budget_branchname" --></td>
                 <td align="right" ><!-- TMPL_VAR name="budget_amount" --></td>
-                <td align="right" ><!-- TMPL_VAR name="budget_ordered" --></td>
-                <td align="right" ><!-- TMPL_VAR name="budget_spent" --></td>
+                <td align="right" ><a href="ordered.pl?fund=<!-- TMPL_VAR name="budget_id" -->&start=<!-- TMPL_VAR name="budget_period_startdate" -->&end=<!-- TMPL_VAR name="budget_period_enddate" -->"><!-- TMPL_VAR name="budget_ordered" --></a></td>
+                <td align="right" ><a href="spent.pl?fund=<!-- TMPL_VAR name="budget_id" -->&start=<!-- TMPL_VAR name="budget_period_startdate" -->&end=<!-- TMPL_VAR name="budget_period_enddate" -->"><!-- TMPL_VAR name="budget_spent" --></a></td>
                 <td align="right" ><!-- TMPL_VAR name="budget_avail" --></td>
             </tr>
         <!-- /TMPL_LOOP -->

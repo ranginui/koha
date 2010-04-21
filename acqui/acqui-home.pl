@@ -83,49 +83,54 @@ my $totspent   = 0;
 my $totordered = 0;
 my $totcomtd   = 0;
 my $totavail   = 0;
+use Data::Dumper;
+print STDERR Dumper($fund_arr);
+foreach my $fund ( @{$fund_arr} ) {
+    my $budget_period = GetBudgetPeriod($fund->{budget_period_id});
+    print STDERR Dumper($budget_period);
+    $fund->{budget_code_indent} =~ s/\ /\&nbsp\;/g;
 
-foreach my $budget ( @{$budget_arr} ) {
+    $fund->{'budget_branchname'} =
+      GetBranchName( $fund->{'budget_branchcode'} );
 
-    $budget->{budget_code_indent} =~ s/\ /\&nbsp\;/g;
-
-    $budget->{'budget_branchname'} =
-      GetBranchName( $budget->{'budget_branchcode'} );
-
-    my $member = GetMember( borrowernumber => $budget->{budget_owner_id} );
+    my $member = GetMember( borrowernumber => $fund->{budget_owner_id} );
     if ($member) {
-        $budget->{budget_owner} =
+        $fund->{budget_owner} =
           $member->{'firstname'} . ' ' . $member->{'surname'};
     }
 
-    if ( !defined $budget->{budget_amount} ) {
-        $budget->{budget_amount} = 0;
+    if ( !defined $fund->{budget_amount} ) {
+        $fund->{budget_amount} = 0;
     }
 
-    $budget->{'budget_ordered'} = GetBudgetOrdered( $budget->{'budget_id'} );
-    $budget->{'budget_spent'}   = GetBudgetSpent( $budget->{'budget_id'} );
-    if ( !defined $budget->{budget_spent} ) {
-        $budget->{budget_spent} = 0;
+    $fund->{'budget_ordered'} = GetBudgetOrdered( $fund->{'budget_id'} );
+    $fund->{'budget_spent'}   = GetBudgetSpent( $fund->{'budget_id'} );
+    $fund->{'budget_period_startdate'} = $budget_period->{'budget_period_startdate'};
+    $fund->{'budget_period_enddate'} = $budget_period->{'budget_period_enddate'};
+    if ( !defined $fund->{budget_spent} ) {
+        $fund->{budget_spent} = 0;
     }
-    if ( !defined $budget->{budget_ordered} ) {
-        $budget->{budget_ordered} = 0;
+    if ( !defined $fund->{budget_ordered} ) {
+        $fund->{budget_ordered} = 0;
     }
-    $budget->{'budget_avail'} =
-      $budget->{'budget_amount'} - ( $budget->{'budget_spent'} + $budget->{'budget_ordered'} );
+    $fund->{'budget_avail'} =
+      $fund->{'budget_amount'} - ( $fund->{'budget_spent'} + $fund->{'budget_ordered'} );
 
-    $total      += $budget->{'budget_amount'};
-    $totspent   += $budget->{'budget_spent'};
-    $totordered += $budget->{'budget_ordered'};
-    $totavail   += $budget->{'budget_avail'};
+    $total      += $fund->{'budget_amount'};
+    $totspent   += $fund->{'budget_spent'};
+    $totordered += $fund->{'budget_ordered'};
+    $totavail   += $fund->{'budget_avail'};
 
     for my $field (qw( budget_amount budget_spent budget_ordered budget_avail ) ) {
-        $budget->{$field} = $num_formatter->format_price( $budget->{$field} );
+        $fund->{$field} = $num_formatter->format_price( $fund->{$field} );
     }
 }
+print STDERR "Final: ".Dumper($fund_arr);
 
 $template->param(
 
     type          => 'intranet',
-    loop_budget   => $budget_arr,
+    loop_budget   => $fund_arr,
     branchname    => $branchname,
     total         => $num_formatter->format_price($total),
     totspent      => $num_formatter->format_price($totspent),

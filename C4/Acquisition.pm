@@ -1015,6 +1015,7 @@ sub NewOrder {
         $orderinfo->{'subscription'} = 0;
     }
     $orderinfo->{'entrydate'} ||= C4::Dates->new()->output("iso");
+    $orderinfo->{'budgetdate'} ||= C4::Dates->new()->output("iso");
     if (!$orderinfo->{quantityreceived}) {
         $orderinfo->{quantityreceived} = 0;
     }
