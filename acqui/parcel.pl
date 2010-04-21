@@ -113,7 +113,7 @@ if($input->param('format') eq "json"){
             $data->{title} = $order->{title};
             $data->{author} = $order->{author};
             $data->{biblionumber} = $order->{biblionumber};
-            $data->{freight} = $order->{freight};
+            $data->{freight} = $order->{freight} || $freight;
             $data->{quantity} = $order->{quantity};
             $data->{ecost} = $order->{ecost};
             $data->{ordertotal} = sprintf("%.2f",$order->{ecost}*$order->{quantity});
@@ -208,6 +208,7 @@ for (my $i = 0 ; $i < $countlines ; $i++) {
     %line          = %{ $parcelitems[$i] };
     $line{invoice} = $invoice;
     $line{gst}     = $gst;
+    $line{freight} = $freight;
     $line{total} = sprintf($cfstr, $total);
     $line{supplierid} = $supplierid;
     push @loop_received, \%line;
