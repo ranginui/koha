@@ -76,16 +76,17 @@ use C4::Budgets;
 use C4::Input;
 use C4::Dates;
 
-use C4::Bookseller;		# GetBookSellerFromId
+use C4::Bookseller;	    # GetBookSellerFromId
 use C4::Acquisition;
-use C4::Suggestions;	# GetSuggestion
-use C4::Biblio;			# GetBiblioData
+use C4::Suggestions;	    # GetSuggestion
+use C4::Biblio;		    # GetBiblioData
 use C4::Output;
 use C4::Input;
 use C4::Koha;
-use C4::Branch;			# GetBranches
+use C4::Branch;		    # GetBranches
 use C4::Members;
 use C4::Search qw/FindDuplicate BiblioAddAuthorities/;
+use C4::Circulation         # SetItemDefaultLocation
 
 #needed for z3950 import:
 use C4::ImportBatch qw/GetImportRecordMarc SetImportRecordStatus/;
@@ -161,6 +162,7 @@ if ( $ordernumber eq '' and defined $params->{'breedingid'}){
                 $listprice = 0;
             }
         }
+        SetItemDefaultLocation($bibitemnum);
         SetImportRecordStatus($params->{'breedingid'}, 'imported');
     }
 }

@@ -97,6 +97,11 @@ BEGIN {
                 &CreateBranchTransferLimit
                 &DeleteBranchTransferLimits
 	);
+
+        # subs to deal with configuring new items
+        push @EXPORT, qw(
+            &SetItemDefaultLocation
+        );
 }
 
 =head1 NAME
@@ -2768,6 +2773,22 @@ sub DeleteBranchTransferLimits {
    $sth->execute();
 }
 
+=head2 SetItemDefaultLocation($biblioitemnumber)
+
+If a default location is set, this puts the item there. It will set the
+permenant location to be whatever the previous location was.
+
+=cut
+
+sub SetItemDefaultLocation {
+    my ($biblioitemnumber) = @_;
+    if ( C4::Context->preference('NewItemsDefaultLocation') ) {
+        my $item = GetItem( $biblioitemnumber );
+        $item->{'permanent_location'} = $item->{'location'};
+        $item->{'location'} = C4::Context->preference('NewItemsDefaultLocation');
+        ModItem( $item, undef, $biblioitemnumber);
+    }
+}
 
   1;
 

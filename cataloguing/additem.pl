@@ -30,6 +30,7 @@ use C4::Koha; # XXX subfield_is_koha_internal_p
 use C4::Branch; # XXX subfield_is_koha_internal_p
 use C4::ClassSource;
 use C4::Dates;
+use C4::Circulation;
 
 use MARC::File::XML;
 
@@ -57,16 +58,6 @@ sub get_item_from_barcode {
     $rq->execute($barcode);
     ($result)=$rq->fetchrow;
     return($result);
-}
-
-sub set_item_default_location {
-    my $itemnumber = shift;
-    if ( C4::Context->preference('NewItemsDefaultLocation') ) {
-        my $item = GetItem( $itemnumber );
-        $item->{'permanent_location'} = $item->{'location'};
-        $item->{'location'} = C4::Context->preference('NewItemsDefaultLocation');
-        ModItem( $item, undef, $itemnumber);
-    }
 }
 
 my $input = new CGI;
@@ -152,10 +143,10 @@ if ($op eq "additem") {
 	my $exist_itemnumber = get_item_from_barcode($addedolditem->{'barcode'});
 	push @errors,"barcode_not_unique" if($exist_itemnumber);
 	# if barcode exists, don't create, but report The problem.
-    unless ($exist_itemnumber) {
+        unless ($exist_itemnumber) {
 	    my ($oldbiblionumber,$oldbibnum,$oldbibitemnum) = AddItemFromMarc($record,$biblionumber);
-        set_item_default_location($oldbibitemnum);
-    }
+            SetItemDefaultLocation($oldbibitemnum);
+        }
 	$nextop = "additem";
 	if ($exist_itemnumber) {
 	    $itemrecord = $record;
@@ -225,7 +216,7 @@ if ($op eq "additem") {
 		# Adding the item
         if (!$exist_itemnumber) {
             my ($oldbiblionumber,$oldbibnum,$oldbibitemnum) = AddItemFromMarc($record,$biblionumber);
-            set_item_default_location($oldbibitemnum);
+            SetItemDefaultLocation($oldbibitemnum);
 
             # We count the item only if it was really added
             # That way, all items are added, even if there was some already existing barcodes
