@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 
 # Copyright 2008 - 2009 BibLibre SARL
+# Copyright 2010 Catalyst IT Limited
 # This file is part of Koha.
 #
 # Koha is free software; you can redistribute it and/or modify it under the
@@ -36,7 +37,7 @@ use C4::Output;
 
 my $dbh      = C4::Context->dbh;
 my $input    = new CGI;
-my $bookfund = $input->param('fund');
+my $fund_id = $input->param('fund');
 my $start    = $input->param('start');
 my $end      = $input->param('end');
 
@@ -51,23 +52,37 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
     }
 );
 
-my $query =
-"Select quantity,datereceived,freight,unitprice,listprice,ecost,quantityreceived
-as qrev,subscription,title,itemtype,aqorders.biblionumber,aqorders.booksellerinvoicenumber,
-quantity-quantityreceived as tleft,aqorders.ordernumber
-as ordnum,entrydate,budgetdate,booksellerid,aqbasket.basketno
-from (aqorders,aqorderbreakdown,aqbasket)
-left join biblioitems on  biblioitems.biblioitemnumber=aqorders.biblioitemnumber
-where bookfundid=? and aqorders.ordernumber=aqorderbreakdown.ordernumber and
-aqorders.basketno=aqbasket.basketno and (budgetdate >= ? and budgetdate < ?)
-and (datecancellationprinted is NULL or datecancellationprinted='0000-00-00')
-  and (quantity > quantityreceived or quantityreceived is NULL)
-";
-warn $query;
+my $query = <<EOQ;
+SELECT
+    aqorders.basketno, aqorders.ordernumber, 
+    quantity-quantityreceived AS tleft,
+    ecost, budgetdate,
+    aqbasket.booksellerid,
+    itype,
+    title
+FROM (aqorders, aqbasket)
+LEFT JOIN items ON
+    items.biblioitemnumber=aqorders.biblioitemnumber
+LEFT JOIN biblio ON
+    biblio.biblionumber=aqorders.biblionumber
+LEFT JOIN aqorders_items ON
+    aqorders.ordernumber=aqorders_items.ordernumber
+WHERE 
+    aqorders.basketno=aqbasket.basketno AND
+    budget_id=? AND
+    (budgetdate >= ? AND budgetdate < ?) AND
+    (datecancellationprinted IS NULL OR 
+        datecancellationprinted='0000-00-00') AND
+    (quantity > quantityreceived OR quantityreceived IS NULL)
+EOQ
+
 my $sth = $dbh->prepare($query);
 
-$sth->execute( $bookfund, $start, $end );
-my @commited_loop;
+$sth->execute( $fund_id, $start, $end );
+if ($sth->err) {
+    die "Error occurred fetching records: ".$sth->errstr;
+}
+my @ordered;
 
 my $total = 0;
 while ( my $data = $sth->fetchrow_hashref ) {
@@ -79,14 +94,16 @@ while ( my $data = $sth->fetchrow_hashref ) {
         my $subtotal = $left * $data->{'ecost'};
         $data->{subtotal} =  sprintf ("%.2f",  $subtotal);
         $data->{'left'} = $left;
-        push @commited_loop, $data;
+        push @ordered, $data;
         $total += $subtotal;
     }
 }
+use Data::Dumper;
+print STDERR Dumper(\@ordered);
 
 $template->param(
-    COMMITEDLOOP => \@commited_loop,
-    total        => $total
+    ordered     => \@ordered,
+    total       => $total
 );
 $sth->finish;
 $dbh->disconnect;

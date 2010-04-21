@@ -38,7 +38,7 @@ use CGI;
 
 my $dbh      = C4::Context->dbh;
 my $input    = new CGI;
-my $bookfund = $input->param('bookfund');
+my $bookfund = $input->param('fund');
 my $start    = $input->param('start');
 my $end      = $input->param('end');
 
@@ -68,17 +68,45 @@ my $query =
         (datereceived >= ? and datereceived < ?))
     and (datecancellationprinted is NULL or
            datecancellationprinted='0000-00-00')
+";
 
-
-  ";
+$query = <<EOQ;
+SELECT
+    aqorders.basketno, aqorders.ordernumber, 
+    quantity-quantityreceived AS tleft,
+    ecost, budgetdate,
+    aqbasket.booksellerid,
+    itype,
+    title,
+    aqorders.booksellerinvoicenumber,
+    quantityreceived,
+    unitprice,
+    datereceived,
+    aqorders.biblionumber
+FROM (aqorders, aqbasket)
+LEFT JOIN items ON
+    items.biblioitemnumber=aqorders.biblioitemnumber
+LEFT JOIN biblio ON
+    biblio.biblionumber=aqorders.biblionumber
+LEFT JOIN aqorders_items ON
+    aqorders.ordernumber=aqorders_items.ordernumber
+WHERE 
+    aqorders.basketno=aqbasket.basketno AND
+    budget_id=? AND
+    (datereceived >= ? AND datereceived < ?) AND
+    (datecancellationprinted IS NULL OR 
+        datecancellationprinted='0000-00-00')
+EOQ
 my $sth = $dbh->prepare($query);
 $sth->execute( $bookfund, $start, $end );
-
+if ($sth->err) {
+    die "An error occurred fetching records: ".$sth->errstr;
+}
 my $total = 0;
 my $toggle;
-my @spent_loop;
+my @spent;
 while ( my $data = $sth->fetchrow_hashref ) {
-    my $recv = $data->{'qrev'};
+    my $recv = $data->{'quantityreceived'};
     if ( $recv > 0 ) {
         my $subtotal = $recv * $data->{'unitprice'};
         $data->{'subtotal'}  =   sprintf ("%.2f",  $subtotal); 
@@ -94,14 +122,15 @@ while ( my $data = $sth->fetchrow_hashref ) {
             $toggle = 1;
         }
         $data->{'toggle'} = $toggle;
-        push @spent_loop, $data;
+        push @spent, $data;
     }
 
 }
 
+
 $template->param(
-    SPENTLOOP => \@spent_loop,
-    total     => $total
+    spent       => \@spent,
+    total       => $total
 );
 $sth->finish;
 

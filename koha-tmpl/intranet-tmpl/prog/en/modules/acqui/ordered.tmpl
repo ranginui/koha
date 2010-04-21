@@ -31,7 +31,7 @@
 	</td>
 </tr>
 
-<!--TMPL_LOOP NAME="commitedloop"-->
+<!--TMPL_LOOP NAME="ordered"-->
 	<!--TMPL_IF name="toggle"-->
 		<tr valign="top" class="hilighted">
 	<!--TMPL_ELSE-->
@@ -42,10 +42,10 @@
 			<!--TMPL_VAR NAME="title"-->	
 		</td>
 		<td class="cell">
-				<a href=/cgi-bin/koha/acqui/newbiblio.pl?ordnum=<!--TMPL_VAR NAME="ordnum"-->&booksellerid=<!--TMPL_VAR NAME="booksellerid"-->&basket=<!--TMPL_VAR NAME="basketno"-->><!--TMPL_VAR NAME="ordnum"--></a>
+				<a href=/cgi-bin/koha/acqui/newbiblio.pl?ordnum=<!--TMPL_VAR NAME="ordernumber"-->&booksellerid=<!--TMPL_VAR NAME="booksellerid"-->&basket=<!--TMPL_VAR NAME="basketno"-->><!--TMPL_VAR NAME="ordernumber"--></a>
 		</td>
 		<td class="cell">
-			<!--TMPL_VAR NAME="itemtype"-->	
+			<!--TMPL_VAR NAME="itype"-->	
 		</td>
 		<td class="cell">
 			<!--TMPL_VAR NAME="left"-->	

@@ -38,7 +38,7 @@
 	</td>
 </tr>
 
-<!--TMPL_LOOP NAME="SPENTLOOP"-->
+<!--TMPL_LOOP NAME="spent"-->
 	<!--TMPL_IF name="toggle"-->
 		<tr valign="top" class="hilighted">
 	<!--TMPL_ELSE-->
@@ -49,7 +49,7 @@
 			<!--TMPL_VAR NAME="title"-->	
 		</td>
 		<td class="cell">
-                  <a href="/cgi-bin/koha/acqui/acquire.pl?recieve=<!--TMPL_VAR NAME="ordnum"-->&biblio=<!--TMPL_VAR NAME="biblionumber"-->&invoice=<!--TMPL_VAR NAME="booksellerinvoicenumber"-->&supplierid=<!--TMPL_VAR NAME="booksellerid"-->&catview=yes"><TMPL_VAR NAME="ordnum"--></a>
+                  <a href="/cgi-bin/koha/acqui/acquire.pl?recieve=<!--TMPL_VAR NAME="ordernumber"-->&biblio=<!--TMPL_VAR NAME="biblionumber"-->&invoice=<!--TMPL_VAR NAME="booksellerinvoicenumber"-->&supplierid=<!--TMPL_VAR NAME="booksellerid"-->&catview=yes"><!--TMPL_VAR NAME="ordernumber"--></a>
 		</td>
 		<td class="cell">
 			<!--TMPL_VAR NAME="booksellerid"-->	
@@ -61,7 +61,7 @@
 			<!--TMPL_VAR NAME="itemtype"-->	
 		</td>
 		<td class="cell">
-			<!--TMPL_VAR NAME="qrev"-->	
+			<!--TMPL_VAR NAME="quantityreceived"-->	
 		</td>
 		<td class="cell">
 			<!--TMPL_VAR NAME="unitprice"-->		
