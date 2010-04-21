@@ -53,24 +53,7 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
     }
 );
 
-my $query =
-"Select quantity,datereceived,freight,unitprice,listprice,ecost,quantityreceived
-    as qrev,subscription,title,itemtype,aqorders.biblionumber,aqorders.booksellerinvoicenumber,
-    quantity-quantityreceived as tleft,
-    aqorders.ordernumber
-    as ordnum,entrydate,budgetdate,booksellerid,aqbasket.basketno
-    from (aqorders,aqorderbreakdown,aqbasket)
-    left join biblioitems on  biblioitems.biblioitemnumber=aqorders.biblioitemnumber 
-    where bookfundid=? and
-    aqorders.ordernumber=aqorderbreakdown.ordernumber and
-    aqorders.basketno=aqbasket.basketno
-   and (
-        (datereceived >= ? and datereceived < ?))
-    and (datecancellationprinted is NULL or
-           datecancellationprinted='0000-00-00')
-";
-
-$query = <<EOQ;
+my $query = <<EOQ;
 SELECT
     aqorders.basketno, aqorders.ordernumber, 
     quantity-quantityreceived AS tleft,
@@ -113,7 +96,6 @@ while ( my $data = $sth->fetchrow_hashref ) {
         $data->{'unitprice'} =   sprintf ("%.2f",   $data->{'unitprice'}  ); 
         $total               += $subtotal;
 
-        $total =   sprintf ("%.2f",  $total); 
 
         if ($toggle) {
             $toggle = 0;
@@ -126,7 +108,7 @@ while ( my $data = $sth->fetchrow_hashref ) {
     }
 
 }
-
+$total =   sprintf ("%.2f",  $total); 
 
 $template->param(
     spent       => \@spent,

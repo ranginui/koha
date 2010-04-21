@@ -98,9 +98,7 @@ while ( my $data = $sth->fetchrow_hashref ) {
         $total += $subtotal;
     }
 }
-use Data::Dumper;
-print STDERR Dumper(\@ordered);
-
+$total =   sprintf ("%.2f",  $total);
 $template->param(
     ordered     => \@ordered,
     total       => $total
