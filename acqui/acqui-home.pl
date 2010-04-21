@@ -74,7 +74,7 @@ if ( $cur_format eq 'FR' ) {
     );
 }
 
-my $budget_arr =
+my $fund_arr =
   GetBudgetHierarchy( 2, $user->{branchcode},
     $template->{param_map}->{'USER_INFO'}[0]->{'borrowernumber'} );
 
@@ -83,11 +83,10 @@ my $totspent   = 0;
 my $totordered = 0;
 my $totcomtd   = 0;
 my $totavail   = 0;
-use Data::Dumper;
-print STDERR Dumper($fund_arr);
+
 foreach my $fund ( @{$fund_arr} ) {
     my $budget_period = GetBudgetPeriod($fund->{budget_period_id});
-    print STDERR Dumper($budget_period);
+
     $fund->{budget_code_indent} =~ s/\ /\&nbsp\;/g;
 
     $fund->{'budget_branchname'} =
@@ -125,7 +124,6 @@ foreach my $fund ( @{$fund_arr} ) {
         $fund->{$field} = $num_formatter->format_price( $fund->{$field} );
     }
 }
-print STDERR "Final: ".Dumper($fund_arr);
 
 $template->param(
 
