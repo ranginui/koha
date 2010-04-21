@@ -76,7 +76,7 @@ my $freight=$input->param('freight') || '';
 if ($bookseller->{gstrate} == 0){
     $bookseller->{gstrate}='';
 }
-my $gstrate= $input->param('gst') || $bookseller->{gstrate} || C4::Context->preference("gist") || 0;
+my $gstrate= $input->param('gstrate') || $bookseller->{gstrate} || C4::Context->preference("gist") || 0;
 my $datereceived =  ($input->param('op') eq 'new') ? C4::Dates->new($input->param('datereceived')) 
 					:  C4::Dates->new($input->param('datereceived'), 'iso')   ;
 $datereceived = C4::Dates->new() unless $datereceived;
@@ -201,7 +201,8 @@ my $totalquantity = 0;
 my $total;
 my $tototal;
 my @loop_received = ();
-my $gst           = 0;
+my $gst            = 0;
+my $peritemfreight = 0;
 for (my $i = 0 ; $i < $countlines ; $i++) {
 
     #$total=($parcelitems[$i]->{'unitprice'} + $parcelitems[$i]->{'freight'}) * $parcelitems[$i]->{'quantityreceived'};   #weird, are the freight fees counted by book? (pierre)
@@ -223,11 +224,12 @@ for (my $i = 0 ; $i < $countlines ; $i++) {
 
     # FIXME - each order in a  parcel holds the freight for the whole parcel. This means if you receive a parcel with items from multiple budgets, you'll see the freight charge in each budget..
     
-    if ($i > 0 && $totalfreight != $parcelitems[$i]->{'freight'}) {
-        warn "FREIGHT CHARGE MISMATCH!!";
-    }
+#    if ($i > 0 && $totalfreight != $parcelitems[$i]->{'freight'}) {
+#        warn "FREIGHT CHARGE MISMATCH!!";
+#    }
     if ($parcelitems[$i]->{'freight'} > 0){
-	$totalfreight = $parcelitems[$i]->{'freight'};
+	$totalfreight += ($parcelitems[$i]->{'freight'} * $parcelitems[$i]->{'quantityreceived'});
+	$peritemfreight = $parcelitems[$i]->{'freight'};
     }
     $totalquantity += $parcelitems[$i]->{'quantityreceived'};
     $tototal       += $total;
@@ -240,6 +242,7 @@ my $countpendings = scalar @$pendingorders;
 my ($totalPunitprice, $totalPquantity, $totalPecost, $totalPqtyrcvd);
 my $ordergrandtotal;
 my @loop_orders = ();
+
 for (my $i = 0 ; $i < $countpendings ; $i++) {
     my %line;
     %line = %{$pendingorders->[$i]};
