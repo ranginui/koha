@@ -256,12 +256,6 @@
 	    </tr>
 	</thead>
 <tfoot>
-	    <tr>
-		<td colspan="4" class="total">SUBTOTAL</td>
-		<td>&nbsp;</td>
-		<td><!-- TMPL_VAR NAME="totalprice" --></td>
-		<td><!-- TMPL_VAR NAME="tototal" --></td>
-	    </tr>
 	      <!-- TMPL_IF NAME="totalfreight" -->
 		    <tr>
 		<td colspan="5">&nbsp;
@@ -269,6 +263,13 @@
 			    <td>Shipping</td>
 		<td><!-- TMPL_VAR NAME="totalfreight" --></td>
 	    </tr> <!-- /TMPL_IF -->
+
+	    <tr>
+		<td colspan="4" class="total">SUBTOTAL</td>
+		<td>&nbsp;</td>
+		<td><!-- TMPL_VAR NAME="totalprice" --></td>
+		<td><!-- TMPL_VAR NAME="tototal" --></td>
+	    </tr>
 	      <!-- TMPL_IF NAME="gst" -->
 		    <tr>
 		<td colspan="5">

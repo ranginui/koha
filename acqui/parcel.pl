@@ -208,21 +208,20 @@ for (my $i = 0 ; $i < $countlines ; $i++) {
     my %line;
     %line          = %{ $parcelitems[$i] };
     $line{invoice} = $invoice;
-    $line{gst}     = $line{gst};
-    $line{freight} = $freight;
+#    $line{gst}     = $line{gst};
+#    $line{freight} = $;
     $line{total} = sprintf($cfstr, $total);
     $line{supplierid} = $supplierid;
     push @loop_received, \%line;
     $totalprice += $parcelitems[$i]->{'unitprice'};
     $line{unitprice} = sprintf($cfstr, $parcelitems[$i]->{'unitprice'});
 
-    #double FIXME - totalfreight is redefined later.
-
-# FIXME - each order in a  parcel holds the freight for the whole parcel. This means if you receive a parcel with items from multiple budgets, you'll see the freight charge in each budget..
+    # FIXME - each order in a  parcel holds the freight for the whole parcel. This means if you receive a parcel with items from multiple budgets, you'll see the freight charge in each budget..
+    
     if ($i > 0 && $totalfreight != $parcelitems[$i]->{'freight'}) {
         warn "FREIGHT CHARGE MISMATCH!!";
     }
-    if ($parcelitems[$i]->{'freight'}; > 0){
+    if ($parcelitems[$i]->{'freight'} > 0){
 	$totalfreight = $parcelitems[$i]->{'freight'};
     }
     $totalquantity += $parcelitems[$i]->{'quantityreceived'};
@@ -250,7 +249,12 @@ for (my $i = 0 ; $i < $countpendings ; $i++) {
     $line{ordertotal} = sprintf("%.2f",$line{ecost}*$line{quantity});
     $line{unitprice} = sprintf("%.2f",$line{unitprice});
     $line{invoice} = $invoice;
-    $line{gst} = $line{gst};
+#    $line{gst} = $line{gst};
+    if ($line{freight} > 0){
+	}
+    else {
+	$line{freight} = $freight;
+	}
     $line{total} = $total;
     $line{supplierid} = $supplierid;
     $ordergrandtotal += $line{ecost} * $line{quantity};
@@ -291,7 +295,7 @@ if ($count>$resultsperpage){
                     );
 }
 
-#$totalfreight=$freight;
+
 $tototal = $tototal + $totalfreight;
 
 $template->param(
@@ -309,7 +313,7 @@ $template->param(
     countpending          => $countpendings,
     loop_orders           => \@loop_orders,
     totalprice            => sprintf($cfstr, $totalprice),
-    totalfreight          => $totalfreight,
+    totalfreight          => sprintf($cfstr, $totalfreight),
     totalquantity         => $totalquantity,
     tototal               => sprintf($cfstr, $tototal),
     ordergrandtotal       => sprintf($cfstr, $ordergrandtotal),

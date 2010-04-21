@@ -1401,6 +1401,8 @@ sub GetParcel {
                 aqorders.listprice,
                 aqorders.rrp,
                 aqorders.ecost,
+                aqorders.gst,
+                aqorders.freight,
                 biblio.title
         FROM aqorders
         LEFT JOIN aqbasket ON aqbasket.basketno=aqorders.basketno
