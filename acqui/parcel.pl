@@ -73,8 +73,10 @@ my $bookseller=GetBookSellerFromId($supplierid);
 my $invoice=$input->param('invoice') || '';
 my $freight=$input->param('freight') || '';
 
-
-my $gst= $input->param('gst') || $bookseller->{gstrate} || C4::Context->preference("gist") || 0;
+if ($bookseller->{gstrate} == 0){
+    $bookseller->{gstrate}='';
+}
+my $gstrate= $input->param('gst') || $bookseller->{gstrate} || C4::Context->preference("gist") || 0;
 my $datereceived =  ($input->param('op') eq 'new') ? C4::Dates->new($input->param('datereceived')) 
 					:  C4::Dates->new($input->param('datereceived'), 'iso')   ;
 $datereceived = C4::Dates->new() unless $datereceived;
@@ -199,17 +201,20 @@ my $totalquantity = 0;
 my $total;
 my $tototal;
 my @loop_received = ();
-
+my $gst           = 0;
 for (my $i = 0 ; $i < $countlines ; $i++) {
 
     #$total=($parcelitems[$i]->{'unitprice'} + $parcelitems[$i]->{'freight'}) * $parcelitems[$i]->{'quantityreceived'};   #weird, are the freight fees counted by book? (pierre)
+    if ($bookseller->{invoiceincgst}){
+	$parcelitems[$i]->{'unitprice'} = $parcelitems[$i]->{'unitprice'} / (1 + $gstrate);
+	$parcelitems[$i]->{'gst'} =  ($parcelitems[$i]->{'unitprice'} * $gstrate);
+    }
     $total = ($parcelitems[$i]->{'unitprice'}) * $parcelitems[$i]->{'quantityreceived'};    #weird, are the freight fees counted by book? (pierre)
     $parcelitems[$i]->{'unitprice'} += 0;
     my %line;
     %line          = %{ $parcelitems[$i] };
     $line{invoice} = $invoice;
-#    $line{gst}     = $line{gst};
-#    $line{freight} = $;
+    $gst += $line{gst} * $line{quantityreceived};
     $line{total} = sprintf($cfstr, $total);
     $line{supplierid} = $supplierid;
     push @loop_received, \%line;
@@ -296,8 +301,22 @@ if ($count>$resultsperpage){
 }
 
 
-$tototal = $tototal + $totalfreight;
 
+
+# deal with gst, we have a few cases
+# if vendor profile is to invoice price includes gst then gst not added, just shown
+# if doesnt include gst add it
+my $grandtotal = $tototal;
+#if ($bookseller->{invoiceincgst}){
+#    $gst = $tototal * $gstrate;
+#    $tototal = $tototal / ( 1 + $gstrate);
+#}
+#else {
+    $gst = $tototal * $gstrate;
+    $grandtotal += $gst;
+#}
+$grandtotal += $totalfreight;      
+$tototal = $tototal + $totalfreight;
 $template->param(
     invoice               => $invoice,
     datereceived          => $datereceived->output('iso'),
@@ -305,7 +324,6 @@ $template->param(
     formatteddatereceived => $datereceived->output(),
     name                  => $bookseller->{'name'},
     supplierid            => $supplierid,
-    gst                   => $gst,
     freight               => $freight,
     invoice               => $invoice,
     countreceived         => $countlines,
@@ -317,8 +335,8 @@ $template->param(
     totalquantity         => $totalquantity,
     tototal               => sprintf($cfstr, $tototal),
     ordergrandtotal       => sprintf($cfstr, $ordergrandtotal),
-    gst                   => $gst,
-    grandtot              => sprintf($cfstr, $tototal + $gst),
+    gst                   => sprintf($cfstr, $gst),
+    grandtot              => sprintf($cfstr, $grandtotal),
     totalPunitprice       => sprintf("%.2f", $totalPunitprice),
     totalPquantity        => $totalPquantity,
     totalPqtyrcvd         => $totalPqtyrcvd,
