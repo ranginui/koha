@@ -2254,7 +2254,7 @@ sub TransformMarcToKohaOneField {
 
 =over 4
 
-PrepareItemrecordDisplay($itemrecord,$bibnum,$itemumber,$frameworkcode);
+PrepareItemrecordDisplay($bibnum, $itemnum, $defaultvalues, $frameworkcode);
 
 Returns a hash with all the fields for Display a given item data in a template
 
@@ -2333,6 +2333,13 @@ sub PrepareItemrecordDisplay {
                     my $temp = $itemrecord->field($subfield) if ($itemrecord);
                     unless ($temp) {
                         $defaultvalue = $defaultvalues->{branchcode} if $defaultvalues;
+                    }
+                }
+                if ($tagslib->{$tag}->{$subfield}->{kohafield} eq 'items.location' && 
+                    $defaultvalues &&
+                    $defaultvalues->{location}) {
+                    unless ($itemrecord && $itemrecord->field($subfield)) {
+                        $defaultvalue = $defaultvalues->{'location'};
                     }
                 }
                 if ( $tagslib->{$tag}->{$subfield}->{authorised_value} ) {

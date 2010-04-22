@@ -86,7 +86,7 @@ use C4::Koha;
 use C4::Branch;		    # GetBranches
 use C4::Members;
 use C4::Search qw/FindDuplicate BiblioAddAuthorities/;
-use C4::Circulation         # SetItemDefaultLocation
+use C4::Circulation;        # SetItemDefaultLocation
 
 #needed for z3950 import:
 use C4::ImportBatch qw/GetImportRecordMarc SetImportRecordStatus/;
@@ -162,7 +162,6 @@ if ( $ordernumber eq '' and defined $params->{'breedingid'}){
                 $listprice = 0;
             }
         }
-        SetItemDefaultLocation($bibitemnum);
         SetImportRecordStatus($params->{'breedingid'}, 'imported');
     }
 }
@@ -297,17 +296,19 @@ if ($CGIsort2) {
     $template->param( sort2 => $data->{'sort2'} );
 }
 
+# Set up default values for this
+my $defaultvalues={
+    'location'      => C4::Context->preference('NewItemsDefaultLocation')
+};
 if (C4::Context->preference('AcqCreateItem') eq 'ordering' && !$ordernumber) {
     # prepare empty item form
-    my $cell = PrepareItemrecordDisplay('','','','ACQ');
-#     warn "==> ".Data::Dumper::Dumper($cell);
+    my $cell = PrepareItemrecordDisplay('','',$defaultvalues,'ACQ');
     unless ($cell) {
-        $cell = PrepareItemrecordDisplay('','','','');
+        $cell = PrepareItemrecordDisplay('','',$defaultvalues,'');
         $template->param('NoACQframework' => 1);
     }
     my @itemloop;
     push @itemloop,$cell;
-    
     $template->param(items => \@itemloop);
 }
 
