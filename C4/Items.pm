@@ -272,6 +272,13 @@ sub AddItem {
 
 	my ( $itemnumber, $error ) = _koha_new_item( $item, $item->{barcode} );
     $item->{'itemnumber'} = $itemnumber;
+    
+    # defaults get set here
+    # TODO we need a real item defaults system, that can hook in here
+    if ((my $loc = C4::Context->preference('NewItemsDefaultLocation')) && 
+        !$item->{'location'}) {
+        $item->{'location'} = $loc;
+    }
 
     # create MARC tag representing item and add to bib
     my $new_item_marc = _marc_from_item_hash($item, $frameworkcode, $unlinked_item_subfields);
@@ -2244,6 +2251,7 @@ sub _marc_from_item_hash {
     my $item_marc = MARC::Record->new();
     foreach my $item_field (keys %{ $mungeditem }) {
         my ($tag, $subfield) = GetMarcFromKohaField($item_field, $frameworkcode);
+        print STDERR "_marc_from_item_hash: item_field: $item_field  tag: $tag  subfield: $subfield  item: $mungeditem->{$item_field}\n";
         next unless defined $tag and defined $subfield; # skip if not mapped to MARC field
         if (my $field = $item_marc->field($tag)) {
             $field->add_subfields($subfield => $mungeditem->{$item_field});
