@@ -61,12 +61,12 @@ SELECT
     itype,
     title
 FROM (aqorders, aqbasket)
-LEFT JOIN items ON
-    items.biblioitemnumber=aqorders.biblioitemnumber
 LEFT JOIN biblio ON
     biblio.biblionumber=aqorders.biblionumber
 LEFT JOIN aqorders_items ON
     aqorders.ordernumber=aqorders_items.ordernumber
+LEFT JOIN items ON
+    items.itemnumber=aqorders_items.itemnumber  
 WHERE 
     aqorders.basketno=aqbasket.basketno AND
     budget_id=? AND
