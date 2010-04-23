@@ -1,4 +1,4 @@
-A, A:visited {
+A:visited {
 	color: #BC6030;
 }
 
@@ -124,12 +124,15 @@ h1#libraryname A {
 	margin: 9px 2px 0 10px;
 }
 
-#searchsubmit {
-	font-size : 100%;
-	font-weight : bold;
-	padding: 9px 10px;
-	margin: 8px 0 0 2px;
-	_margin: 0px 0 0 2px;
+#searchsubmit {                              
+        font-size : 100%;                                 
+	font-weight : bold; 
+	padding: 9px;         
+	margin:  0 0 0 2px;    
+	border:solid 1px #fff; 
+	-webkit-border-radius: 5px;  
+	-moz-border-radius: 5px;    
+	border-radius:  5px;
 }
 
 A#cartmenulink, A#cartmenulink:hover, A#listsmenulink, A#listsmenulink:hover {
