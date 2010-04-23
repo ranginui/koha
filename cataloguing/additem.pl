@@ -367,7 +367,7 @@ my ($location_field, $location_subfield) = GetMarcFromKohaField('items.location'
 
 # Getting the name of the authorised values' category for item location
 my $item_location_category = $tagslib->{$location_field}->{$location_subfield}->{'authorised_value'};
-
+print STDERR "itemrecord: ".Data::Dumper::Dumper($itemrecord);
 foreach my $tag (sort keys %{$tagslib}) {
 # loop through each subfield
   foreach my $subfield (sort keys %{$tagslib->{$tag}}) {

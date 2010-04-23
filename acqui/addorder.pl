@@ -245,7 +245,6 @@ if ( $orderinfo->{quantity} ne '0' ) {
             push @{$itemhash{$itemid[$i]}->{'indicator'}},$indicator[$i];
         }
         foreach my $item (keys %itemhash){
-
             my $xml = TransformHtmlToXml( $itemhash{$item}->{'tags'},
                                     $itemhash{$item}->{'subfields'},
                                     $itemhash{$item}->{'field_values'},

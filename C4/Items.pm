@@ -270,9 +270,6 @@ sub AddItem {
         ( $item->{'itype'} ) = $itype_sth->fetchrow_array;
     }
 
-	my ( $itemnumber, $error ) = _koha_new_item( $item, $item->{barcode} );
-    $item->{'itemnumber'} = $itemnumber;
-    
     # defaults get set here
     # TODO we need a real item defaults system, that can hook in here
     if ((my $loc = C4::Context->preference('NewItemsDefaultLocation')) && 
@@ -280,6 +277,9 @@ sub AddItem {
         $item->{'location'} = $loc;
     }
 
+    my ( $itemnumber, $error ) = _koha_new_item( $item, $item->{barcode} );
+    $item->{'itemnumber'} = $itemnumber;
+    
     # create MARC tag representing item and add to bib
     my $new_item_marc = _marc_from_item_hash($item, $frameworkcode, $unlinked_item_subfields);
     _add_item_field_to_biblio($new_item_marc, $item->{'biblionumber'}, $frameworkcode );
