@@ -332,11 +332,19 @@ foreach my $biblioNum (@biblionumbers) {
         }
     }
 
-    $biblioLoopIter{itemtype} = $biblioData->{itemtype};
-    $biblioLoopIter{itemTypeDescription} = $itemTypes->{$biblioData->{itemtype}}{description};
+    $biblioLoopIter{itemtype}            = $biblioData->{itemtype};
+    $biblioLoopIter{itemTypeDescription} = $itemTypes->{ $biblioData->{itemtype} }{description};
 
     $biblioLoopIter{itemLoop} = [];
     my $numCopiesAvailable = 0;
+
+    # $canReserveMultiple is set to "yes" ( >0 ) if multiple items can be reserved
+    # it is set to 0 otherwise. depends on item-level_itypes syspref
+    # and the list of itypes that can be multiple reserved
+    my $canReserveMultiple = 0;
+    unless ( C4::Context->preference("item-level_itypes") ) {
+        $canReserveMultiple = CanHoldMultipleItems( $biblioLoopIter{itemtype} );
+    }
     foreach my $itemInfo ( @{ $biblioData->{itemInfos} } ) {
         my $itemNum      = $itemInfo->{itemnumber};
         my $itemLoopIter = {};
@@ -350,6 +358,15 @@ foreach my $biblioNum (@biblionumbers) {
         if ($itemLevelTypes) {
             $itemLoopIter->{description} = $itemInfo->{description};
             $itemLoopIter->{imageurl}    = $itemInfo->{imageurl};
+        }
+
+        # check if the itype is one that can be multiple reserved
+        if ( C4::Context->preference("item-level_itypes") ) {
+
+            # sum canReserveMultiple : if at least one item can be multiple reserved, then the flag will be >0
+            # FIXME : there can be complex & strange cases, where some items can be multiple reserved, and some can't
+            # this case is not managed. Note it may be only theoric, and have no real case
+            $canReserveMultiple = $canReserveMultiple + CanHoldMultipleItems( $itemInfo->{itype} );
         }
 
         # If the holdingbranch is different than the homebranch, we show the
@@ -367,8 +384,8 @@ foreach my $biblioNum (@biblionumbers) {
         }
 
         # checking reserve
-        my ($reservedate,$reservedfor,$expectedAt) = GetReservesFromItemnumber($itemNum);
-        my $ItemBorrowerReserveInfo = GetMemberDetails( $reservedfor, 0);
+        my ( $reservedate, $reservedfor, $expectedAt ) = GetReservesFromItemnumber($itemNum);
+        my $ItemBorrowerReserveInfo = GetMemberDetails( $reservedfor, 0 );
         if ( defined $reservedate ) {
             $itemLoopIter->{backgroundcolor}           = 'reserved';
             $itemLoopIter->{reservedate}               = format_date($reservedate);
@@ -440,7 +457,7 @@ foreach my $biblioNum (@biblionumbers) {
         $biblioLoopIter{bib_available} = 1;
         $biblioLoopIter{holdable}      = 1;
     }
-    if ( $biblioLoopIter{already_reserved} && !CanHoldMultipleItems($biblioLoopIter{itemtype}) ) {
+    if ( $biblioLoopIter{already_reserved} && !$canReserveMultiple ) {
         $biblioLoopIter{holdable} = undef;
         warn "Already_Reserved";
     }
