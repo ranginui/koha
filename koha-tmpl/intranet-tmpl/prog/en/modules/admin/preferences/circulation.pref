@@ -261,6 +261,13 @@ Circulation:
                   yes: Enable
                   no:  "Don't enable"
             - "sending an email to the Koha administrator email address whenever a hold request is placed."
+        -
+            - pref: OverduesBlockCirc
+              choices:
+                  block: Block
+                  confirmation:  "Ask for confirmation"
+		  noblock: "Don't Block"
+            - "when checking out to a borrower that has overdues outstanding"
     Fines Policy:
         -
             - Calculate fines based on days overdue

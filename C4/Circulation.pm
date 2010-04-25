@@ -749,10 +749,12 @@ sub CanBookBeIssued {
 
     my ($blocktype, $count) = C4::Members::IsMemberBlocked($borrower->{'borrowernumber'});
     if($blocktype == -1){
-        ## remaining overdue documents
-#        $issuingimpossible{USERBLOCKEDREMAINING} = $count; # this is overkill for most libraries 
-	# should be a syspref
-	
+        ## remaining overdue documentsi
+	if ( C4::Context->preference("OverduesBlockCirc") eq 'Block'){
+	    $issuingimpossible{USERBLOCKEDREMAINING} = $count;
+	elsif ( C4::Context->preference("OverudesBlockCirc") eq 'Confirmation'){
+	    $needsconfirmation{USERBLOCKEDREMAINING} = $count;
+	}
     }elsif($blocktype == 1){
         ## blocked because of overdue return
         $issuingimpossible{USERBLOCKEDOVERDUE} = $count;
