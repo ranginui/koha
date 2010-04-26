@@ -53,6 +53,8 @@ To filter the results list on this given date.
 
 =cut
 
+use strict;
+#use warnings; FIXME - Bug 2505
 use C4::Auth;
 use C4::Acquisition;
 use C4::Budgets;
@@ -63,8 +65,6 @@ use CGI;
 use C4::Output;
 use C4::Dates qw/format_date format_date_in_iso/;
 use JSON;
-
-use strict;
 
 my $input=new CGI;
 my $supplierid=$input->param('supplierid');
