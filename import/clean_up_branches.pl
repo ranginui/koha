@@ -10,7 +10,7 @@ use C4::Circulation;
 use C4::Members;
 my $dbh = C4::Context->dbh();
 
-my $sql = "SELECT biblionumber,itemnumber FROM items";
+my $sql = "SELECT biblionumber,itemnumber,holdingbranch,homebranch FROM items order by itemnumber";
 my $sth = $dbh->prepare($sql);
 $sth->execute();
 
@@ -25,11 +25,12 @@ while ( my $data = $sth->fetchrow_hashref() ) {
     # H issue to H00000022 5 years
     # M issue to H00042816 3 months
     # P issue to H00000066 3 months
+    warn "$data->{'itemnumber'}\t holding branch is $data->{'holdingbranch'}\t home branch is $data->{'homebranch'}\n";
     if ($data->{'holdingbranch'} eq 'C'){
 	ModItem({ 'holdingbranch' => 'L' }, $data->{biblionumber}, $data->{itemnumber});	
     }
     if ($data->{'holdingbranch'} eq 'FM'){
-	AddIssue($borrower1,$data->{barcode},'2010-02-17');
+	AddIssue($borrower1,$data->{barcode},'2010-07-26');
 	ModItem({ 'holdingbranch' => 'F' }, $data->{biblionumber}, $data->{itemnumber});	
     }
     if ($data->{'holdingbranch'} eq 'FP'){
@@ -39,18 +40,18 @@ while ( my $data = $sth->fetchrow_hashref() ) {
 	ModItem({ 'holdingbranch' => 'F' }, $data->{biblionumber}, $data->{itemnumber});	
     }
     if ($data->{'holdingbranch'} eq 'H'){
-	AddIssue($borrower2,$data->{barcode},'2014-12-17');
+	AddIssue($borrower2,$data->{barcode},'2014-07-26');
 	ModItem({ 'holdingbranch' => 'L' }, $data->{biblionumber}, $data->{itemnumber});	
     }
     if ($data->{'holdingbranch'} eq 'LP'){
 	ModItem({ 'holdingbranch' => 'L' }, $data->{biblionumber}, $data->{itemnumber});	
     }
     if ($data->{'holdingbranch'} eq 'M'){
-	AddIssue($borrower3,$data->{barcode},'2010-02-17');
+	AddIssue($borrower3,$data->{barcode},'2010-07-26');
 	ModItem({ 'holdingbranch' => 'F' }, $data->{biblionumber}, $data->{itemnumber});	
     }
     if ($data->{'holdingbranch'} eq 'P'){
-	AddIssue($borrower4,$data->{barcode},'2010-02-17');
+	AddIssue($borrower4,$data->{barcode},'2010-07-26');
 	ModItem({ 'holdingbranch' => 'L' }, $data->{biblionumber}, $data->{itemnumber});	
     }
     if ($data->{'holdingbranch'} eq 'SP'){
