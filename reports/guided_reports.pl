@@ -46,9 +46,10 @@ my $input = new CGI;
 my $phase = $input->param('phase');
 my $flagsrequired;
 if ( $phase eq 'Build new' ) {
-    $flagsrequired = 'create_report';
-} elsif ( $phase eq 'Use saved' ) {
-    $flagsrequired = 'execute_report';
+    $flagsrequired = 'create_reports';
+}
+elsif ( $phase eq 'Use saved' ) {
+    $flagsrequired = 'execute_reports';
 } else {
     $flagsrequired = '*';
 }
