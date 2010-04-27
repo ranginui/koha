@@ -20,6 +20,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+#use warnings; FIXME - Bug 2505
 use CGI;
 use List::Util qw/min/;
 use Number::Format qw(format_price);
@@ -68,7 +69,7 @@ if  (  not defined $template->{param_map}->{'CAN_user_acquisition_budget_add_del
 my $num=FormatNumber;
 
 my $script_name               = "/cgi-bin/koha/admin/aqbudgets.pl";
-my $budget_hash=$input->Vars;
+my $budget_hash               = $input->Vars;
 my $budget_id                 = $$budget_hash{budget_id};
 my $budget_permission         = $input->param('budget_permission');
 my $budget_period_dropbox     = $input->param('budget_period_dropbox');
@@ -243,6 +244,9 @@ if ($op eq 'add_form') {
 	#This Looks WEIRD to me : should budgets be filtered in such a way ppl who donot own it would not see the amount spent on the budget by others ?
 
     foreach my $budget (@budgets) {
+        #Level and sublevels total spent
+        $budget->{'total_levels_spent'} = GetChildBudgetsSpent($budget->{"budget_id"});
+
         # PERMISSIONS
         unless($staffflags->{'superlibrarian'} % 2   == 1 ) {
             #IF NO PERMS, THEN DISABLE EDIT/DELETE
@@ -283,14 +287,14 @@ if ($op eq 'add_form') {
         # adds to total  - only if budget is a 'top-level' budget
         $period_alloc_total += $budget->{'budget_amount_total'} if $budget->{'depth'} == 0;
         $base_spent_total += $budget->{'budget_spent'};
-        $budget->{'budget_remaining'} = $budget->{'budget_amount'} - $budget->{'budget_spent'};
+        $budget->{'budget_remaining'} = $budget->{'budget_amount'} - $budget->{'total_levels_spent'};
 
 # if amount == 0 dont display...
         delete  $budget->{'budget_unalloc_sublevel'} if  $budget->{'budget_unalloc_sublevel'} == 0 ;
 
         $budget->{'remaining_pos'} = 1 if $budget->{'budget_remaining'} > 0;
         $budget->{'remaining_neg'} = 1 if $budget->{'budget_remaining'} < 0;
-		for (grep {/budget_spent|budget_amount|budget_remaining|budget_unalloc/} keys %$budget){
+		for (grep {/total_levels_spent|budget_spent|budget_amount|budget_remaining|budget_unalloc/} keys %$budget){
         $$budget{$_}               = $num->format_price( $$budget{$_} ) if defined($$budget{$_})
 		}
 
@@ -298,8 +302,21 @@ if ($op eq 'add_form') {
         $budget->{"budget_owner_name"}     = $borrower->{'firstname'} . ' ' . $borrower->{'surname'};
         $budget->{"budget_borrowernumber"} = $borrower->{'borrowernumber'};
 
+        #Make a list of parents of the bugdet
+        my @budget_hierarchy;
+        push  @budget_hierarchy, { element_name => $budget->{"budget_name"}, element_id => $budget->{"budget_id"} };
+        my $parent_id = $budget->{"budget_parent_id"};
+        while ($parent_id) {
+            my $parent = GetBudget($parent_id);
+            push @budget_hierarchy, { element_name => $parent->{"budget_name"}, element_id => $parent->{"budget_id"} };
+            $parent_id = $parent->{"budget_parent_id"};
+        }
+        push  @budget_hierarchy, { element_name => $period->{"budget_period_description"} }; 
+        @budget_hierarchy = reverse(@budget_hierarchy);
+
         push( @loop, {  %{$budget},
                         branchname  => $branches->{ $budget->{branchcode} }->{branchname},
+                        budget_hierarchy => \@budget_hierarchy,
                     }
         );
     }

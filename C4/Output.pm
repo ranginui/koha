@@ -26,6 +26,7 @@ package C4::Output;
 # templates.
 
 use strict;
+#use warnings; FIXME - Bug 2505
 
 use C4::Context;
 use C4::Languages qw(getTranslatedLanguages get_bidi regex_lang_subtags language_get_description accept_language );
@@ -460,6 +461,7 @@ sub output_with_http_headers($$$$;$) {
 
 sub output_html_with_http_headers ($$$;$) {
     my ( $query, $cookie, $data, $status ) = @_;
+    $data =~ s/\&amp\;amp\; /\&amp\; /;
     output_with_http_headers( $query, $cookie, $data, 'html', $status );
 }
 

@@ -16,7 +16,7 @@ package C4::Search;
 # Suite 330, Boston, MA  02111-1307 USA
 
 use strict;
-# use warnings; # FIXME
+#use warnings; FIXME - Bug 2505
 require Exporter;
 use C4::Context;
 use C4::Biblio;    # GetMarcFromKohaField, GetBiblioData
@@ -2607,7 +2607,7 @@ sub GetDistinctValues {
     if ($fieldname=~/\./){
 			my ($table,$column)=split /\./, $fieldname;
 			my $dbh = C4::Context->dbh;
-			warn "select DISTINCT($column) as value, count(*) as cnt from $table group by lib order by $column ";
+			warn "select DISTINCT($column) as value, count(*) as cnt from $table group by lib order by $column " if $DEBUG;
 			my $sth = $dbh->prepare("select DISTINCT($column) as value, count(*) as cnt from $table ".($string?" where $column like \"$string%\"":"")."group by value order by $column ");
 			$sth->execute;
 			my $elements=$sth->fetchall_arrayref({});
