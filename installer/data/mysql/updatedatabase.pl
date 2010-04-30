@@ -4350,6 +4350,13 @@ INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES (
     SetVersion($DBversion);
 }
 
+$DBversion = "3.02.00.004";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+	$dbh->do("UPDATE authorised_values SET authorised_value=UPPER(authorised_value) WHERE category='COUNTRY'");
+    print "Upgrade to $DBversion done (Converts COUNTRY authorised values to uppercase)\n";
+    SetVersion ($DBversion);
+}
+
 =item DropAllForeignKeys($table)
 
   Drop all foreign keys of the table $table
