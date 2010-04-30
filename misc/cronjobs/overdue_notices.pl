@@ -285,7 +285,6 @@ foreach my $key (keys %$columns_def_hashref){
     $key=~s/[^\.]*\.//;
     $columns_def_hashref->{$key}=$columns_def_hashref->{$initkey};
 }
-print Dump($columns_def_hashref);
 if ( defined $csvfilename && $csvfilename =~ /^-/ ) {
     warn qq(using "$csvfilename" as filename, that seems odd);
 }
