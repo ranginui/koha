@@ -98,8 +98,12 @@ $template->param(do_it => 1,
                 results_loop => \@results,
                 );
 
-$template->param( branchloop => GetBranchesLoop(C4::Context->userenv->{'branch'}));
-
+if (C4::Context->userenv){
+    $template->param( branchloop => GetBranchesLoop(C4::Context->userenv->{'branch'}));
+}
+else {
+    $template->param( branchloop => GetBranchesLoop());
+}
 #doctype
 $itemtypes = GetItemTypes;
 my @itemtypeloop;
