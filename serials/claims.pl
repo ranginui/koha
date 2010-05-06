@@ -92,11 +92,7 @@ if($op && $op eq 'preview'){
 $template->param('letters'=>\@letters,'letter'=>$letter);
 $template->param(
         order =>$order,
-<<<<<<< HEAD:serials/claims.pl
-        supplier_loop => $supplierlist,
-=======
         suploop => \@suploop,
->>>>>>> [MT2766] Replaced CGI dropdown box call wich is deprecated:serials/claims.pl
         phone => $supplierinfo[0]->{phone},
         booksellerfax => $supplierinfo[0]->{booksellerfax},
         bookselleremail => $supplierinfo[0]->{bookselleremail},
