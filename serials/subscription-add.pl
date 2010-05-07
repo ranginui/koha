@@ -236,11 +236,7 @@ sub redirect_add_subscription {
     my $location          = $query->param('location');
     $startdate = format_date_in_iso( $query->param('startdate') );
     my $enddate = format_date_in_iso( $query->param('enddate') );
-    <<<< <<< HEAD : serials / subscription-add . pl
     my $firstacquidate  = format_date_in_iso($query->param('firstacquidate'));
-=======
-    $firstacquidate  = format_date_in_iso($query->param('firstacquidate'));    
->>>>>>> (MT #2972) use "select" box for location in subscription-add:serials/subscription-add.pl
     my $histenddate = format_date_in_iso($query->param('histenddate'));
     my $histstartdate = format_date_in_iso($query->param('histstartdate'));
     my $recievedlist = $query->param('recievedlist');
