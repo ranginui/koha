@@ -15,7 +15,6 @@
 # Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA  02111-1307 USA
 
-
 use strict;
 use warnings;
 use CGI;
@@ -32,8 +31,7 @@ my $input = new CGI;
 my $dbh   = C4::Context->dbh;
 
 my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
-    {
-        template_name   => "opac-main.tmpl",
+    {   template_name   => "opac-main.tmpl",
         type            => "opac",
         query           => $input,
         authnotrequired => 1,
@@ -42,45 +40,39 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
 );
 
 my $casAuthentication = C4::Context->preference('casAuthentication');
-$template->param(
-    casAuthentication   => $casAuthentication,
-);
+$template->param( casAuthentication => $casAuthentication, );
 
-
-my $borrower = GetMember( borrowernumber=>$borrowernumber );
-$template->param(
-    textmessaging        => $borrower->{textmessaging},
-) if (ref($borrower) eq "HASH");
+my $borrower = GetMember( borrowernumber => $borrowernumber );
+$template->param( textmessaging => $borrower->{textmessaging}, ) if ( ref($borrower) eq "HASH" );
 
 # display news
 # use cookie setting for language, bug default to syspref if it's not set
-(my $theme) = themelanguage(C4::Context->config('opachtdocs'),'opac-main.tmpl','opac',$input);
+( my $theme ) = themelanguage( C4::Context->config('opachtdocs'), 'opac-main.tmpl', 'opac', $input );
 
-my $translations = getTranslatedLanguages('opac',$theme);
+my $translations = getTranslatedLanguages( 'opac', $theme );
 my @languages = ();
-foreach my $trans (@$translations)
-{
-    push(@languages, $trans->{rfc4646_subtag});
+foreach my $trans (@$translations) {
+    push( @languages, $trans->{rfc4646_subtag} );
 }
 
 my $news_lang;
-if($input->cookie('KohaOpacLanguage')){
+if ( $input->cookie('KohaOpacLanguage') ) {
     $news_lang = $input->cookie('KohaOpacLanguage');
-}else{
-    if ($ENV{HTTP_ACCEPT_LANGUAGE}) {
-        while( !$news_lang && ( $ENV{HTTP_ACCEPT_LANGUAGE} =~ m/([a-zA-Z]{2,}-?[a-zA-Z]*)(;|,)?/g ) ){
-            if( my @lang = grep { /^$1$/i } @languages ) {
+} else {
+    if ( $ENV{HTTP_ACCEPT_LANGUAGE} ) {
+        while ( !$news_lang && ( $ENV{HTTP_ACCEPT_LANGUAGE} =~ m/([a-zA-Z]{2,}-?[a-zA-Z]*)(;|,)?/g ) ) {
+            if ( my @lang = grep { /^$1$/i } @languages ) {
                 $news_lang = $lang[0];
             }
         }
     }
-    if (not $news_lang) {
+    if ( not $news_lang ) {
         my @languages = split ",", C4::Context->preference("opaclanguages");
         $news_lang = $languages[0];
     }
 }
 
-$news_lang = $news_lang ? $news_lang : 'en' ;
+$news_lang = $news_lang ? $news_lang : 'en';
 
 my $all_koha_news   = &GetNewsToDisplay($news_lang);
 my $koha_news_count = scalar @$all_koha_news;
@@ -91,8 +83,8 @@ $template->param(
 );
 
 # If GoogleIndicTransliteration system preference is On Set paramter to load Google's javascript in OPAC search screens
-if (C4::Context->preference('GoogleIndicTransliteration')) {
-        $template->param('GoogleIndicTransliteration' => 1);
+if ( C4::Context->preference('GoogleIndicTransliteration') ) {
+    $template->param( 'GoogleIndicTransliteration' => 1 );
 }
 
 output_html_with_http_headers $input, $cookie, $template->output;

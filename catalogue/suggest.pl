@@ -19,6 +19,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 
 use CGI;
@@ -29,31 +30,31 @@ use C4::Auth;
 use C4::Output;
 use C4::Biblio;
 use C4::Acquisition;
-use C4::Koha; # XXX subfield_is_koha_internal_p
+use C4::Koha;    # XXX subfield_is_koha_internal_p
 
 # Creates the list of active tags using the active MARC configuration
-my $query=new CGI;
-my $Q=$query->param('Q');
-my @words = split / /,$Q;
-my $dbh = C4::Context->dbh;
+my $query = new CGI;
+my $Q     = $query->param('Q');
+my @words = split / /, $Q;
+my $dbh   = C4::Context->dbh;
 
-my $suggestions = findsuggestion($dbh,\@words);
+my $suggestions = findsuggestion( $dbh, \@words );
 my @loop_suggests;
 foreach my $line (@$suggestions) {
-    my ($word,$suggestion,$count) = split /\|/,$line;
-    push @loop_suggests, { word => $word, suggestion =>$suggestion, count => $count };
+    my ( $word, $suggestion, $count ) = split /\|/, $line;
+    push @loop_suggests, { word => $word, suggestion => $suggestion, count => $count };
 }
 
-my ($template, $loggedinuser, $cookie)
-    = get_template_and_user({template_name => "catalogue/suggest.tmpl",
-                 query => $query,
-                 type => "intranet",
-                 authnotrequired => 0,
-                 flagsrequired => {editcatalogue => 'edit_catalogue'},
-                 debug => 1,
-                 });
-$template->param("loop" => \@loop_suggests,
-        );
+my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
+    {   template_name   => "catalogue/suggest.tmpl",
+        query           => $query,
+        type            => "intranet",
+        authnotrequired => 0,
+        flagsrequired   => { editcatalogue => 'edit_catalogue' },
+        debug           => 1,
+    }
+);
+$template->param( "loop" => \@loop_suggests, );
 
 output_html_with_http_headers $query, $cookie, $template->output;
 

@@ -15,7 +15,6 @@
 # with Koha; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-
 use strict;
 use warnings;
 use CGI;
@@ -25,73 +24,77 @@ use C4::Output;
 use C4::Context;
 use C4::Serials;
 
-my $query = new CGI;
-my $op = $query->param('op') || q{};
-my $dbh = C4::Context->dbh;
+my $query          = new CGI;
+my $op             = $query->param('op') || q{};
+my $dbh            = C4::Context->dbh;
 my $subscriptionid = $query->param('subscriptionid');
-my $auser = $query->param('user');
-my $histstartdate = format_date_in_iso($query->param('histstartdate'));
-my $enddate = format_date_in_iso($query->param('enddate'));
-my $recievedlist = $query->param('recievedlist');
-my $missinglist = $query->param('missinglist');
-my $opacnote = $query->param('opacnote');
-my $librariannote = $query->param('librariannote');
-my @serialids = $query->param('serialid');
-my @serialseqs = $query->param('serialseq');
-my @planneddates = $query->param('planneddate');
-my @notes = $query->param('notes');
-my @status = $query->param('status');
+my $auser          = $query->param('user');
+my $histstartdate  = format_date_in_iso( $query->param('histstartdate') );
+my $enddate        = format_date_in_iso( $query->param('enddate') );
+my $recievedlist   = $query->param('recievedlist');
+my $missinglist    = $query->param('missinglist');
+my $opacnote       = $query->param('opacnote');
+my $librariannote  = $query->param('librariannote');
+my @serialids      = $query->param('serialid');
+my @serialseqs     = $query->param('serialseq');
+my @planneddates   = $query->param('planneddate');
+my @notes          = $query->param('notes');
+my @status         = $query->param('status');
 
-my ($template, $loggedinuser, $cookie)
-= get_template_and_user({template_name => "serials/statecollection.tmpl",
-				query => $query,
-				type => "intranet",
-				authnotrequired => 0,
-				flagsrequired => {serials => 1},
-				debug => 1,
-				});
+my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
+    {   template_name   => "serials/statecollection.tmpl",
+        query           => $query,
+        type            => "intranet",
+        authnotrequired => 0,
+        flagsrequired   => { serials => 1 },
+        debug           => 1,
+    }
+);
 
 my $HasSubscriptionExpired = HasSubscriptionExpired($subscriptionid);
-my $subscription=GetSubscription($subscriptionid);
-if ($op eq 'modsubscriptionhistory') {
-	modsubscriptionhistory($subscriptionid,$histstartdate,$enddate,$recievedlist,$missinglist,$opacnote,$librariannote);
+my $subscription           = GetSubscription($subscriptionid);
+if ( $op eq 'modsubscriptionhistory' ) {
+    modsubscriptionhistory( $subscriptionid, $histstartdate, $enddate, $recievedlist, $missinglist, $opacnote, $librariannote );
 }
+
 # change status except, if subscription has expired, for the "waited" issue.
-if ($op eq 'serialchangestatus') {
-	my $sth = $dbh->prepare("select status from serial where serialid=?");
-	for (my $i=0;$i<=$#serialids;$i++) {
-		$sth->execute($serialids[$i]);
-		my ($oldstatus) = $sth->fetchrow;
-		if ($serialids[$i]) {
-			serialchangestatus($serialids[$i],$serialseqs[$i],format_date_in_iso($planneddates[$i]),$status[$i],$notes[$i]) unless ($HasSubscriptionExpired && $oldstatus == 1);
-		} else {
-			# add a special issue
-			if ($serialseqs[$i]) {
-				my $sub=getsubscription($subscriptionid);
-				newissue($serialseqs[$i],$subscriptionid,$sub->{biblionumber},$status[$i], format_date_in_iso($planneddates[$i]));
-			}
-		}
-	}
+if ( $op eq 'serialchangestatus' ) {
+    my $sth = $dbh->prepare("select status from serial where serialid=?");
+    for ( my $i = 0 ; $i <= $#serialids ; $i++ ) {
+        $sth->execute( $serialids[$i] );
+        my ($oldstatus) = $sth->fetchrow;
+        if ( $serialids[$i] ) {
+            serialchangestatus( $serialids[$i], $serialseqs[$i], format_date_in_iso( $planneddates[$i] ), $status[$i], $notes[$i] )
+              unless ( $HasSubscriptionExpired && $oldstatus == 1 );
+        } else {
+
+            # add a special issue
+            if ( $serialseqs[$i] ) {
+                my $sub = getsubscription($subscriptionid);
+                newissue( $serialseqs[$i], $subscriptionid, $sub->{biblionumber}, $status[$i], format_date_in_iso( $planneddates[$i] ) );
+            }
+        }
+    }
 }
 my $subs = &GetSubscription($subscriptionid);
-my ($totalissues,@serialslist) = GetSerials($subscriptionid,10);
+my ( $totalissues, @serialslist ) = GetSerials( $subscriptionid, 10 );
 
-my $sth=$dbh->prepare("select * from subscriptionhistory where subscriptionid = ?");
+my $sth = $dbh->prepare("select * from subscriptionhistory where subscriptionid = ?");
 $sth->execute($subscriptionid);
 my $solhistory = $sth->fetchrow_hashref;
 
-	$template->param(
-			serialslist => \@serialslist,
-			biblionumber => $subscription->{biblionumber},
-			histstartdate => format_date($solhistory->{'histstartdate'}),
-			enddate => format_date($solhistory->{'enddate'}),
-			recievedlist => $solhistory->{'recievedlist'},
-			missinglist => $solhistory->{'missinglist'},
-			opacnote => $solhistory->{'opacnote'},
-			librariannote => $solhistory->{'librariannote'},
-			subscriptionid => $subscriptionid,
-			bibliotitle => $subs->{bibliotitle},
-			biblionumber => $subs->{biblionumber},
-			hassubscriptionexpired =>$HasSubscriptionExpired,
-		);
+$template->param(
+    serialslist            => \@serialslist,
+    biblionumber           => $subscription->{biblionumber},
+    histstartdate          => format_date( $solhistory->{'histstartdate'} ),
+    enddate                => format_date( $solhistory->{'enddate'} ),
+    recievedlist           => $solhistory->{'recievedlist'},
+    missinglist            => $solhistory->{'missinglist'},
+    opacnote               => $solhistory->{'opacnote'},
+    librariannote          => $solhistory->{'librariannote'},
+    subscriptionid         => $subscriptionid,
+    bibliotitle            => $subs->{bibliotitle},
+    biblionumber           => $subs->{biblionumber},
+    hassubscriptionexpired => $HasSubscriptionExpired,
+);
 output_html_with_http_headers $query, $cookie, $template->output;

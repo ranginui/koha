@@ -1,7 +1,7 @@
 package C4::ClassSortRoutine::Dewey;
 
 # Copyright (C) 2007 LibLime
-# 
+#
 # This file is part of Koha.
 #
 # Koha is free software; you can redistribute it and/or modify it under the
@@ -56,7 +56,7 @@ Generates sorting key using the following rules:
 =cut
 
 sub get_class_sort_key {
-    my ($cn_class, $cn_item) = @_;
+    my ( $cn_class, $cn_item ) = @_;
 
     $cn_class = '' unless defined $cn_class;
     $cn_item  = '' unless defined $cn_item;
@@ -67,16 +67,17 @@ sub get_class_sort_key {
     $init =~ s/^([\p{IsAlpha}]+)/$1 /;
     my @tokens = split /\.|\s+/, $init;
     my $digit_group_count = 0;
-    for (my $i = 0; $i <= $#tokens; $i++) {
-        if ($tokens[$i] =~ /^\d+$/) {
+    for ( my $i = 0 ; $i <= $#tokens ; $i++ ) {
+
+        if ( $tokens[$i] =~ /^\d+$/ ) {
             $digit_group_count++;
-            if (2 == $digit_group_count) {
-                $tokens[$i] = sprintf("%-15.15s", $tokens[$i]);
+            if ( 2 == $digit_group_count ) {
+                $tokens[$i] = sprintf( "%-15.15s", $tokens[$i] );
                 $tokens[$i] =~ tr/ /0/;
             }
         }
     }
-    my $key = join("_", @tokens);
+    my $key = join( "_", @tokens );
     $key =~ s/[^\p{IsAlnum}_]//g;
 
     return $key;

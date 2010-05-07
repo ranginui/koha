@@ -27,7 +27,9 @@ longoverdue.pl  cron script to set lost statuses on overdue materials.
 
 use strict;
 use warnings;
+
 BEGIN {
+
     # find Koha's Perl modules
     # test carefully before changing this
     use FindBin;
@@ -38,11 +40,11 @@ use C4::Items;
 use C4::Accounts;
 use Getopt::Long;
 
-my  $lost;  #  key=lost value,  value=num days.
-my ($charge, $verbose, $confirm);
-my $endrange = 366;  # FIXME hardcoded - don't deal with anything overdue by more than this num days.
+my $lost;    #  key=lost value,  value=num days.
+my ( $charge, $verbose, $confirm );
+my $endrange = 366;    # FIXME hardcoded - don't deal with anything overdue by more than this num days.
 
-GetOptions( 
+GetOptions(
     'lost=s%'    => \$lost,
     'c|charge=s' => \$charge,
     'confirm'    => \$confirm,
@@ -95,13 +97,13 @@ ENDUSAGE
 # FIXME: do checks on --lost ranges to make sure don't go past endrange.
 # FIXME: convert to using pod2usage
 # FIXME: allow --help or -h
-# 
-if ( ! defined($lost) ) {
+#
+if ( !defined($lost) ) {
     print $usage;
     die "ERROR: No --lost (-l) option defined";
 }
 unless ($confirm) {
-    $verbose = 1;     # If you're not running it for real, then the whole point is the print output.
+    $verbose = 1;    # If you're not running it for real, then the whole point is the print output.
     print "### TEST MODE -- NO ACTIONS TAKEN ###\n";
 }
 
@@ -130,60 +132,61 @@ sub longoverdue_sth {
 #FIXME - Should add a 'system' user and get suitable userenv for it for logging, etc.
 
 my $count;
-# my @ranges = map { 
+
+# my @ranges = map {
 my @report;
 my $total = 0;
-my $i = 0;
+my $i     = 0;
 
 # FIXME - The item is only marked returned if you supply --charge .
 #         We need a better way to handle this.
 #
 my $sth_items = longoverdue_sth();
 
-foreach my $startrange (sort keys %$lost) {
-    if( my $lostvalue = $lost->{$startrange} ) {
+foreach my $startrange ( sort keys %$lost ) {
+    if ( my $lostvalue = $lost->{$startrange} ) {
         my ($date1) = bounds($startrange);
-        my ($date2) = bounds(  $endrange);
+        my ($date2) = bounds($endrange);
+
         # print "\nRange ", ++$i, "\nDue $startrange - $endrange days ago ($date2 to $date1), lost => $lostvalue\n" if($verbose);
-        $verbose and 
-            printf "\nRange %s\nDue %3s - %3s days ago (%s to %s), lost => %s\n", ++$i,
-            $startrange, $endrange, $date2, $date1, $lostvalue;
-        $sth_items->execute($startrange, $endrange, $lostvalue);
-        $count=0;
-        while (my $row=$sth_items->fetchrow_hashref) {
-            printf ("Due %s: item %5s from borrower %5s to lost: %s\n", $row->{date_due}, $row->{itemnumber}, $row->{borrowernumber}, $lostvalue) if($verbose);
-            if($confirm) {
-                ModItem({ itemlost => $lostvalue }, $row->{'biblionumber'}, $row->{'itemnumber'});
-                chargelostitem($row->{'itemnumber'}) if( $charge && $charge eq $lostvalue);
+        $verbose
+          and printf "\nRange %s\nDue %3s - %3s days ago (%s to %s), lost => %s\n", ++$i,
+          $startrange, $endrange, $date2, $date1, $lostvalue;
+        $sth_items->execute( $startrange, $endrange, $lostvalue );
+        $count = 0;
+        while ( my $row = $sth_items->fetchrow_hashref ) {
+            printf( "Due %s: item %5s from borrower %5s to lost: %s\n", $row->{date_due}, $row->{itemnumber}, $row->{borrowernumber}, $lostvalue ) if ($verbose);
+            if ($confirm) {
+                ModItem( { itemlost => $lostvalue }, $row->{'biblionumber'}, $row->{'itemnumber'} );
+                chargelostitem( $row->{'itemnumber'} ) if ( $charge && $charge eq $lostvalue );
             }
             $count++;
         }
-        push @report, {
-           startrange => $startrange,
-             endrange => $endrange,
-                range => "$startrange - $endrange",
-                date1 => $date1,
-                date2 => $date2,
-            lostvalue => $lostvalue,
-                count => $count,
-        };
+        push @report,
+          { startrange => $startrange,
+            endrange   => $endrange,
+            range      => "$startrange - $endrange",
+            date1      => $date1,
+            date2      => $date2,
+            lostvalue  => $lostvalue,
+            count      => $count,
+          };
         $total += $count;
     }
     $endrange = $startrange;
 }
 
 sub summarize ($$) {
-    my $arg = shift;    # ref to array
-    my $got_items = shift || 0;     # print "count" line for items
-    my @report = @$arg or return undef;
-    my $i = 0;
+    my $arg       = shift;                   # ref to array
+    my $got_items = shift || 0;              # print "count" line for items
+    my @report    = @$arg or return undef;
+    my $i         = 0;
     for my $range (@report) {
-        printf "\nRange %s\nDue %3s - %3s days ago (%s to %s), lost => %s\n", ++$i,
-            map {$range->{$_}} qw(startrange endrange date2 date1 lostvalue);
+        printf "\nRange %s\nDue %3s - %3s days ago (%s to %s), lost => %s\n", ++$i, map { $range->{$_} } qw(startrange endrange date2 date1 lostvalue);
         $got_items and printf "  %4s items\n", $range->{count};
     }
 }
 
 print "\n### LONGOVERDUE SUMMARY ###";
-summarize (\@report, 1);
+summarize( \@report, 1 );
 print "\nTOTAL: $total items\n";

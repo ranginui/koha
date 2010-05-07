@@ -36,13 +36,14 @@ use Carp;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
 BEGIN {
-	require Exporter;
-	# set the version for version checking
-	$VERSION = 3.01;
-	@ISA = qw(Exporter);
-	@EXPORT = qw(
-	&GetLetters &getletter &addalert &getalert &delalert &findrelatedto &SendAlerts GetPrintMessages
-	);
+    require Exporter;
+
+    # set the version for version checking
+    $VERSION = 3.01;
+    @ISA     = qw(Exporter);
+    @EXPORT  = qw(
+      &GetLetters &getletter &addalert &getalert &delalert &findrelatedto &SendAlerts GetPrintMessages
+    );
 }
 
 =head1 NAME
@@ -100,12 +101,11 @@ sub GetLetters (;$) {
     my %letters;
     my $dbh = C4::Context->dbh;
     my $sth;
-    if (defined $cat) {
+    if ( defined $cat ) {
         my $query = "SELECT * FROM letter WHERE module = ? ORDER BY name";
         $sth = $dbh->prepare($query);
         $sth->execute($cat);
-    }
-    else {
+    } else {
         my $query = "SELECT * FROM letter ORDER BY name";
         $sth = $dbh->prepare($query);
         $sth->execute;
@@ -139,9 +139,7 @@ sub getletter ($$) {
 sub addalert ($$$) {
     my ( $borrowernumber, $type, $externalid ) = @_;
     my $dbh = C4::Context->dbh;
-    my $sth =
-      $dbh->prepare(
-        "insert into alert (borrowernumber, type, externalid) values (?,?,?)");
+    my $sth = $dbh->prepare("insert into alert (borrowernumber, type, externalid) values (?,?,?)");
     $sth->execute( $borrowernumber, $type, $externalid );
 
     # get the alert number newly created and return it
@@ -179,7 +177,7 @@ sub getalert (;$$$) {
     my $dbh   = C4::Context->dbh;
     my $query = "SELECT * FROM alert WHERE";
     my @bind;
-    if ($borrowernumber and $borrowernumber =~ /^\d+$/) {
+    if ( $borrowernumber and $borrowernumber =~ /^\d+$/ ) {
         $query .= " borrowernumber=? AND ";
         push @bind, $borrowernumber;
     }
@@ -194,7 +192,7 @@ sub getalert (;$$$) {
     $query =~ s/ AND $//;
     my $sth = $dbh->prepare($query);
     $sth->execute(@bind);
-    return $sth->fetchall_arrayref({});
+    return $sth->fetchall_arrayref( {} );
 }
 
 =head2 findrelatedto($type, $externalid)
@@ -207,17 +205,17 @@ sub getalert (;$$$) {
 	When type=issue, the id is related to a subscriptionid and this sub returns the name of the biblio.
 
 =cut
-    
+
 # outmoded POD:
 # When type=virtual, the id is related to a virtual shelf and this sub returns the name of the sub
 
 sub findrelatedto ($$) {
     my $type       = shift or return undef;
     my $externalid = shift or return undef;
-    my $q = ($type eq 'issue'   ) ?
-"select title as result from subscription left join biblio on subscription.biblionumber=biblio.biblionumber where subscriptionid=?" :
-            ($type eq 'borrower') ?
-"select concat(firstname,' ',surname) from borrowers where borrowernumber=?" : undef;
+    my $q =
+        ( $type eq 'issue' )    ? "select title as result from subscription left join biblio on subscription.biblionumber=biblio.biblionumber where subscriptionid=?"
+      : ( $type eq 'borrower' ) ? "select concat(firstname,' ',surname) from borrowers where borrowernumber=?"
+      :                           undef;
     unless ($q) {
         warn "findrelatedto(): Illegal type '$type'";
         return undef;
@@ -249,9 +247,7 @@ sub SendAlerts {
 
         # prepare the letter...
         # search the biblionumber
-        my $sth =
-          $dbh->prepare(
-            "SELECT biblionumber FROM subscription WHERE subscriptionid=?");
+        my $sth = $dbh->prepare("SELECT biblionumber FROM subscription WHERE subscriptionid=?");
         $sth->execute($externalid);
         my ($biblionumber) = $sth->fetchrow;
 
@@ -262,8 +258,7 @@ sub SendAlerts {
         # parsing librarian name
         $letter->{content} =~ s/<<LibrarianFirstname>>/$userenv->{firstname}/g;
         $letter->{content} =~ s/<<LibrarianSurname>>/$userenv->{surname}/g;
-        $letter->{content} =~
-          s/<<LibrarianEmailaddress>>/$userenv->{emailaddress}/g;
+        $letter->{content} =~ s/<<LibrarianEmailaddress>>/$userenv->{emailaddress}/g;
 
         # parsing biblio information
         parseletter( $letter, 'biblio',      $biblionumber );
@@ -275,25 +270,24 @@ sub SendAlerts {
 
             # and parse borrower ...
             my $innerletter = $letter;
-            my $borinfo = GetMember( 'borrowernumber' => $_->{'borrowernumber'});
+            my $borinfo = GetMember( 'borrowernumber' => $_->{'borrowernumber'} );
             parseletter( $innerletter, 'borrowers', $_->{'borrowernumber'} );
 
             # ... then send mail
             if ( $borinfo->{email} ) {
                 my %mail = (
-                    To      => $borinfo->{email},
-                    From    => $borinfo->{email},
-                    Subject => "" . $innerletter->{title},
-                    Message => "" . $innerletter->{content},
+                    To             => $borinfo->{email},
+                    From           => $borinfo->{email},
+                    Subject        => "" . $innerletter->{title},
+                    Message        => "" . $innerletter->{content},
                     'Content-Type' => 'text/plain; charset="utf8"',
-                    );
+                );
                 sendmail(%mail) or carp $Mail::Sendmail::error;
 
-# warn "sending to $mail{To} From $mail{From} subj $mail{Subject} Mess $mail{Message}";
+                # warn "sending to $mail{To} From $mail{From} subj $mail{Subject} Mess $mail{Message}";
             }
         }
-    }
-    elsif ( $type eq 'claimacquisition' ) {
+    } elsif ( $type eq 'claimacquisition' ) {
 
         # 		warn "sending issues...";
         my $letter = getletter( 'claimacquisition', $letter );
@@ -306,10 +300,8 @@ sub SendAlerts {
         my $sthorders = $dbh->prepare($strsth);
         $sthorders->execute;
         my $dataorders = $sthorders->fetchall_arrayref( {} );
-        parseletter( $letter, 'aqbooksellers',
-            $dataorders->[0]->{booksellerid} );
-        my $sthbookseller =
-          $dbh->prepare("select * from aqbooksellers where id=?");
+        parseletter( $letter, 'aqbooksellers', $dataorders->[0]->{booksellerid} );
+        my $sthbookseller = $dbh->prepare("select * from aqbooksellers where id=?");
         $sthbookseller->execute( $dataorders->[0]->{booksellerid} );
         my $databookseller = $sthbookseller->fetchrow_hashref;
 
@@ -320,8 +312,7 @@ sub SendAlerts {
         # parsing librarian name
         $letter->{content} =~ s/<<LibrarianFirstname>>/$userenv->{firstname}/g;
         $letter->{content} =~ s/<<LibrarianSurname>>/$userenv->{surname}/g;
-        $letter->{content} =~
-          s/<<LibrarianEmailaddress>>/$userenv->{emailaddress}/g;
+        $letter->{content} =~ s/<<LibrarianEmailaddress>>/$userenv->{emailaddress}/g;
         foreach my $data (@$dataorders) {
             my $line = $1 if ( $letter->{content} =~ m/(<<.*>>)/ );
             foreach my $field ( keys %$data ) {
@@ -334,8 +325,7 @@ sub SendAlerts {
 
         # ... then send mail
         if (   $databookseller->{bookselleremail}
-            || $databookseller->{contemail} )
-        {
+            || $databookseller->{contemail} ) {
             my %mail = (
                 To => $databookseller->{bookselleremail}
                   . (
@@ -349,21 +339,12 @@ sub SendAlerts {
                 'Content-Type' => 'text/plain; charset="utf8"',
             );
             sendmail(%mail) or carp $Mail::Sendmail::error;
-            warn
-"sending to $mail{To} From $mail{From} subj $mail{Subject} Mess $mail{Message}";
+            warn "sending to $mail{To} From $mail{From} subj $mail{Subject} Mess $mail{Message}";
         }
         if ( C4::Context->preference("LetterLog") ) {
-            logaction(
-                "ACQUISITION",
-                "Send Acquisition claim letter",
-                "",
-                "order list : "
-                  . join( ",", @$externalid )
-                  . "\n$innerletter->{title}\n$innerletter->{content}"
-            );
+            logaction( "ACQUISITION", "Send Acquisition claim letter", "", "order list : " . join( ",", @$externalid ) . "\n$innerletter->{title}\n$innerletter->{content}" );
         }
-    }
-    elsif ( $type eq 'claimissues' ) {
+    } elsif ( $type eq 'claimissues' ) {
 
         # 		warn "sending issues...";
         my $letter = getletter( 'claimissues', $letter );
@@ -376,10 +357,8 @@ sub SendAlerts {
         my $sthorders = $dbh->prepare($strsth);
         $sthorders->execute;
         my $dataorders = $sthorders->fetchall_arrayref( {} );
-        parseletter( $letter, 'aqbooksellers',
-            $dataorders->[0]->{aqbooksellerid} );
-        my $sthbookseller =
-          $dbh->prepare("select * from aqbooksellers where id=?");
+        parseletter( $letter, 'aqbooksellers', $dataorders->[0]->{aqbooksellerid} );
+        my $sthbookseller = $dbh->prepare("select * from aqbooksellers where id=?");
         $sthbookseller->execute( $dataorders->[0]->{aqbooksellerid} );
         my $databookseller = $sthbookseller->fetchrow_hashref;
 
@@ -390,8 +369,7 @@ sub SendAlerts {
         # parsing librarian name
         $letter->{content} =~ s/<<LibrarianFirstname>>/$userenv->{firstname}/g;
         $letter->{content} =~ s/<<LibrarianSurname>>/$userenv->{surname}/g;
-        $letter->{content} =~
-          s/<<LibrarianEmailaddress>>/$userenv->{emailaddress}/g;
+        $letter->{content} =~ s/<<LibrarianEmailaddress>>/$userenv->{emailaddress}/g;
         foreach my $data (@$dataorders) {
             my $line = $1 if ( $letter->{content} =~ m/(<<.*>>)/ );
             foreach my $field ( keys %$data ) {
@@ -406,8 +384,8 @@ sub SendAlerts {
         if (   $databookseller->{bookselleremail}
             || $databookseller->{contemail} ) {
             my $mail_to = $databookseller->{bookselleremail};
-            if ($databookseller->{contemail}) {
-                if (!$mail_to) {
+            if ( $databookseller->{contemail} ) {
+                if ( !$mail_to ) {
                     $mail_to = $databookseller->{contemail};
                 } else {
                     $mail_to .= q|,|;
@@ -420,29 +398,20 @@ sub SendAlerts {
             $mail_subj ||= q{};
 
             my %mail = (
-                To => $mail_to,
-                From    => $userenv->{emailaddress},
-                Subject => $mail_subj,
-                Message => $mail_msg,
+                To             => $mail_to,
+                From           => $userenv->{emailaddress},
+                Subject        => $mail_subj,
+                Message        => $mail_msg,
                 'Content-Type' => 'text/plain; charset="utf8"',
             );
             sendmail(%mail) or carp $Mail::Sendmail::error;
-            logaction(
-                "ACQUISITION",
-                "CLAIM ISSUE",
-                undef,
-                "To="
-                  . $databookseller->{contemail}
-                  . " Title="
-                  . $innerletter->{title}
-                  . " Content="
-                  . $innerletter->{content}
-            ) if C4::Context->preference("LetterLog");
+            logaction( "ACQUISITION", "CLAIM ISSUE", undef, "To=" . $databookseller->{contemail} . " Title=" . $innerletter->{title} . " Content=" . $innerletter->{content} )
+              if C4::Context->preference("LetterLog");
         }
-        warn
-"sending to From $userenv->{emailaddress} subj $innerletter->{title} Mess $innerletter->{content}";
-    }    
-   # send an "account details" notice to a newly created user 
+        warn "sending to From $userenv->{emailaddress} subj $innerletter->{title} Mess $innerletter->{content}";
+    }
+
+    # send an "account details" notice to a newly created user
     elsif ( $type eq 'members' ) {
         $letter->{content} =~ s/<<borrowers.title>>/$externalid->{'title'}/g;
         $letter->{content} =~ s/<<borrowers.firstname>>/$externalid->{'firstname'}/g;
@@ -451,11 +420,11 @@ sub SendAlerts {
         $letter->{content} =~ s/<<borrowers.password>>/$externalid->{'password'}/g;
 
         my %mail = (
-                To      =>     $externalid->{'emailaddr'},
-                From    =>  C4::Context->preference("KohaAdminEmailAddress"),
-                Subject => $letter->{'title'}, 
-                Message => $letter->{'content'},
-                'Content-Type' => 'text/plain; charset="utf8"',
+            To             => $externalid->{'emailaddr'},
+            From           => C4::Context->preference("KohaAdminEmailAddress"),
+            Subject        => $letter->{'title'},
+            Message        => $letter->{'content'},
+            'Content-Type' => 'text/plain; charset="utf8"',
         );
         sendmail(%mail) or carp $Mail::Sendmail::error;
     }
@@ -481,23 +450,25 @@ sub parseletter_sth {
         carp "ERROR: parseletter_sth() called without argument (table)";
         return;
     }
+
     # check cache first
-    (defined $handles{$table}) and return $handles{$table};
-    my $query = 
-    ($table eq 'biblio'       ) ? "SELECT * FROM $table WHERE   biblionumber = ?"                      :
-    ($table eq 'biblioitems'  ) ? "SELECT * FROM $table WHERE   biblionumber = ?"                      :
-    ($table eq 'items'        ) ? "SELECT * FROM $table WHERE     itemnumber = ?"                      :
-    ($table eq 'suggestions'  ) ? "SELECT * FROM $table WHERE borrowernumber = ? and biblionumber = ?" :
-    ($table eq 'reserves'     ) ? "SELECT * FROM $table WHERE borrowernumber = ? and biblionumber = ?" :
-    ($table eq 'borrowers'    ) ? "SELECT * FROM $table WHERE borrowernumber = ?"                      :
-    ($table eq 'branches'     ) ? "SELECT * FROM $table WHERE     branchcode = ?"                      :
-    ($table eq 'suggestions'  ) ? "SELECT * FROM $table WHERE borrowernumber = ? and biblionumber = ?" :
-    ($table eq 'aqbooksellers') ? "SELECT * FROM $table WHERE             id = ?"                      : undef ;
+    ( defined $handles{$table} ) and return $handles{$table};
+    my $query =
+        ( $table eq 'biblio' )        ? "SELECT * FROM $table WHERE   biblionumber = ?"
+      : ( $table eq 'biblioitems' )   ? "SELECT * FROM $table WHERE   biblionumber = ?"
+      : ( $table eq 'items' )         ? "SELECT * FROM $table WHERE     itemnumber = ?"
+      : ( $table eq 'suggestions' )   ? "SELECT * FROM $table WHERE borrowernumber = ? and biblionumber = ?"
+      : ( $table eq 'reserves' )      ? "SELECT * FROM $table WHERE borrowernumber = ? and biblionumber = ?"
+      : ( $table eq 'borrowers' )     ? "SELECT * FROM $table WHERE borrowernumber = ?"
+      : ( $table eq 'branches' )      ? "SELECT * FROM $table WHERE     branchcode = ?"
+      : ( $table eq 'suggestions' )   ? "SELECT * FROM $table WHERE borrowernumber = ? and biblionumber = ?"
+      : ( $table eq 'aqbooksellers' ) ? "SELECT * FROM $table WHERE             id = ?"
+      :                                 undef;
     unless ($query) {
         warn "ERROR: No parseletter_sth query for table '$table'";
-        return;     # nothing to get
+        return;    # nothing to get
     }
-    unless ($handles{$table} = C4::Context->dbh->prepare($query)) {
+    unless ( $handles{$table} = C4::Context->dbh->prepare($query) ) {
         warn "ERROR: Failed to prepare query: '$query'";
         return;
     }
@@ -515,27 +486,21 @@ sub parseletter {
         warn "parseletter_sth('$table') failed to return a valid sth.  No substitution will be done for that table.";
         return;
     }
-    if ( $pk2 ) {
-        $sth->execute($pk, $pk2);
+    if ($pk2) {
+        $sth->execute( $pk, $pk2 );
     } else {
         $sth->execute($pk);
     }
 
     my $values = $sth->fetchrow_hashref;
-    
+
     # TEMPORARY hack until the expirationdate column is added to reserves
     if ( $table eq 'reserves' && $values->{'waitingdate'} ) {
         my @waitingdate = split /-/, $values->{'waitingdate'};
 
-        $values->{'expirationdate'} = C4::Dates->new(
-            sprintf(
-                '%04d-%02d-%02d',
-                Add_Delta_Days( @waitingdate, C4::Context->preference( 'ReservesMaxPickUpDelay' ) )
-            ),
-            'iso'
-        )->output();
+        $values->{'expirationdate'} =
+          C4::Dates->new( sprintf( '%04d-%02d-%02d', Add_Delta_Days( @waitingdate, C4::Context->preference('ReservesMaxPickUpDelay') ) ), 'iso' )->output();
     }
-
 
     # and get all fields from the table
     my $columns = C4::Context->dbh->prepare("SHOW COLUMNS FROM $table");
@@ -543,9 +508,9 @@ sub parseletter {
     while ( ( my $field ) = $columns->fetchrow_array ) {
         my $replacefield = "<<$table.$field>>";
         $values->{$field} =~ s/\p{P}(?=$)//g if $values->{$field};
-        my $replacedby   = $values->{$field} || '';
-        ($letter->{title}  ) and $letter->{title}   =~ s/$replacefield/$replacedby/g;
-        ($letter->{content}) and $letter->{content} =~ s/$replacefield/$replacedby/g;
+        my $replacedby = $values->{$field} || '';
+        ( $letter->{title} )   and $letter->{title}   =~ s/$replacefield/$replacedby/g;
+        ( $letter->{content} ) and $letter->{content} =~ s/$replacefield/$replacedby/g;
     }
     return $letter;
 }
@@ -593,16 +558,16 @@ ENDSQL
 
     my $sth    = $dbh->prepare($statement);
     my $result = $sth->execute(
-        $params->{'borrowernumber'},              # borrowernumber
-        $params->{'letter'}->{'title'},           # subject
-        $params->{'letter'}->{'content'},         # content
-        $params->{'letter'}->{'metadata'} || '',  # metadata
-        $params->{'letter'}->{'code'}     || '',  # letter_code
-        $params->{'message_transport_type'},      # message_transport_type
-        'pending',                                # status
-        $params->{'to_address'},                  # to_address
-        $params->{'from_address'},                # from_address
-        $params->{'letter'}->{'content-type'},    # content_type
+        $params->{'borrowernumber'},         # borrowernumber
+        $params->{'letter'}->{'title'},      # subject
+        $params->{'letter'}->{'content'},    # content
+        $params->{'letter'}->{'metadata'} || '',    # metadata
+        $params->{'letter'}->{'code'}     || '',    # letter_code
+        $params->{'message_transport_type'},        # message_transport_type
+        'pending',                                  # status
+        $params->{'to_address'},                    # to_address
+        $params->{'from_address'},                  # from_address
+        $params->{'letter'}->{'content-type'},      # content_type
     );
     return $result;
 }
@@ -625,22 +590,21 @@ sub SendQueuedMessages (;$) {
     my $params = shift;
 
     my $unsent_messages = _get_unsent_messages();
-    MESSAGE: foreach my $message ( @$unsent_messages ) {
+  MESSAGE: foreach my $message (@$unsent_messages) {
+
         # warn Data::Dumper->Dump( [ $message ], [ 'message' ] );
-        warn sprintf( 'sending %s message to patron: %s',
-                      $message->{'message_transport_type'},
-                      $message->{'borrowernumber'} || 'Admin' )
+        warn sprintf( 'sending %s message to patron: %s', $message->{'message_transport_type'}, $message->{'borrowernumber'} || 'Admin' )
           if $params->{'verbose'} or $debug;
+
         # This is just begging for subclassing
-        next MESSAGE if ( lc($message->{'message_transport_type'}) eq 'rss' );
+        next MESSAGE if ( lc( $message->{'message_transport_type'} ) eq 'rss' );
         if ( lc( $message->{'message_transport_type'} ) eq 'email' ) {
-            _send_message_by_email( $message );
-        }
-        elsif ( lc( $message->{'message_transport_type'} ) eq 'sms' ) {
-            _send_message_by_sms( $message );
+            _send_message_by_email($message);
+        } elsif ( lc( $message->{'message_transport_type'} ) eq 'sms' ) {
+            _send_message_by_sms($message);
         }
     }
-    return scalar( @$unsent_messages );
+    return scalar(@$unsent_messages);
 }
 
 =head2 GetRSSMessages
@@ -661,10 +625,13 @@ sub GetRSSMessages {
     return unless $params;
     return unless ref $params;
     return unless $params->{'borrowernumber'};
-    
-    return _get_unsent_messages( { message_transport_type => 'rss',
-                                   limit                  => $params->{'limit'},
-                                   borrowernumber         => $params->{'borrowernumber'}, } );
+
+    return _get_unsent_messages(
+        {   message_transport_type => 'rss',
+            limit                  => $params->{'limit'},
+            borrowernumber         => $params->{'borrowernumber'},
+        }
+    );
 }
 
 =head2 GetPrintMessages
@@ -682,9 +649,12 @@ person).
 
 sub GetPrintMessages {
     my $params = shift || {};
-    
-    return _get_unsent_messages( { message_transport_type => 'print',
-                                   borrowernumber         => $params->{'borrowernumber'}, } );
+
+    return _get_unsent_messages(
+        {   message_transport_type => 'print',
+            borrowernumber         => $params->{'borrowernumber'},
+        }
+    );
 }
 
 =head2 GetQueuedMessages ([$hashref])
@@ -705,7 +675,7 @@ list of hashes, each has represents a message in the message queue.
 sub GetQueuedMessages {
     my $params = shift;
 
-    my $dbh = C4::Context->dbh();
+    my $dbh       = C4::Context->dbh();
     my $statement = << 'ENDSQL';
 SELECT message_id, borrowernumber, subject, content, message_transport_type, status, time_queued
 FROM message_queue
@@ -718,7 +688,7 @@ ENDSQL
         push @query_params, $params->{'borrowernumber'};
     }
 
-    if ( @whereclauses ) {
+    if (@whereclauses) {
         $statement .= ' WHERE ' . join( 'AND', @whereclauses );
     }
 
@@ -727,9 +697,9 @@ ENDSQL
         push @query_params, $params->{'limit'};
     }
 
-    my $sth = $dbh->prepare( $statement );
-    my $result = $sth->execute( @query_params );
-    return $sth->fetchall_arrayref({});
+    my $sth    = $dbh->prepare($statement);
+    my $result = $sth->execute(@query_params);
+    return $sth->fetchall_arrayref( {} );
 }
 
 =head2 _add_attachements
@@ -768,6 +738,7 @@ sub _add_attachments {
             Filename => $attachment->{'filename'},
         );
     }
+
     # we're forcing list context here to get the header, not the count back from grep.
     ( $params->{'letter'}->{'content-type'} ) = grep( /^Content-Type:/, split( /\n/, $params->{'message'}->header_as_string ) );
     $params->{'letter'}->{'content-type'} =~ s/^Content-Type:\s+//;
@@ -780,7 +751,7 @@ sub _add_attachments {
 sub _get_unsent_messages (;$) {
     my $params = shift;
 
-    my $dbh = C4::Context->dbh();
+    my $dbh       = C4::Context->dbh();
     my $statement = << 'ENDSQL';
 SELECT message_id, borrowernumber, subject, content, message_transport_type, status, time_queued, from_address, to_address, content_type
   FROM message_queue
@@ -803,10 +774,10 @@ ENDSQL
         }
     }
     $debug and warn "_get_unsent_messages SQL: $statement";
-    $debug and warn "_get_unsent_messages params: " . join(',',@query_params);
-    my $sth = $dbh->prepare( $statement );
-    my $result = $sth->execute( @query_params );
-    return $sth->fetchall_arrayref({});
+    $debug and warn "_get_unsent_messages params: " . join( ',', @query_params );
+    my $sth    = $dbh->prepare($statement);
+    my $result = $sth->execute(@query_params);
+    return $sth->fetchall_arrayref( {} );
 }
 
 sub _send_message_by_email ($;$$$) {
@@ -817,42 +788,54 @@ sub _send_message_by_email ($;$$$) {
         my $member = C4::Members::GetMember( 'borrowernumber' => $message->{'borrowernumber'} );
         unless ($member) {
             warn "FAIL: No 'to_address' and INVALID borrowernumber ($message->{borrowernumber})";
-            _set_message_status( { message_id => $message->{'message_id'},
-                                   status     => 'failed' } );
+            _set_message_status(
+                {   message_id => $message->{'message_id'},
+                    status     => 'failed'
+                }
+            );
             return;
         }
         my $which_address = C4::Context->preference('AutoEmailPrimaryAddress');
         $to_address = $member->{$which_address};
-        unless ($to_address) {  
+        unless ($to_address) {
+
             # warn "FAIL: No 'to_address' and no email for " . ($member->{surname} ||'') . ", borrowernumber ($message->{borrowernumber})";
             # warning too verbose for this more common case?
-            _set_message_status( { message_id => $message->{'message_id'},
-                                   status     => 'failed' } );
+            _set_message_status(
+                {   message_id => $message->{'message_id'},
+                    status     => 'failed'
+                }
+            );
             return;
         }
     }
 
-	my $content = encode('utf8', $message->{'content'});
+    my $content = encode( 'utf8', $message->{'content'} );
     my %sendmail_params = (
-        To   => $to_address,
-        From => $message->{'from_address'} || C4::Context->preference('KohaAdminEmailAddress'),
-        Subject => $message->{'subject'},
-        charset => 'utf8',
-        Message => $content,
+        To             => $to_address,
+        From           => $message->{'from_address'} || C4::Context->preference('KohaAdminEmailAddress'),
+        Subject        => $message->{'subject'},
+        charset        => 'utf8',
+        Message        => $content,
         'content-type' => $message->{'content_type'} || 'text/plain; charset="UTF-8"',
     );
     if ( my $bcc = C4::Context->preference('OverdueNoticeBcc') ) {
-       $sendmail_params{ Bcc } = $bcc;
+        $sendmail_params{Bcc} = $bcc;
     }
-    
 
-    if ( sendmail( %sendmail_params ) ) {
-        _set_message_status( { message_id => $message->{'message_id'},
-                status     => 'sent' } );
+    if ( sendmail(%sendmail_params) ) {
+        _set_message_status(
+            {   message_id => $message->{'message_id'},
+                status     => 'sent'
+            }
+        );
         return 1;
     } else {
-        _set_message_status( { message_id => $message->{'message_id'},
-                status     => 'failed' } );
+        _set_message_status(
+            {   message_id => $message->{'message_id'},
+                status     => 'failed'
+            }
+        );
         carp $Mail::Sendmail::error;
         return;
     }
@@ -863,29 +846,32 @@ sub _send_message_by_sms ($) {
     my $member = C4::Members::GetMember( 'borrowernumber' => $message->{'borrowernumber'} );
     return unless $member->{'smsalertnumber'};
 
-    my $success = C4::SMS->send_sms( { destination => $member->{'smsalertnumber'},
-                                       message     => $message->{'content'},
-                                     } );
-    _set_message_status( { message_id => $message->{'message_id'},
-                           status     => ($success ? 'sent' : 'failed') } );
+    my $success = C4::SMS->send_sms(
+        {   destination => $member->{'smsalertnumber'},
+            message     => $message->{'content'},
+        }
+    );
+    _set_message_status(
+        {   message_id => $message->{'message_id'},
+            status     => ( $success ? 'sent' : 'failed' )
+        }
+    );
     return $success;
 }
 
 sub _set_message_status ($) {
     my $params = shift or return undef;
 
-    foreach my $required_parameter ( qw( message_id status ) ) {
-        return undef unless exists $params->{ $required_parameter };
+    foreach my $required_parameter (qw( message_id status )) {
+        return undef unless exists $params->{$required_parameter};
     }
 
-    my $dbh = C4::Context->dbh();
+    my $dbh       = C4::Context->dbh();
     my $statement = 'UPDATE message_queue SET status= ? WHERE message_id = ?';
-    my $sth = $dbh->prepare( $statement );
-    my $result = $sth->execute( $params->{'status'},
-                                $params->{'message_id'} );
+    my $sth       = $dbh->prepare($statement);
+    my $result    = $sth->execute( $params->{'status'}, $params->{'message_id'} );
     return $result;
 }
-
 
 1;
 __END__

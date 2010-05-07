@@ -147,17 +147,17 @@ my $out;
 
 # If ILS-DI module is disabled in System->Preferences, redirect to 404
 unless ( C4::Context->preference('ILS-DI') ) {
-    $out->{'code'} = "NotAllowed";
+    $out->{'code'}    = "NotAllowed";
     $out->{'message'} = "ILS-DI is disabled.";
 }
 
 # If the remote address is not allowed, redirect to 403
-my @AuthorizedIPs = split(/,/, C4::Context->preference('ILS-DI:AuthorizedIPs'));
-if ( @AuthorizedIPs # If no filter set, allow access to everybody
-    and not any { $ENV{'REMOTE_ADDR'} eq $_ } @AuthorizedIPs # IP Check
-    ) {
-    $out->{'code'} = "NotAllowed";
-    $out->{'message'} = "Unauthorized IP address: ".$ENV{'REMOTE_ADDR'}.".";
+my @AuthorizedIPs = split( /,/, C4::Context->preference('ILS-DI:AuthorizedIPs') );
+if (@AuthorizedIPs    # If no filter set, allow access to everybody
+    and not any { $ENV{'REMOTE_ADDR'} eq $_ } @AuthorizedIPs    # IP Check
+  ) {
+    $out->{'code'}    = "NotAllowed";
+    $out->{'message'} = "Unauthorized IP address: " . $ENV{'REMOTE_ADDR'} . ".";
 }
 
 my $service = $cgi->param('service') || "ilsdi";
@@ -173,15 +173,15 @@ if ( $service and any { $service eq $_ } @services ) {
     $paramhash{$_} = 1 for @names;
 
     # check for missing parameters
-    for ( @parmsrequired ) {
+    for (@parmsrequired) {
         unless ( exists $paramhash{$_} ) {
-            $out->{'code'} = "MissingParameter";
-            $out->{'message'} = "The required parameter ".$_." is missing.";
+            $out->{'code'}    = "MissingParameter";
+            $out->{'message'} = "The required parameter " . $_ . " is missing.";
         }
     }
 
     # check for illegal parameters
-    for my $name ( @names ) {
+    for my $name (@names) {
         my $found = 0;
         for my $name2 (@parmsall) {
             if ( $name eq $name2 ) {
@@ -189,17 +189,17 @@ if ( $service and any { $service eq $_ } @services ) {
             }
         }
         if ( $found == 0 && $name ne 'service' ) {
-            $out->{'code'} = "IllegalParameter";
-            $out->{'message'} = "The parameter ".$name." is illegal.";
+            $out->{'code'}    = "IllegalParameter";
+            $out->{'message'} = "The parameter " . $name . " is illegal.";
         }
     }
 
     # check for multiple parameters
-    for ( @names ) {
+    for (@names) {
         my @values = $cgi->param($_);
         if ( $#values != 0 ) {
-            $out->{'code'} = "MultipleValuesNotAllowed";
-            $out->{'message'} = "Multiple values not allowed for the parameter ".$_.".";
+            $out->{'code'}    = "MultipleValuesNotAllowed";
+            $out->{'message'} = "Multiple values not allowed for the parameter " . $_ . ".";
         }
     }
 
@@ -228,8 +228,8 @@ if ( $service and any { $service eq $_ } @services ) {
 }
 
 # Output XML by passing the hashref to XMLOut
-binmode(STDOUT, ":utf8");
-print CGI::header('-type'=>'text/xml', '-charset'=>'utf-8');
+binmode( STDOUT, ":utf8" );
+print CGI::header( '-type' => 'text/xml', '-charset' => 'utf-8' );
 print XMLout(
     $out,
     noattr        => 1,

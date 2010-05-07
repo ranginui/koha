@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 # Copyright (C) 2009 LibLime
-# 
+#
 # This file is part of Koha.
 #
 # Koha is free software; you can redistribute it and/or modify it under the
@@ -43,11 +43,11 @@ my $template = HTML::Template::Pro->new(
     die_on_bad_params => 1,
     global_vars       => 1,
     case_sensitive    => 1,
-    loop_context_vars => 1,     # enable: __first__, __last__, __inner__, __odd__, __counter__ 
+    loop_context_vars => 1,                # enable: __first__, __last__, __inner__, __odd__, __counter__
     path              => [$include_dir],
 );
 
-$template->output; # tossing output
+$template->output;                         # tossing output
 
 =head1 AUTHOR
 

@@ -24,8 +24,7 @@ use C4::Output;
 
 my $query = new CGI;
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => "tools/tools-home.tmpl",
+    {   template_name   => "tools/tools-home.tmpl",
         query           => $query,
         type            => "intranet",
         authnotrequired => 0,

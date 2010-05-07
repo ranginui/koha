@@ -19,15 +19,17 @@ These get run once, before the main test methods in this module
 
 sub insert_test_data : Test( startup => 71 ) {
     my $self = shift;
-    
+
     # get original 'Finn Test' count
     my $query = 'Finn Test';
-    my ( $error, $results ) = SimpleSearch( $query );
+    my ( $error, $results ) = SimpleSearch($query);
     $self->{'orig_finn_test_hits'} = scalar(@$results);
 
     # I'm going to add a bunch of biblios so that I can search for them.
-    $self->add_biblios( count     => 10,
-                        add_items => 1 );
+    $self->add_biblios(
+        count     => 10,
+        add_items => 1
+    );
 
 }
 
@@ -46,11 +48,11 @@ sub basic_test : Test( 2 ) {
 
     my $query = 'test';
 
-    my ( $error, $results ) = SimpleSearch( $query );
-    ok( ! defined $error, 'no error found during search' );
+    my ( $error, $results ) = SimpleSearch($query);
+    ok( !defined $error, 'no error found during search' );
     like( $results->[0], qr/$query/i, 'the result seems to match the query' )
-      or diag( Data::Dumper->Dump( [ $results ], [ 'results' ] ) );
-    
+      or diag( Data::Dumper->Dump( [$results], ['results'] ) );
+
 }
 
 =head3 basic_test_with_server
@@ -64,13 +66,12 @@ sub basic_test_with_server : Test( 2 ) {
 
     my $query = 'test';
 
-    my ( $error, $results ) = SimpleSearch( $query, undef, undef, [ 'biblioserver' ] );
-    ok( ! defined $error, 'no error found during search' );
+    my ( $error, $results ) = SimpleSearch( $query, undef, undef, ['biblioserver'] );
+    ok( !defined $error, 'no error found during search' );
     like( $results->[0], qr/$query/i, 'the result seems to match the query' )
-      or diag( Data::Dumper->Dump( [ $results ], [ 'results' ] ) );
-    
-}
+      or diag( Data::Dumper->Dump( [$results], ['results'] ) );
 
+}
 
 =head3 basic_test_no_results
 
@@ -83,11 +84,11 @@ sub basic_test_no_results : Test( 3 ) {
 
     my $query = 'This string is almost guaranteed to not match anything.';
 
-    my ( $error, $results ) = SimpleSearch( $query );
-    ok( ! defined $error, 'no error found during search' );
+    my ( $error, $results ) = SimpleSearch($query);
+    ok( !defined $error, 'no error found during search' );
     isa_ok( $results, 'ARRAY' );
-    is( scalar( @$results ), 0, 'an empty list was returned.' )
-      or diag( Data::Dumper->Dump( [ $results ], [ 'results' ] ) );
+    is( scalar(@$results), 0, 'an empty list was returned.' )
+      or diag( Data::Dumper->Dump( [$results], ['results'] ) );
 }
 
 =head3 limits
@@ -102,39 +103,37 @@ sub limits : Test( 8 ) {
     my $query = 'Finn Test';
 
     {
-        my ( $error, $results ) = SimpleSearch( $query );
-        ok( ! defined $error, 'no error found during search' );
+        my ( $error, $results ) = SimpleSearch($query);
+        ok( !defined $error, 'no error found during search' );
         my $expected_hits = 10 + $self->{'orig_finn_test_hits'};
         is( scalar @$results, $expected_hits, "found all $expected_hits results." )
-          or diag( Data::Dumper->Dump( [ $results ], [ 'results' ] ) );
+          or diag( Data::Dumper->Dump( [$results], ['results'] ) );
     }
-    
+
     my $offset = 4;
     {
         my ( $error, $results ) = SimpleSearch( $query, $offset );
-        ok( ! defined $error, 'no error found during search' );
+        ok( !defined $error, 'no error found during search' );
         my $expected_hits = 6 + $self->{'orig_finn_test_hits'};
         is( scalar @$results, $expected_hits, "found $expected_hits results." )
-          or diag( Data::Dumper->Dump( [ $results ], [ 'results' ] ) );
+          or diag( Data::Dumper->Dump( [$results], ['results'] ) );
     }
 
     my $max_results = 2;
     {
         my ( $error, $results ) = SimpleSearch( $query, $offset, $max_results );
-        ok( ! defined $error, 'no error found during search' );
+        ok( !defined $error, 'no error found during search' );
         is( scalar @$results, $max_results, "found $max_results results." )
-          or diag( Data::Dumper->Dump( [ $results ], [ 'results' ] ) );
+          or diag( Data::Dumper->Dump( [$results], ['results'] ) );
     }
-    
+
     {
         my ( $error, $results ) = SimpleSearch( $query, 0, $max_results );
-        ok( ! defined $error, 'no error found during search' );
+        ok( !defined $error, 'no error found during search' );
         is( scalar @$results, $max_results, "found $max_results results." )
-          or diag( Data::Dumper->Dump( [ $results ], [ 'results' ] ) );
+          or diag( Data::Dumper->Dump( [$results], ['results'] ) );
     }
-    
-       
-}
 
+}
 
 1;

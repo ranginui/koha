@@ -28,7 +28,7 @@ BEGIN {
     eval { require "$FindBin::Bin/../kohalib.pl" };
 }
 
-use CGI; # NOT a CGI script, this is just to keep C4::Output::gettemplate happy
+use CGI;    # NOT a CGI script, this is just to keep C4::Output::gettemplate happy
 use C4::Context;
 use C4::Dates;
 use C4::Debug;
@@ -51,40 +51,40 @@ USAGE
 my ( $stylesheet, $help );
 
 GetOptions(
-    's:s' => \$stylesheet,
+    's:s'    => \$stylesheet,
     'h|help' => \$help,
-) || usage( 1 );
+) || usage(1);
 
-usage( 0 ) if ( $help );
+usage(0) if ($help);
 
 my $output_directory = $ARGV[0];
 
 if ( !$output_directory || !-d $output_directory ) {
     print STDERR "Error: You must specify a valid directory to dump the print notices in.\n";
-    usage( 1 );
+    usage(1);
 }
 
-my $today = C4::Dates->new();
+my $today    = C4::Dates->new();
 my @messages = @{ GetPrintMessages() };
-exit unless( @messages );
+exit unless (@messages);
 
-open OUTPUT, '>', File::Spec->catdir( $output_directory, "holdnotices-" . $today->output( 'iso' ) . ".html" );
+open OUTPUT, '>', File::Spec->catdir( $output_directory, "holdnotices-" . $today->output('iso') . ".html" );
 
 my $template = C4::Output::gettemplate( 'batch/print-notices.tmpl', 'intranet', new CGI );
 my $stylesheet_contents = '';
 
 open STYLESHEET, '<', $stylesheet;
-while ( <STYLESHEET> ) { $stylesheet_contents .= $_ }
+while (<STYLESHEET>) { $stylesheet_contents .= $_ }
 close STYLESHEET;
 
 $template->param(
     stylesheet => $stylesheet_contents,
-    today => $today->output(),
-    messages => \@messages,
+    today      => $today->output(),
+    messages   => \@messages,
 );
 
 print OUTPUT $template->output;
 
-foreach my $message ( @messages ) {
+foreach my $message (@messages) {
     C4::Letters::_set_message_status( { message_id => $message->{'message_id'}, status => 'sent' } );
 }

@@ -18,6 +18,7 @@ package C4::Installer;
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 
 our $VERSION = 3.00;
@@ -75,13 +76,12 @@ sub new {
     $self->{'port'}     = C4::Context->config("port");
     $self->{'user'}     = C4::Context->config("user");
     $self->{'password'} = C4::Context->config("pass");
-    $self->{'dbh'} = DBI->connect("DBI:$self->{dbms}:dbname=$self->{dbname};host=$self->{hostname}" .
-                                  ( $self->{port} ? ";port=$self->{port}" : "" ),
-                                  $self->{'user'}, $self->{'password'});
-    $self->{'language'} = undef;
+    $self->{'dbh'} =
+      DBI->connect( "DBI:$self->{dbms}:dbname=$self->{dbname};host=$self->{hostname}" . ( $self->{port} ? ";port=$self->{port}" : "" ), $self->{'user'}, $self->{'password'} );
+    $self->{'language'}    = undef;
     $self->{'marcflavour'} = undef;
-	$self->{'dbh'}->do('set NAMES "utf8"');
-    $self->{'dbh'}->{'mysql_enable_utf8'}=1;
+    $self->{'dbh'}->do('set NAMES "utf8"');
+    $self->{'dbh'}->{'mysql_enable_utf8'} = 1;
 
     bless $self, $class;
     return $self;
@@ -106,7 +106,7 @@ sub marcflavour_list {
     my $lang = shift;
 
     my $dir = C4::Context->config('intranetdir') . "/installer/data/$self->{dbms}/$lang/marcflavour";
-    opendir(MYDIR, $dir) or return;
+    opendir( MYDIR, $dir ) or return;
     my @list = grep { !/^\.|CVS/ && -d "$dir/$_" } readdir(MYDIR);
     closedir MYDIR;
     return \@list;
@@ -130,22 +130,23 @@ for language C<$lang> and the 'en' ones are returned.
 =cut
 
 sub marc_framework_sql_list {
-    my $self = shift;
-    my $lang = shift;
+    my $self        = shift;
+    my $lang        = shift;
     my $marcflavour = shift;
 
     my $defaulted_to_en = 0;
 
     undef $/;
-    my $dir = C4::Context->config('intranetdir') . "/installer/data/$self->{dbms}/$lang/marcflavour/".lc($marcflavour);
-    unless (opendir( MYDIR, $dir )) {
-        if ($lang eq 'en') {
+    my $dir = C4::Context->config('intranetdir') . "/installer/data/$self->{dbms}/$lang/marcflavour/" . lc($marcflavour);
+    unless ( opendir( MYDIR, $dir ) ) {
+        if ( $lang eq 'en' ) {
             warn "cannot open MARC frameworks directory $dir";
         } else {
+
             # if no translated MARC framework is available,
             # default to English
-            $dir = C4::Context->config('intranetdir') . "/installer/data/$self->{dbms}/en/marcflavour/".lc($marcflavour);
-            opendir(MYDIR, $dir) or warn "cannot open English MARC frameworks directory $dir";
+            $dir = C4::Context->config('intranetdir') . "/installer/data/$self->{dbms}/en/marcflavour/" . lc($marcflavour);
+            opendir( MYDIR, $dir ) or warn "cannot open English MARC frameworks directory $dir";
             $defaulted_to_en = 1;
         }
     }
@@ -156,7 +157,7 @@ sub marc_framework_sql_list {
     my $request = $self->{'dbh'}->prepare("SELECT value FROM systempreferences WHERE variable='FrameworksLoaded'");
     $request->execute;
     my ($frameworksloaded) = $request->fetchrow;
-    $frameworksloaded = '' unless defined $frameworksloaded; # avoid warning
+    $frameworksloaded = '' unless defined $frameworksloaded;    # avoid warning
     my %frameworksloaded;
     foreach ( split( /\|/, $frameworksloaded ) ) {
         $frameworksloaded{$_} = 1;
@@ -170,15 +171,14 @@ sub marc_framework_sql_list {
         my @frameworklist;
         map {
             my $name = substr( $_, 0, -4 );
-            open FILE, "<:utf8","$dir/$requirelevel/$name.txt";
+            open FILE, "<:utf8", "$dir/$requirelevel/$name.txt";
             my $lines = <FILE>;
             $lines =~ s/\n|\r/<br \/>/g;
             use utf8;
             utf8::encode($lines) unless ( utf8::is_utf8($lines) );
-            my $mandatory = ($requirelevel =~ /(mandatory|requi|oblig|necess)/i);
+            my $mandatory = ( $requirelevel =~ /(mandatory|requi|oblig|necess)/i );
             push @frameworklist,
-              {
-                'fwkname'        => $name,
+              { 'fwkname'        => $name,
                 'fwkfile'        => "$dir/$requirelevel/$_",
                 'fwkdescription' => $lines,
                 'checked'        => ( ( $frameworksloaded{$_} || $mandatory ) ? 1 : 0 ),
@@ -194,7 +194,7 @@ sub marc_framework_sql_list {
         push @fwklist, \%cell;
     }
 
-    return ($defaulted_to_en, \@fwklist);
+    return ( $defaulted_to_en, \@fwklist );
 }
 
 =head2 sample_data_sql_list
@@ -220,14 +220,15 @@ sub sample_data_sql_list {
 
     undef $/;
     my $dir = C4::Context->config('intranetdir') . "/installer/data/$self->{dbms}/$lang";
-    unless (opendir( MYDIR, $dir )) {
-        if ($lang eq 'en') {
+    unless ( opendir( MYDIR, $dir ) ) {
+        if ( $lang eq 'en' ) {
             warn "cannot open sample data directory $dir";
         } else {
+
             # if no sample data is available,
             # default to English
             $dir = C4::Context->config('intranetdir') . "/installer/data/$self->{dbms}/en";
-            opendir(MYDIR, $dir) or warn "cannot open English sample data directory $dir";
+            opendir( MYDIR, $dir ) or warn "cannot open English sample data directory $dir";
             $defaulted_to_en = 1;
         }
     }
@@ -238,7 +239,7 @@ sub sample_data_sql_list {
     my $request = $self->{'dbh'}->prepare("SELECT value FROM systempreferences WHERE variable='FrameworksLoaded'");
     $request->execute;
     my ($frameworksloaded) = $request->fetchrow;
-    $frameworksloaded = '' unless defined $frameworksloaded; # avoid warning
+    $frameworksloaded = '' unless defined $frameworksloaded;    # avoid warning
     my %frameworksloaded;
     foreach ( split( /\|/, $frameworksloaded ) ) {
         $frameworksloaded{$_} = 1;
@@ -252,15 +253,14 @@ sub sample_data_sql_list {
         my @frameworklist;
         map {
             my $name = substr( $_, 0, -4 );
-            open FILE, "<:utf8","$dir/$requirelevel/$name.txt";
+            open FILE, "<:utf8", "$dir/$requirelevel/$name.txt";
             my $lines = <FILE>;
             $lines =~ s/\n|\r/<br \/>/g;
             use utf8;
             utf8::encode($lines) unless ( utf8::is_utf8($lines) );
-            my $mandatory = ($requirelevel =~ /(mandatory|requi|oblig|necess)/i);
+            my $mandatory = ( $requirelevel =~ /(mandatory|requi|oblig|necess)/i );
             push @frameworklist,
-              {
-                'fwkname'        => $name,
+              { 'fwkname'        => $name,
                 'fwkfile'        => "$dir/$requirelevel/$_",
                 'fwkdescription' => $lines,
                 'checked'        => ( ( $frameworksloaded{$_} || $mandatory ) ? 1 : 0 ),
@@ -275,7 +275,7 @@ sub sample_data_sql_list {
         push @levellist, \%cell;
     }
 
-    return ($defaulted_to_en, \@levellist);
+    return ( $defaulted_to_en, \@levellist );
 }
 
 =head2 sql_file_list
@@ -294,27 +294,27 @@ is a hashref containing possible named parameters 'mandatory' and 'optional'.
 =cut
 
 sub sql_file_list {
-    my $self = shift;
-    my $lang = shift;
-    my $marcflavour = shift;
+    my $self          = shift;
+    my $lang          = shift;
+    my $marcflavour   = shift;
     my $subset_wanted = shift;
 
-    my ($marc_defaulted_to_en, $marc_sql) = $self->marc_framework_sql_list($lang, $marcflavour);
-    my ($sample_defaulted_to_en, $sample_sql) = $self->sample_data_sql_list($lang);
+    my ( $marc_defaulted_to_en, $marc_sql ) = $self->marc_framework_sql_list( $lang, $marcflavour );
+    my ( $sample_defaulted_to_en, $sample_sql ) = $self->sample_data_sql_list($lang);
 
     my @sql_list = ();
     map {
         map {
-            if ($subset_wanted->{'mandatory'}) {
+            if ( $subset_wanted->{'mandatory'} ) {
                 push @sql_list, $_->{'fwkfile'} if $_->{'mandatory'};
             }
-            if ($subset_wanted->{'optional'}) {
+            if ( $subset_wanted->{'optional'} ) {
                 push @sql_list, $_->{'fwkfile'} unless $_->{'mandatory'};
             }
-        } @{ $_->{'frameworks'} }
-    } (@$marc_sql, @$sample_sql);
+          } @{ $_->{'frameworks'} }
+    } ( @$marc_sql, @$sample_sql );
 
-    return \@sql_list
+    return \@sql_list;
 }
 
 =head2 load_db_schema
@@ -335,7 +335,7 @@ sub load_db_schema {
     my $self = shift;
 
     my $datadir = C4::Context->config('intranetdir') . "/installer/data/$self->{dbms}";
-    my $error = $self->load_sql("$datadir/kohastructure.sql");
+    my $error   = $self->load_sql("$datadir/kohastructure.sql");
     return $error;
 
 }
@@ -371,9 +371,9 @@ moved to a different method.
 =cut
 
 sub load_sql_in_order {
-    my $self = shift;
+    my $self          = shift;
     my $all_languages = shift;
-    my @sql_list = @_;
+    my @sql_list      = @_;
 
     my $lang;
     my %hashlevel;
@@ -382,11 +382,12 @@ sub load_sql_in_order {
         my @bb = split /\/|\\/, ($b);
         $aa[-1] cmp $bb[-1]
     } @sql_list;
-    my $request = $self->{'dbh'}->prepare( "SELECT value FROM systempreferences WHERE variable='FrameworksLoaded'" );
+    my $request = $self->{'dbh'}->prepare("SELECT value FROM systempreferences WHERE variable='FrameworksLoaded'");
     $request->execute;
     my ($systempreference) = $request->fetchrow;
-    $systempreference = '' unless defined $systempreference; # avoid warning
+    $systempreference = '' unless defined $systempreference;    # avoid warning
     foreach my $file (@fnames) {
+
         #      warn $file;
         undef $/;
         my $error = $self->load_sql($file);
@@ -399,8 +400,7 @@ sub load_sql_in_order {
         }
 
         #Bulding here a hierarchy to display files by level.
-        push @{ $hashlevel{$level} },
-          { "fwkname" => $file[ scalar(@file) - 1 ], "error" => $error };
+        push @{ $hashlevel{$level} }, { "fwkname" => $file[ scalar(@file) - 1 ], "error" => $error };
     }
 
     #systempreference contains an ending |
@@ -416,18 +416,15 @@ sub load_sql_in_order {
             $fwk_language = $each_language->{language_locale_name};
         }
     }
-    my $updateflag =
-      $self->{'dbh'}->do(
-        "UPDATE systempreferences set value=\"$systempreference\" where variable='FrameworksLoaded'"
-      );
+    my $updateflag = $self->{'dbh'}->do( "UPDATE systempreferences set value=\"$systempreference\" where variable='FrameworksLoaded'" );
 
     unless ( $updateflag == 1 ) {
         my $string =
-            "INSERT INTO systempreferences (value, variable, explanation, type) VALUES (\"$systempreference\",'FrameworksLoaded','Frameworks loaded through webinstaller','choice')";
+"INSERT INTO systempreferences (value, variable, explanation, type) VALUES (\"$systempreference\",'FrameworksLoaded','Frameworks loaded through webinstaller','choice')";
         my $rq = $self->{'dbh'}->prepare($string);
         $rq->execute;
     }
-    return ($fwk_language, \@list);
+    return ( $fwk_language, \@list );
 }
 
 =head2 set_marcflavour_syspref
@@ -449,7 +446,7 @@ MARC21 or UNIMARC.
 =cut
 
 sub set_marcflavour_syspref {
-    my $self = shift;
+    my $self        = shift;
     my $marcflavour = shift;
 
     # we can have some variants of marc flavour, by having different directories, like : unimarc_small and unimarc_full, for small and complete unimarc frameworks.
@@ -457,9 +454,9 @@ sub set_marcflavour_syspref {
     my $marc_cleaned = 'MARC21';
     $marc_cleaned = 'UNIMARC' if $marcflavour =~ /unimarc/i;
     my $request =
-        $self->{'dbh'}->prepare(
-          "INSERT IGNORE INTO `systempreferences` (variable,value,explanation,options,type) VALUES('marcflavour','$marc_cleaned','Define global MARC flavor (MARC21 or UNIMARC) used for character encoding','MARC21|UNIMARC','Choice');"
-        );
+      $self->{'dbh'}->prepare(
+"INSERT IGNORE INTO `systempreferences` (variable,value,explanation,options,type) VALUES('marcflavour','$marc_cleaned','Define global MARC flavor (MARC21 or UNIMARC) used for character encoding','MARC21|UNIMARC','Choice');"
+      );
     $request->execute;
 }
 
@@ -480,7 +477,7 @@ off NoZebra mode (i.e., use the Zebra search engine).
 =cut
 
 sub set_indexing_engine {
-    my $self = shift;
+    my $self    = shift;
     my $nozebra = shift;
 
     if ($nozebra) {
@@ -508,16 +505,20 @@ Koha software version.
 sub set_version_syspref {
     my $self = shift;
 
-    my $kohaversion=C4::Context::KOHAVERSION;
+    my $kohaversion = C4::Context::KOHAVERSION;
+
     # remove the 3 last . to have a Perl number
     $kohaversion =~ s/(.*\..*)\.(.*)\.(.*)/$1$2$3/;
-    if (C4::Context->preference('Version')) {
+    if ( C4::Context->preference('Version') ) {
         warn "UPDATE Version";
-        my $finish=$self->{'dbh'}->prepare("UPDATE systempreferences SET value=? WHERE variable='Version'");
+        my $finish = $self->{'dbh'}->prepare("UPDATE systempreferences SET value=? WHERE variable='Version'");
         $finish->execute($kohaversion);
     } else {
         warn "INSERT Version";
-        my $finish=$self->{'dbh'}->prepare("INSERT into systempreferences (variable,value,explanation) values ('Version',?,'The Koha database version. WARNING: Do not change this value manually, it is maintained by the webinstaller')");
+        my $finish =
+          $self->{'dbh'}->prepare(
+"INSERT into systempreferences (variable,value,explanation) values ('Version',?,'The Koha database version. WARNING: Do not change this value manually, it is maintained by the webinstaller')"
+          );
         $finish->execute($kohaversion);
     }
     C4::Context->clear_syspref_cache();
@@ -547,33 +548,34 @@ FIXME: even using the command-line loader, some more
 =cut
 
 sub load_sql {
-    my $self = shift;
+    my $self     = shift;
     my $filename = shift;
 
     my $datadir = C4::Context->config('intranetdir') . "/installer/data/$self->{dbms}";
     my $error;
     my $strcmd;
     if ( $self->{dbms} eq 'mysql' ) {
-        $strcmd = "mysql "
-            . ( $self->{hostname} ? " -h $self->{hostname} " : "" )
-            . ( $self->{port}     ? " -P $self->{port} "     : "" )
-            . ( $self->{user}     ? " -u $self->{user} "     : "" )
-            . ( $self->{password} ? " -p'$self->{password}'"   : "" )
-            . " $self->{dbname} ";
+        $strcmd =
+            "mysql "
+          . ( $self->{hostname} ? " -h $self->{hostname} " : "" )
+          . ( $self->{port}     ? " -P $self->{port} "     : "" )
+          . ( $self->{user}     ? " -u $self->{user} "     : "" )
+          . ( $self->{password} ? " -p'$self->{password}'" : "" )
+          . " $self->{dbname} ";
         $error = qx($strcmd --default-character-set=utf8 <$filename 2>&1 1>/dev/null);
     } elsif ( $self->{dbms} eq 'Pg' ) {
-        $strcmd = "psql "
-            . ( $self->{hostname} ? " -h $self->{hostname} " : "" )
-            . ( $self->{port}     ? " -p $self->{port} "     : "" )
-            . ( $self->{user}     ? " -U $self->{user} "     : "" )
-#            . ( $self->{password} ? " -W $self->{password}"   : "" )       # psql will NOT accept a password, but prompts...
-            . " $self->{dbname} ";                        # Therefore, be sure to run 'trust' on localhost in pg_hba.conf -fbcit
+        $strcmd = "psql " . ( $self->{hostname} ? " -h $self->{hostname} " : "" ) . ( $self->{port} ? " -p $self->{port} " : "" ) . ( $self->{user} ? " -U $self->{user} " : "" )
+
+          #            . ( $self->{password} ? " -W $self->{password}"   : "" )       # psql will NOT accept a password, but prompts...
+          . " $self->{dbname} ";    # Therefore, be sure to run 'trust' on localhost in pg_hba.conf -fbcit
         $error = qx($strcmd -f $filename 2>&1 1>/dev/null);
+
         # Be sure to set 'client_min_messages = error' in postgresql.conf
         # so that only true errors are returned to stderr or else the installer will
         # report the import a failure although it really succeded -fbcit
     }
-#   errors thrown while loading installer data should be logged
+
+    #   errors thrown while loading installer data should be logged
     warn "C4::Installer::load_sql returned the following errors while attempting to load $filename:\n";
     warn $error;
     return $error;
@@ -596,17 +598,18 @@ returns undef if no match was found.
 =cut
 
 sub get_file_path_from_name {
-    my $self = shift;
+    my $self        = shift;
     my $partialname = shift;
 
-    my $lang = 'en'; # FIXME: how do I know what language I want?
+    my $lang = 'en';    # FIXME: how do I know what language I want?
 
-    my ($defaulted_to_en, $list) = $self->sample_data_sql_list($lang);
+    my ( $defaulted_to_en, $list ) = $self->sample_data_sql_list($lang);
+
     # warn( Data::Dumper->Dump( [ $list ], [ 'list' ] ) );
 
     my @found;
-    foreach my $frameworklist ( @$list ) {
-        push @found, grep { $_->{'fwkfile'} =~ /$partialname$/ } @{$frameworklist->{'frameworks'}};
+    foreach my $frameworklist (@$list) {
+        push @found, grep { $_->{'fwkfile'} =~ /$partialname$/ } @{ $frameworklist->{'frameworks'} };
     }
 
     # warn( Data::Dumper->Dump( [ \@found ], [ 'found' ] ) );
@@ -620,7 +623,6 @@ sub get_file_path_from_name {
     }
 
 }
-
 
 =head1 AUTHOR
 

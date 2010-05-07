@@ -17,8 +17,8 @@ package C4::Koha;
 # with Koha; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use C4::Context;
 use C4::Output;
@@ -27,61 +27,61 @@ use URI::Split qw(uri_split);
 use vars qw($VERSION @ISA @EXPORT $DEBUG);
 
 BEGIN {
-	$VERSION = 3.01;
-	require Exporter;
-	@ISA    = qw(Exporter);
-	@EXPORT = qw(
-		&slashifyDate
-		&DisplayISBN
-		&subfield_is_koha_internal_p
-		&GetPrinters &GetPrinter
-		&GetItemTypes &getitemtypeinfo
-		&GetCcodes
-		&GetSupportName &GetSupportList
-		&get_itemtypeinfos_of
-		&getframeworks &getframeworkinfo
-		&getauthtypes &getauthtype
-		&getallthemes
-		&getFacets
-		&displayServers
-		&getnbpages
-		&get_infos_of
-		&get_notforloan_label_of
-		&getitemtypeimagedir
-		&getitemtypeimagesrc
-		&getitemtypeimagelocation
-		&GetAuthorisedValues
-		&GetAuthorisedValueCategories
-		&GetKohaAuthorisedValues
-		&GetKohaAuthorisedValuesFromField
-		&GetAuthValCode
-		&GetNormalizedUPC
-		&GetNormalizedISBN
-		&GetNormalizedEAN
-		&GetNormalizedOCLCNumber
+    $VERSION = 3.01;
+    require Exporter;
+    @ISA    = qw(Exporter);
+    @EXPORT = qw(
+      &slashifyDate
+      &DisplayISBN
+      &subfield_is_koha_internal_p
+      &GetPrinters &GetPrinter
+      &GetItemTypes &getitemtypeinfo
+      &GetCcodes
+      &GetSupportName &GetSupportList
+      &get_itemtypeinfos_of
+      &getframeworks &getframeworkinfo
+      &getauthtypes &getauthtype
+      &getallthemes
+      &getFacets
+      &displayServers
+      &getnbpages
+      &get_infos_of
+      &get_notforloan_label_of
+      &getitemtypeimagedir
+      &getitemtypeimagesrc
+      &getitemtypeimagelocation
+      &GetAuthorisedValues
+      &GetAuthorisedValueCategories
+      &GetKohaAuthorisedValues
+      &GetKohaAuthorisedValuesFromField
+      &GetAuthValCode
+      &GetNormalizedUPC
+      &GetNormalizedISBN
+      &GetNormalizedEAN
+      &GetNormalizedOCLCNumber
 
-		$DEBUG
-	);
-	$DEBUG = 0;
+      $DEBUG
+    );
+    $DEBUG = 0;
 }
 
 # expensive functions
-    
+
 eval {
     my $servers = C4::Context->config('memcached_servers');
     if ($servers) {
         require Memoize::Memcached;
         import Memoize::Memcached qw(memoize_memcached);
- 
+
         my $memcached = {
-            servers    => [ $servers ],
+            servers    => [$servers],
             key_prefix => C4::Context->config('memcached_namespace') || 'koha',
         };
 
-        memoize_memcached('GetKohaAuthorisedValues',memcached => $memcached, expire_time => 600000);
-        memoize_memcached('GetAuthorisedValues',memcached => $memcached, expire_time => 600000);
-        memoize_memcached('GetItemTypes',memcached => $memcached, expire_time => 600000);
-        memoize_memcached('getitemtypeimagelocation',memcached => $memcached, expire_time => 600000);
+        memoize_memcached( 'GetKohaAuthorisedValues',  memcached => $memcached, expire_time => 600000 );
+        memoize_memcached( 'GetAuthorisedValues',      memcached => $memcached, expire_time => 600000 );
+        memoize_memcached( 'GetItemTypes',             memcached => $memcached, expire_time => 600000 );
+        memoize_memcached( 'getitemtypeimagelocation', memcached => $memcached, expire_time => 600000 );
     }
 };
 
@@ -119,7 +119,6 @@ sub slashifyDate {
     return ("$dateOut[2]/$dateOut[1]/$dateOut[0]");
 }
 
-
 =head2 DisplayISBN
 
     my $string = DisplayISBN( $isbn );
@@ -128,95 +127,77 @@ sub slashifyDate {
 
 sub DisplayISBN {
     my ($isbn) = @_;
-    if (length ($isbn)<13){
-    my $seg1;
-    if ( substr( $isbn, 0, 1 ) <= 7 ) {
-        $seg1 = substr( $isbn, 0, 1 );
-    }
-    elsif ( substr( $isbn, 0, 2 ) <= 94 ) {
-        $seg1 = substr( $isbn, 0, 2 );
-    }
-    elsif ( substr( $isbn, 0, 3 ) <= 995 ) {
-        $seg1 = substr( $isbn, 0, 3 );
-    }
-    elsif ( substr( $isbn, 0, 4 ) <= 9989 ) {
-        $seg1 = substr( $isbn, 0, 4 );
-    }
-    else {
-        $seg1 = substr( $isbn, 0, 5 );
-    }
-    my $x = substr( $isbn, length($seg1) );
-    my $seg2;
-    if ( substr( $x, 0, 2 ) <= 19 ) {
+    if ( length($isbn) < 13 ) {
+        my $seg1;
+        if ( substr( $isbn, 0, 1 ) <= 7 ) {
+            $seg1 = substr( $isbn, 0, 1 );
+        } elsif ( substr( $isbn, 0, 2 ) <= 94 ) {
+            $seg1 = substr( $isbn, 0, 2 );
+        } elsif ( substr( $isbn, 0, 3 ) <= 995 ) {
+            $seg1 = substr( $isbn, 0, 3 );
+        } elsif ( substr( $isbn, 0, 4 ) <= 9989 ) {
+            $seg1 = substr( $isbn, 0, 4 );
+        } else {
+            $seg1 = substr( $isbn, 0, 5 );
+        }
+        my $x = substr( $isbn, length($seg1) );
+        my $seg2;
+        if ( substr( $x, 0, 2 ) <= 19 ) {
 
-        # if(sTmp2 < 10) sTmp2 = "0" sTmp2;
-        $seg2 = substr( $x, 0, 2 );
-    }
-    elsif ( substr( $x, 0, 3 ) <= 699 ) {
-        $seg2 = substr( $x, 0, 3 );
-    }
-    elsif ( substr( $x, 0, 4 ) <= 8399 ) {
-        $seg2 = substr( $x, 0, 4 );
-    }
-    elsif ( substr( $x, 0, 5 ) <= 89999 ) {
-        $seg2 = substr( $x, 0, 5 );
-    }
-    elsif ( substr( $x, 0, 6 ) <= 9499999 ) {
-        $seg2 = substr( $x, 0, 6 );
-    }
-    else {
-        $seg2 = substr( $x, 0, 7 );
-    }
-    my $seg3 = substr( $x, length($seg2) );
-    $seg3 = substr( $seg3, 0, length($seg3) - 1 );
-    my $seg4 = substr( $x, -1, 1 );
-    return "$seg1-$seg2-$seg3-$seg4";
+            # if(sTmp2 < 10) sTmp2 = "0" sTmp2;
+            $seg2 = substr( $x, 0, 2 );
+        } elsif ( substr( $x, 0, 3 ) <= 699 ) {
+            $seg2 = substr( $x, 0, 3 );
+        } elsif ( substr( $x, 0, 4 ) <= 8399 ) {
+            $seg2 = substr( $x, 0, 4 );
+        } elsif ( substr( $x, 0, 5 ) <= 89999 ) {
+            $seg2 = substr( $x, 0, 5 );
+        } elsif ( substr( $x, 0, 6 ) <= 9499999 ) {
+            $seg2 = substr( $x, 0, 6 );
+        } else {
+            $seg2 = substr( $x, 0, 7 );
+        }
+        my $seg3 = substr( $x, length($seg2) );
+        $seg3 = substr( $seg3, 0, length($seg3) - 1 );
+        my $seg4 = substr( $x, -1, 1 );
+        return "$seg1-$seg2-$seg3-$seg4";
     } else {
-      my $seg1;
-      $seg1 = substr( $isbn, 0, 3 );
-      my $seg2;
-      if ( substr( $isbn, 3, 1 ) <= 7 ) {
-          $seg2 = substr( $isbn, 3, 1 );
-      }
-      elsif ( substr( $isbn, 3, 2 ) <= 94 ) {
-          $seg2 = substr( $isbn, 3, 2 );
-      }
-      elsif ( substr( $isbn, 3, 3 ) <= 995 ) {
-          $seg2 = substr( $isbn, 3, 3 );
-      }
-      elsif ( substr( $isbn, 3, 4 ) <= 9989 ) {
-          $seg2 = substr( $isbn, 3, 4 );
-      }
-      else {
-          $seg2 = substr( $isbn, 3, 5 );
-      }
-      my $x = substr( $isbn, length($seg2) +3);
-      my $seg3;
-      if ( substr( $x, 0, 2 ) <= 19 ) {
-  
-          # if(sTmp2 < 10) sTmp2 = "0" sTmp2;
-          $seg3 = substr( $x, 0, 2 );
-      }
-      elsif ( substr( $x, 0, 3 ) <= 699 ) {
-          $seg3 = substr( $x, 0, 3 );
-      }
-      elsif ( substr( $x, 0, 4 ) <= 8399 ) {
-          $seg3 = substr( $x, 0, 4 );
-      }
-      elsif ( substr( $x, 0, 5 ) <= 89999 ) {
-          $seg3 = substr( $x, 0, 5 );
-      }
-      elsif ( substr( $x, 0, 6 ) <= 9499999 ) {
-          $seg3 = substr( $x, 0, 6 );
-      }
-      else {
-          $seg3 = substr( $x, 0, 7 );
-      }
-      my $seg4 = substr( $x, length($seg3) );
-      $seg4 = substr( $seg4, 0, length($seg4) - 1 );
-      my $seg5 = substr( $x, -1, 1 );
-      return "$seg1-$seg2-$seg3-$seg4-$seg5";       
-    }    
+        my $seg1;
+        $seg1 = substr( $isbn, 0, 3 );
+        my $seg2;
+        if ( substr( $isbn, 3, 1 ) <= 7 ) {
+            $seg2 = substr( $isbn, 3, 1 );
+        } elsif ( substr( $isbn, 3, 2 ) <= 94 ) {
+            $seg2 = substr( $isbn, 3, 2 );
+        } elsif ( substr( $isbn, 3, 3 ) <= 995 ) {
+            $seg2 = substr( $isbn, 3, 3 );
+        } elsif ( substr( $isbn, 3, 4 ) <= 9989 ) {
+            $seg2 = substr( $isbn, 3, 4 );
+        } else {
+            $seg2 = substr( $isbn, 3, 5 );
+        }
+        my $x = substr( $isbn, length($seg2) + 3 );
+        my $seg3;
+        if ( substr( $x, 0, 2 ) <= 19 ) {
+
+            # if(sTmp2 < 10) sTmp2 = "0" sTmp2;
+            $seg3 = substr( $x, 0, 2 );
+        } elsif ( substr( $x, 0, 3 ) <= 699 ) {
+            $seg3 = substr( $x, 0, 3 );
+        } elsif ( substr( $x, 0, 4 ) <= 8399 ) {
+            $seg3 = substr( $x, 0, 4 );
+        } elsif ( substr( $x, 0, 5 ) <= 89999 ) {
+            $seg3 = substr( $x, 0, 5 );
+        } elsif ( substr( $x, 0, 6 ) <= 9499999 ) {
+            $seg3 = substr( $x, 0, 6 );
+        } else {
+            $seg3 = substr( $x, 0, 7 );
+        }
+        my $seg4 = substr( $x, length($seg3) );
+        $seg4 = substr( $seg4, 0, length($seg4) - 1 );
+        my $seg5 = substr( $x, -1, 1 );
+        return "$seg1-$seg2-$seg3-$seg4-$seg5";
+    }
 }
 
 # FIXME.. this should be moved to a MARC-specific module
@@ -239,33 +220,31 @@ Returns a string with the name of the itemtype.
 
 =cut
 
-sub GetSupportName{
-	my ($codestring)=@_;
-	return if (! $codestring); 
-	my $resultstring;
-	my $advanced_search_types = C4::Context->preference("AdvancedSearchTypes");
-	if (!$advanced_search_types or $advanced_search_types eq 'itemtypes') {  
-		my $query = qq|
+sub GetSupportName {
+    my ($codestring) = @_;
+    return if ( !$codestring );
+    my $resultstring;
+    my $advanced_search_types = C4::Context->preference("AdvancedSearchTypes");
+    if ( !$advanced_search_types or $advanced_search_types eq 'itemtypes' ) {
+        my $query = qq|
 			SELECT description
 			FROM   itemtypes
 			WHERE itemtype=?
 			order by description
 		|;
-		my $sth = C4::Context->dbh->prepare($query);
-		$sth->execute($codestring);
-		($resultstring)=$sth->fetchrow;
-		return $resultstring;
-	} else {
-        my $sth =
-            C4::Context->dbh->prepare(
-                    "SELECT lib FROM authorised_values WHERE category = ? AND authorised_value = ?"
-                    );
+        my $sth = C4::Context->dbh->prepare($query);
+        $sth->execute($codestring);
+        ($resultstring) = $sth->fetchrow;
+        return $resultstring;
+    } else {
+        my $sth = C4::Context->dbh->prepare( "SELECT lib FROM authorised_values WHERE category = ? AND authorised_value = ?" );
         $sth->execute( $advanced_search_types, $codestring );
         my $data = $sth->fetchrow_hashref;
         return $$data{'lib'};
-	}
+    }
 
 }
+
 =head2 GetSupportList
 
   $itemtypes = &GetSupportList();
@@ -294,23 +273,24 @@ build a HTML select with the following code :
 
 =cut
 
-sub GetSupportList{
-	my $advanced_search_types = C4::Context->preference("AdvancedSearchTypes");
-	if (!$advanced_search_types or $advanced_search_types eq 'itemtypes') {  
-		my $query = qq|
+sub GetSupportList {
+    my $advanced_search_types = C4::Context->preference("AdvancedSearchTypes");
+    if ( !$advanced_search_types or $advanced_search_types eq 'itemtypes' ) {
+        my $query = qq|
 			SELECT *
 			FROM   itemtypes
 			order by description
 		|;
-		my $sth = C4::Context->dbh->prepare($query);
-		$sth->execute;
-		return $sth->fetchall_arrayref({});
-	} else {
-		my $advsearchtypes = GetAuthorisedValues($advanced_search_types);
-		my @results= map {{itemtype=>$$_{authorised_value},description=>$$_{lib},imageurl=>$$_{imageurl}}} @$advsearchtypes;
-		return \@results;
-	}
+        my $sth = C4::Context->dbh->prepare($query);
+        $sth->execute;
+        return $sth->fetchall_arrayref( {} );
+    } else {
+        my $advsearchtypes = GetAuthorisedValues($advanced_search_types);
+        my @results = map { { itemtype => $$_{authorised_value}, description => $$_{lib}, imageurl => $$_{imageurl} } } @$advsearchtypes;
+        return \@results;
+    }
 }
+
 =head2 GetItemTypes
 
   $itemtypes = &GetItemTypes();
@@ -386,9 +366,7 @@ sub GetCcodes {
     my $count = 0;
     my @results;
     my $dbh = C4::Context->dbh;
-    my $sth =
-      $dbh->prepare(
-        "SELECT * FROM authorised_values ORDER BY authorised_value");
+    my $sth = $dbh->prepare("SELECT * FROM authorised_values ORDER BY authorised_value");
     $sth->execute;
     while ( my $data = $sth->fetchrow_hashref ) {
         if ( $data->{category} eq "CCODE" ) {
@@ -526,8 +504,7 @@ Returns information about an frameworkcode.
 sub getframeworkinfo {
     my ($frameworkcode) = @_;
     my $dbh             = C4::Context->dbh;
-    my $sth             =
-      $dbh->prepare("select * from biblio_framework where frameworkcode=?");
+    my $sth             = $dbh->prepare("select * from biblio_framework where frameworkcode=?");
     $sth->execute($frameworkcode);
     my $res = $sth->fetchrow_hashref;
     return $res;
@@ -570,33 +547,33 @@ returns the full path to the appropriate directory containing images.
 =cut
 
 sub getitemtypeimagedir {
-	my $src = shift || 'opac';
-	if ($src eq 'intranet') {
-		return C4::Context->config('intrahtdocs') . '/' .C4::Context->preference('template') . '/img/itemtypeimg';
-	} else {
-		return C4::Context->config('opachtdocs') . '/' . C4::Context->preference('template') . '/itemtypeimg';
-	}
+    my $src = shift || 'opac';
+    if ( $src eq 'intranet' ) {
+        return C4::Context->config('intrahtdocs') . '/' . C4::Context->preference('template') . '/img/itemtypeimg';
+    } else {
+        return C4::Context->config('opachtdocs') . '/' . C4::Context->preference('template') . '/itemtypeimg';
+    }
 }
 
 sub getitemtypeimagesrc {
-	my $src = shift || 'opac';
-	if ($src eq 'intranet') {
-		return '/intranet-tmpl' . '/' .	C4::Context->preference('template') . '/img/itemtypeimg';
-	} else {
-		return '/opac-tmpl' . '/' . C4::Context->preference('template') . '/itemtypeimg';
-	}
+    my $src = shift || 'opac';
+    if ( $src eq 'intranet' ) {
+        return '/intranet-tmpl' . '/' . C4::Context->preference('template') . '/img/itemtypeimg';
+    } else {
+        return '/opac-tmpl' . '/' . C4::Context->preference('template') . '/itemtypeimg';
+    }
 }
 
 sub getitemtypeimagelocation($$) {
-	my ( $src, $image ) = @_;
+    my ( $src, $image ) = @_;
 
-	return '' if ( !$image );
+    return '' if ( !$image );
 
-	my $scheme = ( uri_split( $image ) )[0];
+    my $scheme = ( uri_split($image) )[0];
 
-	return $image if ( $scheme );
+    return $image if ($scheme);
 
-	return getitemtypeimagesrc( $src ) . '/' . $image;
+    return getitemtypeimagesrc($src) . '/' . $image;
 }
 
 =head3 _getImagesFromDirectory
@@ -620,8 +597,8 @@ sub _getImagesFromDirectory {
     return unless defined $directoryname;
     return unless -d $directoryname;
 
-    if ( opendir ( my $dh, $directoryname ) ) {
-        my @images = grep { /\.(gif|png)$/i } readdir( $dh );
+    if ( opendir( my $dh, $directoryname ) ) {
+        my @images = grep { /\.(gif|png)$/i } readdir($dh);
         closedir $dh;
         return @images;
     } else {
@@ -651,8 +628,8 @@ sub _getSubdirectoryNames {
     return unless defined $directoryname;
     return unless -d $directoryname;
 
-    if ( opendir ( my $dh, $directoryname ) ) {
-        my @directories = grep { -d File::Spec->catfile( $directoryname, $_ ) && ! ( /^\./ ) } readdir( $dh );
+    if ( opendir( my $dh, $directoryname ) ) {
+        my @directories = grep { -d File::Spec->catfile( $directoryname, $_ ) && !(/^\./) } readdir($dh);
         closedir $dh;
         return @directories;
     } else {
@@ -682,32 +659,38 @@ sub getImageSets {
     my %params = @_;
     my $checked = $params{'checked'} || '';
 
-    my $paths = { staff => { filesystem => getitemtypeimagedir('intranet'),
-                             url        => getitemtypeimagesrc('intranet'),
-                        },
-                  opac => { filesystem => getitemtypeimagedir('opac'),
-                             url       => getitemtypeimagesrc('opac'),
-                        }
-                  };
+    my $paths = {
+        staff => {
+            filesystem => getitemtypeimagedir('intranet'),
+            url        => getitemtypeimagesrc('intranet'),
+        },
+        opac => {
+            filesystem => getitemtypeimagedir('opac'),
+            url        => getitemtypeimagesrc('opac'),
+        }
+    };
 
-    my @imagesets = (); # list of hasrefs of image set data to pass to template
+    my @imagesets      = ();                                                         # list of hasrefs of image set data to pass to template
     my @subdirectories = _getSubdirectoryNames( $paths->{'staff'}{'filesystem'} );
 
-    foreach my $imagesubdir ( @subdirectories ) {
-        my @imagelist     = (); # hashrefs of image info
+    foreach my $imagesubdir (@subdirectories) {
+        my @imagelist = ();                                                                                                 # hashrefs of image info
         my @imagenames = _getImagesFromDirectory( File::Spec->catfile( $paths->{'staff'}{'filesystem'}, $imagesubdir ) );
-        foreach my $thisimage ( @imagenames ) {
-            push( @imagelist,
-                  { KohaImage     => "$imagesubdir/$thisimage",
+        foreach my $thisimage (@imagenames) {
+            push(
+                @imagelist,
+                {   KohaImage     => "$imagesubdir/$thisimage",
                     StaffImageUrl => join( '/', $paths->{'staff'}{'url'}, $imagesubdir, $thisimage ),
                     OpacImageUrl  => join( '/', $paths->{'opac'}{'url'}, $imagesubdir, $thisimage ),
                     checked       => "$imagesubdir/$thisimage" eq $checked ? 1 : 0,
-               }
-             );
+                }
+            );
         }
-        push @imagesets, { imagesetname => $imagesubdir,
-                           images       => \@imagelist };
-        
+        push @imagesets,
+          { imagesetname => $imagesubdir,
+            images       => \@imagelist
+          };
+
     }
     return \@imagesets;
 }
@@ -745,7 +728,7 @@ $printer = GetPrinter( $query, $printers );
 sub GetPrinter ($$) {
     my ( $query, $printers ) = @_;    # get printer for this query from printers
     my $printer = $query->param('printer');
-    my %cookie = $query->cookie('userenv');
+    my %cookie  = $query->cookie('userenv');
     ($printer) || ( $printer = $cookie{'printer'} ) || ( $printer = '' );
     ( $printers->{$printer} ) || ( $printer = ( keys %$printers )[0] );
     return $printer;
@@ -779,8 +762,7 @@ sub getallthemes {
     my @themes;
     if ( $type eq 'intranet' ) {
         $htdocs = C4::Context->config('intrahtdocs');
-    }
-    else {
+    } else {
         $htdocs = C4::Context->config('opachtdocs');
     }
     opendir D, "$htdocs";
@@ -795,54 +777,46 @@ sub getFacets {
     my $facets;
     if ( C4::Context->preference("marcflavour") eq "UNIMARC" ) {
         $facets = [
-            {
-                link_value  => 'su-to',
+            {   link_value  => 'su-to',
                 label_value => 'Topics',
-                tags        =>
-                  [ '600', '601', '602', '603', '604', '605', '606', '610' ],
-                subfield => 'a',
+                tags        => [ '600', '601', '602', '603', '604', '605', '606', '610' ],
+                subfield    => 'a',
             },
-            {
-                link_value  => 'su-geo',
+            {   link_value  => 'su-geo',
                 label_value => 'Places',
                 tags        => ['651'],
                 subfield    => 'a',
             },
-            {
-                link_value  => 'su-ut',
+            {   link_value  => 'su-ut',
                 label_value => 'Titles',
                 tags        => [ '500', '501', '502', '503', '504', ],
                 subfield    => 'a',
             },
-            {
-                link_value  => 'au',
+            {   link_value  => 'au',
                 label_value => 'Authors',
                 tags        => [ '700', '701', '702', ],
                 subfield    => 'a',
             },
-            {
-                link_value  => 'se',
+            {   link_value  => 'se',
                 label_value => 'Series',
                 tags        => ['225'],
                 subfield    => 'a',
             },
-            ];
+        ];
 
-            my $library_facet;
+        my $library_facet;
 
-            $library_facet = {
-                link_value  => 'branch',
-                label_value => 'Libraries',
-                tags        => [ '995', ],
-                subfield    => 'b',
-                expanded    => '1',
-            };
-            push @$facets, $library_facet unless C4::Context->preference("singleBranchMode");
-    }
-    else {
+        $library_facet = {
+            link_value  => 'branch',
+            label_value => 'Libraries',
+            tags        => [ '995', ],
+            subfield    => 'b',
+            expanded    => '1',
+        };
+        push @$facets, $library_facet unless C4::Context->preference("singleBranchMode");
+    } else {
         $facets = [
-            {
-                link_value  => 'su-to',
+            {   link_value  => 'su-to',
                 label_value => 'Topics',
                 tags        => ['650'],
                 subfield    => 'a',
@@ -854,40 +828,36 @@ sub getFacets {
             #        tags => ['600', '610', '611'],
             #        subfield => 'a',
             #        },
-            {
-                link_value  => 'su-geo',
+            {   link_value  => 'su-geo',
                 label_value => 'Places',
                 tags        => ['651'],
                 subfield    => 'a',
             },
-            {
-                link_value  => 'su-ut',
+            {   link_value  => 'su-ut',
                 label_value => 'Titles',
                 tags        => ['630'],
                 subfield    => 'a',
             },
-            {
-                link_value  => 'au',
+            {   link_value  => 'au',
                 label_value => 'Authors',
                 tags        => [ '100', '110', '700', ],
                 subfield    => 'a',
             },
-            {
-                link_value  => 'se',
+            {   link_value  => 'se',
                 label_value => 'Series',
                 tags        => [ '440', '490', ],
                 subfield    => 'a',
             },
-            ];
-            my $library_facet;
-            $library_facet = {
-                link_value  => 'branch',
-                label_value => 'Libraries',
-                tags        => [ '952', ],
-                subfield    => 'b',
-                expanded    => '1',
-            };
-            push @$facets, $library_facet unless C4::Context->preference("singleBranchMode");
+        ];
+        my $library_facet;
+        $library_facet = {
+            link_value  => 'branch',
+            label_value => 'Libraries',
+            tags        => [ '952', ],
+            subfield    => 'b',
+            expanded    => '1',
+        };
+        push @$facets, $library_facet unless C4::Context->preference("singleBranchMode");
     }
     return $facets;
 }
@@ -924,14 +894,13 @@ sub get_infos_of {
     my $dbh = C4::Context->dbh;
 
     my $sth = $dbh->prepare($query);
-    $sth->execute( @$bind_params );
+    $sth->execute(@$bind_params);
 
     my %infos_of;
     while ( my $row = $sth->fetchrow_hashref ) {
         if ( defined $value_name ) {
             $infos_of{ $row->{$key_name} } = $row->{$value_name};
-        }
-        else {
+        } else {
             $infos_of{ $row->{$key_name} } = $row;
         }
     }
@@ -1073,13 +1042,13 @@ $authvalcode = GetAuthValCode($kohafield,$frameworkcode);
 =cut
 
 sub GetAuthValCode {
-	my ($kohafield,$fwcode) = @_;
-	my $dbh = C4::Context->dbh;
-	$fwcode='' unless $fwcode;
-	my $sth = $dbh->prepare('select authorised_value from marc_subfield_structure where kohafield=? and frameworkcode=?');
-	$sth->execute($kohafield,$fwcode);
-	my ($authvalcode) = $sth->fetchrow_array;
-	return $authvalcode;
+    my ( $kohafield, $fwcode ) = @_;
+    my $dbh = C4::Context->dbh;
+    $fwcode = '' unless $fwcode;
+    my $sth = $dbh->prepare('select authorised_value from marc_subfield_structure where kohafield=? and frameworkcode=?');
+    $sth->execute( $kohafield, $fwcode );
+    my ($authvalcode) = $sth->fetchrow_array;
+    return $authvalcode;
 }
 
 =head2 GetAuthValCodeFromField
@@ -1091,19 +1060,19 @@ C<$subfield> can be undefined
 =cut
 
 sub GetAuthValCodeFromField {
-	my ($field,$subfield,$fwcode) = @_;
-	my $dbh = C4::Context->dbh;
-	$fwcode='' unless $fwcode;
-	my $sth;
-	if (defined $subfield) {
-	    $sth = $dbh->prepare('select authorised_value from marc_subfield_structure where tagfield=? and tagsubfield=? and frameworkcode=?');
-	    $sth->execute($field,$subfield,$fwcode);
-	} else {
-	    $sth = $dbh->prepare('select authorised_value from marc_tag_structure where tagfield=? and frameworkcode=?');
-	    $sth->execute($field,$fwcode);
-	}
-	my ($authvalcode) = $sth->fetchrow_array;
-	return $authvalcode;
+    my ( $field, $subfield, $fwcode ) = @_;
+    my $dbh = C4::Context->dbh;
+    $fwcode = '' unless $fwcode;
+    my $sth;
+    if ( defined $subfield ) {
+        $sth = $dbh->prepare('select authorised_value from marc_subfield_structure where tagfield=? and tagsubfield=? and frameworkcode=?');
+        $sth->execute( $field, $subfield, $fwcode );
+    } else {
+        $sth = $dbh->prepare('select authorised_value from marc_tag_structure where tagfield=? and frameworkcode=?');
+        $sth->execute( $field, $fwcode );
+    }
+    my ($authvalcode) = $sth->fetchrow_array;
+    return $authvalcode;
 }
 
 =head2 GetAuthorisedValues
@@ -1119,25 +1088,27 @@ C<$opac> If set to a true value, displays OPAC descriptions rather than normal o
 =cut
 
 sub GetAuthorisedValues {
-    my ($category,$selected,$opac) = @_;
-	my @results;
-    my $dbh      = C4::Context->dbh;
-    my $query    = "SELECT * FROM authorised_values";
+    my ( $category, $selected, $opac ) = @_;
+    my @results;
+    my $dbh   = C4::Context->dbh;
+    my $query = "SELECT * FROM authorised_values";
     $query .= " WHERE category = '" . $category . "'" if $category;
     $query .= " ORDER BY category, lib, lib_opac";
     my $sth = $dbh->prepare($query);
     $sth->execute;
-	while (my $data=$sth->fetchrow_hashref) {
-	    if ($selected && $selected eq $data->{'authorised_value'} ) {
-		    $data->{'selected'} = 1;
-	    }
-	    if ($opac && $data->{'lib_opac'}) {
-		$data->{'lib'} = $data->{'lib_opac'};
-	    }
-	    push @results, $data;
-	}
+
+    while ( my $data = $sth->fetchrow_hashref ) {
+        if ( $selected && $selected eq $data->{'authorised_value'} ) {
+            $data->{'selected'} = 1;
+        }
+        if ( $opac && $data->{'lib_opac'} ) {
+            $data->{'lib'} = $data->{'lib_opac'};
+        }
+        push @results, $data;
+    }
+
     #my $data = $sth->fetchall_arrayref({});
-    return \@results; #$data;
+    return \@results;    #$data;
 }
 
 =head2 GetAuthorisedValueCategories
@@ -1154,7 +1125,7 @@ sub GetAuthorisedValueCategories {
     my $sth = $dbh->prepare("SELECT DISTINCT category FROM authorised_values ORDER BY category");
     $sth->execute;
     my @results;
-    while (my $category = $sth->fetchrow_array) {
+    while ( my $category = $sth->fetchrow_array ) {
         push @results, $category;
     }
     return \@results;
@@ -1171,21 +1142,21 @@ sub GetAuthorisedValueCategories {
 =cut
 
 sub GetKohaAuthorisedValues {
-  my ($kohafield,$fwcode,$opac) = @_;
-  $fwcode='' unless $fwcode;
-  my %values;
-  my $dbh = C4::Context->dbh;
-  my $avcode = GetAuthValCode($kohafield,$fwcode);
-  if ($avcode) {  
-	my $sth = $dbh->prepare("select authorised_value, lib, lib_opac from authorised_values where category=? ");
-   	$sth->execute($avcode);
-	while ( my ($val, $lib, $lib_opac) = $sth->fetchrow_array ) { 
-		$values{$val} = ($opac && $lib_opac) ? $lib_opac : $lib;
-   	}
-   	return \%values;
-  } else {
-  	return undef;
-  }
+    my ( $kohafield, $fwcode, $opac ) = @_;
+    $fwcode = '' unless $fwcode;
+    my %values;
+    my $dbh = C4::Context->dbh;
+    my $avcode = GetAuthValCode( $kohafield, $fwcode );
+    if ($avcode) {
+        my $sth = $dbh->prepare("select authorised_value, lib, lib_opac from authorised_values where category=? ");
+        $sth->execute($avcode);
+        while ( my ( $val, $lib, $lib_opac ) = $sth->fetchrow_array ) {
+            $values{$val} = ( $opac && $lib_opac ) ? $lib_opac : $lib;
+        }
+        return \%values;
+    } else {
+        return undef;
+    }
 }
 
 =head2 GetKohaAuthorisedValuesFromField
@@ -1200,21 +1171,21 @@ sub GetKohaAuthorisedValues {
 =cut
 
 sub GetKohaAuthorisedValuesFromField {
-  my ($field, $subfield, $fwcode,$opac) = @_;
-  $fwcode='' unless $fwcode;
-  my %values;
-  my $dbh = C4::Context->dbh;
-  my $avcode = GetAuthValCodeFromField($field, $subfield, $fwcode);
-  if ($avcode) {  
-	my $sth = $dbh->prepare("select authorised_value, lib, lib_opac from authorised_values where category=? ");
-   	$sth->execute($avcode);
-	while ( my ($val, $lib, $lib_opac) = $sth->fetchrow_array ) { 
-		$values{$val} = ($opac && $lib_opac) ? $lib_opac : $lib;
-   	}
-   	return \%values;
-  } else {
-  	return undef;
-  }
+    my ( $field, $subfield, $fwcode, $opac ) = @_;
+    $fwcode = '' unless $fwcode;
+    my %values;
+    my $dbh = C4::Context->dbh;
+    my $avcode = GetAuthValCodeFromField( $field, $subfield, $fwcode );
+    if ($avcode) {
+        my $sth = $dbh->prepare("select authorised_value, lib, lib_opac from authorised_values where category=? ");
+        $sth->execute($avcode);
+        while ( my ( $val, $lib, $lib_opac ) = $sth->fetchrow_array ) {
+            $values{$val} = ( $opac && $lib_opac ) ? $lib_opac : $lib;
+        }
+        return \%values;
+    } else {
+        return undef;
+    }
 }
 
 =head2 display_marc_indicators
@@ -1232,9 +1203,9 @@ MARC field, replacing any blanks with '#'.
 =cut
 
 sub display_marc_indicators {
-    my $field = shift;
+    my $field      = shift;
     my $indicators = '';
-    if ($field->tag() >= 10) {
+    if ( $field->tag() >= 10 ) {
         $indicators = $field->indicator(1) . $field->indicator(2);
         $indicators =~ s/ /#/g;
     }
@@ -1242,24 +1213,23 @@ sub display_marc_indicators {
 }
 
 sub GetNormalizedUPC {
- my ($record,$marcflavour) = @_;
-    my (@fields,$upc);
+    my ( $record, $marcflavour ) = @_;
+    my ( @fields, $upc );
 
-    if ($marcflavour eq 'MARC21') {
+    if ( $marcflavour eq 'MARC21' ) {
         @fields = $record->field('024');
         foreach my $field (@fields) {
             my $indicator = $field->indicator(1);
-            my $upc = _normalize_match_point($field->subfield('a'));
-            if ($indicator == 1 and $upc ne '') {
+            my $upc       = _normalize_match_point( $field->subfield('a') );
+            if ( $indicator == 1 and $upc ne '' ) {
                 return $upc;
             }
         }
-    }
-    else { # assume unimarc if not marc21
+    } else {    # assume unimarc if not marc21
         @fields = $record->field('072');
         foreach my $field (@fields) {
-            my $upc = _normalize_match_point($field->subfield('a'));
-            if ($upc ne '') {
+            my $upc = _normalize_match_point( $field->subfield('a') );
+            if ( $upc ne '' ) {
                 return $upc;
             }
         }
@@ -1268,14 +1238,14 @@ sub GetNormalizedUPC {
 
 # Normalizes and returns the first valid ISBN found in the record
 sub GetNormalizedISBN {
-    my ($isbn,$record,$marcflavour) = @_;
+    my ( $isbn, $record, $marcflavour ) = @_;
     my @fields;
     if ($isbn) {
         return _isbn_cleanup($isbn);
     }
     return undef unless $record;
 
-    if ($marcflavour eq 'MARC21') {
+    if ( $marcflavour eq 'MARC21' ) {
         @fields = $record->field('020');
         foreach my $field (@fields) {
             $isbn = $field->subfield('a');
@@ -1285,8 +1255,7 @@ sub GetNormalizedISBN {
                 return undef;
             }
         }
-    }
-    else { # assume unimarc if not marc21
+    } else {    # assume unimarc if not marc21
         @fields = $record->field('010');
         foreach my $field (@fields) {
             my $isbn = $field->subfield('a');
@@ -1301,52 +1270,51 @@ sub GetNormalizedISBN {
 }
 
 sub GetNormalizedEAN {
-    my ($record,$marcflavour) = @_;
-    my (@fields,$ean);
+    my ( $record, $marcflavour ) = @_;
+    my ( @fields, $ean );
 
-    if ($marcflavour eq 'MARC21') {
+    if ( $marcflavour eq 'MARC21' ) {
         @fields = $record->field('024');
         foreach my $field (@fields) {
             my $indicator = $field->indicator(1);
-            $ean = _normalize_match_point($field->subfield('a'));
-            if ($indicator == 3 and $ean ne '') {
+            $ean = _normalize_match_point( $field->subfield('a') );
+            if ( $indicator == 3 and $ean ne '' ) {
                 return $ean;
             }
         }
-    }
-    else { # assume unimarc if not marc21
+    } else {    # assume unimarc if not marc21
         @fields = $record->field('073');
         foreach my $field (@fields) {
-            $ean = _normalize_match_point($field->subfield('a'));
-            if ($ean ne '') {
+            $ean = _normalize_match_point( $field->subfield('a') );
+            if ( $ean ne '' ) {
                 return $ean;
             }
         }
     }
 }
-sub GetNormalizedOCLCNumber {
-    my ($record,$marcflavour) = @_;
-    my (@fields,$oclc);
 
-    if ($marcflavour eq 'MARC21') {
+sub GetNormalizedOCLCNumber {
+    my ( $record, $marcflavour ) = @_;
+    my ( @fields, $oclc );
+
+    if ( $marcflavour eq 'MARC21' ) {
         @fields = $record->field('035');
         foreach my $field (@fields) {
             $oclc = $field->subfield('a');
-            if ($oclc =~ /OCoLC/) {
+            if ( $oclc =~ /OCoLC/ ) {
                 $oclc =~ s/\(OCoLC\)//;
                 return $oclc;
             } else {
                 return undef;
             }
         }
-    }
-    else { # TODO: add UNIMARC fields
+    } else {    # TODO: add UNIMARC fields
     }
 }
 
 sub _normalize_match_point {
     my $match_point = shift;
-    (my $normalized_match_point) = $match_point =~ /([\d-]*[X]*)/;
+    ( my $normalized_match_point ) = $match_point =~ /([\d-]*[X]*)/;
     $normalized_match_point =~ s/-//g;
 
     return $normalized_match_point;
@@ -1355,14 +1323,12 @@ sub _normalize_match_point {
 sub _isbn_cleanup ($) {
     my $normalized_isbn = shift;
     $normalized_isbn =~ s/-//g;
-    $normalized_isbn =~/([0-9x]{1,})/i;
+    $normalized_isbn =~ /([0-9x]{1,})/i;
     $normalized_isbn = $1;
-    if (
-        $normalized_isbn =~ /\b(\d{13})\b/ or
-        $normalized_isbn =~ /\b(\d{12})\b/i or
-        $normalized_isbn =~ /\b(\d{10})\b/ or
-        $normalized_isbn =~ /\b(\d{9}X)\b/i
-    ) { 
+    if (   $normalized_isbn =~ /\b(\d{13})\b/
+        or $normalized_isbn =~ /\b(\d{12})\b/i
+        or $normalized_isbn =~ /\b(\d{10})\b/
+        or $normalized_isbn =~ /\b(\d{9}X)\b/i ) {
         return $1;
     }
     return undef;

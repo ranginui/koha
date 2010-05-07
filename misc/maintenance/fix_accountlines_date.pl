@@ -19,7 +19,9 @@
 
 use strict;
 use warnings;
+
 BEGIN {
+
     # find Koha's Perl modules
     # test carefully before changing this
     use FindBin;
@@ -83,14 +85,14 @@ only if there is a problem and with the '-n' option.
 
 =cut
 
-my $mode = '';
+my $mode      = '';
 my $want_help = 0;
-my $limit = -1;
-my $done = 0;
-my $DEBUG = 0;
+my $limit     = -1;
+my $done      = 0;
+my $DEBUG     = 0;
 
 # Regexes for the two date formats
-our $US_DATE = '((0\d|1[0-2])\/([0-2]\d|3[01])\/(\d{4}))';
+our $US_DATE     = '((0\d|1[0-2])\/([0-2]\d|3[01])\/(\d{4}))';
 our $METRIC_DATE = '(([0-2]\d|3[01])\/(0\d|1[0-2])\/(\d{4}))';
 
 sub print_usage {
@@ -111,47 +113,46 @@ _USAGE_
 }
 
 my $result = GetOptions(
-    'm=s' => \$mode,
-    'd'  => \$DEBUG,
-    'n=i'  => \$limit, 
-    'help|h'   => \$want_help,
+    'm=s'    => \$mode,
+    'd'      => \$DEBUG,
+    'n=i'    => \$limit,
+    'help|h' => \$want_help,
 );
 
-if (not $result or $want_help or ($mode ne 'us' and $mode ne 'metric')) {
+if ( not $result or $want_help or ( $mode ne 'us' and $mode ne 'metric' ) ) {
     print_usage();
     exit 0;
 }
 
 our $dbh = C4::Context->dbh;
 $dbh->{AutoCommit} = 0;
-my $sth = $dbh->prepare("
+my $sth = $dbh->prepare( "
 SELECT borrowernumber, itemnumber, accountno, description
   FROM accountlines
   WHERE accounttype in ('FU', 'F', 'O', 'M')
-;");
+;" );
 $sth->execute();
 
-my $update_sth = $dbh->prepare('
+my $update_sth = $dbh->prepare( '
 UPDATE accountlines
   SET description = ?
   WHERE borrowernumber = ? AND itemnumber = ? AND accountno = ?
-;');
+;' );
 
-
-while (my $accountline = $sth->fetchrow_hashref) {
+while ( my $accountline = $sth->fetchrow_hashref ) {
     my $description = $accountline->{'description'};
-    my $updated = 0;
+    my $updated     = 0;
 
-    if ($mode eq 'us') {
-        if ($description =~ /$US_DATE/) { # mm/dd/yyyy
-            my $date = C4::Dates->new($1, 'us');
+    if ( $mode eq 'us' ) {
+        if ( $description =~ /$US_DATE/ ) {    # mm/dd/yyyy
+            my $date = C4::Dates->new( $1, 'us' );
             print "Converting $1 (us) to " . $date->output() . "\n" if $DEBUG;
             $description =~ s/$US_DATE/$date->output()/;
             $updated = 1;
         }
-    } elsif ($mode eq 'metric') {
-        if ($description =~ /$METRIC_DATE/) { # dd/mm/yyyy
-            my $date = C4::Dates->new($1, 'metric');
+    } elsif ( $mode eq 'metric' ) {
+        if ( $description =~ /$METRIC_DATE/ ) {    # dd/mm/yyyy
+            my $date = C4::Dates->new( $1, 'metric' );
             print "Converting $1 (metric) to " . $date->output() . "\n" if $DEBUG;
             $description =~ s/$METRIC_DATE/$date->output()/;
             $updated = 2;
@@ -159,11 +160,11 @@ while (my $accountline = $sth->fetchrow_hashref) {
     }
 
     print "Changing description from '" . $accountline->{'description'} . "' to '" . $description . "'\n" if $DEBUG;
-    $update_sth->execute($description, $accountline->{'borrowernumber'}, $accountline->{'itemnumber'}, $accountline->{'accountno'});
+    $update_sth->execute( $description, $accountline->{'borrowernumber'}, $accountline->{'itemnumber'}, $accountline->{'accountno'} );
 
     $done++;
 
-    last if ($done == $limit); # $done can't be -1, so this works
+    last if ( $done == $limit );    # $done can't be -1, so this works
 }
 
 $dbh->commit();

@@ -35,9 +35,8 @@ use C4::Csv;
 use utf8;
 my $query = new CGI;
 
-my ( $template, $borrowernumber, $cookie ) = get_template_and_user (
-    {
-        template_name   => "opac-downloadcart.tmpl",
+my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
+    {   template_name   => "opac-downloadcart.tmpl",
         query           => $query,
         type            => "opac",
         authnotrequired => 1,
@@ -46,46 +45,47 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user (
 );
 
 my $bib_list = $query->param('bib_list');
-my $format  = $query->param('format');
-my $dbh     = C4::Context->dbh;
+my $format   = $query->param('format');
+my $dbh      = C4::Context->dbh;
 
-if ($bib_list && $format) {
+if ( $bib_list && $format ) {
 
     my @bibs = split( /\//, $bib_list );
 
-    my $marcflavour         = C4::Context->preference('marcflavour');
+    my $marcflavour = C4::Context->preference('marcflavour');
     my $output;
 
-    # CSV   
-    if ($format =~ /^\d+$/) {
+    # CSV
+    if ( $format =~ /^\d+$/ ) {
 
-        $output = marc2csv(\@bibs, $format);
+        $output = marc2csv( \@bibs, $format );
 
-    # Other formats
+        # Other formats
     } else {
-	foreach my $biblio (@bibs) {
+        foreach my $biblio (@bibs) {
 
-	    my $record = GetMarcBiblio($biblio);
+            my $record = GetMarcBiblio($biblio);
 
-	    switch ($format) {
-		case "iso2709" { $output .= $record->as_usmarc(); }
-		case "ris"     { $output .= marc2ris($record); }
-		case "bibtex"  { $output .= marc2bibtex($record, $biblio); }
-	    }
-	}
+            switch ($format) {
+                case "iso2709" { $output .= $record->as_usmarc(); }
+                case "ris"     { $output .= marc2ris($record); }
+                case "bibtex"  { $output .= marc2bibtex( $record, $biblio ); }
+            }
+        }
     }
 
     # If it was a CSV export we change the format after the export so the file extension is fine
-    $format = "csv" if ($format =~ m/^\d+$/);
+    $format = "csv" if ( $format =~ m/^\d+$/ );
 
     print $query->header(
-	-type => 'application/octet-stream',
-	-'Content-Transfer-Encoding' => 'binary',
-	-attachment=>"cart.$format");
+        -type                        => 'application/octet-stream',
+        -'Content-Transfer-Encoding' => 'binary',
+        -attachment                  => "cart.$format"
+    );
     print $output;
 
-} else { 
-    $template->param(csv_profiles => GetCsvProfilesLoop());
-    $template->param(bib_list => $bib_list); 
+} else {
+    $template->param( csv_profiles => GetCsvProfilesLoop() );
+    $template->param( bib_list     => $bib_list );
     output_html_with_http_headers $query, $cookie, $template->output;
 }

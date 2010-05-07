@@ -18,6 +18,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use C4::Context;
 use C4::Scheduler;
@@ -39,8 +40,7 @@ my $base        = C4::Context->config('intranetdir');
 my $CONFIG_NAME = $ENV{'KOHA_CONF'};
 
 my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
-    {
-        template_name   => "tools/scheduler.tmpl",
+    {   template_name   => "tools/scheduler.tmpl",
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
@@ -55,27 +55,24 @@ my $id   = $input->param('id');
 if ( $mode eq 'job_add' ) {
 
     # Retrieving the date according to the dateformat syspref
-    my $c4date = C4::Dates->new($input->param('startdate'));
+    my $c4date = C4::Dates->new( $input->param('startdate') );
 
     # Formatting it for Schedule::At
-    my $startdate = join('', (split /-/, $c4date->output("iso")));
+    my $startdate = join( '', ( split /-/, $c4date->output("iso") ) );
 
     my $starttime = $input->param('starttime');
     my $recurring = $input->param('recurring');
     $starttime =~ s/\://g;
-    my $start  = $startdate . $starttime;
-    my $report = $input->param('report');
-    my $format = $input->param('format');
-    my $email  = $input->param('email');
-    my $command =
-        "EXPORT KOHA_CONF=\"$CONFIG_NAME\"; " . $base
-      . "/tools/runreport.pl $report $format $email";
+    my $start   = $startdate . $starttime;
+    my $report  = $input->param('report');
+    my $format  = $input->param('format');
+    my $email   = $input->param('email');
+    my $command = "EXPORT KOHA_CONF=\"$CONFIG_NAME\"; " . $base . "/tools/runreport.pl $report $format $email";
 
     if ($recurring) {
         my $frequency = $input->param('frequency');
         add_cron_job( $start, $command );
-    }
-    else {
+    } else {
         unless ( add_at_job( $start, $command ) ) {
             $template->param( job_add_failed => 1 );
         }

@@ -51,5 +51,4 @@ my $borrower_message = $input->param('borrower_message');
 
 AddMessage( $borrowernumber, $message_type, $borrower_message, $branchcode );
 
-print $input->redirect(
-    "/cgi-bin/koha/circ/circulation.pl?borrowernumber=$borrowernumber");
+print $input->redirect("/cgi-bin/koha/circ/circulation.pl?borrowernumber=$borrowernumber");

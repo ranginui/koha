@@ -17,7 +17,6 @@
 # with Koha; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-
 use strict;
 use warnings;
 
@@ -30,7 +29,6 @@ use C4::Koha;
 use C4::Letters;
 use C4::Serials;
 
-
 my $query = new CGI;
 my $op    = $query->param('op') || '';
 my $dbh   = C4::Context->dbh;
@@ -42,8 +40,7 @@ my $alerttype    = $query->param('alerttype') || '';
 my $biblionumber = $query->param('biblionumber');
 
 ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => "opac-alert-subscribe.tmpl",
+    {   template_name   => "opac-alert-subscribe.tmpl",
         query           => $query,
         type            => "opac",
         authnotrequired => 1,
@@ -54,26 +51,21 @@ my $biblionumber = $query->param('biblionumber');
 if ( $op eq 'alert_confirmed' ) {
     addalert( $loggedinuser, $alerttype, $externalid );
     if ( $alerttype eq 'issue' ) {
-        print $query->redirect(
-            "opac-serial-issues.pl?biblionumber=$biblionumber");
+        print $query->redirect("opac-serial-issues.pl?biblionumber=$biblionumber");
         exit;
     }
-}
-elsif ( $op eq 'cancel_confirmed' ) {
+} elsif ( $op eq 'cancel_confirmed' ) {
     my $alerts = getalert( $loggedinuser, $alerttype, $externalid );
-    warn "CANCEL confirmed : $loggedinuser, $alerttype, $externalid".Data::Dumper::Dumper( $alerts );
-    foreach (@$alerts)
-    {    # we are supposed to have only 1 result, but just in case...
+    warn "CANCEL confirmed : $loggedinuser, $alerttype, $externalid" . Data::Dumper::Dumper($alerts);
+    foreach (@$alerts) {    # we are supposed to have only 1 result, but just in case...
         delalert( $_->{alertid} );
     }
     if ( $alerttype eq 'issue' ) {
-        print $query->redirect(
-            "opac-serial-issues.pl?biblionumber=$biblionumber");
+        print $query->redirect("opac-serial-issues.pl?biblionumber=$biblionumber");
         exit;
     }
 
-}
-else {
+} else {
     if ( $alerttype eq 'issue' ) {    # alert for subscription issues
         my $subscription = &GetSubscription($externalid);
         $template->param(
@@ -83,8 +75,7 @@ else {
             externalid     => $externalid,
             biblionumber   => $biblionumber,
         );
-    }
-    else {
+    } else {
     }
 
 }

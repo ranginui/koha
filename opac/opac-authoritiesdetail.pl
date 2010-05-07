@@ -48,19 +48,17 @@ use CGI;
 use MARC::Record;
 use C4::Koha;
 
-
 my $query = new CGI;
 
 my $dbh = C4::Context->dbh;
 
 my $authid       = $query->param('authid');
-my $authtypecode = &GetAuthTypeCode( $authid );
+my $authtypecode = &GetAuthTypeCode($authid);
 my $tagslib      = &GetTagsLabels( 1, $authtypecode );
 
 # open template
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => "opac-authoritiesdetail.tmpl",
+    {   template_name   => "opac-authoritiesdetail.tmpl",
         query           => $query,
         type            => "opac",
         authnotrequired => 1,
@@ -69,40 +67,36 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
 );
 
 my $record;
-if (C4::Context->preference("AuthDisplayHierarchy")){
-  my $trees=BuildUnimarcHierarchies($authid);
-  my @trees = split /;/,$trees ;
-  push @trees,$trees unless (@trees);
-  my @loophierarchies;
-  foreach my $tree (@trees){
-    my @tree=split /,/,$tree;
-    push @tree,$tree unless (@tree);
-    my $cnt=0;
-    my @loophierarchy;
-    foreach my $element (@tree){
-      my $cell;
-      my $elementdata = GetAuthority($element);
-      $record= $elementdata if ($authid==$element);
-      push @loophierarchy, BuildUnimarcHierarchy($elementdata,"child".$cnt, $authid);
-      $cnt++;
+if ( C4::Context->preference("AuthDisplayHierarchy") ) {
+    my $trees = BuildUnimarcHierarchies($authid);
+    my @trees = split /;/, $trees;
+    push @trees, $trees unless (@trees);
+    my @loophierarchies;
+    foreach my $tree (@trees) {
+        my @tree = split /,/, $tree;
+        push @tree, $tree unless (@tree);
+        my $cnt = 0;
+        my @loophierarchy;
+        foreach my $element (@tree) {
+            my $cell;
+            my $elementdata = GetAuthority($element);
+            $record = $elementdata if ( $authid == $element );
+            push @loophierarchy, BuildUnimarcHierarchy( $elementdata, "child" . $cnt, $authid );
+            $cnt++;
+        }
+        push @loophierarchies, { 'loopelement' => \@loophierarchy };
     }
-    push @loophierarchies, { 'loopelement' =>\@loophierarchy};
-  }
-  $template->param(
-    'displayhierarchy' =>C4::Context->preference("AuthDisplayHierarchy"),
-    'loophierarchies' =>\@loophierarchies,
-  );
-}
-else {
-    $record = GetAuthority( $authid );
+    $template->param(
+        'displayhierarchy' => C4::Context->preference("AuthDisplayHierarchy"),
+        'loophierarchies'  => \@loophierarchies,
+    );
+} else {
+    $record = GetAuthority($authid);
 }
 my $count = CountUsage($authid);
 
 # find the marc field/subfield used in biblio by this authority
-my $sth =
-  $dbh->prepare(
-    "select distinct tagfield from marc_subfield_structure where authtypecode=?"
-  );
+my $sth = $dbh->prepare( "select distinct tagfield from marc_subfield_structure where authtypecode=?" );
 $sth->execute($authtypecode);
 my $biblio_fields;
 while ( my ($tagfield) = $sth->fetchrow ) {
@@ -117,7 +111,7 @@ my $tag;
 # loop through each tab 0 through 9
 # for (my $tabloop = 0; $tabloop<=10;$tabloop++) {
 # loop through each tag
-my @fields    = $record->fields();
+my @fields = $record->fields();
 foreach my $field (@fields) {
     my @subfields_data;
 
@@ -125,13 +119,12 @@ foreach my $field (@fields) {
     if ( $field->tag() < 10 ) {
         next if ( $tagslib->{ $field->tag() }->{'@'}->{hidden} );
         my %subfield_data;
-        $subfield_data{marc_lib}   = $tagslib->{ $field->tag() }->{'@'}->{lib};
-        $subfield_data{marc_value} = $field->data();
+        $subfield_data{marc_lib}      = $tagslib->{ $field->tag() }->{'@'}->{lib};
+        $subfield_data{marc_value}    = $field->data();
         $subfield_data{marc_subfield} = '@';
         $subfield_data{marc_tag}      = $field->tag();
         push( @subfields_data, \%subfield_data );
-    }
-    else {
+    } else {
         my @subf = $field->subfields;
 
         # loop through each subfield
@@ -139,13 +132,10 @@ foreach my $field (@fields) {
             $subf[$i][0] = "@" unless $subf[$i][0];
             next if ( $tagslib->{ $field->tag() }->{ $subf[$i][0] }->{hidden} );
             my %subfield_data;
-            $subfield_data{marc_lib} =
-              $tagslib->{ $field->tag() }->{ $subf[$i][0] }->{lib};
+            $subfield_data{marc_lib} = $tagslib->{ $field->tag() }->{ $subf[$i][0] }->{lib};
             if ( $tagslib->{ $field->tag() }->{ $subf[$i][0] }->{isurl} ) {
-                $subfield_data{marc_value} =
-                  "<a href=\"$subf[$i][1]\">$subf[$i][1]</a>";
-            }
-            else {
+                $subfield_data{marc_value} = "<a href=\"$subf[$i][1]\">$subf[$i][1]</a>";
+            } else {
                 $subfield_data{marc_value} = $subf[$i][1];
             }
             $subfield_data{marc_subfield} = $subf[$i][0];
@@ -155,11 +145,7 @@ foreach my $field (@fields) {
     }
     if ( $#subfields_data >= 0 ) {
         my %tag_data;
-        $tag_data{tag} =
-          $field->tag() 
-          . ' '
-          . C4::Koha::display_marc_indicators($field)
-          . ' - ' . $tagslib->{ $field->tag() }->{lib};
+        $tag_data{tag}      = $field->tag() . ' ' . C4::Koha::display_marc_indicators($field) . ' - ' . $tagslib->{ $field->tag() }->{lib};
         $tag_data{subfield} = \@subfields_data;
         push( @loop_data, \%tag_data );
     }

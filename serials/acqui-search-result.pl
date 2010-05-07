@@ -20,7 +20,6 @@
 # with Koha; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-
 =head1 NAME
 
 acqui-search-result.pl
@@ -38,7 +37,6 @@ acqui-search-result.pl
 
 =cut
 
-
 use strict;
 use warnings;
 use C4::Auth;
@@ -49,45 +47,49 @@ use C4::Acquisition;
 use C4::Dates qw/format_date/;
 use C4::Bookseller;
 
-my $query=new CGI;
-my ($template, $loggedinuser, $cookie)
-    = get_template_and_user({template_name => "serials/acqui-search-result.tmpl",
-                 query => $query,
-                 type => "intranet",
-                 authnotrequired => 0,
-                 flagsrequired => {serials => 1},
-                 debug => 1,
-                 });
+my $query = new CGI;
+my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
+    {   template_name   => "serials/acqui-search-result.tmpl",
+        query           => $query,
+        type            => "intranet",
+        authnotrequired => 0,
+        flagsrequired   => { serials => 1 },
+        debug           => 1,
+    }
+);
 
-my $supplier=$query->param('supplier');
+my $supplier  = $query->param('supplier');
 my @suppliers = GetBookSeller($supplier);
+
 #my $count = scalar @suppliers;
 
 #build result page
 my $loop_suppliers = [];
 for my $s (@suppliers) {
-    my $orders = GetPendingOrders($s->{'id'});
+    my $orders = GetPendingOrders( $s->{'id'} );
 
     my $loop_basket = [];
     for my $ord ( @{$orders} ) {
-        push @{$loop_basket}, {
-            basketno     => $ord->{'basketno'},
+        push @{$loop_basket},
+          { basketno     => $ord->{'basketno'},
             total        => $ord->{'count(*)'},
             authorisedby => $ord->{'authorisedby'},
-            creationdate => format_date($ord->{'creationdate'}),
-            closedate    => format_date($ord->{'closedate'}),
-        };
+            creationdate => format_date( $ord->{'creationdate'} ),
+            closedate    => format_date( $ord->{'closedate'} ),
+          };
     }
-    push @{$loop_suppliers}, {
-        loop_basket => $loop_basket,
+    push @{$loop_suppliers},
+      { loop_basket    => $loop_basket,
         aqbooksellerid => $s->{'id'},
-        name => $s->{'name'},
-        active => $s->{'active'},
-    };
+        name           => $s->{'name'},
+        active         => $s->{'active'},
+      };
 }
 
-$template->param(loop_suppliers => $loop_suppliers,
-                        supplier => $supplier,
-                        count => scalar @suppliers);
+$template->param(
+    loop_suppliers => $loop_suppliers,
+    supplier       => $supplier,
+    count          => scalar @suppliers
+);
 
 output_html_with_http_headers $query, $cookie, $template->output;

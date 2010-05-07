@@ -44,7 +44,6 @@ sub startup_90_add_item_get_callnumber : Test( startup => 13 ) {
     $self->{itemnumber} = $item_info->{itemnumber};
 }
 
-
 =head2 TEST METHODS
 
 standard test methods
@@ -60,32 +59,32 @@ column is not cleared).
 sub bug2466 : Test( 8 ) {
     my $self = shift;
 
-    my $item = C4::Items::GetItem($self->{itemnumber});
-    isa_ok($item, 'HASH', "item $self->{itemnumber} exists");
-   
-    my $item_marc = C4::Items::GetMarcItem($item->{biblionumber}, $self->{itemnumber});
-    isa_ok($item_marc, 'MARC::Record', "retrieved item MARC");
+    my $item = C4::Items::GetItem( $self->{itemnumber} );
+    isa_ok( $item, 'HASH', "item $self->{itemnumber} exists" );
 
-    cmp_ok($item->{itemcallnumber}, 'ne', '', "item call number is not blank");
+    my $item_marc = C4::Items::GetMarcItem( $item->{biblionumber}, $self->{itemnumber} );
+    isa_ok( $item_marc, 'MARC::Record', "retrieved item MARC" );
 
-    my ($callnum_tag, $callnum_subfield) = C4::Biblio::GetMarcFromKohaField('items.itemcallnumber', '');
-    cmp_ok($callnum_tag, '>', 0, "found tag for itemcallnumber");
+    cmp_ok( $item->{itemcallnumber}, 'ne', '', "item call number is not blank" );
+
+    my ( $callnum_tag, $callnum_subfield ) = C4::Biblio::GetMarcFromKohaField( 'items.itemcallnumber', '' );
+    cmp_ok( $callnum_tag, '>', 0, "found tag for itemcallnumber" );
 
     my $item_field = $item_marc->field($callnum_tag);
-    ok(defined($item_field), "retrieved MARC field for item");
+    ok( defined($item_field), "retrieved MARC field for item" );
 
-    $item_field->delete_subfield(code => $callnum_subfield);
+    $item_field->delete_subfield( code => $callnum_subfield );
 
     my $dbh = C4::Context->dbh;
-    my $item_from_marc = C4::Biblio::TransformMarcToKoha($dbh, $item_marc, '', 'items');
-    ok(not(exists($item_from_marc->{itemcallnumber})), "itemcallnumber subfield removed");
+    my $item_from_marc = C4::Biblio::TransformMarcToKoha( $dbh, $item_marc, '', 'items' );
+    ok( not( exists( $item_from_marc->{itemcallnumber} ) ), "itemcallnumber subfield removed" );
 
-    C4::Items::ModItemFromMarc($item_marc, $item->{biblionumber}, $self->{itemnumber});
+    C4::Items::ModItemFromMarc( $item_marc, $item->{biblionumber}, $self->{itemnumber} );
 
-    my $modified_item = C4::Items::GetItem($self->{itemnumber});
-    isa_ok($modified_item, 'HASH', "retrieved modified item");
+    my $modified_item = C4::Items::GetItem( $self->{itemnumber} );
+    isa_ok( $modified_item, 'HASH', "retrieved modified item" );
 
-    ok(not(defined($modified_item->{itemcallnumber})), "itemcallnumber is now undef");
+    ok( not( defined( $modified_item->{itemcallnumber} ) ), "itemcallnumber is now undef" );
 }
 
 1;

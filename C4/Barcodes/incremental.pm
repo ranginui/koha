@@ -24,7 +24,7 @@ use vars qw($VERSION @ISA);
 
 BEGIN {
     $VERSION = 0.01;
-    @ISA = qw(C4::Barcodes);
+    @ISA     = qw(C4::Barcodes);
 }
 
 1;

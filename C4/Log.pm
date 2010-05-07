@@ -2,7 +2,6 @@ package C4::Log;
 
 #package to deal with Logging Actions in DB
 
-
 # Copyright 2000-2002 Katipo Communications
 #
 # This file is part of Koha.
@@ -29,11 +28,12 @@ use C4::Dates qw(format_date);
 use vars qw($VERSION @ISA @EXPORT);
 
 BEGIN {
-	# set the version for version checking
-	$VERSION = 3.01;
-	require Exporter;
-	@ISA = qw(Exporter);
-	@EXPORT = qw(&logaction &GetLogStatus &displaylog &GetLogs);
+
+    # set the version for version checking
+    $VERSION = 3.01;
+    require Exporter;
+    @ISA    = qw(Exporter);
+    @EXPORT = qw(&logaction &GetLogStatus &displaylog &GetLogs);
 }
 
 =head1 NAME
@@ -65,17 +65,17 @@ number is set to 0, which is the same as the superlibrarian's number.
 
 #'
 sub logaction {
-    my ($modulename, $actionname, $objectnumber, $infos)=@_;
+    my ( $modulename, $actionname, $objectnumber, $infos ) = @_;
 
     # Get ID of logged in user.  if called from a batch job,
     # no user session exists and C4::Context->userenv() returns
     # the scalar '0'.
     my $userenv = C4::Context->userenv();
-    my $usernumber = (ref($userenv) eq 'HASH') ? $userenv->{'number'} : 0;
+    my $usernumber = ( ref($userenv) eq 'HASH' ) ? $userenv->{'number'} : 0;
 
     my $dbh = C4::Context->dbh;
-    my $sth=$dbh->prepare("Insert into action_logs (timestamp,user,module,action,object,info) values (now(),?,?,?,?,?)");
-    $sth->execute($usernumber,$modulename,$actionname,$objectnumber,$infos);
+    my $sth = $dbh->prepare("Insert into action_logs (timestamp,user,module,action,object,info) values (now(),?,?,?,?,?)");
+    $sth->execute( $usernumber, $modulename, $actionname, $objectnumber, $infos );
     $sth->finish;
 }
 
@@ -120,9 +120,9 @@ returns a table of hash containing who did what on which object at what time
 
 #'
 sub displaylog {
-  my ($modulename, @filters) = @_;
-    my $dbh = C4::Context->dbh;
-    my $strsth=qq|
+    my ( $modulename, @filters ) = @_;
+    my $dbh    = C4::Context->dbh;
+    my $strsth = qq|
 		SELECT action_logs.timestamp, action_logs.action, action_logs.info,
 				borrowers.cardnumber, borrowers.surname, borrowers.firstname, borrowers.userid,
         		biblio.biblionumber, biblio.title, biblio.author
@@ -131,15 +131,15 @@ sub displaylog {
         LEFT JOIN  biblio   ON action_logs.object=biblio.biblionumber
         WHERE action_logs.module = 'cataloguing' 
 	|;
-	my %filtermap = ();
-    if ($modulename eq "catalogue" or $modulename eq "acqui") {
-		%filtermap = (
-			  user => 'borrowers.surname',
-			 title => 'biblio.title',
-			author => 'biblio.author',
-		);
-    } elsif ($modulename eq "members") {
-        $strsth=qq|
+    my %filtermap = ();
+    if ( $modulename eq "catalogue" or $modulename eq "acqui" ) {
+        %filtermap = (
+            user   => 'borrowers.surname',
+            title  => 'biblio.title',
+            author => 'biblio.author',
+        );
+    } elsif ( $modulename eq "members" ) {
+        $strsth = qq|
 		SELECT action_logs.timestamp, action_logs.action, action_logs.info, 
         		borrowers.cardnumber, borrowers.surname, borrowers.firstname, borrowers.userid,
         		bor2.cardnumber, bor2.surname, bor2.firstname, bor2.userid
@@ -148,38 +148,38 @@ sub displaylog {
 		LEFT JOIN borrowers as bor2 ON action_logs.object=bor2.borrowernumber
         WHERE action_logs.module = 'members' 
 		|;
-		%filtermap = (
-		       user => 'borrowers.surname',
-		    surname => 'bor2.surname',
-		  firstname => 'bor2.firstname',
-		 cardnumber => 'bor2.cardnumber',
-		);
+        %filtermap = (
+            user       => 'borrowers.surname',
+            surname    => 'bor2.surname',
+            firstname  => 'bor2.firstname',
+            cardnumber => 'bor2.cardnumber',
+        );
     } else {
-		return 0;
-	}
+        return 0;
+    }
 
     if (@filters) {
-		foreach my $filter (@filters) {
-			my $tempname = $filter->{name}         or next;
-			(grep {/^$tempname$/} keys %filtermap) or next;
-			$filter->{value} =~ s/\*/%/g;
-			$strsth .= " AND " . $filtermap{$tempname} . " LIKE " . $filter->{value};
-		}
-	}
-    my $sth=$dbh->prepare($strsth);
+        foreach my $filter (@filters) {
+            my $tempname = $filter->{name} or next;
+            ( grep { /^$tempname$/ } keys %filtermap ) or next;
+            $filter->{value} =~ s/\*/%/g;
+            $strsth .= " AND " . $filtermap{$tempname} . " LIKE " . $filter->{value};
+        }
+    }
+    my $sth = $dbh->prepare($strsth);
     $sth->execute;
     my @results;
     my $count;
-    my $hilighted=1;
-    while (my $data = $sth->fetchrow_hashref){
-    	$data->{hilighted} = ($hilighted>0);
+    my $hilighted = 1;
+    while ( my $data = $sth->fetchrow_hashref ) {
+        $data->{hilighted} = ( $hilighted > 0 );
         $data->{info} =~ s/\n/<br\/>/g;
-        $data->{day} = format_date($data->{timestamp});
+        $data->{day} = format_date( $data->{timestamp} );
         push @results, $data;
         $count++;
         $hilighted = -$hilighted;
     }
-    return ($count, \@results);
+    return ( $count, \@results );
 }
 
 =item GetLogs
@@ -195,15 +195,15 @@ sub GetLogs {
     my $datefrom = shift;
     my $dateto   = shift;
     my $user     = shift;
-    my $modules   = shift;
+    my $modules  = shift;
     my $action   = shift;
     my $object   = shift;
     my $info     = shift;
-   
-    my $iso_datefrom = C4::Dates->new($datefrom,C4::Context->preference("dateformat"))->output('iso');
-    my $iso_dateto = C4::Dates->new($dateto,C4::Context->preference("dateformat"))->output('iso');
 
-    my $dbh = C4::Context->dbh;
+    my $iso_datefrom = C4::Dates->new( $datefrom, C4::Context->preference("dateformat") )->output('iso');
+    my $iso_dateto   = C4::Dates->new( $dateto,   C4::Context->preference("dateformat") )->output('iso');
+
+    my $dbh   = C4::Context->dbh;
     my $query = "
         SELECT *
         FROM   action_logs
@@ -211,37 +211,37 @@ sub GetLogs {
     ";
 
     my @parameters;
-    $query .= " AND DATE_FORMAT(timestamp, '%Y-%m-%d') >= \"".$iso_datefrom."\" " if $iso_datefrom;   #fix me - mysql specific
-    $query .= " AND DATE_FORMAT(timestamp, '%Y-%m-%d') <= \"".$iso_dateto."\" " if $iso_dateto;
-    if($user) {
-    	$query .= " AND user = ? ";
-    	push(@parameters,$user);
+    $query .= " AND DATE_FORMAT(timestamp, '%Y-%m-%d') >= \"" . $iso_datefrom . "\" " if $iso_datefrom;    #fix me - mysql specific
+    $query .= " AND DATE_FORMAT(timestamp, '%Y-%m-%d') <= \"" . $iso_dateto . "\" "   if $iso_dateto;
+    if ($user) {
+        $query .= " AND user = ? ";
+        push( @parameters, $user );
     }
-    if(scalar @$modules > 1 or @$modules[0] ne "") {
-    	$query .= " AND module IN (".join(",",map {"?"} @$modules).") ";
-	push(@parameters,@$modules);
+    if ( scalar @$modules > 1 or @$modules[0] ne "" ) {
+        $query .= " AND module IN (" . join( ",", map { "?" } @$modules ) . ") ";
+        push( @parameters, @$modules );
     }
-    if($action && scalar(@$action)) {
-    	$query .= " AND action IN (".join(",",map {"?"} @$action).") ";
-	push(@parameters,@$action);
+    if ( $action && scalar(@$action) ) {
+        $query .= " AND action IN (" . join( ",", map { "?" } @$action ) . ") ";
+        push( @parameters, @$action );
     }
-    if($object) {
-    	$query .= " AND object = ? ";
-	push(@parameters,$object);
+    if ($object) {
+        $query .= " AND object = ? ";
+        push( @parameters, $object );
     }
-    if($info) {
-    	$query .= " AND info LIKE ? ";
-	push(@parameters,"%".$info."%");
+    if ($info) {
+        $query .= " AND info LIKE ? ";
+        push( @parameters, "%" . $info . "%" );
     }
-   
-    warn $query, join("/",@parameters);
+
+    warn $query, join( "/", @parameters );
     my $sth = $dbh->prepare($query);
     $sth->execute(@parameters);
-    
+
     my @logs;
-    while( my $row = $sth->fetchrow_hashref ) {
-        $row->{$row->{module}} = 1;
-        push @logs , $row;
+    while ( my $row = $sth->fetchrow_hashref ) {
+        $row->{ $row->{module} } = 1;
+        push @logs, $row;
     }
     return \@logs;
 }

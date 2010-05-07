@@ -17,7 +17,6 @@
 # with Koha; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-
 =head1 NAME
 
 serial-issue.pl
@@ -51,61 +50,62 @@ use C4::Serials;
 use C4::Output;
 use C4::Context;
 
-
-my $query = new CGI;
-my $dbh = C4::Context->dbh;
+my $query      = new CGI;
+my $dbh        = C4::Context->dbh;
 my $selectview = $query->param('selectview');
 $selectview = C4::Context->preference("SubscriptionHistory") unless $selectview;
 
-my ($template, $loggedinuser, $cookie);
+my ( $template, $loggedinuser, $cookie );
 my $biblionumber = $query->param('biblionumber');
-if ($selectview eq "full"){
+if ( $selectview eq "full" ) {
     my $subscriptions = GetFullSubscriptionsFromBiblionumber($biblionumber);
 
-    my $title = $subscriptions->[0]{bibliotitle};
-    my $yearmin=$subscriptions->[0]{year};
-    my $yearmax=$subscriptions->[scalar(@$subscriptions)-1]{year};
+    my $title   = $subscriptions->[0]{bibliotitle};
+    my $yearmin = $subscriptions->[0]{year};
+    my $yearmax = $subscriptions->[ scalar(@$subscriptions) - 1 ]{year};
 
-    ($template, $loggedinuser, $cookie)
-     = get_template_and_user({template_name => "serials/serial-issues-full.tmpl",
-     query => $query,
-     type => "intranet",
-     authnotrequired => 0,
-	 flagsrequired => {serials => 1},
-     debug => 1,
-     });
+    ( $template, $loggedinuser, $cookie ) = get_template_and_user(
+        {   template_name   => "serials/serial-issues-full.tmpl",
+            query           => $query,
+            type            => "intranet",
+            authnotrequired => 0,
+            flagsrequired   => { serials => 1 },
+            debug           => 1,
+        }
+    );
 
- # replace CR by <br> in librarian note
- # $subscription->{opacnote} =~ s/\n/\<br\/\>/g;
+    # replace CR by <br> in librarian note
+    # $subscription->{opacnote} =~ s/\n/\<br\/\>/g;
 
     $template->param(
-        biblionumber => $query->param('biblionumber'),
-        years => $subscriptions,
-        yearmin => $yearmin,
-        yearmax =>$yearmax,
-        bibliotitle => $title,
-        suggestion => C4::Context->preference("suggestion"),
+        biblionumber   => $query->param('biblionumber'),
+        years          => $subscriptions,
+        yearmin        => $yearmin,
+        yearmax        => $yearmax,
+        bibliotitle    => $title,
+        suggestion     => C4::Context->preference("suggestion"),
         virtualshelves => C4::Context->preference("virtualshelves"),
     );
 
 } else {
     my $subscriptions = GetSubscriptionsFromBiblionumber($biblionumber);
-    ($template, $loggedinuser, $cookie)
-    = get_template_and_user({template_name => "serials/serial-issues.tmpl",
-        query => $query,
-        type => "intranet",
-        authnotrequired => 1,
-        debug => 1,
-     });
+    ( $template, $loggedinuser, $cookie ) = get_template_and_user(
+        {   template_name   => "serials/serial-issues.tmpl",
+            query           => $query,
+            type            => "intranet",
+            authnotrequired => 1,
+            debug           => 1,
+        }
+    );
 
- # replace CR by <br> in librarian note
- # $subscription->{opacnote} =~ s/\n/\<br\/\>/g;
+    # replace CR by <br> in librarian note
+    # $subscription->{opacnote} =~ s/\n/\<br\/\>/g;
 
     $template->param(
-        biblionumber => "".$query->param('biblionumber'),
+        biblionumber      => "" . $query->param('biblionumber'),
         subscription_LOOP => $subscriptions,
-        suggestion => "".C4::Context->preference("suggestion"),
-        virtualshelves => "".C4::Context->preference("virtualshelves"),
+        suggestion        => "" . C4::Context->preference("suggestion"),
+        virtualshelves    => "" . C4::Context->preference("virtualshelves"),
     );
 }
 output_html_with_http_headers $query, $cookie, $template->output;

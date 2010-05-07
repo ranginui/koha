@@ -1,6 +1,5 @@
 #!/usr/bin/perl
 
-
 # Copyright 2000-2002 Katipo Communications
 #
 # This file is part of Koha.
@@ -19,6 +18,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use C4::Auth;
 use CGI;
@@ -30,8 +30,9 @@ use C4::Log;
 use C4::Items;
 use C4::Branch;
 use C4::Debug;
+
 # use Data::Dumper;
-use C4::Search;		# enabled_staff_search_views
+use C4::Search;    # enabled_staff_search_views
 
 use vars qw($debug $cgi_debug);
 
@@ -41,11 +42,11 @@ plugin that shows stats
 
 =cut
 
-my $input    = new CGI;
+my $input = new CGI;
 
 $debug or $debug = $cgi_debug;
 my $do_it    = $input->param('do_it');
-my @modules   = $input->param("modules");
+my @modules  = $input->param("modules");
 my $user     = $input->param("user");
 my @action   = $input->param("action");
 my $object   = $input->param("object");
@@ -54,20 +55,19 @@ my $datefrom = $input->param("from");
 my $dateto   = $input->param("to");
 my $basename = $input->param("basename");
 my $mime     = $input->param("MIME");
+
 #my $del      = $input->param("sep");
-my $output   = $input->param("output") || "screen";
-my $src      = $input->param("src");    # this param allows us to be told where we were called from -fbcit
+my $output = $input->param("output") || "screen";
+my $src = $input->param("src");    # this param allows us to be told where we were called from -fbcit
 
 my $permissionrequired;
-if ($src){
-    $permissionrequired={ circulate => 'view_borrowers_logs' };
-}
-else {
-    $permissionrequired={ tools => 'view_system_logs' };
+if ($src) {
+    $permissionrequired = { circulate => 'view_borrowers_logs' };
+} else {
+    $permissionrequired = { tools => 'view_system_logs' };
 }
 my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
-    {
-        template_name   => "tools/viewlog.tmpl",
+    {   template_name   => "tools/viewlog.tmpl",
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
@@ -76,39 +76,41 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
     }
 );
 
-if ($src eq 'circ') {   # if we were called from circulation, use the circulation menu and get data to populate it -fbcit
+if ( $src eq 'circ' ) {    # if we were called from circulation, use the circulation menu and get data to populate it -fbcit
     use C4::Members;
     my $borrowernumber = $object;
-    my $data = GetMember('borrowernumber'=>$borrowernumber);
-    my ($picture, $dberror) = GetPatronImage($data->{'cardnumber'});
+    my $data = GetMember( 'borrowernumber' => $borrowernumber );
+    my ( $picture, $dberror ) = GetPatronImage( $data->{'cardnumber'} );
     $template->param( picture => 1 ) if $picture;
-    $template->param(   menu            => 1,
-                        title           => $data->{'title'},
-                        initials        => $data->{'initials'},
-                        surname         => $data->{'surname'},
-                        borrowernumber  => $borrowernumber,
-                        firstname       => $data->{'firstname'},
-                        cardnumber      => $data->{'cardnumber'},
-                        categorycode    => $data->{'categorycode'},
-                        categoryname	=> $data->{'description'},
-                        address         => $data->{'address'},
-                        address2        => $data->{'address2'},
-                        city            => $data->{'city'},
-			zipcode		=> $data->{'zipcode'},
-                        phone           => $data->{'phone'},
-                        phonepro        => $data->{'phonepro'},
-                        email           => $data->{'email'},
-                        branchcode      => $data->{'branchcode'},
-                        branchname		=> GetBranchName($data->{'branchcode'}),
+    $template->param(
+        menu           => 1,
+        title          => $data->{'title'},
+        initials       => $data->{'initials'},
+        surname        => $data->{'surname'},
+        borrowernumber => $borrowernumber,
+        firstname      => $data->{'firstname'},
+        cardnumber     => $data->{'cardnumber'},
+        categorycode   => $data->{'categorycode'},
+        categoryname   => $data->{'description'},
+        address        => $data->{'address'},
+        address2       => $data->{'address2'},
+        city           => $data->{'city'},
+        zipcode        => $data->{'zipcode'},
+        phone          => $data->{'phone'},
+        phonepro       => $data->{'phonepro'},
+        email          => $data->{'email'},
+        branchcode     => $data->{'branchcode'},
+        branchname     => GetBranchName( $data->{'branchcode'} ),
     );
 }
 
 $template->param(
-	DHTMLcalendar_dateformat => C4::Dates->DHTMLcalendar(),
-	              dateformat => C4::Dates->new()->format(),
-				       debug => $debug,
-	C4::Search::enabled_staff_search_views,
+    DHTMLcalendar_dateformat => C4::Dates->DHTMLcalendar(),
+    dateformat               => C4::Dates->new()->format(),
+    debug                    => $debug,
+    C4::Search::enabled_staff_search_views,
 );
+
 #
 #### This code was never really used - maybe some day some will fix it ###
 #my @mime = ( C4::Context->preference("MIME") );
@@ -135,24 +137,26 @@ $template->param(
 if ($do_it) {
 
     my @data;
-    my $results = GetLogs($datefrom,$dateto,$user,\@modules,\@action,$object,$info);
-    @data=@$results;
+    my $results = GetLogs( $datefrom, $dateto, $user, \@modules, \@action, $object, $info );
+    @data = @$results;
     my $total = scalar @data;
-    foreach my $result (@data){
-	if ($result->{'info'} eq 'item'||$result->{module} eq "CIRCULATION"){
-	    # get item information so we can create a working link
-        my $itemnumber=$result->{'object'};
-        $itemnumber=$result->{'info'} if ($result->{module} eq "CIRCULATION");
-	    my $item=GetItem($itemnumber);
-	    $result->{'biblionumber'}=$item->{'biblionumber'};
-	    $result->{'biblioitemnumber'}=$item->{'biblionumber'};		
-	}
+    foreach my $result (@data) {
+        if ( $result->{'info'} eq 'item' || $result->{module} eq "CIRCULATION" ) {
+
+            # get item information so we can create a working link
+            my $itemnumber = $result->{'object'};
+            $itemnumber = $result->{'info'} if ( $result->{module} eq "CIRCULATION" );
+            my $item = GetItem($itemnumber);
+            $result->{'biblionumber'}     = $item->{'biblionumber'};
+            $result->{'biblioitemnumber'} = $item->{'biblionumber'};
+        }
     }
-    
+
     if ( $output eq "screen" ) {
+
         # Printing results to screen
-        $template->param (
-			logview => 1,
+        $template->param(
+            logview  => 1,
             total    => $total,
             looprow  => \@data,
             do_it    => 1,
@@ -164,13 +168,15 @@ if ($do_it) {
             info     => $info,
             src      => $src,
         );
-	    #module   => 'fix this', #this seems unused in actual code
-	foreach my $module (@modules) {
-		$template->param($module  => 1);
-	}
+
+        #module   => 'fix this', #this seems unused in actual code
+        foreach my $module (@modules) {
+            $template->param( $module => 1 );
+        }
 
         output_html_with_http_headers $input, $cookie, $template->output;
     } else {
+
         # Printing to a csv file
         print $input->header(
             -type       => 'text/csv',
@@ -179,22 +185,24 @@ if ($do_it) {
         );
         my $sep = C4::Context->preference("delimiter");
         foreach my $line (@data) {
+
             #next unless $modules[0] eq "catalogue";
-		foreach (qw(timestamp firstname surname action info title author)) {
-			print $line->{$_} . $sep;
-		}	
-	}
+            foreach (qw(timestamp firstname surname action info title author)) {
+                print $line->{$_} . $sep;
+            }
+        }
     }
-	exit;
+    exit;
 } else {
+
     #my @values;
     #my %labels;
     #my %select;
-	#initialize some paramaters that might not be used in the template - it seems to evaluate EXPR even if a false TMPL_IF
-	$template->param(
-        	total => 0,
-		module => "",
-		info => ""
-	);
-	output_html_with_http_headers $input, $cookie, $template->output;
+    #initialize some paramaters that might not be used in the template - it seems to evaluate EXPR even if a false TMPL_IF
+    $template->param(
+        total  => 0,
+        module => "",
+        info   => ""
+    );
+    output_html_with_http_headers $input, $cookie, $template->output;
 }

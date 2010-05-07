@@ -17,7 +17,6 @@
 # with Koha; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-
 =head1 NAME
 
 serials-home.pl
@@ -48,22 +47,21 @@ use C4::Serials;
 use C4::Output;
 use C4::Context;
 
-my $query         = new CGI;
-my $title         = $query->param('title_filter');
-my $ISSN          = $query->param('ISSN_filter');
-my $routing       = $query->param('routing')||C4::Context->preference("RoutingSerials");
-my $searched      = $query->param('searched');
-my $biblionumber  = $query->param('biblionumber');
+my $query        = new CGI;
+my $title        = $query->param('title_filter');
+my $ISSN         = $query->param('ISSN_filter');
+my $routing      = $query->param('routing') || C4::Context->preference("RoutingSerials");
+my $searched     = $query->param('searched');
+my $biblionumber = $query->param('biblionumber');
 
-my @serialseqs = $query->param('serialseq');
-my @planneddates = $query->param('planneddate');
+my @serialseqs     = $query->param('serialseq');
+my @planneddates   = $query->param('planneddate');
 my @publisheddates = $query->param('publisheddate');
-my @status = $query->param('status');
-my @notes = $query->param('notes');
+my @status         = $query->param('status');
+my @notes          = $query->param('notes');
 
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => "serials/serials-home.tmpl",
+    {   template_name   => "serials/serials-home.tmpl",
         query           => $query,
         type            => "intranet",
         authnotrequired => 0,
@@ -72,32 +70,32 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
     }
 );
 
-if (@serialseqs){
-  my @information;
-  my $index;
-  foreach my $seq (@serialseqs){
-    if ($seq){
-      ### FIXME  This limitation that a serial must be given a title may not be very efficient for some library who do not update serials titles.
-      push @information,
-        { serialseq=>$seq,
-          publisheddate=>$publisheddates[$index],
-          planneddate=>$planneddates[$index],
-          notes=>$notes[$index],
-          status=>$status[$index]
+if (@serialseqs) {
+    my @information;
+    my $index;
+    foreach my $seq (@serialseqs) {
+        if ($seq) {
+            ### FIXME  This limitation that a serial must be given a title may not be very efficient for some library who do not update serials titles.
+            push @information,
+              { serialseq     => $seq,
+                publisheddate => $publisheddates[$index],
+                planneddate   => $planneddates[$index],
+                notes         => $notes[$index],
+                status        => $status[$index]
+              };
         }
+        $index++;
     }
-    $index++;
-  }
-  $template->param('information'=>\@information);
+    $template->param( 'information' => \@information );
 }
 my @subscriptions;
-if ($searched){
+if ($searched) {
     @subscriptions = GetSubscriptions( $title, $ISSN, $biblionumber );
 }
 
 # to toggle between create or edit routing list options
 if ($routing) {
-    for my $subscription ( @subscriptions) {
+    for my $subscription (@subscriptions) {
         $subscription->{routingedit} = check_routing( $subscription->{subscriptionid} );
     }
 }

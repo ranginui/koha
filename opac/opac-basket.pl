@@ -15,7 +15,6 @@
 # Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA  02111-1307 USA
 
-
 use strict;
 use warnings;
 use CGI;
@@ -27,9 +26,8 @@ use C4::Output;
 
 my $query = new CGI;
 
-my ( $template, $borrowernumber, $cookie ) = get_template_and_user (
-    {
-        template_name   => "opac-basket.tmpl",
+my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
+    {   template_name   => "opac-basket.tmpl",
         query           => $query,
         type            => "opac",
         authnotrequired => 1,
@@ -47,17 +45,16 @@ if ($print_basket) { $template->param( print_basket => 1 ); }
 my @bibs = split( /\//, $bib_list );
 my @results;
 
-my $num = 1;
+my $num         = 1;
 my $marcflavour = C4::Context->preference('marcflavour');
-if (C4::Context->preference('TagsEnabled')) {
-	$template->param(TagsEnabled => 1);
-	foreach (qw(TagsShowOnList TagsInputOnList)) {
-		C4::Context->preference($_) and $template->param($_ => 1);
-	}
+if ( C4::Context->preference('TagsEnabled') ) {
+    $template->param( TagsEnabled => 1 );
+    foreach (qw(TagsShowOnList TagsInputOnList)) {
+        C4::Context->preference($_) and $template->param( $_ => 1 );
+    }
 }
 
-
-foreach my $biblionumber ( @bibs ) {
+foreach my $biblionumber (@bibs) {
     $template->param( biblionumber => $biblionumber );
 
     my $dat              = &GetBiblioData($biblionumber);
@@ -65,23 +62,23 @@ foreach my $biblionumber ( @bibs ) {
     my $marcnotesarray   = GetMarcNotes( $record, $marcflavour );
     my $marcauthorsarray = GetMarcAuthors( $record, $marcflavour );
     my $marcsubjctsarray = GetMarcSubjects( $record, $marcflavour );
-    my $marcseriesarray  = GetMarcSeries  ($record,$marcflavour);
-    my $marcurlsarray    = GetMarcUrls    ($record,$marcflavour);
+    my $marcseriesarray  = GetMarcSeries( $record, $marcflavour );
+    my $marcurlsarray    = GetMarcUrls( $record, $marcflavour );
     my @items            = &GetItemsInfo( $biblionumber, 'opac' );
-    my $subtitle         = GetRecordValue('subtitle', $record, GetFrameworkCode($biblionumber));
+    my $subtitle         = GetRecordValue( 'subtitle', $record, GetFrameworkCode($biblionumber) );
 
     my $hasauthors = 0;
-    if($dat->{'author'} || @$marcauthorsarray) {
-      $hasauthors = 1;
+    if ( $dat->{'author'} || @$marcauthorsarray ) {
+        $hasauthors = 1;
     }
-    my $collections =  GetKohaAuthorisedValues('items.ccode',$dat->{'frameworkcode'}, 'opac');
+    my $collections = GetKohaAuthorisedValues( 'items.ccode', $dat->{'frameworkcode'}, 'opac' );
 
-	# COinS format FIXME: for books Only
-        my $coins_format;
-        my $fmt = substr $record->leader(), 6,2;
-        my $fmts;
-        $fmts->{'am'} = 'book';
-        $dat->{ocoins_format} = $fmts->{$fmt};
+    # COinS format FIXME: for books Only
+    my $coins_format;
+    my $fmt = substr $record->leader(), 6, 2;
+    my $fmts;
+    $fmts->{'am'} = 'book';
+    $dat->{ocoins_format} = $fmts->{$fmt};
 
     if ( $num % 2 == 1 ) {
         $dat->{'even'} = 1;
@@ -89,22 +86,20 @@ foreach my $biblionumber ( @bibs ) {
 
     $num++;
     $dat->{biblionumber} = $biblionumber;
-    $dat->{ITEM_RESULTS}   = \@items;
-    $dat->{MARCNOTES}      = $marcnotesarray;
-    $dat->{MARCSUBJCTS}    = $marcsubjctsarray;
-    $dat->{MARCAUTHORS}    = $marcauthorsarray;
-    $dat->{MARCSERIES}  = $marcseriesarray;
-    $dat->{MARCURLS}    = $marcurlsarray;
-    $dat->{HASAUTHORS}  = $hasauthors;
-    $dat->{subtitle} = $subtitle;
+    $dat->{ITEM_RESULTS} = \@items;
+    $dat->{MARCNOTES}    = $marcnotesarray;
+    $dat->{MARCSUBJCTS}  = $marcsubjctsarray;
+    $dat->{MARCAUTHORS}  = $marcauthorsarray;
+    $dat->{MARCSERIES}   = $marcseriesarray;
+    $dat->{MARCURLS}     = $marcurlsarray;
+    $dat->{HASAUTHORS}   = $hasauthors;
+    $dat->{subtitle}     = $subtitle;
 
     if ( C4::Context->preference("BiblioDefaultView") eq "normal" ) {
         $dat->{dest} = "opac-detail.pl";
-    }
-    elsif ( C4::Context->preference("BiblioDefaultView") eq "marc" ) {
+    } elsif ( C4::Context->preference("BiblioDefaultView") eq "marc" ) {
         $dat->{dest} = "opac-MARCdetail.pl";
-    }
-    else {
+    } else {
         $dat->{dest} = "opac-ISBDdetail.pl";
     }
     push( @results, $dat );
@@ -115,7 +110,7 @@ my $resultsarray = \@results;
 # my $itemsarray=\@items;
 
 $template->param(
-    bib_list => $bib_list,
+    bib_list       => $bib_list,
     BIBLIO_RESULTS => $resultsarray,
 );
 

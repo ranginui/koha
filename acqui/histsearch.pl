@@ -15,7 +15,6 @@
 # Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA  02111-1307 USA
 
-
 =head1 NAME
 
 histsearch.pl
@@ -48,6 +47,7 @@ to filter on ended date.
 =cut
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use CGI;
 use C4::Auth;    # get_template_and_user
@@ -57,16 +57,15 @@ use C4::Dates;
 use C4::Debug;
 
 my $input          = new CGI;
-my $title          = $input->param( 'title');
+my $title          = $input->param('title');
 my $author         = $input->param('author');
-my $name           = $input->param( 'name' );
-my $from_placed_on = C4::Dates->new($input->param('from'));
-my $to_placed_on   = C4::Dates->new($input->param(  'to'));
+my $name           = $input->param('name');
+my $from_placed_on = C4::Dates->new( $input->param('from') );
+my $to_placed_on   = C4::Dates->new( $input->param('to') );
 
 my $dbh = C4::Context->dbh;
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => "acqui/histsearch.tmpl",
+    {   template_name   => "acqui/histsearch.tmpl",
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
@@ -75,25 +74,24 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
     }
 );
 
-my $from_iso = C4::Dates->new($input->param('from'))->output('iso') if $input->param('from');
-my   $to_iso =   C4::Dates->new($input->param('to'))->output('iso') if $input->param('iso');
-my ( $order_loop, $total_qty, $total_price, $total_qtyreceived ) =
-  &GetHistory( $title, $author, $name, $from_iso, $to_iso );
-  
+my $from_iso = C4::Dates->new( $input->param('from') )->output('iso') if $input->param('from');
+my $to_iso   = C4::Dates->new( $input->param('to') )->output('iso')   if $input->param('iso');
+my ( $order_loop, $total_qty, $total_price, $total_qtyreceived ) = &GetHistory( $title, $author, $name, $from_iso, $to_iso );
+
 $template->param(
-    suggestions_loop        => $order_loop,
-    total_qty               => $total_qty,
-    total_qtyreceived       => $total_qtyreceived,
-    total_price             => sprintf( "%.2f", $total_price ),
-    numresults              => scalar(@$order_loop),
-    title                   => $title,
-    author                  => $author,
-    name                    => $name,
-    from_placed_on          => $from_placed_on->output('syspref'),
-    to_placed_on            =>   $to_placed_on->output('syspref'),
-    DHTMLcalendar_dateformat=> C4::Dates->DHTMLcalendar(),
-	dateformat              => C4::Dates->new()->format(),
-    debug                   => $debug || $input->param('debug') || 0,
+    suggestions_loop         => $order_loop,
+    total_qty                => $total_qty,
+    total_qtyreceived        => $total_qtyreceived,
+    total_price              => sprintf( "%.2f", $total_price ),
+    numresults               => scalar(@$order_loop),
+    title                    => $title,
+    author                   => $author,
+    name                     => $name,
+    from_placed_on           => $from_placed_on->output('syspref'),
+    to_placed_on             => $to_placed_on->output('syspref'),
+    DHTMLcalendar_dateformat => C4::Dates->DHTMLcalendar(),
+    dateformat               => C4::Dates->new()->format(),
+    debug                    => $debug || $input->param('debug') || 0,
 );
 
 output_html_with_http_headers $input, $cookie, $template->output;

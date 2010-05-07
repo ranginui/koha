@@ -20,6 +20,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use C4::Auth;
 use C4::Output;
@@ -29,39 +30,38 @@ use C4::Branch;
 use C4::Letters;
 
 use C4::Dates qw/format_date/;
-my $input=new CGI;
-
+my $input = new CGI;
 
 my $borrowernumber = $input->param('borrowernumber');
+
 #get borrower details
-my $borrower = GetMember(borrowernumber => $borrowernumber);
+my $borrower = GetMember( borrowernumber => $borrowernumber );
 
-my ($template, $loggedinuser, $cookie)
-= get_template_and_user({template_name => "members/notices.tmpl",
-				query => $input,
-				type => "intranet",
-				authnotrequired => 0,
-				flagsrequired => {borrowers => 1},
-				debug => 1,
-				});
+my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
+    {   template_name   => "members/notices.tmpl",
+        query           => $input,
+        type            => "intranet",
+        authnotrequired => 0,
+        flagsrequired   => { borrowers => 1 },
+        debug           => 1,
+    }
+);
 
-$template->param( $borrower );
-my ($picture, $dberror) = GetPatronImage($borrower->{'cardnumber'});
+$template->param($borrower);
+my ( $picture, $dberror ) = GetPatronImage( $borrower->{'cardnumber'} );
 $template->param( picture => 1 ) if $picture;
 
 # Getting the messages
-my $queued_messages = C4::Letters::GetQueuedMessages({borrowernumber => $borrowernumber});
+my $queued_messages = C4::Letters::GetQueuedMessages( { borrowernumber => $borrowernumber } );
 
-warn Data::Dumper::Dumper( $queued_messages );
+warn Data::Dumper::Dumper($queued_messages);
 $template->param(
-			QUEUED_MESSAGES 	=> $queued_messages,
- 			BORROWER_INFO         	=> [ $borrower ],
-                        firstname 		=> $borrower->{'firstname'},
-			surname 		=> $borrower->{'surname'},
-			borrowernumber 		=> $borrowernumber,
-			sentnotices 		=> 1
-		);
+    QUEUED_MESSAGES => $queued_messages,
+    BORROWER_INFO   => [$borrower],
+    firstname       => $borrower->{'firstname'},
+    surname         => $borrower->{'surname'},
+    borrowernumber  => $borrowernumber,
+    sentnotices     => 1
+);
 output_html_with_http_headers $input, $cookie, $template->output;
-
-
 

@@ -15,7 +15,6 @@
 # Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA  02111-1307 USA
 
-
 =head1 NAME
 
 newordersuggestion.pl
@@ -87,6 +86,7 @@ can be equal to
 =cut
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 
 use CGI;
@@ -107,14 +107,13 @@ my $publishercode   = $input->param('publishercode');
 my $op              = $input->param('op');
 my $suggestionid    = $input->param('suggestionid');
 my $duplicateNumber = $input->param('duplicateNumber');
-my $uncertainprice = $input->param('uncertainprice');
+my $uncertainprice  = $input->param('uncertainprice');
 
 $op = 'else' unless $op;
 
 my $dbh = C4::Context->dbh;
 my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
-    {
-        template_name   => "acqui/newordersuggestion.tmpl",
+    {   template_name   => "acqui/newordersuggestion.tmpl",
         type            => "intranet",
         query           => $input,
         authnotrequired => 1,
@@ -127,20 +126,21 @@ if ( $op eq 'connectDuplicate' ) {
 }
 
 # getting all suggestions.
-my $suggestions_loop =
-        &SearchSuggestion( 
-                { managedby 	=> $borrowernumber, 
-                author		  	=> $author, 
-                title			=> $title, 
-                publishercode	=> $publishercode,
-                status		    => 'ACCEPTED'});
+my $suggestions_loop = &SearchSuggestion(
+    {   managedby     => $borrowernumber,
+        author        => $author,
+        title         => $title,
+        publishercode => $publishercode,
+        status        => 'ACCEPTED'
+    }
+);
 my $vendor = GetBookSellerFromId($supplierid);
 $template->param(
-    suggestions_loop        => $suggestions_loop,
-    basketno                => $basketno,
-    supplierid              => $supplierid,
-    name					=> $vendor->{'name'},
-    "op_$op"                => 1,
+    suggestions_loop => $suggestions_loop,
+    basketno         => $basketno,
+    supplierid       => $supplierid,
+    name             => $vendor->{'name'},
+    "op_$op"         => 1,
 );
 
 output_html_with_http_headers $input, $cookie, $template->output;

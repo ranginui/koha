@@ -17,7 +17,6 @@
 # with Koha; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-
 use strict;
 use warnings;
 use CGI;
@@ -27,8 +26,7 @@ use C4::Output;
 my $query = new CGI;
 
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => "serials/acqui-search.tmpl",
+    {   template_name   => "serials/acqui-search.tmpl",
         query           => $query,
         type            => "intranet",
         authnotrequired => 0,

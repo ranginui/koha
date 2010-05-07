@@ -64,8 +64,8 @@ unless ($hours) {
 }
 
 my $query = "SELECT itemnumber FROM items WHERE location = 'CART' AND TIMESTAMPDIFF(HOUR, items.timestamp, NOW() ) > ?";
-my $sth = C4::Context->dbh->prepare($query);
+my $sth   = C4::Context->dbh->prepare($query);
 $sth->execute($hours);
-while (my ($itemnumber) = $sth->fetchrow_array) {
+while ( my ($itemnumber) = $sth->fetchrow_array ) {
     CartToShelf($itemnumber);
 }

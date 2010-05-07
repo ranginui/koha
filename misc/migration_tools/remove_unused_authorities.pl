@@ -27,12 +27,12 @@ use C4::Context;
 use C4::AuthoritiesMarc;
 use Getopt::Long;
 
-my ($test,@authtypes);
+my ( $test, @authtypes );
 my $want_help = 0;
 GetOptions(
-    'aut|authtypecode:s'    => \@authtypes,
-    't'    => \$test,
-    'h|help'        => \$want_help
+    'aut|authtypecode:s' => \@authtypes,
+    't'                  => \$test,
+    'h|help'             => \$want_help
 );
 
 if ($want_help) {
@@ -40,33 +40,32 @@ if ($want_help) {
     exit 0;
 }
 
-my $dbh=C4::Context->dbh;
+my $dbh = C4::Context->dbh;
 @authtypes or @authtypes = qw( NC );
-my $thresholdmin=0;
-my $thresholdmax=0;
+my $thresholdmin = 0;
+my $thresholdmax = 0;
 my @results;
+
 # prepare the request to retrieve all authorities of the requested types
-my $rqselect = $dbh->prepare(
-    qq{SELECT * from auth_header where authtypecode IN (}
-    . join(",",map{$dbh->quote($_)}@authtypes)
-    . ")"
-);
-$|=1;
+my $rqselect = $dbh->prepare( qq{SELECT * from auth_header where authtypecode IN (} . join( ",", map { $dbh->quote($_) } @authtypes ) . ")" );
+$| = 1;
 
 $rqselect->execute;
-my $counter=0;
-my $totdeleted=0;
-my $totundeleted=0;
-while (my $data=$rqselect->fetchrow_hashref){
+my $counter      = 0;
+my $totdeleted   = 0;
+my $totundeleted = 0;
+while ( my $data = $rqselect->fetchrow_hashref ) {
     my $query;
-    $query= "an=".$data->{'authid'};
+    $query = "an=" . $data->{'authid'};
+
     # search for biblios mapped
-    my ($err,$res,$used) = C4::Search::SimpleSearch($query,0,10);
+    my ( $err, $res, $used ) = C4::Search::SimpleSearch( $query, 0, 10 );
     print ".";
     print "$counter\n" unless $counter++ % 100;
+
     # if found, delete, otherwise, just count
-    if ($used>=$thresholdmin and $used<=$thresholdmax){
-        DelAuthority($data->{'authid'}) unless $test;
+    if ( $used >= $thresholdmin and $used <= $thresholdmax ) {
+        DelAuthority( $data->{'authid'} ) unless $test;
         $totdeleted++;
     } else {
         $totundeleted++;
@@ -74,7 +73,6 @@ while (my $data=$rqselect->fetchrow_hashref){
 }
 
 print "$counter authorities parsed, $totdeleted deleted and $totundeleted unchanged because used\n";
-
 
 sub print_usage {
     print <<_USAGE_;

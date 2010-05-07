@@ -20,6 +20,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use CGI;
 use C4::Auth;
@@ -41,66 +42,70 @@ my $query = CGI->new;
 my $biblionumber = $query->param('biblionumber');
 
 # The barcode of the item to move
-my $barcode	 = $query->param('barcode');
+my $barcode = $query->param('barcode');
 
-my ($template, $loggedinuser, $cookie)
-    = get_template_and_user({template_name => "cataloguing/moveitem.tmpl",
-                 query => $query,
-                 type => "intranet",
-                 authnotrequired => 0,
-                 flagsrequired => {editcatalogue => 'edit_catalogue'},
-                 debug => 1,
-                 });
-
-
+my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
+    {   template_name   => "cataloguing/moveitem.tmpl",
+        query           => $query,
+        type            => "intranet",
+        authnotrequired => 0,
+        flagsrequired   => { editcatalogue => 'edit_catalogue' },
+        debug           => 1,
+    }
+);
 
 my $biblio = GetBiblioData($biblionumber);
-$template->param(bibliotitle => $biblio->{'title'});
-$template->param(biblionumber => $biblionumber);
+$template->param( bibliotitle  => $biblio->{'title'} );
+$template->param( biblionumber => $biblionumber );
 
 # If we already have the barcode of the item to move and the biblionumber to move the item to
-if ($barcode && $biblionumber) { 
-    
+if ( $barcode && $biblionumber ) {
+
     # We get his itemnumber
     my $itemnumber = GetItemnumberFromBarcode($barcode);
 
     if ($itemnumber) {
-    	# And then, we get the item
-	my $item = GetItem($itemnumber);
 
-	if ($item) {
+        # And then, we get the item
+        my $item = GetItem($itemnumber);
 
-	    my $results = GetBiblioFromItemNumber($itemnumber, $barcode);
-	    my $frombiblionumber = $results->{'biblionumber'};
-	   
-	    my $moveresult = MoveItemFromBiblio($itemnumber, $frombiblionumber, $biblionumber); 
-	    if ($moveresult) { 
-		$template->param(success => 1);
-	    } else {
-		$template->param(error => 1,
-				 errornonewitem => 1); 
-	    }
+        if ($item) {
 
+            my $results = GetBiblioFromItemNumber( $itemnumber, $barcode );
+            my $frombiblionumber = $results->{'biblionumber'};
 
-	} else {
-	    $template->param(error => 1,
-	                     errornoitem => 1);
-	}
+            my $moveresult = MoveItemFromBiblio( $itemnumber, $frombiblionumber, $biblionumber );
+            if ($moveresult) {
+                $template->param( success => 1 );
+            } else {
+                $template->param(
+                    error          => 1,
+                    errornonewitem => 1
+                );
+            }
+
+        } else {
+            $template->param(
+                error       => 1,
+                errornoitem => 1
+            );
+        }
     } else {
-	    $template->param(error => 1,
-			     errornoitemnumber => 1);
+        $template->param(
+            error             => 1,
+            errornoitemnumber => 1
+        );
 
     }
     $template->param(
-			barcode => $barcode,  
-			itemnumber => $itemnumber,
-		    );
+        barcode    => $barcode,
+        itemnumber => $itemnumber,
+    );
 
 } else {
-    $template->param(missingparameter => 1);
-    if (!$barcode)      { $template->param(missingbarcode      => 1); }
-    if (!$biblionumber) { $template->param(missingbiblionumber => 1); }
+    $template->param( missingparameter => 1 );
+    if ( !$barcode )      { $template->param( missingbarcode      => 1 ); }
+    if ( !$biblionumber ) { $template->param( missingbiblionumber => 1 ); }
 }
-
 
 output_html_with_http_headers $query, $cookie, $template->output;

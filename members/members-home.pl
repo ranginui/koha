@@ -26,32 +26,31 @@ use C4::Members;
 use C4::Branch;
 use C4::Category;
 
-my $query = new CGI;
+my $query       = new CGI;
 my $quicksearch = $query->param('quicksearch');
-my $branch = $query->param('branchcode');
+my $branch      = $query->param('branchcode');
 my $template_name;
 
-my ($template, $loggedinuser, $cookie)
-    = get_template_and_user({template_name => "members/member.tmpl",
-                 query => $query,
-                 type => "intranet",
-                 authnotrequired => 0,
-                 flagsrequired => {borrowers => 1},
-                 debug => 1,
-                 });
+my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
+    {   template_name   => "members/member.tmpl",
+        query           => $query,
+        type            => "intranet",
+        authnotrequired => 0,
+        flagsrequired   => { borrowers => 1 },
+        debug           => 1,
+    }
+);
 
-my @letters = map { {letter => $_} } ( 'A' .. 'Z');
+my @letters = map { { letter => $_ } } ( 'A' .. 'Z' );
 $template->param( letters => \@letters );
 
-my @categories=C4::Category->all;
+my @categories = C4::Category->all;
 $template->param(
-    branchloop=>(defined $branch?GetBranchesLoop($branch):GetBranchesLoop()),
-	categoryloop=>\@categories,
+    branchloop => ( defined $branch ? GetBranchesLoop($branch) : GetBranchesLoop() ),
+    categoryloop => \@categories,
 );
-$template->param( 
-        "AddPatronLists_".C4::Context->preference("AddPatronLists")=> "1",
-            );
-my @letters = map { {letter => $_} } ( 'A' .. 'Z');
+$template->param( "AddPatronLists_" . C4::Context->preference("AddPatronLists") => "1", );
+my @letters = map { { letter => $_ } } ( 'A' .. 'Z' );
 $template->param( letters => \@letters );
 
 output_html_with_http_headers $query, $cookie, $template->output;

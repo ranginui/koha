@@ -19,7 +19,9 @@
 
 use strict;
 use warnings;
+
 BEGIN {
+
     # find Koha's Perl modules
     # test carefully before changing this
     use FindBin;
@@ -28,12 +30,13 @@ BEGIN {
 use C4::Letters;
 use Getopt::Long;
 
-my $help = 0;
+my $help    = 0;
 my $verbose = 0;
 
-GetOptions( 'h'    => \$help,
-            'v'    => \$verbose,
-       );
+GetOptions(
+    'h' => \$help,
+    'v' => \$verbose,
+);
 my $usage = << 'ENDUSAGE';
 
 This script processes the message queue in the message_queue database

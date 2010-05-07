@@ -15,7 +15,6 @@
 # Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA  02111-1307 USA
 
-
 use strict;
 use warnings;
 
@@ -34,7 +33,7 @@ use C4::Members;
 use C4::Serials;
 use C4::XISBN qw(get_xisbns get_biblionumber_from_isbn);
 use C4::External::Amazon;
-use C4::Search;		# enabled_staff_search_views
+use C4::Search;     # enabled_staff_search_views
 use C4::VirtualShelves;
 use C4::XSLT;
 
@@ -42,8 +41,7 @@ use C4::XSLT;
 
 my $query = CGI->new();
 my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
-    {
-        template_name   => "catalogue/detail.tmpl",
+    {   template_name   => "catalogue/detail.tmpl",
         query           => $query,
         type            => "intranet",
         authnotrequired => 0,
@@ -52,16 +50,18 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
 );
 
 my $biblionumber = $query->param('biblionumber');
-my $fw = GetFrameworkCode($biblionumber);
+my $fw           = GetFrameworkCode($biblionumber);
 
 ## get notes and subjects from MARC record
-my $marcflavour      = C4::Context->preference("marcflavour");
-my $record           = GetMarcBiblio($biblionumber);
+my $marcflavour = C4::Context->preference("marcflavour");
+my $record      = GetMarcBiblio($biblionumber);
 
 # XSLT processing of some stuff
-if (C4::Context->preference("XSLTDetailsDisplay") ) {
-    $template->param('XSLTDetailsDisplay' =>'1',
-        'XSLTBloc' => XSLTParse4Display($biblionumber, $record, C4::Context->preference('IntranetXSLTDetailsDisplay')) );
+if ( C4::Context->preference("XSLTDetailsDisplay") ) {
+    $template->param(
+        'XSLTDetailsDisplay' => '1',
+        'XSLTBloc'           => XSLTParse4Display( $biblionumber, $record, C4::Context->preference('IntranetXSLTDetailsDisplay') )
+    );
 }
 
 $template->param( 'SpineLabelShowPrintOnBibDetails' => C4::Context->preference("SpineLabelShowPrintOnBibDetails") );
@@ -69,34 +69,34 @@ $template->param( 'SpineLabelShowPrintOnBibDetails' => C4::Context->preference("
 # some useful variables for enhanced content;
 # in each case, we're grabbing the first value we find in
 # the record and normalizing it
-my $upc = GetNormalizedUPC($record,$marcflavour);
-my $ean = GetNormalizedEAN($record,$marcflavour);
-my $oclc = GetNormalizedOCLCNumber($record,$marcflavour);
-my $isbn = GetNormalizedISBN(undef,$record,$marcflavour);
+my $upc = GetNormalizedUPC( $record, $marcflavour );
+my $ean = GetNormalizedEAN( $record, $marcflavour );
+my $oclc = GetNormalizedOCLCNumber( $record, $marcflavour );
+my $isbn = GetNormalizedISBN( undef, $record, $marcflavour );
 
 $template->param(
-    normalized_upc => $upc,
-    normalized_ean => $ean,
+    normalized_upc  => $upc,
+    normalized_ean  => $ean,
     normalized_oclc => $oclc,
     normalized_isbn => $isbn,
 );
 
-unless (defined($record)) {
+unless ( defined($record) ) {
     print $query->redirect("/cgi-bin/koha/errors/404.pl");
-	exit;
+    exit;
 }
 
-my $marcnotesarray   = GetMarcNotes( $record, $marcflavour );
+my $marcnotesarray = GetMarcNotes( $record, $marcflavour );
 my $marcauthorsarray = GetMarcAuthors( $record, $marcflavour );
 my $marcsubjctsarray = GetMarcSubjects( $record, $marcflavour );
-my $marcseriesarray  = GetMarcSeries($record,$marcflavour);
-my $marcurlsarray    = GetMarcUrls    ($record,$marcflavour);
-my $subtitle         = GetRecordValue('subtitle', $record, $fw);
+my $marcseriesarray = GetMarcSeries( $record, $marcflavour );
+my $marcurlsarray = GetMarcUrls( $record, $marcflavour );
+my $subtitle = GetRecordValue( 'subtitle', $record, $fw );
 
 # Get Branches, Itemtypes and Locations
-my $branches = GetBranches();
+my $branches  = GetBranches();
 my $itemtypes = GetItemTypes();
-my $dbh = C4::Context->dbh;
+my $dbh       = C4::Context->dbh;
 
 # change back when ive fixed request.pl
 my @items = &GetItemsInfo( $biblionumber, 'intra' );
@@ -104,23 +104,23 @@ my $dat = &GetBiblioData($biblionumber);
 
 #coping with subscriptions
 my $subscriptionsnumber = CountSubscriptionFromBiblionumber($biblionumber);
-my @subscriptions       = GetSubscriptions( $dat->{title}, $dat->{issn}, $biblionumber );
+my @subscriptions = GetSubscriptions( $dat->{title}, $dat->{issn}, $biblionumber );
 my @subs;
-$dat->{'serial'}=1 if $subscriptionsnumber;
+$dat->{'serial'} = 1 if $subscriptionsnumber;
 foreach my $subscription (@subscriptions) {
     my %cell;
-	my $serials_to_display;
+    my $serials_to_display;
     $cell{subscriptionid}    = $subscription->{subscriptionid};
     $cell{subscriptionnotes} = $subscription->{notes};
     $cell{branchcode}        = $subscription->{branchcode};
-    $cell{branchname}        = GetBranchName($subscription->{branchcode});
+    $cell{branchname}        = GetBranchName( $subscription->{branchcode} );
     $cell{hasalert}          = $subscription->{hasalert};
+
     #get the three latest serials.
-	$serials_to_display = $subscription->{staffdisplaycount};
-	$serials_to_display = C4::Context->preference('StaffSerialIssueDisplayCount') unless $serials_to_display;
-	$cell{staffdisplaycount} = $serials_to_display;
-    $cell{latestserials} =
-      GetLatestSerials( $subscription->{subscriptionid}, $serials_to_display );
+    $serials_to_display      = $subscription->{staffdisplaycount};
+    $serials_to_display      = C4::Context->preference('StaffSerialIssueDisplayCount') unless $serials_to_display;
+    $cell{staffdisplaycount} = $serials_to_display;
+    $cell{latestserials} = GetLatestSerials( $subscription->{subscriptionid}, $serials_to_display );
     push @subs, \%cell;
 }
 
@@ -128,12 +128,12 @@ if ( defined $dat->{'itemtype'} ) {
     $dat->{imageurl} = getitemtypeimagelocation( 'intranet', $itemtypes->{ $dat->{itemtype} }{imageurl} );
 }
 $dat->{'count'} = scalar @items;
-my $shelflocations = GetKohaAuthorisedValues('items.location', $fw);
-my $collections    = GetKohaAuthorisedValues('items.ccode'   , $fw);
-my (@itemloop, %itemfields);
-my $norequests = 1;
-my $authvalcode_items_itemlost = GetAuthValCode('items.itemlost',$fw);
-my $authvalcode_items_damaged  = GetAuthValCode('items.damaged', $fw);
+my $shelflocations = GetKohaAuthorisedValues( 'items.location', $fw );
+my $collections    = GetKohaAuthorisedValues( 'items.ccode',    $fw );
+my ( @itemloop, %itemfields );
+my $norequests                 = 1;
+my $authvalcode_items_itemlost = GetAuthValCode( 'items.itemlost', $fw );
+my $authvalcode_items_damaged  = GetAuthValCode( 'items.damaged', $fw );
 foreach my $item (@items) {
 
     # can place holds defaults to yes
@@ -143,58 +143,62 @@ foreach my $item (@items) {
     if ( defined $item->{'publictype'} ) {
         $item->{ $item->{'publictype'} } = 1;
     }
-    $item->{imageurl} = defined $item->{itype} ? getitemtypeimagelocation('intranet', $itemtypes->{ $item->{itype} }{imageurl})
-                                               : '';
+    $item->{imageurl} =
+      defined $item->{itype}
+      ? getitemtypeimagelocation( 'intranet', $itemtypes->{ $item->{itype} }{imageurl} )
+      : '';
 
-	foreach (qw(datedue datelastseen onloan)) {
-		$item->{$_} = format_date($item->{$_});
-	}
-    # item damaged, lost, withdrawn loops
-    $item->{itemlostloop} = GetAuthorisedValues($authvalcode_items_itemlost, $item->{itemlost}) if $authvalcode_items_itemlost;
-    if ($item->{damaged}) {
-        $item->{itemdamagedloop} = GetAuthorisedValues($authvalcode_items_damaged, $item->{damaged}) if $authvalcode_items_damaged;
+    foreach (qw(datedue datelastseen onloan)) {
+        $item->{$_} = format_date( $item->{$_} );
     }
+
+    # item damaged, lost, withdrawn loops
+    $item->{itemlostloop} = GetAuthorisedValues( $authvalcode_items_itemlost, $item->{itemlost} ) if $authvalcode_items_itemlost;
+    if ( $item->{damaged} ) {
+        $item->{itemdamagedloop} = GetAuthorisedValues( $authvalcode_items_damaged, $item->{damaged} ) if $authvalcode_items_damaged;
+    }
+
     #get shelf location and collection code description if they are authorised value.
     my $shelfcode = $item->{'location'};
-    $item->{'location'} = $shelflocations->{$shelfcode} if ( defined( $shelfcode ) && defined($shelflocations) && exists( $shelflocations->{$shelfcode} ) );
+    $item->{'location'} = $shelflocations->{$shelfcode} if ( defined($shelfcode) && defined($shelflocations) && exists( $shelflocations->{$shelfcode} ) );
     my $ccode = $item->{'ccode'};
-    $item->{'ccode'} = $collections->{$ccode} if ( defined( $ccode ) && defined($collections) && exists( $collections->{$ccode} ) );
+    $item->{'ccode'} = $collections->{$ccode} if ( defined($ccode) && defined($collections) && exists( $collections->{$ccode} ) );
     foreach (qw(ccode enumchron copynumber uri)) {
         $itemfields{$_} = 1 if ( $item->{$_} );
     }
 
     # checking for holds
-    my ($reservedate,$reservedfor,$expectedAt) = GetReservesFromItemnumber($item->{itemnumber});
-    my $ItemBorrowerReserveInfo = GetMemberDetails( $reservedfor, 0);
-    
-    if (C4::Context->preference('HidePatronName')){
-	$item->{'hidepatronname'} = 1;
+    my ( $reservedate, $reservedfor, $expectedAt ) = GetReservesFromItemnumber( $item->{itemnumber} );
+    my $ItemBorrowerReserveInfo = GetMemberDetails( $reservedfor, 0 );
+
+    if ( C4::Context->preference('HidePatronName') ) {
+        $item->{'hidepatronname'} = 1;
     }
 
     if ( defined $reservedate ) {
-        $item->{backgroundcolor} = 'reserved';
-        $item->{reservedate}     = format_date($reservedate);
-        $item->{ReservedForBorrowernumber}     = $reservedfor;
-        $item->{ReservedForSurname}     = $ItemBorrowerReserveInfo->{'surname'};
-        $item->{ReservedForFirstname}   = $ItemBorrowerReserveInfo->{'firstname'};
-        $item->{ExpectedAtLibrary}      = $branches->{$expectedAt}{branchname};
-	$item->{cardnumber}             = $ItemBorrowerReserveInfo->{'cardnumber'};
+        $item->{backgroundcolor}           = 'reserved';
+        $item->{reservedate}               = format_date($reservedate);
+        $item->{ReservedForBorrowernumber} = $reservedfor;
+        $item->{ReservedForSurname}        = $ItemBorrowerReserveInfo->{'surname'};
+        $item->{ReservedForFirstname}      = $ItemBorrowerReserveInfo->{'firstname'};
+        $item->{ExpectedAtLibrary}         = $branches->{$expectedAt}{branchname};
+        $item->{cardnumber}                = $ItemBorrowerReserveInfo->{'cardnumber'};
     }
 
-	# Check the transit status
-    my ( $transfertwhen, $transfertfrom, $transfertto ) = GetTransfers($item->{itemnumber});
-    if ( defined( $transfertwhen ) && ( $transfertwhen ne '' ) ) {
+    # Check the transit status
+    my ( $transfertwhen, $transfertfrom, $transfertto ) = GetTransfers( $item->{itemnumber} );
+    if ( defined($transfertwhen) && ( $transfertwhen ne '' ) ) {
         $item->{transfertwhen} = format_date($transfertwhen);
         $item->{transfertfrom} = $branches->{$transfertfrom}{branchname};
         $item->{transfertto}   = $branches->{$transfertto}{branchname};
-        $item->{nocancel} = 1;
+        $item->{nocancel}      = 1;
     }
 
     # FIXME: move this to a pm, check waiting status for holds
     my $sth2 = $dbh->prepare("SELECT * FROM reserves WHERE borrowernumber=? AND itemnumber=? AND found='W'");
-    $sth2->execute($item->{ReservedForBorrowernumber},$item->{itemnumber});
-    while (my $wait_hashref = $sth2->fetchrow_hashref) {
-        $item->{waitingdate} = format_date($wait_hashref->{waitingdate});
+    $sth2->execute( $item->{ReservedForBorrowernumber}, $item->{itemnumber} );
+    while ( my $wait_hashref = $sth2->fetchrow_hashref ) {
+        $item->{waitingdate} = format_date( $wait_hashref->{waitingdate} );
     }
 
     push @itemloop, $item;
@@ -202,19 +206,19 @@ foreach my $item (@items) {
 
 $template->param( norequests => $norequests );
 $template->param(
-	MARCNOTES   => $marcnotesarray,
-	MARCSUBJCTS => $marcsubjctsarray,
-	MARCAUTHORS => $marcauthorsarray,
-	MARCSERIES  => $marcseriesarray,
-	MARCURLS => $marcurlsarray,
-	subtitle    => $subtitle,
-	itemdata_ccode      => $itemfields{ccode},
-	itemdata_enumchron  => $itemfields{enumchron},
-	itemdata_uri        => $itemfields{uri},
-	itemdata_copynumber => $itemfields{copynumber},
-	volinfo				=> $itemfields{enumchron} || $dat->{'serial'} ,
-	z3950_search_params	=> C4::Search::z3950_search_args($dat),
-	C4::Search::enabled_staff_search_views,
+    MARCNOTES           => $marcnotesarray,
+    MARCSUBJCTS         => $marcsubjctsarray,
+    MARCAUTHORS         => $marcauthorsarray,
+    MARCSERIES          => $marcseriesarray,
+    MARCURLS            => $marcurlsarray,
+    subtitle            => $subtitle,
+    itemdata_ccode      => $itemfields{ccode},
+    itemdata_enumchron  => $itemfields{enumchron},
+    itemdata_uri        => $itemfields{uri},
+    itemdata_copynumber => $itemfields{copynumber},
+    volinfo             => $itemfields{enumchron} || $dat->{'serial'},
+    z3950_search_params => C4::Search::z3950_search_args($dat),
+    C4::Search::enabled_staff_search_views,
 );
 
 my @results = ( $dat, );
@@ -226,9 +230,9 @@ foreach ( keys %{$dat} ) {
 # method query not found?!?!
 
 $template->param(
-    itemloop        => \@itemloop,
+    itemloop            => \@itemloop,
     biblionumber        => $biblionumber,
-    detailview => 1,
+    detailview          => 1,
     subscriptions       => \@subs,
     subscriptionsnumber => $subscriptionsnumber,
     subscriptiontitle   => $dat->{title},
@@ -238,17 +242,13 @@ $template->param(
 
 # Lists
 
-if (C4::Context->preference("virtualshelves") ) {
-   $template->param( 'GetShelves' => GetBibliosShelves( $biblionumber ) );
+if ( C4::Context->preference("virtualshelves") ) {
+    $template->param( 'GetShelves' => GetBibliosShelves($biblionumber) );
 }
 
 # XISBN Stuff
-if (C4::Context->preference("FRBRizeEditions")==1) {
-    eval {
-        $template->param(
-            XISBNS => get_xisbns($isbn)
-        );
-    };
+if ( C4::Context->preference("FRBRizeEditions") == 1 ) {
+    eval { $template->param( XISBNS => get_xisbns($isbn) ); };
     if ($@) { warn "XISBN Failed $@"; }
 }
 if ( C4::Context->preference("AmazonEnabled") == 1 ) {
@@ -256,44 +256,47 @@ if ( C4::Context->preference("AmazonEnabled") == 1 ) {
     my $amazon_reviews  = C4::Context->preference("AmazonReviews");
     my $amazon_similars = C4::Context->preference("AmazonSimilarItems");
     my @services;
-    if ( $amazon_reviews ) {
+    if ($amazon_reviews) {
         $template->param( AmazonReviews => 1 );
         push( @services, 'EditorialReview' );
     }
-    if ( $amazon_similars ) {
+    if ($amazon_similars) {
         $template->param( AmazonSimilarItems => 1 );
         push( @services, 'Similarities' );
     }
     my $amazon_details = &get_amazon_details( $isbn, $record, $marcflavour, \@services );
-    if ( $amazon_similars ) {
+    if ($amazon_similars) {
         my $similar_products_exist;
         my @similar_products;
-        for my $similar_product (@{$amazon_details->{Items}->{Item}->[0]->{SimilarProducts}->{SimilarProduct}}) {
+        for my $similar_product ( @{ $amazon_details->{Items}->{Item}->[0]->{SimilarProducts}->{SimilarProduct} } ) {
+
             # do we have any of these isbns in our collection?
-            my $similar_biblionumbers = get_biblionumber_from_isbn($similar_product->{ASIN});
+            my $similar_biblionumbers = get_biblionumber_from_isbn( $similar_product->{ASIN} );
+
             # verify that there is at least one similar item
-		    if (scalar(@$similar_biblionumbers)){            
-			    $similar_products_exist++ if ($similar_biblionumbers && $similar_biblionumbers->[0]);
-                push @similar_products, +{ similar_biblionumbers => $similar_biblionumbers, title => $similar_product->{Title}, ASIN => $similar_product->{ASIN}  };
+            if ( scalar(@$similar_biblionumbers) ) {
+                $similar_products_exist++ if ( $similar_biblionumbers && $similar_biblionumbers->[0] );
+                push @similar_products, +{ similar_biblionumbers => $similar_biblionumbers, title => $similar_product->{Title}, ASIN => $similar_product->{ASIN} };
             }
         }
-        $template->param( AmazonSimilarItems       => $similar_products_exist );
-        $template->param( AMAZON_SIMILAR_PRODUCTS  => \@similar_products      );
+        $template->param( AmazonSimilarItems      => $similar_products_exist );
+        $template->param( AMAZON_SIMILAR_PRODUCTS => \@similar_products );
     }
-    if ( $amazon_reviews ) {
-        my $item = $amazon_details->{Items}->{Item}->[0];
+    if ($amazon_reviews) {
+        my $item              = $amazon_details->{Items}->{Item}->[0];
         my $editorial_reviews = \@{ $item->{EditorialReviews}->{EditorialReview} };
+
         #my $customer_reviews  = \@{$amazon_details->{Items}->{Item}->[0]->{CustomerReviews}->{Review}};
         #my $average_rating = $amazon_details->{Items}->{Item}->[0]->{CustomerReviews}->{AverageRating} || 0;
         #$template->param( amazon_average_rating    => $average_rating * 20    );
         #$template->param( AMAZON_CUSTOMER_REVIEWS  => $customer_reviews       );
-        $template->param( AMAZON_EDITORIAL_REVIEWS => $editorial_reviews      );
+        $template->param( AMAZON_EDITORIAL_REVIEWS => $editorial_reviews );
     }
 }
 
 # Get OPAC URL
-if (C4::Context->preference('OPACBaseURL')){
-     $template->param( OpacUrl => C4::Context->preference('OPACBaseURL') );
+if ( C4::Context->preference('OPACBaseURL') ) {
+    $template->param( OpacUrl => C4::Context->preference('OPACBaseURL') );
 }
 
 output_html_with_http_headers $query, $cookie, $template->output;

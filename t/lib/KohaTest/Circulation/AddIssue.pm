@@ -23,7 +23,7 @@ sub basic_usage : Test( 13 ) {
     my $borrowernumber = $self->{'memberid'};
     ok( $borrowernumber, "we're going to work with borrower: $borrowernumber" );
 
-    my $borrower = C4::Members::GetMemberDetails( $borrowernumber );
+    my $borrower = C4::Members::GetMemberDetails($borrowernumber);
     ok( $borrower, '...and we were able to look up that borrower' );
     is( $borrower->{'borrowernumber'}, $borrowernumber, '...and they have the right borrowernumber' );
 
@@ -33,37 +33,37 @@ sub basic_usage : Test( 13 ) {
     ok( $barcode, "...which has barcode $barcode" );
 
     my $before_issues = C4::Circulation::GetItemIssue( $self->{'items'}[0]{'itemnumber'} );
+
     # Note that we can't check for $before_issues as undef because GetItemIssue always returns a populated hashref
-    ok( ! defined $before_issues->{'borrowernumber'}, '...and is not currently checked out' )
-      or diag( Data::Dumper->Dump( [ $before_issues ], [ 'before_issues' ] ) );
+    ok( !defined $before_issues->{'borrowernumber'}, '...and is not currently checked out' )
+      or diag( Data::Dumper->Dump( [$before_issues], ['before_issues'] ) );
 
     my ( $issuingimpossible, $needsconfirmation ) = C4::Circulation::CanBookBeIssued( $borrower, $barcode );
     is( scalar keys %$issuingimpossible, 0, 'the item CanBookBeIssued' )
-      or diag( Data::Dumper->Dump( [ $issuingimpossible, $needsconfirmation ], [ qw( issuingimpossible needsconfirmation ) ] ) );
+      or diag( Data::Dumper->Dump( [ $issuingimpossible, $needsconfirmation ], [qw( issuingimpossible needsconfirmation )] ) );
     is( scalar keys %$needsconfirmation, 0, '...and the transaction does not needsconfirmation' )
-      or diag( Data::Dumper->Dump( [ $issuingimpossible, $needsconfirmation ], [ qw( issuingimpossible needsconfirmation ) ] ) );
+      or diag( Data::Dumper->Dump( [ $issuingimpossible, $needsconfirmation ], [qw( issuingimpossible needsconfirmation )] ) );
 
     # bug 2758 don't ask for confirmation if patron has $0.00 account balance
     # and IssuingInProcess is on
     my $orig_issuing_in_process = C4::Context->preference('IssuingInProcess');
-    my $dbh = C4::Context->dbh;
+    my $dbh                     = C4::Context->dbh;
     $dbh->do("UPDATE systempreferences SET value = 1 WHERE variable = 'IssuingInProcess'");
-    C4::Context->clear_syspref_cache(); # FIXME not needed after a syspref mutator is written
+    C4::Context->clear_syspref_cache();    # FIXME not needed after a syspref mutator is written
     ( $issuingimpossible, $needsconfirmation ) = C4::Circulation::CanBookBeIssued( $borrower, $barcode );
     is( scalar keys %$issuingimpossible, 0, 'the item CanBookBeIssued with IssuingInProcess ON (bug 2758)' )
-      or diag( Data::Dumper->Dump( [ $issuingimpossible, $needsconfirmation ], [ qw( issuingimpossible needsconfirmation ) ] ) );
-    is( scalar keys %$needsconfirmation, 0, 
-        '...and the transaction does not needsconfirmation with IssuingInProcess ON (bug 2758)' )
-      or diag( Data::Dumper->Dump( [ $issuingimpossible, $needsconfirmation ], [ qw( issuingimpossible needsconfirmation ) ] ) );
-    $dbh->do("UPDATE systempreferences SET value = ? WHERE variable = 'IssuingInProcess'", {}, $orig_issuing_in_process);
-    C4::Context->clear_syspref_cache(); # FIXME not needed after a syspref mutator is written
+      or diag( Data::Dumper->Dump( [ $issuingimpossible, $needsconfirmation ], [qw( issuingimpossible needsconfirmation )] ) );
+    is( scalar keys %$needsconfirmation, 0, '...and the transaction does not needsconfirmation with IssuingInProcess ON (bug 2758)' )
+      or diag( Data::Dumper->Dump( [ $issuingimpossible, $needsconfirmation ], [qw( issuingimpossible needsconfirmation )] ) );
+    $dbh->do( "UPDATE systempreferences SET value = ? WHERE variable = 'IssuingInProcess'", {}, $orig_issuing_in_process );
+    C4::Context->clear_syspref_cache();    # FIXME not needed after a syspref mutator is written
 
     my $datedue = C4::Circulation::AddIssue( $borrower, $barcode );
     ok( $datedue, "the item has been issued and it is due: $datedue" );
-    
+
     my $after_issues = C4::Circulation::GetItemIssue( $self->{'items'}[0]{'itemnumber'} );
     is( $after_issues->{'borrowernumber'}, $borrowernumber, '...and now it is checked out to our borrower' )
-      or diag( Data::Dumper->Dump( [ $after_issues ], [ 'after_issues' ] ) );
+      or diag( Data::Dumper->Dump( [$after_issues], ['after_issues'] ) );
 
     my $loanlength = Date::Calc::Delta_Days( split( /-/, $after_issues->{'issuedate'} ), split( /-/, $after_issues->{'date_due'} ) );
     ok( $loanlength, "the loanlength is $loanlength days" );
@@ -86,8 +86,8 @@ sub set_issuedate : Test( 7 ) {
     my $self = shift;
 
     my $before_issues = C4::Circulation::GetItemIssue( $self->{'items'}[0]{'itemnumber'} );
-    ok( ! defined $before_issues->{'borrowernumber'}, 'At this beginning, this item was not checked out.' )
-      or diag( Data::Dumper->Dump( [ $before_issues ], [ 'before_issues' ] ) );
+    ok( !defined $before_issues->{'borrowernumber'}, 'At this beginning, this item was not checked out.' )
+      or diag( Data::Dumper->Dump( [$before_issues], ['before_issues'] ) );
 
     my $issuedate = $self->random_date();
     ok( $issuedate, "Check out an item on $issuedate" );
@@ -96,10 +96,10 @@ sub set_issuedate : Test( 7 ) {
 
     my $after_issues = C4::Circulation::GetItemIssue( $self->{'items'}[0]{'itemnumber'} );
     is( $after_issues->{'borrowernumber'}, $self->{'memberid'}, 'We found this item checked out to our member.' )
-      or diag( Data::Dumper->Dump( [ $after_issues ], [ 'issues' ] ) );
+      or diag( Data::Dumper->Dump( [$after_issues], ['issues'] ) );
     is( $after_issues->{'issuedate'}, $issuedate, "...and it was issued on $issuedate" )
-      or diag( Data::Dumper->Dump( [ $after_issues ], [ 'after_issues' ] ) );
-    
+      or diag( Data::Dumper->Dump( [$after_issues], ['after_issues'] ) );
+
     my $loanlength = Date::Calc::Delta_Days( split( /-/, $after_issues->{'issuedate'} ), split( /-/, $after_issues->{'date_due'} ) );
     ok( $loanlength, "the loanlength is $loanlength days" );
     is( $loanlength, $self->{'loanlength'} );
@@ -109,24 +109,25 @@ sub set_lastreneweddate_on_renewal : Test( 6 ) {
     my $self = shift;
 
     my $before_issues = C4::Circulation::GetItemIssue( $self->{'items'}[0]{'itemnumber'} );
-    ok( ! defined $before_issues->{'borrowernumber'}, 'At this beginning, this item was not checked out.' )
-      or diag( Data::Dumper->Dump( [ $before_issues ], [ 'before_issues' ] ) );
+    ok( !defined $before_issues->{'borrowernumber'}, 'At this beginning, this item was not checked out.' )
+      or diag( Data::Dumper->Dump( [$before_issues], ['before_issues'] ) );
 
     my $datedue = $self->checkout_first_item( { issuedate => $self->yesterday() } );
     ok( $datedue, "The item is checked out and it's due on $datedue" );
 
     my $issuedate = $self->random_date();
     ok( $issuedate, "Check out an item again on $issuedate" );
+
     # This will actually be a renewal
     $datedue = $self->checkout_first_item( { issuedate => $issuedate } );
     ok( $datedue, "...and it's due on $datedue" );
 
     my $after_issues = C4::Circulation::GetItemIssue( $self->{'items'}[0]{'itemnumber'} );
     is( $after_issues->{'borrowernumber'}, $self->{'memberid'}, 'We found this item checked out to our member.' )
-      or diag( Data::Dumper->Dump( [ $after_issues ], [ 'issues' ] ) );
+      or diag( Data::Dumper->Dump( [$after_issues], ['issues'] ) );
     is( $after_issues->{'lastreneweddate'}, $issuedate, "...and it was renewed on $issuedate" )
-      or diag( Data::Dumper->Dump( [ $after_issues ], [ 'after_issues' ] ) );
-    
+      or diag( Data::Dumper->Dump( [$after_issues], ['after_issues'] ) );
+
 }
 
 1;

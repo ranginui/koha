@@ -43,8 +43,7 @@ sub set_in_cache {
 
     if ( defined $expiry ) {
         return $self->cache->set( $key, $value, $expiry );
-    }
-    else {
+    } else {
         return $self->cache->set( $key, $value );
     }
 }

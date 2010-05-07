@@ -15,8 +15,6 @@
 # Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA  02111-1307 USA
 
-
-
 =head1 batchupdateISBNs.pl 
 
     This script batch updates ISBN fields
@@ -24,8 +22,10 @@
 =cut
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 BEGIN {
+
     # find Koha's Perl modules
     # test carefully before changing this
     use FindBin;
@@ -36,20 +36,19 @@ use MARC::File::XML;
 use MARC::Record;
 use Getopt::Long;
 
-my ( $no_marcxml, $no_isbn, $help) = (0,0,0);
+my ( $no_marcxml, $no_isbn, $help ) = ( 0, 0, 0 );
 
 GetOptions(
-    'noisbn'    => \$no_isbn,
-    'noxml'     => \$no_marcxml,
-    'h'         => \$help,
-    'help'      => \$help,
+    'noisbn' => \$no_isbn,
+    'noxml'  => \$no_marcxml,
+    'h'      => \$help,
+    'help'   => \$help,
 );
 
-
 $| = 1;
-my $dbh   = C4::Context->dbh;
+my $dbh = C4::Context->dbh;
 
-if($help){
+if ($help) {
     print qq(
         Option :
             \t-h        show this help
@@ -61,7 +60,7 @@ if($help){
 }
 
 my $cpt_isbn = 0;
-if(not $no_isbn){
+if ( not $no_isbn ) {
 
     my $query_isbn = "
         SELECT biblioitemnumber,isbn FROM biblioitems WHERE isbn IS NOT NULL ORDER BY biblioitemnumber
@@ -74,67 +73,67 @@ if(not $no_isbn){
     my $sth = $dbh->prepare($query_isbn);
     $sth->execute;
 
-    while (my $data = $sth->fetchrow_arrayref){
+    while ( my $data = $sth->fetchrow_arrayref ) {
         my $biblioitemnumber = $data->[0];
         print "\rremoving '-' on isbn for biblioitemnumber $biblioitemnumber";
-        
+
         # suppression des tirets de l'isbn
-        my $isbn    = $data->[1];
-        if($isbn){
+        my $isbn = $data->[1];
+        if ($isbn) {
             $isbn =~ s/-//g;
-            
-            #update 
+
+            #update
             my $sth = $dbh->prepare($update_isbn);
-            $sth->execute($isbn,$biblioitemnumber);
+            $sth->execute( $isbn, $biblioitemnumber );
         }
         $cpt_isbn++;
     }
     print "$cpt_isbn updated";
 }
 
-if(not $no_marcxml){
-    
+if ( not $no_marcxml ) {
+
     my $query_marcxml = "
         SELECT biblioitemnumber,marcxml FROM biblioitems WHERE isbn IS NOT NULL ORDER BY biblioitemnumber
     ";
-    
-    
+
     my $update_marcxml = "
         UPDATE biblioitems SET marcxml=? WHERE biblioitemnumber = ? 
     ";
 
     my $sth = $dbh->prepare($query_marcxml);
     $sth->execute;
-    
-    while (my $data = $sth->fetchrow_arrayref){
-        
-       my $biblioitemnumber = $data->[0];
-       print "\rremoving '-' on marcxml for biblioitemnumber $biblioitemnumber";
-        
+
+    while ( my $data = $sth->fetchrow_arrayref ) {
+
+        my $biblioitemnumber = $data->[0];
+        print "\rremoving '-' on marcxml for biblioitemnumber $biblioitemnumber";
+
         # suppression des tirets de l'isbn dans la notice
         my $marcxml = $data->[1];
-        
-        eval{
-            my $record = MARC::Record->new_from_xml($marcxml,'UTF-8','UNIMARC');
-            my @field = $record->field('010');
-            my $flag = 0;
-	    foreach my $field (@field){
+
+        eval {
+            my $record = MARC::Record->new_from_xml( $marcxml, 'UTF-8', 'UNIMARC' );
+            my @field  = $record->field('010');
+            my $flag   = 0;
+            foreach my $field (@field) {
                 my $subfield = $field->subfield('a');
-                if($subfield){
+                if ($subfield) {
                     my $isbn = $subfield;
                     $isbn =~ s/-//g;
-                    $field->update('a' => $isbn);
+                    $field->update( 'a' => $isbn );
                     $flag = 1;
                 }
-	    }
-            if($flag){
+            }
+            if ($flag) {
                 $marcxml = $record->as_xml_record('UNIMARC');
+
                 # Update
                 my $sth = $dbh->prepare($update_marcxml);
-                $sth->execute($marcxml,$biblioitemnumber);
+                $sth->execute( $marcxml, $biblioitemnumber );
             }
         };
-        if($@){
+        if ($@) {
             print "\n /!\\ pb getting $biblioitemnumber : $@";
         }
     }

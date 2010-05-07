@@ -54,15 +54,13 @@ use C4::Output;
 use C4::Acquisition qw/GetBasket NewBasket GetContracts ModBasketHeader/;
 use C4::Bookseller qw/GetBookSellerFromId/;
 
-
 my $input = new CGI;
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => "acqui/basketheader.tmpl",
+    {   template_name   => "acqui/basketheader.tmpl",
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
-       flagsrequired   => { acquisition => 'order_manage' },
+        flagsrequired   => { acquisition => 'order_manage' },
         debug           => 1,
     }
 );
@@ -72,54 +70,73 @@ my $booksellerid;
 $booksellerid = $input->param('booksellerid');
 my $basketno = $input->param('basketno');
 my $basket;
-my $op = $input ->param('op');
-my $is_an_edit= $input ->param('is_an_edit');
+my $op         = $input->param('op');
+my $is_an_edit = $input->param('is_an_edit');
 
 if ( $op eq 'add_form' ) {
     my @contractloop;
-    if ( $basketno ) {
-    #this is an edit
+    if ($basketno) {
+
+        #this is an edit
         $basket = GetBasket($basketno);
-        if (! $booksellerid) {
-            $booksellerid=$basket->{'booksellerid'};
+        if ( !$booksellerid ) {
+            $booksellerid = $basket->{'booksellerid'};
         }
-        @contractloop = &GetContracts($booksellerid, 1);
+        @contractloop = &GetContracts( $booksellerid, 1 );
         for (@contractloop) {
             if ( $basket->{'contractnumber'} eq $_->{'contractnumber'} ) {
                 $_->{'selected'} = 1;
             }
         }
-        $template->param( is_an_edit => 1);
+        $template->param( is_an_edit => 1 );
     } else {
-    #new basket
+
+        #new basket
         my $basket;
-        push(@contractloop, &GetContracts($booksellerid, 1));
+        push( @contractloop, &GetContracts( $booksellerid, 1 ) );
     }
     my $bookseller = GetBookSellerFromId($booksellerid);
-    my $count = scalar @contractloop;
-    if ( $count > 0) {
-        $template->param(contractloop => \@contractloop,
-                         basketcontractnumber => $basket->{'contractnumber'});
+    my $count      = scalar @contractloop;
+    if ( $count > 0 ) {
+        $template->param(
+            contractloop         => \@contractloop,
+            basketcontractnumber => $basket->{'contractnumber'}
+        );
     }
-    $template->param( add_form => 1,
-                    basketname => $basket->{'basketname'},
-                    basketnote => $basket->{'note'},
-                    basketbooksellernote => $basket->{'booksellernote'},
-                    booksellername => $bookseller->{'name'},
-                    booksellerid => $booksellerid,
-                    basketno => $basketno
-    	);
-#End Edit
+    $template->param(
+        add_form             => 1,
+        basketname           => $basket->{'basketname'},
+        basketnote           => $basket->{'note'},
+        basketbooksellernote => $basket->{'booksellernote'},
+        booksellername       => $bookseller->{'name'},
+        booksellerid         => $booksellerid,
+        basketno             => $basketno
+    );
+
+    #End Edit
 } elsif ( $op eq 'add_validate' ) {
-#we are confirming the changes, save the basket
+
+    #we are confirming the changes, save the basket
     my $basketno;
-    if ( $is_an_edit ) {
+    if ($is_an_edit) {
         $basketno = $input->param('basketno');
-        ModBasketHeader($input->param('basketno'),$input->param('basketname'),$input->param('basketnote'),$input->param('basketbooksellernote'),$input->param('basketcontractnumber'));
-    } else { #New basket
-        $basketno = NewBasket($booksellerid, $loggedinuser, $input->param('basketname'), $input->param('basketnote'), $input->param('basketbooksellernote'), $input->param('basketcontractnumber'));
+        ModBasketHeader(
+            $input->param('basketno'),
+            $input->param('basketname'),
+            $input->param('basketnote'),
+            $input->param('basketbooksellernote'),
+            $input->param('basketcontractnumber')
+        );
+    } else {    #New basket
+        $basketno = NewBasket(
+            $booksellerid, $loggedinuser,
+            $input->param('basketname'),
+            $input->param('basketnote'),
+            $input->param('basketbooksellernote'),
+            $input->param('basketcontractnumber')
+        );
     }
-    print $input->redirect('basket.pl?basketno='.$basketno);
+    print $input->redirect( 'basket.pl?basketno=' . $basketno );
     exit 0;
 }
 output_html_with_http_headers $input, $cookie, $template->output;

@@ -36,6 +36,7 @@
 	- we delete the designated record
 
 =cut
+
 # TODO This script drives the CRUD operations on the letter table
 # The DB interaction should be handled by calls to C4/Letters.pm
 
@@ -53,31 +54,32 @@ sub StringSearch {
     my @data = split( ' ', $searchstring );
     $data[0] = '' unless @data;
     my $sth = $dbh->prepare("SELECT * FROM letter WHERE (code LIKE ?) ORDER BY module, code");
-    $sth->execute("$data[0]%");     # slightly bogus, only searching on first string.
-    return $sth->fetchall_arrayref({});
+    $sth->execute("$data[0]%");    # slightly bogus, only searching on first string.
+    return $sth->fetchall_arrayref( {} );
 }
 
 # FIXME untranslateable
 our %column_map = (
     aqbooksellers => 'BOOKSELLERS',
-    aqorders => 'ORDERS',
-    serial => 'SERIALS',
-    reserves => 'HOLDS',
-    suggestions => 'SUGGESTIONS',
+    aqorders      => 'ORDERS',
+    serial        => 'SERIALS',
+    reserves      => 'HOLDS',
+    suggestions   => 'SUGGESTIONS',
 );
 
 sub column_picks ($) {
+
     # returns @array of values
     my $table = shift or return ();
     my $sth = C4::Context->dbh->prepare("SHOW COLUMNS FROM $table");
     $sth->execute;
     my @SQLfieldname = ();
-    push @SQLfieldname, {'value' => "", 'text' => '---' . uc($column_map{$table} || $table) . '---'};
-    while (my ($field) = $sth->fetchrow_array) {
-        push @SQLfieldname, {
-            value => $table . ".$field",
-             text => $table . ".$field"
-        };
+    push @SQLfieldname, { 'value' => "", 'text' => '---' . uc( $column_map{$table} || $table ) . '---' };
+    while ( my ($field) = $sth->fetchrow_array ) {
+        push @SQLfieldname,
+          { value => $table . ".$field",
+            text  => $table . ".$field"
+          };
     }
     return @SQLfieldname;
 }
@@ -85,16 +87,16 @@ sub column_picks ($) {
 # letter_exists($module, $code)
 # - return true if a letter with the given $module and $code exists
 sub letter_exists {
-    my ($module, $code) = @_;
+    my ( $module, $code ) = @_;
     my $dbh = C4::Context->dbh;
-    my $letters = $dbh->selectall_arrayref(q{SELECT name FROM letter WHERE module = ? AND code = ?}, undef, $module, $code);
+    my $letters = $dbh->selectall_arrayref( q{SELECT name FROM letter WHERE module = ? AND code = ?}, undef, $module, $code );
     return @{$letters};
 }
 
 # $protected_letters = protected_letters()
 # - return a hashref of letter_codes representing letters that should never be deleted
 sub protected_letters {
-    my $dbh = C4::Context->dbh;
+    my $dbh   = C4::Context->dbh;
     my $codes = $dbh->selectall_arrayref(q{SELECT DISTINCT letter_code FROM message_transports});
     return { map { $_->[0] => 1 } @{$codes} };
 }
@@ -106,14 +108,13 @@ my $code        = $input->param('code');
 my $module      = $input->param('module');
 my $content     = $input->param('content');
 my $op          = $input->param('op');
-my $dbh = C4::Context->dbh;
-if (!defined $module ) {
+my $dbh         = C4::Context->dbh;
+if ( !defined $module ) {
     $module = q{};
 }
 
 my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
-    {
-        template_name   => 'tools/letter.tmpl',
+    {   template_name   => 'tools/letter.tmpl',
         query           => $input,
         type            => 'intranet',
         authnotrequired => 0,
@@ -122,55 +123,51 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
     }
 );
 
-if (!defined $op) {
-    $op = q{}; # silence errors from eq
+if ( !defined $op ) {
+    $op = q{};    # silence errors from eq
 }
+
 # we show only the TMPL_VAR names $op
 
 $template->param(
-	script_name => $script_name,
-	action => $script_name
+    script_name => $script_name,
+    action      => $script_name
 );
 
-if ($op eq 'add_form') {
-    add_form($module, $code);
-}
-elsif ( $op eq 'add_validate' ) {
+if ( $op eq 'add_form' ) {
+    add_form( $module, $code );
+} elsif ( $op eq 'add_validate' ) {
     add_validate();
-    $op = q{}; # next operation is to return to default screen
-}
-elsif ( $op eq 'delete_confirm' ) {
-    delete_confirm($module, $code);
-}
-elsif ( $op eq 'delete_confirmed' ) {
-    delete_confirmed($module, $code);
-    $op = q{}; # next operation is to return to default screen
-}
-else {
+    $op = q{};    # next operation is to return to default screen
+} elsif ( $op eq 'delete_confirm' ) {
+    delete_confirm( $module, $code );
+} elsif ( $op eq 'delete_confirmed' ) {
+    delete_confirmed( $module, $code );
+    $op = q{};    # next operation is to return to default screen
+} else {
     default_display($searchfield);
 }
 
 # Do this last as delete_confirmed resets
 if ($op) {
-    $template->param($op  => 1);
+    $template->param( $op => 1 );
 } else {
-    $template->param(no_op_set => 1);
+    $template->param( no_op_set => 1 );
 }
 
 output_html_with_http_headers $input, $cookie, $template->output;
 
 sub add_form {
-    my ($module, $code ) = @_;
+    my ( $module, $code ) = @_;
 
     my $letter;
+
     # if code has been passed we can identify letter and its an update action
     if ($code) {
-        $letter = $dbh->selectrow_hashref(q{SELECT module, code, name, title, content FROM letter WHERE module=? AND code=?},
-            undef, $module, $code);
+        $letter = $dbh->selectrow_hashref( q{SELECT module, code, name, title, content FROM letter WHERE module=? AND code=?}, undef, $module, $code );
         $template->param( modify => 1 );
         $template->param( code   => $letter->{code} );
-    }
-    else { # initialize the new fields
+    } else {    # initialize the new fields
         $letter = {
             module  => $module,
             code    => q{},
@@ -185,52 +182,40 @@ sub add_form {
     my @SQLfieldname;
     my $field_selection;
     if ( $module eq "suggestions" ) {
-        push @SQLfieldname, column_picks('borrowers'),
-                            column_picks('suggestions'),
-                            column_picks('aqbooksellers'),
-                            column_picks('biblio'),
-                            column_picks('items');
-	}
-    elsif ( $module eq "reserves" ) {
-        push @SQLfieldname, column_picks('borrowers'),
-                            column_picks('reserves'),
-                            column_picks('biblio'),
-                            column_picks('items');
-    }
-    elsif ( index( $module, "acquisition" ) > 0 ) {	# FIXME: imprecise comparison
+        push @SQLfieldname, column_picks('borrowers'), column_picks('suggestions'), column_picks('aqbooksellers'), column_picks('biblio'), column_picks('items');
+    } elsif ( $module eq "reserves" ) {
+        push @SQLfieldname, column_picks('borrowers'), column_picks('reserves'), column_picks('biblio'), column_picks('items');
+    } elsif ( index( $module, "acquisition" ) > 0 ) {    # FIXME: imprecise comparison
         push @SQLfieldname, column_picks('aqbooksellers'), column_picks('aqorders');
+
         # add issues specific tables
     }
     push @{$field_selection}, add_fields('branches');
-    if ($module eq 'reserves') {
-        push @{$field_selection}, add_fields('borrowers', 'reserves', 'biblio', 'items');
-    }
-    elsif ($module eq 'claimacquisition') {
-        push @{$field_selection}, add_fields('aqbooksellers', 'aqorders');
-    }
-    elsif ($module eq 'claimissues') {
-        push @{$field_selection}, add_fields('aqbooksellers', 'serial', 'subscription');
+    if ( $module eq 'reserves' ) {
+        push @{$field_selection}, add_fields( 'borrowers', 'reserves', 'biblio', 'items' );
+    } elsif ( $module eq 'claimacquisition' ) {
+        push @{$field_selection}, add_fields( 'aqbooksellers', 'aqorders' );
+    } elsif ( $module eq 'claimissues' ) {
+        push @{$field_selection}, add_fields( 'aqbooksellers', 'serial', 'subscription' );
         push @{$field_selection},
-        {
-            value => q{},
-            text => '---BIBLIO---'
-        };
-        foreach(qw(title author serial)) {
-            push @{$field_selection}, {value => "biblio.$_", text => ucfirst $_ };
+          { value => q{},
+            text  => '---BIBLIO---'
+          };
+        foreach (qw(title author serial)) {
+            push @{$field_selection}, { value => "biblio.$_", text => ucfirst $_ };
         }
-    }
-    else {
-        push @{$field_selection}, add_fields('biblio','biblioitems'),
-            {value => q{},             text => '---ITEMS---'  },
-            {value => 'items.content', text => 'items.content'},
-            add_fields('borrowers');
+    } else {
+        push @{$field_selection}, add_fields( 'biblio', 'biblioitems' ),
+          { value => q{},             text => '---ITEMS---' },
+          { value => 'items.content', text => 'items.content' },
+          add_fields('borrowers');
     }
 
     $template->param(
-        name    => $letter->{name},
-        title   => $letter->{title},
-        content => $letter->{content},
-        $module => 1,
+        name         => $letter->{name},
+        title        => $letter->{title},
+        content      => $letter->{content},
+        $module      => 1,
         SQLfieldname => $field_selection,
     );
     return;
@@ -243,41 +228,33 @@ sub add_validate {
     my $name    = $input->param('name');
     my $title   = $input->param('title');
     my $content = $input->param('content');
-    if (letter_exists($module, $code)) {
-        $dbh->do(
-            q{UPDATE letter SET module = ?, code = ?, name = ?, title = ?, content = ? WHERE module = ? AND code = ?},
-            undef,
-            $module, $code, $name, $title, $content,
-            $module, $code
-        );
+    if ( letter_exists( $module, $code ) ) {
+        $dbh->do( q{UPDATE letter SET module = ?, code = ?, name = ?, title = ?, content = ? WHERE module = ? AND code = ?},
+            undef, $module, $code, $name, $title, $content, $module, $code );
     } else {
-        $dbh->do(
-            q{INSERT INTO letter (module,code,name,title,content) VALUES (?,?,?,?,?)},
-            undef,
-            $module, $code, $name, $title, $content
-        );
+        $dbh->do( q{INSERT INTO letter (module,code,name,title,content) VALUES (?,?,?,?,?)}, undef, $module, $code, $name, $title, $content );
     }
+
     # set up default display
     default_display();
     return;
 }
 
 sub delete_confirm {
-    my ($module, $code) = @_;
+    my ( $module, $code ) = @_;
     my $dbh = C4::Context->dbh;
-    my $letter = $dbh->selectrow_hashref(q|SELECT  name FROM letter WHERE module = ? AND code = ?|,
-        { Slice => {} },
-        $module, $code);
-    $template->param( code => $code );
-    $template->param( module => $module);
-    $template->param( name => $letter->{name});
+    my $letter = $dbh->selectrow_hashref( q|SELECT  name FROM letter WHERE module = ? AND code = ?|, { Slice => {} }, $module, $code );
+    $template->param( code   => $code );
+    $template->param( module => $module );
+    $template->param( name   => $letter->{name} );
     return;
 }
 
 sub delete_confirmed {
-    my ($module, $code) = @_;
-    my $dbh    = C4::Context->dbh;
-    $dbh->do('DELETE FROM letter WHERE module=? AND code=?',{},$module,$code);
+    my ( $module, $code ) = @_;
+    my $dbh = C4::Context->dbh;
+    $dbh->do( 'DELETE FROM letter WHERE module=? AND code=?', {}, $module, $code );
+
     # setup default display for screen
     default_display();
     return;
@@ -285,16 +262,14 @@ sub delete_confirmed {
 
 sub retrieve_letters {
     my $searchstring = shift;
-    my $dbh = C4::Context->dbh;
+    my $dbh          = C4::Context->dbh;
     if ($searchstring) {
-        if ($searchstring=~m/(\S+)/) {
+        if ( $searchstring =~ m/(\S+)/ ) {
             $searchstring = $1 . q{%};
-            return $dbh->selectall_arrayref('SELECT module, code, name FROM letter WHERE code LIKE ? ORDER BY module, code',
-                { Slice => {} }, $searchstring);
+            return $dbh->selectall_arrayref( 'SELECT module, code, name FROM letter WHERE code LIKE ? ORDER BY module, code', { Slice => {} }, $searchstring );
         }
-    }
-    else {
-        return $dbh->selectall_arrayref('SELECT module, code, name FROM letter ORDER BY module, code', { Slice => {} });
+    } else {
+        return $dbh->selectall_arrayref( 'SELECT module, code, name FROM letter ORDER BY module, code', { Slice => {} } );
     }
     return;
 }
@@ -302,17 +277,17 @@ sub retrieve_letters {
 sub default_display {
     my $searchfield = shift;
     my $results;
-    if ( $searchfield  ) {
+    if ($searchfield) {
         $template->param( search      => 1 );
         $template->param( searchfield => $searchfield );
         $results = retrieve_letters($searchfield);
     } else {
         $results = retrieve_letters();
     }
-    my $loop_data = [];
+    my $loop_data         = [];
     my $protected_letters = protected_letters();
-    foreach my $row (@{$results}) {
-        $row->{protected} = $protected_letters->{ $row->{code}};
+    foreach my $row ( @{$results} ) {
+        $row->{protected} = $protected_letters->{ $row->{code} };
         push @{$loop_data}, $row;
 
     }
@@ -333,7 +308,8 @@ sub add_fields {
 
 sub get_columns_for {
     my $table = shift;
-# FIXME untranslateable
+
+    # FIXME untranslateable
     my %column_map = (
         aqbooksellers => '---BOOKSELLERS---',
         aqorders      => '---ORDERS---',
@@ -341,28 +317,27 @@ sub get_columns_for {
         reserves      => '---HOLDS---',
     );
     my @fields = ();
-    if (exists $column_map{$table} ) {
-        push @fields, {
-            value => q{},
-            text  => $column_map{$table} ,
-        };
-    }
-    else {
+    if ( exists $column_map{$table} ) {
+        push @fields,
+          { value => q{},
+            text  => $column_map{$table},
+          };
+    } else {
         my $tlabel = '---' . uc $table;
-        $tlabel.= '---';
-        push @fields, {
-            value => q{},
+        $tlabel .= '---';
+        push @fields,
+          { value => q{},
             text  => $tlabel,
-        };
+          };
     }
-    my $sql = "SHOW COLUMNS FROM $table";# TODO not db agnostic
+    my $sql          = "SHOW COLUMNS FROM $table";                                      # TODO not db agnostic
     my $table_prefix = $table . q|.|;
-    my $rows = C4::Context->dbh->selectall_arrayref($sql, { Slice => {} });
-    for my $row (@{$rows}) {
-        push @fields, {
-            value => $table_prefix . $row->{Field},
+    my $rows         = C4::Context->dbh->selectall_arrayref( $sql, { Slice => {} } );
+    for my $row ( @{$rows} ) {
+        push @fields,
+          { value => $table_prefix . $row->{Field},
             text  => $table_prefix . $row->{Field},
-        }
+          };
     }
     return @fields;
 }

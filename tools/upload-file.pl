@@ -18,6 +18,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 
 # standard or CPAN modules used
@@ -26,8 +27,8 @@ use CGI;
 use CGI::Session;
 use C4::Context;
 use C4::Auth qw/check_cookie_auth/;
-use CGI::Cookie; # need to check cookies before
-                 # having CGI parse the POST request
+use CGI::Cookie;    # need to check cookies before
+                    # having CGI parse the POST request
 use C4::UploadedFile;
 
 # upload-file.pl must authenticate the user
@@ -39,35 +40,36 @@ use C4::UploadedFile;
 # have been created.
 
 my %cookies = fetch CGI::Cookie;
-my ($auth_status, $sessionID) = check_cookie_auth($cookies{'CGISESSID'}->value, { tools => '*' });
-if ($auth_status ne "ok") {
+my ( $auth_status, $sessionID ) = check_cookie_auth( $cookies{'CGISESSID'}->value, { tools => '*' } );
+if ( $auth_status ne "ok" ) {
     $auth_status = 'denied' if $auth_status eq 'failed';
-    send_reply($auth_status, "");
+    send_reply( $auth_status, "" );
     exit 0;
 }
 
 my $uploaded_file = C4::UploadedFile->new($sessionID);
-unless (defined $uploaded_file) {
+unless ( defined $uploaded_file ) {
+
     # FIXME - failed to create file for some reason
-    send_reply('failed', '');
+    send_reply( 'failed', '' );
     exit 0;
 }
-$uploaded_file->max_size($ENV{'CONTENT_LENGTH'}); # may not be the file size, exactly
+$uploaded_file->max_size( $ENV{'CONTENT_LENGTH'} );    # may not be the file size, exactly
 
 my $first_chunk = 1;
 
 my $query;
 $query = new CGI \&upload_hook;
 $uploaded_file->done();
-send_reply('done', $uploaded_file->id());
+send_reply( 'done', $uploaded_file->id() );
 
 # FIXME - if possible, trap signal caused by user cancelling upload
 # FIXME - something is wrong during cleanup: \t(in cleanup) Can't call method "commit" on unblessed reference at /usr/local/share/perl/5.8.8/CGI/Session/Driver/DBI.pm line 130 during global destruction.
 exit 0;
 
 sub upload_hook {
-    my ($file_name, $buffer, $bytes_read, $session) = @_;
-    $uploaded_file->stash(\$buffer, $bytes_read);
+    my ( $file_name, $buffer, $bytes_read, $session ) = @_;
+    $uploaded_file->stash( \$buffer, $bytes_read );
     if ($first_chunk) {
         $uploaded_file->name($file_name);
         $first_chunk = 0;
@@ -75,10 +77,11 @@ sub upload_hook {
 }
 
 sub send_reply {
-    my ($upload_status, $fileid) = @_;
+    my ( $upload_status, $fileid ) = @_;
 
     my $reply = CGI->new("");
-    print $reply->header(-type => 'text/html');
+    print $reply->header( -type => 'text/html' );
+
     # response will be sent back as JSON
     print "{ status: '$upload_status', fileid: '$fileid' }";
 }

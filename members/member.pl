@@ -1,9 +1,7 @@
 #!/usr/bin/perl
 
-
 #script to do a borrower enquiry/bring up borrower details etc
 #written 20/12/99 by chris@katipo.co.nz
-
 
 # Copyright 2000-2002 Katipo Communications
 #
@@ -23,6 +21,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use C4::Auth;
 use C4::Output;
@@ -33,146 +32,138 @@ use C4::Category;
 use File::Basename;
 use YAML;
 
-my $input = new CGI;
-my $quicksearch = $input->param('quicksearch');
-my $startfrom = $input->param('startfrom')||1;
-my $resultsperpage = $input->param('resultsperpage')||C4::Context->preference("PatronsPerPage")||20;
+my $input          = new CGI;
+my $quicksearch    = $input->param('quicksearch');
+my $startfrom      = $input->param('startfrom') || 1;
+my $resultsperpage = $input->param('resultsperpage') || C4::Context->preference("PatronsPerPage") || 20;
 
-my ($template, $loggedinuser, $cookie)
-    = get_template_and_user({template_name => "members/member.tmpl",
-                 query => $input,
-                 type => "intranet",
-                 authnotrequired => 0,
-                 flagsrequired => {borrowers => 1},
-                 });
+my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
+    {   template_name   => "members/member.tmpl",
+        query           => $input,
+        type            => "intranet",
+        authnotrequired => 0,
+        flagsrequired   => { borrowers => 1 },
+    }
+);
 
 my $theme = $input->param('theme') || "default";
 
 my $patron = $input->Vars;
-foreach (keys %$patron){
-	delete $$patron{$_} unless($$patron{$_}); 
+foreach ( keys %$patron ) {
+    delete $$patron{$_} unless ( $$patron{$_} );
 }
 
-my @categories=C4::Category->all;
-my $branches=(defined $$patron{branchcode}?GetBranchesLoop($$patron{branchcode}):GetBranchesLoop());
+my @categories = C4::Category->all;
+my $branches = ( defined $$patron{branchcode} ? GetBranchesLoop( $$patron{branchcode} ) : GetBranchesLoop() );
 
 my %categories_dislay;
 
-foreach my $category (@categories){
-	my $hash={
-			category_description=>$$category{description},
-			category_type=>$$category{category_type}
-			 };
-	$categories_dislay{$$category{categorycode}} = $hash;
+foreach my $category (@categories) {
+    my $hash = {
+        category_description => $$category{description},
+        category_type        => $$category{category_type}
+    };
+    $categories_dislay{ $$category{categorycode} } = $hash;
 }
-$template->param( 
-        "AddPatronLists_".C4::Context->preference("AddPatronLists")=> "1",
-            );
-if (C4::Context->preference("AddPatronLists")=~/code/){
-    $categories[0]->{'first'}=1;
-}  
+$template->param( "AddPatronLists_" . C4::Context->preference("AddPatronLists") => "1", );
+if ( C4::Context->preference("AddPatronLists") =~ /code/ ) {
+    $categories[0]->{'first'} = 1;
+}
 
-my $member=$input->param('member');
-my $orderbyparams=$input->param('orderby');
+my $member        = $input->param('member');
+my $orderbyparams = $input->param('orderby');
 my @orderby;
-if ($orderbyparams and not $quicksearch){
-	my @orderbyelt=split(/,/,$orderbyparams);
-	push @orderby, {$orderbyelt[0]=>$orderbyelt[1]||0};
+if ( $orderbyparams and not $quicksearch ) {
+    my @orderbyelt = split( /,/, $orderbyparams );
+    push @orderby, { $orderbyelt[0] => $orderbyelt[1] || 0 };
+} else {
+    @orderby = ( { surname => 0 }, { firstname => 0 } );
 }
-else {
-	@orderby = ({surname=>0},{firstname=>0});
-}
-$member =~ s/,//g;   #remove any commas from search string
+$member =~ s/,//g;     #remove any commas from search string
 $member =~ s/\*/%/g;
 
-my ($count,$results);
+my ( $count, $results );
 
 my @searchpatron;
 push @searchpatron, $member if ($member);
-push @searchpatron, $patron if (keys %$patron);
-my $from= ($startfrom-1)*$resultsperpage;
-my $to=$from+$resultsperpage;
- #($results)=Search(\@searchpatron,{surname=>1,firstname=>1},[$from,$to],undef,["firstname","surname","email","othernames"]  ) if (@searchpatron);
- my $search_scope=($quicksearch?"field_start_with":"start_with");
- ($results)=Search(\@searchpatron,\@orderby,undef,undef,["firstname","surname","othernames","cardnumber","userid"],$search_scope  ) if (@searchpatron);
-if ($results){
-	$count =scalar(@$results);
+push @searchpatron, $patron if ( keys %$patron );
+my $from = ( $startfrom - 1 ) * $resultsperpage;
+my $to   = $from + $resultsperpage;
+
+#($results)=Search(\@searchpatron,{surname=>1,firstname=>1},[$from,$to],undef,["firstname","surname","email","othernames"]  ) if (@searchpatron);
+my $search_scope = ( $quicksearch ? "field_start_with" : "start_with" );
+($results) = Search( \@searchpatron, \@orderby, undef, undef, [ "firstname", "surname", "othernames", "cardnumber", "userid" ], $search_scope ) if (@searchpatron);
+if ($results) {
+    $count = scalar(@$results);
 }
 
-if($count == 1){
-    print $input->redirect("/cgi-bin/koha/members/moremember.pl?borrowernumber=" . @$results[0]->{borrowernumber});
+if ( $count == 1 ) {
+    print $input->redirect( "/cgi-bin/koha/members/moremember.pl?borrowernumber=" . @$results[0]->{borrowernumber} );
     exit;
 }
 
 my @resultsdata;
-my $to=($count>$to?$to:$count);
-my $index=$from;
+my $to = ( $count > $to ? $to : $count );
+my $index = $from;
 
-foreach my $borrower(@$results[$from..$to-1]){
-  #find out stats
-  my ($od,$issue,$fines)=GetMemberIssuesAndFines($$borrower{'borrowernumber'});
+foreach my $borrower ( @$results[ $from .. $to - 1 ] ) {
 
-  $$borrower{'dateexpiry'}= C4::Dates->new($$borrower{'dateexpiry'},'iso')->output('syspref');
+    #find out stats
+    my ( $od, $issue, $fines ) = GetMemberIssuesAndFines( $$borrower{'borrowernumber'} );
 
-  my %row = (
-    count => $index++,
-	%$borrower,
-	%{$categories_dislay{$$borrower{categorycode}}},
-    overdues => $od,
-    issues => $issue,
-    odissue => "$od/$issue",
-    fines =>  sprintf("%.2f",$fines),
+    $$borrower{'dateexpiry'} = C4::Dates->new( $$borrower{'dateexpiry'}, 'iso' )->output('syspref');
+
+    my %row = (
+        count => $index++,
+        %$borrower,
+        %{ $categories_dislay{ $$borrower{categorycode} } },
+        overdues => $od,
+        issues   => $issue,
+        odissue  => "$od/$issue",
+        fines    => sprintf( "%.2f", $fines ),
     );
-  push(@resultsdata, \%row);
+    push( @resultsdata, \%row );
 }
 
-if ($$patron{branchcode}){
-	foreach my $branch (grep{$_->{value} eq $$patron{branchcode}}@$branches){
-		$$branch{selected}=1;
-	}
+if ( $$patron{branchcode} ) {
+    foreach my $branch ( grep { $_->{value} eq $$patron{branchcode} } @$branches ) {
+        $$branch{selected} = 1;
+    }
 }
-if ($$patron{categorycode}){
-	foreach my $category (grep{$_->{categorycode} eq $$patron{categorycode}}@categories){
-		$$category{selected}=1;
-	}
+if ( $$patron{categorycode} ) {
+    foreach my $category ( grep { $_->{categorycode} eq $$patron{categorycode} } @categories ) {
+        $$category{selected} = 1;
+    }
 }
-my %parameters=
-        (  %$patron
-		, 'orderby'			=> $orderbyparams 
-		, 'resultsperpage'	=> $resultsperpage 
-        , 'type'=> 'intranet'); 
-my $base_url =
-    'member.pl?&amp;'
-  . join(
-    '&amp;',
-    map { "$_=$parameters{$_}" } (keys %parameters)
-  );
+my %parameters = (
+    %$patron,
+    'orderby'        => $orderbyparams,
+    'resultsperpage' => $resultsperpage,
+    'type'           => 'intranet'
+);
+my $base_url = 'member.pl?&amp;' . join( '&amp;', map { "$_=$parameters{$_}" } ( keys %parameters ) );
 
-my @letters = map { {letter => $_} } ( 'A' .. 'Z');
+my @letters = map { { letter => $_ } } ( 'A' .. 'Z' );
 $template->param( letters => \@letters );
 
 $template->param(
-    paginationbar => pagination_bar(
-        $base_url,  int( $count / $resultsperpage ) + 1,
-        $startfrom, 'startfrom'
-    ),
-    startfrom => $startfrom,
-    from      => ($startfrom-1)*$resultsperpage+1,  
-    to        => $to,
-    multipage => ($count != $to+1 || $startfrom!=1),
+    paginationbar => pagination_bar( $base_url, int( $count / $resultsperpage ) + 1, $startfrom, 'startfrom' ),
+    startfrom     => $startfrom,
+    from          => ( $startfrom - 1 ) * $resultsperpage + 1,
+    to            => $to,
+    multipage => ( $count != $to + 1 || $startfrom != 1 ),
 );
 $template->param(
-    branchloop=>$branches,
-	categoryloop=>\@categories,
+    branchloop   => $branches,
+    categoryloop => \@categories,
 );
 
-
-$template->param( 
-        searching       => "1",
-		actionname		=>basename($0),
-		%$patron,
-        numresults      => $count,
-        resultsloop     => \@resultsdata,
-            );
+$template->param(
+    searching  => "1",
+    actionname => basename($0),
+    %$patron,
+    numresults  => $count,
+    resultsloop => \@resultsdata,
+);
 
 output_html_with_http_headers $input, $cookie, $template->output;

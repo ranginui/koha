@@ -1,6 +1,5 @@
 #!/usr/bin/perl
 
-
 # Copyright 2000-2002 Katipo Communications
 #
 # This file is part of Koha.
@@ -23,7 +22,7 @@ use warnings;
 use CGI;
 use C4::Context;
 use C4::Output;
-use C4::Branch;     # GetBranches
+use C4::Branch;    # GetBranches
 use C4::Auth;
 use C4::Dates qw/format_date/;
 use C4::Biblio;
@@ -38,12 +37,11 @@ use Date::Calc qw(
 use C4::Koha;
 use C4::Reserves;
 
-my $input = new CGI;
+my $input      = new CGI;
 my $itemnumber = $input->param('itemnumber');
 
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => "circ/transferstoreceive.tmpl",
+    {   template_name   => "circ/transferstoreceive.tmpl",
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
@@ -62,8 +60,7 @@ my $latetransfers;
 foreach my $br ( keys %$branches ) {
     my @transferloop;
     my %branchloop;
-    my @gettransfers =
-      GetTransfersFromTo( $branches->{$br}->{'branchcode'}, $default );
+    my @gettransfers = GetTransfersFromTo( $branches->{$br}->{'branchcode'}, $default );
 
     if (@gettransfers) {
         $branchloop{'branchname'} = $branches->{$br}->{'branchname'};
@@ -71,35 +68,32 @@ foreach my $br ( keys %$branches ) {
         foreach my $num (@gettransfers) {
             my %getransf;
 
-            my ( $sent_year, $sent_month, $sent_day ) = split "-",
-              $num->{'datesent'};
+            my ( $sent_year, $sent_month, $sent_day ) = split "-", $num->{'datesent'};
             $sent_day = ( split " ", $sent_day )[0];
-            ( $sent_year, $sent_month, $sent_day ) =
-              Add_Delta_Days( $sent_year, $sent_month, $sent_day,
-                C4::Context->preference('TransfersMaxDaysWarning'));
+            ( $sent_year, $sent_month, $sent_day ) = Add_Delta_Days( $sent_year, $sent_month, $sent_day, C4::Context->preference('TransfersMaxDaysWarning') );
             my $calcDate = Date_to_Days( $sent_year, $sent_month, $sent_day );
             my $today    = Date_to_Days(&Today);
-			my $diff = $today - $calcDate;
+            my $diff     = $today - $calcDate;
 
-            if ($today > $calcDate) {
-				$latetransfers = 1;
+            if ( $today > $calcDate ) {
+                $latetransfers         = 1;
                 $getransf{'messcompa'} = 1;
-				$getransf{'diff'} = $diff;
+                $getransf{'diff'}      = $diff;
             }
-            my $gettitle     = GetBiblioFromItemNumber( $num->{'itemnumber'} );
-            my $itemtypeinfo = getitemtypeinfo( (C4::Context->preference('item-level_itypes')) ? $gettitle->{'itype'} : $gettitle->{'itemtype'} );
+            my $gettitle = GetBiblioFromItemNumber( $num->{'itemnumber'} );
+            my $itemtypeinfo = getitemtypeinfo( ( C4::Context->preference('item-level_itypes') ) ? $gettitle->{'itype'} : $gettitle->{'itemtype'} );
 
             $getransf{'datetransfer'} = format_date( $num->{'datesent'} );
-            $getransf{'itemtype'} = $itemtypeinfo ->{'description'};
-			foreach (qw(title author biblionumber itemnumber barcode homebranch holdingbranch itemcallnumber)) {
-            	$getransf{$_} = $gettitle->{$_};
-			}
+            $getransf{'itemtype'}     = $itemtypeinfo->{'description'};
+            foreach (qw(title author biblionumber itemnumber barcode homebranch holdingbranch itemcallnumber)) {
+                $getransf{$_} = $gettitle->{$_};
+            }
 
-            my $record = GetMarcBiblio($gettitle->{'biblionumber'});
-            $getransf{'subtitle'} = GetRecordValue('subtitle', $record, GetFrameworkCode($gettitle->{'biblionumber'}));
+            my $record = GetMarcBiblio( $gettitle->{'biblionumber'} );
+            $getransf{'subtitle'} = GetRecordValue( 'subtitle', $record, GetFrameworkCode( $gettitle->{'biblionumber'} ) );
 
             # we check if we have a reserv for this transfer
-            my @checkreserv = GetReservesFromItemnumber($num->{'itemnumber'} );
+            my @checkreserv = GetReservesFromItemnumber( $num->{'itemnumber'} );
             if ( $checkreserv[0] ) {
                 my $getborrower = GetMemberDetails( $checkreserv[1] );
                 $getransf{'borrowernum'}       = $getborrower->{'borrowernumber'};
@@ -111,7 +105,7 @@ foreach my $br ( keys %$branches ) {
             push( @transferloop, \%getransf );
         }
 
-      # 		If we have a return of reservloop we put it in the branchloop sequence
+        # 		If we have a return of reservloop we put it in the branchloop sequence
         $branchloop{'reserv'} = \@transferloop;
     }
     push( @branchesloop, \%branchloop ) if %branchloop;
@@ -119,10 +113,10 @@ foreach my $br ( keys %$branches ) {
 
 $template->param(
     branchesloop => \@branchesloop,
-    show_date    => format_date(C4::Dates->today('iso')),
-	'dateformat_' . (C4::Context->preference("dateformat") || '') => 1,
-	TransfersMaxDaysWarning => C4::Context->preference('TransfersMaxDaysWarning'),
-	latetransfers => $latetransfers ? 1 : 0,
+    show_date    => format_date( C4::Dates->today('iso') ),
+    'dateformat_' . ( C4::Context->preference("dateformat") || '' ) => 1,
+    TransfersMaxDaysWarning => C4::Context->preference('TransfersMaxDaysWarning'),
+    latetransfers           => $latetransfers ? 1 : 0,
 );
 
 output_html_with_http_headers $input, $cookie, $template->output;

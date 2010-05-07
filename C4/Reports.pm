@@ -18,6 +18,7 @@ package C4::Reports;
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use CGI;
 
@@ -26,12 +27,13 @@ use C4::Context;
 use C4::Debug;
 
 BEGIN {
+
     # set the version for version checking
     $VERSION = 0.13;
     require Exporter;
-    @ISA = qw(Exporter);
+    @ISA    = qw(Exporter);
     @EXPORT = qw(
-        GetDelimiterChoices
+      GetDelimiterChoices
     );
 }
 
@@ -60,24 +62,25 @@ This will return a list of all the available delimiters.
 sub GetDelimiterChoices {
     my $dbh = C4::Context->dbh;
 
-    my $sth = $dbh->prepare("
+    my $sth = $dbh->prepare( "
       SELECT options, value
       FROM systempreferences
       WHERE variable = 'delimiter'
-    ");
+    " );
 
     $sth->execute();
 
-    my ($choices, $default) = $sth->fetchrow;
+    my ( $choices, $default ) = $sth->fetchrow;
     my @dels = split /\|/, $choices;
 
     return CGI::scrolling_list(
-                -name     => 'sep',
-                -id       => 'sep',
-                -default  => $default,
-                -values   => \@dels,
-                -size     => 1,
-                -multiple => 0 );
+        -name     => 'sep',
+        -id       => 'sep',
+        -default  => $default,
+        -values   => \@dels,
+        -size     => 1,
+        -multiple => 0
+    );
 }
 
 1;

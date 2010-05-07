@@ -22,6 +22,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 
 use CGI;
@@ -32,42 +33,41 @@ use C4::Members;
 
 my $input = new CGI;
 
-my ($template, $borrowernumber, $cookie)
-                = get_template_and_user({template_name => "members/deletemem.tmpl",
-                                        query => $input,
-                                        type => "intranet",
-                                        authnotrequired => 0,
-                                        flagsrequired => {borrowers => 1},
-                                        debug => 1,
-                                        });
+my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
+    {   template_name   => "members/deletemem.tmpl",
+        query           => $input,
+        type            => "intranet",
+        authnotrequired => 0,
+        flagsrequired   => { borrowers => 1 },
+        debug           => 1,
+    }
+);
 
 #print $input->header;
-my $member=$input->param('member');
-my $issues = GetPendingIssues($member);     # FIXME: wasteful call when really, we only want the count
+my $member      = $input->param('member');
+my $issues      = GetPendingIssues($member);    # FIXME: wasteful call when really, we only want the count
 my $countissues = scalar(@$issues);
 
-my ($bor)=GetMemberDetails($member,'');
-my $flags=$bor->{flags};
+my ($bor) = GetMemberDetails( $member, '' );
+my $flags = $bor->{flags};
 my $userenv = C4::Context->userenv;
 
- 
-
-if ($bor->{category_type} eq "S") {
-    unless(C4::Auth::haspermission($userenv->{'id'},{'staffaccess'=>1})) {
+if ( $bor->{category_type} eq "S" ) {
+    unless ( C4::Auth::haspermission( $userenv->{'id'}, { 'staffaccess' => 1 } ) ) {
         print $input->redirect("/cgi-bin/koha/members/moremember.pl?borrowernumber=$member&error=CANT_DELETE_STAFF");
         exit 1;
     }
 } else {
-    unless(C4::Auth::haspermission($userenv->{'id'},{'borrowers'=>1})) {
-	print $input->redirect("/cgi-bin/koha/members/moremember.pl?borrowernumber=$member&error=CANT_DELETE");
-	exit 1;
+    unless ( C4::Auth::haspermission( $userenv->{'id'}, { 'borrowers' => 1 } ) ) {
+        print $input->redirect("/cgi-bin/koha/members/moremember.pl?borrowernumber=$member&error=CANT_DELETE");
+        exit 1;
     }
 }
 
-if (C4::Context->preference("IndependantBranches")) {
+if ( C4::Context->preference("IndependantBranches") ) {
     my $userenv = C4::Context->userenv;
-    if (($userenv->{flags} % 2 != 1) && $bor->{'branchcode'}){
-        unless ($userenv->{branch} eq $bor->{'branchcode'}){
+    if ( ( $userenv->{flags} % 2 != 1 ) && $bor->{'branchcode'} ) {
+        unless ( $userenv->{branch} eq $bor->{'branchcode'} ) {
             print $input->redirect("/cgi-bin/koha/members/moremember.pl?borrowernumber=$member&error=CANT_DELETE_OTHERLIBRARY");
             exit;
         }
@@ -75,27 +75,27 @@ if (C4::Context->preference("IndependantBranches")) {
 }
 
 my $dbh = C4::Context->dbh;
-my $sth=$dbh->prepare("Select * from borrowers where guarantorid=?");
+my $sth = $dbh->prepare("Select * from borrowers where guarantorid=?");
 $sth->execute($member);
-my $data=$sth->fetchrow_hashref;
-if ($countissues > 0 or $flags->{'CHARGES'}  or $data->{'borrowernumber'}){
+my $data = $sth->fetchrow_hashref;
+if ( $countissues > 0 or $flags->{'CHARGES'} or $data->{'borrowernumber'} ) {
+
     #   print $input->header;
-    $template->param(borrowernumber => $member);
-    if ($countissues >0) {
-        $template->param(ItemsOnIssues => $countissues);
+    $template->param( borrowernumber => $member );
+    if ( $countissues > 0 ) {
+        $template->param( ItemsOnIssues => $countissues );
     }
-    if ($flags->{'CHARGES'} ne '') {
-        $template->param(charges => $flags->{'CHARGES'}->{'amount'});
+    if ( $flags->{'CHARGES'} ne '' ) {
+        $template->param( charges => $flags->{'CHARGES'}->{'amount'} );
     }
     if ($data) {
-        $template->param(guarantees => 1);
+        $template->param( guarantees => 1 );
     }
-output_html_with_http_headers $input, $cookie, $template->output;
+    output_html_with_http_headers $input, $cookie, $template->output;
 
 } else {
     MoveMemberToDeleted($member);
     DelMember($member);
     print $input->redirect("/cgi-bin/koha/members/members-home.pl");
 }
-
 

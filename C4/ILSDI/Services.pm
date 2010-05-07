@@ -249,7 +249,7 @@ sub GetAuthorityRecords {
     foreach my $authid ( split( / /, $cgi->param('id') ) ) {
 
         # Get the record as XML string, or error code
-        my $record = GetAuthorityXML( $_ ) || "<record><code>RecordNotFound</code></record>";
+        my $record = GetAuthorityXML($_) || "<record><code>RecordNotFound</code></record>";
         $record =~ s/<\?xml(.*)\?>//go;
         $records .= $record;
     }
@@ -278,7 +278,7 @@ sub LookupPatron {
     my ($cgi) = @_;
 
     # Get the borrower...
-    my $borrower = GetMember($cgi->param('id_type') => $cgi->param('id'));
+    my $borrower = GetMember( $cgi->param('id_type') => $cgi->param('id') );
     if ( not $borrower->{'borrowernumber'} ) {
         return { message => 'PatronNotFound' };
     }
@@ -309,7 +309,7 @@ sub AuthenticatePatron {
     my ($cgi) = @_;
 
     # Check if borrower exists, using a C4::Auth function...
-    unless( checkpw( C4::Context->dbh, $cgi->param('username'), $cgi->param('password') ) ) {
+    unless ( checkpw( C4::Context->dbh, $cgi->param('username'), $cgi->param('password') ) ) {
         return { code => 'PatronNotFound' };
     }
 
@@ -349,7 +349,7 @@ sub GetPatronInfo {
 
     # Get Member details
     my $borrowernumber = $cgi->param('patron_id');
-    my $borrower = GetMemberDetails( $borrowernumber );
+    my $borrower       = GetMemberDetails($borrowernumber);
     return { code => 'PatronNotFound' } unless $$borrower{borrowernumber};
 
     # Cleaning the borrower hashref
@@ -434,13 +434,13 @@ sub GetPatronStatus {
 
     # Get Member details
     my $borrowernumber = $cgi->param('patron_id');
-    my $borrower = GetMemberDetails( $borrowernumber );
+    my $borrower       = GetMemberDetails($borrowernumber);
     return { code => 'PatronNotFound' } unless $$borrower{borrowernumber};
 
     # Return the results
     return {
         type   => $$borrower{categorycode},
-        status => 0, # TODO
+        status => 0,                          # TODO
         expiry => $$borrower{dateexpiry},
     };
 }
@@ -463,12 +463,12 @@ sub GetServices {
 
     # Get the member, or return an error code if not found
     my $borrowernumber = $cgi->param('patron_id');
-    my $borrower = GetMemberDetails( $borrowernumber );
+    my $borrower       = GetMemberDetails($borrowernumber);
     return { code => 'PatronNotFound' } unless $$borrower{borrowernumber};
 
     # Get the item, or return an error code if not found
     my $itemnumber = $cgi->param('item_id');
-    my $item = GetItem( $itemnumber );
+    my $item       = GetItem($itemnumber);
     return { code => 'RecordNotFound' } unless $$item{itemnumber};
 
     my @availablefor;
@@ -535,12 +535,12 @@ sub RenewLoan {
 
     # Get borrower infos or return an error code
     my $borrowernumber = $cgi->param('patron_id');
-    my $borrower = GetMemberDetails( $borrowernumber );
+    my $borrower       = GetMemberDetails($borrowernumber);
     return { code => 'PatronNotFound' } unless $$borrower{borrowernumber};
 
     # Get the item, or return an error code
     my $itemnumber = $cgi->param('item_id');
-    my $item = GetItem( $itemnumber );
+    my $item       = GetItem($itemnumber);
     return { code => 'RecordNotFound' } unless $$item{itemnumber};
 
     # Add renewal if possible
@@ -585,14 +585,14 @@ sub HoldTitle {
 
     # Get the borrower or return an error code
     my $borrowernumber = $cgi->param('patron_id');
-    my $borrower = GetMemberDetails( $borrowernumber );
+    my $borrower       = GetMemberDetails($borrowernumber);
     return { code => 'PatronNotFound' } unless $$borrower{borrowernumber};
 
     # Get the biblio record, or return an error code
     my $biblionumber = $cgi->param('bib_id');
-    my ( $count, $biblio ) = GetBiblio( $biblionumber );
+    my ( $count, $biblio ) = GetBiblio($biblionumber);
     return { code => 'RecordNotFound' } unless $$biblio{biblionumber};
-    
+
     my $title = $$biblio{title};
 
     # Check if the biblio can be reserved
@@ -605,7 +605,7 @@ sub HoldTitle {
         $branch = $cgi->param('pickup_location');
         my $branches = GetBranches;
         return { code => 'LocationNotFound' } unless $$branches{$branch};
-    } else { # if the request provide no branch, use the borrower's branch
+    } else {    # if the request provide no branch, use the borrower's branch
         $branch = $$borrower{branchcode};
     }
 
@@ -650,7 +650,7 @@ sub HoldItem {
 
     # Get the borrower or return an error code
     my $borrowernumber = $cgi->param('patron_id');
-    my $borrower = GetMemberDetails( $borrowernumber );
+    my $borrower       = GetMemberDetails($borrowernumber);
     return { code => 'PatronNotFound' } unless $$borrower{borrowernumber};
 
     # Get the biblio or return an error code
@@ -662,7 +662,7 @@ sub HoldItem {
 
     # Get the item or return an error code
     my $itemnumber = $cgi->param('item_id');
-    my $item = GetItem( $itemnumber );
+    my $item       = GetItem($itemnumber);
     return { code => 'RecordNotFound' } unless $$item{itemnumber};
 
     # If the biblio does not match the item, return an error code
@@ -680,7 +680,7 @@ sub HoldItem {
         $branch = $cgi->param('pickup_location');
         my $branches = GetBranches();
         return { code => 'LocationNotFound' } unless $$branches{$branch};
-    } else { # if the request provide no branch, use the borrower's branch
+    } else {    # if the request provide no branch, use the borrower's branch
         $branch = $$borrower{branchcode};
     }
 
@@ -724,12 +724,12 @@ sub CancelHold {
 
     # Get the borrower or return an error code
     my $borrowernumber = $cgi->param('patron_id');
-    my $borrower = GetMemberDetails( $borrowernumber );
+    my $borrower       = GetMemberDetails($borrowernumber);
     return { code => 'PatronNotFound' } unless $$borrower{borrowernumber};
 
     # Get the item or return an error code
     my $itemnumber = $cgi->param('item_id');
-    my $item = GetItem( $itemnumber );
+    my $item       = GetItem($itemnumber);
     return { code => 'RecordNotFound' } unless $$item{itemnumber};
 
     # Get borrower's reserves

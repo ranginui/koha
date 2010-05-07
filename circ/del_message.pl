@@ -49,5 +49,4 @@ my $message_id     = $input->param('message_id');
 
 DeleteMessage($message_id);
 
-print $input->redirect(
-    "/cgi-bin/koha/circ/circulation.pl?borrowernumber=$borrowernumber");
+print $input->redirect("/cgi-bin/koha/circ/circulation.pl?borrowernumber=$borrowernumber");

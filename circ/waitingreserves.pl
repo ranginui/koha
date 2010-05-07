@@ -22,11 +22,11 @@ use warnings;
 use CGI;
 use C4::Context;
 use C4::Output;
-use C4::Branch; # GetBranchName
+use C4::Branch;    # GetBranchName
 use C4::Auth;
 use C4::Dates qw/format_date/;
 use C4::Circulation;
-use C4::Reserves; # qw/GetMaxPickUpDelay/;
+use C4::Reserves;    # qw/GetMaxPickUpDelay/;
 use C4::Members;
 use C4::Biblio;
 use C4::Items;
@@ -50,8 +50,7 @@ my $all_branches   = $input->param('allbranches') || '';
 my $cancel;
 
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => "circ/waitingreserves.tmpl",
+    {   template_name   => "circ/waitingreserves.tmpl",
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
@@ -65,14 +64,15 @@ my $default = C4::Context->userenv->{'branch'};
 # if we have a return from the form we launch the subroutine CancelReserve
 if ($item) {
     my ( $messages, $nextreservinfo ) = ModReserveCancelAll( $item, $borrowernumber );
+
     # if we have a result
     if ($nextreservinfo) {
-        my $borrowerinfo = GetMemberDetails( $nextreservinfo );
-        my $iteminfo = GetBiblioFromItemNumber($item);
+        my $borrowerinfo = GetMemberDetails($nextreservinfo);
+        my $iteminfo     = GetBiblioFromItemNumber($item);
         if ( $messages->{'transfert'} ) {
             $template->param(
                 messagetransfert => $messages->{'transfert'},
-                branchname       => GetBranchName($messages->{'transfert'}),
+                branchname       => GetBranchName( $messages->{'transfert'} ),
             );
         }
 
@@ -83,12 +83,12 @@ if ($item) {
             nextreservfirstname => $borrowerinfo->{'firstname'},
             nextreservitem      => $item,
             nextreservtitle     => $iteminfo->{'title'},
-            waiting             => ($messages->{'waiting'}) ? 1 : 0,
+            waiting             => ( $messages->{'waiting'} ) ? 1 : 0,
         );
     }
 
-# 	if the document is not in his homebranch location and there is not reservation after, we transfer it
-    if ($fbr ne $tbr  and not $nextreservinfo) {
+    # 	if the document is not in his homebranch location and there is not reservation after, we transfer it
+    if ( $fbr ne $tbr and not $nextreservinfo ) {
         ModItemTransfer( $item, $fbr, $tbr );
     }
 }
@@ -99,38 +99,40 @@ if ( C4::Context->preference('IndependantBranches') ) {
       unless $all_branches;
 }
 
-my (@reservloop, @overloop);
-my ($reservcount, $overcount);
+my ( @reservloop,  @overloop );
+my ( $reservcount, $overcount );
 my @getreserves = $all_branches ? GetReservesForBranch() : GetReservesForBranch($default);
+
 # get reserves for the branch we are logged into, or for all branches
 
 my $today = Date_to_Days(&Today);
 foreach my $num (@getreserves) {
-    next unless ($num->{'waitingdate'} && $num->{'waitingdate'} ne '0000-00-00');
+    next unless ( $num->{'waitingdate'} && $num->{'waitingdate'} ne '0000-00-00' );
     my %getreserv;
-    my $gettitle     = GetBiblioFromItemNumber( $num->{'itemnumber'} );
+    my $gettitle = GetBiblioFromItemNumber( $num->{'itemnumber'} );
+
     # fix up item type for display
     $gettitle->{'itemtype'} = C4::Context->preference('item-level_itypes') ? $gettitle->{'itype'} : $gettitle->{'itemtype'};
     my $getborrower  = GetMemberDetails( $num->{'borrowernumber'} );
-    my $itemtypeinfo = getitemtypeinfo( $gettitle->{'itemtype'} );  # using the fixed up itype/itemtype
-    if ($num->{waitingdate}){
-	my @maxpickupdate=GetMaxPickupDate($num->{'waitingdate'},$borrowernumber, $num);
-	$getreserv{'waitingdate'} = format_date( $num->{'waitingdate'} );
+    my $itemtypeinfo = getitemtypeinfo( $gettitle->{'itemtype'} );     # using the fixed up itype/itemtype
+    if ( $num->{waitingdate} ) {
+        my @maxpickupdate = GetMaxPickupDate( $num->{'waitingdate'}, $borrowernumber, $num );
+        $getreserv{'waitingdate'} = format_date( $num->{'waitingdate'} );
 
-	$getreserv{'maxpickupdate'} = sprintf("%d-%02d-%02d", @maxpickupdate);
+        $getreserv{'maxpickupdate'} = sprintf( "%d-%02d-%02d", @maxpickupdate );
 
-	my $calcDate = Date_to_Days( @maxpickupdate );
+        my $calcDate = Date_to_Days(@maxpickupdate);
 
-	if ($today > $calcDate) {
-	    $getreserv{'messcompa'} = 1;
-	}
+        if ( $today > $calcDate ) {
+            $getreserv{'messcompa'} = 1;
+        }
     }
     $getreserv{'itemtype'}       = $itemtypeinfo->{'description'};
     $getreserv{'title'}          = $gettitle->{'title'};
     $getreserv{'itemnumber'}     = $gettitle->{'itemnumber'};
     $getreserv{'biblionumber'}   = $gettitle->{'biblionumber'};
     $getreserv{'barcode'}        = $gettitle->{'barcode'};
-    $getreserv{'homebranch'}     = GetBranchName($gettitle->{'homebranch'});
+    $getreserv{'homebranch'}     = GetBranchName( $gettitle->{'homebranch'} );
     $getreserv{'holdingbranch'}  = $gettitle->{'holdingbranch'};
     $getreserv{'itemcallnumber'} = $gettitle->{'itemcallnumber'};
     if ( $gettitle->{'homebranch'} ne $gettitle->{'holdingbranch'} ) {
@@ -141,26 +143,26 @@ foreach my $num (@getreserves) {
     $getreserv{'borrowerfirstname'} = $getborrower->{'firstname'};
     $getreserv{'borrowerphone'}     = $getborrower->{'phone'};
     if ( $getborrower->{'emailaddress'} ) {
-        $getreserv{'borrowermail'}  = $getborrower->{'emailaddress'};
+        $getreserv{'borrowermail'} = $getborrower->{'emailaddress'};
     }
- 
-    if ($today > $calcDate) {
-        push @overloop,   \%getreserv;
+
+    if ( $today > $calcDate ) {
+        push @overloop, \%getreserv;
         $overcount++;
-    }else{
+    } else {
         push @reservloop, \%getreserv;
         $reservcount++;
     }
-    
+
 }
 
 $template->param(
-    reserveloop => \@reservloop,
+    reserveloop  => \@reservloop,
     reservecount => $reservcount,
-    overloop    => \@overloop,
-    overcount   => $overcount,
-    show_date   => format_date(C4::Dates->today('iso')),
-	dateformat  => C4::Context->preference("dateformat"),
+    overloop     => \@overloop,
+    overcount    => $overcount,
+    show_date    => format_date( C4::Dates->today('iso') ),
+    dateformat   => C4::Context->preference("dateformat"),
 );
 
 output_html_with_http_headers $input, $cookie, $template->output;

@@ -1,9 +1,7 @@
 #!/usr/bin/perl
 
-
 #written 18/1/2000 by chris@katipo.co.nz
 #script to renew items from the web
-
 
 # Copyright 2000-2002 Katipo Communications
 #
@@ -28,8 +26,8 @@ use C4::Circulation;
 use C4::Auth;
 use C4::Dates qw/format_date_in_iso/;
 use C4::Context;
-use C4::Overdues; #CheckBorrowerDebarred
-use C4::Members; #GetMemberDetail
+use C4::Overdues;    #CheckBorrowerDebarred
+use C4::Members;     #GetMemberDetail
 use C4::Items;
 use C4::Branch;
 use List::MoreUtils qw/any/;
@@ -41,8 +39,7 @@ my $input = new CGI;
 # And assures user is loggedin  and has correct accreditations.
 
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => "members/moremember.tmpl",
+    {   template_name   => "members/moremember.tmpl",
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
@@ -57,125 +54,123 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
 
 my $branches = GetBranches();
 my @data;
-if ($input->param('renew_all')) {
+if ( $input->param('renew_all') ) {
     @data = $input->param('all_items[]');
-}
-else {
+} else {
     @data = $input->param('items[]');
 }
 
 my @barcodes;
-if ($input->param('return_all')) {
+if ( $input->param('return_all') ) {
     @barcodes = $input->param('all_barcodes[]');
 } else {
     @barcodes = $input->param('barcodes[]');
 }
 
-my $branch=$input->param('branch');
+my $branch = $input->param('branch');
 my $datedue;
-if ($input->param('newduedate')){
-    $datedue=C4::Dates->new($input->param('newduedate'));
+if ( $input->param('newduedate') ) {
+    $datedue = C4::Dates->new( $input->param('newduedate') );
 }
 
 # warn "barcodes : @barcodes";
 #
 # renew items
 #
-my $cardnumber = $input->param("cardnumber");
+my $cardnumber     = $input->param("cardnumber");
 my $borrowernumber = $input->param("borrowernumber");
-my $exemptfine = $input->param("exemptfine") || 0;
+my $exemptfine     = $input->param("exemptfine") || 0;
 my $override_limit = $input->param("override_limit") || 0;
 my $failedrenews;
 foreach my $itemno (@data) {
+
     # check status before renewing issue
-	my ($renewokay,$error) = CanBookBeRenewed($borrowernumber,$itemno);
-    if ($renewokay||$override_limit){
-        AddRenewal($borrowernumber,$itemno,$branch,$datedue);
-        my $remotehost=$input->remote_host;
-        my @ips=split /,|\|/, C4::Context->preference("CI-3M:AuthorizedIPs");
+    my ( $renewokay, $error ) = CanBookBeRenewed( $borrowernumber, $itemno );
+    if ( $renewokay || $override_limit ) {
+        AddRenewal( $borrowernumber, $itemno, $branch, $datedue );
+        my $remotehost = $input->remote_host;
+        my @ips = split /,|\|/, C4::Context->preference("CI-3M:AuthorizedIPs");
+
         #my $pid=fork();
         #unless($pid && $remotehost=~qr(^$ips$)){
         #if (!$pid && any{ $remotehost eq $_ }@ips ){
-        if (any{ $remotehost eq $_ }@ips ){
+        if ( any { $remotehost eq $_ } @ips ) {
             warn $remotehost;
             system("../services/magnetise.pl $remotehost out");
+
             #die 0;
         }
+    } else {
+        $failedrenews .= "&failedrenew=$itemno&renewerror=" . encode_json($error);
     }
-	else {
-		$failedrenews.="&failedrenew=$itemno&renewerror=".encode_json($error);
-	}
 }
 
 my $failedreturn;
 foreach my $barcode (@barcodes) {
+
     # check status before renewing issue
-   my ( $returned, $messages, $issueinformation, $borrower ) = 
-    AddReturn($barcode, $branch, $exemptfine);
-    my $itemnumber=GetItemnumberFromBarcode($barcode);
-    if ($returned){
-        if (my ($reservetype,$reserve)=C4::Reserves::CheckReserves(undef,$barcode)){
-            if ($reservetype eq "Waiting" || $reservetype eq "Reserved"){
-                my $transfer=C4::Context->userenv->{branch} ne $reserve->{branchcode};
-                ModReserveAffect($itemnumber,$reserve->{borrowernumber},$transfer);
+    my ( $returned, $messages, $issueinformation, $borrower ) = AddReturn( $barcode, $branch, $exemptfine );
+    my $itemnumber = GetItemnumberFromBarcode($barcode);
+    if ($returned) {
+        if ( my ( $reservetype, $reserve ) = C4::Reserves::CheckReserves( undef, $barcode ) ) {
+            if ( $reservetype eq "Waiting" || $reservetype eq "Reserved" ) {
+                my $transfer = C4::Context->userenv->{branch} ne $reserve->{branchcode};
+                ModReserveAffect( $itemnumber, $reserve->{borrowernumber}, $transfer );
                 my ( $message_reserve, $nextreservinfo ) = GetOtherReserves($itemnumber);
 
                 my ($borr) = GetMemberDetails( $nextreservinfo, 0 );
-                $messages->{reservesdata}={
-                        found          => 1,
-                        currentbranch  => $branches->{C4::Context->userenv->{branch}}->{'branchname'},
-                        destbranchname => $branches->{ $reserve->{'branchcode'} }->{'branchname'},
-                        name           => $borr->{'surname'} . ", " . $borr->{'title'} . " " . $borr->{'firstname'},
-                        borfirstname   => $borr->{'firstname'},
-                        borsurname     => $borr->{'surname'},
-                        bortitle       => $borr->{'title'},
-                        borphone       => $borr->{'phone'},
-                        boremail       => $borr->{'email'},
-                        boraddress     => $borr->{'address'},
-                        boraddress2    => $borr->{'address2'},
-                        borcity        => $borr->{'city'},
-                        borzip         => $borr->{'zipcode'},
-                        borcnum        => $borr->{'cardnumber'},
-                        debarred       => CheckBorrowerDebarred($borr->{borrowernumber}),
-                        gonenoaddress  => $borr->{'gonenoaddress'},
-                        barcode        => $barcode,
-                        transfertodo   => $transfer,
-                        destbranch	   => $reserve->{'branchcode'},
-                        borrowernumber => $reserve->{'borrowernumber'},
-                        itemnumber     => $reserve->{'itemnumber'},
-                        biblionumber   => $reserve->{'biblionumber'},
-                        reservenotes   => $reserve->{'reservenotes'},
+                $messages->{reservesdata} = {
+                    found          => 1,
+                    currentbranch  => $branches->{ C4::Context->userenv->{branch} }->{'branchname'},
+                    destbranchname => $branches->{ $reserve->{'branchcode'} }->{'branchname'},
+                    name           => $borr->{'surname'} . ", " . $borr->{'title'} . " " . $borr->{'firstname'},
+                    borfirstname   => $borr->{'firstname'},
+                    borsurname     => $borr->{'surname'},
+                    bortitle       => $borr->{'title'},
+                    borphone       => $borr->{'phone'},
+                    boremail       => $borr->{'email'},
+                    boraddress     => $borr->{'address'},
+                    boraddress2    => $borr->{'address2'},
+                    borcity        => $borr->{'city'},
+                    borzip         => $borr->{'zipcode'},
+                    borcnum        => $borr->{'cardnumber'},
+                    debarred       => CheckBorrowerDebarred( $borr->{borrowernumber} ),
+                    gonenoaddress  => $borr->{'gonenoaddress'},
+                    barcode        => $barcode,
+                    transfertodo   => $transfer,
+                    destbranch     => $reserve->{'branchcode'},
+                    borrowernumber => $reserve->{'borrowernumber'},
+                    itemnumber     => $reserve->{'itemnumber'},
+                    biblionumber   => $reserve->{'biblionumber'},
+                    reservenotes   => $reserve->{'reservenotes'},
                 };
-                
+
             }
         }
-        my $remotehost=$input->remote_host;
-        my @ips=split /,|\|/, C4::Context->preference("CI-3M:AuthorizedIPs");
+        my $remotehost = $input->remote_host;
+        my @ips = split /,|\|/, C4::Context->preference("CI-3M:AuthorizedIPs");
+
         #my $pid=fork();
         #unless($pid && $remotehost=~qr(^$ips$)){
         #if (!$pid && any{ $remotehost eq $_ }@ips ){
-        if (any{ $remotehost eq $_ }@ips ){
+        if ( any { $remotehost eq $_ } @ips ) {
             warn $remotehost;
             system("../services/magnetise.pl $remotehost in");
+
             #die 0;
         }
     }
-    if (!$returned ||$messages){
-        $failedreturn.="&failedreturn=$barcode&returnerror=".encode_json($messages);
-   }
+    if ( !$returned || $messages ) {
+        $failedreturn .= "&failedreturn=$barcode&returnerror=" . encode_json($messages);
+    }
 }
 
 #
 # redirection to the referrer page
 #
-if ($input->param('destination') eq "circ"){
-    warn ($failedreturn);
-    print $input->redirect(
-        '/cgi-bin/koha/circ/circulation.pl?findborrower='.$cardnumber.$failedrenews.$failedreturn
-    );
-}
-else {
-    print $input->redirect(
-        '/cgi-bin/koha/members/moremember.pl?borrowernumber='.$borrowernumber.$failedrenews.$failedreturn
-    );
+if ( $input->param('destination') eq "circ" ) {
+    warn($failedreturn);
+    print $input->redirect( '/cgi-bin/koha/circ/circulation.pl?findborrower=' . $cardnumber . $failedrenews . $failedreturn );
+} else {
+    print $input->redirect( '/cgi-bin/koha/members/moremember.pl?borrowernumber=' . $borrowernumber . $failedrenews . $failedreturn );
 }

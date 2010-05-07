@@ -3,7 +3,6 @@
 
 package C4::VirtualShelves;
 
-
 # Copyright 2000-2002 Katipo Communications
 #
 # This file is part of Koha.
@@ -34,24 +33,24 @@ require C4::Auth;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
 
 BEGIN {
-	# set the version for version checking
-	$VERSION = 3.02;
-	require Exporter;
-	@ISA    = qw(Exporter);
-	@EXPORT = qw(
-            &GetShelves &GetShelfContents &GetShelf
-            &AddToShelf &AddToShelfFromBiblio &AddShelf
-            &ModShelf
-            &ShelfPossibleAction
-            &DelFromShelf &DelShelf
-            &GetBibliosShelves
-	);
-        @EXPORT_OK = qw(
-            &GetShelvesSummary &GetRecentShelves
-            &RefreshShelvesSummary &SetShelvesLimit
-        );
-}
 
+    # set the version for version checking
+    $VERSION = 3.02;
+    require Exporter;
+    @ISA    = qw(Exporter);
+    @EXPORT = qw(
+      &GetShelves &GetShelfContents &GetShelf
+      &AddToShelf &AddToShelfFromBiblio &AddShelf
+      &ModShelf
+      &ShelfPossibleAction
+      &DelFromShelf &DelShelf
+      &GetBibliosShelves
+    );
+    @EXPORT_OK = qw(
+      &GetShelvesSummary &GetRecentShelves
+      &RefreshShelvesSummary &SetShelvesLimit
+    );
+}
 
 my $dbh = C4::Context->dbh;
 
@@ -100,14 +99,15 @@ The number of virtuals on that virtualshelves.
 =cut
 
 sub GetShelves ($$$$) {
-    my ($mincategory, $row_count, $offset, $owner) = @_;
-	my @params = ($owner, $mincategory, ($offset ? $offset : 0), $row_count);
-	my @params1 = ($owner, $mincategory);
-	if ($mincategory > 1) {
-		shift @params;
-		shift @params1;
-	}
-	my $total = _shelf_count($owner, $mincategory);
+    my ( $mincategory, $row_count, $offset, $owner ) = @_;
+    my @params = ( $owner, $mincategory, ( $offset ? $offset : 0 ), $row_count );
+    my @params1 = ( $owner, $mincategory );
+    if ( $mincategory > 1 ) {
+        shift @params;
+        shift @params1;
+    }
+    my $total = _shelf_count( $owner, $mincategory );
+
     # grab only the shelves meeting the row_count/offset spec...
     my $query = qq(
         SELECT virtualshelves.shelfnumber, virtualshelves.shelfname,owner,surname,firstname,virtualshelves.category,virtualshelves.sortfield,
@@ -115,8 +115,8 @@ sub GetShelves ($$$$) {
         FROM   virtualshelves
             LEFT JOIN   virtualshelfcontents ON virtualshelves.shelfnumber = virtualshelfcontents.shelfnumber
             LEFT JOIN   borrowers ON virtualshelves.owner = borrowers.borrowernumber );
-    $query .= ($mincategory == 1) ? "WHERE  owner=? AND category=?" : "WHERE category>=?";
-	$query .= qq(
+    $query .= ( $mincategory == 1 ) ? "WHERE  owner=? AND category=?" : "WHERE category>=?";
+    $query .= qq(
         GROUP BY virtualshelves.shelfnumber
         ORDER BY virtualshelves.category
 		DESC 
@@ -124,8 +124,8 @@ sub GetShelves ($$$$) {
     my $sth2 = $dbh->prepare($query);
     $sth2->execute(@params);
     my %shelflist;
-    while ( my ( $shelfnumber, $shelfname, $owner, $surname,
-           	$firstname,   $category,  $sortfield, $count ) = $sth2->fetchrow ) {
+
+    while ( my ( $shelfnumber, $shelfname, $owner, $surname, $firstname, $category, $sortfield, $count ) = $sth2->fetchrow ) {
         $shelflist{$shelfnumber}->{'shelfname'} = $shelfname;
         $shelflist{$shelfnumber}->{'count'}     = $count;
         $shelflist{$shelfnumber}->{'sortfield'} = $sortfield;
@@ -149,16 +149,17 @@ When C<$mincategory> is 2 or 3, supply undef as argument for C<$owner>.
 =cut
 
 sub GetShelvesSummary ($$$$) {
-    my ($mincategory, $row_count, $offset, $owner) = @_;
-	my @params = ($owner, $mincategory, ($offset ? $offset : 0), $row_count);
-	my @params1 = ($owner, $mincategory);
-	if ($mincategory > 1) {
-		shift @params;
-		shift @params1;
-	}
-	my $total = _shelf_count($owner, $mincategory);
+    my ( $mincategory, $row_count, $offset, $owner ) = @_;
+    my @params = ( $owner, $mincategory, ( $offset ? $offset : 0 ), $row_count );
+    my @params1 = ( $owner, $mincategory );
+    if ( $mincategory > 1 ) {
+        shift @params;
+        shift @params1;
+    }
+    my $total = _shelf_count( $owner, $mincategory );
+
     # grab only the shelves meeting the row_count/offset spec...
-	my $query = qq(
+    my $query = qq(
 		SELECT
 			virtualshelves.shelfnumber,
 			virtualshelves.shelfname,
@@ -169,21 +170,21 @@ sub GetShelvesSummary ($$$$) {
 		FROM   virtualshelves
 			LEFT JOIN  virtualshelfcontents ON virtualshelves.shelfnumber = virtualshelfcontents.shelfnumber
 			LEFT JOIN             borrowers ON virtualshelves.owner = borrowers.borrowernumber );
-    $query .= ($mincategory == 1) ? "WHERE  owner=? AND category=?" : "WHERE category>=?";
-	$query .= qq(
+    $query .= ( $mincategory == 1 ) ? "WHERE  owner=? AND category=?" : "WHERE category>=?";
+    $query .= qq(
 		GROUP BY virtualshelves.shelfnumber
 		ORDER BY virtualshelves.category
 		DESC 
 		LIMIT ?, ?);
-	my $sth2 = $dbh->prepare($query);
-	$sth2->execute(@params);
-    my $shelves = $sth2->fetchall_arrayref({});
-    return ($shelves, $total);
+    my $sth2 = $dbh->prepare($query);
+    $sth2->execute(@params);
+    my $shelves = $sth2->fetchall_arrayref( {} );
+    return ( $shelves, $total );
 
-	# Probably NOT the final implementation since it is still bulky (repeated hash keys).
-	# might like an array of rows of delimited values:
-	# 1|2||0|blacklist|112
-	# 2|6|Josh Ferraro|51|en_fuego|106
+    # Probably NOT the final implementation since it is still bulky (repeated hash keys).
+    # might like an array of rows of delimited values:
+    # 1|2||0|blacklist|112
+    # 2|6|Josh Ferraro|51|en_fuego|106
 }
 
 =item GetRecentShelves
@@ -200,20 +201,20 @@ the submitted parameters.
 =cut
 
 sub GetRecentShelves ($$$) {
-	my ($mincategory, $row_count, $owner) = @_;
+    my ( $mincategory, $row_count, $owner ) = @_;
     my (@shelflist);
-	my $total = _shelf_count($owner, $mincategory);
-	my @params = ($owner, $mincategory);	
-	push @params, $row_count if (defined $row_count);
-	shift @params if (not defined $owner);
-	my $query = "SELECT * FROM virtualshelves";
-	$query .= ((defined $owner) ? " WHERE owner = ? AND category = ?" : " WHERE category >= ? ");
-	$query .= " ORDER BY lastmodified DESC";
-	$query .= " LIMIT ?" if (defined $row_count);
-	my $sth = $dbh->prepare($query);
-	$sth->execute(@params);
-	@shelflist = $sth->fetchall_arrayref({});
-	return ( \@shelflist, $total );
+    my $total = _shelf_count( $owner, $mincategory );
+    my @params = ( $owner, $mincategory );
+    push @params, $row_count if ( defined $row_count );
+    shift @params if ( not defined $owner );
+    my $query = "SELECT * FROM virtualshelves";
+    $query .= ( ( defined $owner ) ? " WHERE owner = ? AND category = ?" : " WHERE category >= ? " );
+    $query .= " ORDER BY lastmodified DESC";
+    $query .= " LIMIT ?" if ( defined $row_count );
+    my $sth = $dbh->prepare($query);
+    $sth->execute(@params);
+    @shelflist = $sth->fetchall_arrayref( {} );
+    return ( \@shelflist, $total );
 }
 
 =item GetShelf
@@ -258,43 +259,43 @@ from C4::Circulation.
 =cut
 
 sub GetShelfContents ($;$$$) {
-    my ($shelfnumber, $row_count, $offset, $sortfield) = @_;
-    my $dbh=C4::Context->dbh();
-	my $sth1 = $dbh->prepare("SELECT count(*) FROM virtualshelfcontents WHERE shelfnumber = ?");
-	$sth1->execute($shelfnumber);
-	my $total = $sth1->fetchrow;
-	if(!$sortfield) {
-		my $sth2 = $dbh->prepare('SELECT sortfield FROM virtualshelves WHERE shelfnumber=?');
-		$sth2->execute($shelfnumber);
-		($sortfield) = $sth2->fetchrow_array;
-	}
-    my $query =
-       " SELECT vc.biblionumber, vc.shelfnumber, vc.dateadded, itemtypes.*,
+    my ( $shelfnumber, $row_count, $offset, $sortfield ) = @_;
+    my $dbh  = C4::Context->dbh();
+    my $sth1 = $dbh->prepare("SELECT count(*) FROM virtualshelfcontents WHERE shelfnumber = ?");
+    $sth1->execute($shelfnumber);
+    my $total = $sth1->fetchrow;
+    if ( !$sortfield ) {
+        my $sth2 = $dbh->prepare('SELECT sortfield FROM virtualshelves WHERE shelfnumber=?');
+        $sth2->execute($shelfnumber);
+        ($sortfield) = $sth2->fetchrow_array;
+    }
+    my $query = " SELECT vc.biblionumber, vc.shelfnumber, vc.dateadded, itemtypes.*,
 	   			biblio.*, biblioitems.itemtype, biblioitems.publicationyear
          FROM   virtualshelfcontents vc
 		 LEFT JOIN biblio      ON      vc.biblionumber =      biblio.biblionumber
 		 LEFT JOIN biblioitems ON  biblio.biblionumber = biblioitems.biblionumber
 		 LEFT JOIN itemtypes   ON biblioitems.itemtype = itemtypes.itemtype
          WHERE  vc.shelfnumber=? ";
-	my @params = ($shelfnumber);
-	if($sortfield) {
-		$query .= " ORDER BY " . $sortfield;
-		$query .= " DESC " if ($sortfield eq 'copyrightdate');
-	}
-    if($row_count){
-	   $query .= " LIMIT ?, ? ";
-	   push (@params, ($offset ? $offset : 0));
-	   push (@params, $row_count);
+    my @params = ($shelfnumber);
+    if ($sortfield) {
+        $query .= " ORDER BY " . $sortfield;
+        $query .= " DESC " if ( $sortfield eq 'copyrightdate' );
+    }
+    if ($row_count) {
+        $query .= " LIMIT ?, ? ";
+        push( @params, ( $offset ? $offset : 0 ) );
+        push( @params, $row_count );
     }
     my $sth3 = $dbh->prepare($query);
-	$sth3->execute(@params);
-	return ($sth3->fetchall_arrayref({}), $total);
-	# Like the perldoc says,
-	# returns reference-to-array, where each element is reference-to-hash of the row:
-	#   like [ $sth->fetchrow_hashref(), $sth->fetchrow_hashref() ... ] 
-	# Suitable for use in TMPL_LOOP.
-	# See http://search.cpan.org/~timb/DBI-1.601/DBI.pm#fetchall_arrayref
-	# or newer, for your version of DBI.
+    $sth3->execute(@params);
+    return ( $sth3->fetchall_arrayref( {} ), $total );
+
+    # Like the perldoc says,
+    # returns reference-to-array, where each element is reference-to-hash of the row:
+    #   like [ $sth->fetchrow_hashref(), $sth->fetchrow_hashref() ... ]
+    # Suitable for use in TMPL_LOOP.
+    # See http://search.cpan.org/~timb/DBI-1.601/DBI.pm#fetchall_arrayref
+    # or newer, for your version of DBI.
 }
 
 =item AddShelf
@@ -318,7 +319,7 @@ sub AddShelf {
         WHERE  shelfname=? AND owner=?
     );
     my $sth = $dbh->prepare($query);
-    $sth->execute($shelfname,$owner);
+    $sth->execute( $shelfname, $owner );
     ( $sth->rows ) and return (-1);
     $query = qq(
         INSERT INTO virtualshelves
@@ -352,20 +353,20 @@ sub AddToShelf {
     my $sth = $dbh->prepare($query);
 
     $sth->execute( $shelfnumber, $biblionumber );
-    ($sth->rows) and return undef;	# already on shelf
-	$query = qq(
+    ( $sth->rows ) and return undef;    # already on shelf
+    $query = qq(
 		INSERT INTO virtualshelfcontents
 			(shelfnumber, biblionumber, flags)
 		VALUES
 			(?, ?, 0)
 	);
-	$sth = $dbh->prepare($query);
-	$sth->execute( $shelfnumber, $biblionumber );
-	$query = qq(UPDATE virtualshelves
+    $sth = $dbh->prepare($query);
+    $sth->execute( $shelfnumber, $biblionumber );
+    $query = qq(UPDATE virtualshelves
 				SET lastmodified = CURRENT_TIMESTAMP
 				WHERE shelfnumber = ?);
-	$sth = $dbh->prepare($query);
-	$sth->execute( $shelfnumber );
+    $sth = $dbh->prepare($query);
+    $sth->execute($shelfnumber);
 }
 
 =item AddToShelfFromBiblio
@@ -388,7 +389,7 @@ sub AddToShelfFromBiblio {
     my $sth = $dbh->prepare($query);
     $sth->execute( $shelfnumber, $biblionumber );
     unless ( $sth->rows ) {
-        my $query =qq(
+        my $query = qq(
             INSERT INTO virtualshelfcontents
                 (shelfnumber, biblionumber, flags)
             VALUES
@@ -396,11 +397,11 @@ sub AddToShelfFromBiblio {
         );
         $sth = $dbh->prepare($query);
         $sth->execute( $shelfnumber, $biblionumber );
-		$query = qq(UPDATE virtualshelves
+        $query = qq(UPDATE virtualshelves
 					SET lastmodified = CURRENT_TIMESTAMP
 					WHERE shelfnumber = ?);
-		$sth = $dbh->prepare($query);
-		$sth->execute( $shelfnumber );
+        $sth = $dbh->prepare($query);
+        $sth->execute($shelfnumber);
     }
 }
 
@@ -418,39 +419,38 @@ the name of a column of virtualshelves.
 
 sub ModShelf {
     my $shelfnumber = shift;
-    my $shelf = shift;
+    my $shelf       = shift;
 
-    if (exists $shelf->{shelfnumber}) {
+    if ( exists $shelf->{shelfnumber} ) {
         carp "Should not use ModShelf to change shelfnumber";
         return;
     }
-    unless (defined $shelfnumber and $shelfnumber =~ /^\d+$/) {
+    unless ( defined $shelfnumber and $shelfnumber =~ /^\d+$/ ) {
         carp "Invalid shelfnumber passed to ModShelf: $shelfnumber";
         return;
     }
 
-	my $query = "UPDATE virtualshelves SET ";
+    my $query       = "UPDATE virtualshelves SET ";
     my @bind_params = ();
     my @set_clauses = ();
 
-	foreach my $column (keys %$shelf) {
+    foreach my $column ( keys %$shelf ) {
         push @set_clauses, "$column = ?";
         push @bind_params, $shelf->{$column};
     }
 
-    if ($#set_clauses == -1) {
+    if ( $#set_clauses == -1 ) {
         carp "No columns to update passed to ModShelf";
         return;
     }
-    $query .= join(", ", @set_clauses);
+    $query .= join( ", ", @set_clauses );
 
     $query .= " WHERE shelfnumber = ? ";
     push @bind_params, $shelfnumber;
 
-    $debug and warn "ModShelf query:\n $query\n",
-	                "ModShelf query args: ", join(',', @bind_params), "\n";
-	my $sth = $dbh->prepare($query);
-   	$sth->execute( @bind_params );
+    $debug and warn "ModShelf query:\n $query\n", "ModShelf query args: ", join( ',', @bind_params ), "\n";
+    my $sth = $dbh->prepare($query);
+    $sth->execute(@bind_params);
 }
 
 =item ShelfPossibleAction
@@ -476,13 +476,14 @@ sub ShelfPossibleAction {
     my $sth = $dbh->prepare($query);
     $sth->execute($shelfnumber);
     my ( $owner, $category ) = $sth->fetchrow;
-	my $borrower = GetMemberDetails($user);
-	return 0 if not defined($user);
-	return 1 if ( $category >= 3);							# open list
-    return 1 if (($category >= 2) and
-				defined($action) and $action eq 'view');	# public list, anybody can view
-    return 1 if (($category >= 2) and defined($user) and ($borrower->{authflags}->{superlibrarian} || $user == 0));	# public list, superlibrarian can edit/delete
-    return 1 if (defined($user)  and $owner  eq $user );	# user owns this list.  Check last.
+    my $borrower = GetMemberDetails($user);
+    return 0 if not defined($user);
+    return 1 if ( $category >= 3 );    # open list
+    return 1 if ( ( $category >= 2 )
+        and defined($action)
+        and $action eq 'view' );       # public list, anybody can view
+    return 1 if ( ( $category >= 2 ) and defined($user) and ( $borrower->{authflags}->{superlibrarian} || $user == 0 ) );    # public list, superlibrarian can edit/delete
+    return 1 if ( defined($user) and $owner eq $user );                                                                      # user owns this list.  Check last.
     return 0;
 }
 
@@ -527,12 +528,12 @@ This function deletes the shelf number, and all of it's content.
 =cut
 
 sub DelShelf {
-	unless (@_) {
-		carp "DelShelf called without valid argument (shelfnumber)";
-		return undef;
-	}
-	my $sth = $dbh->prepare("DELETE FROM virtualshelves WHERE shelfnumber=?");
-	return $sth->execute(shift);
+    unless (@_) {
+        carp "DelShelf called without valid argument (shelfnumber)";
+        return undef;
+    }
+    my $sth = $dbh->prepare("DELETE FROM virtualshelves WHERE shelfnumber=?");
+    return $sth->execute(shift);
 }
 
 =item GetBibShelves
@@ -542,17 +543,17 @@ This finds all the public lists that this bib record is in.
 =cut
 
 sub GetBibliosShelves {
-    my ( $biblionumber )  = @_;
-    my $dbh = C4::Context->dbh;
-    my $sth = $dbh->prepare('
+    my ($biblionumber) = @_;
+    my $dbh            = C4::Context->dbh;
+    my $sth            = $dbh->prepare( '
         SELECT vs.shelfname, vs.shelfnumber 
         FROM virtualshelves vs 
         JOIN virtualshelfcontents vc ON (vs.shelfnumber= vc.shelfnumber) 
         WHERE vs.category != 1 
         AND vc.biblionumber= ?
-    ');
-    $sth->execute( $biblionumber );
-    return $sth->fetchall_arrayref({});
+    ' );
+    $sth->execute($biblionumber);
+    return $sth->fetchall_arrayref( {} );
 }
 
 =item RefreshShelvesSummary
@@ -569,60 +570,61 @@ This function is used in conjunction with the 'Lists' button in masthead.inc.
 =cut
 
 sub RefreshShelvesSummary ($$$) {
-	
-	my ($sessionID, $loggedinuser, $row_count) = @_;
-	my $session = C4::Auth::get_session($sessionID);
-	my ($total, $totshelves, $barshelves, $pubshelves);
 
-	($barshelves, $totshelves) = GetRecentShelves(1, undef, $loggedinuser);
-	$total->{'bartotal'} = $totshelves;
-	($pubshelves, $totshelves) = GetRecentShelves(2, $row_count, undef);
-	$total->{'pubtotal'} = $totshelves;
+    my ( $sessionID, $loggedinuser, $row_count ) = @_;
+    my $session = C4::Auth::get_session($sessionID);
+    my ( $total, $totshelves, $barshelves, $pubshelves );
 
-	# Update the current session with the latest shelves...
-	$session->param('barshelves', $barshelves->[0]);
-	$session->param('pubshelves', $pubshelves->[0]);
-	$session->param('totshelves', $total);
+    ( $barshelves, $totshelves ) = GetRecentShelves( 1, undef, $loggedinuser );
+    $total->{'bartotal'} = $totshelves;
+    ( $pubshelves, $totshelves ) = GetRecentShelves( 2, $row_count, undef );
+    $total->{'pubtotal'} = $totshelves;
 
-	# likewise the userenv...
-	C4::Context->set_shelves_userenv('bar',$barshelves->[0]);
-	C4::Context->set_shelves_userenv('pub',$pubshelves->[0]);
-	C4::Context::set_shelves_userenv('tot',$total);
+    # Update the current session with the latest shelves...
+    $session->param( 'barshelves', $barshelves->[0] );
+    $session->param( 'pubshelves', $pubshelves->[0] );
+    $session->param( 'totshelves', $total );
 
-	return ($total, $pubshelves, $barshelves);
+    # likewise the userenv...
+    C4::Context->set_shelves_userenv( 'bar', $barshelves->[0] );
+    C4::Context->set_shelves_userenv( 'pub', $pubshelves->[0] );
+    C4::Context::set_shelves_userenv( 'tot', $total );
+
+    return ( $total, $pubshelves, $barshelves );
 }
 
 # internal subs
 
 sub _shelf_count ($$) {
-	my (@params) = @_;
-	# Find out how many shelves total meet the submitted criteria...
-	my $query = "SELECT count(*) FROM virtualshelves";
-	$query .= ($params[1] > 1) ? " WHERE category >= ?" : " WHERE  owner=? AND category=?";
-	shift @params if $params[1] > 1;
-	my $sth = $dbh->prepare($query);
-	$sth->execute(@params);
-	my $total = $sth->fetchrow;
-	return $total;
+    my (@params) = @_;
+
+    # Find out how many shelves total meet the submitted criteria...
+    my $query = "SELECT count(*) FROM virtualshelves";
+    $query .= ( $params[1] > 1 ) ? " WHERE category >= ?" : " WHERE  owner=? AND category=?";
+    shift @params if $params[1] > 1;
+    my $sth = $dbh->prepare($query);
+    $sth->execute(@params);
+    my $total = $sth->fetchrow;
+    return $total;
 }
 
 sub _biblionumber_sth {
     my ($shelf) = @_;
-    my $query = 'select biblionumber from virtualshelfcontents where shelfnumber = ?';
-    my $dbh = C4::Context->dbh;
-    my $sth = $dbh->prepare($query)
-	or die $dbh->errstr;
-    $sth->execute( $shelf )
-	or die $sth->errstr;
+    my $query   = 'select biblionumber from virtualshelfcontents where shelfnumber = ?';
+    my $dbh     = C4::Context->dbh;
+    my $sth     = $dbh->prepare($query)
+      or die $dbh->errstr;
+    $sth->execute($shelf)
+      or die $sth->errstr;
     $sth;
 }
 
 sub each_biblionumbers (&$) {
-    my ($code,$shelf) = @_;
-    my $ref =  _biblionumber_sth($shelf)->fetchall_arrayref;
+    my ( $code, $shelf ) = @_;
+    my $ref = _biblionumber_sth($shelf)->fetchall_arrayref;
     map {
-	$_=$$_[0];
-	$code->();
+        $_ = $$_[0];
+        $code->();
     } @$ref;
 }
 

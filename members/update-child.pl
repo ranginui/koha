@@ -27,6 +27,7 @@
 =cut
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use CGI;
 use C4::Context;
@@ -40,8 +41,7 @@ my $dbh   = C4::Context->dbh;
 my $input = new CGI;
 
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => "members/update-child.tmpl",
+    {   template_name   => "members/update-child.tmpl",
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
@@ -53,13 +53,14 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
 my $borrowernumber = $input->param('borrowernumber');
 my $catcode        = $input->param('catcode');
 my $cattype        = $input->param('cattype');
-my $catcode_multi = $input->param('catcode_multi');
+my $catcode_multi  = $input->param('catcode_multi');
 my $op             = $input->param('op');
 
 if ( $op eq 'multi' ) {
     my ( $catcodes, $labels ) =
-		# FIXME - what are the possible upgrade paths?  C -> A , C -> S ...
-		#   currently just allowing C -> A because of limitation of API.
+
+      # FIXME - what are the possible upgrade paths?  C -> A , C -> S ...
+      #   currently just allowing C -> A because of limitation of API.
       GetborCatFromCatType( 'A', 'WHERE category_type = ?' );
     my @rows;
     foreach my $k ( keys %$labels ) {
@@ -72,7 +73,7 @@ if ( $op eq 'multi' ) {
     }
     $template->param(
         MULTI          => 1,
-        CATCODE_MULTI          => 1,
+        CATCODE_MULTI  => 1,
         borrowernumber => $borrowernumber,
         CAT_LOOP       => \@rows,
     );
@@ -80,7 +81,7 @@ if ( $op eq 'multi' ) {
 }
 
 elsif ( $op eq 'update' ) {
-    my $member = GetMember('borrowernumber'=>$borrowernumber);
+    my $member = GetMember( 'borrowernumber' => $borrowernumber );
     $member->{'guarantorid'}  = '0';
     $member->{'categorycode'} = $catcode;
     my $borcat = GetBorrowercategory($catcode);
@@ -88,11 +89,11 @@ elsif ( $op eq 'update' ) {
     $member->{'description'}   = $borcat->{'description'};
     ModMember(%$member);
 
-    if (  $catcode_multi ) {
+    if ($catcode_multi) {
         $template->param(
-                SUCCESS        => 1,
-                borrowernumber => $borrowernumber,
-                );
+            SUCCESS        => 1,
+            borrowernumber => $borrowernumber,
+        );
         output_html_with_http_headers $input, $cookie, $template->output;
     } else {
         print $input->redirect("/cgi-bin/koha/members/moremember.pl?borrowernumber=$borrowernumber");

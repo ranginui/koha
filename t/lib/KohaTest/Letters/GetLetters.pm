@@ -14,17 +14,11 @@ sub GetDefaultLetters : Test( 2 ) {
 
     # the default install includes several entries in the letter table.
     isa_ok( $letters, 'HASH' )
-      or diag( Data::Dumper->Dump( [ $letters ], [ 'letters' ] ) );
+      or diag( Data::Dumper->Dump( [$letters], ['letters'] ) );
 
-  ok( scalar keys( %$letters ) > 0, 'we got some letters' );
-
+    ok( scalar keys(%$letters) > 0, 'we got some letters' );
 
 }
 
 1;
-
-
-
-
-
 

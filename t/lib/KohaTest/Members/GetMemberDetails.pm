@@ -41,7 +41,7 @@ sub startup_create_detailed_borrower : Test( startup => 2 ) {
         dateofbirth  => $self->random_date(),
     };
 
-    my $borrowernumber = AddMember( %$memberinfo );
+    my $borrowernumber = AddMember(%$memberinfo);
     ok( $borrowernumber, "created member: $borrowernumber" );
     $self->{detail_borrowernumber} = $borrowernumber;
     $self->{detail_cardnumber}     = $memberinfo->{cardnumber};
@@ -52,9 +52,7 @@ sub startup_create_detailed_borrower : Test( startup => 2 ) {
     $amount      = 5.00;
     $user        = '';
 
-    my $acct_added =
-      C4::Accounts::manualinvoice( $borrowernumber, undef, $description, $type, $amount,
-        $user );
+    my $acct_added = C4::Accounts::manualinvoice( $borrowernumber, undef, $description, $type, $amount, $user );
 
     ok( $acct_added == 0, 'added account for borrower' );
 
@@ -77,24 +75,19 @@ amountoutstanding and user flags.
 sub borrower_detail_get : Test( 8 ) {
     my $self = shift;
 
-    ok( $self->{detail_borrowernumber},
-        'we have a valid detailed borrower to test with' );
+    ok( $self->{detail_borrowernumber}, 'we have a valid detailed borrower to test with' );
 
     my $details = C4::Members::GetMemberDetails( $self->{detail_borrowernumber} );
-    ok( $details, 'we successfully called GetMemberDetails' );
-    ok( exists $details->{categorycode},
-        'member details has a "categorycode" attribute' );
-    ok( $details->{categorycode}, '...and it is set to something' );
+    ok( $details,                        'we successfully called GetMemberDetails' );
+    ok( exists $details->{categorycode}, 'member details has a "categorycode" attribute' );
+    ok( $details->{categorycode},        '...and it is set to something' );
 
     ok( exists $details->{category_type}, "categories in the join returned values" );
 
     ok( $details->{category_type}, '...and category_type is valid' );
 
     ok( $details->{amountoutstanding}, 'an amountoutstanding exists' );
-    is( $details->{amountoutstanding},
-        $self->{amountoutstanding},
-        '...and matches inserted account record'
-    );
+    is( $details->{amountoutstanding}, $self->{amountoutstanding}, '...and matches inserted account record' );
 
 }
 
@@ -108,22 +101,20 @@ current calls to GetMemberDetail using cardnumber though, so this test may not b
 sub cardnumber_detail_get : Test( 8 ) {
     my $self = shift;
 
-    ok( $self->{detail_cardnumber},
-        "we have a valid detailed borrower to test with $self->{detail_cardnumber}" );
+    ok( $self->{detail_cardnumber}, "we have a valid detailed borrower to test with $self->{detail_cardnumber}" );
 
     my $details = C4::Members::GetMemberDetails( undef, $self->{detail_cardnumber} );
-    ok( $details, 'we successfully called GetMemberDetails' );
-    ok( exists $details->{categorycode},
-        "member details has a 'categorycode' attribute $details->{categorycode}" );
-    ok( $details->{categorycode}, '...and it is set to something' );
+    ok( $details,                        'we successfully called GetMemberDetails' );
+    ok( exists $details->{categorycode}, "member details has a 'categorycode' attribute $details->{categorycode}" );
+    ok( $details->{categorycode},        '...and it is set to something' );
 
     ok( exists $details->{category_type}, "categories in the join returned values" );
 
     ok( $details->{category_type}, '...and category_type is valid' );
 
-#FIXME These 2 methods will fail as borrowernumber is not set in GetMemberDetails when cardnumber is used instead.
-#ok( $details->{amountoutstanding}, 'an amountoutstanding exists' );
-#is( $details->{amountoutstanding}, $self->{amountoutstanding}, '...and matches inserted account record' );
+    #FIXME These 2 methods will fail as borrowernumber is not set in GetMemberDetails when cardnumber is used instead.
+    #ok( $details->{amountoutstanding}, 'an amountoutstanding exists' );
+    #is( $details->{amountoutstanding}, $self->{amountoutstanding}, '...and matches inserted account record' );
 }
 
 =head2 SHUTDOWN METHDOS

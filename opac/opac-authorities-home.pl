@@ -43,9 +43,10 @@ my $resultsperpage;
 
 my $authtypes = getauthtypes;
 my @authtypesloop;
-foreach my $thisauthtype ( sort { $authtypes->{$a}{'authtypetext'} cmp $authtypes->{$b}{'authtypetext'} }
-    keys %$authtypes )
-{
+foreach my $thisauthtype (
+    sort { $authtypes->{$a}{'authtypetext'} cmp $authtypes->{$b}{'authtypetext'} }
+    keys %$authtypes
+  ) {
     my $selected = 1 if $thisauthtype eq $authtypecode;
     my %row = (
         value        => $thisauthtype,
@@ -56,23 +57,20 @@ foreach my $thisauthtype ( sort { $authtypes->{$a}{'authtypetext'} cmp $authtype
 }
 
 if ( $op eq "do_search" ) {
-    my @marclist = ($query->param('marclista'),$query->param('marclistb'),$query->param('marclistc'));
-    my @and_or = ($query->param('and_ora'),$query->param('and_orb'),$query->param('and_orc'));
-    my @excluding = ($query->param('excludinga'),$query->param('excludingb'),$query->param('excludingc'),);
-    my @operator = ($query->param('operatora'),$query->param('operatorb'),$query->param('operatorc'));
-    my $orderby = $query->param('orderby');
-    my @value = ($query->param('valuea') || "",$query->param('valueb') || "",$query->param('valuec') || "",);
+    my @marclist  = ( $query->param('marclista'),  $query->param('marclistb'),  $query->param('marclistc') );
+    my @and_or    = ( $query->param('and_ora'),    $query->param('and_orb'),    $query->param('and_orc') );
+    my @excluding = ( $query->param('excludinga'), $query->param('excludingb'), $query->param('excludingc'), );
+    my @operator  = ( $query->param('operatora'),  $query->param('operatorb'),  $query->param('operatorc') );
+    my $orderby   = $query->param('orderby');
+    my @value = ( $query->param('valuea') || "", $query->param('valueb') || "", $query->param('valuec') || "", );
 
     $resultsperpage = $query->param('resultsperpage');
     $resultsperpage = 20 if ( !defined $resultsperpage );
     my @tags;
     my ( $results, $total, @fields ) =
-      SearchAuthorities( \@marclist, \@and_or, \@excluding, \@operator,
-        \@value, $startfrom * $resultsperpage,
-        $resultsperpage, $authtypecode, $orderby );
+      SearchAuthorities( \@marclist, \@and_or, \@excluding, \@operator, \@value, $startfrom * $resultsperpage, $resultsperpage, $authtypecode, $orderby );
     ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-        {
-            template_name   => "opac-authoritiessearchresultlist.tmpl",
+        {   template_name   => "opac-authoritiessearchresultlist.tmpl",
             query           => $query,
             type            => 'opac',
             authnotrequired => 1,
@@ -90,12 +88,12 @@ if ( $op eq "do_search" ) {
 
     my @field_data = ();
 
-    foreach my $letter (qw/a b c/){
-        push @field_data, { term => "marclist$letter" , val => $query->param("marclist$letter") || ''};
-        push @field_data, { term => "and_or$letter" , val => $query->param("and_or$letter") || ''};
-        push @field_data, { term => "excluding$letter" , val => $query->param("excluding$letter") || ''};
-        push @field_data, { term => "operator$letter" , val => $query->param("operator$letter") || ''};
-        push @field_data, { term => "value$letter" , val => $query->param("value$letter") || ''};
+    foreach my $letter (qw/a b c/) {
+        push @field_data, { term => "marclist$letter",  val => $query->param("marclist$letter")  || '' };
+        push @field_data, { term => "and_or$letter",    val => $query->param("and_or$letter")    || '' };
+        push @field_data, { term => "excluding$letter", val => $query->param("excluding$letter") || '' };
+        push @field_data, { term => "operator$letter",  val => $query->param("operator$letter")  || '' };
+        push @field_data, { term => "value$letter",     val => $query->param("value$letter")     || '' };
     }
 
     my @numbers = ();
@@ -106,8 +104,7 @@ if ( $op eq "do_search" ) {
                 my $highlight = 0;
                 ( $startfrom == ( $i - 1 ) ) && ( $highlight = 1 );
                 push @numbers,
-                  {
-                    number     => $i,
+                  { number     => $i,
                     highlight  => $highlight,
                     searchdata => \@field_data,
                     startfrom  => ( $i - 1 )
@@ -121,8 +118,7 @@ if ( $op eq "do_search" ) {
 
     if ( $total < ( ( $startfrom + 1 ) * $resultsperpage ) ) {
         $to = $total;
-    }
-    else {
+    } else {
         $to = ( ( $startfrom + 1 ) * $resultsperpage );
     }
     $template->param( result => $results ) if $results;
@@ -144,11 +140,9 @@ if ( $op eq "do_search" ) {
         isEDITORS      => $authtypecode eq 'EDITORS',
     );
 
-}
-else {
+} else {
     ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-        {
-            template_name   => "opac-authorities-home.tmpl",
+        {   template_name   => "opac-authorities-home.tmpl",
             query           => $query,
             type            => 'opac',
             authnotrequired => 1,

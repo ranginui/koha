@@ -68,37 +68,37 @@ use C4::Output;
 my %tabsysprefs;
 
 # Acquisitions
-    $tabsysprefs{acquisitions}="Acquisitions";
-    $tabsysprefs{gist}="Acquisitions";
-    $tabsysprefs{emailPurchaseSuggestions}="Acquisitions";
-    $tabsysprefs{RenewSerialAddsSuggestion}="Acquisitions";
-    $tabsysprefs{AcqCreateItem}="Acquisitions";
-    $tabsysprefs{OrderPdfFormat}="Acquisitions";
-    $tabsysprefs{OrderPdfTemplate}="Acquisitions";
-    $tabsysprefs{CurrencyFormat}="Acquisitions";
+$tabsysprefs{acquisitions}              = "Acquisitions";
+$tabsysprefs{gist}                      = "Acquisitions";
+$tabsysprefs{emailPurchaseSuggestions}  = "Acquisitions";
+$tabsysprefs{RenewSerialAddsSuggestion} = "Acquisitions";
+$tabsysprefs{AcqCreateItem}             = "Acquisitions";
+$tabsysprefs{OrderPdfFormat}            = "Acquisitions";
+$tabsysprefs{OrderPdfTemplate}          = "Acquisitions";
+$tabsysprefs{CurrencyFormat}            = "Acquisitions";
 
 # Admin
-$tabsysprefs{singleBranchMode}      = "Admin";
-$tabsysprefs{staffClientBaseURL}    = "Admin";
-$tabsysprefs{Version}               = "Admin";
-$tabsysprefs{OpacMaintenance}       = "Admin";
-$tabsysprefs{FrameworksLoaded}      = "Admin";
-$tabsysprefs{libraryAddress}        = "Admin";
-$tabsysprefs{delimiter}             = "Admin";
-$tabsysprefs{IndependantBranches}   = "Admin";
-$tabsysprefs{IndependentBranchPatron}= "Admin";
-$tabsysprefs{insecure}              = "Admin";
-$tabsysprefs{KohaAdmin}             = "Admin";
-$tabsysprefs{KohaAdminEmailAddress} = "Admin";
-$tabsysprefs{MIME}                  = "Admin";
-$tabsysprefs{timeout}               = "Admin";
-$tabsysprefs{Intranet_includes}     = "Admin";
-$tabsysprefs{AutoLocation}          = "Admin";
-$tabsysprefs{DebugLevel}            = "Admin";
-$tabsysprefs{SessionStorage}        = "Admin";
-$tabsysprefs{noItemTypeImages}      = "Admin";
-$tabsysprefs{OPACBaseURL}           = "Admin";
-$tabsysprefs{GranularPermissions}   = "Admin";
+$tabsysprefs{singleBranchMode}        = "Admin";
+$tabsysprefs{staffClientBaseURL}      = "Admin";
+$tabsysprefs{Version}                 = "Admin";
+$tabsysprefs{OpacMaintenance}         = "Admin";
+$tabsysprefs{FrameworksLoaded}        = "Admin";
+$tabsysprefs{libraryAddress}          = "Admin";
+$tabsysprefs{delimiter}               = "Admin";
+$tabsysprefs{IndependantBranches}     = "Admin";
+$tabsysprefs{IndependentBranchPatron} = "Admin";
+$tabsysprefs{insecure}                = "Admin";
+$tabsysprefs{KohaAdmin}               = "Admin";
+$tabsysprefs{KohaAdminEmailAddress}   = "Admin";
+$tabsysprefs{MIME}                    = "Admin";
+$tabsysprefs{timeout}                 = "Admin";
+$tabsysprefs{Intranet_includes}       = "Admin";
+$tabsysprefs{AutoLocation}            = "Admin";
+$tabsysprefs{DebugLevel}              = "Admin";
+$tabsysprefs{SessionStorage}          = "Admin";
+$tabsysprefs{noItemTypeImages}        = "Admin";
+$tabsysprefs{OPACBaseURL}             = "Admin";
+$tabsysprefs{GranularPermissions}     = "Admin";
 
 # Authorities
 $tabsysprefs{authoritysep}          = "Authorities";
@@ -132,54 +132,53 @@ $tabsysprefs{SpineLabelFormat}            = "Cataloging";
 $tabsysprefs{SpineLabelAutoPrint}         = "Cataloging";
 
 # Circulation
-$tabsysprefs{maxoutstanding}                 = "Circulation";
-$tabsysprefs{noissuescharge}                 = "Circulation";
-$tabsysprefs{IssuingInProcess}               = "Circulation";
-$tabsysprefs{patronimages}                   = "Circulation";
-$tabsysprefs{printcirculationslips}          = "Circulation";
-$tabsysprefs{ReturnBeforeExpiry}             = "Circulation";
-$tabsysprefs{ceilingDueDate}                 = "Circulation";
-$tabsysprefs{SpecifyDueDate}                 = "Circulation";
-$tabsysprefs{AutomaticItemReturn}            = "Circulation";
-$tabsysprefs{TransfersMaxDaysWarning}        = "Circulation";
-$tabsysprefs{useDaysMode}                    = "Circulation";
-$tabsysprefs{ReservesNeedReturns}            = "Circulation";
-$tabsysprefs{CircAutocompl}                  = "Circulation";
-$tabsysprefs{AllowRenewalLimitOverride}      = "Circulation";
-$tabsysprefs{canreservefromotherbranches}    = "Circulation";
-$tabsysprefs{finesMode}                      = "Circulation";
-$tabsysprefs{numReturnedItemsToShow}         = "Circulation";
-$tabsysprefs{emailLibrarianWhenHoldIsPlaced} = "Circulation";
-$tabsysprefs{globalDueDate}                  = "Circulation";
-$tabsysprefs{holdCancelLength}               = "Circulation";
-$tabsysprefs{itemBarcodeInputFilter}         = "Circulation";
-$tabsysprefs{WebBasedSelfCheck}              = "Circulation";
+$tabsysprefs{maxoutstanding}                     = "Circulation";
+$tabsysprefs{noissuescharge}                     = "Circulation";
+$tabsysprefs{IssuingInProcess}                   = "Circulation";
+$tabsysprefs{patronimages}                       = "Circulation";
+$tabsysprefs{printcirculationslips}              = "Circulation";
+$tabsysprefs{ReturnBeforeExpiry}                 = "Circulation";
+$tabsysprefs{ceilingDueDate}                     = "Circulation";
+$tabsysprefs{SpecifyDueDate}                     = "Circulation";
+$tabsysprefs{AutomaticItemReturn}                = "Circulation";
+$tabsysprefs{TransfersMaxDaysWarning}            = "Circulation";
+$tabsysprefs{useDaysMode}                        = "Circulation";
+$tabsysprefs{ReservesNeedReturns}                = "Circulation";
+$tabsysprefs{CircAutocompl}                      = "Circulation";
+$tabsysprefs{AllowRenewalLimitOverride}          = "Circulation";
+$tabsysprefs{canreservefromotherbranches}        = "Circulation";
+$tabsysprefs{finesMode}                          = "Circulation";
+$tabsysprefs{numReturnedItemsToShow}             = "Circulation";
+$tabsysprefs{emailLibrarianWhenHoldIsPlaced}     = "Circulation";
+$tabsysprefs{globalDueDate}                      = "Circulation";
+$tabsysprefs{holdCancelLength}                   = "Circulation";
+$tabsysprefs{itemBarcodeInputFilter}             = "Circulation";
+$tabsysprefs{WebBasedSelfCheck}                  = "Circulation";
 $tabsysprefs{ShowPatronImageInWebBasedSelfCheck} = "Circulation";
-$tabsysprefs{CircControl}                    = "Circulation";
-$tabsysprefs{finesCalendar}                  = "Circulation";
-$tabsysprefs{previousIssuesDefaultSortOrder} = "Circulation";
-$tabsysprefs{todaysIssuesDefaultSortOrder}   = "Circulation";
-$tabsysprefs{HomeOrHoldingBranch}            = "Circulation";
-$tabsysprefs{RandomizeHoldsQueueWeight}      = "Circulation";
-$tabsysprefs{StaticHoldsQueueWeight}         = "Circulation";
-$tabsysprefs{AllowOnShelfHolds}              = "Circulation";
-$tabsysprefs{AllowHoldsOnDamagedItems}       = "Circulation";
-$tabsysprefs{UseBranchTransferLimits}        = "Circulation";
-$tabsysprefs{AllowHoldPolicyOverride}        = "Circulation";
-$tabsysprefs{BranchTransferLimitsType}       = "Circulation";
-$tabsysprefs{AllowNotForLoanOverride}        = "Circulation";
-$tabsysprefs{RenewalPeriodBase}              = "Circulation";
-$tabsysprefs{FilterBeforeOverdueReport}      = "Circulation";
-$tabsysprefs{AllowHoldDateInFuture}          = "Circulation";
-$tabsysprefs{OPACFineNoRenewals}             = "Circulation";
-$tabsysprefs{InProcessingToShelvingCart}     = "Circulation";
-$tabsysprefs{NewItemsDefaultLocation}        = "Circulation";
-$tabsysprefs{ReturnToShelvingCart}           = "Circulation";
-$tabsysprefs{DisplayClearScreenButton}       = "Circulation";
-$tabsysprefs{AllowAllMessageDeletion}        = "Circulation";
-$tabsysprefs{OverdueNoticeBcc}               = "Circulation";
-$tabsysprefs{OverduesBlockCirc}              = "Circulation";
-
+$tabsysprefs{CircControl}                        = "Circulation";
+$tabsysprefs{finesCalendar}                      = "Circulation";
+$tabsysprefs{previousIssuesDefaultSortOrder}     = "Circulation";
+$tabsysprefs{todaysIssuesDefaultSortOrder}       = "Circulation";
+$tabsysprefs{HomeOrHoldingBranch}                = "Circulation";
+$tabsysprefs{RandomizeHoldsQueueWeight}          = "Circulation";
+$tabsysprefs{StaticHoldsQueueWeight}             = "Circulation";
+$tabsysprefs{AllowOnShelfHolds}                  = "Circulation";
+$tabsysprefs{AllowHoldsOnDamagedItems}           = "Circulation";
+$tabsysprefs{UseBranchTransferLimits}            = "Circulation";
+$tabsysprefs{AllowHoldPolicyOverride}            = "Circulation";
+$tabsysprefs{BranchTransferLimitsType}           = "Circulation";
+$tabsysprefs{AllowNotForLoanOverride}            = "Circulation";
+$tabsysprefs{RenewalPeriodBase}                  = "Circulation";
+$tabsysprefs{FilterBeforeOverdueReport}          = "Circulation";
+$tabsysprefs{AllowHoldDateInFuture}              = "Circulation";
+$tabsysprefs{OPACFineNoRenewals}                 = "Circulation";
+$tabsysprefs{InProcessingToShelvingCart}         = "Circulation";
+$tabsysprefs{NewItemsDefaultLocation}            = "Circulation";
+$tabsysprefs{ReturnToShelvingCart}               = "Circulation";
+$tabsysprefs{DisplayClearScreenButton}           = "Circulation";
+$tabsysprefs{AllowAllMessageDeletion}            = "Circulation";
+$tabsysprefs{OverdueNoticeBcc}                   = "Circulation";
+$tabsysprefs{OverduesBlockCirc}                  = "Circulation";
 
 # Staff Client
 $tabsysprefs{TemplateEncoding}        = "StaffClient";
@@ -217,12 +216,11 @@ $tabsysprefs{EnhancedMessagingPreferences} = "Patrons";
 $tabsysprefs{'SMSSendDriver'}              = 'Patrons';
 $tabsysprefs{HidePatronName}               = "Patrons";
 
-
 # I18N/L10N
-$tabsysprefs{dateformat}    = "I18N/L10N";
-$tabsysprefs{opaclanguages} = "I18N/L10N";
+$tabsysprefs{dateformat}           = "I18N/L10N";
+$tabsysprefs{opaclanguages}        = "I18N/L10N";
 $tabsysprefs{opaclanguagesdisplay} = "I18N/L10N";
-$tabsysprefs{language}      = "I18N/L10N";
+$tabsysprefs{language}             = "I18N/L10N";
 
 # Searching
 $tabsysprefs{defaultSortField}        = "Searching";
@@ -256,7 +254,7 @@ $tabsysprefs{AmazonReviews}          = "EnhancedContent";
 $tabsysprefs{OPACAmazonReviews}      = "EnhancedContent";
 
 # Babelthèque
-$tabsysprefs{Babeltheque}            = "EnhancedContent";
+$tabsysprefs{Babeltheque} = "EnhancedContent";
 
 # Baker & Taylor
 $tabsysprefs{BakerTaylorBookstoreURL} = 'EnhancedContent';
@@ -265,8 +263,8 @@ $tabsysprefs{BakerTaylorPassword}     = 'EnhancedContent';
 $tabsysprefs{BakerTaylorUsername}     = 'EnhancedContent';
 
 # Library Thing for Libraries
-$tabsysprefs{LibraryThingForLibrariesID} = "EnhancedContent";
-$tabsysprefs{LibraryThingForLibrariesEnabled} = "EnhancedContent";
+$tabsysprefs{LibraryThingForLibrariesID}         = "EnhancedContent";
+$tabsysprefs{LibraryThingForLibrariesEnabled}    = "EnhancedContent";
 $tabsysprefs{LibraryThingForLibrariesTabbedView} = "EnhancedContent";
 
 # Syndetics
@@ -282,7 +280,6 @@ $tabsysprefs{SyndeticsAuthorNotes}    = 'EnhancedContent';
 $tabsysprefs{SyndeticsAwards}         = 'EnhancedContent';
 $tabsysprefs{SyndeticsSeries}         = 'EnhancedContent';
 $tabsysprefs{SyndeticsCoverImageSize} = 'EnhancedContent';
-
 
 # FRBR
 $tabsysprefs{FRBRizeEditions}     = "EnhancedContent";
@@ -327,12 +324,12 @@ $tabsysprefs{OPACSearchForTitleIn}       = "OPAC";
 $tabsysprefs{OPACShelfBrowser}           = "OPAC";
 $tabsysprefs{OPACDisplayRequestPriority} = "OPAC";
 $tabsysprefs{OPACAllowHoldDateInFuture}  = "OPAC";
-$tabsysprefs{OPACPatronDetails}  = "OPAC";
-$tabsysprefs{OPACFinesTab}  = "OPAC";
-$tabsysprefs{DisplayOPACiconsXSLT}	 = "OPAC";
-$tabsysprefs{AutoSelfCheckAllowed}	 = "OPAC";
-$tabsysprefs{AutoSelfCheckID}		 = "OPAC";
-$tabsysprefs{AutoSelfCheckPass}		 = "OPAC";
+$tabsysprefs{OPACPatronDetails}          = "OPAC";
+$tabsysprefs{OPACFinesTab}               = "OPAC";
+$tabsysprefs{DisplayOPACiconsXSLT}       = "OPAC";
+$tabsysprefs{AutoSelfCheckAllowed}       = "OPAC";
+$tabsysprefs{AutoSelfCheckID}            = "OPAC";
+$tabsysprefs{AutoSelfCheckPass}          = "OPAC";
 
 # OPAC
 $tabsysprefs{SearchMyLibraryFirst} = "OPAC";
@@ -357,10 +354,10 @@ $tabsysprefs{OPACItemHolds}        = "OPAC";
 $tabsysprefs{OPACGroupResults}     = "OPAC";
 $tabsysprefs{XSLTDetailsDisplay}   = "OPAC";
 $tabsysprefs{XSLTResultsDisplay}   = "OPAC";
-$tabsysprefs{OPACShowCheckoutName}   = "OPAC";
+$tabsysprefs{OPACShowCheckoutName} = "OPAC";
 
 # Serials
-$tabsysprefs{RoutingListAddReserves}  	   = "Serials";
+$tabsysprefs{RoutingListAddReserves}       = "Serials";
 $tabsysprefs{OPACSerialIssueDisplayCount}  = "Serials";
 $tabsysprefs{StaffSerialIssueDisplayCount} = "Serials";
 $tabsysprefs{OPACDisplayExtendedSubInfo}   = "Serials";

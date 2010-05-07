@@ -1,8 +1,10 @@
 #!/usr/bin/perl
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 BEGIN {
+
     # find Koha's Perl modules
     # test carefully before changing this
     use FindBin;
@@ -22,12 +24,12 @@ my $do_update = 0;
 my $wherestrings;
 
 my $result = GetOptions(
-    'run-update'    => \$do_update,
-    'where=s@'         => \$wherestrings,
-    'h|help'        => \$want_help,
+    'run-update' => \$do_update,
+    'where=s@'   => \$wherestrings,
+    'h|help'     => \$want_help,
 );
 
-if (not $result or $want_help or not $do_update) {
+if ( not $result or $want_help or not $do_update ) {
     print_usage();
     exit 0;
 }
@@ -37,10 +39,10 @@ my $num_bibs_modified      = 0;
 my $num_marc_items_deleted = 0;
 my $num_marc_items_added   = 0;
 my $num_bad_bibs           = 0;
-my $dbh = C4::Context->dbh;
+my $dbh                    = C4::Context->dbh;
 $dbh->{AutoCommit} = 0;
 
-our ($itemtag, $itemsubfield) = GetMarcFromKohaField("items.itemnumber", '');
+our ( $itemtag, $itemsubfield ) = GetMarcFromKohaField( "items.itemnumber", '' );
 our ($item_sth) = $dbh->prepare("SELECT itemnumber FROM items WHERE biblionumber = ?");
 
 process_bibs();
@@ -50,16 +52,16 @@ exit 0;
 
 sub process_bibs {
     my $sql = "SELECT biblionumber FROM biblio JOIN biblioitems USING (biblionumber)";
-    $sql.="WHERE ". join(" AND ",@$wherestrings) if ($wherestrings);
-    $sql.="ORDER BY biblionumber ASC";
+    $sql .= "WHERE " . join( " AND ", @$wherestrings ) if ($wherestrings);
+    $sql .= "ORDER BY biblionumber ASC";
     my $sth = $dbh->prepare($sql);
-    eval{$sth->execute();};
-    if ($@){ die "error $@";};
-    while (my ($biblionumber) = $sth->fetchrow_array()) {
+    eval { $sth->execute(); };
+    if ($@) { die "error $@"; }
+    while ( my ($biblionumber) = $sth->fetchrow_array() ) {
         $num_bibs_processed++;
         process_bib($biblionumber);
 
-        if (($num_bibs_processed % 100) == 0) {
+        if ( ( $num_bibs_processed % 100 ) == 0 ) {
             print_progress_and_commit($num_bibs_processed);
         }
     }
@@ -82,7 +84,7 @@ sub process_bib {
     my $biblionumber = shift;
 
     my $bib = GetMarcBiblio($biblionumber);
-    unless (defined $bib) {
+    unless ( defined $bib ) {
         print "\nCould not retrieve bib $biblionumber from the database - record is corrupt.\n";
         $num_bad_bibs++;
         return;
@@ -91,8 +93,8 @@ sub process_bib {
     my $bib_modified = 0;
 
     # delete any item tags
-    foreach my $field ($bib->field($itemtag)) {
-        unless ($bib->delete_field($field)) {
+    foreach my $field ( $bib->field($itemtag) ) {
+        unless ( $bib->delete_field($field) ) {
             warn "Could not delete item in $itemtag for biblionumber $biblionumber";
             next;
         }
@@ -102,13 +104,13 @@ sub process_bib {
 
     # add back items from items table
     $item_sth->execute($biblionumber);
-    while (my $itemnumber = $item_sth->fetchrow_array) {
-        my $marc_item = C4::Items::GetMarcItem($biblionumber, $itemnumber);
+    while ( my $itemnumber = $item_sth->fetchrow_array ) {
+        my $marc_item = C4::Items::GetMarcItem( $biblionumber, $itemnumber );
         unless ($marc_item) {
             warn "FAILED C4::Items::GetMarcItem for biblionumber=$biblionumber, itemnumber=$itemnumber";
             next;
         }
-        foreach my $item_field ($marc_item->field($itemtag)) {
+        foreach my $item_field ( $marc_item->field($itemtag) ) {
             $bib->insert_fields_ordered($item_field);
             $num_marc_items_added++;
             $bib_modified = 1;
@@ -116,7 +118,7 @@ sub process_bib {
     }
 
     if ($bib_modified) {
-        ModBiblioMarc($bib, $biblionumber, GetFrameworkCode($biblionumber));
+        ModBiblioMarc( $bib, $biblionumber, GetFrameworkCode($biblionumber) );
         $num_bibs_modified++;
     }
 

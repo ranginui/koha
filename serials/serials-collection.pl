@@ -17,7 +17,6 @@
 # with Koha; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-
 use strict;
 use warnings;
 use CGI;
@@ -29,123 +28,115 @@ use C4::Letters;
 use C4::Output;
 use C4::Context;
 
-
 my $query = new CGI;
-my $op = $query->param('op') || q{};
-my $dbh = C4::Context->dbh;
+my $op    = $query->param('op') || q{};
+my $dbh   = C4::Context->dbh;
 
-my ($template, $loggedinuser, $cookie);
-($template, $loggedinuser, $cookie)
-  = get_template_and_user({template_name => "serials/serials-collection.tmpl",
-                            query => $query,
-                            type => "intranet",
-                            authnotrequired => 0,
-                            flagsrequired => {serials => 1},
-                            debug => 1,
-                            });
-my $biblionumber = $query->param('biblionumber');
+my ( $template, $loggedinuser, $cookie );
+( $template, $loggedinuser, $cookie ) = get_template_and_user(
+    {   template_name   => "serials/serials-collection.tmpl",
+        query           => $query,
+        type            => "intranet",
+        authnotrequired => 0,
+        flagsrequired   => { serials => 1 },
+        debug           => 1,
+    }
+);
+my $biblionumber   = $query->param('biblionumber');
 my @subscriptionid = $query->param('subscriptionid');
 
-my $subscriptiondescs ;
+my $subscriptiondescs;
 my $subscriptions;
 
-if($op eq 'gennext' && @subscriptionid){
+if ( $op eq 'gennext' && @subscriptionid ) {
     my $subscriptionid = $subscriptionid[0];
-    my $subscription = GetSubscription($subscriptionid);
+    my $subscription   = GetSubscription($subscriptionid);
 
-	my $sth = $dbh->prepare("SELECT publisheddate, serialid, serialseq, planneddate
-							FROM serial WHERE status = 1 AND subscriptionid = ?");
-	$sth->execute($subscriptionid);
+    my $sth = $dbh->prepare(
+        "SELECT publisheddate, serialid, serialseq, planneddate
+							FROM serial WHERE status = 1 AND subscriptionid = ?"
+    );
+    $sth->execute($subscriptionid);
 
-	# modify actual expected issue, to generate the next
-	if ( my $issue = $sth->fetchrow_hashref ) {
-		ModSerialStatus( $issue->{serialid}, $issue->{serialseq},
-                $issue->{planneddate}, $issue->{publisheddate},
-                3, "" );
-	}else{
-		my $expected = GetNextExpected($subscriptionid);
-	    my (
-	         $newserialseq,  $newlastvalue1, $newlastvalue2, $newlastvalue3,
-             $newinnerloop1, $newinnerloop2, $newinnerloop3
-            ) = GetNextSeq($subscription);
+    # modify actual expected issue, to generate the next
+    if ( my $issue = $sth->fetchrow_hashref ) {
+        ModSerialStatus( $issue->{serialid}, $issue->{serialseq}, $issue->{planneddate}, $issue->{publisheddate}, 3, "" );
+    } else {
+        my $expected = GetNextExpected($subscriptionid);
+        my ( $newserialseq, $newlastvalue1, $newlastvalue2, $newlastvalue3, $newinnerloop1, $newinnerloop2, $newinnerloop3 ) = GetNextSeq($subscription);
 
-	     ## We generate the next publication date
-	     my $nextpublisheddate = GetNextDate( $expected->{planneddate}->output('iso'), $subscription );
-	     ## Creating the new issue
-	     NewIssue( $newserialseq, $subscriptionid, $subscription->{'biblionumber'},
-	             1, $nextpublisheddate, $nextpublisheddate );
+        ## We generate the next publication date
+        my $nextpublisheddate = GetNextDate( $expected->{planneddate}->output('iso'), $subscription );
+        ## Creating the new issue
+        NewIssue( $newserialseq, $subscriptionid, $subscription->{'biblionumber'}, 1, $nextpublisheddate, $nextpublisheddate );
 
-	     ## Updating the subscription seq status
-	     my $squery = "UPDATE subscription SET lastvalue1=?, lastvalue2=?, lastvalue3=?, innerloop1=?, innerloop2=?, innerloop3=?
+        ## Updating the subscription seq status
+        my $squery = "UPDATE subscription SET lastvalue1=?, lastvalue2=?, lastvalue3=?, innerloop1=?, innerloop2=?, innerloop3=?
 	                 WHERE  subscriptionid = ?";
-	     $sth = $dbh->prepare($squery);
-	     $sth->execute(
-	         $newlastvalue1, $newlastvalue2, $newlastvalue3, $newinnerloop1,
-	         $newinnerloop2, $newinnerloop3, $subscriptionid
-	         );
+        $sth = $dbh->prepare($squery);
+        $sth->execute( $newlastvalue1, $newlastvalue2, $newlastvalue3, $newinnerloop1, $newinnerloop2, $newinnerloop3, $subscriptionid );
 
-	}
+    }
 
-    print $query->redirect('/cgi-bin/koha/serials/serials-collection.pl?subscriptionid='.$subscriptionid);
+    print $query->redirect( '/cgi-bin/koha/serials/serials-collection.pl?subscriptionid=' . $subscriptionid );
 }
 
-if (@subscriptionid){
-   my @subscriptioninformation=();
-   foreach my $subscriptionid (@subscriptionid){
-    my $subs= GetSubscription($subscriptionid);
-    $subs->{opacnote}     =~ s/\n/\<br\/\>/g;
-    $subs->{missinglist}  =~ s/\n/\<br\/\>/g;
-    $subs->{recievedlist} =~ s/\n/\<br\/\>/g;
-    ##these are display information
-    $subs->{ "periodicity" . $subs->{periodicity} } = 1;
-    $subs->{ "numberpattern" . $subs->{numberpattern} } = 1;
-    $subs->{ "status" . $subs->{'status'} } = 1;
-    $subs->{startdate}     = format_date( $subs->{startdate} );
-    $subs->{histstartdate} = format_date( $subs->{histstartdate} );
-    if ( !defined $subs->{enddate} || $subs->{enddate} eq '0000-00-00' ) {
-        $subs->{enddate} = '';
+if (@subscriptionid) {
+    my @subscriptioninformation = ();
+    foreach my $subscriptionid (@subscriptionid) {
+        my $subs = GetSubscription($subscriptionid);
+        $subs->{opacnote}     =~ s/\n/\<br\/\>/g;
+        $subs->{missinglist}  =~ s/\n/\<br\/\>/g;
+        $subs->{recievedlist} =~ s/\n/\<br\/\>/g;
+        ##these are display information
+        $subs->{ "periodicity" . $subs->{periodicity} }     = 1;
+        $subs->{ "numberpattern" . $subs->{numberpattern} } = 1;
+        $subs->{ "status" . $subs->{'status'} }             = 1;
+        $subs->{startdate}                                  = format_date( $subs->{startdate} );
+        $subs->{histstartdate}                              = format_date( $subs->{histstartdate} );
+        if ( !defined $subs->{enddate} || $subs->{enddate} eq '0000-00-00' ) {
+            $subs->{enddate} = '';
+        } else {
+            $subs->{enddate} = format_date( $subs->{enddate} );
+        }
+        $subs->{'abouttoexpire'}       = abouttoexpire( $subs->{'subscriptionid'} );
+        $subs->{'subscriptionexpired'} = HasSubscriptionExpired( $subs->{'subscriptionid'} );
+        $subs->{'subscriptionid'}      = $subscriptionid;                                       # FIXME - why was this lost ?
+        push @$subscriptiondescs, $subs;
+        my $tmpsubscription = GetFullSubscription($subscriptionid);
+        @subscriptioninformation = ( @$tmpsubscription, @subscriptioninformation );
     }
-    else {
-        $subs->{enddate} = format_date( $subs->{enddate} );
-    }
-    $subs->{'abouttoexpire'}=abouttoexpire($subs->{'subscriptionid'});
-    $subs->{'subscriptionexpired'}=HasSubscriptionExpired($subs->{'subscriptionid'});
-    $subs->{'subscriptionid'} = $subscriptionid;  # FIXME - why was this lost ?
-    push @$subscriptiondescs,$subs;
-    my $tmpsubscription= GetFullSubscription($subscriptionid);
-    @subscriptioninformation=(@$tmpsubscription,@subscriptioninformation);
-  }
-  $subscriptions=PrepareSerialsData(\@subscriptioninformation);
+    $subscriptions = PrepareSerialsData( \@subscriptioninformation );
 } else {
-  $subscriptiondescs = GetSubscriptionsFromBiblionumber($biblionumber) ;
-  my $subscriptioninformation = GetFullSubscriptionsFromBiblionumber($biblionumber);
-  $subscriptions=PrepareSerialsData($subscriptioninformation);
+    $subscriptiondescs = GetSubscriptionsFromBiblionumber($biblionumber);
+    my $subscriptioninformation = GetFullSubscriptionsFromBiblionumber($biblionumber);
+    $subscriptions = PrepareSerialsData($subscriptioninformation);
 }
 
-my $title = $subscriptiondescs->[0]{bibliotitle};
-my $yearmax=($subscriptions->[0]{year} eq "manage" && scalar(@$subscriptions)>1)? $subscriptions->[1]{year} :$subscriptions->[0]{year};
-my $yearmin=$subscriptions->[scalar(@$subscriptions)-1]{year};
-my $subscriptionidlist="";
-foreach my $subscription (@$subscriptiondescs){
-  $subscriptionidlist.=$subscription->{'subscriptionid'}."," ;
-  $biblionumber = $subscription->{'bibnum'} unless ($biblionumber);
+my $title              = $subscriptiondescs->[0]{bibliotitle};
+my $yearmax            = ( $subscriptions->[0]{year} eq "manage" && scalar(@$subscriptions) > 1 ) ? $subscriptions->[1]{year} : $subscriptions->[0]{year};
+my $yearmin            = $subscriptions->[ scalar(@$subscriptions) - 1 ]{year};
+my $subscriptionidlist = "";
+foreach my $subscription (@$subscriptiondescs) {
+    $subscriptionidlist .= $subscription->{'subscriptionid'} . ",";
+    $biblionumber = $subscription->{'bibnum'} unless ($biblionumber);
 }
 
 # warn "title : $title yearmax : $yearmax nombre d'elements dans le tableau :".scalar(@$subscriptions);
 #  use Data::Dumper; warn Dumper($subscriptions);
 chop $subscriptionidlist;
 $template->param(
-          onesubscription => (scalar(@$subscriptiondescs)==1),
-          subscriptionidlist => $subscriptionidlist,
-          biblionumber => $biblionumber,
-          subscriptions => $subscriptiondescs,
-          years => $subscriptions,
-          yearmin => $yearmin,
-          yearmax =>$yearmax,
-          bibliotitle => $title,
-          suggestion => C4::Context->preference("suggestion"),
-          virtualshelves => C4::Context->preference("virtualshelves"),
-          subscr=>$query->param('subscriptionid'),
-          );
+    onesubscription    => ( scalar(@$subscriptiondescs) == 1 ),
+    subscriptionidlist => $subscriptionidlist,
+    biblionumber       => $biblionumber,
+    subscriptions      => $subscriptiondescs,
+    years              => $subscriptions,
+    yearmin            => $yearmin,
+    yearmax            => $yearmax,
+    bibliotitle        => $title,
+    suggestion         => C4::Context->preference("suggestion"),
+    virtualshelves     => C4::Context->preference("virtualshelves"),
+    subscr             => $query->param('subscriptionid'),
+);
 
 output_html_with_http_headers $query, $cookie, $template->output;

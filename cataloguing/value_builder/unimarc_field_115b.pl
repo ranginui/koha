@@ -1,6 +1,5 @@
 #!/usr/bin/perl
 
-
 # Copyright 2000-2002 Katipo Communications
 #
 # This file is part of Koha.
@@ -19,6 +18,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use C4::Auth;
 use CGI;
@@ -68,9 +68,7 @@ sub plugin {
 
     my $dbh = C4::Context->dbh;
     my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-        {
-            template_name =>
-              "cataloguing/value_builder/unimarc_field_115b.tmpl",
+        {   template_name   => "cataloguing/value_builder/unimarc_field_115b.tmpl",
             query           => $input,
             type            => "intranet",
             authnotrequired => 0,

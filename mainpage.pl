@@ -31,8 +31,7 @@ my @authtypesloop;
 foreach my $thisauthtype (
     sort { $authtypes->{$a} <=> $authtypes->{$b} }
     keys %$authtypes
-  )
-{
+  ) {
     my %row = (
         value        => $thisauthtype,
         authtypetext => $authtypes->{$thisauthtype}{'authtypetext'},
@@ -41,14 +40,11 @@ foreach my $thisauthtype (
 }
 
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => "intranet-main.tmpl",
+    {   template_name   => "intranet-main.tmpl",
         query           => $query,
         type            => "intranet",
         authnotrequired => 0,
-        flagsrequired   => {
-            catalogue => 1,
-        },
+        flagsrequired   => { catalogue => 1, },
     }
 );
 

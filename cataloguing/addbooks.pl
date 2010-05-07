@@ -1,6 +1,5 @@
 #!/usr/bin/perl
 
-
 # Copyright 2000-2002 Katipo Communications
 #
 # This file is part of Koha.
@@ -36,16 +35,14 @@ use C4::Search;
 
 my $input = new CGI;
 
-my $success = $input->param('biblioitem');
-my $query   = $input->param('q');
-my @value   = $input->param('value');
-my $page    = $input->param('page') || 1;
+my $success          = $input->param('biblioitem');
+my $query            = $input->param('q');
+my @value            = $input->param('value');
+my $page             = $input->param('page') || 1;
 my $results_per_page = 20;
 
-
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => "cataloguing/addbooks.tmpl",
+    {   template_name   => "cataloguing/addbooks.tmpl",
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
@@ -57,24 +54,24 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
 # get framework list
 my $frameworks = getframeworks;
 my @frameworkcodeloop;
-foreach my $thisframeworkcode ( sort {$frameworks->{$a} cmp $frameworks->{$b}}keys %{$frameworks} ) {
-    push @frameworkcodeloop, {
-        value         => $thisframeworkcode,
+foreach my $thisframeworkcode ( sort { $frameworks->{$a} cmp $frameworks->{$b} } keys %{$frameworks} ) {
+    push @frameworkcodeloop,
+      { value         => $thisframeworkcode,
         frameworktext => $frameworks->{$thisframeworkcode}->{'frameworktext'},
-    };
+      };
 }
-
 
 # Searching the catalog.
 if ($query) {
 
     # build query
     my @operands = $query;
-    my (@operators, @indexes, @sort_by, @limits) = ();
-    my ( $builterror,$builtquery,$simple_query,$query_cgi,$query_desc,$limit,$limit_cgi,$limit_desc,$stopwords_removed,$query_type) = buildQuery(\@operators,\@operands,\@indexes,@limits,\@sort_by,undef,undef);
+    my ( @operators, @indexes, @sort_by, @limits ) = ();
+    my ( $builterror, $builtquery, $simple_query, $query_cgi, $query_desc, $limit, $limit_cgi, $limit_desc, $stopwords_removed, $query_type ) =
+      buildQuery( \@operators, \@operands, \@indexes, @limits, \@sort_by, undef, undef );
 
     # find results
-    my ( $error, $marcresults, $total_hits ) = SimpleSearch($builtquery, $results_per_page * ($page - 1), $results_per_page);
+    my ( $error, $marcresults, $total_hits ) = SimpleSearch( $builtquery, $results_per_page * ( $page - 1 ), $results_per_page );
 
     if ( defined $error ) {
         $template->param( error => $error );
@@ -100,38 +97,39 @@ if ($query) {
 my $countbr = 0;
 my @resultsbr;
 if ($query) {
-# fill isbn or title, depending on what has been entered
-#u must do check on isbn because u can find number in beginning of title
-#check is on isbn legnth 13 for new isbn and 10 for old isbn
+
+    # fill isbn or title, depending on what has been entered
+    #u must do check on isbn because u can find number in beginning of title
+    #check is on isbn legnth 13 for new isbn and 10 for old isbn
     my ( $title, $isbn );
-    if ($query=~/\d/) {
+    if ( $query =~ /\d/ ) {
         my $querylength = length $query;
         if ( $querylength == 13 || $querylength == 10 ) {
             $isbn = $query;
         }
     }
-    if (!$isbn) {
+    if ( !$isbn ) {
         $title = $query;
     }
     ( $countbr, @resultsbr ) = BreedingSearch( $title, $isbn );
 }
 my $breeding_loop = [];
 for my $resultsbr (@resultsbr) {
-    push @{$breeding_loop}, {
-        id               => $resultsbr->{import_record_id},
+    push @{$breeding_loop},
+      { id               => $resultsbr->{import_record_id},
         isbn             => $resultsbr->{isbn},
         copyrightdate    => $resultsbr->{copyrightdate},
         editionstatement => $resultsbr->{editionstatement},
         file             => $resultsbr->{file_name},
         title            => $resultsbr->{title},
         author           => $resultsbr->{author},
-    };
+      };
 }
 
 $template->param(
-    frameworkcodeloop => \@frameworkcodeloop,
-    breeding_count    => $countbr,
-    breeding_loop     => $breeding_loop,
+    frameworkcodeloop   => \@frameworkcodeloop,
+    breeding_count      => $countbr,
+    breeding_loop       => $breeding_loop,
     z3950_search_params => C4::Search::z3950_search_args($query),
 );
 

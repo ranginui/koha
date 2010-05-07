@@ -28,49 +28,52 @@ my $query = new CGI;
 
 my $framework = $query->param('framework') || "";
 
-my $field         = $query->param('fieldname');
-my $fieldcode     = $query->param('marcfield');
-my $subfieldcode  = $query->param('marcsubfield');
-my $op            = $query->param('op');
-my $id            = $query->param('id');
+my $field        = $query->param('fieldname');
+my $fieldcode    = $query->param('marcfield');
+my $subfieldcode = $query->param('marcsubfield');
+my $op           = $query->param('op');
+my $id           = $query->param('id');
 
-my ($template, $loggedinuser, $cookie)
-    = get_template_and_user({template_name => "admin/fieldmapping.tmpl",
-			     query => $query,
-			     type => "intranet",
-			     authnotrequired => 0,
-			     flagsrequired => {parameters => 1},
-			     debug => 1,
-			     });
+my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
+    {   template_name   => "admin/fieldmapping.tmpl",
+        query           => $query,
+        type            => "intranet",
+        authnotrequired => 0,
+        flagsrequired   => { parameters => 1 },
+        debug           => 1,
+    }
+);
 
 # get framework list
 my $frameworks = getframeworks();
 my @frameworkloop;
-foreach my $thisframeworkcode (keys %$frameworks) {
-	my $selected = 1 if $thisframeworkcode eq $framework;
-	my %row =(value => $thisframeworkcode,
-				selected => $selected,
-				frameworktext => $frameworks->{$thisframeworkcode}->{'frameworktext'},
-			);
-	push @frameworkloop, \%row;
+foreach my $thisframeworkcode ( keys %$frameworks ) {
+    my $selected = 1 if $thisframeworkcode eq $framework;
+    my %row = (
+        value         => $thisframeworkcode,
+        selected      => $selected,
+        frameworktext => $frameworks->{$thisframeworkcode}->{'frameworktext'},
+    );
+    push @frameworkloop, \%row;
 }
 
-if($op eq "delete" and $id){
+if ( $op eq "delete" and $id ) {
     DeleteFieldMapping($id);
-    print $query->redirect("/cgi-bin/koha/admin/fieldmapping.pl?framework=".$framework);
+    print $query->redirect( "/cgi-bin/koha/admin/fieldmapping.pl?framework=" . $framework );
     exit;
 }
 
 # insert operation
-if($field and $fieldcode){
-    SetFieldMapping($framework, $field, $fieldcode, $subfieldcode);
+if ( $field and $fieldcode ) {
+    SetFieldMapping( $framework, $field, $fieldcode, $subfieldcode );
 }
 
 my $fieldloop = GetFieldMapping($framework);
 
-$template->param( frameworkloop => \@frameworkloop, 
-                  framework     => $framework,
-                  fields        => $fieldloop,
-                );
+$template->param(
+    frameworkloop => \@frameworkloop,
+    framework     => $framework,
+    fields        => $fieldloop,
+);
 
 output_html_with_http_headers $query, $cookie, $template->output;

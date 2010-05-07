@@ -18,6 +18,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use CGI;
 use C4::Auth;
@@ -25,34 +26,36 @@ use C4::Context;
 use C4::Output;
 use C4::Circulation;
 
+my $input          = new CGI;
+my $report_name    = $input->param("report_name");
+my $do_it          = $input->param('do_it');
+my $fullreportname = "reports/" . $report_name . ".tmpl";
+my @values         = $input->param("value");
+my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
+    {   template_name   => $fullreportname,
+        query           => $input,
+        type            => "intranet",
+        authnotrequired => 0,
+        flagsrequired   => { reports => '*' },
+        debug           => 1,
+    }
+);
+$template->param(
+    do_it       => $do_it,
+    report_name => $report_name,
+);
+my $cgidir = C4::Context->config('intranetdir') . "/cgi-bin/reports/";
 
-my $input = new CGI;
-my $report_name=$input->param("report_name");
-my $do_it=$input->param('do_it');
-my $fullreportname = "reports/".$report_name.".tmpl";
-my @values = $input->param("value");
-my ($template, $borrowernumber, $cookie)
-	= get_template_and_user({template_name => $fullreportname,
-				query => $input,
-				type => "intranet",
-				authnotrequired => 0,
-				flagsrequired => {reports => '*'},
-				debug => 1,
-				});
-$template->param(do_it => $do_it,
-		report_name => $report_name,
-		);
-my $cgidir = C4::Context->config('intranetdir')."/cgi-bin/reports/";
-unless (-r $cgidir and -d $cgidir) {
-	$cgidir = C4::Context->intranetdir."/reports/";
-} 
-my $plugin = $cgidir.$report_name.".plugin";
-warn "PLUGIN:".$plugin;
+unless ( -r $cgidir and -d $cgidir ) {
+    $cgidir = C4::Context->intranetdir . "/reports/";
+}
+my $plugin = $cgidir . $report_name . ".plugin";
+warn "PLUGIN:" . $plugin;
 require $plugin;
 if ($do_it) {
-	my $results = calculate(\@values);
-	$template->param(mainloop => $results);
+    my $results = calculate( \@values );
+    $template->param( mainloop => $results );
 } else {
-	$template = set_parameters($template);
+    $template = set_parameters($template);
 }
 output_html_with_http_headers $input, $cookie, $template->output;

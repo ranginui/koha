@@ -52,7 +52,7 @@ pod2usage(1) if $help;
 pod2usage( -verbose => 2 ) if $man;
 
 # select all serials with not "irregular" periodicity that are late
-my $sth = $dbh->prepare("
+my $sth = $dbh->prepare( "
      SELECT *
      FROM serial 
      LEFT JOIN subscription 
@@ -60,35 +60,31 @@ my $sth = $dbh->prepare("
      WHERE serial.status = 1 
        AND periodicity <> 32
        AND DATE_ADD(planneddate, INTERVAL CAST(graceperiod AS SIGNED) DAY) < NOW()
-     ");
+     " );
 $sth->execute();
 
 while ( my $issue = $sth->fetchrow_hashref ) {
 
-    my $subscription      = &GetSubscription( $issue->{subscriptionid} );
-    my $planneddate       = $issue->{planneddate};
+    my $subscription = &GetSubscription( $issue->{subscriptionid} );
+    my $planneddate  = $issue->{planneddate};
 
-    if( $subscription && $planneddate && $planneddate ne "0000-00-00" ){
+    if ( $subscription && $planneddate && $planneddate ne "0000-00-00" ) {
         my $nextpublisheddate = GetNextDate( $planneddate, $subscription );
-        my $today             = format_date_in_iso( C4::Dates->new()->output() );
+        my $today = format_date_in_iso( C4::Dates->new()->output() );
 
-        if ($nextpublisheddate && $today){
+        if ( $nextpublisheddate && $today ) {
             my ( $year,  $month,  $day )  = split( /-/, $nextpublisheddate );
             my ( $tyear, $tmonth, $tday ) = split( /-/, $today );
             if (   check_date( $year, $month, $day )
                 && check_date( $tyear, $tmonth, $tday )
-                && Date_to_Days( $year, $month, $day ) <
-                Date_to_Days( $tyear, $tmonth, $tday ) )
-            {
-        
-            ModSerialStatus( $issue->{serialid}, $issue->{serialseq},
-                $issue->{planneddate}, $issue->{publisheddate},
-                3, "Automatically set to late" );
-            print $issue->{serialid}." update\n";
+                && Date_to_Days( $year, $month, $day ) < Date_to_Days( $tyear, $tmonth, $tday ) ) {
+
+                ModSerialStatus( $issue->{serialid}, $issue->{serialseq}, $issue->{planneddate}, $issue->{publisheddate}, 3, "Automatically set to late" );
+                print $issue->{serialid} . " update\n";
             }
-        }else{
-            print "Error with serial(".$issue->{serialid}.") has no existent 
-                   subscription(".$issue->{subscriptionid}.") attached
+        } else {
+            print "Error with serial(" . $issue->{serialid} . ") has no existent 
+                   subscription(" . $issue->{subscriptionid} . ") attached
                    or planneddate is ";
         }
     }

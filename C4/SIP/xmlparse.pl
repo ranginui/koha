@@ -7,25 +7,32 @@
 # in Sip::Configuration.pm
 #
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use English;
 
 use XML::Simple qw(:strict);
 use Data::Dumper;
 
-my $parser = new XML::Simple( KeyAttr   => { login => '+id',
-					     institution => '+id',
-					     service => '+port', },
-			      GroupTags =>  { listeners => 'service',
-					      accounts => 'login',
-					      institutions => 'institution', },
-			      ForceArray=> [ 'service',
-					     'login',
-					     'institution' ],
-			      ValueAttr =>  { 'error-detect' => 'enabled',
-					     'min_servers' => 'value',
-					     'max_servers' => 'value'} );
+my $parser = new XML::Simple(
+    KeyAttr => {
+        login       => '+id',
+        institution => '+id',
+        service     => '+port',
+    },
+    GroupTags => {
+        listeners    => 'service',
+        accounts     => 'login',
+        institutions => 'institution',
+    },
+    ForceArray => [ 'service', 'login', 'institution' ],
+    ValueAttr  => {
+        'error-detect' => 'enabled',
+        'min_servers'  => 'value',
+        'max_servers'  => 'value'
+    }
+);
 
-my $ref = $parser->XMLin(@ARGV ? shift : 'SIPconfig.xml');
+my $ref = $parser->XMLin( @ARGV ? shift : 'SIPconfig.xml' );
 
-print Dumper($ref); 
+print Dumper($ref);

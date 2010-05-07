@@ -27,12 +27,11 @@ use C4::Auth;
 my $query = new CGI;
 
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => "virtualshelves/shelves.tmpl",
+    {   template_name   => "virtualshelves/shelves.tmpl",
         query           => $query,
         type            => "intranet",
         authnotrequired => 0,
         flagsrequired   => { catalogue => 1 },
     }
 );
-shelfpage('intranet', $query, $template, $loggedinuser, $cookie);
+shelfpage( 'intranet', $query, $template, $loggedinuser, $cookie );

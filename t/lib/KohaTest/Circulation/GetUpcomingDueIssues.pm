@@ -22,5 +22,4 @@ sub basic_usage : Test(2) {
       or diag( Data::Dumper->Dump( [$upcoming], ['upcoming'] ) );
 }
 
-
 1;

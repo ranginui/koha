@@ -27,8 +27,7 @@ use Config;
 
 my $query = new CGI;
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => "about.tmpl",
+    {   template_name   => "about.tmpl",
         query           => $query,
         type            => "intranet",
         authnotrequired => 0,
@@ -37,10 +36,10 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
     }
 );
 
-my $kohaVersion   = C4::Context::KOHAVERSION;
-my $osVersion     = `uname -a`;
-my $perl_path = $^X;
-if ($^O ne 'VMS') {
+my $kohaVersion = C4::Context::KOHAVERSION;
+my $osVersion   = `uname -a`;
+my $perl_path   = $^X;
+if ( $^O ne 'VMS' ) {
     $perl_path .= $Config{_exe} unless $perl_path =~ m/$Config{_exe}$/i;
 }
 my $perlVersion   = $];
@@ -60,97 +59,96 @@ $template->param(
     apacheVersion => $apacheVersion,
     zebraVersion  => $zebraVersion,
 );
-my @component_names =
-    qw/
-Algorithm::CheckDigits
-Biblio::EndnoteStyle
-CGI
-CGI::Carp
-CGI::Session
-CGI::Session::Serialize::yaml
-Class::Factory::Util
-Class::Accessor
-Compress::Zlib
-DBD::mysql
-DBD::SQLite2
-DBI
-Data::Dumper
-Data::ICal
-Date::Calc
-Date::ICal
-Date::Manip
-Digest::MD5
-Digest::SHA
-Email::Date
-File::Temp
-GD
-GD::Barcode::UPCE
-Getopt::Long
-Getopt::Std
-Graphics::Magick
-HTML::Template::Pro
-HTTP::Cookies
-HTTP::OAI
-HTTP::Request::Common
-HTML::Scrubber
-IPC::Cmd
-JSON
-LWP::Simple
-LWP::UserAgent
-Lingua::Stem
-Lingua::Stem::Snowball
-List::Util
-List::MoreUtils
-Locale::Currency::Format
-Locale::Language
-MARC::Crosswalk::DublinCore
-MARC::Charset
-MARC::File::XML
-MARC::Record
-MIME::Base64
-MIME::Lite
-MIME::QuotedPrint
-Mail::Sendmail
-Net::LDAP
-Net::LDAP::Filter
-Net::Z3950::ZOOM
-Number::Format
-PDF::API2
-PDF::API2::Page
-PDF::API2::Util
-PDF::API2::Simple
-PDF::Table
-PDF::Reuse
-PDF::Reuse::Barcode
-POE
-POSIX
-Schedule::At
-SMS::Send
-Term::ANSIColor
-Test
-Test::Harness
-Test::More
-Text::CSV
-Text::CSV_XS
-Text::CSV::Encoded
-Text::Iconv
-Text::Wrap
-Time::HiRes
-Time::localtime
-Unicode::Normalize
-XML::Dumper
-XML::LibXML
-XML::LibXSLT
-XML::SAX::ParserFactory
-XML::SAX::Writer
-XML::Simple
-XML::RSS
-YAML::Syck
-      /;
+my @component_names = qw/
+  Algorithm::CheckDigits
+  Biblio::EndnoteStyle
+  CGI
+  CGI::Carp
+  CGI::Session
+  CGI::Session::Serialize::yaml
+  Class::Factory::Util
+  Class::Accessor
+  Compress::Zlib
+  DBD::mysql
+  DBD::SQLite2
+  DBI
+  Data::Dumper
+  Data::ICal
+  Date::Calc
+  Date::ICal
+  Date::Manip
+  Digest::MD5
+  Digest::SHA
+  Email::Date
+  File::Temp
+  GD
+  GD::Barcode::UPCE
+  Getopt::Long
+  Getopt::Std
+  Graphics::Magick
+  HTML::Template::Pro
+  HTTP::Cookies
+  HTTP::OAI
+  HTTP::Request::Common
+  HTML::Scrubber
+  IPC::Cmd
+  JSON
+  LWP::Simple
+  LWP::UserAgent
+  Lingua::Stem
+  Lingua::Stem::Snowball
+  List::Util
+  List::MoreUtils
+  Locale::Currency::Format
+  Locale::Language
+  MARC::Crosswalk::DublinCore
+  MARC::Charset
+  MARC::File::XML
+  MARC::Record
+  MIME::Base64
+  MIME::Lite
+  MIME::QuotedPrint
+  Mail::Sendmail
+  Net::LDAP
+  Net::LDAP::Filter
+  Net::Z3950::ZOOM
+  Number::Format
+  PDF::API2
+  PDF::API2::Page
+  PDF::API2::Util
+  PDF::API2::Simple
+  PDF::Table
+  PDF::Reuse
+  PDF::Reuse::Barcode
+  POE
+  POSIX
+  Schedule::At
+  SMS::Send
+  Term::ANSIColor
+  Test
+  Test::Harness
+  Test::More
+  Text::CSV
+  Text::CSV_XS
+  Text::CSV::Encoded
+  Text::Iconv
+  Text::Wrap
+  Time::HiRes
+  Time::localtime
+  Unicode::Normalize
+  XML::Dumper
+  XML::LibXML
+  XML::LibXSLT
+  XML::SAX::ParserFactory
+  XML::SAX::Writer
+  XML::Simple
+  XML::RSS
+  YAML::Syck
+  /;
 
 my @components = ();
 
-my $counter=0;
+my $counter = 0;
 foreach my $component ( sort @component_names ) {
     my $version;
     if ( eval "require $component" ) {
@@ -158,16 +156,14 @@ foreach my $component ( sort @component_names ) {
         if ( $version eq '' ) {
             $version = 'unknown';
         }
-    }
-    else {
+    } else {
         $version = 'module is missing';
     }
     push(
         @components,
-        {
-            name    => $component,
+        {   name    => $component,
             version => $version,
-            newrow  => (++$counter % 4) ? 0 : 1,
+            newrow  => ( ++$counter % 4 ) ? 0 : 1,
         }
     );
 }

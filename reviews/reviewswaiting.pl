@@ -28,8 +28,7 @@ use C4::Biblio;
 
 my $query = new CGI;
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => "reviews/reviewswaiting.tmpl",
+    {   template_name   => "reviews/reviewswaiting.tmpl",
         query           => $query,
         type            => "intranet",
         authnotrequired => 0,
@@ -38,22 +37,22 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
     }
 );
 
-my $op       = $query->param('op') || '';
+my $op = $query->param('op') || '';
 my $reviewid = $query->param('reviewid');
 
 if ( $op eq 'approve' ) {
     approvereview($reviewid);
-}
-elsif ( $op eq 'delete' ) {
+} elsif ( $op eq 'delete' ) {
     deletereview($reviewid);
 }
 
 my $reviews = getallreviews(0);
 
-foreach ( @$reviews ) {
+foreach (@$reviews) {
     my $borrowernumber = $_->{borrowernumber};
-    my $borrowerData   = GetMember('borrowernumber' => $borrowernumber);
-    my $biblioData     = GetBiblioData($_->{biblionumber});
+    my $borrowerData   = GetMember( 'borrowernumber' => $borrowernumber );
+    my $biblioData     = GetBiblioData( $_->{biblionumber} );
+
     # setting some borrower info into this hash
     $_->{bibliotitle} = $biblioData->{'title'};
     $_->{surname}     = $borrowerData->{'surname'};

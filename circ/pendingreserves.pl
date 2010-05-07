@@ -1,6 +1,5 @@
 #!/usr/bin/perl
 
-
 # Copyright 2000-2002 Katipo Communications
 #
 # This file is part of Koha.
@@ -24,6 +23,7 @@
 # 		The reserve pull lists *works* as long as not for indepencdant branches, I can fix!
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use C4::Context;
 use C4::Output;
@@ -33,18 +33,17 @@ use C4::Dates qw/format_date format_date_in_iso/;
 use C4::Debug;
 use Date::Calc qw/Today Add_Delta_YMD/;
 
-my $input = new CGI;
-my $order = $input->param('order');
-my $startdate=$input->param('from');
-my $enddate=$input->param('to');
-my $run_report=$input->param('run_report');
-my $report_page=$input->param('report_page');
+my $input       = new CGI;
+my $order       = $input->param('order');
+my $startdate   = $input->param('from');
+my $enddate     = $input->param('to');
+my $run_report  = $input->param('run_report');
+my $report_page = $input->param('report_page');
 
 my $theme = $input->param('theme');    # only used if allowthemeoverride is set
 
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => "circ/pendingreserves.tmpl",
+    {   template_name   => "circ/pendingreserves.tmpl",
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
@@ -67,31 +66,32 @@ my $title;
 my $author;
 
 my ( $year, $month, $day ) = Today();
-my $todaysdate     = sprintf("%-04.4d-%-02.2d-%02.2d", $year, $month, $day);
-my $yesterdaysdate = sprintf("%-04.4d-%-02.2d-%02.2d", Add_Delta_YMD($year, $month, $day,   0, 0, -1));
+my $todaysdate = sprintf( "%-04.4d-%-02.2d-%02.2d", $year, $month, $day );
+my $yesterdaysdate = sprintf( "%-04.4d-%-02.2d-%02.2d", Add_Delta_YMD( $year, $month, $day, 0, 0, -1 ) );
+
 #changed from delivered range of 10 years-yesterday to 2 days ago-today
 # Find two days ago for the default shelf pull start and end dates
-my $pastdate       = sprintf("%-04.4d-%-02.2d-%02.2d", Add_Delta_YMD($year, $month, $day, 0, 0, -2));
+my $pastdate = sprintf( "%-04.4d-%-02.2d-%02.2d", Add_Delta_YMD( $year, $month, $day, 0, 0, -2 ) );
 
 #		Predefine the start and end dates if they are not already defined
 $startdate =~ s/^\s+//;
 $startdate =~ s/\s+$//;
-$enddate =~ s/^\s+//;
-$enddate =~ s/\s+$//;
-#		Check if null, should string match, if so set start and end date to yesterday
-if (!defined($startdate) or $startdate eq "") {
-	$startdate = format_date($pastdate);
-}
-if (!defined($enddate) or $enddate eq "") {
-	$enddate = format_date($todaysdate);
-}
+$enddate   =~ s/^\s+//;
+$enddate   =~ s/\s+$//;
 
+#		Check if null, should string match, if so set start and end date to yesterday
+if ( !defined($startdate) or $startdate eq "" ) {
+    $startdate = format_date($pastdate);
+}
+if ( !defined($enddate) or $enddate eq "" ) {
+    $enddate = format_date($todaysdate);
+}
 
 my @reservedata;
-my ($prev_results, $next_results, $next_or_previous) = (0,0,0);
-if ( $run_report ) {
-    my $dbh    = C4::Context->dbh;
-    my ($sqlorderby, $sqldatewhere, $sqllimitoffset) = ("","","");
+my ( $prev_results, $next_results, $next_or_previous ) = ( 0, 0, 0 );
+if ($run_report) {
+    my $dbh = C4::Context->dbh;
+    my ( $sqlorderby, $sqldatewhere, $sqllimitoffset ) = ( "", "", "" );
     $debug and warn format_date_in_iso($startdate) . "\n" . format_date_in_iso($enddate);
     my @query_params = ();
     if ($startdate) {
@@ -105,27 +105,26 @@ if ( $run_report ) {
 
     $sqllimitoffset = " LIMIT 251";
     if ($report_page) {
-        $sqllimitoffset  .= " OFFSET=?";
-        push @query_params, ($report_page * 250);
+        $sqllimitoffset .= " OFFSET=?";
+        push @query_params, ( $report_page * 250 );
     }
 
-    if ($order eq "biblio") {
+    if ( $order eq "biblio" ) {
         $sqlorderby = " ORDER BY biblio.title ";
-    } elsif ($order eq "itype") {
+    } elsif ( $order eq "itype" ) {
         $sqlorderby = " ORDER BY l_itype, location, l_itemcallnumber ";
-    } elsif ($order eq "location") {
+    } elsif ( $order eq "location" ) {
         $sqlorderby = " ORDER BY location, l_itemcallnumber, holdingbranch ";
-    } elsif ($order eq "date") {
+    } elsif ( $order eq "date" ) {
         $sqlorderby = " ORDER BY l_reservedate, location, l_itemcallnumber ";
-    } elsif ($order eq "library") {
+    } elsif ( $order eq "library" ) {
         $sqlorderby = " ORDER BY holdingbranch, l_itemcallnumber, location ";
-    } elsif ($order eq "call") {
-        $sqlorderby = " ORDER BY l_itemcallnumber, holdingbranch, location ";    
+    } elsif ( $order eq "call" ) {
+        $sqlorderby = " ORDER BY l_itemcallnumber, holdingbranch, location ";
     } else {
         $sqlorderby = " ORDER BY biblio.title ";
     }
-    my $strsth =
-    "SELECT min(reservedate) as l_reservedate,
+    my $strsth = "SELECT min(reservedate) as l_reservedate,
             reserves.borrowernumber as borrowernumber,
             GROUP_CONCAT(DISTINCT items.holdingbranch 
                     ORDER BY items.itemnumber SEPARATOR '<br/>') l_holdingbranch,
@@ -164,11 +163,11 @@ if ( $run_report ) {
     AND reserves.priority <> 0 
     AND notforloan = 0 AND damaged = 0 AND itemlost = 0 AND wthdrawn = 0
     ";
-    # GROUP BY reserves.biblionumber allows only items that are not checked out, else multiples occur when 
+
+    # GROUP BY reserves.biblionumber allows only items that are not checked out, else multiples occur when
     #    multiple patrons have a hold on an item
 
-
-    if (C4::Context->preference('IndependantBranches')){
+    if ( C4::Context->preference('IndependantBranches') ) {
         $strsth .= " AND items.holdingbranch=? ";
         push @query_params, C4::Context->userenv->{'branch'};
     }
@@ -180,12 +179,11 @@ if ( $run_report ) {
     my $previous;
     my $this;
     while ( my $data = $sth->fetchrow_hashref ) {
-        $this=$data->{biblionumber}.":".$data->{borrowernumber};
+        $this = $data->{biblionumber} . ":" . $data->{borrowernumber};
         my @itemlist;
         push(
             @reservedata,
-            {
-                reservedate      => format_date( $data->{l_reservedate} ),
+            {   reservedate      => format_date( $data->{l_reservedate} ),
                 priority         => $data->{priority},
                 name             => $data->{l_patron},
                 title            => $data->{title},
@@ -203,27 +201,27 @@ if ( $run_report ) {
                 notes            => $data->{notes},
                 notificationdate => $data->{notificationdate},
                 reminderdate     => $data->{reminderdate},
-                count				  => $data->{icount},
-                rcount			  => $data->{rcount},
-                pullcount		  => $data->{icount} <= $data->{rcount} ? $data->{icount} : $data->{rcount},
-                itype				  => $data->{l_itype},
-                location			  => $data->{l_location}
+                count            => $data->{icount},
+                rcount           => $data->{rcount},
+                pullcount        => $data->{icount} <= $data->{rcount} ? $data->{icount} : $data->{rcount},
+                itype            => $data->{l_itype},
+                location         => $data->{l_location}
             }
         );
-        $previous=$this;
+        $previous = $this;
     }
 
     $sth->finish;
 
     # Next Page?
-    if ($report_page > 0) {
-        $prev_results = $report_page  - 1;
+    if ( $report_page > 0 ) {
+        $prev_results = $report_page - 1;
     }
     if ( scalar(@reservedata) > 250 ) {
         $next_results = $report_page + 1;
-        pop(@reservedata); # .. we retrieved 251 results
+        pop(@reservedata);    # .. we retrieved 251 results
     }
-    if ($prev_results || $next_results) {
+    if ( $prev_results || $next_results ) {
         $next_or_previous = 1;
     }
 
@@ -268,7 +266,7 @@ if ( $run_report ) {
     #            itype				  => $data->{l_itype},
     #            location			  => $data->{l_location},
     #            thisitemonly     => 1,
-    # 
+    #
     #        }
     #    );
     #    $previous=$this;
@@ -277,18 +275,18 @@ if ( $run_report ) {
 }
 
 $template->param(
-    todaysdate      	=> format_date($todaysdate),
-    from                => $startdate,
-    to              	=> $enddate,
-    run_report          => $run_report,
-    report_page         => $report_page,
-    prev_results        => $prev_results,
-    next_results        => $next_results,
-    next_or_previous    => $next_or_previous,
-    reserveloop     	=> \@reservedata,
-    "BiblioDefaultView".C4::Context->preference("BiblioDefaultView") => 1,
-    DHTMLcalendar_dateformat =>  C4::Dates->DHTMLcalendar(),
-	dateformat    => C4::Context->preference("dateformat"),
+    todaysdate                                                         => format_date($todaysdate),
+    from                                                               => $startdate,
+    to                                                                 => $enddate,
+    run_report                                                         => $run_report,
+    report_page                                                        => $report_page,
+    prev_results                                                       => $prev_results,
+    next_results                                                       => $next_results,
+    next_or_previous                                                   => $next_or_previous,
+    reserveloop                                                        => \@reservedata,
+    "BiblioDefaultView" . C4::Context->preference("BiblioDefaultView") => 1,
+    DHTMLcalendar_dateformat                                           => C4::Dates->DHTMLcalendar(),
+    dateformat                                                         => C4::Context->preference("dateformat"),
 );
 
 output_html_with_http_headers $input, $cookie, $template->output;

@@ -17,7 +17,6 @@
 # with Koha; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-
 =head1 opac-tags_subject.pl
 
 TODO :: Description here
@@ -32,7 +31,7 @@ use C4::Context;
 use C4::Output;
 use CGI;
 use C4::Biblio;
-use C4::Koha;       # use getitemtypeinfo
+use C4::Koha;    # use getitemtypeinfo
 
 my $query = new CGI;
 
@@ -40,8 +39,7 @@ my $dbh = C4::Context->dbh;
 
 # open template
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => "opac-tags_subject.tmpl",
+    {   template_name   => "opac-tags_subject.tmpl",
         query           => $query,
         type            => "opac",
         authnotrequired => 1,
@@ -55,11 +53,11 @@ my $sth = $dbh->prepare("SELECT entry,weight FROM tags ORDER BY weight DESC LIMI
 $sth->execute;
 
 my %result;
-my $max=0;
-my $min=9999;
-my ($entry,$weight);
-while (($entry,$weight) = $sth->fetchrow) {
-    $result{$entry}=$weight;
+my $max = 0;
+my $min = 9999;
+my ( $entry, $weight );
+while ( ( $entry, $weight ) = $sth->fetchrow ) {
+    $result{$entry} = $weight;
     $max = $weight if $weight > $max;
     $min = $weight if $weight < $min;
 }
@@ -67,14 +65,14 @@ while (($entry,$weight) = $sth->fetchrow) {
 $min++ if $min == $max;
 
 my @loop;
-foreach my $entry (sort keys %result) {
+foreach my $entry ( sort keys %result ) {
     my %line;
     $line{entry} = $entry;
-    $line{weight} = int(($result{$entry}-$min)/($max-$min)*25)+10;
+    $line{weight} = int( ( $result{$entry} - $min ) / ( $max - $min ) * 25 ) + 10;
     push @loop, \%line;
 }
 $template->param(
-    LOOP => \@loop,
+    LOOP   => \@loop,
     number => $number
 );
 

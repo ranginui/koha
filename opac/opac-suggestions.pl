@@ -27,21 +27,20 @@ use C4::Suggestions;
 use C4::Koha;
 use C4::Dates;
 
-my $input           = new CGI;
-my $allsuggestions  = $input->param('showall');
-my $op              = $input->param('op');
-my $suggestion      = $input->Vars;
+my $input          = new CGI;
+my $allsuggestions = $input->param('showall');
+my $op             = $input->param('op');
+my $suggestion     = $input->Vars;
 delete $$suggestion{$_} foreach qw<op suggestedbyme>;
 $op = 'else' unless $op;
 
 my ( $template, $borrowernumber, $cookie );
-my $deleted = $input->param('deleted');
+my $deleted   = $input->param('deleted');
 my $submitted = $input->param('submitted');
 
 if ( C4::Context->preference("AnonSuggestions") ) {
     ( $template, $borrowernumber, $cookie ) = get_template_and_user(
-        {
-            template_name   => "opac-suggestions.tmpl",
+        {   template_name   => "opac-suggestions.tmpl",
             query           => $input,
             type            => "opac",
             authnotrequired => 1,
@@ -50,41 +49,38 @@ if ( C4::Context->preference("AnonSuggestions") ) {
     if ( !$$suggestion{suggestedby} ) {
         $$suggestion{suggestedby} = C4::Context->preference("AnonSuggestions");
     }
-}
-else {
+} else {
     ( $template, $borrowernumber, $cookie ) = get_template_and_user(
-        {
-            template_name   => "opac-suggestions.tmpl",
+        {   template_name   => "opac-suggestions.tmpl",
             query           => $input,
             type            => "opac",
             authnotrequired => 0,
         }
     );
 }
-if ($allsuggestions){
-	delete $$suggestion{suggestedby};
+if ($allsuggestions) {
+    delete $$suggestion{suggestedby};
+} else {
+    $$suggestion{suggestedby} ||= $borrowernumber unless ($allsuggestions);
 }
-else {
-	$$suggestion{suggestedby} ||= $borrowernumber unless ($allsuggestions);
-}
+
 # warn "bornum:",$borrowernumber;
 use YAML;
-my $suggestions_loop =
-  &SearchSuggestion( $suggestion);
+my $suggestions_loop = &SearchSuggestion($suggestion);
 if ( $op eq "add_confirm" ) {
-	if (@$suggestions_loop>=1){
-		#some suggestion are answering the request Donot Add
-	}
-	else {
-		$$suggestion{'suggesteddate'}=C4::Dates->today;
-		$$suggestion{'branchcode'}=C4::Context->userenv->{"branch"};
-		&NewSuggestion($suggestion);
-		# empty fields, to avoid filter in "SearchSuggestion"
-		$$suggestion{$_}='' foreach qw<title author publishercode copyrightdate place collectiontitle isbn STATUS>;
-		$suggestions_loop =
-		   &SearchSuggestion( $suggestion );
-	}
-	$op              = 'else';
+    if ( @$suggestions_loop >= 1 ) {
+
+        #some suggestion are answering the request Donot Add
+    } else {
+        $$suggestion{'suggesteddate'} = C4::Dates->today;
+        $$suggestion{'branchcode'}    = C4::Context->userenv->{"branch"};
+        &NewSuggestion($suggestion);
+
+        # empty fields, to avoid filter in "SearchSuggestion"
+        $$suggestion{$_} = '' foreach qw<title author publishercode copyrightdate place collectiontitle isbn STATUS>;
+        $suggestions_loop = &SearchSuggestion($suggestion);
+    }
+    $op = 'else';
     print $input->redirect("/cgi-bin/koha/opac-suggestions.pl?op=else&submitted=1");
     exit;
 }
@@ -98,19 +94,18 @@ if ( $op eq "delete_confirm" ) {
     print $input->redirect("/cgi-bin/koha/opac-suggestions.pl?op=else&deleted=1");
     exit;
 }
-map{ $_->{'branchcodesuggestedby'}=GetBranchInfo($_->{'branchcodesuggestedby'})->[0]->{'branchname'}} @$suggestions_loop;
-my $supportlist=GetSupportList();
-foreach my $support(@$supportlist){
-	if ($$support{'imageurl'}){
-		$$support{'imageurl'}= getitemtypeimagelocation( 'opac', $$support{'imageurl'} );
-	}
-	else {
-	   delete $$support{'imageurl'}
-	}
+map { $_->{'branchcodesuggestedby'} = GetBranchInfo( $_->{'branchcodesuggestedby'} )->[0]->{'branchname'} } @$suggestions_loop;
+my $supportlist = GetSupportList();
+foreach my $support (@$supportlist) {
+    if ( $$support{'imageurl'} ) {
+        $$support{'imageurl'} = getitemtypeimagelocation( 'opac', $$support{'imageurl'} );
+    } else {
+        delete $$support{'imageurl'};
+    }
 }
 
-foreach my $suggestion(@$suggestions_loop) {
-    if($suggestion->{'suggestedby'} == $borrowernumber) {
+foreach my $suggestion (@$suggestions_loop) {
+    if ( $suggestion->{'suggestedby'} == $borrowernumber ) {
         $suggestion->{'showcheckbox'} = $borrowernumber;
     } else {
         $suggestion->{'showcheckbox'} = 0;
@@ -118,14 +113,13 @@ foreach my $suggestion(@$suggestions_loop) {
 }
 
 $template->param(
-	%$suggestion,
-	itemtypeloop=> $supportlist,
+    %$suggestion,
+    itemtypeloop     => $supportlist,
     suggestions_loop => $suggestions_loop,
-    showall    => $allsuggestions,
+    showall          => $allsuggestions,
     "op_$op"         => 1,
-    suggestionsview => 1,
+    suggestionsview  => 1,
 );
-
 
 output_html_with_http_headers $input, $cookie, $template->output;
 

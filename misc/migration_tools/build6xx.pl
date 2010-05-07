@@ -3,6 +3,7 @@
 
 # delete  FROM  `marc_subfield_table`  WHERE tag =  "606" AND subfieldcode = 9;
 use strict;
+
 #use warnings; FIXME - Bug 2505
 
 # Koha modules used
@@ -15,18 +16,18 @@ use C4::AuthoritiesMarc;
 use Time::HiRes qw(gettimeofday);
 
 use Getopt::Long;
-my ( $input_marc_file, $number) = ('',0);
-my ($version, $verbose, $test_parameter, $field,$delete,$category,$subfields);
+my ( $input_marc_file, $number ) = ( '', 0 );
+my ( $version, $verbose, $test_parameter, $field, $delete, $category, $subfields );
 GetOptions(
-    'h' => \$version,
-    'd' => \$delete,
-    't' => \$test_parameter,
+    'h'   => \$version,
+    'd'   => \$delete,
+    't'   => \$test_parameter,
     's:s' => \$subfields,
-    'v' => \$verbose,
+    'v'   => \$verbose,
     'c:s' => \$category,
 );
 
-if ($version || ($category eq '')) {
+if ( $version || ( $category eq '' ) ) {
     print <<EOF
 small script to recreate a authority table into Koha.
 parameters :
@@ -36,8 +37,8 @@ parameters :
 SAMPLES :
  ./build6xx.pl -c NC -d 
 EOF
-;#
-die;
+      ;    #
+    die;
 }
 
 my $dbh = C4::Context->dbh;
@@ -46,9 +47,9 @@ if ($delete) {
     print "deleting thesaurus\n";
     my $del1 = $dbh->prepare("delete from auth_subfield_table where authid=?");
     my $del2 = $dbh->prepare("delete from auth_word where authid=?");
-    my $sth = $dbh->prepare("select authid from auth_header where authtypecode='NC'");
+    my $sth  = $dbh->prepare("select authid from auth_header where authtypecode='NC'");
     $sth->execute;
-    while (my ($authid) = $sth->fetchrow) {
+    while ( my ($authid) = $sth->fetchrow ) {
         $del1->execute($authid);
         $del2->execute($authid);
     }
@@ -60,39 +61,51 @@ if ($delete) {
 if ($test_parameter) {
     print "TESTING MODE ONLY\n    DOING NOTHING\n===============\n";
 }
-$|=1; # flushes output
+$| = 1;    # flushes output
 my $starttime = gettimeofday;
-my $sth = $dbh->prepare("select bibid from marc_biblio");
+my $sth       = $dbh->prepare("select bibid from marc_biblio");
 $sth->execute;
-my $i=1;
+my $i = 1;
 my %alreadydone;
 
 # search biblios to "connect" to an authority with any number of $x (limited to 4 $x in this script)
-my $sthBIBLIOS = $dbh->prepare("select distinct m1.bibid,m1.tag,m1.tagorder,m1.subfieldorder from marc_subfield_table as m1 where tag in (606) and subfieldcode='a' and subfieldvalue=?");
-my $sthBIBLIOSx = $dbh->prepare("select distinct m1.bibid,m1.tag,m1.tagorder,m1.subfieldorder from marc_subfield_table as m1 left join marc_subfield_table as m2 on m1.bibid=m2.bibid where m1.tag in (606) and m1.subfieldcode='a' and m2.subfieldcode='x' and m1.subfieldvalue=? and m2.subfieldvalue=?");
-my $sthBIBLIOSxx = $dbh->prepare("select distinct m1.bibid,m1.tag,m1.tagorder,m1.subfieldorder from marc_subfield_table as m1 left join marc_subfield_table as m2 on m1.bibid=m2.bibid left join marc_subfield_table as m3 on m1.bibid=m3.bibid where m1.tag in (606) and m1.subfieldcode='a' and m2.subfieldcode='x' and m3.subfieldcode='x' and m1.subfieldvalue=? and m2.subfieldvalue=? and m3.subfieldvalue=?");
-my $sthBIBLIOSxxx = $dbh->prepare("select distinct m1.bibid,m1.tag,m1.tagorder,m1.subfieldorder from marc_subfield_table as m1 left join marc_subfield_table as m2 on m1.bibid=m2.bibid left join marc_subfield_table as m3 on m1.bibid=m4.bibid left join marc_subfield_table as m4 on m1.bibid=m4.bibid where m1.tag in (606) and m1.subfieldcode='a' and m2.subfieldcode='x' and m3.subfieldcode='x' and m4.subfieldcode='x' and m1.subfieldvalue=? and m2.subfieldvalue=? and m3.subfieldvalue=? and m4.subfieldvalue=?");
-my $sthBIBLIOSxxxx = $dbh->prepare("select distinct m1.bibid,m1.tag,m1.tagorder,m1.subfieldorder from marc_subfield_table as m1 left join marc_subfield_table as m2 on m1.bibid=m2.bibid left join marc_subfield_table as m3 on m1.bibid=m4.bibid left join marc_subfield_table as m4 on m1.bibid=m4.bibid left join marc_subfield_table as m5 on m1.bibid=m5.bibid where m1.tag in (606) and m1.subfieldcode='a' and m2.subfieldcode='x' and m3.subfieldcode='x' and m4.subfieldcode='x' and m5.subfieldcode='x' and m1.subfieldvalue=? and m2.subfieldvalue=? and m3.subfieldvalue=? and m4.subfieldvalue=? and m5.subfieldvalue=?");
+my $sthBIBLIOS =
+  $dbh->prepare("select distinct m1.bibid,m1.tag,m1.tagorder,m1.subfieldorder from marc_subfield_table as m1 where tag in (606) and subfieldcode='a' and subfieldvalue=?");
+my $sthBIBLIOSx = $dbh->prepare(
+"select distinct m1.bibid,m1.tag,m1.tagorder,m1.subfieldorder from marc_subfield_table as m1 left join marc_subfield_table as m2 on m1.bibid=m2.bibid where m1.tag in (606) and m1.subfieldcode='a' and m2.subfieldcode='x' and m1.subfieldvalue=? and m2.subfieldvalue=?"
+);
+my $sthBIBLIOSxx = $dbh->prepare(
+"select distinct m1.bibid,m1.tag,m1.tagorder,m1.subfieldorder from marc_subfield_table as m1 left join marc_subfield_table as m2 on m1.bibid=m2.bibid left join marc_subfield_table as m3 on m1.bibid=m3.bibid where m1.tag in (606) and m1.subfieldcode='a' and m2.subfieldcode='x' and m3.subfieldcode='x' and m1.subfieldvalue=? and m2.subfieldvalue=? and m3.subfieldvalue=?"
+);
+my $sthBIBLIOSxxx = $dbh->prepare(
+"select distinct m1.bibid,m1.tag,m1.tagorder,m1.subfieldorder from marc_subfield_table as m1 left join marc_subfield_table as m2 on m1.bibid=m2.bibid left join marc_subfield_table as m3 on m1.bibid=m4.bibid left join marc_subfield_table as m4 on m1.bibid=m4.bibid where m1.tag in (606) and m1.subfieldcode='a' and m2.subfieldcode='x' and m3.subfieldcode='x' and m4.subfieldcode='x' and m1.subfieldvalue=? and m2.subfieldvalue=? and m3.subfieldvalue=? and m4.subfieldvalue=?"
+);
+my $sthBIBLIOSxxxx = $dbh->prepare(
+"select distinct m1.bibid,m1.tag,m1.tagorder,m1.subfieldorder from marc_subfield_table as m1 left join marc_subfield_table as m2 on m1.bibid=m2.bibid left join marc_subfield_table as m3 on m1.bibid=m4.bibid left join marc_subfield_table as m4 on m1.bibid=m4.bibid left join marc_subfield_table as m5 on m1.bibid=m5.bibid where m1.tag in (606) and m1.subfieldcode='a' and m2.subfieldcode='x' and m3.subfieldcode='x' and m4.subfieldcode='x' and m5.subfieldcode='x' and m1.subfieldvalue=? and m2.subfieldvalue=? and m3.subfieldvalue=? and m4.subfieldvalue=? and m5.subfieldvalue=?"
+);
 
 # loop through each biblio
-while (my ($bibid) = $sth->fetchrow) {
-    my $record = GetMarcBiblio($bibid);
+while ( my ($bibid) = $sth->fetchrow ) {
+    my $record     = GetMarcBiblio($bibid);
     my $timeneeded = gettimeofday - $starttime;
-    print "$i in $timeneeded s\n" unless ($i % 50);
-    foreach my $field ($record->field(995)) {
+    print "$i in $timeneeded s\n" unless ( $i % 50 );
+    foreach my $field ( $record->field(995) ) {
         $record->delete_field($field);
     }
-    my $totdone=0;
+    my $totdone = 0;
     my $authid;
+
     # search the 606 field(s)
-    foreach my $field ($record->field("606")) {
-        foreach my $authentry ($field->subfield("a")) {
+    foreach my $field ( $record->field("606") ) {
+        foreach my $authentry ( $field->subfield("a") ) {
+
             # the hashentry variable contains all $x fields and the $a in a single string. Used to differenciate
             # $xsomething$aelse and $asomething else
             my $hashentry = $authentry;
-            foreach my $x ($field->subfield('x')) {
-                $hashentry.=" -- $x";
+            foreach my $x ( $field->subfield('x') ) {
+                $hashentry .= " -- $x";
             }
+
             # remove ��$e...
             # all the same for mysql, but NOT for perl hashes !
             # without those lines, t� is not tot and pat� is not patee

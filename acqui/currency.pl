@@ -34,9 +34,9 @@ use C4::Budgets;
 
 my $input = new CGI;
 
-foreach my $param ($input->param) {
-    if ($param ne 'type' && $param !~ /submit/) {
-        ModCurrencies($param, $input->param($param));
+foreach my $param ( $input->param ) {
+    if ( $param ne 'type' && $param !~ /submit/ ) {
+        ModCurrencies( $param, $input->param($param) );
     }
 }
 print $input->redirect('/cgi-bin/koha/acqui/acqui-home.pl');

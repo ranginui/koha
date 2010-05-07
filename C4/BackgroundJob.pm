@@ -19,6 +19,7 @@ package C4::BackgroundJob;
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use C4::Context;
 use C4::Auth qw/get_session/;
@@ -27,8 +28,9 @@ use Digest::MD5;
 use vars qw($VERSION);
 
 BEGIN {
-	# set the version for version checking
-	$VERSION = 3.00;
+
+    # set the version for version checking
+    $VERSION = 3.00;
 }
 
 =head1 NAME
@@ -85,16 +87,16 @@ number of bytes, etc.
 
 sub new {
     my $class = shift;
-    my ($sessionID, $job_name, $job_invoker, $num_work_units) = @_;
+    my ( $sessionID, $job_name, $job_invoker, $num_work_units ) = @_;
 
     my $self = {};
     $self->{'sessionID'} = $sessionID;
-    $self->{'name'} = $job_name;
-    $self->{'invoker'} = $job_invoker;
-    $self->{'size'} = $num_work_units;
-    $self->{'progress'} = 0;
-    $self->{'status'} = "running";
-    $self->{'jobID'} = Digest::MD5::md5_hex(Digest::MD5::md5_hex(time().{}.rand().{}.$$));
+    $self->{'name'}      = $job_name;
+    $self->{'invoker'}   = $job_invoker;
+    $self->{'size'}      = $num_work_units;
+    $self->{'progress'}  = 0;
+    $self->{'status'}    = "running";
+    $self->{'jobID'}     = Digest::MD5::md5_hex( Digest::MD5::md5_hex( time() . {} . rand() . {} . $$ ) );
 
     bless $self, $class;
     $self->_serialize();
@@ -106,9 +108,9 @@ sub new {
 sub _serialize {
     my $self = shift;
 
-    my $prefix = "job_" . $self->{'jobID'};
-    my $session = get_session($self->{'sessionID'});
-    $session->param($prefix, $self);
+    my $prefix  = "job_" . $self->{'jobID'};
+    my $session = get_session( $self->{'sessionID'} );
+    $session->param( $prefix, $self );
     $session->flush();
 }
 
@@ -253,9 +255,9 @@ the results of the job.
 =cut
 
 sub finish {
-    my $self = shift;
+    my $self            = shift;
     my $results_hashref = shift;
-    $self->{'status'} = 'completed';
+    $self->{'status'}  = 'completed';
     $self->{'results'} = $results_hashref;
     $self->_serialize();
 }
@@ -294,13 +296,13 @@ session.
 =cut
 
 sub fetch {
-    my $class = shift;
+    my $class     = shift;
     my $sessionID = shift;
-    my $jobID = shift;
+    my $jobID     = shift;
 
     my $session = get_session($sessionID);
-    my $prefix = "job_$jobID";
-    unless (defined $session->param($prefix)) {
+    my $prefix  = "job_$jobID";
+    unless ( defined $session->param($prefix) ) {
         return undef;
     }
     my $self = $session->param($prefix);

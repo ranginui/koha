@@ -19,6 +19,7 @@ package C4::UploadedFile;
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use C4::Context;
 use C4::Auth qw/get_session/;
@@ -27,8 +28,9 @@ use IO::File;
 use vars qw($VERSION);
 
 BEGIN {
-	# set the version for version checking
-	$VERSION = 3.00;
+
+    # set the version for version checking
+    $VERSION = 3.00;
 }
 
 =head1 NAME
@@ -88,34 +90,35 @@ the current session ID.
 =cut
 
 sub new {
-    my $class = shift;
+    my $class     = shift;
     my $sessionID = shift;
 
     my $self = {};
 
     $self->{'sessionID'} = $sessionID;
-    $self->{'fileID'} = Digest::MD5::md5_hex(Digest::MD5::md5_hex(time().{}.rand().{}.$$));
+    $self->{'fileID'} = Digest::MD5::md5_hex( Digest::MD5::md5_hex( time() . {} . rand() . {} . $$ ) );
+
     # FIXME - make staging area configurable
-    my $TEMPROOT = "/tmp";
+    my $TEMPROOT  = "/tmp";
     my $OUTPUTDIR = "$TEMPROOT/$sessionID";
     mkdir $OUTPUTDIR;
     my $tmp_file_name = "$OUTPUTDIR/$self->{'fileID'}";
     my $fh = new IO::File $tmp_file_name, "w";
-    unless (defined $fh) {
+    unless ( defined $fh ) {
         return undef;
     }
-    $fh->binmode(); # Windows compatibility
-    $self->{'fh'} = $fh;
+    $fh->binmode();    # Windows compatibility
+    $self->{'fh'}            = $fh;
     $self->{'tmp_file_name'} = $tmp_file_name;
-    $self->{'max_size'} = 0;
-    $self->{'progress'} = 0;
-    $self->{'name'} = '';
+    $self->{'max_size'}      = 0;
+    $self->{'progress'}      = 0;
+    $self->{'name'}          = '';
 
     bless $self, $class;
     $self->_serialize();
 
     my $session = get_session($sessionID);
-    $session->param('current_upload', $self->{'fileID'});
+    $session->param( 'current_upload', $self->{'fileID'} );
     $session->flush();
 
     return $self;
@@ -125,15 +128,15 @@ sub new {
 sub _serialize {
     my $self = shift;
 
-    my $prefix = "upload_" . $self->{'fileID'};
-    my $session = get_session($self->{'sessionID'});
+    my $prefix  = "upload_" . $self->{'fileID'};
+    my $session = get_session( $self->{'sessionID'} );
 
     # temporarily take file handle out of structure
     my $fh = $self->{'fh'};
     delete $self->{'fh'};
-    $session->param($prefix, $self);
+    $session->param( $prefix, $self );
     $session->flush();
-    $self->{'fh'} =$fh;
+    $self->{'fh'} = $fh;
 }
 
 =head2 id
@@ -206,15 +209,15 @@ the number of bytes (out of C<$max_size>) transmitted so far.
 =cut
 
 sub stash {
-    my $self = shift;
-    my $dataref = shift;
+    my $self       = shift;
+    my $dataref    = shift;
     my $bytes_read = shift;
 
     my $fh = $self->{'fh'};
     print $fh $$dataref;
 
-    my $percentage = int(($bytes_read / $self->{'max_size'}) * 100);
-    if ($percentage > $self->{'progress'}) {
+    my $percentage = int( ( $bytes_read / $self->{'max_size'} ) * 100 );
+    if ( $percentage > $self->{'progress'} ) {
         $self->{'progress'} = $percentage;
         $self->_serialize();
     }
@@ -253,18 +256,18 @@ progress of the current file upload.
 =cut
 
 sub upload_progress {
-    my ($class, $sessionID) = shift;
+    my ( $class, $sessionID ) = shift;
 
     my $session = get_session($sessionID);
 
     my $fileID = $session->param('current_upload');
 
     my $reported_progress = 0;
-    if (defined $fileID and $fileID ne "") {
-        my $file = C4::UploadedFile->fetch($sessionID, $fileID);
+    if ( defined $fileID and $fileID ne "" ) {
+        my $file = C4::UploadedFile->fetch( $sessionID, $fileID );
         my $progress = $file->{'progress'};
-        if (defined $progress) {
-            if ($progress eq "done") {
+        if ( defined $progress ) {
+            if ( $progress eq "done" ) {
                 $reported_progress = 100;
             } else {
                 $reported_progress = $progress;
@@ -287,14 +290,14 @@ Retrieves an uploaded file object from the current session.
 =cut
 
 sub fetch {
-    my $class = shift;
+    my $class     = shift;
     my $sessionID = shift;
-    my $fileID = shift;
+    my $fileID    = shift;
 
     my $session = get_session($sessionID);
-    my $prefix = "upload_$fileID";
-    my $self = $session->param($prefix);
-    my $fh = new IO::File $self->{'tmp_file_name'}, "r";
+    my $prefix  = "upload_$fileID";
+    my $self    = $session->param($prefix);
+    my $fh      = new IO::File $self->{'tmp_file_name'}, "r";
     $self->{'fh'} = $fh;
 
     bless $self, $class;

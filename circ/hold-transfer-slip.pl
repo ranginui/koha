@@ -1,6 +1,5 @@
 #!/usr/bin/perl
 
-
 # Copyright 2008 LibLime
 #
 # This file is part of Koha.
@@ -19,6 +18,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use C4::Context;
 use C4::Output;
@@ -34,14 +34,13 @@ BEGIN {
     $debug = $ENV{DEBUG} || 0;
 }
 
-my $input = new CGI;
-my $biblionumber = $input->param('biblionumber');
+my $input          = new CGI;
+my $biblionumber   = $input->param('biblionumber');
 my $borrowernumber = $input->param('borrowernumber');
-my $transfer = $input->param('transfer');
+my $transfer       = $input->param('transfer');
 
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {   
-        template_name   => "circ/hold-transfer-slip.tmpl",
+    {   template_name   => "circ/hold-transfer-slip.tmpl",
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
@@ -50,17 +49,13 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
     }
 );
 
-my $reserveinfo = GetReserveInfo($borrowernumber,$biblionumber );
+my $reserveinfo = GetReserveInfo( $borrowernumber, $biblionumber );
 my $pulldate = C4::Dates->new();
-$reserveinfo->{'pulldate'} = $pulldate->output();
-$reserveinfo->{'branchname'} = GetBranchName($reserveinfo->{'branchcode'});
+$reserveinfo->{'pulldate'}         = $pulldate->output();
+$reserveinfo->{'branchname'}       = GetBranchName( $reserveinfo->{'branchcode'} );
 $reserveinfo->{'transferrequired'} = $transfer;
 
-$template->param( reservedata => [ $reserveinfo ] ,
-				);
+$template->param( reservedata => [$reserveinfo], );
 
 output_html_with_http_headers $input, $cookie, $template->output;
-
-
-
 

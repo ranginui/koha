@@ -35,6 +35,7 @@ This script allow the user to define a new profile for CSV export
 =cut
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use Data::Dumper;
 use Encode;
@@ -46,13 +47,12 @@ use CGI;
 use C4::Koha;
 use C4::Csv;
 
-my $input        = new CGI;
-my $dbh          = C4::Context->dbh;
+my $input = new CGI;
+my $dbh   = C4::Context->dbh;
 
 # open template
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => "tools/csv-profiles.tmpl",
+    {   template_name   => "tools/csv-profiles.tmpl",
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
@@ -63,8 +63,8 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
 
 # Getting available encodings list
 my @encodings = Encode->encodings();
-my @encodings_loop = map{{encoding => $_}} @encodings;
-$template->param(encodings => \@encodings_loop);
+my @encodings_loop = map { { encoding => $_ } } @encodings;
+$template->param( encodings => \@encodings_loop );
 
 my $profile_name        = $input->param("profile_name");
 my $profile_description = $input->param("profile_description");
@@ -78,57 +78,59 @@ my $delete              = $input->param("delete");
 my $id                  = $input->param("id");
 if ($delete) { $action = "delete"; }
 
-if ($profile_name && $profile_content && $action) {
+if ( $profile_name && $profile_content && $action ) {
     my $rows;
 
-    if ($action eq "create") {
-	my $query = "INSERT INTO export_format(export_format_id, profile, description, marcfields, csv_separator, field_separator, subfield_separator, encoding) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?)";
-	my $sth   = $dbh->prepare($query);
-	$rows  = $sth->execute($profile_name, $profile_description, $profile_content, $csv_separator, $field_separator, $subfield_separator, $encoding);
-    
-    }
-
-    if ($action eq "edit") {
-	my $query = "UPDATE export_format SET description=?, marcfields=?, csv_separator=?, field_separator=?, subfield_separator=?, encoding=? WHERE export_format_id=? LIMIT 1";
-	my $sth   = $dbh->prepare($query);
-	$rows  = $sth->execute($profile_description, $profile_content, $csv_separator, $field_separator, $subfield_separator, $encoding, $profile_name);
-    }
-
-    if ($action eq "delete") {
-	my $query = "DELETE FROM export_format WHERE export_format_id=? LIMIT 1";
-	my $sth   = $dbh->prepare($query);
-	$rows  = $sth->execute($profile_name);
+    if ( $action eq "create" ) {
+        my $query =
+"INSERT INTO export_format(export_format_id, profile, description, marcfields, csv_separator, field_separator, subfield_separator, encoding) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?)";
+        my $sth = $dbh->prepare($query);
+        $rows = $sth->execute( $profile_name, $profile_description, $profile_content, $csv_separator, $field_separator, $subfield_separator, $encoding );
 
     }
 
-    $rows ? $template->param(success => 1) : $template->param(error => 1);
-    $template->param(profile_name => $profile_name);
-    $template->param(action => $action);
+    if ( $action eq "edit" ) {
+        my $query = "UPDATE export_format SET description=?, marcfields=?, csv_separator=?, field_separator=?, subfield_separator=?, encoding=? WHERE export_format_id=? LIMIT 1";
+        my $sth   = $dbh->prepare($query);
+        $rows = $sth->execute( $profile_description, $profile_content, $csv_separator, $field_separator, $subfield_separator, $encoding, $profile_name );
+    }
+
+    if ( $action eq "delete" ) {
+        my $query = "DELETE FROM export_format WHERE export_format_id=? LIMIT 1";
+        my $sth   = $dbh->prepare($query);
+        $rows = $sth->execute($profile_name);
+
+    }
+
+    $rows ? $template->param( success => 1 ) : $template->param( error => 1 );
+    $template->param( profile_name => $profile_name );
+    $template->param( action       => $action );
 
 }
 
-    # If a profile has been selected for modification
-    if ($id) {
-	my $query = "SELECT export_format_id, profile, description, marcfields, csv_separator, field_separator, subfield_separator, encoding FROM export_format WHERE export_format_id = ?";
-	my $sth;
-	$sth = $dbh->prepare($query);
+# If a profile has been selected for modification
+if ($id) {
+    my $query =
+      "SELECT export_format_id, profile, description, marcfields, csv_separator, field_separator, subfield_separator, encoding FROM export_format WHERE export_format_id = ?";
+    my $sth;
+    $sth = $dbh->prepare($query);
 
-	$sth->execute($id);
-	my $selected_profile = $sth->fetchrow_arrayref();
-	$template->param(
-	    selected_profile_id          => $selected_profile->[0],
-	    selected_profile_name        => $selected_profile->[1],
-	    selected_profile_description => $selected_profile->[2],
-	    selected_profile_marcfields  => $selected_profile->[3],
-	    selected_csv_separator       => $selected_profile->[4],
-	    selected_field_separator     => $selected_profile->[5],
-	    selected_subfield_separator  => $selected_profile->[6],
-	    selected_encoding            => $selected_profile->[7]
-	);
+    $sth->execute($id);
+    my $selected_profile = $sth->fetchrow_arrayref();
+    $template->param(
+        selected_profile_id          => $selected_profile->[0],
+        selected_profile_name        => $selected_profile->[1],
+        selected_profile_description => $selected_profile->[2],
+        selected_profile_marcfields  => $selected_profile->[3],
+        selected_csv_separator       => $selected_profile->[4],
+        selected_field_separator     => $selected_profile->[5],
+        selected_subfield_separator  => $selected_profile->[6],
+        selected_encoding            => $selected_profile->[7]
+    );
 
-    }
+}
 
-    # List of existing profiles
-    $template->param(existing_profiles => GetCsvProfilesLoop());
+# List of existing profiles
+$template->param( existing_profiles => GetCsvProfilesLoop() );
 
 output_html_with_http_headers $input, $cookie, $template->output;

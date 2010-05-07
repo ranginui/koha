@@ -1,7 +1,7 @@
 package C4::Heading;
 
 # Copyright (C) 2008 LibLime
-# 
+#
 # This file is part of Koha.
 #
 # Koha is free software; you can redistribute it and/or modify it under the
@@ -18,6 +18,7 @@ package C4::Heading;
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use MARC::Record;
 use MARC::Field;
@@ -68,8 +69,8 @@ is returned.
 =cut
 
 sub new_from_bib_field {
-    my $class = shift;
-    my $field = shift;
+    my $class       = shift;
+    my $field       = shift;
     my $marcflavour = @_ ? shift : C4::Context->preference('marcflavour');
 
     my $marc_handler = _marc_format_handler($marcflavour);
@@ -77,10 +78,14 @@ sub new_from_bib_field {
     my $tag = $field->tag();
     return unless $marc_handler->valid_bib_heading_tag($tag);
     my $self = {};
-   
-    ($self->{'auth_type'}, $self->{'subject_added_entry'}, $self->{'series_added_entry'}, $self->{'main_entry'},
-     $self->{'thesaurus'}, $self->{'search_form'}, $self->{'display_form'}) =
-        $marc_handler->parse_heading($field);
+
+    (   $self->{'auth_type'},
+        $self->{'subject_added_entry'},
+        $self->{'series_added_entry'},
+        $self->{'main_entry'}, $self->{'thesaurus'},
+        $self->{'search_form'},
+        $self->{'display_form'}
+    ) = $marc_handler->parse_heading($field);
 
     bless $self, $class;
     return $self;
@@ -117,10 +122,10 @@ heading.
 =cut
 
 sub authorities {
-    my $self = shift;
+    my $self  = shift;
     my $query = qq(Match-heading,ext="$self->{'search_form'}");
     $query .= $self->_query_limiters();
-    my ($error, $results, $total_hits) = SimpleSearch( $query, undef, undef, [ "authorityserver" ] );
+    my ( $error, $results, $total_hits ) = SimpleSearch( $query, undef, undef, ["authorityserver"] );
     return $results;
 }
 
@@ -138,10 +143,10 @@ that are a preferred form of the heading.
 =cut
 
 sub preferred_authorities {
-    my $self = shift;
+    my $self  = shift;
     my $query = "Match-heading-see-from,ext='$self->{'search_form'}'";
     $query .= $self->_query_limiters();
-    my ($error, $results, $total_hits) = SimpleSearch( $query, undef, undef, [ "authorityserver" ] );
+    my ( $error, $results, $total_hits ) = SimpleSearch( $query, undef, undef, ["authorityserver"] );
     return $results;
 }
 
@@ -155,15 +160,15 @@ sub _query_limiters {
     my $self = shift;
 
     my $limiters = " AND at='$self->{'auth_type'}'";
-    if ($self->{'subject_added_entry'}) {
-        $limiters .= " AND Heading-use-subject-added-entry=a"; # FIXME -- is this properly in C4::Heading::MARC21?
+    if ( $self->{'subject_added_entry'} ) {
+        $limiters .= " AND Heading-use-subject-added-entry=a";                # FIXME -- is this properly in C4::Heading::MARC21?
         $limiters .= " AND Subject-heading-thesaurus=$self->{'thesaurus'}";
     }
-    if ($self->{'series_added_entry'}) {
-        $limiters .= " AND Heading-use-series-added-entry=a"; # FIXME -- is this properly in C4::Heading::MARC21?
+    if ( $self->{'series_added_entry'} ) {
+        $limiters .= " AND Heading-use-series-added-entry=a";                 # FIXME -- is this properly in C4::Heading::MARC21?
     }
-    if (not $self->{'subject_added_entry'} and not $self->{'series_added_entry'}) {
-        $limiters .= " AND Heading-use-main-or-added-entry=a" # FIXME -- is this properly in C4::Heading::MARC21?
+    if ( not $self->{'subject_added_entry'} and not $self->{'series_added_entry'} ) {
+        $limiters .= " AND Heading-use-main-or-added-entry=a"                 # FIXME -- is this properly in C4::Heading::MARC21?
     }
     return $limiters;
 }
@@ -180,7 +185,7 @@ depending on the selected MARC flavour.
 sub _marc_format_handler {
     my $marcflavour = shift;
 
-    if ($marcflavour eq 'UNIMARC') {
+    if ( $marcflavour eq 'UNIMARC' ) {
         return C4::Heading::UNIMARC->new();
     } else {
         return C4::Heading::MARC21->new();

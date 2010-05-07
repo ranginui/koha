@@ -26,7 +26,7 @@ BEGIN {
 #    }
 
 sub _check_params {
-    my $exit_code = 0;
+    my $exit_code         = 0;
     my @valtmpl_id_params = (
         'layout_id',
         'barcode_type',
@@ -38,21 +38,20 @@ sub _check_params {
         'callnum_split',
         'text_justify',
         'format_string',
-        'layout_xml',           # FIXME: all layouts should be stored in xml format to greatly simplify handling -chris_n
+        'layout_xml',    # FIXME: all layouts should be stored in xml format to greatly simplify handling -chris_n
         'creator',
     );
-    if (scalar(@_) >1) {
+    if ( scalar(@_) > 1 ) {
         my %given_params = @_;
-        foreach my $key (keys %given_params) {
-            if (!(grep m/$key/, @valtmpl_id_params)) {
-                warn sprintf('(Multiple parameters) Unrecognized parameter type of "%s".', $key);
+        foreach my $key ( keys %given_params ) {
+            if ( !( grep m/$key/, @valtmpl_id_params ) ) {
+                warn sprintf( '(Multiple parameters) Unrecognized parameter type of "%s".', $key );
                 $exit_code = 1;
             }
         }
-    }
-    else {
-        if (!(grep m/$_/, @valtmpl_id_params)) {
-            warn sprintf('(Single parameter) Unrecognized parameter type of "%s".', $_);
+    } else {
+        if ( !( grep m/$_/, @valtmpl_id_params ) ) {
+            warn sprintf( '(Single parameter) Unrecognized parameter type of "%s".', $_ );
             $exit_code = 1;
         }
     }
@@ -61,123 +60,126 @@ sub _check_params {
 
 sub new {
     my $invocant = shift;
-    my $self = '';
-    if (_check_params(@_) eq 1) {
+    my $self     = '';
+    if ( _check_params(@_) eq 1 ) {
         return -1;
     }
     my $type = ref($invocant) || $invocant;
-    if (grep {$_ eq 'Labels'} @_) {
-       $self = {
-            barcode_type    =>      'CODE39',
-            printing_type   =>      'BAR',
-            layout_name     =>      'DEFAULT',
-            guidebox        =>      0,
-            font            =>      'TR',
-            font_size       =>      3,
-            callnum_split   =>      0,
-            text_justify    =>      'L',
-            format_string   =>      'title, author, isbn, issn, itemtype, barcode, callnumber',
+    if ( grep { $_ eq 'Labels' } @_ ) {
+        $self = {
+            barcode_type  => 'CODE39',
+            printing_type => 'BAR',
+            layout_name   => 'DEFAULT',
+            guidebox      => 0,
+            font          => 'TR',
+            font_size     => 3,
+            callnum_split => 0,
+            text_justify  => 'L',
+            format_string => 'title, author, isbn, issn, itemtype, barcode, callnumber',
             @_,
         };
-    }
-    elsif (grep {$_ eq 'Patroncards'} @_) {
+    } elsif (
+        grep {
+            $_ eq 'Patroncards'
+        } @_
+      ) {
         $self = {
             layout_xml => '<opt>Default Layout</opt>',
             @_,
-        }
+        };
     }
-    bless ($self, $type);
+    bless( $self, $type );
     return $self;
 }
 
 sub retrieve {
     my $invocant = shift;
-    my %opts = @_;
-    my $type = ref($invocant) || $invocant;
-    my $query = "SELECT * FROM creator_layouts WHERE layout_id = ? AND creator = ?";
+    my %opts     = @_;
+    my $type     = ref($invocant) || $invocant;
+    my $query    = "SELECT * FROM creator_layouts WHERE layout_id = ? AND creator = ?";
+
     #warn "QUERY: $query\n";    #XXX Remove
     #warn "PARAMS: layout_id=" . $opts{'layout_id'} . " creator=" . $opts{'creator'} . "\n";    #XXX Remove
     my $sth = C4::Context->dbh->prepare($query);
-    $sth->execute($opts{'layout_id'}, $opts{'creator'});
-    if ($sth->err) {
-        warn sprintf('Database returned the following error: %s', $sth->errstr);
+    $sth->execute( $opts{'layout_id'}, $opts{'creator'} );
+    if ( $sth->err ) {
+        warn sprintf( 'Database returned the following error: %s', $sth->errstr );
         return -1;
     }
     my $self = $sth->fetchrow_hashref;
-    bless ($self, $type);
+    bless( $self, $type );
     return $self;
 }
 
 sub delete {
-    my $self = {};
-    my %opts = ();
+    my $self      = {};
+    my %opts      = ();
     my $call_type = '';
-    my @params = ();
-    if (ref($_[0])) {
-        $self = shift;  # check to see if this is a method call
+    my @params    = ();
+    if ( ref( $_[0] ) ) {
+        $self      = shift;                          # check to see if this is a method call
         $call_type = 'C4::Labels::Layout->delete';
         push @params, $self->{'layout_id'}, $self->{'creator'};
-    }
-    else {
+    } else {
         my $class = shift;
-        %opts = @_;
+        %opts      = @_;
         $call_type = $class . '::delete';
         push @params, $opts{'layout_id'}, $opts{'creator'};
     }
-    if (scalar(@params) < 2) {   # If there is no layout id or creator type then we cannot delete it
-        warn sprintf('%s : Cannot delete layout as the profile id is invalid or non-existant.', $call_type) if !$params[0];
-        warn sprintf('%s : Cannot delete layout as the creator type is invalid or non-existant.', $call_type) if !$params[1];
+    if ( scalar(@params) < 2 ) {                     # If there is no layout id or creator type then we cannot delete it
+        warn sprintf( '%s : Cannot delete layout as the profile id is invalid or non-existant.',   $call_type ) if !$params[0];
+        warn sprintf( '%s : Cannot delete layout as the creator type is invalid or non-existant.', $call_type ) if !$params[1];
         return -1;
     }
     my $query = "DELETE FROM creator_layouts WHERE layout_id = ? AND creator = ?";
-    my $sth = C4::Context->dbh->prepare($query);
+    my $sth   = C4::Context->dbh->prepare($query);
     $sth->execute(@params);
-    if ($sth->err) {
-        warn sprintf('Database returned the following error on attempted DELETE: %s', $sth->errstr);
+    if ( $sth->err ) {
+        warn sprintf( 'Database returned the following error on attempted DELETE: %s', $sth->errstr );
         return -1;
     }
 }
 
 sub save {
     my $self = shift;
-    if ($self->{'layout_id'}) {        # if we have an id, the record exists and needs UPDATE
+    if ( $self->{'layout_id'} ) {    # if we have an id, the record exists and needs UPDATE
         my @params;
         my $query = "UPDATE creator_layouts SET ";
-        foreach my $key (keys %{$self}) {
-            next if ($key eq 'layout_id') || ($key eq 'creator');
-            push (@params, $self->{$key});
+        foreach my $key ( keys %{$self} ) {
+            next if ( $key eq 'layout_id' ) || ( $key eq 'creator' );
+            push( @params, $self->{$key} );
             $query .= "$key=?, ";
         }
-        $query = substr($query, 0, (length($query)-2));
+        $query = substr( $query, 0, ( length($query) - 2 ) );
         $query .= " WHERE layout_id=? AND creator = ?;";
-        push (@params, $self->{'layout_id'}, $self->{'creator'});
+        push( @params, $self->{'layout_id'}, $self->{'creator'} );
         my $sth = C4::Context->dbh->prepare($query);
+
         #local $sth->{TraceLevel} = "3";        # enable DBI trace and set level; outputs to STDERR
         $sth->execute(@params);
-        if ($sth->err) {
-            warn sprintf('Database returned the following error: %s', $sth->errstr);
+        if ( $sth->err ) {
+            warn sprintf( 'Database returned the following error: %s', $sth->errstr );
             return -1;
         }
         return $self->{'layout_id'};
-    }
-    else {                      # otherwise create a new record
+    } else {    # otherwise create a new record
         my @params;
         my $query = "INSERT INTO creator_layouts (";
-        foreach my $key (keys %{$self}) {
-            push (@params, $self->{$key});
+        foreach my $key ( keys %{$self} ) {
+            push( @params, $self->{$key} );
             $query .= "$key, ";
         }
-        $query = substr($query, 0, (length($query)-2));
+        $query = substr( $query, 0, ( length($query) - 2 ) );
         $query .= ") VALUES (";
-        for (my $i=1; $i<=(scalar keys %$self); $i++) {
+        for ( my $i = 1 ; $i <= ( scalar keys %$self ) ; $i++ ) {
             $query .= "?,";
         }
-        $query = substr($query, 0, (length($query)-1));
+        $query = substr( $query, 0, ( length($query) - 1 ) );
         $query .= ");";
         my $sth = C4::Context->dbh->prepare($query);
         $sth->execute(@params);
-        if ($sth->err) {
-            warn sprintf('Database returned the following error: %s', $sth->errstr);
+        if ( $sth->err ) {
+            warn sprintf( 'Database returned the following error: %s', $sth->errstr );
             return -1;
         }
         my $sth1 = C4::Context->dbh->prepare("SELECT MAX(layout_id) FROM creator_layouts;");
@@ -190,14 +192,13 @@ sub save {
 
 sub get_attr {
     my $self = shift;
-    if (_check_params(@_) eq 1) {
+    if ( _check_params(@_) eq 1 ) {
         return -1;
     }
     my ($attr) = @_;
-    if (exists($self->{$attr})) {
+    if ( exists( $self->{$attr} ) ) {
         return $self->{$attr};
-    }
-    else {
+    } else {
         return -1;
     }
     return;
@@ -205,25 +206,25 @@ sub get_attr {
 
 sub set_attr {
     my $self = shift;
-    if (_check_params(@_) eq 1) {
+    if ( _check_params(@_) eq 1 ) {
         return -1;
     }
     my %attrs = @_;
-    foreach my $attrib (keys(%attrs)) {
+    foreach my $attrib ( keys(%attrs) ) {
         $self->{$attrib} = $attrs{$attrib};
-    };
+    }
     return 0;
 }
 
 sub get_text_wrap_cols {
-    my $self = shift;
-    my %params = @_;
-    my $string = '';
-    my $strwidth = 0;
+    my $self      = shift;
+    my %params    = @_;
+    my $string    = '';
+    my $strwidth  = 0;
     my $col_count = 0;
-    my $textlimit = $params{'label_width'} - ( 3 * $params{'left_text_margin'});
+    my $textlimit = $params{'label_width'} - ( 3 * $params{'left_text_margin'} );
 
-    while ($strwidth < $textlimit) {
+    while ( $strwidth < $textlimit ) {
         $string .= '0';
         $col_count++;
         $strwidth = C4::Creators::PDF->StrWidth( $string, $self->{'font'}, $self->{'font_size'} );

@@ -1,6 +1,5 @@
 #!/usr/bin/perl
 
-
 # Copyright 2000-2002 Katipo Communications
 #
 # This file is part of Koha.
@@ -33,25 +32,28 @@ my $dbh = C4::Context->dbh;
 my $input = new CGI;
 my $print = $input->param('print');
 
-my ($template, $loggedinuser, $cookie)
-    = get_template_and_user({template_name => 'serials/viewalerts.tmpl',
-                 query => $input,
-                 type => "intranet",
-                 authnotrequired => 0,
-                 flagsrequired => {serials => 1},
-                 debug => 1,
-                 });
+my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
+    {   template_name   => 'serials/viewalerts.tmpl',
+        query           => $input,
+        type            => "intranet",
+        authnotrequired => 0,
+        flagsrequired   => { serials => 1 },
+        debug           => 1,
+    }
+);
 
-my $subscriptionid=$input->param('subscriptionid');
+my $subscriptionid = $input->param('subscriptionid');
 
-my $borrowers = getalert('','issue',$subscriptionid);
+my $borrowers = getalert( '', 'issue', $subscriptionid );
 my $subscription = GetSubscription($subscriptionid);
 
 foreach (@$borrowers) {
-    $_->{name} = findrelatedto('borrower',$_->{borrowernumber});
+    $_->{name} = findrelatedto( 'borrower', $_->{borrowernumber} );
 }
-$template->param(alertloop => $borrowers,
-                bibliotitle => $subscription->{bibliotitle},
-                subscriptionid => $subscriptionid);
+$template->param(
+    alertloop      => $borrowers,
+    bibliotitle    => $subscription->{bibliotitle},
+    subscriptionid => $subscriptionid
+);
 
 output_html_with_http_headers $input, $cookie, $template->output;

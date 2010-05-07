@@ -2,8 +2,10 @@
 # small script that import an iso2709 file into koha 2.0
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 BEGIN {
+
     # find Koha's Perl modules
     # test carefully before changing this
     use FindBin;
@@ -23,22 +25,22 @@ use Time::HiRes qw(gettimeofday);
 use Getopt::Long;
 use IO::File;
 
-my ( $input_marc_file, $number) = ('',0);
-my ($version, $delete, $test_parameter,$char_encoding, $verbose, $format, $commit);
+my ( $input_marc_file, $number ) = ( '', 0 );
+my ( $version, $delete, $test_parameter, $char_encoding, $verbose, $format, $commit );
 $| = 1;
 GetOptions(
-    'file:s'    => \$input_marc_file,
-    'n:i' => \$number,
-    'h' => \$version,
-    'd' => \$delete,
-    't' => \$test_parameter,
-    'c:s' => \$char_encoding,
-    'v:s' => \$verbose,
-    'm:s' => \$format,
+    'file:s'   => \$input_marc_file,
+    'n:i'      => \$number,
+    'h'        => \$version,
+    'd'        => \$delete,
+    't'        => \$test_parameter,
+    'c:s'      => \$char_encoding,
+    'v:s'      => \$verbose,
+    'm:s'      => \$format,
     'commit:f' => \$commit,
 );
 
-if ($version || ($input_marc_file eq '')) {
+if ( $version || ( $input_marc_file eq '' ) ) {
     print <<EOF
 small script to import an iso2709 file into Koha.
 parameters :
@@ -56,8 +58,8 @@ If you fail the test, the import won't work correctly and you will get invalid d
 
 SAMPLE : ./bulkmarcimport.pl -file /home/paul/koha.dev/local/npl -n 1
 EOF
-;#'
-die;
+      ;    #'
+    die;
 }
 
 my $dbh = C4::Context->dbh;
@@ -74,9 +76,10 @@ my $marcFlavour = C4::Context->preference('marcflavour') || 'MARC21';
 $char_encoding = 'MARC21' unless ($char_encoding);
 print "CHAR : $char_encoding\n" if $verbose;
 my $starttime = gettimeofday;
-my $fh = IO::File->new($input_marc_file); # don't let MARC::Batch open the file, as it applies the ':utf8' IO layer
+my $fh        = IO::File->new($input_marc_file);    # don't let MARC::Batch open the file, as it applies the ':utf8' IO layer
 my $batch;
-if ($format =~ /XML/i) {
+if ( $format =~ /XML/i ) {
+
     # ugly hack follows -- MARC::File::XML, when used by MARC::Batch,
     # appears to try to convert incoming XML records from MARC-8
     # to UTF-8.  Setting the BinaryEncoding key turns that off
@@ -93,7 +96,7 @@ if ($format =~ /XML/i) {
 }
 $batch->warnings_off();
 $batch->strict_off();
-my $i=0;
+my $i = 0;
 
 $dbh->{AutoCommit} = 0;
 my $commitnum = 50;
@@ -106,47 +109,46 @@ RECORD: while ( my $record = $batch->next() ) {
     print ".";
     print "\r$i" unless $i % 100;
 
-    if ($record->encoding() eq 'MARC-8') {
-        my ($guessed_charset, $charset_errors);
-        ($record, $guessed_charset, $charset_errors) = MarcToUTF8Record($record, $marcFlavour);
-        if ($guessed_charset eq 'failed') {
+    if ( $record->encoding() eq 'MARC-8' ) {
+        my ( $guessed_charset, $charset_errors );
+        ( $record, $guessed_charset, $charset_errors ) = MarcToUTF8Record( $record, $marcFlavour );
+        if ( $guessed_charset eq 'failed' ) {
             warn "ERROR: failed to perform character conversion for record $i\n";
-            next RECORD;            
+            next RECORD;
         }
     }
 
-    warn "$i ==>".$record->as_formatted() if $verbose eq 2;
+    warn "$i ==>" . $record->as_formatted() if $verbose eq 2;
     my $authtypecode;
-    if (C4::Context->preference('marcflavour') eq 'MARC21') {
-        $authtypecode="PERSO_NAME" if ($record->field('100'));
-        $authtypecode="CORPO_NAME" if ($record->field('110'));
-        $authtypecode="MEETI_NAME" if ($record->field('111'));
-        $authtypecode="UNIF_TITLE" if ($record->field('130'));
-        $authtypecode="CHRON_TERM" if ($record->field('148') or $record->field('182'));
-        $authtypecode="TOPIC_TERM" if ($record->field('150') or $record->field('180'));
-        $authtypecode="GEOGR_NAME" if ($record->field('151') or $record->field('181'));
-        $authtypecode="GENRE/FORM" if ($record->field('155') or $record->field('185'));
-        next unless $authtypecode; # skip invalid records FIXME: far too simplistic
-    }
-    else {
-        $authtypecode=substr($record->leader(),9,1);
-        $authtypecode="NP" if ($authtypecode eq 'a'); # personnes
-        $authtypecode="CO" if ($authtypecode eq 'b'); # collectivit�
-        $authtypecode="NG" if ($authtypecode eq 'c'); # g�graphique
-        $authtypecode="NM" if ($authtypecode eq 'd'); # marque
-        $authtypecode="NF" if ($authtypecode eq 'e'); # famille
-        $authtypecode="TI" if ($authtypecode eq 'f'); # Titre uniforme
-        $authtypecode="TI" if ($authtypecode eq 'h'); # auteur/titre
-        $authtypecode="MM" if ($authtypecode eq 'j'); # mot mati�e
+    if ( C4::Context->preference('marcflavour') eq 'MARC21' ) {
+        $authtypecode = "PERSO_NAME" if ( $record->field('100') );
+        $authtypecode = "CORPO_NAME" if ( $record->field('110') );
+        $authtypecode = "MEETI_NAME" if ( $record->field('111') );
+        $authtypecode = "UNIF_TITLE" if ( $record->field('130') );
+        $authtypecode = "CHRON_TERM" if ( $record->field('148') or $record->field('182') );
+        $authtypecode = "TOPIC_TERM" if ( $record->field('150') or $record->field('180') );
+        $authtypecode = "GEOGR_NAME" if ( $record->field('151') or $record->field('181') );
+        $authtypecode = "GENRE/FORM" if ( $record->field('155') or $record->field('185') );
+        next unless $authtypecode;    # skip invalid records FIXME: far too simplistic
+    } else {
+        $authtypecode = substr( $record->leader(), 9, 1 );
+        $authtypecode = "NP" if ( $authtypecode eq 'a' );    # personnes
+        $authtypecode = "CO" if ( $authtypecode eq 'b' );    # collectivit�
+        $authtypecode = "NG" if ( $authtypecode eq 'c' );    # g�graphique
+        $authtypecode = "NM" if ( $authtypecode eq 'd' );    # marque
+        $authtypecode = "NF" if ( $authtypecode eq 'e' );    # famille
+        $authtypecode = "TI" if ( $authtypecode eq 'f' );    # Titre uniforme
+        $authtypecode = "TI" if ( $authtypecode eq 'h' );    # auteur/titre
+        $authtypecode = "MM" if ( $authtypecode eq 'j' );    # mot mati�e
     }
 
     unless ($test_parameter) {
-        my ($authid) = AddAuthority($record,0,$authtypecode);
+        my ($authid) = AddAuthority( $record, 0, $authtypecode );
         warn "ADDED authority NB $authid in DB\n" if $verbose;
-        $dbh->commit() if (0 == $i % $commitnum);
+        $dbh->commit() if ( 0 == $i % $commitnum );
     }
 
-    last if $i ==  $number;
+    last if $i == $number;
 }
 $dbh->commit();
 

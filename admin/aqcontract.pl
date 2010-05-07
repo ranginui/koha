@@ -48,11 +48,11 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
 );
 
 $template->param(
-    contractnumber => $contractnumber,
-    booksellerid   => $booksellerid,
-    booksellername => $bookseller->{name},
+    contractnumber           => $contractnumber,
+    booksellerid             => $booksellerid,
+    booksellername           => $bookseller->{name},
     DHTMLcalendar_dateformat => C4::Dates->DHTMLcalendar(),
-    dateformat     => C4::Context->preference("dateformat"),
+    dateformat               => C4::Context->preference("dateformat"),
 );
 
 #ADD_FORM: called if $op is 'add_form'. Used to create form to add or  modify a record
@@ -60,7 +60,7 @@ if ( $op eq 'add_form' ) {
     $template->param( add_form => 1 );
 
     # if contractnumber exists, it's a modify action, so read values to modify...
-    my $contract = @{GetContract( { contractnumber => $contractnumber } )}[0] if $contractnumber;
+    my $contract = @{ GetContract( { contractnumber => $contractnumber } ) }[0] if $contractnumber;
 
     $template->param(
         contractnumber           => $$contract{contractnumber},
@@ -73,6 +73,7 @@ if ( $op eq 'add_form' ) {
 
     # END $OP eq ADD_FORM
 }
+
 #ADD_VALIDATE: called by add_form, used to insert/modify data in DB
 elsif ( $op eq 'add_validate' ) {
 ## Please see file perltidy.ERR
@@ -80,23 +81,25 @@ elsif ( $op eq 'add_validate' ) {
 
     my $is_a_modif = $input->param("is_a_modif");
 
-    if ( $is_a_modif ) {
-        ModContract({
-            contractstartdate   => format_date_in_iso( $input->param('contractstartdate') ),
-            contractenddate     => format_date_in_iso( $input->param('contractenddate') ),
-            contractname        => $input->param('contractname'),
-            contractdescription => $input->param('contractdescription'),
-            booksellerid        => $input->param('booksellerid'),
-            contractnumber      => $input->param('contractnumber'),
-        });
+    if ($is_a_modif) {
+        ModContract(
+            {   contractstartdate   => format_date_in_iso( $input->param('contractstartdate') ),
+                contractenddate     => format_date_in_iso( $input->param('contractenddate') ),
+                contractname        => $input->param('contractname'),
+                contractdescription => $input->param('contractdescription'),
+                booksellerid        => $input->param('booksellerid'),
+                contractnumber      => $input->param('contractnumber'),
+            }
+        );
     } else {
-        AddContract({
-            contractname        => $input->param('contractname'),
-            contractdescription => $input->param('contractdescription'),
-            booksellerid        => $input->param('booksellerid'),
-            contractstartdate   => format_date_in_iso( $input->param('contractstartdate') ),
-            contractenddate     => format_date_in_iso( $input->param('contractenddate') ),
-        });
+        AddContract(
+            {   contractname        => $input->param('contractname'),
+                contractdescription => $input->param('contractdescription'),
+                booksellerid        => $input->param('booksellerid'),
+                contractstartdate   => format_date_in_iso( $input->param('contractstartdate') ),
+                contractenddate     => format_date_in_iso( $input->param('contractenddate') ),
+            }
+        );
     }
 
     print $input->redirect("/cgi-bin/koha/acqui/supplier.pl?supplierid=$booksellerid");
@@ -104,11 +107,12 @@ elsif ( $op eq 'add_validate' ) {
 
     # END $OP eq ADD_VALIDATE
 }
+
 #DELETE_CONFIRM: called by default form, used to confirm deletion of data in DB
 elsif ( $op eq 'delete_confirm' ) {
     $template->param( delete_confirm => 1 );
 
-    my $contract = @{GetContract( { contractnumber => $contractnumber } )}[0];
+    my $contract = @{ GetContract( { contractnumber => $contractnumber } ) }[0];
 
     $template->param(
         contractnumber      => $$contract{contractnumber},
@@ -120,6 +124,7 @@ elsif ( $op eq 'delete_confirm' ) {
 
     # END $OP eq DELETE_CONFIRM
 }
+
 #DELETE_CONFIRMED: called by delete_confirm, used to effectively confirm deletion of data in DB
 elsif ( $op eq 'delete_confirmed' ) {
     $template->param( delete_confirmed => 1 );
@@ -131,20 +136,21 @@ elsif ( $op eq 'delete_confirmed' ) {
 
     # END $OP eq DELETE_CONFIRMED
 }
+
 # DEFAULT: Builds a list of contracts and displays them
 else {
-    $template->param(else => 1);
+    $template->param( else => 1 );
 
     # get contracts
-    my @contracts = @{GetContract( { booksellerid => $booksellerid } )};
+    my @contracts = @{ GetContract( { booksellerid => $booksellerid } ) };
 
     # format dates
-    for ( @contracts ) {
-        $$_{contractstartdate} = format_date($$_{contractstartdate});
-        $$_{contractenddate}   = format_date($$_{contractenddate});
+    for (@contracts) {
+        $$_{contractstartdate} = format_date( $$_{contractstartdate} );
+        $$_{contractenddate}   = format_date( $$_{contractenddate} );
     }
 
-    $template->param(loop => \@contracts);
+    $template->param( loop => \@contracts );
 
     #---- END $OP eq DEFAULT
 }

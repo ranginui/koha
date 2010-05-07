@@ -39,9 +39,11 @@
 #
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 
 my $module_dir;
+
 BEGIN {
     $module_dir = '__PERL_MODULE_DIR__';
     die if $module_dir =~ /^[_]{2}PERL_MODULE_DIR[_]{2}$/;

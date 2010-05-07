@@ -35,9 +35,8 @@ use C4::Members;
 
 my $query = new CGI;
 
-my ( $template, $borrowernumber, $cookie ) = get_template_and_user (
-    {
-        template_name   => "opac-sendshelfform.tmpl",
+my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
+    {   template_name   => "opac-sendshelfform.tmpl",
         query           => $query,
         type            => "opac",
         authnotrequired => 1,
@@ -48,9 +47,9 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user (
 my $shelfid = $query->param('shelfid');
 my $email   = $query->param('email');
 
-my $dbh          = C4::Context->dbh;
+my $dbh = C4::Context->dbh;
 
-if ( $email ) {
+if ($email) {
     my $email_from = C4::Context->preference('KohaAdminEmailAddress');
     my $comment    = $query->param('comment');
 
@@ -60,8 +59,7 @@ if ( $email ) {
     );
 
     my ( $template2, $borrowernumber, $cookie ) = get_template_and_user(
-        {
-            template_name   => "opac-sendshelf.tmpl",
+        {   template_name   => "opac-sendshelf.tmpl",
             query           => $query,
             type            => "opac",
             authnotrequired => 1,
@@ -69,9 +67,9 @@ if ( $email ) {
         }
     );
 
-    my @shelf               = GetShelf($shelfid);
-    my ($items, $totitems)  = GetShelfContents($shelfid);
-    my $marcflavour         = C4::Context->preference('marcflavour');
+    my @shelf = GetShelf($shelfid);
+    my ( $items, $totitems ) = GetShelfContents($shelfid);
+    my $marcflavour = C4::Context->preference('marcflavour');
     my $iso2709;
     my @results;
 
@@ -98,7 +96,7 @@ if ( $email ) {
         push( @results, $dat );
     }
 
-    my $user = GetMember(borrowernumber => $borrowernumber); 
+    my $user = GetMember( borrowernumber => $borrowernumber );
 
     $template2->param(
         BIBLIO_RESULTS => \@results,
@@ -116,8 +114,9 @@ if ( $email ) {
     # Analysing information and getting mail properties
     if ( $template_res =~ /<SUBJECT>\n(.*)\n<END_SUBJECT>/s ) {
         $mail{'subject'} = $1;
+    } else {
+        $mail{'subject'} = "no subject";
     }
-    else { $mail{'subject'} = "no subject"; }
 
     my $email_header = "";
     if ( $template_res =~ /<HEADER>\n(.*)\n<END_HEADER>/s ) {
@@ -136,7 +135,7 @@ if ( $email ) {
     # We set and put the multipart content
     $mail{'content-type'} = "multipart/mixed; boundary=\"$boundary\"";
 
-    my $isofile = encode_base64(encode("UTF-8", $iso2709));
+    my $isofile = encode_base64( encode( "UTF-8", $iso2709 ) );
     $boundary = '--' . $boundary;
 
     $mail{body} = <<END_OF_BODY;
@@ -157,10 +156,11 @@ END_OF_BODY
 
     # Sending mail
     if ( sendmail %mail ) {
+
         # do something if it works....
-        $template->param( SENT      => "1" );
-    }
-    else {
+        $template->param( SENT => "1" );
+    } else {
+
         # do something if it doesnt work....
         warn "Error sending mail: $Mail::Sendmail::error \n";
         $template->param( error => 1 );
@@ -169,10 +169,10 @@ END_OF_BODY
     $template->param( email => $email );
     output_html_with_http_headers $query, $cookie, $template->output;
 
-
-}else{
-    $template->param( shelfid => $shelfid,
-                      url     => "/cgi-bin/koha/opac-sendshelf.pl",
-                    );
+} else {
+    $template->param(
+        shelfid => $shelfid,
+        url     => "/cgi-bin/koha/opac-sendshelf.pl",
+    );
     output_html_with_http_headers $query, $cookie, $template->output;
 }

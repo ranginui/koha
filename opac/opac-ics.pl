@@ -36,8 +36,7 @@ use C4::Dates;
 
 my $query = new CGI;
 my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
-    {
-        template_name   => "opac-user.tmpl",
+    {   template_name   => "opac-user.tmpl",
         query           => $query,
         type            => "opac",
         authnotrequired => 0,
@@ -47,7 +46,7 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
 );
 
 # get borrower information ....
-my ( $borr ) =  GetMemberDetails( $borrowernumber );
+my ($borr) = GetMemberDetails($borrowernumber);
 
 # Create Calendar
 my $calendar = Data::ICal->new();
@@ -55,41 +54,40 @@ my $calendar = Data::ICal->new();
 # get issued items ....
 my ($issues) = GetPendingIssues($borrowernumber);
 
-foreach my $issue ( @$issues ) {
+foreach my $issue (@$issues) {
     my $vevent = Data::ICal::Entry::Event->new();
-    my ($year,$month,$day)=Parse_Date($issue->{'date_due'});
-    ($year,$month,$day)=split /-|\/|\.|:/,$issue->{'date_due'} unless ($year && $month);
-#    Decode_Date_EU2($string))
-    my $datestart = Date::ICal->new( 
-	day => $day, 
-	month => $month, 
-	year => $year,
-	hour => 9,
-	min => 0,
-	sec => 0
+    my ( $year, $month, $day ) = Parse_Date( $issue->{'date_due'} );
+    ( $year, $month, $day ) = split /-|\/|\.|:/, $issue->{'date_due'} unless ( $year && $month );
+
+    #    Decode_Date_EU2($string))
+    my $datestart = Date::ICal->new(
+        day   => $day,
+        month => $month,
+        year  => $year,
+        hour  => 9,
+        min   => 0,
+        sec   => 0
     )->ical;
-    my $dateend = Date::ICal->new( 
-	day => $day, 
-	month => $month, 
-	year => $year,
-	hour => 10,
-	min => 0,
-	sec => 0
+    my $dateend = Date::ICal->new(
+        day   => $day,
+        month => $month,
+        year  => $year,
+        hour  => 10,
+        min   => 0,
+        sec   => 0
     )->ical;
     $vevent->add_properties(
-        summary => "$issue->{'title'} Due",
-        description =>
-"Your copy of $issue->{'title'} barcode $issue->{'barcode'} is due back at the library today",
-        dtstart => $datestart,
-	dtend => $dateend,
+        summary     => "$issue->{'title'} Due",
+        description => "Your copy of $issue->{'title'} barcode $issue->{'barcode'} is due back at the library today",
+        dtstart     => $datestart,
+        dtend       => $dateend,
     );
     $calendar->add_entry($vevent);
 }
 
 print $query->header(
-    -type        => 'application/octet-stream',
+    -type       => 'application/octet-stream',
     -attachment => 'koha.ics'
 );
-
 
 print $calendar->as_string;

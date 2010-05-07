@@ -5,13 +5,13 @@ BEGIN {
     use vars qw(@EXPORT, @ISA);
     @ISA = qw(Exporter);
     our @EXPORT = qw(unpack_UTF8
-                     text_alignment
-                     leading
-                     box
-                     get_borrower_attributes
-                     put_image
-                     get_image
-                     rm_image
+      text_alignment
+      leading
+      box
+      get_borrower_attributes
+      put_image
+      get_image
+      rm_image
     );
     use C4::Patroncards::Batch 1.000000;
     use C4::Patroncards::Layout 1.000000;

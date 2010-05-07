@@ -22,6 +22,7 @@ use CGI;
 use File::Basename;
 use Encode;
 use JSON;
+
 #use Data::Dump 'pp';
 
 use C4::Auth;
@@ -37,20 +38,20 @@ my $preferences = 'C4::ItemCirculationAlertPreference';
 
 # utf8 filter
 sub utf8 {
-    my ($data, @keys) = @_;
+    my ( $data, @keys ) = @_;
     for (@keys) {
-        $data->{$_} = decode('utf8', $data->{$_});
+        $data->{$_} = decode( 'utf8', $data->{$_} );
     }
     $data;
 }
 
 # prepend "br_" to column name and replace spaces with "<br/>"
 sub br {
-    my ($data, @keys) = @_;
+    my ( $data, @keys ) = @_;
     for (@keys) {
         my $br = $data->{$_};
         $br =~ s{\s+}{<br/>}g;
-        $data->{'br_'.$_} = $br;
+        $data->{ 'br_' . $_ } = $br;
     }
     $data;
 }
@@ -59,47 +60,41 @@ sub br {
 sub show {
     my ($input) = @_;
     my $dbh = C4::Context->dbh;
-    my ($template, $user, $cookie) = get_template_and_user(
-        {
-            template_name   => "admin/item_circulation_alerts.tmpl",
+    my ( $template, $user, $cookie ) = get_template_and_user(
+        {   template_name   => "admin/item_circulation_alerts.tmpl",
             query           => $input,
             type            => "intranet",
             authnotrequired => 0,
             flagsrequired   => { parameters => 1 },
-            debug           => defined($input->param('debug')),
+            debug           => defined( $input->param('debug') ),
         }
     );
 
     my $br       = GetBranches;
     my $branch   = $input->param('branch') || '*';
     my @branches = (
-        {
-            branchcode => '*',
+        {   branchcode => '*',
             branchname => 'Default',
         },
         sort { $a->{branchname} cmp $b->{branchname} } values %$br,
     );
     for (@branches) {
-        $_->{selected} = "selected" if ($branch eq $_->{branchcode});
+        $_->{selected} = "selected" if ( $branch eq $_->{branchcode} );
     }
-    my $branch_name = exists($br->{$branch}) && $br->{$branch}->{branchname};
+    my $branch_name = exists( $br->{$branch} ) && $br->{$branch}->{branchname};
 
-    my @categories = (
-        C4::Category->all
-    );
-    my @item_types = map { br($_, 'description') }  (
-        C4::ItemType->all
-    );
-    my $grid_checkout = $preferences->grid({ branchcode => $branch, notification => 'CHECKOUT' });
-    my $grid_checkin  = $preferences->grid({ branchcode => $branch, notification => 'CHECKIN' });
+    my @categories    = ( C4::Category->all );
+    my @item_types    = map { br( $_, 'description' ) } ( C4::ItemType->all );
+    my $grid_checkout = $preferences->grid( { branchcode => $branch, notification => 'CHECKOUT' } );
+    my $grid_checkin  = $preferences->grid( { branchcode => $branch, notification => 'CHECKIN' } );
 
-    $template->param(branch             => $branch);
-    $template->param(branch_name        => $branch_name || 'Default');
-    $template->param(branches           => \@branches);
-    $template->param(categories         => \@categories);
-    $template->param(item_types         => \@item_types);
-    $template->param(grid_checkout      => $grid_checkout);
-    $template->param(grid_checkin       => $grid_checkin);
+    $template->param( branch        => $branch );
+    $template->param( branch_name   => $branch_name || 'Default' );
+    $template->param( branches      => \@branches );
+    $template->param( categories    => \@categories );
+    $template->param( item_types    => \@item_types );
+    $template->param( grid_checkout => $grid_checkout );
+    $template->param( grid_checkin  => $grid_checkin );
 
     output_html_with_http_headers $input, $cookie, $template->output;
 }
@@ -107,9 +102,9 @@ sub show {
 # toggle a preference via ajax
 sub toggle {
     my ($input) = @_;
-    my $id = $input->param('id');
-    my $branch = $input->param('branch');
-    my ($category, $item_type, $notification) = split('-', $id);
+    my $id      = $input->param('id');
+    my $branch  = $input->param('branch');
+    my ( $category, $item_type, $notification ) = split( '-', $id );
     $category  =~ s/_/*/;
     $item_type =~ s/_/*/;
 
@@ -120,27 +115,29 @@ sub toggle {
         notification => $notification,
     };
 
-    my $restrictions = $preferences;  # all the same thing...
-    my $notifications = $preferences; #
-    if ($notifications->is_enabled_for($settings)) {
+    my $restrictions  = $preferences;    # all the same thing...
+    my $notifications = $preferences;    #
+    if ( $notifications->is_enabled_for($settings) ) {
+
         # toggle by adding a restriction
         $restrictions->create($settings);
     } else {
+
         # toggle by removing the restriction
         $restrictions->delete($settings);
     }
 
     my $response = { success => 1 };
-    my @reasons  = $notifications->is_disabled_for($settings);
-    if (@reasons == 0) {
+    my @reasons = $notifications->is_disabled_for($settings);
+    if ( @reasons == 0 ) {
         $response->{classes} = '';
     } else {
-        my $default_exists   = grep { $_->{branchcode} eq '*' } @reasons;
+        my $default_exists = grep { $_->{branchcode} eq '*' } @reasons;
         my $non_default_also = grep { $_->{branchcode} ne '*' } @reasons;
         my @classes;
         push @classes, 'default'  if $default_exists;
         push @classes, 'disabled' if $non_default_also;
-        $response->{classes} = join(' ', @classes);
+        $response->{classes} = join( ' ', @classes );
     }
     print $input->header;
     print encode_json($response);
@@ -152,15 +149,12 @@ sub dispatch {
         show   => \&show,
         toggle => \&toggle,
     );
-    my $input  = new CGI;
+    my $input = new CGI;
     my $action = $input->param('action') || 'show';
-    if (not exists $handler{$action}) {
+    if ( not exists $handler{$action} ) {
         my $status = 400;
-        print $input->header(-status => $status);
-        print $input->div(
-            $input->h1($status),
-            $input->p("$action is not supported.")
-        );
+        print $input->header( -status => $status );
+        print $input->div( $input->h1($status), $input->p("$action is not supported.") );
     } else {
         $handler{$action}->($input);
     }
@@ -169,7 +163,6 @@ sub dispatch {
 # main
 dispatch if $ENV{REQUEST_URI};
 1;
-
 
 =head1 NAME
 

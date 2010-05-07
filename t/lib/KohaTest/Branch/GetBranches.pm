@@ -30,12 +30,13 @@ sub onlymine : Test( 4 ) {
 
     # C4::Branch::GetBranches uses this variable, so make sure it exists.
     ok( C4::Context->userenv->{'branch'}, 'we have a branch' );
-    my $branches = C4::Branch::GetBranches( 'onlymine' );
+    my $branches = C4::Branch::GetBranches('onlymine');
+
     # diag( Data::Dumper->Dump( [ $branches ], [ 'branches' ] ) );
     is( scalar( keys %$branches ), 1, 'one key for our branch only' );
     ok( exists $branches->{ C4::Context->userenv->{'branch'} }, 'my branch was returned' );
     is( $branches->{ C4::Context->userenv->{'branch'} }->{'branchcode'}, C4::Context->userenv->{'branch'}, 'branchcode' );
-    
+
 }
 
 1;

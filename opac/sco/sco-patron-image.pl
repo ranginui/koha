@@ -22,29 +22,31 @@ use warnings;
 use C4::Service;
 use C4::Members;
 
-my ($query, $response) = C4::Service->init(circulate => 'circulate_remaining_permissions');
+my ( $query, $response ) = C4::Service->init( circulate => 'circulate_remaining_permissions' );
 
-unless (C4::Context->preference('WebBasedSelfCheck')) {
-    print $query->header(status => '403 Forbidden - web-based self-check not enabled');
+unless ( C4::Context->preference('WebBasedSelfCheck') ) {
+    print $query->header( status => '403 Forbidden - web-based self-check not enabled' );
     exit;
 }
-unless (C4::Context->preference('ShowPatronImageInWebBasedSelfCheck')) {
-    print $query->header(status => '403 Forbidden - displaying patron images in self-check not enabled');
+unless ( C4::Context->preference('ShowPatronImageInWebBasedSelfCheck') ) {
+    print $query->header( status => '403 Forbidden - displaying patron images in self-check not enabled' );
     exit;
 }
 
 my ($cardnumber) = C4::Service->require_params('cardnumber');
 
-my ($imagedata, $dberror) = GetPatronImage($cardnumber);
+my ( $imagedata, $dberror ) = GetPatronImage($cardnumber);
 
 if ($dberror) {
-    print $query->header(status => '500 internal error');
+    print $query->header( status => '500 internal error' );
 }
 
 if ($imagedata) {
-    print $query->header(-type => $imagedata->{'mimetype'}, 
-                         -Content_Length => length ($imagedata->{'imagefile'})), 
-          $imagedata->{'imagefile'};
+    print $query->header(
+        -type           => $imagedata->{'mimetype'},
+        -Content_Length => length( $imagedata->{'imagefile'} )
+      ),
+      $imagedata->{'imagefile'};
 } else {
-    print $query->header(status => '404 patron image not found');
+    print $query->header( status => '404 patron image not found' );
 }

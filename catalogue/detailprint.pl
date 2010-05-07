@@ -18,6 +18,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 
 use C4::Context;
@@ -43,7 +44,7 @@ foreach my $itm (@items) {
 
 my $dat         = GetBiblioData($biblionumber);
 my $record      = GetMarcBiblio($biblionumber);
-my $addauthor   = GetMarcAuthors($record,C4::Context->preference("marcflavour"));
+my $addauthor   = GetMarcAuthors( $record, C4::Context->preference("marcflavour") );
 my $authorcount = scalar @$addauthor;
 
 $dat->{'additional'} = "";
@@ -65,8 +66,7 @@ my $startfrom = $query->param('startfrom');
 ($startfrom) || ( $startfrom = 0 );
 
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => ('catalogue/detailprint.tmpl'),
+    {   template_name   => ('catalogue/detailprint.tmpl'),
         query           => $query,
         type            => "intranet",
         authnotrequired => ( $type eq 'opac' ),
@@ -79,7 +79,7 @@ my $count = 1;
 # now to get the items into a hash we can use and whack that thru
 
 my $nextstartfrom = ( $startfrom + 20 < $count - 20 ) ? ( $startfrom + 20 ) : ( $count - 20 );
-my $prevstartfrom = ( $startfrom - 20 > 0 ) ? ( $startfrom - 20 ) : (0);
+my $prevstartfrom = ( $startfrom - 20 > 0 )           ? ( $startfrom - 20 ) : (0);
 
 $template->param(
     startfrom      => $startfrom + 1,

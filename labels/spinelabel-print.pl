@@ -48,9 +48,9 @@ $sth = $dbh->prepare($sql);
 $sth->execute($barcode);
 $item = $sth->fetchrow_hashref;
 
-unless (defined $item) {
-  $template->param( 'Barcode' => $barcode );
-  $template->param( 'BarcodeNotFound' => 1 );
+unless ( defined $item ) {
+    $template->param( 'Barcode'         => $barcode );
+    $template->param( 'BarcodeNotFound' => 1 );
 }
 
 my $body;
@@ -60,10 +60,10 @@ while ( my ( $key, $value ) = each(%$item) ) {
     $data->{$key} .= "<span class='field' id='$key'>";
 
     $value = '' unless defined $value;
-    my @characters = split( //, $value );
-    my $charnum    = 1;
-    my $wordernumber    = 1;
-    my $i          = 1;
+    my @characters   = split( //, $value );
+    my $charnum      = 1;
+    my $wordernumber = 1;
+    my $i            = 1;
     foreach my $char (@characters) {
         if ( $char ne ' ' ) {
             $data->{$key} .= "<span class='character word$wordernumber character$charnum' id='$key$i'>$char</span>";

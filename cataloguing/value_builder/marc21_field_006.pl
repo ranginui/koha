@@ -18,6 +18,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use C4::Auth;
 use CGI;
@@ -33,12 +34,12 @@ plugin_parameters : other parameters added when the plugin is called by the dopo
 =cut
 
 sub plugin_parameters {
-    my ($dbh, $record, $tagslib, $i, $tabloop) = @_;
+    my ( $dbh, $record, $tagslib, $i, $tabloop ) = @_;
     return "";
 }
 
 sub plugin_javascript {
-    my ($dbh, $record, $tagslib, $field_number, $tabloop) = @_;
+    my ( $dbh, $record, $tagslib, $field_number, $tabloop ) = @_;
     my $function_name = $field_number;
     my $res           = "
 <script type=\"text/javascript\">
@@ -61,7 +62,7 @@ function Clic$function_name(i) {
 </script>
 ";
 
-    return ($function_name, $res);
+    return ( $function_name, $res );
 }
 
 sub plugin {
@@ -71,7 +72,7 @@ sub plugin {
 
     my $dbh = C4::Context->dbh;
 
-    my ($template, $loggedinuser, $cookie) = get_template_and_user(
+    my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
         {   template_name   => "cataloguing/value_builder/marc21_field_006.tmpl",
             query           => $input,
             type            => "intranet",
@@ -83,18 +84,18 @@ sub plugin {
     $result = "a|||||r|||| 00| 0 " unless $result;
 
     #	$result = "a     r     00  0 " unless $result;
-    my $f0   = substr($result, 0,  1);
-    my $f014 = substr($result, 1,  4);
-    my $f5   = substr($result, 5,  1);
-    my $f6   = substr($result, 6,  1);
-    my $f710 = substr($result, 7,  4);
-    my $f11  = substr($result, 11, 1);
-    my $f12  = substr($result, 12, 1);
-    my $f13  = substr($result, 13, 1);
-    my $f14  = substr($result, 14, 1);
-    my $f15  = substr($result, 15, 1);
-    my $f16  = substr($result, 16, 1);
-    my $f17  = substr($result, 17, 1);
+    my $f0   = substr( $result, 0,  1 );
+    my $f014 = substr( $result, 1,  4 );
+    my $f5   = substr( $result, 5,  1 );
+    my $f6   = substr( $result, 6,  1 );
+    my $f710 = substr( $result, 7,  4 );
+    my $f11  = substr( $result, 11, 1 );
+    my $f12  = substr( $result, 12, 1 );
+    my $f13  = substr( $result, 13, 1 );
+    my $f14  = substr( $result, 14, 1 );
+    my $f15  = substr( $result, 15, 1 );
+    my $f16  = substr( $result, 16, 1 );
+    my $f17  = substr( $result, 17, 1 );
 
     $template->param(
         index       => $index,

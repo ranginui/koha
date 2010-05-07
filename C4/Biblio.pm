@@ -134,9 +134,9 @@ eval {
             servers    => [$servers],
             key_prefix => C4::Context->config('memcached_namespace') || 'koha',
         };
-        memoize_memcached( 'GetMarcStructure', memcached => $memcached, expire_time => 60000 );    #cache for 1000 minutes
-        memoize_memcached( 'GetAuthorisedValueDesc', memcached => $memcached, expire_time => 60000 );    #cache for 1000 minutes
-        memoize_memcached( 'GetMarcFromKohaField', memcached => $memcached, expire_time => 60000 );    #cache for 1000 minutes
+        memoize_memcached( 'GetMarcStructure',             memcached => $memcached, expire_time => 60000 );    #cache for 1000 minutes
+        memoize_memcached( 'GetAuthorisedValueDesc',       memcached => $memcached, expire_time => 60000 );    #cache for 1000 minutes
+        memoize_memcached( 'GetMarcFromKohaField',         memcached => $memcached, expire_time => 60000 );    #cache for 1000 minutes
         memoize_memcached( 'get_biblio_authorised_values', memcached => $memcached, expire_time => 60000 );    #cache for 1000 minutes
     }
 };
@@ -372,7 +372,7 @@ sub ModBiblio {
 sub ModBiblioframework {
     my ( $biblionumber, $frameworkcode ) = @_;
     my $dbh = C4::Context->dbh;
-    my $sth = $dbh->prepare( "UPDATE biblio SET frameworkcode=? WHERE biblionumber=?" );
+    my $sth = $dbh->prepare("UPDATE biblio SET frameworkcode=? WHERE biblionumber=?");
     $sth->execute( $frameworkcode, $biblionumber );
     return 1;
 }
@@ -732,8 +732,8 @@ sub GetBiblioItemByBiblioNumber {
 
 sub GetBiblionumberFromItemnumber {
     my ($itemnumber) = @_;
-    my $dbh            = C4::Context->dbh;
-    my $sth            = $dbh->prepare("Select biblionumber FROM items WHERE itemnumber = ?");
+    my $dbh          = C4::Context->dbh;
+    my $sth          = $dbh->prepare("Select biblionumber FROM items WHERE itemnumber = ?");
 
     $sth->execute($itemnumber);
     my ($result) = $sth->fetchrow;
@@ -981,29 +981,29 @@ sub GetMarcStructure {
         return $marc_structure_cache->{$forlibrarian}->{$frameworkcode};
     }
 
-    my $lib= ($forlibrarian?'liblibrarian':'IFNULL(libopac,liblibrarian)');
+    my $lib = ( $forlibrarian ? 'liblibrarian' : 'IFNULL(libopac,liblibrarian)' );
 
     my $restags = $dbh->selectall_hashref(
         qq{SELECT frameworkcode,tagfield,$lib as lib,mandatory,repeatable 
         FROM marc_tag_structure 
         ORDER BY frameworkcode,tagfield},
-        ["frameworkcode", "tagfield"],
+        [ "frameworkcode", "tagfield" ],
     );
 
     my $ressubfields = $dbh->selectall_hashref(
-        "SELECT frameworkcode,tagfield,tagsubfield,$lib as lib,tab,mandatory,repeatable,authorised_value,authtypecode,value_builder,kohafield,seealso,hidden,isurl,link,defaultvalue 
+"SELECT frameworkcode,tagfield,tagsubfield,$lib as lib,tab,mandatory,repeatable,authorised_value,authtypecode,value_builder,kohafield,seealso,hidden,isurl,link,defaultvalue 
          FROM   marc_subfield_structure 
          ORDER BY frameworkcode,tagfield,tagsubfield",
-        ["frameworkcode", "tagfield","tagsubfield"],
+        [ "frameworkcode", "tagfield", "tagsubfield" ],
     );
     my $res;
-    foreach my $fwkcode (keys %$restags){
-    foreach my $tag (keys %{$restags->{$fwkcode}}){
-        %{$res->{$fwkcode}->{$tag}}=%{$ressubfields->{$fwkcode}->{$tag}} if ($ressubfields->{$fwkcode}->{$tag});
-        foreach my $key (keys %{$restags->{$fwkcode}->{$tag}}){
-            $res->{$fwkcode}->{$tag}->{$key}=$restags->{$fwkcode}->{$tag}->{$key};
+    foreach my $fwkcode ( keys %$restags ) {
+        foreach my $tag ( keys %{ $restags->{$fwkcode} } ) {
+            %{ $res->{$fwkcode}->{$tag} } = %{ $ressubfields->{$fwkcode}->{$tag} } if ( $ressubfields->{$fwkcode}->{$tag} );
+            foreach my $key ( keys %{ $restags->{$fwkcode}->{$tag} } ) {
+                $res->{$fwkcode}->{$tag}->{$key} = $restags->{$fwkcode}->{$tag}->{$key};
+            }
         }
-    }
     }
     $marc_structure_cache->{$forlibrarian} = $res;
 
@@ -1131,10 +1131,11 @@ sub GetCOinSBiblio {
     my $record = GetMarcBiblio($biblionumber);
 
     # get the coin format
-    if ( ! $record ) {
-	# can't get a valid MARC::Record object, bail out at this point
-	warn "We called GetMarcBiblio with a biblionumber that doesn't exist biblionumber=$biblionumber";
-	return;
+    if ( !$record ) {
+
+        # can't get a valid MARC::Record object, bail out at this point
+        warn "We called GetMarcBiblio with a biblionumber that doesn't exist biblionumber=$biblionumber";
+        return;
     }
     my $pos7 = substr $record->leader(), 7, 1;
     my $pos6 = substr $record->leader(), 6, 1;
@@ -1290,7 +1291,7 @@ sub GetAuthorisedValueDesc {
     }
 
     if ( $category ne "" ) {
-        my $sth = $dbh->prepare( "SELECT lib, lib_opac FROM authorised_values WHERE category = ? AND authorised_value = ?" );
+        my $sth = $dbh->prepare("SELECT lib, lib_opac FROM authorised_values WHERE category = ? AND authorised_value = ?");
         $sth->execute( $category, $value );
         my $data = $sth->fetchrow_hashref;
         return ( $opac && $data->{'lib_opac'} ) ? $data->{'lib_opac'} : $data->{'lib'};
@@ -1678,7 +1679,7 @@ sub GetPublisherNameFromIsbn($) {
 
 sub TransformKohaToMarc {
     my ($hash) = @_;
-    my $sth    = C4::Context->dbh->prepare( "SELECT tagfield,tagsubfield FROM marc_subfield_structure WHERE frameworkcode=? AND kohafield=?" );
+    my $sth    = C4::Context->dbh->prepare("SELECT tagfield,tagsubfield FROM marc_subfield_structure WHERE frameworkcode=? AND kohafield=?");
     my $record = MARC::Record->new();
     SetMarcUnicodeFlag( $record, C4::Context->preference("marcflavour") );
     foreach ( keys %{$hash} ) {
@@ -1705,7 +1706,7 @@ sub TransformKohaToMarcOneField {
 
     if ( !defined $sth ) {
         my $dbh = C4::Context->dbh;
-        $sth = $dbh->prepare( "SELECT tagfield,tagsubfield FROM marc_subfield_structure WHERE frameworkcode=? AND kohafield=?" );
+        $sth = $dbh->prepare("SELECT tagfield,tagsubfield FROM marc_subfield_structure WHERE frameworkcode=? AND kohafield=?");
     }
     $sth->execute( $frameworkcode, $kohafieldname );
     if ( ( $tagfield, $tagsubfield ) = $sth->fetchrow ) {
@@ -2262,7 +2263,7 @@ sub PrepareItemrecordDisplay {
     return "" unless $tagslib;
     my $itemrecord = C4::Items::GetMarcItem( $bibnum, $itemnum ) if ($itemnum);
     my @loop_data;
-    my $authorised_values_sth = $dbh->prepare( "SELECT authorised_value,lib FROM authorised_values WHERE category=? ORDER BY lib" );
+    my $authorised_values_sth = $dbh->prepare("SELECT authorised_value,lib FROM authorised_values WHERE category=? ORDER BY lib");
     foreach my $tag ( sort keys %{$tagslib} ) {
         my $previous_tag = '';
         if ( $tag ne '' ) {
@@ -2329,7 +2330,7 @@ sub PrepareItemrecordDisplay {
                     if ( $tagslib->{$tag}->{$subfield}->{'authorised_value'} eq "branches" ) {
                         if (   ( C4::Context->preference("IndependantBranches") )
                             && ( C4::Context->userenv->{flags} % 2 != 1 ) ) {
-                            my $sth = $dbh->prepare( "SELECT branchcode,branchname FROM branches WHERE branchcode = ? ORDER BY branchname" );
+                            my $sth = $dbh->prepare("SELECT branchcode,branchname FROM branches WHERE branchcode = ? ORDER BY branchname");
                             $sth->execute( C4::Context->userenv->{branch} );
                             push @authorised_values, ""
                               unless ( $tagslib->{$tag}->{$subfield}->{mandatory} );
@@ -2338,7 +2339,7 @@ sub PrepareItemrecordDisplay {
                                 $authorised_lib{$branchcode} = $branchname;
                             }
                         } else {
-                            my $sth = $dbh->prepare( "SELECT branchcode,branchname FROM branches ORDER BY branchname" );
+                            my $sth = $dbh->prepare("SELECT branchcode,branchname FROM branches ORDER BY branchname");
                             $sth->execute;
                             push @authorised_values, ""
                               unless ( $tagslib->{$tag}->{$subfield}->{mandatory} );
@@ -2350,7 +2351,7 @@ sub PrepareItemrecordDisplay {
 
                         #----- itemtypes
                     } elsif ( $tagslib->{$tag}->{$subfield}->{authorised_value} eq "itemtypes" ) {
-                        my $sth = $dbh->prepare( "SELECT itemtype,description FROM itemtypes ORDER BY description" );
+                        my $sth = $dbh->prepare("SELECT itemtype,description FROM itemtypes ORDER BY description");
                         $sth->execute;
                         push @authorised_values, ""
                           unless ( $tagslib->{$tag}->{$subfield}->{mandatory} );
@@ -2961,9 +2962,9 @@ sub _koha_add_biblio {
     my $error;
 
     # set the series flag
-    unless (defined $biblio->{'serial'}){
-    	$biblio->{'serial'} = 0;
-    	if ( $biblio->{'seriestitle'} ) { $biblio->{'serial'} = 1 }
+    unless ( defined $biblio->{'serial'} ) {
+        $biblio->{'serial'} = 0;
+        if ( $biblio->{'seriestitle'} ) { $biblio->{'serial'} = 1 }
     }
 
     my $query = "INSERT INTO biblio
@@ -2980,8 +2981,8 @@ sub _koha_add_biblio {
         ";
     my $sth = $dbh->prepare($query);
     $sth->execute(
-        $frameworkcode, $biblio->{'author'},      $biblio->{'title'},         $biblio->{'unititle'}, $biblio->{'notes'},
-        $biblio->{'serial'},        $biblio->{'seriestitle'}, $biblio->{'copyrightdate'}, $biblio->{'abstract'}
+        $frameworkcode,      $biblio->{'author'},      $biblio->{'title'},         $biblio->{'unititle'}, $biblio->{'notes'},
+        $biblio->{'serial'}, $biblio->{'seriestitle'}, $biblio->{'copyrightdate'}, $biblio->{'abstract'}
     );
 
     my $biblionumber = $dbh->{'mysql_insertid'};

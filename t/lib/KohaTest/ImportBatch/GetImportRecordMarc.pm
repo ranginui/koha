@@ -10,7 +10,6 @@ use C4::ImportBatch;
 use C4::Matcher;
 use C4::Biblio;
 
-
 =head3 record_does_not_exist
 
 =cut
@@ -18,9 +17,9 @@ use C4::Biblio;
 sub record_does_not_exist : Test( 1 ) {
     my $self = shift;
 
-    my $id = '999999999999';
-    my $marc = GetImportRecordMarc( $id );
-    ok( ! defined( $marc ), 'this marc is undefined' );
+    my $id   = '999999999999';
+    my $marc = GetImportRecordMarc($id);
+    ok( !defined($marc), 'this marc is undefined' );
 
 }
 

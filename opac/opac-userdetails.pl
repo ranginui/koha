@@ -32,8 +32,7 @@ use C4::Members;
 
 my $query = new CGI;
 my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
-    {
-        template_name   => "opac-userdetails.tmpl",
+    {   template_name   => "opac-userdetails.tmpl",
         query           => $query,
         type            => "opac",
         authnotrequired => 0,
@@ -43,10 +42,10 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
 );
 
 # get borrower information ....
-my ( $borr ) = GetMemberDetails( $borrowernumber );
+my ($borr) = GetMemberDetails($borrowernumber);
 
 $borr->{'dateenrolled'} = format_date( $borr->{'dateenrolled'} );
-$borr->{'dateexpiry'}       = format_date( $borr->{'dateexpiry'} );
+$borr->{'dateexpiry'}   = format_date( $borr->{'dateexpiry'} );
 $borr->{'dateofbirth'}  = format_date( $borr->{'dateofbirth'} );
 $borr->{'ethnicity'}    = fixEthnicity( $borr->{'ethnicity'} );
 

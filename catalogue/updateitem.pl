@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License along
 # with Koha; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-use strict; 
+use strict;
 use warnings;
 use CGI;
 use C4::Auth;
@@ -29,52 +29,53 @@ use C4::Circulation;
 use C4::Accounts;
 use C4::Reserves;
 
-my $cgi= new CGI;
+my $cgi = new CGI;
 
-my ($loggedinuser, $cookie, $sessionID) = checkauth($cgi, 0, {circulate => 1}, 'intranet');
+my ( $loggedinuser, $cookie, $sessionID ) = checkauth( $cgi, 0, { circulate => 1 }, 'intranet' );
 
-my $biblionumber=$cgi->param('biblionumber');
-my $itemnumber=$cgi->param('itemnumber');
-my $biblioitemnumber=$cgi->param('biblioitemnumber');
-my $itemlost=$cgi->param('itemlost');
-my $itemnotes=$cgi->param('itemnotes');
-my $wthdrawn=$cgi->param('wthdrawn');
-my $damaged=$cgi->param('damaged');
+my $biblionumber     = $cgi->param('biblionumber');
+my $itemnumber       = $cgi->param('itemnumber');
+my $biblioitemnumber = $cgi->param('biblioitemnumber');
+my $itemlost         = $cgi->param('itemlost');
+my $itemnotes        = $cgi->param('itemnotes');
+my $wthdrawn         = $cgi->param('wthdrawn');
+my $damaged          = $cgi->param('damaged');
 
-my $confirm=$cgi->param('confirm');
-my $dbh = C4::Context->dbh;
+my $confirm = $cgi->param('confirm');
+my $dbh     = C4::Context->dbh;
 
 # get the rest of this item's information
-my $item_data_hashref = GetItem($itemnumber, undef);
+my $item_data_hashref = GetItem( $itemnumber, undef );
 
 # make sure item statuses are set to 0 if empty or NULL
-for ($damaged,$itemlost,$wthdrawn) {
-    if (!$_ or $_ eq "") {
+for ( $damaged, $itemlost, $wthdrawn ) {
+    if ( !$_ or $_ eq "" ) {
         $_ = 0;
     }
 }
 
 # modify MARC item if input differs from items table.
 my $item_changes = {};
-if (defined $itemnotes) { # i.e., itemnotes parameter passed from form
-    my ($loggedinuser, $cookie, $sessionID) = checkauth($cgi, 0, {editcatalogue => 'edit_items'}, 'intranet');
-    if ((not defined  $item_data_hashref->{'itemnotes'}) or $itemnotes ne $item_data_hashref->{'itemnotes'}) {
+if ( defined $itemnotes ) {    # i.e., itemnotes parameter passed from form
+    my ( $loggedinuser, $cookie, $sessionID ) = checkauth( $cgi, 0, { editcatalogue => 'edit_items' }, 'intranet' );
+    if ( ( not defined $item_data_hashref->{'itemnotes'} ) or $itemnotes ne $item_data_hashref->{'itemnotes'} ) {
         $item_changes->{'itemnotes'} = $itemnotes;
     }
-} elsif ($itemlost ne $item_data_hashref->{'itemlost'}) {
+} elsif ( $itemlost ne $item_data_hashref->{'itemlost'} ) {
     $item_changes->{'itemlost'} = $itemlost;
-} elsif ($wthdrawn ne $item_data_hashref->{'wthdrawn'}) {
+} elsif ( $wthdrawn ne $item_data_hashref->{'wthdrawn'} ) {
     $item_changes->{'wthdrawn'} = $wthdrawn;
-} elsif ($damaged ne $item_data_hashref->{'damaged'}) {
+} elsif ( $damaged ne $item_data_hashref->{'damaged'} ) {
     $item_changes->{'damaged'} = $damaged;
 } else {
+
     #nothings changed, so do nothing.
     print $cgi->redirect("moredetail.pl?biblionumber=$biblionumber&itemnumber=$itemnumber#item$itemnumber");
-	exit;
+    exit;
 }
 
-ModItem($item_changes, $biblionumber, $itemnumber);
+ModItem( $item_changes, $biblionumber, $itemnumber );
 
-C4::Accounts::chargelostitem($itemnumber) if ($itemlost==1) ;
+C4::Accounts::chargelostitem($itemnumber) if ( $itemlost == 1 );
 
 print $cgi->redirect("moredetail.pl?biblionumber=$biblionumber&itemnumber=$itemnumber#item$itemnumber");

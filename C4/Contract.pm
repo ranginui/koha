@@ -18,22 +18,24 @@ package C4::Contract;
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use C4::SQLHelper qw(:all);
 
 use vars qw($VERSION @ISA @EXPORT);
 
 BEGIN {
-	# set the version for version checking
-	$VERSION = 3.2;
+
+    # set the version for version checking
+    $VERSION = 3.2;
     require Exporter;
-	@ISA    = qw(Exporter);
-	@EXPORT = qw(
-		&GetContract
-		&AddContract
-		&ModContract
-		&DelContract
-	);
+    @ISA    = qw(Exporter);
+    @EXPORT = qw(
+      &GetContract
+      &AddContract
+      &ModContract
+      &DelContract
+    );
 }
 
 =head1 NAME
@@ -55,13 +57,13 @@ SQLHelper centralised documentation to know how to use the following subs.
 
 =cut
 
-sub GetContract { SearchInTable("aqcontract", shift); }
+sub GetContract { SearchInTable( "aqcontract", shift ); }
 
-sub AddContract { InsertInTable("aqcontract", shift); }
+sub AddContract { InsertInTable( "aqcontract", shift ); }
 
-sub ModContract { UpdateInTable("aqcontract", shift); }
+sub ModContract { UpdateInTable( "aqcontract", shift ); }
 
-sub DelContract { DeleteInTable("aqcontract", shift); }
+sub DelContract { DeleteInTable( "aqcontract", shift ); }
 
 1;
 

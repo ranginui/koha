@@ -17,7 +17,6 @@
 # with Koha; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-
 use strict;
 use warnings;
 
@@ -29,7 +28,6 @@ use C4::Serials;
 use C4::Letters;
 use C4::Output;
 use C4::Context;
-
 
 my $query      = new CGI;
 my $op         = $query->param('op');
@@ -44,19 +42,19 @@ my ( $template, $loggedinuser, $cookie );
 my $biblionumber = $query->param('biblionumber');
 if ( $selectview eq "full" ) {
     ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-        {
-            template_name   => "opac-full-serial-issues.tmpl",
+        {   template_name   => "opac-full-serial-issues.tmpl",
             query           => $query,
             type            => "opac",
             authnotrequired => 1,
             debug           => 1,
         }
     );
-    my $subscriptions = GetFullSubscriptionsFromBiblionumber($biblionumber);
-    my $subscriptioninformation=PrepareSerialsData($subscriptions);
+    my $subscriptions           = GetFullSubscriptionsFromBiblionumber($biblionumber);
+    my $subscriptioninformation = PrepareSerialsData($subscriptions);
+
     # now, check is there is an alert subscription for one of the subscriptions
     foreach (@$subscriptions) {
-        if (getalert($loggedinuser,'issue',$_->{subscriptionid})) {
+        if ( getalert( $loggedinuser, 'issue', $_->{subscriptionid} ) ) {
             $_->{hasalert} = 1;
         }
     }
@@ -64,7 +62,6 @@ if ( $selectview eq "full" ) {
     my $title   = $subscriptions->[0]{bibliotitle};
     my $yearmin = $subscriptions->[0]{year};
     my $yearmax = $subscriptions->[ scalar(@$subscriptions) - 1 ]{year};
-
 
     # replace CR by <br> in librarian note
     # $subscription->{opacnote} =~ s/\n/\<br\/\>/g;
@@ -79,11 +76,9 @@ if ( $selectview eq "full" ) {
         virtualshelves => C4::Context->preference("virtualshelves"),
     );
 
-}
-else {
+} else {
     ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-        {
-            template_name   => "opac-serial-issues.tmpl",
+        {   template_name   => "opac-serial-issues.tmpl",
             query           => $query,
             type            => "opac",
             authnotrequired => 1,
@@ -92,10 +87,11 @@ else {
     );
 
     my $subscriptions = GetSubscriptionsFromBiblionumber($biblionumber);
+
     # now, check is there is an alert subscription for one of the subscriptions
     foreach (@$subscriptions) {
-        my $subscription = getalert($loggedinuser,'issue',$_->{subscriptionid});
-        if (@$subscription[0]) {
+        my $subscription = getalert( $loggedinuser, 'issue', $_->{subscriptionid} );
+        if ( @$subscription[0] ) {
             $_->{hasalert} = 1;
         }
     }

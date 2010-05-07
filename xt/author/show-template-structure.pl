@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 # Copyright (C) 2010 Galen Charlton
-# 
+#
 # This file is part of Koha.
 #
 # Koha is free software; you can redistribute it and/or modify it under the
@@ -118,8 +118,7 @@ while (<IN>) {
                 } else {
                     my ( $popped_tag, $target, $popped_lineno ) = @{ pop @tag_stack };
                     if ( $tmpl_tag ne $popped_tag ) {
-                        print "\nERROR (line $lineno): got /$tmpl_tag but expected /$popped_tag to", 
-                              " match $popped_tag from line $popped_lineno\n";
+                        print "\nERROR (line $lineno): got /$tmpl_tag but expected /$popped_tag to", " match $popped_tag from line $popped_lineno\n";
                     } else {
                         print " # $target from $popped_lineno\n";
                     }
@@ -151,12 +150,12 @@ while (<IN>) {
 close IN;
 
 # anything left in the stack?
-if (scalar @tag_stack > 0) {
+if ( scalar @tag_stack > 0 ) {
     print "ERROR: tag stack is not empty - the following template structures have not been closed:\n";
     my $i = 0;
-    while (my $entry = pop @tag_stack) {
+    while ( my $entry = pop @tag_stack ) {
         $i++;
-        my ( $popped_tag, $target, $popped_lineno ) = @{ $entry };
+        my ( $popped_tag, $target, $popped_lineno ) = @{$entry};
         print "$i: $popped_tag $target (line $popped_lineno)\n";
     }
 }

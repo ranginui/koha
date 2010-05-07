@@ -1,6 +1,5 @@
 package C4::Stats;
 
-
 # Copyright 2000-2002 Katipo Communications
 #
 # This file is part of Koha.
@@ -28,15 +27,15 @@ use vars qw($VERSION @ISA @EXPORT);
 our $debug;
 
 BEGIN {
-	# set the version for version checking
-	$VERSION = 3.01;
-	@ISA    = qw(Exporter);
-	@EXPORT = qw(
-		&UpdateStats
-		&TotalPaid
-	);
-}
 
+    # set the version for version checking
+    $VERSION = 3.01;
+    @ISA     = qw(Exporter);
+    @EXPORT  = qw(
+      &UpdateStats
+      &TotalPaid
+    );
+}
 
 =head1 NAME
 
@@ -73,12 +72,7 @@ statistics table in the Koha database.
 sub UpdateStats {
 
     #module to insert stats data into stats table
-    my (
-        $branch,         $type,
-        $amount,   $other,          $itemnum,
-        $itemtype, $borrowernumber, $accountno
-      )
-      = @_;
+    my ( $branch, $type, $amount, $other, $itemnum, $itemtype, $borrowernumber, $accountno ) = @_;
     my $dbh = C4::Context->dbh;
     my $sth = $dbh->prepare(
         "INSERT INTO statistics
@@ -86,11 +80,7 @@ sub UpdateStats {
          other, itemnumber, itemtype, borrowernumber, proccode)
          VALUES (now(),?,?,?,?,?,?,?,?)"
     );
-    $sth->execute(
-        $branch,    $type,    $amount,
-        $other,     $itemnum, $itemtype, $borrowernumber,
-		$accountno
-    );
+    $sth->execute( $branch, $type, $amount, $other, $itemnum, $itemtype, $borrowernumber, $accountno );
 }
 
 # Otherwise, it'd need a POD.
@@ -107,7 +97,7 @@ sub TotalPaid {
         $query .= " AND datetime > '$time'";    # FIXME: use placeholders
     }
     if ( $time2 ne '' ) {
-        $query .= " AND datetime < '$time2'";   # FIXME: use placeholders
+        $query .= " AND datetime < '$time2'";    # FIXME: use placeholders
     }
     if ($spreadsheet) {
         $query .= " ORDER BY branch, type";
@@ -115,7 +105,7 @@ sub TotalPaid {
     $debug and warn "TotalPaid query: $query";
     my $sth = $dbh->prepare($query);
     $sth->execute();
-    return @{$sth->fetchall_arrayref({})};
+    return @{ $sth->fetchall_arrayref( {} ) };
 }
 
 1;

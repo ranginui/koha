@@ -4,7 +4,6 @@
 #written 2/8/04
 #by oleonard@athenscounty.lib.oh.us
 
-
 # Copyright 2000-2002 Katipo Communications
 #
 # This file is part of Koha.
@@ -30,17 +29,16 @@ use C4::Context;
 use C4::Members;
 use C4::Auth;
 
-
 my $input = new CGI;
 
 my $flagsrequired;
-$flagsrequired->{borrowers}=1;
-my ($loggedinuser, $cookie, $sessionID) = checkauth($input, 0, $flagsrequired);
+$flagsrequired->{borrowers} = 1;
+my ( $loggedinuser, $cookie, $sessionID ) = checkauth( $input, 0, $flagsrequired );
 
-my $destination = $input->param("destination") || '';
-my $cardnumber = $input->param("cardnumber");
-my $borrowernumber=$input->param('borrowernumber');
-my $status = $input->param('status');
+my $destination    = $input->param("destination") || '';
+my $cardnumber     = $input->param("cardnumber");
+my $borrowernumber = $input->param('borrowernumber');
+my $status         = $input->param('status');
 my $reregistration = $input->param('reregistration') || '';
 
 undef $status unless ($status);
@@ -48,28 +46,29 @@ my $dbh = C4::Context->dbh;
 my $dateexpiry;
 
 if ( $reregistration eq 'y' ) {
-	# re-reregistration function to automatic calcul of date expiry
-	$dateexpiry = ExtendMemberSubscriptionTo( $borrowernumber );
-} else {
-	my $sth=$dbh->prepare("UPDATE borrowers SET debarred = ?, debarredcomment = '' WHERE borrowernumber = ?");
-	$sth->execute($status,$borrowernumber);	
-	$sth->finish;
-	}
 
-if($destination eq "circ"){
-	if($dateexpiry){
-		print $input->redirect("/cgi-bin/koha/circ/circulation.pl?findborrower=$cardnumber&dateexpiry=$dateexpiry");
-	} else {
-	    if($cardnumber){
-		    print $input->redirect("/cgi-bin/koha/circ/circulation.pl?findborrower=$cardnumber");
-	    }else{
-	        print $input->redirect("/cgi-bin/koha/circ/circulation.pl?borrowernumber=$borrowernumber");
-	    }
-	}
+    # re-reregistration function to automatic calcul of date expiry
+    $dateexpiry = ExtendMemberSubscriptionTo($borrowernumber);
 } else {
-	if($dateexpiry){
-		print $input->redirect("/cgi-bin/koha/members/moremember.pl?borrowernumber=$borrowernumber&dateexpiry=$dateexpiry");
-	} else {
-		print $input->redirect("/cgi-bin/koha/members/moremember.pl?borrowernumber=$borrowernumber");
-	}
+    my $sth = $dbh->prepare("UPDATE borrowers SET debarred = ?, debarredcomment = '' WHERE borrowernumber = ?");
+    $sth->execute( $status, $borrowernumber );
+    $sth->finish;
+}
+
+if ( $destination eq "circ" ) {
+    if ($dateexpiry) {
+        print $input->redirect("/cgi-bin/koha/circ/circulation.pl?findborrower=$cardnumber&dateexpiry=$dateexpiry");
+    } else {
+        if ($cardnumber) {
+            print $input->redirect("/cgi-bin/koha/circ/circulation.pl?findborrower=$cardnumber");
+        } else {
+            print $input->redirect("/cgi-bin/koha/circ/circulation.pl?borrowernumber=$borrowernumber");
+        }
+    }
+} else {
+    if ($dateexpiry) {
+        print $input->redirect("/cgi-bin/koha/members/moremember.pl?borrowernumber=$borrowernumber&dateexpiry=$dateexpiry");
+    } else {
+        print $input->redirect("/cgi-bin/koha/members/moremember.pl?borrowernumber=$borrowernumber");
+    }
 }

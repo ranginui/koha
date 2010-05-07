@@ -15,8 +15,8 @@
 # Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA  02111-1307 USA
 
-
 use strict;
+
 #use warnings; FIXME - Bug 2505
 
 use CGI;
@@ -24,14 +24,13 @@ use C4::Auth;
 use C4::Output;
 
 use C4::Circulation;    # GetBiblioIssues
-use C4::Biblio;    # GetBiblio GetBiblioFromItemNumber
+use C4::Biblio;         # GetBiblio GetBiblioFromItemNumber
 use C4::Dates qw/format_date/;
-use C4::Search;		# enabled_staff_search_views
+use C4::Search;         # enabled_staff_search_views
 
 my $query = new CGI;
 my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
-    {
-        template_name   => "catalogue/issuehistory.tmpl",
+    {   template_name   => "catalogue/issuehistory.tmpl",
         query           => $query,
         type            => "intranet",
         authnotrequired => 0,
@@ -45,34 +44,29 @@ my $params = $query->Vars;
 my $biblionumber = $params->{'biblionumber'};
 my $itemnumber   = $params->{'itemnumber'};
 
-my ($issues,$biblio,$barcode);
-if ($itemnumber){
-	$issues=GetItemIssues($itemnumber);
-	$biblio=GetBiblioFromItemNumber($itemnumber);
-	$biblionumber=$biblio->{biblionumber};
-	$barcode=$issues->[0]->{barcode};
-	$template->param(
-		%$biblio,
-		barcode=> $barcode,
-	);
+my ( $issues, $biblio, $barcode );
+if ($itemnumber) {
+    $issues       = GetItemIssues($itemnumber);
+    $biblio       = GetBiblioFromItemNumber($itemnumber);
+    $biblionumber = $biblio->{biblionumber};
+    $barcode      = $issues->[0]->{barcode};
+    $template->param( %$biblio, barcode => $barcode, );
 } else {
-	$issues = GetBiblioIssues($biblionumber);
-	my (undef,@biblio)=GetBiblio($biblionumber);
-	my $total  = scalar @$issues;
-	$template->param(
-		%{$biblio[0]},
-	);
-} 
-foreach (@$issues){
-	$_->{date_due}   = format_date($_->{date_due});
-	$_->{issuedate}  = format_date($_->{issuedate});
-	$_->{returndate} = format_date($_->{returndate});
+    $issues = GetBiblioIssues($biblionumber);
+    my ( undef, @biblio ) = GetBiblio($biblionumber);
+    my $total = scalar @$issues;
+    $template->param( %{ $biblio[0] }, );
+}
+foreach (@$issues) {
+    $_->{date_due}   = format_date( $_->{date_due} );
+    $_->{issuedate}  = format_date( $_->{issuedate} );
+    $_->{returndate} = format_date( $_->{returndate} );
 }
 $template->param(
-    total        => scalar @$issues,
-    issues       => $issues,
-	issuehistoryview => 1,
-	C4::Search::enabled_staff_search_views,
+    total            => scalar @$issues,
+    issues           => $issues,
+    issuehistoryview => 1,
+    C4::Search::enabled_staff_search_views,
 );
 
 output_html_with_http_headers $query, $cookie, $template->output;

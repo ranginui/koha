@@ -118,8 +118,7 @@ GetOptions(
 pod2usage(1) if $help;
 pod2usage( -verbose => 2 ) if $man;
 
-
-my %wanted_borrowers_columns = map { $_ => 1 } qw/borrowernumber cardnumber surname  firstname address city phone dateofbirth/; 
+my %wanted_borrowers_columns = map { $_ => 1 } qw/borrowernumber cardnumber surname  firstname address city phone dateofbirth/;
 my %wanted_issues_columns    = map { $_ => 1 } qw/borrowernumber date_due itemcallnumber title itemtype/;
 
 prepare_file_for_writing($filename)
@@ -130,10 +129,10 @@ verify_dbd_sqlite();
 ## Create DB Connections
 my $dbh_mysql = C4::Context->dbh;
 my $dbh_sqlite;
-if ( $sqlite2 ) {
-  $dbh_sqlite = DBI->connect( "dbi:SQLite2:dbname=$filename", "", "" );
-} elsif ( $sqlite3 ) {
-  $dbh_sqlite = DBI->connect( "dbi:SQLite:dbname=$filename", "", "" );
+if ($sqlite2) {
+    $dbh_sqlite = DBI->connect( "dbi:SQLite2:dbname=$filename", "", "" );
+} elsif ($sqlite3) {
+    $dbh_sqlite = DBI->connect( "dbi:SQLite:dbname=$filename", "", "" );
 }
 $dbh_sqlite->{AutoCommit} = 0;
 
@@ -154,31 +153,32 @@ make sure we have a new enough version of it.
 
 sub verify_dbd_sqlite {
 
-  if ( $sqlite2 ) {
-    eval { require DBD::SQLite2; };
-    if ( $EVAL_ERROR ) {
-      my $msg = <<'END_MESSAGE';
+    if ($sqlite2) {
+        eval { require DBD::SQLite2; };
+        if ($EVAL_ERROR) {
+            my $msg = <<'END_MESSAGE';
 DBD::SQLite2 is required to generate offline circultion database files, but not found.
 Please install the DBD::SQLite2 perl module. It is available from
 http://search.cpan.org/dist/DBD-SQLite2/ or through the CPAN module.
 END_MESSAGE
-      die $msg;
-    }
-  } elsif ( $sqlite3 ) {
-    eval { require DBD::SQLite; };
-    if ( $EVAL_ERROR ) {
-      my $msg = <<'END_MESSAGE';
+            die $msg;
+        }
+    } elsif ($sqlite3) {
+        eval { require DBD::SQLite; };
+        if ($EVAL_ERROR) {
+            my $msg = <<'END_MESSAGE';
 DBD::SQLite3 is required to generate offline circultion database files, but not found.
 Please install the DBD::SQLite3 perl module. It is available from
 http://search.cpan.org/dist/DBD-SQLite3/ or through the CPAN module.
 END_MESSAGE
-      die $msg;
+            die $msg;
+        }
+    } else {
+        die("Error: execution requires either the option --sqlite2 or --sqlite3. Run with --help for details.");
     }
-  } else {
-    die( "Error: execution requires either the option --sqlite2 or --sqlite3. Run with --help for details." );
-  }
 
 }
+
 =head2 prepare_file_for_writing
 
 pass in the filename that we're considering using for the SQLite db.
@@ -212,17 +212,19 @@ Create sqlite borrowers table to mirror the koha borrowers table structure
 
 sub create_borrowers_table {
 
-    my %borrowers_info = get_columns_and_types_of_table( 'borrowers' );
+    my %borrowers_info    = get_columns_and_types_of_table('borrowers');
     my $sqlite_create_sql = "CREATE TABLE borrowers ( \n";
-  
-    $sqlite_create_sql .= join(',', map{ $_ . ' ' . $borrowers_info{$_} } 
-                                    grep { exists($wanted_borrowers_columns{$_}) } keys %borrowers_info);
-    
+
+    $sqlite_create_sql .= join(
+        ',', map { $_ . ' ' . $borrowers_info{$_} }
+          grep { exists( $wanted_borrowers_columns{$_} ) } keys %borrowers_info
+    );
+
     $sqlite_create_sql .= " , \n total_fines decimal(28,6) ";    ## Extra field to store the total fines for a borrower in.
     $sqlite_create_sql .= " ) ";
 
     my $return = $dbh_sqlite->do($sqlite_create_sql);
-    unless ( $return ) {
+    unless ($return) {
         warn 'unable to create borrowers table: ' . $dbh_sqlite->errstr();
     }
     return $return;
@@ -237,9 +239,9 @@ Import the data from the koha.borrowers table into our sqlite table
 
 sub populate_borrowers_table {
 
-    my @borrower_fields = grep { exists($wanted_borrowers_columns{$_}) } get_columns_of_table( 'borrowers' );
+    my @borrower_fields = grep { exists( $wanted_borrowers_columns{$_} ) } get_columns_of_table('borrowers');
     push @borrower_fields, 'total_fines';
-    
+
     my $sql = "INSERT INTO borrowers ( ";
     $sql .= join( ',', @borrower_fields );
     $sql .= " ) VALUES ( ";
@@ -247,7 +249,7 @@ sub populate_borrowers_table {
     $sql .= " ) ";
     my $sth_sqlite = $dbh_sqlite->prepare($sql);
 
-    my $sth_mysql    = $dbh_mysql->prepare(<<'END_SQL');
+    my $sth_mysql = $dbh_mysql->prepare(<<'END_SQL');
 SELECT borrowernumber,
        cardnumber,
        surname,
@@ -268,16 +270,17 @@ END_SQL
     my $count;
     while ( my $borrower = $sth_mysql->fetchrow_hashref ) {
         $count++;
-        if ( $verbose ) {
-            print '.' unless ( $count % 10 );
+        if ($verbose) {
+            print '.'        unless ( $count % 10 );
             print "$count\n" unless ( $count % 1000 );
         }
-        $sth_sqlite->execute( @$borrower{ @borrower_fields } );
+        $sth_sqlite->execute( @$borrower{@borrower_fields} );
         $sth_sqlite->finish();
         $dbh_sqlite->commit() if ( 0 == $count % 1000 );
     }
     $dbh_sqlite->commit();
     print "inserted $count borrowers\n" if $verbose;
+
     # add_fines_to_borrowers_table();
 }
 
@@ -299,8 +302,8 @@ sub add_fines_to_borrowers_table {
     my $count;
     while ( my $result = $sth_mysql->fetchrow_hashref() ) {
         $count++;
-        if ( $verbose ) {
-            print '.' unless ( $count % 10 );
+        if ($verbose) {
+            print '.'        unless ( $count % 10 );
             print "$count\n" unless ( $count % 1000 );
         }
 
@@ -373,7 +376,7 @@ sub populate_issues_table {
     $sth_mysql->execute();
 
     my $column_names = $sth_mysql->{'NAME'};
-    my $sql_sqlite = "INSERT INTO issues ( ";
+    my $sql_sqlite   = "INSERT INTO issues ( ";
     $sql_sqlite .= join( ',', @$column_names );
     $sql_sqlite .= " ) VALUES ( ";
     $sql_sqlite .= join( ',', map { '?' } @$column_names );
@@ -386,12 +389,12 @@ sub populate_issues_table {
     while ( my $result = $sth_mysql->fetchrow_hashref ) {
 
         $count++;
-        if ( $verbose ) {
-            print '.' unless ( $count % 10 );
+        if ($verbose) {
+            print '.'        unless ( $count % 10 );
             print "$count\n" unless ( $count % 1000 );
         }
 
-        $sth_sqlite->execute( @$result{ @$column_names } );
+        $sth_sqlite->execute( @$result{@$column_names} );
         $sth_sqlite->finish();
         $dbh_sqlite->commit() if ( 0 == $count % 1000 );
     }
@@ -410,8 +413,8 @@ returns list of column names in that table.
 sub get_columns_of_table {
     my $table_name = shift;
 
-    my %column_info = get_columns_and_types_of_table( $table_name );
-    my @columns = keys %column_info;
+    my %column_info = get_columns_and_types_of_table($table_name);
+    my @columns     = keys %column_info;
     return @columns;
 
 }
@@ -427,8 +430,8 @@ returns a hash of column names to their types.
 sub get_columns_and_types_of_table {
     my $table_name = shift;
 
-    my $column_info = $dbh_mysql->selectall_arrayref( "SHOW COLUMNS FROM $table_name" );
-    my %columns = map{ $_->[0] => $_->[1] } @$column_info;
+    my $column_info = $dbh_mysql->selectall_arrayref("SHOW COLUMNS FROM $table_name");
+    my %columns = map { $_->[0] => $_->[1] } @$column_info;
     return %columns;
 
 }
@@ -440,16 +443,16 @@ This sub returns a hashref where the keys are all the fields in the given tables
 =cut
 
 sub get_columns_for_issues_table {
-  
-  my @tables = ( 'issues', 'items', 'biblioitems', 'biblio' );
 
-  my %fields;
-  
-  foreach my $table ( @tables ) {
-      my %table_info = get_columns_and_types_of_table( $table );
-      %fields = ( %fields, %table_info );
-  }
-  return { map { $_ => $fields{$_} } grep { exists($wanted_issues_columns{$_}) } keys %fields };
+    my @tables = ( 'issues', 'items', 'biblioitems', 'biblio' );
+
+    my %fields;
+
+    foreach my $table (@tables) {
+        my %table_info = get_columns_and_types_of_table($table);
+        %fields = ( %fields, %table_info );
+    }
+    return { map { $_ => $fields{$_} } grep { exists( $wanted_issues_columns{$_} ) } keys %fields };
 }
 
 1;

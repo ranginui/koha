@@ -3,42 +3,43 @@
 use strict;
 use warnings;
 use CGI;
+
 # use Data::Dumper;
 
 use C4::Context;
 use C4::Auth;
 
 my $q = CGI->new();
-my ($template, $loggedinuser, $cookie) = get_template_and_user({
-	   template_name => "admin/admin-home.tmpl",	# whatever, we don't really use the template anyway.
-			   query => $q,
-			 	type => "intranet",
-	 authnotrequired => 0,
- 	   flagsrequired => {parameters => 1},
-		       debug => 1,
-});
+my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
+    {   template_name   => "admin/admin-home.tmpl",    # whatever, we don't really use the template anyway.
+        query           => $q,
+        type            => "intranet",
+        authnotrequired => 0,
+        flagsrequired   => { parameters => 1 },
+        debug           => 1,
+    }
+);
 
-my $dbh = C4::Context->dbh;
-my  $tz_sth = $dbh->prepare("SHOW VARIABLES LIKE 'time_zone'");
+my $dbh    = C4::Context->dbh;
+my $tz_sth = $dbh->prepare("SHOW VARIABLES LIKE 'time_zone'");
 $tz_sth->execute();
 my $now_sth = $dbh->prepare("SELECT now()");
 $now_sth->execute();
 
-print $q->header(), 
-	$q->html(
-	$q->body(
-	$q->p("This is a test for debugging purposes.  It isn't supposed to look pretty.")
-	.
-	$q->h1("Dumping ENV:") 
-	.
-	join("\n<br\>", map {"$_ = $ENV{$_}"} sort keys %ENV)
-	.
-	$q->h1("Checking different TIME elements in the system:") 
-	. "\n" . $q->p("perl localime: " . localtime)
-	. "\n" . $q->p( "system(date): " . `date`)
-	. "\n" . $q->p( "mysql dbh (Context) time_zone : " .  $tz_sth->fetchrow)
-	. "\n" . $q->p( "mysql dbh (Context) now() : "     . $now_sth->fetchrow)
-	)), "\n";
+print $q->header(),
+  $q->html(
+    $q->body(
+            $q->p("This is a test for debugging purposes.  It isn't supposed to look pretty.")
+          . $q->h1("Dumping ENV:")
+          . join( "\n<br\>", map { "$_ = $ENV{$_}" } sort keys %ENV )
+          . $q->h1("Checking different TIME elements in the system:") . "\n"
+          . $q->p( "perl localime: " . localtime ) . "\n"
+          . $q->p( "system(date): " . `date` ) . "\n"
+          . $q->p( "mysql dbh (Context) time_zone : " . $tz_sth->fetchrow ) . "\n"
+          . $q->p( "mysql dbh (Context) now() : " . $now_sth->fetchrow )
+    )
+  ),
+  "\n";
 
 __END__
 

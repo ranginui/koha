@@ -20,7 +20,7 @@
 use strict;
 use warnings;
 
-use C4::Reports::Guided; # 0.12
+use C4::Reports::Guided;    # 0.12
 use C4::Context;
 
 use Getopt::Long qw(:config auto_help auto_version);
@@ -32,6 +32,7 @@ use CGI;
 use vars qw($VERSION);
 
 BEGIN {
+
     # find Koha's Perl modules
     # test carefully before changing this
     use FindBin;
@@ -117,73 +118,76 @@ my $from    = "";
 my $subject = 'Koha Saved Report';
 
 GetOptions(
-    'help|?'     => \$help,
-    'man'        => \$man,
-    'verbose'    => \$verbose,
-    'format'     => \$format,
-    'to'         => \$to,
-    'from'       => \$from,
-    'email'      => \$email,
+    'help|?'  => \$help,
+    'man'     => \$man,
+    'verbose' => \$verbose,
+    'format'  => \$format,
+    'to'      => \$to,
+    'from'    => \$from,
+    'email'   => \$email,
 ) or pod2usage(2);
 pod2usage( -verbose => 2 ) if ($man);
-pod2usage( -verbose => 2 ) if ($help and $verbose);
+pod2usage( -verbose => 2 ) if ( $help and $verbose );
 pod2usage(1) if $help;
 
 unless ($format) {
     $verbose and print STDERR "No format specified, assuming 'text'\n";
     $format = '';
+
     # $format = 'text';
 }
 
-if ($to or $from or $email) {
+if ( $to or $from or $email ) {
     $email = 1;
     $from or $from = C4::Context->preference('KohaAdminEmailAddress');
     $to   or $to   = C4::Context->preference('KohaAdminEmailAddress');
 }
 
-unless (scalar(@ARGV)) {
+unless ( scalar(@ARGV) ) {
     print STDERR "ERROR: No reportID(s) specified\n";
     pod2usage(1);
 }
-($verbose) and print scalar(@ARGV), " argument(s) after options: " . join(" ", @ARGV) . "\n";
-
+($verbose) and print scalar(@ARGV), " argument(s) after options: " . join( " ", @ARGV ) . "\n";
 
 foreach my $report (@ARGV) {
-    my ($sql, $type) = get_saved_report($report);
+    my ( $sql, $type ) = get_saved_report($report);
     unless ($sql) {
         warn "ERROR: No saved report $report found";
         next;
     }
     $verbose and print "SQL: $sql\n\n";
-    # my $results = execute_query($sql, undef, 0, 99999, $format, $report); 
+
+    # my $results = execute_query($sql, undef, 0, 99999, $format, $report);
     my ($sth) = execute_query($sql);
+
     # execute_query(sql, , 0, 20, , )
-    my $count = scalar($sth->rows);
+    my $count = scalar( $sth->rows );
     unless ($count) {
         print "NO OUTPUT: 0 results from execute_query\n";
         next;
     }
     $verbose and print "$count results from execute_query\n";
 
-    my $cgi = CGI->new();
+    my $cgi  = CGI->new();
     my @rows = ();
-    while (my $line = $sth->fetchrow_arrayref) {
+    while ( my $line = $sth->fetchrow_arrayref ) {
         foreach (@$line) { defined($_) or $_ = ''; }    # catch undef values, replace w/ ''
-        push @rows, $cgi->TR( join('', $cgi->td($line)) ) . "\n";
+        push @rows, $cgi->TR( join( '', $cgi->td($line) ) ) . "\n";
     }
-    my $message = $cgi->table(join "", @rows);
+    my $message = $cgi->table( join "", @rows );
 
-    if ($email){
+    if ($email) {
         my %mail = (
             To      => $to,
             From    => $from,
             Subject => $subject,
-            Message => $message 
+            Message => $message
         );
         sendmail(%mail) or warn "mail not sent";
     } else {
         print $message;
     }
+
     # my @xmlarray = ... ;
     # my $url = "/cgi-bin/koha/reports/guided_reports.pl?phase=retrieve%20results&id=$id";
     # my $xml = XML::Dumper->new()->pl2xml( \@xmlarray );

@@ -27,15 +27,14 @@ use C4::Dates qw/format_date format_date_in_iso/;
 use C4::Debug;
 use Date::Calc qw/Today Add_Delta_YM/;
 
-my $input = new CGI;
+my $input     = new CGI;
 my $order     = $input->param('order') || '';
-my $startdate = $input->param('from')  || '';
-my $enddate   = $input->param('to')    || '';
+my $startdate = $input->param('from') || '';
+my $enddate   = $input->param('to') || '';
 my $max_bill  = $input->param('ratio') || C4::Context->preference('noissuescharge') || 20.00;
 
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => "circ/billing.tmpl",
+    {   template_name   => "circ/billing.tmpl",
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
@@ -45,29 +44,33 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
 );
 
 my ( $year, $month, $day ) = Today();
-my $todaysdate   = sprintf("%-04.4d-%-02.2d-%02.2d", $year, $month, $day);
+my $todaysdate = sprintf( "%-04.4d-%-02.2d-%02.2d", $year, $month, $day );
+
 # Find yesterday for the default shelf pull start and end dates
-#    A default of the prior years's holds is a reasonable way to pull holds 
-my $datelastyear = sprintf("%-04.4d-%-02.2d-%02.2d", Add_Delta_YM($year, $month, $day, -1, 0));
+#    A default of the prior years's holds is a reasonable way to pull holds
+my $datelastyear = sprintf( "%-04.4d-%-02.2d-%02.2d", Add_Delta_YM( $year, $month, $day, -1, 0 ) );
 
 $startdate =~ s/^\s+//;
 $startdate =~ s/\s+$//;
 $enddate   =~ s/^\s+//;
 $enddate   =~ s/\s+$//;
+
 # Predefine the start and end dates if they are not already defined
 $startdate = format_date($datelastyear) unless $startdate;
-$enddate   = format_date($todaysdate  ) unless   $enddate;
+$enddate   = format_date($todaysdate)   unless $enddate;
 
 my $dbh = C4::Context->dbh;
-my ($sqlorderby, $sqldatewhere, $presqldatewhere) = ("","","");
+my ( $sqlorderby, $sqldatewhere, $presqldatewhere ) = ( "", "", "" );
 $debug and warn "start: " . format_date_in_iso($startdate) . "\nend: " . format_date_in_iso($enddate);
 my @query_params = ();
+
 # the dates below is to check for compliance of the current date range
 if ($enddate) {
     $sqldatewhere .= " AND date <= ?";
     push @query_params, format_date_in_iso($enddate);
 }
 push @query_params, $max_bill;
+
 # the date below is to check for compliance of all fees prior
 if ($startdate) {
     $presqldatewhere .= " AND date < ?";
@@ -75,23 +78,22 @@ if ($startdate) {
 }
 push @query_params, $max_bill;
 
-if ($order eq "patron") {
-	$sqlorderby = " ORDER BY surname, firstname ";
-} elsif ($order eq "fee") {
+if ( $order eq "patron" ) {
+    $sqlorderby = " ORDER BY surname, firstname ";
+} elsif ( $order eq "fee" ) {
     $sqlorderby = " ORDER BY l_amountoutstanding DESC ";
-} elsif ($order eq "desc") {
+} elsif ( $order eq "desc" ) {
     $sqlorderby = " ORDER BY l_description ";
-} elsif ($order eq "type") {
+} elsif ( $order eq "type" ) {
     $sqlorderby = " ORDER BY l_accounttype ";
-} elsif ($order eq "date") {
+} elsif ( $order eq "date" ) {
     $sqlorderby = " ORDER BY l_date DESC ";
-} elsif ($order eq "total") {
+} elsif ( $order eq "total" ) {
     $sqlorderby = " ORDER BY sum_amount DESC ";
 } else {
-	$sqlorderby = " ORDER BY surname, firstname ";
+    $sqlorderby = " ORDER BY surname, firstname ";
 }
-my $strsth =
-	"SELECT 
+my $strsth = "SELECT 
 		GROUP_CONCAT(accountlines.accounttype   ORDER BY accountlines.date DESC SEPARATOR '<br/>') as l_accounttype,
 		GROUP_CONCAT(description                ORDER BY accountlines.date DESC SEPARATOR '<br/>') as l_description,
 		GROUP_CONCAT(round(amountoutstanding,2) ORDER BY accountlines.date DESC SEPARATOR '<br/>') as l_amountoutstanding, 
@@ -125,8 +127,8 @@ my $strsth =
 				GROUP BY accountlines.borrowernumber HAVING sum(amountoutstanding) >= ? ) 
 ";
 
-if (C4::Context->preference('IndependantBranches')){
-	$strsth .= " AND borrowers.branchcode=? ";
+if ( C4::Context->preference('IndependantBranches') ) {
+    $strsth .= " AND borrowers.branchcode=? ";
     push @query_params, C4::Context->userenv->{'branch'};
 }
 $strsth .= " GROUP BY accountlines.borrowernumber HAVING sum(amountoutstanding) >= ? " . $sqlorderby;
@@ -136,9 +138,9 @@ my $sth = $dbh->prepare($strsth);
 $sth->execute(@query_params);
 
 my @billingdata;
-while ( my $data = $sth->fetchrow_hashref ) {   
-    push @billingdata, {
-        l_accountype        => $data->{l_accounttype},
+while ( my $data = $sth->fetchrow_hashref ) {
+    push @billingdata,
+      { l_accountype        => $data->{l_accounttype},
         l_description       => $data->{l_description},
         l_amountoutstanding => $data->{l_amountoutstanding},
         l_date              => $data->{l_date},
@@ -157,15 +159,15 @@ while ( my $data = $sth->fetchrow_hashref ) {
         description         => $data->{description},
         amountoutstanding   => $data->{amountoutstanding},
         accountdata         => $data->{accountdata}
-    };
+      };
 }
 
 $template->param(
-    todaysdate      => format_date($todaysdate),
-    from            => $startdate,
-    to              => $enddate,
-    ratio           => $max_bill,
-    billingloop     => \@billingdata,
+    todaysdate               => format_date($todaysdate),
+    from                     => $startdate,
+    to                       => $enddate,
+    ratio                    => $max_bill,
+    billingloop              => \@billingdata,
     DHTMLcalendar_dateformat => C4::Dates->DHTMLcalendar(),
 );
 

@@ -36,8 +36,7 @@ use C4::Form::MessagingPreferences;
 my $query = CGI->new();
 
 my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
-    {
-        template_name   => 'opac-messaging.tmpl',
+    {   template_name   => 'opac-messaging.tmpl',
         query           => $query,
         type            => 'opac',
         authnotrequired => 0,
@@ -46,27 +45,31 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
     }
 );
 
-my $borrower = GetMemberDetails( $borrowernumber );
+my $borrower          = GetMemberDetails($borrowernumber);
 my $messaging_options = C4::Members::Messaging::GetMessagingOptions();
 
 if ( defined $query->param('modify') && $query->param('modify') eq 'yes' ) {
 
     # If they've modified the SMS number, record it.
     if ( ( defined $query->param('SMSnumber') ) && ( $query->param('SMSnumber') ne $borrower->{'mobile'} ) ) {
-        ModMember( borrowernumber => $borrowernumber,
-                   smsalertnumber => $query->param('SMSnumber') );
-        $borrower = GetMemberDetails( $borrowernumber );
+        ModMember(
+            borrowernumber => $borrowernumber,
+            smsalertnumber => $query->param('SMSnumber')
+        );
+        $borrower = GetMemberDetails($borrowernumber);
     }
 
-    C4::Form::MessagingPreferences::handle_form_action($query, { borrowernumber => $borrowernumber }, $template);
+    C4::Form::MessagingPreferences::handle_form_action( $query, { borrowernumber => $borrowernumber }, $template );
 }
 
-C4::Form::MessagingPreferences::set_form_values({ borrowernumber     => $borrower->{'borrowernumber'} }, $template);
+C4::Form::MessagingPreferences::set_form_values( { borrowernumber => $borrower->{'borrowernumber'} }, $template );
 
 # warn( Data::Dumper->Dump( [ $messaging_options ], [ 'messaging_options' ] ) );
-$template->param( BORROWER_INFO         => [ $borrower ],
-                  messagingview         => 1,
-                  SMSnumber => defined $borrower->{'smsalertnumber'} ? $borrower->{'smsalertnumber'} : $borrower->{'mobile'},
-                  SMSSendDriver                =>  C4::Context->preference("SMSSendDriver") );
+$template->param(
+    BORROWER_INFO => [$borrower],
+    messagingview => 1,
+    SMSnumber     => defined $borrower->{'smsalertnumber'} ? $borrower->{'smsalertnumber'} : $borrower->{'mobile'},
+    SMSSendDriver => C4::Context->preference("SMSSendDriver")
+);
 
 output_html_with_http_headers $query, $cookie, $template->output;

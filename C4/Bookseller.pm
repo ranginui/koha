@@ -18,23 +18,24 @@ package C4::Bookseller;
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 
 use vars qw($VERSION @ISA @EXPORT);
 
 BEGIN {
-	# set the version for version checking
-	$VERSION = 3.01;
-    require Exporter;
-	@ISA    = qw(Exporter);
-	@EXPORT = qw(
-		&GetBookSeller &GetBooksellersWithLateOrders &GetBookSellerFromId
-		&ModBookseller
-		&DelBookseller
-		&AddBookseller
-	);
-}
 
+    # set the version for version checking
+    $VERSION = 3.01;
+    require Exporter;
+    @ISA    = qw(Exporter);
+    @EXPORT = qw(
+      &GetBookSeller &GetBooksellersWithLateOrders &GetBookSellerFromId
+      &ModBookseller
+      &DelBookseller
+      &AddBookseller
+    );
+}
 
 =head1 NAME
 
@@ -64,43 +65,44 @@ aqbooksellers table in the Koha database.
 
 =cut
 
-# FIXME: This function is badly named.  It should be something like 
+# FIXME: This function is badly named.  It should be something like
 # SearchBookSellersByName.  It is NOT a singular return value.
 
 sub GetBookSeller($) {
     my ($searchstring) = @_;
-    my $dbh = C4::Context->dbh;
-    my $query = "SELECT * FROM aqbooksellers WHERE name LIKE ?";
-    my $sth =$dbh->prepare($query);
-    $sth->execute( "%$searchstring%" );
+    my $dbh            = C4::Context->dbh;
+    my $query          = "SELECT * FROM aqbooksellers WHERE name LIKE ?";
+    my $sth            = $dbh->prepare($query);
+    $sth->execute("%$searchstring%");
     my @results;
+
     # count how many baskets this bookseller has.
     # if it has none, the bookseller can be deleted
     my $sth2 = $dbh->prepare("SELECT count(*) FROM aqbasket WHERE booksellerid=?");
     while ( my $data = $sth->fetchrow_hashref ) {
-        $sth2->execute($data->{id});
+        $sth2->execute( $data->{id} );
         $data->{basketcount} = $sth2->fetchrow();
         push( @results, $data );
     }
     $sth->finish;
-    return  @results ;
+    return @results;
 }
-
 
 sub GetBookSellerFromId($) {
-	my $id = shift or return;
-	my $dbh = C4::Context->dbh();
-	my $query = "SELECT * FROM aqbooksellers WHERE id = ?";
-	my $sth =$dbh->prepare($query);
-	$sth->execute( $id );
-	if (my $data = $sth->fetchrow_hashref()){
-		my $sth2 = $dbh->prepare("SELECT count(*) FROM aqbasket WHERE booksellerid=?");
-		$sth2->execute($id);
-		$data->{basketcount}=$sth2->fetchrow();
-		return $data;
-	}
-	return;
+    my $id    = shift or return;
+    my $dbh   = C4::Context->dbh();
+    my $query = "SELECT * FROM aqbooksellers WHERE id = ?";
+    my $sth   = $dbh->prepare($query);
+    $sth->execute($id);
+    if ( my $data = $sth->fetchrow_hashref() ) {
+        my $sth2 = $dbh->prepare("SELECT count(*) FROM aqbasket WHERE booksellerid=?");
+        $sth2->execute($id);
+        $data->{basketcount} = $sth2->fetchrow();
+        return $data;
+    }
+    return;
 }
+
 #-----------------------------------------------------------------#
 
 =head2 GetBooksellersWithLateOrders
@@ -112,11 +114,11 @@ Searches for suppliers with late orders.
 =cut
 
 sub GetBooksellersWithLateOrders {
-    my ($delay,$branch) = @_; 	# FIXME: Branch argument unused.
-    my $dbh   = C4::Context->dbh;
+    my ( $delay, $branch ) = @_;    # FIXME: Branch argument unused.
+    my $dbh = C4::Context->dbh;
 
-# FIXME NOT quite sure that this operation is valid for DBMs different from Mysql, HOPING so
-# should be tested with other DBMs
+    # FIXME NOT quite sure that this operation is valid for DBMs different from Mysql, HOPING so
+    # should be tested with other DBMs
 
     my $strsth;
     my $dbdriver = C4::Context->config("db_scheme") || "mysql";
@@ -128,8 +130,7 @@ sub GetBooksellersWithLateOrders {
             WHERE (closedate < DATE_SUB(CURDATE( ),INTERVAL $delay DAY)
                 AND (datereceived = '' OR datereceived IS NULL))
         ";
-    }
-    else {
+    } else {
         $strsth = "
             SELECT DISTINCT aqbasket.booksellerid, aqbooksellers.name
             FROM aqorders LEFT JOIN aqbasket ON aqorders.basketno=aqbasket.basketno
@@ -165,8 +166,8 @@ Returns the ID of the newly-created bookseller.
 
 sub AddBookseller {
     my ($data) = @_;
-    my $dbh = C4::Context->dbh;
-    my $query = "
+    my $dbh    = C4::Context->dbh;
+    my $query  = "
         INSERT INTO aqbooksellers
             (
                 name,      address1,      address2,   address3,      address4,
@@ -180,18 +181,10 @@ sub AddBookseller {
     ";
     my $sth = $dbh->prepare($query);
     $sth->execute(
-        $data->{'name'},         $data->{'address1'},
-        $data->{'address2'},     $data->{'address3'},
-        $data->{'address4'},     $data->{'postal'},
-        $data->{'phone'},        $data->{'fax'},
-        $data->{'url'},          $data->{'contact'},
-        $data->{'contpos'},      $data->{'contphone'},
-        $data->{'contfax'},      $data->{'contaltphone'},
-        $data->{'contemail'},    $data->{'contnotes'},
-        $data->{'active'},       $data->{'listprice'},
-        $data->{'invoiceprice'}, $data->{'gstreg'},
-        $data->{'listincgst'},   $data->{'invoiceincgst'},
-        $data->{'discount'},     $data->{'notes'}
+        $data->{'name'},         $data->{'address1'},     $data->{'address2'},   $data->{'address3'},      $data->{'address4'}, $data->{'postal'},
+        $data->{'phone'},        $data->{'fax'},          $data->{'url'},        $data->{'contact'},       $data->{'contpos'},  $data->{'contphone'},
+        $data->{'contfax'},      $data->{'contaltphone'}, $data->{'contemail'},  $data->{'contnotes'},     $data->{'active'},   $data->{'listprice'},
+        $data->{'invoiceprice'}, $data->{'gstreg'},       $data->{'listincgst'}, $data->{'invoiceincgst'}, $data->{'discount'}, $data->{'notes'}
     );
 
     # return the id of this new supplier
@@ -202,7 +195,7 @@ sub AddBookseller {
     ";
     $sth = $dbh->prepare($query);
     $sth->execute;
-    return scalar($sth->fetchrow);
+    return scalar( $sth->fetchrow );
 }
 
 #-----------------------------------------------------------------#
@@ -225,7 +218,7 @@ C<&ModBookseller> with the result.
 sub ModBookseller {
     my ($data) = @_;
     my $dbh    = C4::Context->dbh;
-    my $query = "
+    my $query  = "
         UPDATE aqbooksellers
         SET name=?,address1=?,address2=?,address3=?,address4=?,
             postal=?,phone=?,fax=?,url=?,contact=?,contpos=?,
@@ -235,22 +228,13 @@ sub ModBookseller {
             discount=?, notes=?, gstrate=?
         WHERE id=?
     ";
-    my $sth    = $dbh->prepare($query);
+    my $sth = $dbh->prepare($query);
     $sth->execute(
-        $data->{'name'},         $data->{'address1'},
-        $data->{'address2'},     $data->{'address3'},
-        $data->{'address4'},     $data->{'postal'},
-        $data->{'phone'},        $data->{'fax'},
-        $data->{'url'},          $data->{'contact'},
-        $data->{'contpos'},      $data->{'contphone'},
-        $data->{'contfax'},      $data->{'contaltphone'},
-        $data->{'contemail'},    $data->{'contnotes'},
-        $data->{'active'},       $data->{'listprice'},
-        $data->{'invoiceprice'}, $data->{'gstreg'},
-        $data->{'listincgst'},   $data->{'invoiceincgst'},
-        $data->{'discount'},
-        $data->{'notes'},        $data->{'gstrate'},
-        $data->{'id'}
+        $data->{'name'},         $data->{'address1'},     $data->{'address2'},   $data->{'address3'},      $data->{'address4'}, $data->{'postal'},
+        $data->{'phone'},        $data->{'fax'},          $data->{'url'},        $data->{'contact'},       $data->{'contpos'},  $data->{'contphone'},
+        $data->{'contfax'},      $data->{'contaltphone'}, $data->{'contemail'},  $data->{'contnotes'},     $data->{'active'},   $data->{'listprice'},
+        $data->{'invoiceprice'}, $data->{'gstreg'},       $data->{'listincgst'}, $data->{'invoiceincgst'}, $data->{'discount'}, $data->{'notes'},
+        $data->{'gstrate'},      $data->{'id'}
     );
     $sth->finish;
 }
@@ -263,10 +247,11 @@ delete the supplier identified by $booksellerid
 This sub can be called only if the supplier has no order.
 
 =cut
+
 sub DelBookseller {
     my ($id) = @_;
-    my $dbh=C4::Context->dbh;
-    my $sth=$dbh->prepare("DELETE FROM aqbooksellers WHERE id=?");
+    my $dbh  = C4::Context->dbh;
+    my $sth  = $dbh->prepare("DELETE FROM aqbooksellers WHERE id=?");
     $sth->execute($id);
 }
 

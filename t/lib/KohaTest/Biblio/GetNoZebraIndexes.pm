@@ -14,7 +14,6 @@ These get run once, before the main test methods in this module
 
 =cut
 
-
 =head2 TEST METHODS
 
 standard test methods
@@ -22,7 +21,7 @@ standard test methods
 =head3 
 
 =cut
-    
+
 sub returns_expected_hashref : Test(2) {
     my $self = shift;
 
@@ -67,6 +66,5 @@ These get run once, after the main test methods in this module
 =head3 
 
 =cut
-
 
 1;

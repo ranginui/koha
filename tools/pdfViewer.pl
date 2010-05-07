@@ -20,23 +20,21 @@
 # Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA  02111-1307 USA
 
-
-
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use C4::Context;
 use CGI;
 
 # This script take a pdf filename as a parameter and output it to the browser.
-my $cgi = new CGI;
-my $filename = "barcodes.pdf";
+my $cgi         = new CGI;
+my $filename    = "barcodes.pdf";
 my $tmpFileName = $cgi->param('tmpFileName');
 print "Content-Disposition: attachment; filename = $filename\n\n";
-print $cgi->header(-type => 'application/pdf'),
-      $cgi->start_html(-title=>"Codify to PDF");
+print $cgi->header( -type => 'application/pdf' ), $cgi->start_html( -title => "Codify to PDF" );
 open FH, "<$tmpFileName";
 while (<FH>) {
-	print;
+    print;
 }
 close FH;
 print $cgi->end_html();

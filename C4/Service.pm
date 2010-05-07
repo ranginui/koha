@@ -1,4 +1,5 @@
 package C4::Service;
+
 #
 # Copyright 2008 LibLime
 #
@@ -83,7 +84,7 @@ sub init {
 
     my ( $status, $cookie_, $sessionID ) = check_api_auth( $query, \%needed_flags );
 
-    our $cookie = $cookie_; # I have no desire to offend the Perl scoping gods
+    our $cookie = $cookie_;    # I have no desire to offend the Perl scoping gods
 
     $class->return_error( 'auth', $status ) if ( $status ne 'ok' );
 
@@ -118,7 +119,7 @@ sub return_error {
 
     my $response = new C4::Output::JSONStream;
 
-    $response->param( message => $error ) if ( $error );
+    $response->param( message => $error ) if ($error);
     $response->param( type => $type, %flags );
 
     output_with_http_headers $query, $cookie, $response->output, 'json', '400 Bad Request';
@@ -160,13 +161,13 @@ sub return_multi {
     my $response = new C4::Output::JSONStream;
 
     if ( !@$responses ) {
-        $class->return_success( $response );
+        $class->return_success($response);
     } else {
         my @responses_formatted;
 
-        foreach my $response ( @$responses ) {
-            if ( ref( $response ) eq 'ARRAY' ) {
-                my ($type, $error, @error_flags) = @$response;
+        foreach my $response (@$responses) {
+            if ( ref($response) eq 'ARRAY' ) {
+                my ( $type, $error, @error_flags ) = @$response;
 
                 push @responses_formatted, { is_error => JSON::true, type => $type, message => $error, @error_flags };
             } else {
@@ -220,9 +221,9 @@ sub require_params {
 
     my @values;
 
-    for my $param ( @params ) {
-        $class->return_error( 'params', "Missing '$param'" ) if ( !defined( $query->param( $param ) ) );
-        push @values, $query->param( $param );
+    for my $param (@params) {
+        $class->return_error( 'params', "Missing '$param'" ) if ( !defined( $query->param($param) ) );
+        push @values, $query->param($param);
     }
 
     return @values;
@@ -265,17 +266,17 @@ sub dispatch {
 
     my $path_info = $query->path_info || '/';
 
-    ROUTE: foreach my $route ( @_ ) {
+  ROUTE: foreach my $route (@_) {
         my ( $path, $params, $handler ) = @$route;
 
-        next unless ( my @match = ( ($query->request_method . ' ' . $path_info)   =~ m,^$path$, ) );
+        next unless ( my @match = ( ( $query->request_method . ' ' . $path_info ) =~ m,^$path$, ) );
 
-        for my $param ( @$params ) {
-            next ROUTE if ( !defined( $query->param ( $param ) ) );
+        for my $param (@$params) {
+            next ROUTE if ( !defined( $query->param($param) ) );
         }
 
         $debug and warn "Using $path";
-        $handler->( @match );
+        $handler->(@match);
         return;
     }
 

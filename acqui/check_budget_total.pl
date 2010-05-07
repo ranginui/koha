@@ -18,6 +18,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use CGI;
 use C4::Context;
@@ -31,20 +32,22 @@ fetches the budget amount fron the DB
 
 =cut
 
-my $input = new CGI;
+my $input     = new CGI;
 my $budget_id = $input->param('budget_id');
-my $total   = $input->param('total');
+my $total     = $input->param('total');
 
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
     {   template_name   => "acqui/ajax.tmpl",
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
-        debug => 1,    } );
+        debug           => 1,
+    }
+);
 
 my $budget = GetBudget($budget_id);
 
-$template->param( return => $budget->{'budget_amount'}  );
+$template->param( return => $budget->{'budget_amount'} );
 
 output_html_with_http_headers $input, $cookie, $template->output;
 1;

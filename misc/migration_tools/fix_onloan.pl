@@ -1,8 +1,9 @@
 #!/usr/bin/perl
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
-use  C4::Context;
+use C4::Context;
 use C4::Items;
 use C4::Biblio;
 
@@ -13,16 +14,16 @@ use C4::Biblio;
 # and put it in the MARC::Record of the item
 #
 
-my $dbh=C4::Context->dbh;
+my $dbh = C4::Context->dbh;
 
 # if (C4::Context->preference("marcflavour") ne "UNIMARC") {
 #     print "this script is for UNIMARC only\n";
 #     exit;
 # }
-my $rqbiblios=$dbh->prepare("SELECT biblionumber,itemnumber,onloan FROM items WHERE items.onloan IS NOT NULL");
+my $rqbiblios = $dbh->prepare("SELECT biblionumber,itemnumber,onloan FROM items WHERE items.onloan IS NOT NULL");
 $rqbiblios->execute;
-$|=1;
-while (my ($biblionumber,$itemnumber,$onloan)= $rqbiblios->fetchrow){
-    ModItem({onloan => "$onloan"}, $biblionumber, $itemnumber);
+$| = 1;
+while ( my ( $biblionumber, $itemnumber, $onloan ) = $rqbiblios->fetchrow ) {
+    ModItem( { onloan => "$onloan" }, $biblionumber, $itemnumber );
     print "Onloan : $onloan for $biblionumber / $itemnumber\n";
 }

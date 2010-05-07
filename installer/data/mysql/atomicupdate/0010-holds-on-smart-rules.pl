@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use C4::Context;
-my $dbh=C4::Context->dbh;
+my $dbh = C4::Context->dbh;
 
 $dbh->do("ALTER TABLE `issuingrules` ADD COLUMN `holdspickupdelay` int(11) DEFAULT NULL;");
 

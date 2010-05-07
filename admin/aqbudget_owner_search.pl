@@ -20,8 +20,9 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
-use C4::Auth ;
+use C4::Auth;
 use C4::Output;
 use CGI;
 use C4::Dates qw/format_date/;
@@ -36,7 +37,7 @@ my ( $template, $loggedinuser, $cookie, $staff_flags ) = get_template_and_user(
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
-        flagsrequired   => { acquisition => 'budget_modify'  },
+        flagsrequired   => { acquisition => 'budget_modify' },
         debug           => 1,
     }
 );
@@ -63,26 +64,26 @@ my ( $count, $count2, $results );
 my @resultsdata;
 my $toggle = 0;
 
-if ( $member ) {
-	my $results= SearchMember($member,"surname",undef,undef,undef);
+if ($member) {
+    my $results = SearchMember( $member, "surname", undef, undef, undef );
 
     foreach my $res (@$results) {
 
-        my $perms = haspermission( $res->{'userid'} );
-        my $subperms =  get_user_subpermissions  ($res->{'userid'} );
-
+        my $perms    = haspermission( $res->{'userid'} );
+        my $subperms = get_user_subpermissions( $res->{'userid'} );
 
         # if the member has 'acqui' permission set, then display to table.
-        if (    $perms->{superlibrarian} == 1  || 
-                $perms->{acquisition} == 1  || 
-                $subperms->{acquisition}->{'budget_manage'} || 
-                $subperms->{acquisition}->{'budget_modify'} || 
-                $subperms->{acquisition}->{'budget_add_del'}  ) {
+        if (   $perms->{superlibrarian} == 1
+            || $perms->{acquisition} == 1
+            || $subperms->{acquisition}->{'budget_manage'}
+            || $subperms->{acquisition}->{'budget_modify'}
+            || $subperms->{acquisition}->{'budget_add_del'} ) {
 
             $count2++;
+
             #find out stats
-#            my ( $od, $issue, $fines ) = GetMemberIssuesAndFines( $res->{'borrowerid'} );
-			#This looks unused and very unuseful
+            #            my ( $od, $issue, $fines ) = GetMemberIssuesAndFines( $res->{'borrowerid'} );
+            #This looks unused and very unuseful
             my $guarantorinfo = uc( $res->{'surname'} ) . " , " . ucfirst( $res->{'firstname'} );
             my $budget_owner_name = $res->{'firstname'} . ' ' . $res->{'surname'}, my $budget_owner_id = $res->{'borrowernumber'};
 
@@ -96,9 +97,10 @@ if ( $member ) {
                 guarantorinfo     => $guarantorinfo,
                 budget_owner_id   => $budget_owner_id,
                 budget_owner_name => $budget_owner_name,
-#                odissue           => "$od/$issue",
-#                fines             => $fines,
-#                borrowernotes     => $res->{'borrowernotes'}
+
+                #                odissue           => "$od/$issue",
+                #                fines             => $fines,
+                #                borrowernotes     => $res->{'borrowernotes'}
             );
             push( @resultsdata, \%row );
         }
@@ -106,8 +108,8 @@ if ( $member ) {
 }
 
 $template->param(
-    member => $member,
-    numres => $count2,
+    member      => $member,
+    numres      => $count2,
     resultsloop => \@resultsdata
 );
 

@@ -54,16 +54,18 @@ BEGIN {
 =cut
 
 sub send_sms {
-    my $self = shift;
-    my $params= shift;
+    my $self   = shift;
+    my $params = shift;
 
-    foreach my $required_parameter ( qw( message destination ) ) {
+    foreach my $required_parameter (qw( message destination )) {
+
         # Should I warn in some way?
-        return unless defined $params->{ $required_parameter };
+        return unless defined $params->{$required_parameter};
     }
 
     eval { require SMS::Send; };
-    if ( $@ ) {
+    if ($@) {
+
         # we apparently don't have SMS::Send. Return a failure.
         return;
     }
@@ -73,17 +75,20 @@ sub send_sms {
     return unless $driver;
 
     # warn "using driver: $driver to send message to $params->{'destination'}";
-    
+
     # Create a sender
-    my $sender = SMS::Send->new( $driver,
-                                 _login    => C4::Context->preference('SMSSendUsername'),
-                                 _password => C4::Context->preference('SMSSendPassword'),
-                            );
-    
+    my $sender = SMS::Send->new(
+        $driver,
+        _login    => C4::Context->preference('SMSSendUsername'),
+        _password => C4::Context->preference('SMSSendPassword'),
+    );
+
     # Send a message
-    my $sent = $sender->send_sms( to   => $params->{'destination'},
-                                  text => $params->{'message'},
-                             );
+    my $sent = $sender->send_sms(
+        to   => $params->{'destination'},
+        text => $params->{'message'},
+    );
+
     # warn 'failure' unless $sent;
     return $sent;
 }

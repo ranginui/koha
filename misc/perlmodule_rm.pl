@@ -12,7 +12,7 @@ my $mod = $ARGV[0];
 
 my $inst = ExtUtils::Installed->new();
 
-foreach my $item (sort($inst->files($mod))) {
+foreach my $item ( sort( $inst->files($mod) ) ) {
     print "removing $item\n";
     unlink $item;
 }

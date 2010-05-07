@@ -7,47 +7,46 @@ use warnings;
 use Test::More;
 
 use C4::Circulation;
-sub testing_class { 'C4::Circulation' };
-
+sub testing_class { 'C4::Circulation' }
 
 sub methods : Test( 1 ) {
-    my $self = shift;
-    my @methods = qw( barcodedecode 
-                      decode 
-                      transferbook 
-                      TooMany 
-                      itemissues 
-                      CanBookBeIssued 
-                      AddIssue 
-                      GetLoanLength 
-                      AddReturn 
-                      MarkIssueReturned 
-                      _FixOverduesOnReturn
-                      _FixAccountForLostAndReturned
-                      GetItemIssue 
-                      GetItemIssues 
-                      GetBiblioIssues 
-                      GetUpcomingDueIssues
-                      CanBookBeRenewed 
-                      AddRenewal 
-                      GetRenewCount 
-                      GetIssuingCharges 
-                      AddIssuingCharge 
-                      GetTransfers 
-                      GetTransfersFromTo 
-                      DeleteTransfer 
-                      AnonymiseIssueHistory 
-                      updateWrongTransfer 
-                      UpdateHoldingbranch 
-                      CalcDateDue  
-                      CheckValidDatedue 
-                      CheckRepeatableHolidays
-                      CheckSpecialHolidays
-                      CheckRepeatableSpecialHolidays
-                      CheckValidBarcode
-                );
-    
-    can_ok( $self->testing_class, @methods );    
+    my $self    = shift;
+    my @methods = qw( barcodedecode
+      decode
+      transferbook
+      TooMany
+      itemissues
+      CanBookBeIssued
+      AddIssue
+      GetLoanLength
+      AddReturn
+      MarkIssueReturned
+      _FixOverduesOnReturn
+      _FixAccountForLostAndReturned
+      GetItemIssue
+      GetItemIssues
+      GetBiblioIssues
+      GetUpcomingDueIssues
+      CanBookBeRenewed
+      AddRenewal
+      GetRenewCount
+      GetIssuingCharges
+      AddIssuingCharge
+      GetTransfers
+      GetTransfersFromTo
+      DeleteTransfer
+      AnonymiseIssueHistory
+      updateWrongTransfer
+      UpdateHoldingbranch
+      CalcDateDue
+      CheckValidDatedue
+      CheckRepeatableHolidays
+      CheckSpecialHolidays
+      CheckRepeatableSpecialHolidays
+      CheckValidBarcode
+    );
+
+    can_ok( $self->testing_class, @methods );
 }
 
 =head3 setup_add_biblios
@@ -66,7 +65,6 @@ sub setup_add_biblios : Tests( setup => 8 ) {
     $self->add_biblios( add_items => 1 );
 }
 
-
 =head3 checkout_first_item
 
 named parameters:
@@ -82,14 +80,14 @@ sub checkout_first_item {
 
     # get passed in borrower, or default to the one in $self.
     my $borrower = $params->{'borrower'};
-    if ( ! defined $borrower ) {
+    if ( !defined $borrower ) {
         my $borrowernumber = $self->{'memberid'};
-        $borrower = C4::Members::GetMemberDetails( $borrowernumber );
+        $borrower = C4::Members::GetMemberDetails($borrowernumber);
     }
 
     # get the barcode passed in, or default to the first one in the items list
     my $barcode = $params->{'barcode'};
-    if ( ! defined $barcode ) {
+    if ( !defined $barcode ) {
         return unless $self->{'items'}[0]{'itemnumber'};
         $barcode = $self->get_barcode_from_itemnumber( $self->{'items'}[0]{'itemnumber'} );
     }

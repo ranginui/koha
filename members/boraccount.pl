@@ -1,9 +1,7 @@
 #!/usr/bin/perl
 
-
 #writen 11/1/2000 by chris@katipo.oc.nz
 #script to display borrowers account details
-
 
 # Copyright 2000-2002 Katipo Communications
 #
@@ -33,46 +31,46 @@ use C4::Members;
 use C4::Branch;
 use C4::Accounts;
 
-my $input=new CGI;
+my $input = new CGI;
 
+my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
+    {   template_name   => "members/boraccount.tmpl",
+        query           => $input,
+        type            => "intranet",
+        authnotrequired => 0,
+        flagsrequired   => { borrowers => 1, updatecharges => 1 },
+        debug           => 1,
+    }
+);
 
-my ($template, $loggedinuser, $cookie)
-    = get_template_and_user({template_name => "members/boraccount.tmpl",
-                            query => $input,
-                            type => "intranet",
-                            authnotrequired => 0,
-                            flagsrequired => {borrowers => 1, updatecharges => 1},
-                            debug => 1,
-                            });
-
-my $borrowernumber=$input->param('borrowernumber');
+my $borrowernumber = $input->param('borrowernumber');
 my $action = $input->param('action') || '';
 
 #get borrower details
-my $data=GetMember('borrowernumber' => $borrowernumber);
+my $data = GetMember( 'borrowernumber' => $borrowernumber );
 
 if ( $action eq 'reverse' ) {
-  ReversePayment( $borrowernumber, $input->param('accountno') );
+    ReversePayment( $borrowernumber, $input->param('accountno') );
 }
 
-if ( $data->{'category_type'} eq 'C') {
-   my  ( $catcodes, $labels ) =  GetborCatFromCatType( 'A', 'WHERE category_type = ?' );
-   my $cnt = scalar(@$catcodes);
-   $template->param( 'CATCODE_MULTI' => 1) if $cnt > 1;
-   $template->param( 'catcode' =>    $catcodes->[0])  if $cnt == 1;
+if ( $data->{'category_type'} eq 'C' ) {
+    my ( $catcodes, $labels ) = GetborCatFromCatType( 'A', 'WHERE category_type = ?' );
+    my $cnt = scalar(@$catcodes);
+    $template->param( 'CATCODE_MULTI' => 1 ) if $cnt > 1;
+    $template->param( 'catcode' => $catcodes->[0] ) if $cnt == 1;
 }
 
 #get account details
-my ($total,$accts,undef)=GetMemberAccountRecords($borrowernumber);
+my ( $total, $accts, undef ) = GetMemberAccountRecords($borrowernumber);
 my $totalcredit;
-if($total <= 0){
-        $totalcredit = 1;
+if ( $total <= 0 ) {
+    $totalcredit = 1;
 }
 
-my $reverse_col = 0; # Flag whether we need to show the reverse column
-foreach my $accountline ( @{$accts}) {
+my $reverse_col = 0;    # Flag whether we need to show the reverse column
+foreach my $accountline ( @{$accts} ) {
     $accountline->{amount} += 0.00;
-    if ($accountline->{amount} <= 0 ) {
+    if ( $accountline->{amount} <= 0 ) {
         $accountline->{amountcredit} = 1;
     }
     $accountline->{amountoutstanding} += 0.00;
@@ -80,45 +78,46 @@ foreach my $accountline ( @{$accts}) {
         $accountline->{amountoutstandingcredit} = 1;
     }
 
-    $accountline->{date} = format_date($accountline->{date});
-    $accountline->{amount} = sprintf '%.2f', $accountline->{amount};
+    $accountline->{date}              = format_date( $accountline->{date} );
+    $accountline->{amount}            = sprintf '%.2f', $accountline->{amount};
     $accountline->{amountoutstanding} = sprintf '%.2f', $accountline->{amountoutstanding};
-    if ($accountline->{accounttype} eq 'Pay') {
+    if ( $accountline->{accounttype} eq 'Pay' ) {
         $accountline->{payment} = 1;
         $reverse_col = 1;
     }
-    if ($accountline->{accounttype} ne 'F' && $accountline->{accounttype} ne 'FU'){
+    if ( $accountline->{accounttype} ne 'F' && $accountline->{accounttype} ne 'FU' ) {
         $accountline->{printtitle} = 1;
     }
 }
 
 $template->param( adultborrower => 1 ) if ( $data->{'category_type'} eq 'A' );
 
-my ($picture, $dberror) = GetPatronImage($data->{'cardnumber'});
+my ( $picture, $dberror ) = GetPatronImage( $data->{'cardnumber'} );
 $template->param( picture => 1 ) if $picture;
 
 $template->param(
-    finesview           => 1,
-    firstname           => $data->{'firstname'},
-    surname             => $data->{'surname'},
-    borrowernumber      => $borrowernumber,
-    cardnumber          => $data->{'cardnumber'},
-    categorycode        => $data->{'categorycode'},
-    category_type       => $data->{'category_type'},
-    categoryname		 => $data->{'description'},
-    address             => $data->{'address'},
-    address2            => $data->{'address2'},
-    city                => $data->{'city'},
-    zipcode             => $data->{'zipcode'},
-    country             => $data->{'country'},
-    phone               => $data->{'phone'},
-    email               => $data->{'email'},
-    branchcode          => $data->{'branchcode'},
-	branchname			=> GetBranchName($data->{'branchcode'}),
-    total               => sprintf("%.2f",$total),
-    totalcredit         => $totalcredit,
-    is_child            => ($data->{'category_type'} eq 'C'),
-    reverse_col         => $reverse_col,
-    accounts            => $accts );
+    finesview      => 1,
+    firstname      => $data->{'firstname'},
+    surname        => $data->{'surname'},
+    borrowernumber => $borrowernumber,
+    cardnumber     => $data->{'cardnumber'},
+    categorycode   => $data->{'categorycode'},
+    category_type  => $data->{'category_type'},
+    categoryname   => $data->{'description'},
+    address        => $data->{'address'},
+    address2       => $data->{'address2'},
+    city           => $data->{'city'},
+    zipcode        => $data->{'zipcode'},
+    country        => $data->{'country'},
+    phone          => $data->{'phone'},
+    email          => $data->{'email'},
+    branchcode     => $data->{'branchcode'},
+    branchname     => GetBranchName( $data->{'branchcode'} ),
+    total          => sprintf( "%.2f", $total ),
+    totalcredit    => $totalcredit,
+    is_child       => ( $data->{'category_type'} eq 'C' ),
+    reverse_col    => $reverse_col,
+    accounts       => $accts
+);
 
 output_html_with_http_headers $input, $cookie, $template->output;

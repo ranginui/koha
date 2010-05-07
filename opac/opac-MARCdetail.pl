@@ -48,7 +48,7 @@ use C4::Output;
 use CGI;
 use MARC::Record;
 use C4::Biblio;
-use C4::Items; #qw/GetItemsInfo GetItemsCount/;
+use C4::Items;    #qw/GetItemsInfo GetItemsCount/;
 use C4::Reserves qw/CanHoldOnShelf/;
 use C4::Acquisition;
 use C4::Koha;
@@ -60,13 +60,12 @@ my $dbh = C4::Context->dbh;
 my $biblionumber = $query->param('biblionumber');
 my $itemtype     = &GetFrameworkCode($biblionumber);
 my $tagslib      = &GetMarcStructure( 0, $itemtype );
-my $biblio = GetBiblioData($biblionumber);
-my $record = GetMarcBiblio($biblionumber);
+my $biblio       = GetBiblioData($biblionumber);
+my $record       = GetMarcBiblio($biblionumber);
 
 # open template
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => "opac-MARCdetail.tmpl",
+    {   template_name   => "opac-MARCdetail.tmpl",
         query           => $query,
         type            => "opac",
         authnotrequired => 1,
@@ -74,19 +73,17 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
     }
 );
 
-$template->param(
-    bibliotitle => $biblio->{title},
-);
+$template->param( bibliotitle => $biblio->{title}, );
 
 $template->param( 'AllowOnShelfHolds' => C4::Context->preference('AllowOnShelfHolds') );
-$template->param( 'ItemsIssued' => CountItemsIssued( $biblionumber ) );
-$template->param( 'ItemsCount' => GetItemsCount( $biblionumber ) );
+$template->param( 'ItemsIssued'       => CountItemsIssued($biblionumber) );
+$template->param( 'ItemsCount'        => GetItemsCount($biblionumber) );
 $template->param(C4::Search::enabled_opac_search_views);
 
 # adding the $RequestOnOpac param
 my $RequestOnOpac;
-if (C4::Context->preference("RequestOnOpac")) {
-	$RequestOnOpac = 1;
+if ( C4::Context->preference("RequestOnOpac") ) {
+    $RequestOnOpac = 1;
 }
 
 # fill arrays
@@ -102,8 +99,7 @@ for ( my $tabloop = 0 ; $tabloop <= 10 ; $tabloop++ ) {
 
     # deal with leader
     unless ( $tagslib->{'000'}->{'@'}->{tab} ne $tabloop
-        or $tagslib->{'000'}->{'@'}->{hidden} > 0 )
-    {
+        or $tagslib->{'000'}->{'@'}->{hidden} > 0 ) {
         my %subfield_data;
         $subfield_data{marc_lib}      = $tagslib->{'000'}->{'@'}->{lib};
         $subfield_data{marc_value}    = $record->leader();
@@ -123,43 +119,39 @@ for ( my $tabloop = 0 ; $tabloop <= 10 ; $tabloop++ ) {
         # if tag <10, there's no subfield, use the "@" trick
         if ( $fields[$x_i]->tag() < 10 ) {
             next
-              if (
-                $tagslib->{ $fields[$x_i]->tag() }->{'@'}->{tab} ne $tabloop );
+              if ( $tagslib->{ $fields[$x_i]->tag() }->{'@'}->{tab} ne $tabloop );
             next if ( $tagslib->{ $fields[$x_i]->tag() }->{'@'}->{hidden} > 0 );
             my %subfield_data;
-            $subfield_data{marc_lib} =
-              $tagslib->{ $fields[$x_i]->tag() }->{'@'}->{lib};
+            $subfield_data{marc_lib}      = $tagslib->{ $fields[$x_i]->tag() }->{'@'}->{lib};
             $subfield_data{marc_value}    = $fields[$x_i]->data();
             $subfield_data{marc_subfield} = '@';
             $subfield_data{marc_tag}      = $fields[$x_i]->tag();
             push( @subfields_data, \%subfield_data );
-        }
-        else {
-            my @subf = $fields[$x_i]->subfields;
+        } else {
+            my @subf     = $fields[$x_i]->subfields;
             my $previous = '';
+
             # loop through each subfield
             for my $i ( 0 .. $#subf ) {
                 $subf[$i][0] = "@" unless $subf[$i][0];
                 my $sf_def = $tagslib->{ $fields[$x_i]->tag() }->{ $subf[$i][0] };
                 next if ( $sf_def->{tab} ne $tabloop );
-                next if ( $sf_def->{hidden} > 0 ); 
+                next if ( $sf_def->{hidden} > 0 );
                 my %subfield_data;
-                $subfield_data{marc_lib} = ($sf_def->{lib} eq $previous) ?  '--' : $sf_def->{lib};
-                $previous = $sf_def->{lib};
-                $subfield_data{link} = $sf_def->{link};
+                $subfield_data{marc_lib} = ( $sf_def->{lib} eq $previous ) ? '--' : $sf_def->{lib};
+                $previous                = $sf_def->{lib};
+                $subfield_data{link}     = $sf_def->{link};
                 $subf[$i][1] =~ s/\n/<br\/>/g;
+
                 if ( $sf_def->{isurl} ) {
                     $subfield_data{marc_value} = "<a href=\"$subf[$i][1]\">$subf[$i][1]</a>";
-                }
-                elsif ( defined($sf_def->{kohafield}) && $sf_def->{kohafield} eq "biblioitems.isbn" ) {
+                } elsif ( defined( $sf_def->{kohafield} ) && $sf_def->{kohafield} eq "biblioitems.isbn" ) {
                     $subfield_data{marc_value} = $subf[$i][1];
-                }
-                else {
+                } else {
                     if ( $sf_def->{authtypecode} ) {
                         $subfield_data{authority} = $fields[$x_i]->subfield(9);
                     }
-                    $subfield_data{marc_value} = GetAuthorisedValueDesc( $fields[$x_i]->tag(),
-                        $subf[$i][0], $subf[$i][1], '', $tagslib, '', 'opac' );
+                    $subfield_data{marc_value} = GetAuthorisedValueDesc( $fields[$x_i]->tag(), $subf[$i][0], $subf[$i][1], '', $tagslib, '', 'opac' );
                 }
                 $subfield_data{marc_subfield} = $subf[$i][0];
                 $subfield_data{marc_tag}      = $fields[$x_i]->tag();
@@ -169,22 +161,13 @@ for ( my $tabloop = 0 ; $tabloop <= 10 ; $tabloop++ ) {
         if ( $#subfields_data >= 0 ) {
             my %tag_data;
             if (   ( $fields[$x_i]->tag() eq $fields[ $x_i - 1 ]->tag() )
-                && ( C4::Context->preference('LabelMARCView') eq 'economical' )
-              )
-            {
+                && ( C4::Context->preference('LabelMARCView') eq 'economical' ) ) {
                 $tag_data{tag} = "";
-            }
-            else {
+            } else {
                 if ( C4::Context->preference('hide_marc') ) {
                     $tag_data{tag} = $tagslib->{ $fields[$x_i]->tag() }->{lib};
-                }
-                else {
-                    $tag_data{tag} =
-                        $fields[$x_i]->tag() 
-                      . ' '
-                      . C4::Koha::display_marc_indicators($fields[$x_i])
-                      . ' - '
-                      . $tagslib->{ $fields[$x_i]->tag() }->{lib};
+                } else {
+                    $tag_data{tag} = $fields[$x_i]->tag() . ' ' . C4::Koha::display_marc_indicators( $fields[$x_i] ) . ' - ' . $tagslib->{ $fields[$x_i]->tag() }->{lib};
                 }
             }
             my @tmp = @subfields_data;
@@ -196,15 +179,13 @@ for ( my $tabloop = 0 ; $tabloop <= 10 ; $tabloop++ ) {
     $template->param( $tabloop . "XX" => \@loop_data );
 }
 
-
 # now, build item tab !
 # the main difference is that datas are in lines and not in columns : thus, we build the <th> first, then the values...
 # loop through each tag
 # warning : we may have differents number of columns in each row. Thus, we first build a hash, complete it if necessary
 # then construct template.
 my @fields = $record->fields();
-my %witness
-  ; #---- stores the list of subfields used at least once, with the "meaning" of the code
+my %witness;    #---- stores the list of subfields used at least once, with the "meaning" of the code
 my @big_array;
 foreach my $field (@fields) {
     next if ( $field->tag() < 10 );
@@ -215,26 +196,22 @@ foreach my $field (@fields) {
     for my $i ( 0 .. $#subf ) {
         my $sf_def = $tagslib->{ $field->tag() }->{ $subf[$i][0] };
         next if ( $sf_def->{tab} ne 10 );
-		next if ( $sf_def->{hidden} > 0 );
+        next if ( $sf_def->{hidden} > 0 );
         $witness{ $subf[$i][0] } = $sf_def->{lib};
 
         if ( $sf_def->{isurl} ) {
             $this_row{ $subf[$i][0] } = "<a href=\"$subf[$i][1]\">$subf[$i][1]</a>";
-        }
-        elsif ( $sf_def->{kohafield} eq "biblioitems.isbn" ) {
+        } elsif ( $sf_def->{kohafield} eq "biblioitems.isbn" ) {
             $this_row{ $subf[$i][0] } = $subf[$i][1];
-        }
-        else {
-            $this_row{ $subf[$i][0] } = GetAuthorisedValueDesc( $field->tag(), $subf[$i][0],
-                $subf[$i][1], '', $tagslib, '', 'opac' );
+        } else {
+            $this_row{ $subf[$i][0] } = GetAuthorisedValueDesc( $field->tag(), $subf[$i][0], $subf[$i][1], '', $tagslib, '', 'opac' );
         }
     }
     if (%this_row) {
         push( @big_array, \%this_row );
     }
 }
-my ( $holdingbrtagf, $holdingbrtagsubf ) =
-  &GetMarcFromKohaField( "items.holdingbranch", $itemtype );
+my ( $holdingbrtagf, $holdingbrtagsubf ) = &GetMarcFromKohaField( "items.holdingbranch", $itemtype );
 @big_array =
   sort { $a->{$holdingbrtagsubf} cmp $b->{$holdingbrtagsubf} } @big_array;
 
@@ -265,8 +242,8 @@ foreach my $subfield_code ( keys(%witness) ) {
     push( @header_value_loop, \%header_value );
 }
 
-if(C4::Context->preference("ISBD")) {
-	$template->param(ISBD => 1);
+if ( C4::Context->preference("ISBD") ) {
+    $template->param( ISBD => 1 );
 }
 
 $template->param(

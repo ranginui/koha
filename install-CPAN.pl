@@ -1,6 +1,6 @@
 # cpan_install.pl - Install prerequisites from CPAN then Koha
 
-($ARGV[0] =~ /koha-.*z/) || die "
+( $ARGV[0] =~ /koha-.*z/ ) || die "
  Run this as the CPAN-owning user (usually root) with:
    perl $0 path/to/koha.tgz
 ";
@@ -29,18 +29,18 @@
 use CPAN;
 CPAN::Config->load;
 $cpan = $CPAN::Config->{cpan_home};
-mkdir $cpan.'/sources/authors/id';
-mkdir $cpan.'/sources/authors/id/K';
-mkdir $cpan.'/sources/authors/id/K/KO';
-mkdir $cpan.'/sources/authors/id/K/KO/KOHA';
+mkdir $cpan . '/sources/authors/id';
+mkdir $cpan . '/sources/authors/id/K';
+mkdir $cpan . '/sources/authors/id/K/KO';
+mkdir $cpan . '/sources/authors/id/K/KO/KOHA';
 
 # Move the tarball to it
 $koha = $ARGV[0];
-( rename $koha,$cpan.'/sources/authors/id/K/KO/KOHA/'.$koha ) ||
-die 'Cannot move koha distribution into position.
+( rename $koha, $cpan . '/sources/authors/id/K/KO/KOHA/' . $koha )
+  || die 'Cannot move koha distribution into position.
 This may be due to an unconfigured CPAN or running as the wrong user.
 To configure cpan, try perl -MCPAN -e shell
 Installation aborted';
 
 # Start the main CPAN install routine
-CPAN::install('KOHA/'.$koha);
+CPAN::install( 'KOHA/' . $koha );

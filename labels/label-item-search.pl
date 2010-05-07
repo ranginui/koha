@@ -51,19 +51,17 @@ my $op        = $query->param('op') || '';
 my $batch_id  = $query->param('batch_id');
 my $ccl_query = $query->param('ccl_query');
 my $startfrom = $query->param('startfrom') || 1;
-my ($template, $loggedinuser, $cookie) = (undef, undef, undef);
-my (
-    $total_hits,  $orderby, $results,  $total,  $error,
-    $marcresults, $idx,     $datefrom, $dateto, $ccl_textbox
-);
-my $resultsperpage = C4::Context->preference('numSearchResults') || '20';
-my $show_results = 0;
-my $display_columns = [ {_add                   => {label => "Add Item", link_field => 1}},
-                        {_item_call_number      => {label => "Call Number", link_field => 0}},
-                        {_date_accessioned      => {label => "Accession Date", link_field => 0}},
-                        {_barcode               => {label => "Barcode", link_field => 0}},
-                        {select                 => {label => "Select", value => "_item_number"}},
-                      ];
+my ( $template, $loggedinuser, $cookie ) = ( undef, undef, undef );
+my ( $total_hits, $orderby, $results, $total, $error, $marcresults, $idx, $datefrom, $dateto, $ccl_textbox );
+my $resultsperpage  = C4::Context->preference('numSearchResults') || '20';
+my $show_results    = 0;
+my $display_columns = [
+    { _add              => { label => "Add Item",       link_field => 1 } },
+    { _item_call_number => { label => "Call Number",    link_field => 0 } },
+    { _date_accessioned => { label => "Accession Date", link_field => 0 } },
+    { _barcode          => { label => "Barcode",        link_field => 0 } },
+    { select            => { label => "Select",         value      => "_item_number" } },
+];
 
 if ( $op eq "do_search" ) {
     $idx         = $query->param('idx');
@@ -78,8 +76,7 @@ if ( $op eq "do_search" ) {
     if ($datefrom) {
         $datefrom = C4::Dates->new($datefrom);
         $ccl_query .= ' and ' if $ccl_textbox;
-        $ccl_query .=
-          "acqdate,st-date-normalized,ge=" . $datefrom->output("iso");
+        $ccl_query .= "acqdate,st-date-normalized,ge=" . $datefrom->output("iso");
     }
 
     if ($dateto) {
@@ -89,13 +86,11 @@ if ( $op eq "do_search" ) {
     }
 
     my $offset = $startfrom > 1 ? $startfrom - 1 : 0;
-    ( $error, $marcresults, $total_hits ) =
-      SimpleSearch( $ccl_query, $offset, $resultsperpage );
+    ( $error, $marcresults, $total_hits ) = SimpleSearch( $ccl_query, $offset, $resultsperpage );
 
-    if (scalar($marcresults) > 0) {
+    if ( scalar($marcresults) > 0 ) {
         $show_results = scalar @$marcresults;
-    }
-    else {
+    } else {
         $debug and warn "ERROR label-item-search: no results from SimpleSearch";
 
         # leave $show_results undef
@@ -103,49 +98,55 @@ if ( $op eq "do_search" ) {
 }
 
 if ($show_results) {
-    my $hits = $show_results;
+    my $hits        = $show_results;
     my @results_set = ();
-    my @items =();
+    my @items       = ();
+
     # This code needs to be refactored using these subs...
     #my @items = &GetItemsInfo( $biblio->{biblionumber}, 'intra' );
     #my $dat = &GetBiblioData( $biblio->{biblionumber} );
     for ( my $i = 0 ; $i < $hits ; $i++ ) {
-        my @row_data= ();
+        my @row_data = ();
+
         #DEBUG Notes: Decode the MARC record from each resulting MARC record...
         my $marcrecord = MARC::File::USMARC::decode( $marcresults->[$i] );
+
         #DEBUG Notes: Transform it to Koha form...
         my $biblio = TransformMarcToKoha( C4::Context->dbh, $marcrecord, '' );
+
         #DEBUG Notes: Stuff the bib into @biblio_data...
-        push (@results_set, $biblio);
+        push( @results_set, $biblio );
         my $biblionumber = $biblio->{'biblionumber'};
+
         #DEBUG Notes: Grab the item numbers associated with this MARC record...
         my $itemnums = get_itemnumbers_of($biblionumber);
+
         #DEBUG Notes: Retrieve the item data for each number...
-        if (my $iii = $itemnums->{$biblionumber}) {
+        if ( my $iii = $itemnums->{$biblionumber} ) {
             my $item_results = GetItemInfosOf(@$iii);
             foreach my $item ( keys %$item_results ) {
+
                 #DEBUG Notes: Build an array element 'item' of the correct bib (results) hash which contains item-specific data...
-                if ($item_results->{$item}->{'biblionumber'} eq $results_set[$i]->{'biblionumber'}) {
+                if ( $item_results->{$item}->{'biblionumber'} eq $results_set[$i]->{'biblionumber'} ) {
                     my $item_data;
-                    $item_data->{'_item_number'} = $item_results->{$item}->{'itemnumber'};
-                    $item_data->{'_item_call_number'} = ($item_results->{$item}->{'itemcallnumber'} ? $item_results->{$item}->{'itemcallnumber'} : 'NA');
+                    $item_data->{'_item_number'}      = $item_results->{$item}->{'itemnumber'};
+                    $item_data->{'_item_call_number'} = ( $item_results->{$item}->{'itemcallnumber'} ? $item_results->{$item}->{'itemcallnumber'} : 'NA' );
                     $item_data->{'_date_accessioned'} = $item_results->{$item}->{'dateaccessioned'};
-                    $item_data->{'_barcode'} = ( $item_results->{$item}->{'barcode'} ? $item_results->{$item}->{'barcode'} : 'NA');
-                    $item_data->{'_add'} = $item_results->{$item}->{'itemnumber'};
-                    unshift (@row_data, $item_data);    # item numbers are given to us in descending order by get_itemnumbers_of()...
+                    $item_data->{'_barcode'}          = ( $item_results->{$item}->{'barcode'} ? $item_results->{$item}->{'barcode'} : 'NA' );
+                    $item_data->{'_add'}              = $item_results->{$item}->{'itemnumber'};
+                    unshift( @row_data, $item_data );    # item numbers are given to us in descending order by get_itemnumbers_of()...
                 }
             }
-            $results_set[$i]->{'item_table'} = html_table($display_columns, \@row_data);
-        }
-        else {
+            $results_set[$i]->{'item_table'} = html_table( $display_columns, \@row_data );
+        } else {
+
             # FIXME: Some error trapping code needed
-            warn sprintf('No item numbers retrieved for biblio number: %s', $biblionumber);
+            warn sprintf( 'No item numbers retrieved for biblio number: %s', $biblionumber );
         }
     }
 
     ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-        {
-            template_name   => "labels/result.tmpl",
+        {   template_name   => "labels/result.tmpl",
             query           => $query,
             type            => "intranet",
             authnotrequired => 0,
@@ -159,16 +160,14 @@ if ($show_results) {
     my ( @field_data, @numbers );
     $total = $total_hits;
 
-    my ( $from, $to, $startfromnext, $startfromprev, $displaynext,
-        $displayprev );
+    my ( $from, $to, $startfromnext, $startfromprev, $displaynext, $displayprev );
 
     if ( $total > $resultsperpage ) {
         my $num_of_pages = ceil( $total / $resultsperpage + 1 );
         for ( my $page = 1 ; $page < $num_of_pages ; $page++ ) {
             my $startfrm = ( ( $page - 1 ) * $resultsperpage ) + 1;
             push @numbers,
-              {
-                number    => $page,
+              { number    => $page,
                 startfrom => $startfrm
               };
         }
@@ -188,8 +187,7 @@ if ($show_results) {
 
         $displaynext = 1 if $to < $total_hits;
 
-    }
-    else {
+    } else {
         $displayprev = 0;
         $displaynext = 0;
     }
@@ -208,12 +206,12 @@ if ($show_results) {
     );
 
     $template->param(
-        results   => ($show_results ? 1 : 0),
-        result_set=> \@results_set,
-        batch_id  => $batch_id,
-        type      => $type,
-        idx       => $idx,
-        ccl_query => $ccl_query,
+        results => ( $show_results ? 1 : 0 ),
+        result_set => \@results_set,
+        batch_id   => $batch_id,
+        type       => $type,
+        idx        => $idx,
+        ccl_query  => $ccl_query,
     );
 }
 
@@ -223,8 +221,7 @@ if ($show_results) {
 
 else {
     ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-        {
-            template_name   => "labels/search.tmpl",
+        {   template_name   => "labels/search.tmpl",
             query           => $query,
             type            => "intranet",
             authnotrequired => 0,

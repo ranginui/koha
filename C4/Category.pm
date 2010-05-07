@@ -21,9 +21,6 @@ use C4::Context;
 
 our $AUTOLOAD;
 
-
-
-
 =head1 NAME
 
 C4::Category - objects from the categories table
@@ -56,12 +53,9 @@ The database is not touched.
 =cut
 
 sub new {
-    my ($class, $opts) = @_;
+    my ( $class, $opts ) = @_;
     bless $opts => $class;
 }
-
-
-
 
 =head3 C4::Category->all
 
@@ -73,16 +67,16 @@ C<description>.
 sub all {
     my ($class) = @_;
     my $dbh = C4::Context->dbh;
-    return    map { $class->new($_) }    @{$dbh->selectall_arrayref(
-        # The categories table is small enough for
-        # `SELECT *` to be harmless.
-        "SELECT * FROM categories ORDER BY description",
-        { Slice => {} },
-    )};
+    return map { $class->new($_) } @{
+        $dbh->selectall_arrayref(
+
+            # The categories table is small enough for
+            # `SELECT *` to be harmless.
+            "SELECT * FROM categories ORDER BY description",
+            { Slice => {} },
+        )
+      };
 }
-
-
-
 
 =head2 Object Methods
 
@@ -118,7 +112,7 @@ sub AUTOLOAD {
     my $self = shift;
     my $attr = $AUTOLOAD;
     $attr =~ s/.*://;
-    if (exists $self->{$attr}) {
+    if ( exists $self->{$attr} ) {
         return $self->{$attr};
     } else {
         return undef;
@@ -126,9 +120,6 @@ sub AUTOLOAD {
 }
 
 sub DESTROY { }
-
-
-
 
 =head1 SEE ALSO
 

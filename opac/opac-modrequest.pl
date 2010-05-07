@@ -4,7 +4,6 @@
 #written 2/1/00 by chris@katipo.oc.nz
 #last update 27/1/2000 by chris@katipo.co.nz
 
-
 # Copyright 2000-2002 Katipo Communications
 #
 # This file is part of Koha.
@@ -31,8 +30,7 @@ use C4::Reserves;
 use C4::Auth;
 my $query = new CGI;
 my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
-    {   
-        template_name   => "opac-account.tmpl",
+    {   template_name   => "opac-account.tmpl",
         query           => $query,
         type            => "opac",
         authnotrequired => 0,
@@ -42,7 +40,7 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
 );
 
 my $biblionumber = $query->param('biblionumber');
-if ($biblionumber and $borrowernumber) {
-	CancelReserve($biblionumber, '', $borrowernumber);
+if ( $biblionumber and $borrowernumber ) {
+    CancelReserve( $biblionumber, '', $borrowernumber );
 }
 print $query->redirect("/cgi-bin/koha/opac-user.pl#opac-user-holds");

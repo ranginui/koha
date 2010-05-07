@@ -17,7 +17,6 @@
 # with Koha; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-
 =head1 NAME
 
 subscription-renew.pl
@@ -62,10 +61,9 @@ my $dbh   = C4::Context->dbh;
 my $mode           = $query->param('mode');
 my $op             = $query->param('op') || q{};
 my $subscriptionid = $query->param('subscriptionid');
-my $done = 0;    # for after form has been submitted
+my $done           = 0;                                 # for after form has been submitted
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => "serials/subscription-renew.tmpl",
+    {   template_name   => "serials/subscription-renew.tmpl",
         query           => $query,
         type            => "intranet",
         authnotrequired => 0,
@@ -73,33 +71,33 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
         debug           => 1,
     }
 );
+
 if ( $op eq "renew" ) {
     ReNewSubscription(
-        $subscriptionid,             $loggedinuser,
-        C4::Dates->new($query->param('startdate'))->output('iso'),  $query->param('numberlength'),
-        $query->param('weeklength'), $query->param('monthlength'),
+        $subscriptionid, $loggedinuser,
+        C4::Dates->new( $query->param('startdate') )->output('iso'),
+        $query->param('numberlength'),
+        $query->param('weeklength'),
+        $query->param('monthlength'),
         $query->param('note')
     );
 }
 
 my $subscription = GetSubscription($subscriptionid);
-if ($subscription->{'cannotedit'}){
-  carp "Attempt to renew subscription $subscriptionid by ".C4::Context->userenv->{'id'}." not allowed";
-  print $query->redirect("/cgi-bin/koha/serials/subscription-detail.pl?subscriptionid=$subscriptionid");
+if ( $subscription->{'cannotedit'} ) {
+    carp "Attempt to renew subscription $subscriptionid by " . C4::Context->userenv->{'id'} . " not allowed";
+    print $query->redirect("/cgi-bin/koha/serials/subscription-detail.pl?subscriptionid=$subscriptionid");
 }
 
 $template->param(
-    startdate => format_date(
-             $subscription->{enddate}
-          || POSIX::strftime( "%Y-%m-%d", localtime )
-    ),
+    startdate => format_date( $subscription->{enddate} || POSIX::strftime( "%Y-%m-%d", localtime ) ),
     numberlength   => $subscription->{numberlength},
     weeklength     => $subscription->{weeklength},
     monthlength    => $subscription->{monthlength},
     subscriptionid => $subscriptionid,
     bibliotitle    => $subscription->{bibliotitle},
     $op            => 1,
-    popup          => ($query->param('mode')eq "popup"),
+    popup          => ( $query->param('mode') eq "popup" ),
 );
 
 # Print the page

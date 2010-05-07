@@ -32,9 +32,8 @@ use C4::Biblio;
 
 my $query = new CGI;
 
-my ( $template, $borrowernumber, $cookie ) = get_template_and_user (
-    {
-        template_name   => "basket/sendbasketform.tmpl",
+my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
+    {   template_name   => "basket/sendbasketform.tmpl",
         query           => $query,
         type            => "intranet",
         authnotrequired => 0,
@@ -46,19 +45,18 @@ my $bib_list     = $query->param('bib_list');
 my $email_add    = $query->param('email_add');
 my $email_sender = $query->param('email_sender');
 
-my $dbh          = C4::Context->dbh;
+my $dbh = C4::Context->dbh;
 
-if ( $email_add ) {
+if ($email_add) {
     my $email_from = C4::Context->preference('KohaAdminEmailAddress');
     my $comment    = $query->param('comment');
-    my %mail = (
+    my %mail       = (
         To   => $email_add,
         From => $email_from
     );
 
     my ( $template2, $borrowernumber, $cookie ) = get_template_and_user(
-        {
-            template_name   => "basket/sendbasket.tmpl",
+        {   template_name   => "basket/sendbasket.tmpl",
             query           => $query,
             type            => "intranet",
             authnotrequired => 0,
@@ -82,10 +80,9 @@ if ( $email_add ) {
         my @items = &GetItemsInfo( $biblionumber, 'opac' );
 
         my $hasauthors = 0;
-        if($dat->{'author'} || @$marcauthorsarray) {
-          $hasauthors = 1;
+        if ( $dat->{'author'} || @$marcauthorsarray ) {
+            $hasauthors = 1;
         }
-	
 
         $dat->{MARCNOTES}      = $marcnotesarray;
         $dat->{MARCSUBJCTS}    = $marcsubjctsarray;
@@ -113,8 +110,9 @@ if ( $email_add ) {
     # Analysing information and getting mail properties
     if ( $template_res =~ /<SUBJECT>\n(.*)\n<END_SUBJECT>/s ) {
         $mail{'subject'} = $1;
+    } else {
+        $mail{'subject'} = "no subject";
     }
-    else { $mail{'subject'} = "no subject"; }
 
     my $email_header = "";
     if ( $template_res =~ /<HEADER>\n(.*)\n<END_HEADER>/s ) {
@@ -139,7 +137,7 @@ if ( $email_add ) {
     #     # Writing mail
     #     $mail{body} =
     $mail{'content-type'} = "multipart/mixed; boundary=\"$boundary\"";
-    my $isofile = encode_base64(encode("UTF-8", $iso2709));
+    my $isofile = encode_base64( encode( "UTF-8", $iso2709 ) );
     $boundary = '--' . $boundary;
     $mail{body} = <<END_OF_BODY;
 $boundary
@@ -159,18 +157,18 @@ END_OF_BODY
 
     # Sending mail
     if ( sendmail %mail ) {
+
         # do something if it works....
-        $template->param( SENT      => "1" );
-    }
-    else {
+        $template->param( SENT => "1" );
+    } else {
+
         # do something if it doesnt work....
         warn "Error sending mail: $Mail::Sendmail::error \n";
         $template->param( error => 1 );
     }
     $template->param( email_add => $email_add );
     output_html_with_http_headers $query, $cookie, $template->output;
-}
-else {
+} else {
     $template->param( bib_list => $bib_list );
     $template->param(
         url            => "/cgi-bin/koha/basket/sendbasket.pl",

@@ -1,6 +1,5 @@
 #!/usr/bin/perl
 
-
 # Copyright 2000-2002 Katipo Communications
 #
 # This file is part of Koha.
@@ -19,6 +18,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use C4::Context;
 
@@ -27,7 +27,9 @@ use C4::Context;
 plugin_parameters : other parameters added when the plugin is called by the dopop function
 
 =cut
+
 sub plugin_parameters {
+
     # my ($dbh,$record,$tagslib,$i,$tabloop) = @_;
     return "";
 }
@@ -46,13 +48,14 @@ returns :
 the 3 scripts are inserted after the <input> in the html code
 
 =cut
+
 sub plugin_javascript {
-    my ($dbh,$record,$tagslib,$field_number,$tabloop) = @_;
-    my $function_name= $field_number;
+    my ( $dbh, $record, $tagslib, $field_number, $tabloop ) = @_;
+    my $function_name = $field_number;
 
     # find today's date
     my $org = C4::Context->preference('MARCOrgCode');
-    my $res  = "
+    my $res = "
 <script type=\"text/javascript\">
 //<![CDATA[
 
@@ -70,7 +73,7 @@ function Clic$function_name(subfield_managed) {
 //]]>
 </script>
 ";
-    return ($function_name,$res);
+    return ( $function_name, $res );
 }
 
 =head1

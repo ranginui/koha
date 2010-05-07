@@ -17,39 +17,34 @@ use C4::Labels 1.000000;
 
 my $cgi = new CGI;
 
-my $batch_id    = $cgi->param('batch_id') if $cgi->param('batch_id');
+my $batch_id = $cgi->param('batch_id') if $cgi->param('batch_id');
 my $template_id = $cgi->param('template_id') || undef;
-my $layout_id   = $cgi->param('layout_id') || undef;
-my @label_ids   = $cgi->param('label_id') if $cgi->param('label_id');
-my @item_numbers  = $cgi->param('item_number') if $cgi->param('item_number');
+my $layout_id   = $cgi->param('layout_id')   || undef;
+my @label_ids    = $cgi->param('label_id')    if $cgi->param('label_id');
+my @item_numbers = $cgi->param('item_number') if $cgi->param('item_number');
 
 my $items = undef;
 
-my $csv_file = (@label_ids || @item_numbers ? "label_single_" . scalar(@label_ids || @item_numbers) : "label_batch_$batch_id");
-print $cgi->header(-type        => 'application/vnd.sun.xml.calc',
-                   -encoding    => 'utf-8',
-                   -attachment  => "$csv_file.csv",
-                    );
+my $csv_file = ( @label_ids || @item_numbers ? "label_single_" . scalar( @label_ids || @item_numbers ) : "label_batch_$batch_id" );
+print $cgi->header(
+    -type       => 'application/vnd.sun.xml.calc',
+    -encoding   => 'utf-8',
+    -attachment => "$csv_file.csv",
+);
 
-
-my $batch = C4::Labels::Batch->retrieve(batch_id => $batch_id);
-my $template = C4::Labels::Template->retrieve(template_id => $template_id, profile_id => 1);
-my $layout = C4::Labels::Layout->retrieve(layout_id => $layout_id);
-
+my $batch = C4::Labels::Batch->retrieve( batch_id => $batch_id );
+my $template = C4::Labels::Template->retrieve( template_id => $template_id, profile_id => 1 );
+my $layout = C4::Labels::Layout->retrieve( layout_id => $layout_id );
 
 if (@label_ids) {
     my $batch_items = $batch->get_attr('items');
     grep {
         my $label_id = $_;
-        push(@{$items}, grep{$_->{'label_id'} == $label_id;} @{$batch_items});
+        push( @{$items}, grep { $_->{'label_id'} == $label_id; } @{$batch_items} );
     } @label_ids;
-}
-elsif (@item_numbers) {
-    grep {
-        push(@{$items}, {item_number => $_});
-    } @item_numbers;
-}
-else {
+} elsif (@item_numbers) {
+    grep { push( @{$items}, { item_number => $_ } ); } @item_numbers;
+} else {
     $items = $batch->get_attr('items');
 }
 
@@ -58,16 +53,15 @@ my $csv = Text::CSV_XS->new();
 CSV_ITEMS:
 foreach my $item (@$items) {
     my $label = C4::Labels::Label->new(
-                                    batch_id            => $batch_id,
-                                    item_number         => $item->{'item_number'},
-                                    format_string       => $layout->get_attr('format_string'),
-                                      );
+        batch_id      => $batch_id,
+        item_number   => $item->{'item_number'},
+        format_string => $layout->get_attr('format_string'),
+    );
     my $csv_fields = $label->csv_data();
-    if ($csv->combine(@$csv_fields)) {
+    if ( $csv->combine(@$csv_fields) ) {
         print $csv->string() . "\n";
-    }
-    else {
-        warn sprintf('Text::CSV_XS->combine() returned the following error: %s', $csv->error_input);
+    } else {
+        warn sprintf( 'Text::CSV_XS->combine() returned the following error: %s', $csv->error_input );
         next CSV_ITEMS;
     }
 }

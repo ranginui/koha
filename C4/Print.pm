@@ -18,6 +18,7 @@ package C4::Print;
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use C4::Context;
 use C4::Circulation;
@@ -27,11 +28,12 @@ use C4::Dates qw(format_date);
 use vars qw($VERSION @ISA @EXPORT);
 
 BEGIN {
-	# set the version for version checking
-	$VERSION = 3.01;
-	require Exporter;
-	@ISA    = qw(Exporter);
-	@EXPORT = qw(&remoteprint &printreserve &printslip);
+
+    # set the version for version checking
+    $VERSION = 3.01;
+    require Exporter;
+    @ISA    = qw(Exporter);
+    @EXPORT = qw(&remoteprint &printreserve &printslip);
 }
 
 =head1 NAME
@@ -68,7 +70,7 @@ from C<&GetBorrowerIssues>.
 
 # FIXME - It'd be nifty if this could generate pretty PostScript.
 sub remoteprint ($$) {
-    my ($items, $borrower) = @_;
+    my ( $items, $borrower ) = @_;
 
     (return)
       unless ( C4::Context->boolean_preference('printcirculationslips') );
@@ -83,8 +85,7 @@ sub remoteprint ($$) {
     # $env->{file} ne "", then that should mean "print to $env->{file}".
     if ( $queue eq "" || $queue eq 'nulllp' ) {
         open( PRINTER, ">/tmp/kohaiss" );
-    }
-    else {
+    } else {
 
         # FIXME - This assumes that 'lpr' exists, and works as expected.
         # This is a reasonable assumption, but only because every other
@@ -96,7 +97,8 @@ sub remoteprint ($$) {
 
     #  print $queue;
     #open (FILE,">/tmp/$file");
-    my $i      = 0;
+    my $i = 0;
+
     # FIXME - This is HLT-specific. Put this stuff in a customizable
     # site-specific file somewhere.
     print PRINTER "Horowhenua Library Trust\r\n";
@@ -104,8 +106,7 @@ sub remoteprint ($$) {
     print PRINTER "Fax:    367-9218\r\n";
     print PRINTER "Email:  renewals\@library.org.nz\r\n\r\n\r\n";
     print PRINTER "$borrower->{'cardnumber'}\r\n";
-    print PRINTER
-      "$borrower->{'title'} $borrower->{'initials'} $borrower->{'surname'}\r\n";
+    print PRINTER "$borrower->{'title'} $borrower->{'initials'} $borrower->{'surname'}\r\n";
 
     # FIXME - Use   for ($i = 0; $items->[$i]; $i++)
     # Or better yet,   foreach $item (@{$items})
@@ -121,7 +122,7 @@ sub remoteprint ($$) {
         print PRINTER "$itemdata->{'date_due'}\r\n";
         $i++;
     }
-    print PRINTER "\r\n" x 7 ;
+    print PRINTER "\r\n" x 7;
     close PRINTER;
 
     #system("lpr /tmp/$file");
@@ -133,15 +134,14 @@ sub printreserve {
     (return) unless ( C4::Context->boolean_preference('printreserveslips') );
     if ( $printer eq "" || $printer eq 'nulllp' ) {
         open( PRINTER, ">>/tmp/kohares" )
-		  or die "Could not write to /tmp/kohares";
-    }
-    else {
+          or die "Could not write to /tmp/kohares";
+    } else {
         open( PRINTER, "| lpr -P $printer >/dev/null" )
           or die "Couldn't write to queue:$!\n";
     }
-    my @da = localtime();
+    my @da         = localtime();
     my $todaysdate = "$da[2]:$da[1]  " . C4::Dates->today();
-    my $slip = <<"EOF";
+    my $slip       = <<"EOF";
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Date: $todaysdate;
 
@@ -179,13 +179,13 @@ EOF
 #'
 sub printslip ($) {
     my $borrowernumber = shift;
-    my $borrower   = GetMemberDetails($borrowernumber);
-	my $issueslist = GetPendingIssues($borrowernumber); 
-	foreach my $it (@$issueslist){
-		$it->{'date_due'}=format_date($it->{'date_due'});
-    }		
+    my $borrower       = GetMemberDetails($borrowernumber);
+    my $issueslist     = GetPendingIssues($borrowernumber);
+    foreach my $it (@$issueslist) {
+        $it->{'date_due'} = format_date( $it->{'date_due'} );
+    }
     my @issues = sort { $b->{'timestamp'} <=> $a->{'timestamp'} } @$issueslist;
-    remoteprint(\@issues, $borrower );
+    remoteprint( \@issues, $borrower );
 }
 
 END { }    # module clean-up code here (global destructor)

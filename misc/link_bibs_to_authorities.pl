@@ -2,7 +2,9 @@
 
 use strict;
 use warnings;
+
 BEGIN {
+
     # find Koha's Perl modules
     # test carefully before changing this
     use FindBin;
@@ -21,20 +23,20 @@ my $test_only = 0;
 my $want_help = 0;
 
 my $result = GetOptions(
-    'verbose'       => \$verbose,
-    'test'          => \$test_only,
-    'h|help'        => \$want_help
+    'verbose' => \$verbose,
+    'test'    => \$test_only,
+    'h|help'  => \$want_help
 );
 
-if (not $result or $want_help) {
+if ( not $result or $want_help ) {
     print_usage();
     exit 0;
 }
 
 my $num_bibs_processed = 0;
-my $num_bibs_modified = 0;
-my $num_bad_bibs = 0;
-my $dbh = C4::Context->dbh;
+my $num_bibs_modified  = 0;
+my $num_bad_bibs       = 0;
+my $dbh                = C4::Context->dbh;
 $dbh->{AutoCommit} = 0;
 process_bibs();
 $dbh->commit();
@@ -45,16 +47,16 @@ sub process_bibs {
     my $sql = "SELECT biblionumber FROM biblio ORDER BY biblionumber ASC";
     my $sth = $dbh->prepare($sql);
     $sth->execute();
-    while (my ($biblionumber) = $sth->fetchrow_array()) {
+    while ( my ($biblionumber) = $sth->fetchrow_array() ) {
         $num_bibs_processed++;
         process_bib($biblionumber);
 
-        if (not $test_only and ($num_bibs_processed % 100) == 0) {
+        if ( not $test_only and ( $num_bibs_processed % 100 ) == 0 ) {
             print_progress_and_commit($num_bibs_processed);
         }
     }
 
-    if (not $test_only) {
+    if ( not $test_only ) {
         $dbh->commit;
     }
 
@@ -72,7 +74,7 @@ sub process_bib {
     my $biblionumber = shift;
 
     my $bib = GetMarcBiblio($biblionumber);
-    unless (defined $bib) {
+    unless ( defined $bib ) {
         print "\nCould not retrieve bib $biblionumber from the database - record is corrupt.\n";
         $num_bad_bibs++;
         return;
@@ -80,18 +82,19 @@ sub process_bib {
 
     my $headings_changed = LinkBibHeadingsToAuthorities($bib);
 
-    if ($headings_changed) {   
+    if ($headings_changed) {
         if ($verbose) {
-            my $title = substr($bib->title, 0, 20);
+            my $title = substr( $bib->title, 0, 20 );
             print "Bib $biblionumber ($title): $headings_changed headings changed\n";
         }
-        if (not $test_only) {
+        if ( not $test_only ) {
+
             # delete any item tags
-            my ($itemtag, $itemsubfield) = GetMarcFromKohaField("items.itemnumber", '');
-            foreach my $field ($bib->field($itemtag)) {
+            my ( $itemtag, $itemsubfield ) = GetMarcFromKohaField( "items.itemnumber", '' );
+            foreach my $field ( $bib->field($itemtag) ) {
                 $bib->delete_field($field);
             }
-            ModBiblio($bib, $biblionumber, GetFrameworkCode($biblionumber));
+            ModBiblio( $bib, $biblionumber, GetFrameworkCode($biblionumber) );
             $num_bibs_modified++;
         }
     }

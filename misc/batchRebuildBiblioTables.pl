@@ -3,9 +3,11 @@
 # Formerly named rebuildnonmarc.pl
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 
 BEGIN {
+
     # find Koha's Perl modules
     # test carefully before changing this
     use FindBin;
@@ -19,15 +21,15 @@ use C4::Biblio;
 use Time::HiRes qw(gettimeofday);
 
 use Getopt::Long;
-my ( $input_marc_file, $number) = ('', 0);
-my ($version, $confirm, $test_parameter);
+my ( $input_marc_file, $number ) = ( '', 0 );
+my ( $version, $confirm, $test_parameter );
 GetOptions(
     'c' => \$confirm,
     'h' => \$version,
     't' => \$test_parameter,
 );
 
-if ($version || (!$confirm)) {
+if ( $version || ( !$confirm ) ) {
     print <<EOF
 This script rebuilds the non-MARC DB from the MARC values.
 You can/must use it when you change your mapping.
@@ -40,63 +42,69 @@ Syntax:
 \t./batchRebuildBiblioTables.pl -c (c like confirm => rebuild non marc DB (may be long)
 \t-t => test only, change nothing in DB
 EOF
-;
+      ;
     exit;
 }
 
-my $dbh = C4::Context->dbh;
-my $i=0;
+my $dbh       = C4::Context->dbh;
+my $i         = 0;
 my $starttime = time();
 
-$|=1; # flushes output
+$|         = 1;              # flushes output
 $starttime = gettimeofday;
 
 #1st of all, find item MARC tag.
-my ($tagfield,$tagsubfield) = &GetMarcFromKohaField("items.itemnumber",'');
+my ( $tagfield, $tagsubfield ) = &GetMarcFromKohaField( "items.itemnumber", '' );
+
 # $dbh->do("lock tables biblio write, biblioitems write, items write, marc_biblio write, marc_subfield_table write, marc_blob_subfield write, marc_word write, marc_subfield_structure write, stopwords write");
 my $sth = $dbh->prepare("SELECT biblionumber FROM biblio");
 $sth->execute;
+
 # my ($biblionumbermax) =  $sth->fetchrow;
 # warn "$biblionumbermax <<==";
 my @errors;
-while (my ($biblionumber)= $sth->fetchrow) {
+while ( my ($biblionumber) = $sth->fetchrow ) {
+
     #now, parse the record, extract the item fields, and store them in somewhere else.
     my $record = GetMarcBiblio($biblionumber);
-    if (not defined $record) {
-	push @errors, $biblionumber;
-	next;
+    if ( not defined $record ) {
+        push @errors, $biblionumber;
+        next;
     }
     my @fields = $record->field($tagfield);
     my @items;
-    my $nbitems=0;
+    my $nbitems = 0;
     print ".";
     my $timeneeded = gettimeofday - $starttime;
-    print "$i in $timeneeded s\n" unless ($i % 50);
+    print "$i in $timeneeded s\n" unless ( $i % 50 );
     $i++;
+
     foreach my $field (@fields) {
         my $item = MARC::Record->new();
         $item->append_fields($field);
-        push @items,$item;
+        push @items, $item;
         $record->delete_field($field);
         $nbitems++;
     }
-#     print "$biblionumber\n";
+
+    #     print "$biblionumber\n";
     my $frameworkcode = GetFrameworkCode($biblionumber);
-    localNEWmodbiblio($dbh,$record,$biblionumber,$frameworkcode) unless $test_parameter;
+    localNEWmodbiblio( $dbh, $record, $biblionumber, $frameworkcode ) unless $test_parameter;
 }
+
 # $dbh->do("unlock tables");
 my $timeneeded = time() - $starttime;
 print "$i MARC record done in $timeneeded seconds\n";
-if (scalar(@errors) > 0) {
-    print "Some biblionumber could not be processed though: ", join(" ", @errors);
+if ( scalar(@errors) > 0 ) {
+    print "Some biblionumber could not be processed though: ", join( " ", @errors );
 }
 
 # modified NEWmodbiblio to jump the MARC part of the biblio modif
 # highly faster
 sub localNEWmodbiblio {
-    my ($dbh,$record,$biblionumber,$frameworkcode) =@_;
-    $frameworkcode="" unless $frameworkcode;
-    my $oldbiblio = TransformMarcToKoha($dbh,$record,$frameworkcode);
+    my ( $dbh, $record, $biblionumber, $frameworkcode ) = @_;
+    $frameworkcode = "" unless $frameworkcode;
+    my $oldbiblio = TransformMarcToKoha( $dbh, $record, $frameworkcode );
     C4::Biblio::_koha_modify_biblio( $dbh, $oldbiblio, $frameworkcode );
     C4::Biblio::_koha_modify_biblioitem_nonmarc( $dbh, $oldbiblio );
     return 1;

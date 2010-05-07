@@ -9,12 +9,12 @@ use Data::Dumper;
 
 my $compare = (@ARGV) ? shift : 0;
 while (1) {
-	print "Enter item barcode: ";
-	my $in = <>;
-	defined($in) or last;
-	chomp($in);
-	last unless $in;
-	my $item = ILS::Item->new($in);
+    print "Enter item barcode: ";
+    my $in = <>;
+    defined($in) or last;
+    chomp($in);
+    last unless $in;
+    my $item = ILS::Item->new($in);
     unless ($item) {
         print "No item ($in)";
         next;
@@ -26,7 +26,7 @@ while (1) {
     print "Item ($in): ", Dumper($item);
     print "hold_queue: ", Dumper($queue);
     my $holdernumber;
-	if ($queue and scalar(@$queue)) {
+    if ( $queue and scalar(@$queue) ) {
         $holdernumber = $queue->[0]->{borrowernumber};
         print "first borrowernumber: $holdernumber\n";
     }
@@ -37,8 +37,7 @@ while (1) {
         chomp($barcode);
         next unless $barcode;
         my $x = ILS::Item::_barcode_to_borrowernumber($barcode) || 'UNDEF';
-        print  "         converts to: $x\n";
-        printf "         compares as: %s\n", 
-            ($item->barcode_is_borrowernumber($barcode,$holdernumber) ? 'TRUE' : 'FALSE');
+        print "         converts to: $x\n";
+        printf "         compares as: %s\n", ( $item->barcode_is_borrowernumber( $barcode, $holdernumber ) ? 'TRUE' : 'FALSE' );
     }
 }

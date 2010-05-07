@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use C4::Context;
-my $dbh=C4::Context->dbh;
+my $dbh = C4::Context->dbh;
 $dbh->do(<<SUGGESTIONS);
 ALTER table suggestions 
     ADD budgetid INT(11),

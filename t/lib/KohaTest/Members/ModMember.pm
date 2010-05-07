@@ -7,8 +7,7 @@ use warnings;
 use Test::More;
 
 use C4::Members;
-sub testing_class { 'C4::Members' };
-
+sub testing_class { 'C4::Members' }
 
 sub a_simple_usage : Test( 7 ) {
     my $self = shift;
@@ -16,7 +15,7 @@ sub a_simple_usage : Test( 7 ) {
     ok( $self->{'memberid'}, 'we have a valid memberid to test with' );
 
     my $details = C4::Members::GetMemberDetails( $self->{'memberid'} );
-    ok( exists $details->{'dateofbirth'}, 'member details has a "dateofbirth" attribute');
+    ok( exists $details->{'dateofbirth'}, 'member details has a "dateofbirth" attribute' );
     ok( $details->{'dateofbirth'},        '...and it is set to something' );
 
     my $new_date_of_birth = $self->random_date();
@@ -30,7 +29,7 @@ sub a_simple_usage : Test( 7 ) {
     ok( $success, 'we successfully called ModMember' );
 
     $details = C4::Members::GetMemberDetails( $self->{'memberid'} );
-    ok( exists $details->{'dateofbirth'},              'member details still has a "dateofbirth" attribute');
+    ok( exists $details->{'dateofbirth'}, 'member details still has a "dateofbirth" attribute' );
     is( $details->{'dateofbirth'}, $new_date_of_birth, '...and it is set to the new_date_of_birth' );
 
 }
@@ -39,9 +38,9 @@ sub incorrect_usage : Test( 1 ) {
     my $self = shift;
 
     local $TODO = 'ModMember does not fail gracefully yet';
-    
+
     my $result = C4::Members::ModMember();
-    ok( ! defined $result, 'ModMember returns false when passed no parameters' );
+    ok( !defined $result, 'ModMember returns false when passed no parameters' );
 
 }
 
@@ -55,7 +54,6 @@ ModMember with none of the date fields set to ensure that they are not
 overwritten.
 
 =cut
-
 
 sub preserve_dates : Test( 18 ) {
     my $self = shift;
@@ -74,12 +72,12 @@ sub preserve_dates : Test( 18 ) {
         %date_fields,
     );
     ok( $success, 'succefully set the date fields.' );
-    
+
     # make sure that we successfully set the date fields. They're not undef.
     my $details = C4::Members::GetMemberDetails( $self->{'memberid'} );
     foreach my $date_field ( keys %date_fields ) {
-        ok( exists $details->{$date_field},                     qq(member details has a "$date_field" attribute) );
-        ok( $details->{$date_field},                            '...and it is set to something true' );
+        ok( exists $details->{$date_field}, qq(member details has a "$date_field" attribute) );
+        ok( $details->{$date_field},        '...and it is set to something true' );
         is( $details->{$date_field}, $date_fields{$date_field}, '...and it is set to what we set it' );
     }
 

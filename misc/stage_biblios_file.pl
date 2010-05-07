@@ -1,8 +1,10 @@
 #!/usr/bin/perl
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 BEGIN {
+
     # find Koha's Perl modules
     # test carefully before changing this
     use FindBin;
@@ -17,40 +19,40 @@ use Getopt::Long;
 $| = 1;
 
 # command-line parameters
-my $match_bibs = 0;
-my $add_items = 0;
-my $input_file = "";
+my $match_bibs    = 0;
+my $add_items     = 0;
+my $input_file    = "";
 my $batch_comment = "";
-my $want_help = 0;
-my $no_replace ;
+my $want_help     = 0;
+my $no_replace;
 
 my $result = GetOptions(
-    'file:s'        => \$input_file,
-    'match-bibs:s'    => \$match_bibs,
-    'add-items'     => \$add_items,
-    'no-replace'    => \$no_replace,
-    'comment:s'     => \$batch_comment,
-    'h|help'        => \$want_help
+    'file:s'       => \$input_file,
+    'match-bibs:s' => \$match_bibs,
+    'add-items'    => \$add_items,
+    'no-replace'   => \$no_replace,
+    'comment:s'    => \$batch_comment,
+    'h|help'       => \$want_help
 );
 
-if (not $result or $input_file eq "" or $want_help) {
+if ( not $result or $input_file eq "" or $want_help ) {
     print_usage();
     exit 0;
 }
 
-unless (-r $input_file) {
+unless ( -r $input_file ) {
     die "$0: cannot open input file $input_file: $!\n";
 }
 
 my $dbh = C4::Context->dbh;
 $dbh->{AutoCommit} = 0;
-process_batch($input_file, $match_bibs, $add_items, $batch_comment);
+process_batch( $input_file, $match_bibs, $add_items, $batch_comment );
 $dbh->commit();
 
 exit 0;
 
 sub process_batch {
-    my ($input_file, $match_bibs, $add_items, $batch_comment) = @_;
+    my ( $input_file, $match_bibs, $add_items, $batch_comment ) = @_;
 
     open IN, "<$input_file" or die "$0: cannot open input file $input_file: $!\n";
     my $marc_records = "";
@@ -59,10 +61,10 @@ sub process_batch {
     while (<IN>) {
         s/^\s+//;
         s/\s+$//;
-        next unless $_; # skip if record has only whitespace, as might occur
-                        # if file includes newlines between each MARC record
-        $marc_records .= $_; # FIXME - this sort of string concatenation
-                             # is probably rather inefficient
+        next unless $_;    # skip if record has only whitespace, as might occur
+                           # if file includes newlines between each MARC record
+        $marc_records .= $_;    # FIXME - this sort of string concatenation
+                                # is probably rather inefficient
         $num_input_records++;
     }
     close IN;
@@ -70,28 +72,27 @@ sub process_batch {
     my $marc_flavor = C4::Context->preference('marcflavour');
 
     print "... staging MARC records -- please wait\n";
-    my ($batch_id, $num_valid, $num_items, @import_errors) = 
-        BatchStageMarcRecords($marc_flavor, $marc_records, $input_file, $batch_comment, '', $add_items, 0,
-                              100, \&print_progress_and_commit);
+    my ( $batch_id, $num_valid, $num_items, @import_errors ) =
+      BatchStageMarcRecords( $marc_flavor, $marc_records, $input_file, $batch_comment, '', $add_items, 0, 100, \&print_progress_and_commit );
     print "... finished staging MARC records\n";
 
     my $num_with_matches = 0;
     if ($match_bibs) {
-        my $matcher = C4::Matcher->fetch($match_bibs) ;
-        if (! defined $matcher) {
+        my $matcher = C4::Matcher->fetch($match_bibs);
+        if ( !defined $matcher ) {
             $matcher = C4::Matcher->new('biblio');
-            $matcher->add_simple_matchpoint('isbn', 1000, '020', 'a', -1, 0, '');
-            $matcher->add_simple_required_check('245', 'a', -1, 0, '', 
-                                            '245', 'a', -1, 0, '');
+            $matcher->add_simple_matchpoint( 'isbn', 1000, '020', 'a', -1, 0, '' );
+            $matcher->add_simple_required_check( '245', 'a', -1, 0, '', '245', 'a', -1, 0, '' );
         } else {
-            SetImportBatchMatcher($batch_id, $match_bibs);
+            SetImportBatchMatcher( $batch_id, $match_bibs );
         }
+
         # set default record overlay behavior
-        SetImportBatchOverlayAction($batch_id, ($no_replace) ? 'ignore' : 'replace');
-        SetImportBatchNoMatchAction($batch_id, 'create_new');
-        SetImportBatchItemAction($batch_id, 'always_add');
+        SetImportBatchOverlayAction( $batch_id, ($no_replace) ? 'ignore' : 'replace' );
+        SetImportBatchNoMatchAction( $batch_id, 'create_new' );
+        SetImportBatchItemAction( $batch_id, 'always_add' );
         print "... looking for matches with records already in database\n";
-        $num_with_matches = BatchFindBibDuplicates($batch_id, $matcher, 10, 100, \&print_progress_and_commit);
+        $num_with_matches = BatchFindBibDuplicates( $batch_id, $matcher, 10, 100, \&print_progress_and_commit );
         print "... finished looking for matches\n";
     }
 

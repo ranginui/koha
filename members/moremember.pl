@@ -17,7 +17,6 @@
 # with Koha; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-
 =head1 moremember.pl
 
  script to do a borrower enquiry/bring up borrower details etc
@@ -32,6 +31,7 @@
 =cut
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use CGI;
 use YAML;
@@ -49,7 +49,7 @@ use C4::Letters;
 use C4::Biblio;
 use C4::Items;
 use C4::Reserves;
-use C4::Branch; # GetBranchName
+use C4::Branch;    # GetBranchName
 use C4::Form::MessagingPreferences;
 use C4::Overdues qw/CheckBorrowerDebarred/;
 use JSON;
@@ -60,36 +60,35 @@ use JSON;
 use vars qw($debug);
 
 BEGIN {
-	$debug = $ENV{DEBUG} || 0;
+    $debug = $ENV{DEBUG} || 0;
 }
 
 my $dbh = C4::Context->dbh;
 
 my $input = new CGI;
 $debug or $debug = $input->param('debug') || 0;
-my $print = $input->param('print');
+my $print          = $input->param('print');
 my $override_limit = $input->param("override_limit") || 0;
-my @failedrenews = $input->param('failedrenew');
-my @failedreturns = $input->param('failedreturn');
-my @renewerrors   = $input->param('renewerror');    # expected to be json
-my @returnerrors  = $input->param('returnerror');   # expected to be json
-my $error = $input->param('error');
+my @failedrenews   = $input->param('failedrenew');
+my @failedreturns  = $input->param('failedreturn');
+my @renewerrors    = $input->param('renewerror');            # expected to be json
+my @returnerrors   = $input->param('returnerror');           # expected to be json
+my $error          = $input->param('error');
 my %renew_failed;
 my %return_failed;
-for (@failedrenews) { $renew_failed{$_} = decode_json(shift @renewerrors); }
-for (@failedreturns) { $return_failed{GetItemnumberFromBarcode($_)} = decode_json(shift @returnerrors); }
+for (@failedrenews) { $renew_failed{$_} = decode_json( shift @renewerrors ); }
+for (@failedreturns) { $return_failed{ GetItemnumberFromBarcode($_) } = decode_json( shift @returnerrors ); }
 
 my $template_name;
 my $quickslip = 0;
 
-if    ($print eq "page") { $template_name = "members/moremember-print.tmpl";   }
-elsif ($print eq "slip") { $template_name = "members/moremember-receipt.tmpl"; }
-elsif ($print eq "qslip") { $template_name = "members/moremember-receipt.tmpl"; $quickslip = 1; }
-else {                     $template_name = "members/moremember.tmpl";         }
+if    ( $print eq "page" )  { $template_name = "members/moremember-print.tmpl"; }
+elsif ( $print eq "slip" )  { $template_name = "members/moremember-receipt.tmpl"; }
+elsif ( $print eq "qslip" ) { $template_name = "members/moremember-receipt.tmpl"; $quickslip = 1; }
+else                        { $template_name = "members/moremember.tmpl"; }
 
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => $template_name,
+    {   template_name   => $template_name,
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
@@ -100,71 +99,70 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
 my $borrowernumber = $input->param('borrowernumber');
 
 #start the page and read in includes
-my $data           = GetMember( 'borrowernumber' => $borrowernumber );
+my $data = GetMember( 'borrowernumber' => $borrowernumber );
 my $reregistration = $input->param('reregistration');
 
 if ( not defined $data ) {
-    $template->param (unknowuser => 1);
-	output_html_with_http_headers $input, $cookie, $template->output;
+    $template->param( unknowuser => 1 );
+    output_html_with_http_headers $input, $cookie, $template->output;
     exit;
 }
 
 # re-reregistration function to automatic calcul of date expiry
 if ( $reregistration eq 'y' ) {
-	$data->{'dateexpiry'} = ExtendMemberSubscriptionTo( $borrowernumber );
+    $data->{'dateexpiry'} = ExtendMemberSubscriptionTo($borrowernumber);
 }
 
 my $category_type = $data->{'category_type'};
 
 ### $category_type
 
-# in template <TMPL_IF name="I"> => instutitional (A for Adult& C for children) 
-$template->param( $data->{'categorycode'} => 1 ); 
+# in template <TMPL_IF name="I"> => instutitional (A for Adult& C for children)
+$template->param( $data->{'categorycode'} => 1 );
 
-$debug and printf STDERR "dates (enrolled,expiry,birthdate) raw: (%s, %s, %s)\n", map {$data->{$_}} qw(dateenrolled dateexpiry dateofbirth);
+$debug and printf STDERR "dates (enrolled,expiry,birthdate) raw: (%s, %s, %s)\n", map { $data->{$_} } qw(dateenrolled dateexpiry dateofbirth);
 foreach (qw(dateenrolled dateexpiry dateofbirth)) {
-		my $userdate = $data->{$_};
-		unless ($userdate) {
-			$debug and warn sprintf "Empty \$data{%12s}", $_;
-			$data->{$_} = '';
-			next;
-		}
-		$userdate = C4::Dates->new($userdate,'iso')->output('syspref');
-		$data->{$_} = $userdate || '';
-		$template->param( $_ => $userdate );
+    my $userdate = $data->{$_};
+    unless ($userdate) {
+        $debug and warn sprintf "Empty \$data{%12s}", $_;
+        $data->{$_} = '';
+        next;
+    }
+    $userdate = C4::Dates->new( $userdate, 'iso' )->output('syspref');
+    $data->{$_} = $userdate || '';
+    $template->param( $_ => $userdate );
 }
 
 for (qw(gonenoaddress lost borrowernotes)) {
-	 $data->{$_} and $template->param(flagged => 1) and last;
+    $data->{$_} and $template->param( flagged => 1 ) and last;
 }
 
 my $debar = CheckBorrowerDebarred($borrowernumber);
-if($debar){
-    $template->param(userdebarred => 1,flagged=>1);
-    if( $debar ne "9999-12-31"){
-        $template->param(userdebarreddate => C4::Dates::format_date($debar));
-        $template->param(debarredcomment => $data->{debarredcomment});
+if ($debar) {
+    $template->param( userdebarred => 1, flagged => 1 );
+    if ( $debar ne "9999-12-31" ) {
+        $template->param( userdebarreddate => C4::Dates::format_date($debar) );
+        $template->param( debarredcomment  => $data->{debarredcomment} );
     }
 }
 
 $data->{'ethnicity'} = fixEthnicity( $data->{'ethnicity'} );
-$data->{ "sex_".$data->{'sex'}."_p" } = 1;
+$data->{ "sex_" . $data->{'sex'} . "_p" } = 1;
 
 my $catcode;
-if ( $category_type eq 'C') {
-	if ($data->{'guarantorid'} ne '0' ) {
-    	my $data2 = GetMember( 'borrowernumber' => $data->{'guarantorid'} );
-    	foreach (qw(address city B_address B_city phone mobile zipcode country B_country)) {
-    	    $data->{$_} = $data2->{$_};
-    	}
-   }
-   my  ( $catcodes, $labels ) =  GetborCatFromCatType( 'A', 'WHERE category_type = ?' );
-   my $cnt = scalar(@$catcodes);
+if ( $category_type eq 'C' ) {
+    if ( $data->{'guarantorid'} ne '0' ) {
+        my $data2 = GetMember( 'borrowernumber' => $data->{'guarantorid'} );
+        foreach (qw(address city B_address B_city phone mobile zipcode country B_country)) {
+            $data->{$_} = $data2->{$_};
+        }
+    }
+    my ( $catcodes, $labels ) = GetborCatFromCatType( 'A', 'WHERE category_type = ?' );
+    my $cnt = scalar(@$catcodes);
 
-   $template->param( 'CATCODE_MULTI' => 1) if $cnt > 1;
-   $template->param( 'catcode' =>    $catcodes->[0])  if $cnt == 1;
+    $template->param( 'CATCODE_MULTI' => 1 ) if $cnt > 1;
+    $template->param( 'catcode' => $catcodes->[0] ) if $cnt == 1;
 }
-
 
 if ( $data->{'ethnicity'} || $data->{'ethnotes'} ) {
     $template->param( printethnicityline => 1 );
@@ -179,29 +177,27 @@ if ( $category_type eq 'A' ) {
     my ( $count, $guarantees ) = GetGuarantees( $data->{'borrowernumber'} );
     my @guaranteedata;
     for ( my $i = 0 ; $i < $count ; $i++ ) {
-        push(@guaranteedata,
-            {
-                borrowernumber => $guarantees->[$i]->{'borrowernumber'},
+        push(
+            @guaranteedata,
+            {   borrowernumber => $guarantees->[$i]->{'borrowernumber'},
                 cardnumber     => $guarantees->[$i]->{'cardnumber'},
-                name           => $guarantees->[$i]->{'firstname'} . " "
-                                . $guarantees->[$i]->{'surname'}
+                name           => $guarantees->[$i]->{'firstname'} . " " . $guarantees->[$i]->{'surname'}
             }
         );
     }
     $template->param( guaranteeloop => \@guaranteedata );
     ( $template->param( adultborrower => 1 ) ) if ( $category_type eq 'A' );
-}
-else {
-    if ($data->{'guarantorid'}){
-	    my ($guarantor) = GetMember( 'borrowernumber' =>$data->{'guarantorid'});
-		$template->param(guarantor => 1);
-		foreach (qw(borrowernumber cardnumber firstname surname)) {        
-			  $template->param("guarantor$_" => $guarantor->{$_});
+} else {
+    if ( $data->{'guarantorid'} ) {
+        my ($guarantor) = GetMember( 'borrowernumber' => $data->{'guarantorid'} );
+        $template->param( guarantor => 1 );
+        foreach (qw(borrowernumber cardnumber firstname surname)) {
+            $template->param( "guarantor$_" => $guarantor->{$_} );
         }
     }
-	if ($category_type eq 'C'){
-		$template->param('C' => 1);
-	}
+    if ( $category_type eq 'C' ) {
+        $template->param( 'C' => 1 );
+    }
 }
 
 my %bor;
@@ -215,14 +211,13 @@ if ( C4::Context->preference("IndependantBranches") ) {
         $samebranch = ( $data->{'branchcode'} eq $userenv->{branch} );
     }
     $samebranch = 1 if ( $userenv->{flags} % 2 == 1 );
-}else{
+} else {
     $samebranch = 1;
 }
-my $branchdetail = GetBranchDetail( $data->{'branchcode'});
+my $branchdetail = GetBranchDetail( $data->{'branchcode'} );
 $data->{'branchname'} = $branchdetail->{branchname};
 
-
-my ( $total, $accts, $numaccts) = GetMemberAccountRecords( $borrowernumber );
+my ( $total, $accts, $numaccts ) = GetMemberAccountRecords($borrowernumber);
 my $lib1 = &GetSortDetails( "Bsort1", $data->{'sort1'} );
 my $lib2 = &GetSortDetails( "Bsort2", $data->{'sort2'} );
 $template->param( lib1 => $lib1 ) if ($lib1);
@@ -230,58 +225,59 @@ $template->param( lib2 => $lib2 ) if ($lib2);
 
 # current issues
 #
-my $issue = GetPendingIssues($borrowernumber);
-my $issuecount = scalar(@$issue);
+my $issue       = GetPendingIssues($borrowernumber);
+my $issuecount  = scalar(@$issue);
 my $roaddetails = &GetRoadTypeDetails( $data->{'streettype'} );
-my $today       = POSIX::strftime("%Y-%m-%d", localtime);	# iso format
+my $today       = POSIX::strftime( "%Y-%m-%d", localtime );       # iso format
 my @issuedata;
 my $overdues_exist = 0;
-my $totalprice = 0;
+my $totalprice     = 0;
 for ( my $i = 0 ; $i < $issuecount ; $i++ ) {
-    my $datedue = $issue->[$i]{'date_due'};
-    my $issuedate = $issue->[$i]{'issuedate'};
+    my $datedue    = $issue->[$i]{'date_due'};
+    my $issuedate  = $issue->[$i]{'issuedate'};
     my $itemnumber = $issue->[$i]{'itemnumber'};
-    $issue->[$i]{'date_due'}  = C4::Dates->new($issue->[$i]{'date_due'}, 'iso')->output('syspref');
-    $issue->[$i]{'issuedate'} = C4::Dates->new($issue->[$i]{'issuedate'},'iso')->output('syspref');
+    $issue->[$i]{'date_due'}  = C4::Dates->new( $issue->[$i]{'date_due'},  'iso' )->output('syspref');
+    $issue->[$i]{'issuedate'} = C4::Dates->new( $issue->[$i]{'issuedate'}, 'iso' )->output('syspref');
     my $biblionumber = $issue->[$i]{'biblionumber'};
-    my %row = %{ $issue->[$i] };
+    my %row          = %{ $issue->[$i] };
     $totalprice += $issue->[$i]{'replacementprice'};
     $row{'replacementprice'} = $issue->[$i]{'replacementprice'};
+
     # item lost, damaged loops
-    if ($row{'itemlost'}) {
-        my $fw = GetFrameworkCode($issue->[$i]{'biblionumber'});
-        my $category = GetAuthValCode('items.itemlost',$fw);
-        my $lostdbh = C4::Context->dbh;
-        my $sth = $lostdbh->prepare("select lib from authorised_values where category=? and authorised_value =? ");
-        $sth->execute($category, $row{'itemlost'});
+    if ( $row{'itemlost'} ) {
+        my $fw       = GetFrameworkCode( $issue->[$i]{'biblionumber'} );
+        my $category = GetAuthValCode( 'items.itemlost', $fw );
+        my $lostdbh  = C4::Context->dbh;
+        my $sth      = $lostdbh->prepare("select lib from authorised_values where category=? and authorised_value =? ");
+        $sth->execute( $category, $row{'itemlost'} );
         my $loststat = $sth->fetchrow;
         if ($loststat) {
-           $row{'itemlost'} = $loststat;
+            $row{'itemlost'} = $loststat;
         }
     }
-    if ($row{'damaged'}) {
-        my $fw = GetFrameworkCode($issue->[$i]{'biblionumber'});
-        my $category = GetAuthValCode('items.damaged',$fw);
+    if ( $row{'damaged'} ) {
+        my $fw         = GetFrameworkCode( $issue->[$i]{'biblionumber'} );
+        my $category   = GetAuthValCode( 'items.damaged', $fw );
         my $damageddbh = C4::Context->dbh;
-        my $sth = $damageddbh->prepare("select lib from authorised_values where category=? and authorised_value =? ");
-        $sth->execute($category, $row{'damaged'});
+        my $sth        = $damageddbh->prepare("select lib from authorised_values where category=? and authorised_value =? ");
+        $sth->execute( $category, $row{'damaged'} );
         my $damagedstat = $sth->fetchrow;
         if ($damagedstat) {
-           $row{'itemdamaged'} = $damagedstat;
+            $row{'itemdamaged'} = $damagedstat;
         }
     }
+
     # end lost, damaged
     if ( $datedue lt $today ) {
         $overdues_exist = 1;
         $row{'red'} = 1;
-	}
-	 if ( $issuedate eq $today ) {
-        $row{'today'} = 1; 
-	 }
+    }
+    if ( $issuedate eq $today ) {
+        $row{'today'} = 1;
+    }
 
     #find the charge for an item
-    my ( $charge, $itemtype ) =
-      GetIssuingCharges( $itemnumber, $borrowernumber );
+    my ( $charge, $itemtype ) = GetIssuingCharges( $itemnumber, $borrowernumber );
 
     my $itemtypeinfo = getitemtypeinfo($itemtype);
     $row{'itemtype_description'} = $itemtypeinfo->{description};
@@ -290,51 +286,51 @@ for ( my $i = 0 ; $i < $issuecount ; $i++ ) {
     # find the collection of an item
     my $collection;
     my $authvals = GetAuthorisedValues('CCODE');
-    for ( @$authvals ) {
-        $collection = $_->{'lib'} if $_->{'authorised_value'} eq $row{'ccode'}
+    for (@$authvals) {
+        $collection = $_->{'lib'} if $_->{'authorised_value'} eq $row{'ccode'};
     }
     $row{'collection'} = $collection;
 
     $row{'charge'} = sprintf( "%.2f", $charge );
 
-	my ( $renewokay,$renewerror ) = CanBookBeRenewed( $borrowernumber, $itemnumber);
-    if (defined $renewerror->{message}){
-            $row{"norenew_reason_".$renewerror->{message}} = 1;
-		    $row{'norenew'} = 1;
+    my ( $renewokay, $renewerror ) = CanBookBeRenewed( $borrowernumber, $itemnumber );
+    if ( defined $renewerror->{message} ) {
+        $row{ "norenew_reason_" . $renewerror->{message} } = 1;
+        $row{'norenew'} = 1;
     }
     $row{$_} = $renewerror->{$_} for (qw(renewals renewalsallowed reserves));
     $row{renewals} = $issue->[$i]{renewals};
     $row{renewals} ||= 0;
     my ( $restype, $reserves ) = CheckReserves( $issue->[$i]->{'itemnumber'} );
-    if ($restype){
-		    $row{'reserved'} = 1;
-            $row{$restype}=1
+    if ($restype) {
+        $row{'reserved'} = 1;
+        $row{$restype} = 1;
     }
-	$row{'can_confirm'} = $row{'norenew'} && C4::Context->preference("AllowRenewalLimitOverride");#( !$renewokay && $renewerror->{message} ne 'on_reserve' );
-	$row{'renew_failed'}  = defined($renew_failed{ $itemnumber });
-	$row{'return_failed'} = defined($return_failed{$itemnumber});   
-    if ($row{'return_failed'}){
-            $row{'return_error_'.$return_failed{$issue->[$i]->{'itemnumber'}}->{message}}=1;
-            delete $return_failed{$issue->[$i]->{'itemnumber'}};
+    $row{'can_confirm'}   = $row{'norenew'} && C4::Context->preference("AllowRenewalLimitOverride");    #( !$renewokay && $renewerror->{message} ne 'on_reserve' );
+    $row{'renew_failed'}  = defined( $renew_failed{$itemnumber} );
+    $row{'return_failed'} = defined( $return_failed{$itemnumber} );
+    if ( $row{'return_failed'} ) {
+        $row{ 'return_error_' . $return_failed{ $issue->[$i]->{'itemnumber'} }->{message} } = 1;
+        delete $return_failed{ $issue->[$i]->{'itemnumber'} };
     }
-    if ( $row{'renew_failed'}){
-            $row{'norenew_reason_'.$renew_failed{$issue->[$i]->{'itemnumber'}}->{message}}=1;
+    if ( $row{'renew_failed'} ) {
+        $row{ 'norenew_reason_' . $renew_failed{ $issue->[$i]->{'itemnumber'} }->{message} } = 1;
     }
     warn Dump(%row);
- push( @issuedata, \%row );
+    push( @issuedata, \%row );
 }
 
 #BUILDS the LOOP for reserves when returning books with reserves
 my @reserveswaiting;
-foreach my $itemnumber (keys %return_failed){
-   next unless $return_failed{$itemnumber}->{'reservesdata'};
-   my $hashdata=$return_failed{$itemnumber}->{'reservesdata'};
-   $hashdata->{circborrowernumber}=$borrowernumber;
-   $hashdata->{script_name}=$input->script_name();
-   push @reserveswaiting, $hashdata if (%$hashdata);
+foreach my $itemnumber ( keys %return_failed ) {
+    next unless $return_failed{$itemnumber}->{'reservesdata'};
+    my $hashdata = $return_failed{$itemnumber}->{'reservesdata'};
+    $hashdata->{circborrowernumber} = $borrowernumber;
+    $hashdata->{script_name}        = $input->script_name();
+    push @reserveswaiting, $hashdata if (%$hashdata);
 }
 
-$template->param(reserves_waiting=>\@reserveswaiting);
+$template->param( reserves_waiting => \@reserveswaiting );
 
 ### ###############################################################################
 # BUILD HTML
@@ -343,24 +339,23 @@ if ($borrowernumber) {
 
     # new op dev
     # now we show the status of the borrower's reservations
-    my @borrowerreserv = GetReservesFromBorrowernumber($borrowernumber );
+    my @borrowerreserv = GetReservesFromBorrowernumber($borrowernumber);
     my @reservloop;
     foreach my $num_res (@borrowerreserv) {
         my %getreserv;
         my $getiteminfo  = GetBiblioFromItemNumber( $num_res->{'itemnumber'} );
         my $itemtypeinfo = getitemtypeinfo( $getiteminfo->{'itemtype'} );
-        my ( $transfertwhen, $transfertfrom, $transfertto ) =
-            GetTransfers( $num_res->{'itemnumber'} );
+        my ( $transfertwhen, $transfertfrom, $transfertto ) = GetTransfers( $num_res->{'itemnumber'} );
 
         foreach (qw(waiting transfered nottransfered)) {
             $getreserv{$_} = 0;
         }
-        $getreserv{reservedate}  = C4::Dates->new($num_res->{'reservedate'},'iso')->output('syspref');
+        $getreserv{reservedate} = C4::Dates->new( $num_res->{'reservedate'}, 'iso' )->output('syspref');
         foreach (qw(biblionumber title author itemcallnumber )) {
             $getreserv{$_} = $getiteminfo->{$_};
         }
-        $getreserv{barcodereserv}  = $getiteminfo->{'barcode'};
-        $getreserv{itemtype}  = $itemtypeinfo->{'description'};
+        $getreserv{barcodereserv} = $getiteminfo->{'barcode'};
+        $getreserv{itemtype}      = $itemtypeinfo->{'description'};
 
         # 		check if we have a waitin status for reservations
         if ( $num_res->{'found'} eq 'W' ) {
@@ -372,28 +367,26 @@ if ($borrowernumber) {
         if ($transfertwhen) {
             $getreserv{color}      = 'transfered';
             $getreserv{transfered} = 1;
-            $getreserv{datesent}   = C4::Dates->new($transfertwhen, 'iso')->output('syspref') or die "Cannot get new($transfertwhen, 'iso') from C4::Dates";
+            $getreserv{datesent}   = C4::Dates->new( $transfertwhen, 'iso' )->output('syspref') or die "Cannot get new($transfertwhen, 'iso') from C4::Dates";
             $getreserv{frombranch} = GetBranchName($transfertfrom);
         }
 
         if ( ( $getiteminfo->{'holdingbranch'} ne $num_res->{'branchcode'} )
-            and not $transfertwhen )
-        {
+            and not $transfertwhen ) {
             $getreserv{nottransfered}   = 1;
-            $getreserv{nottransferedby} =
-                GetBranchName( $getiteminfo->{'holdingbranch'} );
+            $getreserv{nottransferedby} = GetBranchName( $getiteminfo->{'holdingbranch'} );
         }
 
-# 		if we don't have a reserv on item, we put the biblio infos and the waiting position
+        # 		if we don't have a reserv on item, we put the biblio infos and the waiting position
         if ( $getiteminfo->{'title'} eq '' ) {
             my $getbibinfo = GetBiblioData( $num_res->{'biblionumber'} );
             my $getbibtype = getitemtypeinfo( $getbibinfo->{'itemtype'} );
-            $getreserv{color}           = 'inwait';
-            $getreserv{title}           = $getbibinfo->{'title'};
-            $getreserv{nottransfered}   = 0;
-            $getreserv{itemtype}        = $getbibtype->{'description'};
-            $getreserv{author}          = $getbibinfo->{'author'};
-            $getreserv{biblionumber}  = $num_res->{'biblionumber'};	
+            $getreserv{color}         = 'inwait';
+            $getreserv{title}         = $getbibinfo->{'title'};
+            $getreserv{nottransfered} = 0;
+            $getreserv{itemtype}      = $getbibtype->{'description'};
+            $getreserv{author}        = $getbibinfo->{'author'};
+            $getreserv{biblionumber}  = $num_res->{'biblionumber'};
         }
         $getreserv{waitingposition} = $num_res->{'priority'};
 
@@ -401,9 +394,10 @@ if ($borrowernumber) {
     }
 
     # return result to the template
-    $template->param( reservloop => \@reservloop,
+    $template->param(
+        reservloop  => \@reservloop,
         countreserv => scalar @reservloop,
-	 );
+    );
 }
 
 # current alert subscriptions
@@ -415,14 +409,14 @@ foreach (@$alerts) {
 
 my $candeleteuser;
 my $userenv = C4::Context->userenv;
-if($userenv->{flags} % 2 == 1){
+if ( $userenv->{flags} % 2 == 1 ) {
     $candeleteuser = 1;
-}elsif ( C4::Context->preference("IndependantBranches") ) {
+} elsif ( C4::Context->preference("IndependantBranches") ) {
     $candeleteuser = ( $data->{'branchcode'} eq $userenv->{branch} );
-}else{
-    if( C4::Auth::getuserflags( $userenv->{flags},$userenv->{number})->{borrowers} ) {
+} else {
+    if ( C4::Auth::getuserflags( $userenv->{flags}, $userenv->{number} )->{borrowers} ) {
         $candeleteuser = 1;
-    }else{
+    } else {
         $candeleteuser = 0;
     }
 }
@@ -430,54 +424,55 @@ if($userenv->{flags} % 2 == 1){
 # check to see if patron's image exists in the database
 # basically this gives us a template var to condition the display of
 # patronimage related interface on
-my ($picture, $dberror) = GetPatronImage($data->{'cardnumber'});
+my ( $picture, $dberror ) = GetPatronImage( $data->{'cardnumber'} );
 $template->param( picture => 1 ) if $picture;
 
-my $branch=C4::Context->userenv->{'branch'};
+my $branch = C4::Context->userenv->{'branch'};
 
-SetMemberInfosInTemplate($borrowernumber, $template);
+SetMemberInfosInTemplate( $borrowernumber, $template );
 
-if (C4::Context->preference('ExtendedPatronAttributes')) {
-    $template->param(ExtendedPatronAttributes => 1);
-    $template->param(patron_attributes => C4::Members::Attributes::GetBorrowerAttributes($borrowernumber));
+if ( C4::Context->preference('ExtendedPatronAttributes') ) {
+    $template->param( ExtendedPatronAttributes => 1 );
+    $template->param( patron_attributes        => C4::Members::Attributes::GetBorrowerAttributes($borrowernumber) );
     my @types = C4::Members::AttributeTypes::GetAttributeTypes();
-    if (scalar(@types) == 0) {
-        $template->param(no_patron_attribute_types => 1);
+    if ( scalar(@types) == 0 ) {
+        $template->param( no_patron_attribute_types => 1 );
     }
 }
 
-if (C4::Context->preference('EnhancedMessagingPreferences')) {
-    C4::Form::MessagingPreferences::set_form_values({ borrowernumber => $borrowernumber }, $template);
-    $template->param(messaging_form_inactive => 1);
-    $template->param(SMSSendDriver => C4::Context->preference("SMSSendDriver"));
-    $template->param(SMSnumber     => defined $data->{'smsalertnumber'} ? $data->{'smsalertnumber'} : $data->{'mobile'});
+if ( C4::Context->preference('EnhancedMessagingPreferences') ) {
+    C4::Form::MessagingPreferences::set_form_values( { borrowernumber => $borrowernumber }, $template );
+    $template->param( messaging_form_inactive => 1 );
+    $template->param( SMSSendDriver           => C4::Context->preference("SMSSendDriver") );
+    $template->param( SMSnumber               => defined $data->{'smsalertnumber'} ? $data->{'smsalertnumber'} : $data->{'mobile'} );
 }
 
 $template->param(
-    detailview => 1,
+    detailview                => 1,
     AllowRenewalLimitOverride => C4::Context->preference("AllowRenewalLimitOverride"),
-    DHTMLcalendar_dateformat => C4::Dates->DHTMLcalendar(),
-    CANDELETEUSER    => $candeleteuser,
-    roaddetails     => $roaddetails,
-    borrowernumber  => $borrowernumber,
-    categoryname    => $data->{'description'},
-    reregistration  => $reregistration,
-    branch          => $branch,
-    totalprice      => sprintf("%.2f", $totalprice),
-    totaldue        => sprintf("%.2f", $total),
-    totaldue_raw    => $total,
-    issueloop       => \@issuedata,
-	issuecount => $issuecount,
-    overdues_exist  => $overdues_exist,
-    error           => $error,
-    $error          => 1,
-    StaffMember     => ($category_type eq 'S'),
-    is_child        => ($category_type eq 'C'),
-#   reserveloop     => \@reservedata,
-    dateformat      => C4::Context->preference("dateformat"),
-    "dateformat_" . (C4::Context->preference("dateformat") || '') => 1,
-    samebranch     => $samebranch,
-    quickslip		  => $quickslip,
+    DHTMLcalendar_dateformat  => C4::Dates->DHTMLcalendar(),
+    CANDELETEUSER             => $candeleteuser,
+    roaddetails               => $roaddetails,
+    borrowernumber            => $borrowernumber,
+    categoryname              => $data->{'description'},
+    reregistration            => $reregistration,
+    branch                    => $branch,
+    totalprice                => sprintf( "%.2f", $totalprice ),
+    totaldue                  => sprintf( "%.2f", $total ),
+    totaldue_raw              => $total,
+    issueloop                 => \@issuedata,
+    issuecount                => $issuecount,
+    overdues_exist            => $overdues_exist,
+    error                     => $error,
+    $error                    => 1,
+    StaffMember               => ( $category_type eq 'S' ),
+    is_child                  => ( $category_type eq 'C' ),
+
+    #   reserveloop     => \@reservedata,
+    dateformat => C4::Context->preference("dateformat"),
+    "dateformat_" . ( C4::Context->preference("dateformat") || '' ) => 1,
+    samebranch => $samebranch,
+    quickslip  => $quickslip,
 );
 
 output_html_with_http_headers $input, $cookie, $template->output;

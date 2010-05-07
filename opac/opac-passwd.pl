@@ -34,8 +34,7 @@ my $query = new CGI;
 my $dbh   = C4::Context->dbh;
 
 my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
-    {
-        template_name   => "opac-passwd.tmpl",
+    {   template_name   => "opac-passwd.tmpl",
         query           => $query,
         type            => "opac",
         authnotrequired => 0,
@@ -45,62 +44,57 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
 );
 
 # get borrower information ....
-my ( $borr ) = GetMemberDetails( $borrowernumber );
-my $sth =  $dbh->prepare("UPDATE borrowers SET password = ? WHERE borrowernumber=?");
+my ($borr)     = GetMemberDetails($borrowernumber);
+my $sth        = $dbh->prepare("UPDATE borrowers SET password = ? WHERE borrowernumber=?");
 my $minpasslen = C4::Context->preference("minPasswordLength");
 if (   $query->param('Oldkey')
     && $query->param('Newkey')
-    && $query->param('Confirm') )
-{
+    && $query->param('Confirm') ) {
     if ( goodkey( $dbh, $borrowernumber, $query->param('Oldkey') ) ) {
         if ( $query->param('Newkey') eq $query->param('Confirm')
-            && length( $query->param('Confirm') ) >= $minpasslen )
-        {    # Record password
+            && length( $query->param('Confirm') ) >= $minpasslen ) {    # Record password
             my $clave = md5_base64( $query->param('Newkey') );
             $sth->execute( $clave, $borrowernumber );
             $template->param( 'password_updated' => '1' );
             $template->param( 'borrowernumber'   => $borrowernumber );
-        }
-        elsif ( $query->param('Newkey') ne $query->param('Confirm') ) {
+        } elsif ( $query->param('Newkey') ne $query->param('Confirm') ) {
             $template->param( 'Ask_data'       => '1' );
             $template->param( 'Error_messages' => '1' );
             $template->param( 'PassMismatch'   => '1' );
-        }
-        elsif ( length( $query->param('Confirm') ) < $minpasslen ) {
+        } elsif ( length( $query->param('Confirm') ) < $minpasslen ) {
             $template->param( 'Ask_data'       => '1' );
             $template->param( 'Error_messages' => '1' );
             $template->param( 'ShortPass'      => '1' );
-        }
-        else {
+        } else {
             $template->param( 'Error_messages' => '1' );
         }
-    }
-    else {
+    } else {
         $template->param( 'Ask_data'       => '1' );
         $template->param( 'Error_messages' => '1' );
         $template->param( 'WrongPass'      => '1' );
     }
-}
-else {
-   
+} else {
+
     # Called Empty, Ask for data.
     $template->param( 'Ask_data' => '1' );
-	if (!$query->param('Oldkey') && ($query->param('Newkey') || $query->param('Confirm'))){
-		# Old password is empty but one of the others isnt
-		$template->param( 'Error_messages' => '1' );
-		$template->param( 'WrongPass'      => '1' );
-	}
-	elsif ($query->param('Oldkey') && (!$query->param('Newkey') || !$query->param('Confirm'))){
-		# Oldpassword is entered but one of the other fields is empty
-		$template->param( 'Error_messages' => '1' );
-		$template->param( 'PassMismatch'   => '1' );
-	}
+    if ( !$query->param('Oldkey') && ( $query->param('Newkey') || $query->param('Confirm') ) ) {
+
+        # Old password is empty but one of the others isnt
+        $template->param( 'Error_messages' => '1' );
+        $template->param( 'WrongPass'      => '1' );
+    } elsif ( $query->param('Oldkey') && ( !$query->param('Newkey') || !$query->param('Confirm') ) ) {
+
+        # Oldpassword is entered but one of the other fields is empty
+        $template->param( 'Error_messages' => '1' );
+        $template->param( 'PassMismatch'   => '1' );
+    }
 }
 
-$template->param(firstname => $borr->{'firstname'},
-							surname => $borr->{'surname'},
-							minpasslen => $minpasslen,
-							passwdview => 1,
+$template->param(
+    firstname  => $borr->{'firstname'},
+    surname    => $borr->{'surname'},
+    minpasslen => $minpasslen,
+    passwdview => 1,
 );
 
 output_html_with_http_headers $query, $cookie, $template->output;
@@ -108,13 +102,13 @@ output_html_with_http_headers $query, $cookie, $template->output;
 sub goodkey {
     my ( $dbh, $borrowernumber, $key ) = @_;
 
-    my $sth =
-      $dbh->prepare("SELECT password FROM borrowers WHERE borrowernumber=?");
+    my $sth = $dbh->prepare("SELECT password FROM borrowers WHERE borrowernumber=?");
     $sth->execute($borrowernumber);
     if ( $sth->rows ) {
         my ($md5password) = $sth->fetchrow;
-        if ( md5_base64($key) eq $md5password ) { return 1; }
-        else { return 0; }
+        if   ( md5_base64($key) eq $md5password ) { return 1; }
+        else                                      { return 0; }
+    } else {
+        return 0;
     }
-    else { return 0; }
 }

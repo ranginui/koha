@@ -18,6 +18,7 @@ package install_misc::UpgradeBackup;
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use File::Compare qw(compare);
 use Cwd qw(cwd);
@@ -28,8 +29,8 @@ use Exporter;
 
 use vars qw(@ISA @EXPORT $VERSION);
 
-@ISA = ('Exporter');
-@EXPORT = ('backup_changed_files');
+@ISA     = ('Exporter');
+@EXPORT  = ('backup_changed_files');
 $VERSION = '3.00';
 
 =head1 NAME
@@ -44,39 +45,42 @@ creates backups of files updated during an upgrade.
 =cut
 
 sub backup_changed_files {
-    my $from_to = shift;
-    my $suffix = shift;
-    my $verbose = shift;
+    my $from_to       = shift;
+    my $suffix        = shift;
+    my $verbose       = shift;
     my $inc_uninstall = shift;
 
     my $cwd = cwd();
-    foreach my $sourceroot (sort keys %$from_to) {
+    foreach my $sourceroot ( sort keys %$from_to ) {
         my $targetroot = $from_to->{$sourceroot};
-        my $currdir = File::Spec->catdir($cwd, $sourceroot);
+        my $currdir = File::Spec->catdir( $cwd, $sourceroot );
 
         next unless -d $currdir;
 
         chdir $currdir or die "could not change to $currdir: $!";
-       
+
         # expand path
-        find(sub {
-            return unless -f $_;
-            my $filename = $_;
+        find(
+            sub {
+                return unless -f $_;
+                my $filename = $_;
 
-            my $targetdir  = File::Spec->catdir($targetroot, $File::Find::dir);
-            my $targetfile = File::Spec->catfile($targetdir, $filename);
-            my $sourcedir  = File::Spec->catdir($currdir, $File::Find::dir);
-            my $sourcefile = File::Spec->catfile($sourcedir, $filename);
+                my $targetdir = File::Spec->catdir( $targetroot, $File::Find::dir );
+                my $targetfile = File::Spec->catfile( $targetdir, $filename );
+                my $sourcedir = File::Spec->catdir( $currdir, $File::Find::dir );
+                my $sourcefile = File::Spec->catfile( $sourcedir, $filename );
 
-            if (-f $targetfile) {
-                my ($size) = (stat $sourcefile)[7];
-                my $backup = $targetfile . $suffix;
-                unless (-s $targetfile == $size and not compare($sourcefile, $targetfile)) {
-                    print "Backed up $targetfile to $backup\n";
-                    File::Copy::copy($targetfile, $backup);        
+                if ( -f $targetfile ) {
+                    my ($size) = ( stat $sourcefile )[7];
+                    my $backup = $targetfile . $suffix;
+                    unless ( -s $targetfile == $size and not compare( $sourcefile, $targetfile ) ) {
+                        print "Backed up $targetfile to $backup\n";
+                        File::Copy::copy( $targetfile, $backup );
+                    }
                 }
-            }
-        }, ".");
+            },
+            "."
+        );
     }
 }
 

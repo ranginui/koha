@@ -31,21 +31,22 @@ use C4::Acquisition;
 use C4::Koha;    # XXX subfield_is_koha_internal_p
 use C4::Biblio;
 
-my $query        = new CGI;
-my $op           = $query->param('op');
+my $query = new CGI;
+my $op    = $query->param('op');
 $op ||= q{};
 my $authtypecode = $query->param('authtypecode');
 $authtypecode ||= q{};
-my $dbh          = C4::Context->dbh;
+my $dbh = C4::Context->dbh;
 
 my $authid = $query->param('authid');
 my ( $template, $loggedinuser, $cookie );
 
 my $authtypes = getauthtypes;
 my @authtypesloop;
-foreach my $thisauthtype ( sort { $authtypes->{$a}{'authtypetext'} cmp $authtypes->{$b}{'authtypetext'} }
-    keys %$authtypes )
-{
+foreach my $thisauthtype (
+    sort { $authtypes->{$a}{'authtypetext'} cmp $authtypes->{$b}{'authtypetext'} }
+    keys %$authtypes
+  ) {
     my %row = (
         value        => $thisauthtype,
         selected     => $thisauthtype eq $authtypecode,
@@ -66,13 +67,11 @@ if ( $op eq "do_search" ) {
     my $resultsperpage = $query->param('resultsperpage') || 20;
 
     my ( $results, $total ) =
-      SearchAuthorities( \@marclist, \@and_or, \@excluding, \@operator, \@value,
-        ( $startfrom - 1 ) * $resultsperpage,
-        $resultsperpage, $authtypecode, $orderby );
-#     use Data::Dumper; warn Data::Dumper::Dumper(@$results);
+      SearchAuthorities( \@marclist, \@and_or, \@excluding, \@operator, \@value, ( $startfrom - 1 ) * $resultsperpage, $resultsperpage, $authtypecode, $orderby );
+
+    #     use Data::Dumper; warn Data::Dumper::Dumper(@$results);
     ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-        {
-            template_name   => "authorities/searchresultlist.tmpl",
+        {   template_name   => "authorities/searchresultlist.tmpl",
             query           => $query,
             type            => 'intranet',
             authnotrequired => 0,
@@ -88,26 +87,25 @@ if ( $op eq "do_search" ) {
     # next/previous would not work anymore
     my @marclist_ini = $query->param('marclist');
     for ( my $i = 0 ; $i <= $#marclist ; $i++ ) {
-        if ($value[$i]){   
-          push @field_data, { term => "marclist",  val => $marclist_ini[$i] };
-          if (!defined $and_or[$i]) {
-              $and_or[$i] = q{};
-          }
-          push @field_data, { term => "and_or",    val => $and_or[$i] };
-          if (!defined $excluding[$i]) {
-              $excluding[$i] = q{};
-          }
-          push @field_data, { term => "excluding", val => $excluding[$i] };
-          push @field_data, { term => "operator",  val => $operator[$i] };
-          push @field_data, { term => "value",     val => $value[$i] };
-        }    
+        if ( $value[$i] ) {
+            push @field_data, { term => "marclist", val => $marclist_ini[$i] };
+            if ( !defined $and_or[$i] ) {
+                $and_or[$i] = q{};
+            }
+            push @field_data, { term => "and_or", val => $and_or[$i] };
+            if ( !defined $excluding[$i] ) {
+                $excluding[$i] = q{};
+            }
+            push @field_data, { term => "excluding", val => $excluding[$i] };
+            push @field_data, { term => "operator",  val => $operator[$i] };
+            push @field_data, { term => "value",     val => $value[$i] };
+        }
     }
 
     # construction of the url of each page
     my $base_url =
-        'authorities-home.pl?'
-      . join( '&amp;', map { $_->{term} . '=' . $_->{val} } @field_data )
-      . '&amp;'
+        'authorities-home.pl?' 
+      . join( '&amp;', map { $_->{term} . '=' . $_->{val} } @field_data ) . '&amp;'
       . join(
         '&amp;',
         map { $_->{term} . '=' . $_->{val} } (
@@ -121,38 +119,32 @@ if ( $op eq "do_search" ) {
 
     my $from = ( $startfrom - 1 ) * $resultsperpage + 1;
     my $to;
-    if (!defined $total) {
+    if ( !defined $total ) {
         $total = 0;
     }
 
     if ( $total < $startfrom * $resultsperpage ) {
         $to = $total;
-    }
-    else {
+    } else {
         $to = $startfrom * $resultsperpage;
     }
 
     $template->param( result => $results ) if $results;
 
     $template->param(
-        pagination_bar => pagination_bar(
-            $base_url,  int( $total / $resultsperpage ) + 1,
-            $startfrom, 'startfrom'
-        ),
-        total     => $total,
-        from      => $from,
-        to        => $to,
+        pagination_bar => pagination_bar( $base_url, int( $total / $resultsperpage ) + 1, $startfrom, 'startfrom' ),
+        total          => $total,
+        from           => $from,
+        to             => $to,
         isEDITORS => $authtypecode eq 'EDITORS',
     );
 
-}
-elsif ( $op eq "delete" ) {
+} elsif ( $op eq "delete" ) {
 
     &DelAuthority( $authid, 1 );
 
     ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-        {
-            template_name   => "authorities/authorities-home.tmpl",
+        {   template_name   => "authorities/authorities-home.tmpl",
             query           => $query,
             type            => 'intranet',
             authnotrequired => 0,
@@ -163,11 +155,9 @@ elsif ( $op eq "delete" ) {
 
     # 	$template->param("statements" => \@statements,
     # 						"nbstatements" => $nbstatements);
-}
-else {
+} else {
     ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-        {
-            template_name   => "authorities/authorities-home.tmpl",
+        {   template_name   => "authorities/authorities-home.tmpl",
             query           => $query,
             type            => 'intranet',
             authnotrequired => 0,
@@ -178,9 +168,7 @@ else {
 
 }
 
-$template->param(
-    authtypesloop => \@authtypesloop,
-);
+$template->param( authtypesloop => \@authtypesloop, );
 
 # Print the page
 output_html_with_http_headers $query, $cookie, $template->output;

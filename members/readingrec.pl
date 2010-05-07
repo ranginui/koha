@@ -36,103 +36,103 @@ use C4::Dates qw/format_date/;
 my $input = CGI->new;
 
 #get borrower details
-my $data = undef;
+my $data           = undef;
 my $borrowernumber = undef;
-my $cardnumber = undef;
+my $cardnumber     = undef;
 
-if ($input->param('cardnumber')) {
-    $cardnumber = $input->param('cardnumber');
-    $data = GetMember(cardnumber => $cardnumber);
-    $borrowernumber = $data->{'borrowernumber'}; # we must define this as it is used to retrieve other data about the patron
+if ( $input->param('cardnumber') ) {
+    $cardnumber     = $input->param('cardnumber');
+    $data           = GetMember( cardnumber => $cardnumber );
+    $borrowernumber = $data->{'borrowernumber'};                # we must define this as it is used to retrieve other data about the patron
 }
-if ($input->param('borrowernumber')) {
+if ( $input->param('borrowernumber') ) {
     $borrowernumber = $input->param('borrowernumber');
-    $data = GetMember(borrowernumber => $borrowernumber);
+    $data = GetMember( borrowernumber => $borrowernumber );
 }
 
-my $order=$input->param('order') || 'date_due desc';
-my $limit=$input->param('limit');
+my $order = $input->param('order') || 'date_due desc';
+my $limit = $input->param('limit');
 
-if ($limit){
-    if ($limit eq 'full'){
-		$limit=0;
+if ($limit) {
+    if ( $limit eq 'full' ) {
+        $limit = 0;
     }
+} else {
+    $limit = 50;
 }
-else {
-  $limit=50;
-}
-my ( $issues ) = GetAllIssues($borrowernumber,$order,$limit);
+my ($issues) = GetAllIssues( $borrowernumber, $order, $limit );
 
-my ($template, $loggedinuser, $cookie)
-= get_template_and_user({template_name => "members/readingrec.tmpl",
-				query => $input,
-				type => "intranet",
-				authnotrequired => 0,
-				flagsrequired => {borrowers => 1},
-				debug => 1,
-				});
+my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
+    {   template_name   => "members/readingrec.tmpl",
+        query           => $input,
+        type            => "intranet",
+        authnotrequired => 0,
+        flagsrequired   => { borrowers => 1 },
+        debug           => 1,
+    }
+);
 
 my @loop_reading;
 
-foreach my $issue (@{$issues}){
- 	my %line;
- 	$line{issuestimestamp} = format_date($issue->{'issuestimestamp'});
-	$line{biblionumber}    = $issue->{'biblionumber'};
-	$line{title}           = $issue->{'title'};
-	$line{author}          = $issue->{'author'};
-	$line{classification}  = $issue->{'classification'} || $issue->{'itemcallnumber'};
-	$line{date_due}        = format_date($issue->{'date_due'});
-	$line{returndate}      = format_date($issue->{'returndate'});
-	$line{issuedate}       = format_date($issue->{'issuedate'});
-	$line{issuingbranch}   = GetBranchName($issue->{'branchcode'});
-	$line{renewals}        = $issue->{'renewals'};
-	$line{barcode}         = $issue->{'barcode'};
-	$line{volumeddesc}     = $issue->{'volumeddesc'};
-	push(@loop_reading,\%line);
+foreach my $issue ( @{$issues} ) {
+    my %line;
+    $line{issuestimestamp} = format_date( $issue->{'issuestimestamp'} );
+    $line{biblionumber}    = $issue->{'biblionumber'};
+    $line{title}           = $issue->{'title'};
+    $line{author}          = $issue->{'author'};
+    $line{classification}  = $issue->{'classification'} || $issue->{'itemcallnumber'};
+    $line{date_due}        = format_date( $issue->{'date_due'} );
+    $line{returndate}      = format_date( $issue->{'returndate'} );
+    $line{issuedate}       = format_date( $issue->{'issuedate'} );
+    $line{issuingbranch}   = GetBranchName( $issue->{'branchcode'} );
+    $line{renewals}        = $issue->{'renewals'};
+    $line{barcode}         = $issue->{'barcode'};
+    $line{volumeddesc}     = $issue->{'volumeddesc'};
+    push( @loop_reading, \%line );
 }
 
-if ( $data->{'category_type'} eq 'C') {
-    my  ( $catcodes, $labels ) =  GetborCatFromCatType( 'A', 'WHERE category_type = ?' );
+if ( $data->{'category_type'} eq 'C' ) {
+    my ( $catcodes, $labels ) = GetborCatFromCatType( 'A', 'WHERE category_type = ?' );
     my $cnt = scalar(@$catcodes);
-    $template->param( 'CATCODE_MULTI' => 1) if $cnt > 1;
-    $template->param( 'catcode' =>    $catcodes->[0])  if $cnt == 1;
+    $template->param( 'CATCODE_MULTI' => 1 ) if $cnt > 1;
+    $template->param( 'catcode' => $catcodes->[0] ) if $cnt == 1;
 }
 
 $template->param( adultborrower => 1 ) if ( $data->{'category_type'} eq 'A' );
-if (! $limit){
-	$limit = 'full';
+if ( !$limit ) {
+    $limit = 'full';
 }
 
-my ($picture, $dberror) = GetPatronImage($data->{'cardnumber'});
+my ( $picture, $dberror ) = GetPatronImage( $data->{'cardnumber'} );
 $template->param( picture => 1 ) if $picture;
 
 $template->param(
-						readingrecordview => 1,
-						biblionumber => $data->{'biblionumber'},
-						title => $data->{'title'},
-						initials => $data->{'initials'},
-						surname => $data->{'surname'},
-						borrowernumber => $borrowernumber,
-						limit => $limit,
-						firstname => $data->{'firstname'},
-						cardnumber => $data->{'cardnumber'},
-					    categorycode => $data->{'categorycode'},
-					    category_type => $data->{'category_type'},
-					   # category_description => $data->{'description'},
-					    categoryname	=> $data->{'description'},
-					    address => $data->{'address'},
-						address2 => $data->{'address2'},
-					    city => $data->{'city'},
-						zipcode => $data->{'zipcode'},
-						country => $data->{'country'},
-						phone => $data->{'phone'},
-						email => $data->{'email'},
-			   			branchcode => $data->{'branchcode'},
-			   			is_child        => ($data->{'category_type'} eq 'C'),
-			   			branchname => GetBranchName($data->{'branchcode'}),
-						showfulllink => (scalar @loop_reading > 50),					
-						loop_reading => \@loop_reading);
+    readingrecordview => 1,
+    biblionumber      => $data->{'biblionumber'},
+    title             => $data->{'title'},
+    initials          => $data->{'initials'},
+    surname           => $data->{'surname'},
+    borrowernumber    => $borrowernumber,
+    limit             => $limit,
+    firstname         => $data->{'firstname'},
+    cardnumber        => $data->{'cardnumber'},
+    categorycode      => $data->{'categorycode'},
+    category_type     => $data->{'category_type'},
+
+    # category_description => $data->{'description'},
+    categoryname => $data->{'description'},
+    address      => $data->{'address'},
+    address2     => $data->{'address2'},
+    city         => $data->{'city'},
+    zipcode      => $data->{'zipcode'},
+    country      => $data->{'country'},
+    phone        => $data->{'phone'},
+    email        => $data->{'email'},
+    branchcode   => $data->{'branchcode'},
+    is_child     => ( $data->{'category_type'} eq 'C' ),
+    branchname   => GetBranchName( $data->{'branchcode'} ),
+    showfulllink => ( scalar @loop_reading > 50 ),
+    loop_reading => \@loop_reading
+);
 output_html_with_http_headers $input, $cookie, $template->output;
-
-
 

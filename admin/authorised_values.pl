@@ -26,232 +26,251 @@ use C4::Context;
 use C4::Koha;
 use C4::Output;
 
-
 sub AuthorizedValuesForCategory ($) {
     my ($searchstring) = shift or return;
     my $dbh = C4::Context->dbh;
-    $searchstring=~ s/\'/\\\'/g;
-    my @data=split(' ',$searchstring);
-    my $sth=$dbh->prepare('
+    $searchstring =~ s/\'/\\\'/g;
+    my @data = split( ' ', $searchstring );
+    my $sth = $dbh->prepare( '
           SELECT  id, category, authorised_value, lib, lib_opac, imageurl
             FROM  authorised_values
            WHERE  (category = ?)
         ORDER BY  category, authorised_value
-    ');
+    ' );
     $sth->execute("$data[0]");
-    return $sth->fetchall_arrayref({});
+    return $sth->fetchall_arrayref( {} );
 }
 
-my $input = new CGI;
+my $input       = new CGI;
 my $id          = $input->param('id');
-my $op          = $input->param('op')     || '';
+my $op          = $input->param('op') || '';
 my $offset      = $input->param('offset') || 0;
 my $searchfield = $input->param('searchfield');
 $searchfield = '' unless defined $searchfield;
 $searchfield =~ s/\,//g;
 my $script_name = "/cgi-bin/koha/admin/authorised_values.pl";
-my $dbh = C4::Context->dbh;
+my $dbh         = C4::Context->dbh;
 
-# my $subpermission = C4::Context->preference('GranularPermissions') ? 
+# my $subpermission = C4::Context->preference('GranularPermissions') ?
 #     { editcatalogue => ... } :
 #     {    parameters => 1   } ;
 
-my ($template, $borrowernumber, $cookie)= get_template_and_user({
-    template_name => "admin/authorised_values.tmpl",
-    authnotrequired => 0,
-    flagsrequired => {parameters => 1},     # soon $subpermission
-    query => $input,
-    type => "intranet",
-    debug => 1,
-});
+my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
+    {   template_name   => "admin/authorised_values.tmpl",
+        authnotrequired => 0,
+        flagsrequired   => { parameters => 1 },              # soon $subpermission
+        query           => $input,
+        type            => "intranet",
+        debug           => 1,
+    }
+);
 my $pagesize = 20;
 
-$template->param(  script_name => $script_name,
-                 ($op||'else') => 1 );
+$template->param(
+    script_name => $script_name,
+    ( $op || 'else' ) => 1
+);
 ################## ADD_FORM ##################################
 # called by default. Used to create form to add or  modify a record
-if ($op eq 'add_form') {
-	my $data;
-	if ($id) {
-		my $sth=$dbh->prepare("select id, category, authorised_value, lib, lib_opac, imageurl from authorised_values where id=?");
-		$sth->execute($id);
-		$data=$sth->fetchrow_hashref;
-	} else {
-		$data->{'category'} = $input->param('category');
-	}
-	if ($id) {
-		$template->param(action_modify => 1);
-		$template->param('heading-modify-authorized-value-p' => 1);
-	} elsif ( ! $data->{'category'} ) {
-		$template->param(action_add_category => 1);
-		$template->param('heading-add-new-category-p' => 1);
-	} else {
-		$template->param(action_add_value => 1);
-		$template->param('heading-add-authorized-value-p' => 1);
-	}
-	$template->param('use-heading-flags-p' => 1);
-	$template->param( category        => $data->{'category'},
-                         authorised_value => $data->{'authorised_value'},
-                         lib              => $data->{'lib'},
-                         lib_opac         => $data->{'lib_opac'},
-                         id               => $data->{'id'},
-                         imagesets        => C4::Koha::getImageSets( checked => $data->{'imageurl'} ),
-                         offset           => $offset,
-                     );
-                          
+if ( $op eq 'add_form' ) {
+    my $data;
+    if ($id) {
+        my $sth = $dbh->prepare("select id, category, authorised_value, lib, lib_opac, imageurl from authorised_values where id=?");
+        $sth->execute($id);
+        $data = $sth->fetchrow_hashref;
+    } else {
+        $data->{'category'} = $input->param('category');
+    }
+    if ($id) {
+        $template->param( action_modify                       => 1 );
+        $template->param( 'heading-modify-authorized-value-p' => 1 );
+    } elsif ( !$data->{'category'} ) {
+        $template->param( action_add_category          => 1 );
+        $template->param( 'heading-add-new-category-p' => 1 );
+    } else {
+        $template->param( action_add_value                 => 1 );
+        $template->param( 'heading-add-authorized-value-p' => 1 );
+    }
+    $template->param( 'use-heading-flags-p' => 1 );
+    $template->param(
+        category         => $data->{'category'},
+        authorised_value => $data->{'authorised_value'},
+        lib              => $data->{'lib'},
+        lib_opac         => $data->{'lib_opac'},
+        id               => $data->{'id'},
+        imagesets        => C4::Koha::getImageSets( checked => $data->{'imageurl'} ),
+        offset           => $offset,
+    );
+
 ################## ADD_VALIDATE ##################################
-# called by add_form, used to insert/modify data in DB
-} elsif ($op eq 'add_validate') {
+    # called by add_form, used to insert/modify data in DB
+} elsif ( $op eq 'add_validate' ) {
     my $new_authorised_value = $input->param('authorised_value');
-    my $new_category = $input->param('category');
-    my $imageurl     = $input->param( 'imageurl' ) || '';
-	$imageurl = '' if $imageurl =~ /removeImage/;
+    my $new_category         = $input->param('category');
+    my $imageurl             = $input->param('imageurl') || '';
+    $imageurl = '' if $imageurl =~ /removeImage/;
     my $duplicate_entry = 0;
 
-    if ( $id ) { # Update
-        my $sth = $dbh->prepare( "SELECT category, authorised_value FROM authorised_values WHERE id='$id' ");
+    if ($id) {    # Update
+        my $sth = $dbh->prepare("SELECT category, authorised_value FROM authorised_values WHERE id='$id' ");
         $sth->execute();
-        my ($category, $authorised_value) = $sth->fetchrow_array();
+        my ( $category, $authorised_value ) = $sth->fetchrow_array();
         if ( $authorised_value ne $new_authorised_value ) {
-            my $sth = $dbh->prepare_cached( "SELECT COUNT(*) FROM authorised_values " .
-                "WHERE category = '$new_category' AND authorised_value = '$new_authorised_value' and id<>$id");
+            my $sth =
+              $dbh->prepare_cached( "SELECT COUNT(*) FROM authorised_values " . "WHERE category = '$new_category' AND authorised_value = '$new_authorised_value' and id<>$id" );
             $sth->execute();
             ($duplicate_entry) = $sth->fetchrow_array();
             warn "**** duplicate_entry = $duplicate_entry";
         }
-        unless ( $duplicate_entry ) {
-            my $sth=$dbh->prepare( 'UPDATE authorised_values
+        unless ($duplicate_entry) {
+            my $sth = $dbh->prepare(
+                'UPDATE authorised_values
                                       SET category         = ?,
                                           authorised_value = ?,
                                           lib              = ?,
                                           lib_opac         = ?,
                                           imageurl         = ?
-                                      WHERE id=?' );
-            my $lib = $input->param('lib');
+                                      WHERE id=?'
+            );
+            my $lib      = $input->param('lib');
             my $lib_opac = $input->param('lib_opac');
-            undef $lib if ($lib eq ""); # to insert NULL instead of a blank string
-            undef $lib_opac if ($lib_opac eq ""); # to insert NULL instead of a blank string
-            $sth->execute($new_category, $new_authorised_value, $lib, $lib_opac, $imageurl, $id);          
-            print "Content-Type: text/html\n\n<META HTTP-EQUIV=Refresh CONTENT=\"0; URL=authorised_values.pl?searchfield=".$new_category."&offset=$offset\"></html>";
+            undef $lib      if ( $lib      eq "" );    # to insert NULL instead of a blank string
+            undef $lib_opac if ( $lib_opac eq "" );    # to insert NULL instead of a blank string
+            $sth->execute( $new_category, $new_authorised_value, $lib, $lib_opac, $imageurl, $id );
+            print "Content-Type: text/html\n\n<META HTTP-EQUIV=Refresh CONTENT=\"0; URL=authorised_values.pl?searchfield=" . $new_category . "&offset=$offset\"></html>";
+            exit;
+        }
+    } else {    # Insert
+        my $sth = $dbh->prepare_cached( "SELECT COUNT(*) FROM authorised_values " . "WHERE category = '$new_category' AND authorised_value = '$new_authorised_value' " );
+        $sth->execute();
+        ($duplicate_entry) = $sth->fetchrow_array();
+        unless ($duplicate_entry) {
+            my $sth = $dbh->prepare(
+                'INSERT INTO authorised_values
+                                    ( id, category, authorised_value, lib, lib_opac, imageurl )
+                                    values (?, ?, ?, ?, ?, ?)'
+            );
+            my $lib      = $input->param('lib');
+            my $lib_opac = $input->param('lib_opac');
+            undef $lib      if ( $lib      eq "" );    # to insert NULL instead of a blank string
+            undef $lib_opac if ( $lib_opac eq "" );    # to insert NULL instead of a blank string
+            $sth->execute( $id, $new_category, $new_authorised_value, $lib, $lib_opac, $imageurl );
+            print "Content-Type: text/html\n\n<META HTTP-EQUIV=Refresh CONTENT=\"0; URL=authorised_values.pl?searchfield="
+              . $input->param('category')
+              . "&offset=$offset\"></html>";
             exit;
         }
     }
-    else { # Insert
-        my $sth = $dbh->prepare_cached( "SELECT COUNT(*) FROM authorised_values " .
-            "WHERE category = '$new_category' AND authorised_value = '$new_authorised_value' ");
-        $sth->execute();
-        ($duplicate_entry) = $sth->fetchrow_array();
-        unless ( $duplicate_entry ) {
-            my $sth=$dbh->prepare( 'INSERT INTO authorised_values
-                                    ( id, category, authorised_value, lib, lib_opac, imageurl )
-                                    values (?, ?, ?, ?, ?, ?)' );
-    	    my $lib = $input->param('lib');
-    	    my $lib_opac = $input->param('lib_opac');
-    	    undef $lib if ($lib eq ""); # to insert NULL instead of a blank string
-    	    undef $lib_opac if ($lib_opac eq ""); # to insert NULL instead of a blank string
-    	    $sth->execute($id, $new_category, $new_authorised_value, $lib, $lib_opac, $imageurl );
-    	    print "Content-Type: text/html\n\n<META HTTP-EQUIV=Refresh CONTENT=\"0; URL=authorised_values.pl?searchfield=".$input->param('category')."&offset=$offset\"></html>";
-    	    exit;
-        }
-    }
-    if ( $duplicate_entry ) {       
-        $template->param(duplicate_category => $new_category,
-                         duplicate_value =>  $new_authorised_value,
-                         else => 1);
+    if ($duplicate_entry) {
+        $template->param(
+            duplicate_category => $new_category,
+            duplicate_value    => $new_authorised_value,
+            else               => 1
+        );
         default_form();
-     }           
-	
-################## DELETE_CONFIRM ##################################
-# called by default form, used to confirm deletion of data in DB
-} elsif ($op eq 'delete_confirm') {
-	my $sth=$dbh->prepare("select category,authorised_value,lib,lib_opac from authorised_values where id=?");
-	$sth->execute($id);
-	my $data=$sth->fetchrow_hashref;
-	$id = $input->param('id') unless $id;
-	$template->param(searchfield => $searchfield,
-							Tlib => $data->{'lib'},
-							Tlib_opac => $data->{'lib_opac'},
-							Tvalue => $data->{'authorised_value'},
-							id =>$id,
-							);
+    }
 
-													# END $OP eq DELETE_CONFIRM
+################## DELETE_CONFIRM ##################################
+    # called by default form, used to confirm deletion of data in DB
+} elsif ( $op eq 'delete_confirm' ) {
+    my $sth = $dbh->prepare("select category,authorised_value,lib,lib_opac from authorised_values where id=?");
+    $sth->execute($id);
+    my $data = $sth->fetchrow_hashref;
+    $id = $input->param('id') unless $id;
+    $template->param(
+        searchfield => $searchfield,
+        Tlib        => $data->{'lib'},
+        Tlib_opac   => $data->{'lib_opac'},
+        Tvalue      => $data->{'authorised_value'},
+        id          => $id,
+    );
+
+    # END $OP eq DELETE_CONFIRM
 ################## DELETE_CONFIRMED ##################################
-# called by delete_confirm, used to effectively confirm deletion of data in DB
-} elsif ($op eq 'delete_confirmed') {
-	my $id = $input->param('id');
-	my $sth=$dbh->prepare("delete from authorised_values where id=?");
-	$sth->execute($id);
-	print "Content-Type: text/html\n\n<META HTTP-EQUIV=Refresh CONTENT=\"0; URL=authorised_values.pl?searchfield=$searchfield&offset=$offset\"></html>";
-	exit;
-													# END $OP eq DELETE_CONFIRMED
+    # called by delete_confirm, used to effectively confirm deletion of data in DB
+} elsif ( $op eq 'delete_confirmed' ) {
+    my $id  = $input->param('id');
+    my $sth = $dbh->prepare("delete from authorised_values where id=?");
+    $sth->execute($id);
+    print "Content-Type: text/html\n\n<META HTTP-EQUIV=Refresh CONTENT=\"0; URL=authorised_values.pl?searchfield=$searchfield&offset=$offset\"></html>";
+    exit;
+
+    # END $OP eq DELETE_CONFIRMED
 ################## DEFAULT ##################################
-} else { # DEFAULT
+} else {    # DEFAULT
     default_form();
-} #---- END $OP eq DEFAULT
+}    #---- END $OP eq DEFAULT
 output_html_with_http_headers $input, $cookie, $template->output;
 
 exit 0;
 
 sub default_form {
-	# build categories list
-	my $sth = $dbh->prepare("select distinct category from authorised_values");
-	$sth->execute;
-	my @category_list;
-	my %categories;     # a hash, to check that some hardcoded categories exist.
-	while ( my ($category) = $sth->fetchrow_array) {
-		push(@category_list,$category);
-		$categories{$category} = 1;
-	}
-	# push koha system categories
+
+    # build categories list
+    my $sth = $dbh->prepare("select distinct category from authorised_values");
+    $sth->execute;
+    my @category_list;
+    my %categories;    # a hash, to check that some hardcoded categories exist.
+    while ( my ($category) = $sth->fetchrow_array ) {
+        push( @category_list, $category );
+        $categories{$category} = 1;
+    }
+
+    # push koha system categories
     foreach (qw(Asort1 Asort2 Bsort1 Bsort2 SUGGEST DAMAGED LOST)) {
         push @category_list, $_ unless $categories{$_};
     }
 
-	#reorder the list
-	@category_list = sort {$a cmp $b} @category_list;
-	my $tab_list = CGI::scrolling_list(-name=>'searchfield',
-	        -id=>'searchfield',
-			-values=> \@category_list,
-			-default=>"",
-			-size=>1,
-			-multiple=>0,
-			);
-	if (!$searchfield) {
-		$searchfield=$category_list[0];
-	}
+    #reorder the list
+    @category_list = sort { $a cmp $b } @category_list;
+    my $tab_list = CGI::scrolling_list(
+        -name     => 'searchfield',
+        -id       => 'searchfield',
+        -values   => \@category_list,
+        -default  => "",
+        -size     => 1,
+        -multiple => 0,
+    );
+    if ( !$searchfield ) {
+        $searchfield = $category_list[0];
+    }
     my ($results) = AuthorizedValuesForCategory($searchfield);
-    my $count = scalar(@$results);
-	my @loop_data = ();
-	# builds value list
-	for (my $i=$offset; $i < ($offset+$pagesize<$count?$offset+$pagesize:$count); $i++){
-		my %row_data;  # get a fresh hash for the row data
-		$row_data{category}              = $results->[$i]{'category'};
-		$row_data{authorised_value}      = $results->[$i]{'authorised_value'};
-		$row_data{lib}                   = $results->[$i]{'lib'};
-		$row_data{lib_opac}              = $results->[$i]{'lib_opac'};
-		$row_data{imageurl}              = getitemtypeimagelocation( 'intranet', $results->[$i]{'imageurl'} );
-		$row_data{edit}                  = "$script_name?op=add_form&amp;id=".$results->[$i]{'id'}."&amp;offset=$offset";
-		$row_data{delete}                = "$script_name?op=delete_confirm&amp;searchfield=$searchfield&amp;id=".$results->[$i]{'id'}."&amp;offset=$offset";
-		push(@loop_data, \%row_data);
-	}
+    my $count     = scalar(@$results);
+    my @loop_data = ();
 
-	$template->param( loop     => \@loop_data,
-                          tab_list => $tab_list,
-                          category => $searchfield );
+    # builds value list
+    for ( my $i = $offset ; $i < ( $offset + $pagesize < $count ? $offset + $pagesize : $count ) ; $i++ ) {
+        my %row_data;    # get a fresh hash for the row data
+        $row_data{category}         = $results->[$i]{'category'};
+        $row_data{authorised_value} = $results->[$i]{'authorised_value'};
+        $row_data{lib}              = $results->[$i]{'lib'};
+        $row_data{lib_opac}         = $results->[$i]{'lib_opac'};
+        $row_data{imageurl}         = getitemtypeimagelocation( 'intranet', $results->[$i]{'imageurl'} );
+        $row_data{edit}             = "$script_name?op=add_form&amp;id=" . $results->[$i]{'id'} . "&amp;offset=$offset";
+        $row_data{delete}           = "$script_name?op=delete_confirm&amp;searchfield=$searchfield&amp;id=" . $results->[$i]{'id'} . "&amp;offset=$offset";
+        push( @loop_data, \%row_data );
+    }
 
-	if ($offset>0) {
-		my $prevpage = $offset-$pagesize;
-		$template->param(isprevpage => $offset,
-						prevpage=> $prevpage,
-						searchfield => $searchfield,
-		 );
-	}
-	if ($offset+$pagesize<$count) {
-		my $nextpage =$offset+$pagesize;
-		$template->param(nextpage =>$nextpage,
-						searchfield => $searchfield,
-		);
-	}
+    $template->param(
+        loop     => \@loop_data,
+        tab_list => $tab_list,
+        category => $searchfield
+    );
+
+    if ( $offset > 0 ) {
+        my $prevpage = $offset - $pagesize;
+        $template->param(
+            isprevpage  => $offset,
+            prevpage    => $prevpage,
+            searchfield => $searchfield,
+        );
+    }
+    if ( $offset + $pagesize < $count ) {
+        my $nextpage = $offset + $pagesize;
+        $template->param(
+            nextpage    => $nextpage,
+            searchfield => $searchfield,
+        );
+    }
 }
 

@@ -15,9 +15,9 @@
 # Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA  02111-1307 USA
 
-
 use strict;
 use warnings;
+
 # FIXME - Generates a warning from C4/Context.pm (uninitilized value).
 
 use CGI;
@@ -27,8 +27,7 @@ use C4::Output;
 my $input = new CGI;
 
 my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
-    {
-        template_name   => "maintenance.tmpl",
+    {   template_name   => "maintenance.tmpl",
         type            => "opac",
         query           => $input,
         authnotrequired => 1,

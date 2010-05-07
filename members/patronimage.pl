@@ -23,14 +23,14 @@
 use strict;
 use warnings;
 
-use CGI; #qw(:standard escapeHTML);
+use CGI;    #qw(:standard escapeHTML);
 use C4::Context;
 use C4::Members;
 
-$|=1;
+$| = 1;
 
 my $DEBUG = 0;
-my $data = new CGI;
+my $data  = new CGI;
 my $cardnumber;
 
 =head1 NAME
@@ -47,16 +47,15 @@ This script, when called from within HTML and passed a valid patron cardnumber, 
 
 =cut
 
-if ($data->param('crdnum')) {
+if ( $data->param('crdnum') ) {
     $cardnumber = $data->param('crdnum');
 } else {
     $cardnumber = shift;
 }
 
-
 warn "Cardnumber passed in: $cardnumber" if $DEBUG;
 
-my ($imagedata, $dberror) = GetPatronImage($cardnumber);
+my ( $imagedata, $dberror ) = GetPatronImage($cardnumber);
 
 if ($dberror) {
     warn "Database Error!";
@@ -67,7 +66,7 @@ if ($dberror) {
 # things will result... you have been warned!
 
 if ($imagedata) {
-    print $data->header (-type => $imagedata->{'mimetype'}, -'Cache-Control' => 'no-store', -Content_Length => length ($imagedata->{'imagefile'})), $imagedata->{'imagefile'};
+    print $data->header( -type => $imagedata->{'mimetype'}, -'Cache-Control' => 'no-store', -Content_Length => length( $imagedata->{'imagefile'} ) ), $imagedata->{'imagefile'};
     exit;
 } else {
     warn "No image exists for $cardnumber";

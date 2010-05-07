@@ -1,7 +1,7 @@
 package C4::AuthoritiesMarc::UNIMARC;
 
 # Copyright (C) 2007 LibLime
-# 
+#
 # This file is part of Koha.
 #
 # Koha is free software; you can redistribute it and/or modify it under the
@@ -18,6 +18,7 @@ package C4::AuthoritiesMarc::UNIMARC;
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 our $VERSION = 3.00;
 
@@ -74,7 +75,7 @@ this defaults to 152$b.
 =cut
 
 sub default_auth_type_location {
-    return ('152', 'b');
+    return ( '152', 'b' );
 }
 
 =head1 AUTHOR

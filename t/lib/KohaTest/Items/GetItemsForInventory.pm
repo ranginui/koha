@@ -42,7 +42,6 @@ sub startup_90_add_item_get_callnumber : Test( startup => 13 ) {
     $self->{'callnumber'} = $item_info->{'itemcallnumber'};
 }
 
-
 =head2 TEST METHODS
 
 standard test methods
@@ -60,8 +59,8 @@ sub missing_parameters : Test( 1 ) {
     local $TODO = 'GetItemsForInventory should fail when missing required parameters';
 
     my $items = C4::Items::GetItemsForInventory();
-    ok( ! defined $items, 'GetItemsForInventory fails when parameters are missing' )
-      or diag( Data::Dumper->Dump( [ $items ], [ 'items' ] ) );
+    ok( !defined $items, 'GetItemsForInventory fails when parameters are missing' )
+      or diag( Data::Dumper->Dump( [$items], ['items'] ) );
 }
 
 =head3 basic_usage
@@ -77,7 +76,7 @@ sub basic_usage : Test( 4 ) {
     isa_ok( $items, 'ARRAY', 'We were able to call GetItemsForInventory with our call number' );
     is( scalar @$items, 1, '...and we found only one item' );
     my $our_item = $items->[0];
-    is( $our_item->{'itemnumber'},     $self->{'items'}[0]{'itemnumber'},                 '...and the item we found has the right itemnumber' );
+    is( $our_item->{'itemnumber'}, $self->{'items'}[0]{'itemnumber'}, '...and the item we found has the right itemnumber' );
 
     # diag( Data::Dumper->Dump( [$items], ['items'] ) );
 }
@@ -107,17 +106,16 @@ sub date_last_seen : Test( 6 ) {
 
     # give a datelastseen of yesterday, and we should not get our item.
     $items = C4::Items::GetItemsForInventory(
-        $self->{'callnumber'},    # minlocation
-        $self->{'callnumber'},    # maxlocation
-        undef,                    # location
-        undef,                    # itemtype
-        C4::Dates->new( $self->yesterday(), 'iso' )->output,    # datelastseen
+        $self->{'callnumber'},                                 # minlocation
+        $self->{'callnumber'},                                 # maxlocation
+        undef,                                                 # location
+        undef,                                                 # itemtype
+        C4::Dates->new( $self->yesterday(), 'iso' )->output,   # datelastseen
     );
 
     isa_ok( $items, 'ARRAY', 'We were able to call GetItemsForInventory with our call number' );
     is( scalar @$items, 0, '...and we found no items' );
 
 }
-
 
 1;

@@ -8,7 +8,6 @@ use Test::More;
 
 use C4::Dates qw(format_date format_date_in_iso);
 
-
 sub startup_init_constants : Tests(startup => 0) {
     my $self = shift;
     $self->{thash} = {
@@ -39,12 +38,12 @@ sub check_formats : Test( 8 ) {
 sub defaults : Test( 24 ) {
     my $self = shift;
 
-    foreach (@{ $self->{formats} }) {
+    foreach ( @{ $self->{formats} } ) {
         my $pre = sprintf '(%-6s)', $_;
         my $date = C4::Dates->new();
         ok( $date, "$pre Date Creation   : new()" );
         isa_ok( $date, 'C4::Dates' );
-        ok( $_ eq $date->format($_),   "$pre format($_)      : " );
+        ok( $_ eq $date->format($_), "$pre format($_)      : " );
         ok( $date->visual(), "$pre visual()" );
         ok( $date->output(), "$pre output()" );
         ok( $date->today(),  "$pre object->today" );
@@ -55,7 +54,7 @@ sub defaults : Test( 24 ) {
 sub valid_inputs : Test( 108 ) {
     my $self = shift;
 
-    foreach my $format (@{ $self->{formats} }) {
+    foreach my $format ( @{ $self->{formats} } ) {
         my $pre = sprintf '(%-6s)', $format;
         foreach my $testval ( @{ $self->{thash}->{$format} } ) {
             my ( $val, $today );
@@ -67,8 +66,8 @@ sub valid_inputs : Test( 108 ) {
             foreach ( grep { !/$format/ } @{ $self->{formats} } ) {
                 ok( $today = $date->output($_), describe( sprintf( "$pre output(%8s)", "'$_'" ), $today ) );
             }
-            ok( $today = $date->today(), describe( "$pre object->today", $today ) );
-            ok( $val = $date->output(), describe( "$pre output()", $val ) );
+            ok( $today = $date->today(),  describe( "$pre object->today", $today ) );
+            ok( $val   = $date->output(), describe( "$pre output()",      $val ) );
         }
     }
 }
@@ -85,8 +84,6 @@ sub independence_from_class : Test( 1 ) {
     ok( $out1 ne $out2, "subsequent constructors get different dataspace ($out1 != $out2)" );
 
 }
-
-
 
 sub describe {
     my $front = sprintf( "%-25s", shift );

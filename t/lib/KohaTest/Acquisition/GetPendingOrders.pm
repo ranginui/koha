@@ -19,7 +19,7 @@ sub no_orders : Test( 1 ) {
 
     my $orders = GetPendingOrders( $self->{'booksellerid'} );
     is( scalar @$orders, 0, 'our new bookseller has no pending orders' )
-      or diag( Data::Dumper->Dump( [ $orders ], [ 'orders' ] ) );
+      or diag( Data::Dumper->Dump( [$orders], ['orders'] ) );
 }
 
 =head3 new_order
@@ -33,50 +33,51 @@ sub one_new_order : Test( 49 ) {
 
     my ( $basketno, $ordernumber ) = $self->create_new_basket();
 
-    ok( $basketno, "basketno is $basketno" );
+    ok( $basketno,    "basketno is $basketno" );
     ok( $ordernumber, "ordernumber is $ordernumber" );
-    
+
     my $orders = GetPendingOrders( $self->{'booksellerid'} );
     is( scalar @$orders, 1, 'we successfully entered one order.' );
 
     my @expectedfields = qw( basketno
-                             biblioitemnumber
-                             biblionumber
-                             booksellerinvoicenumber
-                             budgetdate
-                             cancelledby
-                             closedate
-                             creationdate
-                             currency
-                             datecancellationprinted
-                             datereceived
-                             ecost
-                             entrydate
-                             firstname
-                             freight
-                             gst
-                             listprice
-                             notes
-                             ordernumber
-                             purchaseordernumber
-                             quantity
-                             quantityreceived
-                             rrp
-                             serialid
-                             sort1
-                             sort2
-                             subscription
-                             supplierreference
-                             surname
-                             timestamp
-                             title
-                             totalamount
-                             unitprice );
+      biblioitemnumber
+      biblionumber
+      booksellerinvoicenumber
+      budgetdate
+      cancelledby
+      closedate
+      creationdate
+      currency
+      datecancellationprinted
+      datereceived
+      ecost
+      entrydate
+      firstname
+      freight
+      gst
+      listprice
+      notes
+      ordernumber
+      purchaseordernumber
+      quantity
+      quantityreceived
+      rrp
+      serialid
+      sort1
+      sort2
+      subscription
+      supplierreference
+      surname
+      timestamp
+      title
+      totalamount
+      unitprice );
     my $firstorder = $orders->[0];
-    for my $field ( @expectedfields ) {
-        ok( exists( $firstorder->{ $field } ), "This order has a $field field" );
+
+    for my $field (@expectedfields) {
+        ok( exists( $firstorder->{$field} ), "This order has a $field field" );
     }
-    
+
 }
 
 1;

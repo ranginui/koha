@@ -26,8 +26,10 @@ use C4::Context;
 plugin_parameters : other parameters added when the plugin is called by the dopop function
 
 =cut
+
 sub plugin_parameters {
-#   my ($dbh,$record,$tagslib,$i,$tabloop) = @_;
+
+    #   my ($dbh,$record,$tagslib,$i,$tabloop) = @_;
     return "";
 }
 
@@ -45,21 +47,22 @@ returns :
 the 3 scripts are inserted after the <input> in the html code
 
 =cut
+
 sub plugin_javascript {
-	my ($dbh,$record,$tagslib,$field_number,$tabloop) = @_;
-	my $function_name= "inventory".(int(rand(100000))+1);
+    my ( $dbh, $record, $tagslib, $field_number, $tabloop ) = @_;
+    my $function_name = "inventory" . ( int( rand(100000) ) + 1 );
 
-	my $branchcode = C4::Context->userenv->{'branch'};
+    my $branchcode = C4::Context->userenv->{'branch'};
 
-	$query = "SELECT MAX(CAST(SUBSTRING_INDEX(stocknumber,'_',-1) AS SIGNED)) FROM items WHERE homebranch = ?";
-	my $sth=$dbh->prepare($query);
-	$sth->execute($branchcode);
-	while (my ($count)= $sth->fetchrow_array) {
-		$nextnum = $count;
-	}
-	$nextnum++;
+    $query = "SELECT MAX(CAST(SUBSTRING_INDEX(stocknumber,'_',-1) AS SIGNED)) FROM items WHERE homebranch = ?";
+    my $sth = $dbh->prepare($query);
+    $sth->execute($branchcode);
+    while ( my ($count) = $sth->fetchrow_array ) {
+        $nextnum = $count;
+    }
+    $nextnum++;
 
-	my $nextnum = $branchcode.'_'.$nextnum;
+    my $nextnum = $branchcode . '_' . $nextnum;
 
     my $scr = <<END_OF_JS;
 if (\$('#' + id).val() == '' || force) {
@@ -67,7 +70,7 @@ if (\$('#' + id).val() == '' || force) {
 }
 END_OF_JS
 
-    my $js  = <<END_OF_JS;
+    my $js = <<END_OF_JS;
 <script type="text/javascript">
 //<![CDATA[
 
@@ -86,7 +89,7 @@ function Clic$function_name(id) {
 //]]>
 </script>
 END_OF_JS
-    return ($function_name, $js);
+    return ( $function_name, $js );
 }
 
 =head1
@@ -96,6 +99,7 @@ plugin: useless here
 =cut
 
 sub plugin {
+
     # my ($input) = @_;
     return "";
 }

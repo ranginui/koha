@@ -56,6 +56,7 @@ the basket number to know on which basket this script have to add a new order.
 =cut
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 
 use C4::Search;
@@ -77,12 +78,11 @@ my $results_per_page = $params->{'num'} || 20;
 my $booksellerid     = $params->{'booksellerid'};
 my $basketno         = $params->{'basketno'};
 my $sub              = $params->{'sub'};
-my $bookseller = GetBookSellerFromId($booksellerid);
+my $bookseller       = GetBookSellerFromId($booksellerid);
 
 # getting the template
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => "acqui/neworderbiblio.tmpl",
+    {   template_name   => "acqui/neworderbiblio.tmpl",
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
@@ -91,15 +91,15 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
 );
 
 # Searching the catalog.
-my ($error, $marcresults, $total_hits) = SimpleSearch($query, $results_per_page * ($page - 1), $results_per_page);
+my ( $error, $marcresults, $total_hits ) = SimpleSearch( $query, $results_per_page * ( $page - 1 ), $results_per_page );
 
-if (defined $error) {
-    warn "error: ".$error;
+if ( defined $error ) {
+    warn "error: " . $error;
     $template->param(
-        query_error => $error,
-        basketno             => $basketno,
-        booksellerid     => $bookseller->{'id'},
-        name             => $bookseller->{'name'},
+        query_error  => $error,
+        basketno     => $basketno,
+        booksellerid => $bookseller->{'id'},
+        name         => $bookseller->{'name'},
     );
     output_html_with_http_headers $input, $cookie, $template->output;
     exit;
@@ -109,7 +109,7 @@ my @results;
 
 if ($marcresults) {
     foreach my $result ( @{$marcresults} ) {
-        my $marcrecord = MARC::File::USMARC::decode( $result );
+        my $marcrecord = MARC::File::USMARC::decode($result);
         my $biblio = TransformMarcToKoha( C4::Context->dbh, $marcrecord, '' );
 
         $biblio->{booksellerid} = $booksellerid;
@@ -118,13 +118,14 @@ if ($marcresults) {
     }
 }
 $template->param(
-    basketno             => $basketno,
-    booksellerid     => $bookseller->{'id'},
-    name             => $bookseller->{'name'},
-    resultsloop          => \@results,
-    total                => $total_hits,
-    query                => $query,
-    pagination_bar       => pagination_bar( "$ENV{'SCRIPT_NAME'}?q=$query&booksellerid=$booksellerid&basketno=$basketno&", getnbpages( $total_hits, $results_per_page ), $page, 'page' ),
+    basketno     => $basketno,
+    booksellerid => $bookseller->{'id'},
+    name         => $bookseller->{'name'},
+    resultsloop  => \@results,
+    total        => $total_hits,
+    query        => $query,
+    pagination_bar =>
+      pagination_bar( "$ENV{'SCRIPT_NAME'}?q=$query&booksellerid=$booksellerid&basketno=$basketno&", getnbpages( $total_hits, $results_per_page ), $page, 'page' ),
 );
 
 # BUILD THE TEMPLATE

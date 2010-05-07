@@ -18,6 +18,7 @@ package C4::Budgets;
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use C4::Context;
 use C4::Dates qw(format_date format_date_in_iso);
@@ -27,55 +28,55 @@ use C4::Debug;
 use vars qw($VERSION @ISA @EXPORT);
 
 BEGIN {
-	# set the version for version checking
-	$VERSION = 3.01;
-	require Exporter;
-	@ISA    = qw(Exporter);
-	@EXPORT = qw(
 
-        &GetBudget
-        &GetBudgets
-        &GetBudgetHierarchy
-	    &AddBudget
-        &ModBudget
-        &DelBudget
-        &GetBudgetSpent
-        &GetBudgetOrdered
-        &GetPeriodsCount
-        &GetChildBudgetsSpent
+    # set the version for version checking
+    $VERSION = 3.01;
+    require Exporter;
+    @ISA    = qw(Exporter);
+    @EXPORT = qw(
 
-	    &GetBudgetPeriod
-        &GetBudgetPeriods
-        &ModBudgetPeriod
-        &AddBudgetPeriod
-	    &DelBudgetPeriod
+      &GetBudget
+      &GetBudgets
+      &GetBudgetHierarchy
+      &AddBudget
+      &ModBudget
+      &DelBudget
+      &GetBudgetSpent
+      &GetBudgetOrdered
+      &GetPeriodsCount
+      &GetChildBudgetsSpent
 
-	    &GetBudgetPeriodsDropbox
-        &GetBudgetSortDropbox
-        &GetAuthvalueDropbox
-        &GetBudgetPermDropbox
+      &GetBudgetPeriod
+      &GetBudgetPeriods
+      &ModBudgetPeriod
+      &AddBudgetPeriod
+      &DelBudgetPeriod
 
-        &ModBudgetPlan
+      &GetBudgetPeriodsDropbox
+      &GetBudgetSortDropbox
+      &GetAuthvalueDropbox
+      &GetBudgetPermDropbox
 
-        &GetCurrency
-        &GetCurrencies
-        &ModCurrencies
-        &ConvertCurrency
-        
-		&GetBudgetsPlanCell
-        &AddBudgetPlanValue
-        &GetBudgetAuthCats
-        &BudgetHasChildren
-        &CheckBudgetParent
-        &CheckBudgetParentPerm
+      &ModBudgetPlan
 
-        &HideCols
-        &GetCols
-	);
+      &GetCurrency
+      &GetCurrencies
+      &ModCurrencies
+      &ConvertCurrency
+
+      &GetBudgetsPlanCell
+      &AddBudgetPlanValue
+      &GetBudgetAuthCats
+      &BudgetHasChildren
+      &CheckBudgetParent
+      &CheckBudgetParentPerm
+
+      &HideCols
+      &GetCols
+    );
 }
 
 # ----------------------------BUDGETS.PM-----------------------------";
-
 
 sub HideCols {
     my ( $authcat, @hide_cols ) = @_;
@@ -88,8 +89,9 @@ sub HideCols {
         AND  authvalue = ? |
     );
     foreach my $authvalue (@hide_cols) {
-#        $sth1->{TraceLevel} = 3;
-        $sth1->execute(  $authcat, $authvalue );
+
+        #        $sth1->{TraceLevel} = 3;
+        $sth1->execute( $authcat, $authvalue );
     }
 }
 
@@ -104,17 +106,17 @@ sub GetCols {
         AND authvalue = ? and display  = 0   |
     );
 
-#    $sth->{TraceLevel} = 3;
+    #    $sth->{TraceLevel} = 3;
     $sth->execute( $authcat, $authvalue );
-    my $res  = $sth->fetchrow_hashref;
+    my $res = $sth->fetchrow_hashref;
 
-    return  $res->{cnt} > 0 ? 0: 1
+    return $res->{cnt} > 0 ? 0 : 1
 
 }
 
 sub CheckBudgetParentPerm {
     my ( $budget, $borrower_id ) = @_;
-    my $depth = $budget->{depth};
+    my $depth     = $budget->{depth};
     my $parent_id = $budget->{budget_parent_id};
     while ($depth) {
         my $parent = GetBudget($parent_id);
@@ -122,20 +124,21 @@ sub CheckBudgetParentPerm {
         if ( $parent->{budget_owner_id} == $borrower_id ) {
             return 1;
         }
-        $depth--
+        $depth--;
     }
     return 0;
 }
 
 sub AddBudgetPeriod {
     my ($budgetperiod) = @_;
-	return InsertInTable("aqbudgetperiods",$budgetperiod);
+    return InsertInTable( "aqbudgetperiods", $budgetperiod );
 }
+
 # -------------------------------------------------------------------
 sub GetPeriodsCount {
     my $dbh = C4::Context->dbh;
-    my $sth = $dbh->prepare("
-        SELECT COUNT(*) AS sum FROM aqbudgetperiods ");
+    my $sth = $dbh->prepare( "
+        SELECT COUNT(*) AS sum FROM aqbudgetperiods " );
     $sth->execute();
     my $res = $sth->fetchrow_hashref;
     return $res->{'sum'};
@@ -150,9 +153,11 @@ sub CheckBudgetParent {
     my $parent_id_tmp = $new_parent_id;
 
     # check new-parent is not a child (or a child's child ;)
-    my $sth = $dbh->prepare(qq|
+    my $sth = $dbh->prepare(
+        qq|
         SELECT budget_parent_id FROM
-            aqbudgets where budget_id = ? | );
+            aqbudgets where budget_id = ? |
+    );
     while (1) {
         $sth->execute($parent_id_tmp);
         my $res = $sth->fetchrow_hashref;
@@ -168,12 +173,14 @@ sub CheckBudgetParent {
 
 # -------------------------------------------------------------------
 sub BudgetHasChildren {
-    my ( $budget_id  ) = @_;
-    my $dbh = C4::Context->dbh;
-    my $sth = $dbh->prepare(qq|
+    my ($budget_id) = @_;
+    my $dbh         = C4::Context->dbh;
+    my $sth         = $dbh->prepare(
+        qq|
        SELECT count(*) as sum FROM  aqbudgets
-        WHERE budget_parent_id = ?   | );
-    $sth->execute( $budget_id );
+        WHERE budget_parent_id = ?   |
+    );
+    $sth->execute($budget_id);
     my $sum = $sth->fetchrow_hashref;
     return $sum->{'sum'};
 }
@@ -181,11 +188,13 @@ sub BudgetHasChildren {
 # -------------------------------------------------------------------
 sub GetBudgetsPlanCell {
     my ( $cell, $period, $budget ) = @_;
-    my ($actual, $sth);
+    my ( $actual, $sth );
     my $dbh = C4::Context->dbh;
     if ( $cell->{'authcat'} eq 'MONTHS' ) {
+
         # get the actual amount
-        $sth = $dbh->prepare( qq|
+        $sth = $dbh->prepare(
+            qq|
 
             SELECT SUM(ecost) AS actual FROM aqorders
                 WHERE    budget_id = ? AND
@@ -193,33 +202,40 @@ sub GetBudgetsPlanCell {
         );
         $sth->execute( $cell->{'budget_id'} );
     } elsif ( $cell->{'authcat'} eq 'BRANCHES' ) {
+
         # get the actual amount
-        $sth = $dbh->prepare( qq|
+        $sth = $dbh->prepare(
+            qq|
 
             SELECT SUM(ecost) FROM aqorders
                 LEFT JOIN aqorders_items
                 ON (aqorders.ordernumber = aqorders_items.ordernumber)
                 LEFT JOIN items
                 ON (aqorders_items.itemnumber = items.itemnumber)
-                WHERE budget_id = ? AND homebranch = ? |          );
+                WHERE budget_id = ? AND homebranch = ? |
+        );
 
         $sth->execute( $cell->{'budget_id'}, $cell->{'authvalue'} );
     } elsif ( $cell->{'authcat'} eq 'ITEMTYPES' ) {
+
         # get the actual amount
-        $sth = $dbh->prepare(  qq|
+        $sth = $dbh->prepare(
+            qq|
 
             SELECT SUM( ecost *  quantity) AS actual
                 FROM aqorders JOIN biblioitems
                 ON (biblioitems.biblionumber = aqorders.biblionumber )
                 WHERE aqorders.budget_id = ? and itemtype  = ? |
         );
-        $sth->execute(  $cell->{'budget_id'},
-                        $cell->{'authvalue'} );
+        $sth->execute( $cell->{'budget_id'}, $cell->{'authvalue'} );
     }
+
     # ELSE GENERIC ORDERS SORT1/SORT2 STAT COUNT.
     else {
+
         # get the actual amount
-        $sth = $dbh->prepare( qq|
+        $sth = $dbh->prepare(
+            qq|
 
         SELECT  SUM(ecost * quantity) AS actual
             FROM aqorders
@@ -228,17 +244,13 @@ sub GetBudgetsPlanCell {
                 ((aqbudgets.sort1_authcat = ? AND sort1 =?) OR
                 (aqbudgets.sort2_authcat = ? AND sort2 =?))    |
         );
-        $sth->execute(  $cell->{'budget_id'},
-                        $budget->{'sort1_authcat'},
-                        $cell->{'authvalue'},
-                        $budget->{'sort2_authcat'},
-                        $cell->{'authvalue'}
-        );
+        $sth->execute( $cell->{'budget_id'}, $budget->{'sort1_authcat'}, $cell->{'authvalue'}, $budget->{'sort2_authcat'}, $cell->{'authvalue'} );
     }
     $actual = $sth->fetchrow_array;
 
     # get the estimated amount
-    $sth = $dbh->prepare( qq|
+    $sth = $dbh->prepare(
+        qq|
 
         SELECT estimated_amount AS estimated, display FROM aqbudgets_planning
             WHERE budget_period_id = ? AND
@@ -246,17 +258,12 @@ sub GetBudgetsPlanCell {
                 authvalue = ? AND
                 authcat = ?         |
     );
-    $sth->execute(  $cell->{'budget_period_id'},
-                    $cell->{'budget_id'},
-                    $cell->{'authvalue'},
-                    $cell->{'authcat'},
-    );
+    $sth->execute( $cell->{'budget_period_id'}, $cell->{'budget_id'}, $cell->{'authvalue'}, $cell->{'authcat'}, );
 
+    my $res = $sth->fetchrow_hashref;
 
-    my $res  = $sth->fetchrow_hashref;
-  #  my $display = $res->{'display'};
+    #  my $display = $res->{'display'};
     my $estimated = $res->{'estimated'};
-
 
     return $actual, $estimated;
 }
@@ -267,18 +274,21 @@ sub ModBudgetPlan {
     my $dbh = C4::Context->dbh;
     foreach my $buds (@$budget_plan) {
         my $lines = $buds->{lines};
-        my $sth = $dbh->prepare( qq|
+        my $sth   = $dbh->prepare(
+            qq|
                 DELETE FROM aqbudgets_planning
                     WHERE   budget_period_id   = ? AND
                             budget_id   = ? AND
                             authcat            = ? |
         );
-    #delete a aqplan line of cells, then insert new cells, 
-    # these could be UPDATES rather than DEL/INSERTS...
-        $sth->execute( $budget_period_id,  $lines->[0]{budget_id}   , $authcat );
+
+        #delete a aqplan line of cells, then insert new cells,
+        # these could be UPDATES rather than DEL/INSERTS...
+        $sth->execute( $budget_period_id, $lines->[0]{budget_id}, $authcat );
 
         foreach my $cell (@$lines) {
-            my $sth = $dbh->prepare( qq|
+            my $sth = $dbh->prepare(
+                qq|
 
                 INSERT INTO aqbudgets_planning
                      SET   budget_id     = ?,
@@ -287,107 +297,106 @@ sub ModBudgetPlan {
                      estimated_amount  = ?,
                      authvalue       = ?  |
             );
-            $sth->execute(
-                            $cell->{'budget_id'},
-                            $cell->{'budget_period_id'},
-                            $cell->{'authcat'},
-                            $cell->{'estimated_amount'},
-                            $cell->{'authvalue'},
-            );
+            $sth->execute( $cell->{'budget_id'}, $cell->{'budget_period_id'}, $cell->{'authcat'}, $cell->{'estimated_amount'}, $cell->{'authvalue'}, );
         }
     }
 }
 
 # -------------------------------------------------------------------
 sub GetBudgetSpent {
-	my ($budget_id) = @_;
-	my $dbh = C4::Context->dbh;
-	my $sth = $dbh->prepare(qq|
+    my ($budget_id) = @_;
+    my $dbh         = C4::Context->dbh;
+    my $sth         = $dbh->prepare(
+        qq|
         SELECT SUM(ecost *  quantity) AS sum FROM aqorders
             WHERE budget_id = ? AND
             quantityreceived > 0 AND
             datecancellationprinted IS NULL
-    |);
+    |
+    );
 
-	$sth->execute($budget_id);
-	my $sum =  $sth->fetchrow_array;
-	return $sum;
+    $sth->execute($budget_id);
+    my $sum = $sth->fetchrow_array;
+    return $sum;
 }
 
 # -------------------------------------------------------------------
 sub GetBudgetOrdered {
-	my ($budget_id) = @_;
-	my $dbh = C4::Context->dbh;
-	my $sth = $dbh->prepare(qq|
+    my ($budget_id) = @_;
+    my $dbh         = C4::Context->dbh;
+    my $sth         = $dbh->prepare(
+        qq|
         SELECT SUM(ecost *  quantity) AS sum FROM aqorders
             WHERE budget_id = ? AND
             quantityreceived = 0 AND
             datecancellationprinted IS NULL
-    |);
+    |
+    );
 
-	$sth->execute($budget_id);
-	my $sum =  $sth->fetchrow_array;
-	return $sum;
+    $sth->execute($budget_id);
+    my $sum = $sth->fetchrow_array;
+    return $sum;
 }
 
 # -------------------------------------------------------------------
 sub GetBudgetPermDropbox {
-	my ($perm) = @_;
-	my %labels;
-	$labels{'0'} = 'None';
-	$labels{'1'} = 'Owner';
-	$labels{'2'} = 'Library';
-	my $radio = CGI::scrolling_list(
-		-id       => 'budget_permission',
-		-name      => 'budget_permission',
-		-values    => [ '0', '1', '2' ],
-		-default   => $perm,
-		-labels    => \%labels,
-		-size    => 1,
-	);
-	return $radio;
+    my ($perm) = @_;
+    my %labels;
+    $labels{'0'} = 'None';
+    $labels{'1'} = 'Owner';
+    $labels{'2'} = 'Library';
+    my $radio = CGI::scrolling_list(
+        -id      => 'budget_permission',
+        -name    => 'budget_permission',
+        -values  => [ '0', '1', '2' ],
+        -default => $perm,
+        -labels  => \%labels,
+        -size    => 1,
+    );
+    return $radio;
 }
 
 # -------------------------------------------------------------------
-sub GetBudgetAuthCats  {
+sub GetBudgetAuthCats {
     my ($budget_period_id) = shift;
+
     # now, populate the auth_cats_loop used in the budget planning button
     # we must retrieve all auth values used by at least one budget
     my $dbh = C4::Context->dbh;
-    my $sth=$dbh->prepare("SELECT sort1_authcat,sort2_authcat FROM aqbudgets WHERE budget_period_id=?");
+    my $sth = $dbh->prepare("SELECT sort1_authcat,sort2_authcat FROM aqbudgets WHERE budget_period_id=?");
     $sth->execute($budget_period_id);
     my %authcats;
-    while (my ($sort1_authcat,$sort2_authcat) = $sth->fetchrow) {
-        $authcats{$sort1_authcat}=1;
-        $authcats{$sort2_authcat}=1;
+    while ( my ( $sort1_authcat, $sort2_authcat ) = $sth->fetchrow ) {
+        $authcats{$sort1_authcat} = 1;
+        $authcats{$sort2_authcat} = 1;
     }
     my @auth_cats_loop;
-    foreach (sort keys %authcats) {
-        push @auth_cats_loop,{ authcat => $_ };
+    foreach ( sort keys %authcats ) {
+        push @auth_cats_loop, { authcat => $_ };
     }
     return \@auth_cats_loop;
 }
 
 # -------------------------------------------------------------------
 sub GetAuthvalueDropbox {
-	my ( $name, $authcat, $default ) = @_;
-	my @authorised_values;
-	my %authorised_lib;
-	my $value;
-	my $dbh = C4::Context->dbh;
-	my $sth = $dbh->prepare(
-		"SELECT authorised_value,lib
+    my ( $name, $authcat, $default ) = @_;
+    my @authorised_values;
+    my %authorised_lib;
+    my $value;
+    my $dbh = C4::Context->dbh;
+    my $sth = $dbh->prepare(
+        "SELECT authorised_value,lib
             FROM authorised_values
             WHERE category = ?
             ORDER BY  lib"
-	);
-	$sth->execute( $authcat );
+    );
+    $sth->execute($authcat);
 
-	push @authorised_values, '';
-	while (my ($value, $lib) = $sth->fetchrow_array) {
-		push @authorised_values, $value;
-		$authorised_lib{$value} = $lib;
-	}
+    push @authorised_values, '';
+    while ( my ( $value, $lib ) = $sth->fetchrow_array ) {
+        push @authorised_values, $value;
+        $authorised_lib{$value} = $lib;
+    }
 
     return 0 if keys(%authorised_lib) == 0;
 
@@ -402,234 +411,243 @@ sub GetAuthvalueDropbox {
         -id       => $name,
     );
 
-    return $budget_authvalue_dropbox
+    return $budget_authvalue_dropbox;
 }
 
 # -------------------------------------------------------------------
 sub GetBudgetPeriodsDropbox {
     my ($budget_period_id) = @_;
-	my %labels;
-	my @values;
-	my ($active, $periods) = GetBudgetPeriods();
-	foreach my $r (@$periods) {
-		$labels{"$r->{budget_period_id}"} = $r->{budget_period_description};
-		push @values, $r->{budget_period_id};
-	}
+    my %labels;
+    my @values;
+    my ( $active, $periods ) = GetBudgetPeriods();
+    foreach my $r (@$periods) {
+        $labels{"$r->{budget_period_id}"} = $r->{budget_period_description};
+        push @values, $r->{budget_period_id};
+    }
 
-	# if no buget_id is passed then its an add
-	my $budget_period_dropbox = CGI::scrolling_list(
-		-name    => 'budget_period_id',
-		-values  => \@values,
-		-default => $budget_period_id ? $budget_period_id :  $active,
-		-size    => 1,
-		-labels  => \%labels,
-	);
-	return $budget_period_dropbox;
+    # if no buget_id is passed then its an add
+    my $budget_period_dropbox = CGI::scrolling_list(
+        -name    => 'budget_period_id',
+        -values  => \@values,
+        -default => $budget_period_id ? $budget_period_id : $active,
+        -size    => 1,
+        -labels  => \%labels,
+    );
+    return $budget_period_dropbox;
 }
 
 # -------------------------------------------------------------------
 sub GetBudgetPeriods {
-	my ($filters,$orderby) = @_;
-    return SearchInTable("aqbudgetperiods",$filters, $orderby, undef,undef, undef, "wide");
+    my ( $filters, $orderby ) = @_;
+    return SearchInTable( "aqbudgetperiods", $filters, $orderby, undef, undef, undef, "wide" );
 }
+
 # -------------------------------------------------------------------
 sub GetBudgetPeriod {
-	my ($budget_period_id) = @_;
-	my $dbh = C4::Context->dbh;
-	## $total = number of records linked to the record that must be deleted
-	my $total = 0;
-	## get information about the record that will be deleted
-	my $sth;
-	if ($budget_period_id) {
-		$sth = $dbh->prepare( qq|
+    my ($budget_period_id) = @_;
+    my $dbh = C4::Context->dbh;
+    ## $total = number of records linked to the record that must be deleted
+    my $total = 0;
+    ## get information about the record that will be deleted
+    my $sth;
+    if ($budget_period_id) {
+        $sth = $dbh->prepare(
+            qq|
               SELECT      *
                 FROM aqbudgetperiods
                 WHERE budget_period_id=? |
-		);
-		$sth->execute($budget_period_id);
-	} else {         # ACTIVE BUDGET
-		$sth = $dbh->prepare(qq|
+        );
+        $sth->execute($budget_period_id);
+    } else {    # ACTIVE BUDGET
+        $sth = $dbh->prepare(
+            qq|
 			  SELECT      *
                 FROM aqbudgetperiods
                 WHERE budget_period_active=1 |
-		);
-		$sth->execute();
-	}
-	my $data = $sth->fetchrow_hashref;
-	return $data;
+        );
+        $sth->execute();
+    }
+    my $data = $sth->fetchrow_hashref;
+    return $data;
 }
 
 # -------------------------------------------------------------------
-sub DelBudgetPeriod{
-	my ($budget_period_id) = @_;
-	my $dbh = C4::Context->dbh;
-	  ; ## $total = number of records linked to the record that must be deleted
+sub DelBudgetPeriod {
+    my ($budget_period_id) = @_;
+    my $dbh = C4::Context->dbh;
+    ;    ## $total = number of records linked to the record that must be deleted
     my $total = 0;
 
-	## get information about the record that will be deleted
-	my $sth = $dbh->prepare(qq|
+    ## get information about the record that will be deleted
+    my $sth = $dbh->prepare(
+        qq|
 		DELETE 
          FROM aqbudgetperiods
          WHERE budget_period_id=? |
-	);
-	return $sth->execute($budget_period_id);
+    );
+    return $sth->execute($budget_period_id);
 }
 
 # -------------------------------------------------------------------
 sub ModBudgetPeriod {
-	my ($budget_period_information) = @_;
-	return UpdateInTable("aqbudgetperiods",$budget_period_information);
+    my ($budget_period_information) = @_;
+    return UpdateInTable( "aqbudgetperiods", $budget_period_information );
 }
 
 # -------------------------------------------------------------------
 sub GetBudgetHierarchy {
-	my ($budget_period_id, $branchcode, $owner) = @_;
-	my @bind_params;
-	my $dbh   = C4::Context->dbh;
-	my $query = qq|
+    my ( $budget_period_id, $branchcode, $owner ) = @_;
+    my @bind_params;
+    my $dbh   = C4::Context->dbh;
+    my $query = qq|
                     SELECT aqbudgets.*
                     FROM aqbudgets |;
+
     # show only period X if requested
-	my @where_strings;
+    my @where_strings;
     if ($budget_period_id) {
-        push @where_strings," aqbudgets.budget_period_id = ?";
-        push @bind_params, $budget_period_id;
+        push @where_strings, " aqbudgets.budget_period_id = ?";
+        push @bind_params,   $budget_period_id;
     }
-	# show only budgets owned by me, my branch or everyone
+
+    # show only budgets owned by me, my branch or everyone
     if ($owner) {
         if ($branchcode) {
-            push @where_strings,qq{ (budget_owner_id = ? OR budget_branchcode = ? OR (budget_branchcode IS NULL or budget_branchcode="" AND (budget_owner_id IS NULL OR budget_owner_id="")))};
-            push @bind_params, ($owner, $branchcode);
+            push @where_strings,
+              qq{ (budget_owner_id = ? OR budget_branchcode = ? OR (budget_branchcode IS NULL or budget_branchcode="" AND (budget_owner_id IS NULL OR budget_owner_id="")))};
+            push @bind_params, ( $owner, $branchcode );
         } else {
             push @where_strings, ' (budget_owner_id = ? OR budget_owner_id IS NULL or budget_owner_id ="") ';
-            push @bind_params, $owner;
+            push @bind_params,   $owner;
         }
     } else {
         if ($branchcode) {
-            push @where_strings," (budget_branchcode =? or budget_branchcode is NULL)";
-            push @bind_params, $branchcode;
+            push @where_strings, " (budget_branchcode =? or budget_branchcode is NULL)";
+            push @bind_params,   $branchcode;
         }
     }
-	$query.=" WHERE ".join(' AND ', @where_strings) if @where_strings;
-	$debug && warn $query,join(",",@bind_params);
-	my $sth = $dbh->prepare($query);
-	$sth->execute(@bind_params);
-	my $results = $sth->fetchall_arrayref({});
-	my @res     = @$results;
-	my $i = 0;
-	while (1) {
-		my $depth_cnt = 0;
-		foreach my $r (@res) {
-			my @child;
-			# look for children
-			$r->{depth} = '0' if !defined $r->{budget_parent_id};
-			foreach my $r2 (@res) {
-				if (defined $r2->{budget_parent_id}
-					&& $r2->{budget_parent_id} == $r->{budget_id}) {
-					push @child, $r2->{budget_id};
-					$r2->{depth} = ($r->{depth} + 1) if defined $r->{depth};
-				}
-			}
-			$r->{child} = \@child if scalar @child > 0;    # add the child
-			$depth_cnt++ if !defined $r->{'depth'};
-		}
-		last if ($depth_cnt == 0 || $i == 100);
-		$i++;
-	}
+    $query .= " WHERE " . join( ' AND ', @where_strings ) if @where_strings;
+    $debug && warn $query, join( ",", @bind_params );
+    my $sth = $dbh->prepare($query);
+    $sth->execute(@bind_params);
+    my $results = $sth->fetchall_arrayref( {} );
+    my @res     = @$results;
+    my $i       = 0;
 
-	# look for top parents 1st
-	my (@sort, $depth_count);
-	($i, $depth_count) = 0;
-	while (1) {
-		my $children = 0;
-		foreach my $r (@res) {
-			if ($r->{depth} == $depth_count) {
-				$children++ if (ref $r->{child} eq 'ARRAY');
+    while (1) {
+        my $depth_cnt = 0;
+        foreach my $r (@res) {
+            my @child;
 
-				# find the parent id element_id and insert it after
-				my $i2 = 0;
-				my $parent;
-				if ($depth_count > 0) {
+            # look for children
+            $r->{depth} = '0' if !defined $r->{budget_parent_id};
+            foreach my $r2 (@res) {
+                if ( defined $r2->{budget_parent_id}
+                    && $r2->{budget_parent_id} == $r->{budget_id} ) {
+                    push @child, $r2->{budget_id};
+                    $r2->{depth} = ( $r->{depth} + 1 ) if defined $r->{depth};
+                }
+            }
+            $r->{child} = \@child if scalar @child > 0;    # add the child
+            $depth_cnt++ if !defined $r->{'depth'};
+        }
+        last if ( $depth_cnt == 0 || $i == 100 );
+        $i++;
+    }
 
-					# add indent
-					my $depth = $r->{depth} * 2;
-					$r->{budget_code_indent} = $r->{budget_code};
-					$r->{budget_name_indent} = $r->{budget_name};
-					foreach my $r3 (@sort) {
-						if ($r3->{budget_id} == $r->{budget_parent_id}) {
-							$parent = $i2;
-							last;
-						}
-						$i2++;
-					}
-				} else {
-					$r->{budget_code_indent} = $r->{budget_code};
-					$r->{budget_name_indent} = $r->{budget_name};
-				}
-                
-				if (defined $parent) {
-					splice @sort, ($parent + 1), 0, $r;
-				} else {
-					push @sort, $r;
-				}
-			}
+    # look for top parents 1st
+    my ( @sort, $depth_count );
+    ( $i, $depth_count ) = 0;
+    while (1) {
+        my $children = 0;
+        foreach my $r (@res) {
+            if ( $r->{depth} == $depth_count ) {
+                $children++ if ( ref $r->{child} eq 'ARRAY' );
 
-			$i++;
-		}    # --------------foreach
-		$depth_count++;
-		last if $children == 0;
-	}
+                # find the parent id element_id and insert it after
+                my $i2 = 0;
+                my $parent;
+                if ( $depth_count > 0 ) {
 
-# add budget-percent and allocation, and flags for html-template
-	foreach my $r (@sort) {
-		my $subs_href = $r->{'child'};
+                    # add indent
+                    my $depth = $r->{depth} * 2;
+                    $r->{budget_code_indent} = $r->{budget_code};
+                    $r->{budget_name_indent} = $r->{budget_name};
+                    foreach my $r3 (@sort) {
+                        if ( $r3->{budget_id} == $r->{budget_parent_id} ) {
+                            $parent = $i2;
+                            last;
+                        }
+                        $i2++;
+                    }
+                } else {
+                    $r->{budget_code_indent} = $r->{budget_code};
+                    $r->{budget_name_indent} = $r->{budget_name};
+                }
+
+                if ( defined $parent ) {
+                    splice @sort, ( $parent + 1 ), 0, $r;
+                } else {
+                    push @sort, $r;
+                }
+            }
+
+            $i++;
+        }    # --------------foreach
+        $depth_count++;
+        last if $children == 0;
+    }
+
+    # add budget-percent and allocation, and flags for html-template
+    foreach my $r (@sort) {
+        my $subs_href = $r->{'child'};
         my @subs_arr = @$subs_href if defined $subs_href;
 
         my $moo = $r->{'budget_code_indent'};
         $moo =~ s/\ /\&nbsp\;/g;
-        $r->{'budget_code_indent'} =  $moo;
+        $r->{'budget_code_indent'} = $moo;
 
         $moo = $r->{'budget_name_indent'};
         $moo =~ s/\ /\&nbsp\;/g;
         $r->{'budget_name_indent'} = $moo;
 
-        $r->{'budget_spent'}       = GetBudgetSpent( $r->{'budget_id'} );
+        $r->{'budget_spent'} = GetBudgetSpent( $r->{'budget_id'} );
 
-        $r->{'budget_amount_total'} =  $r->{'budget_amount'};
+        $r->{'budget_amount_total'} = $r->{'budget_amount'};
 
         # foreach sub-levels
-        my $unalloc_count ;
+        my $unalloc_count;
 
-		foreach my $sub (@subs_arr) {
-			my $sub_budget = GetBudget($sub);
+        foreach my $sub (@subs_arr) {
+            my $sub_budget = GetBudget($sub);
 
-			$r->{budget_spent_sublevel} +=    GetBudgetSpent( $sub_budget->{'budget_id'} );
-			$unalloc_count +=   $sub_budget->{'budget_amount'};
-		}
-	}
-	return \@sort;
+            $r->{budget_spent_sublevel} += GetBudgetSpent( $sub_budget->{'budget_id'} );
+            $unalloc_count += $sub_budget->{'budget_amount'};
+        }
+    }
+    return \@sort;
 }
 
 # -------------------------------------------------------------------
 
 sub AddBudget {
     my ($budget) = @_;
-	return InsertInTable("aqbudgets",$budget);
+    return InsertInTable( "aqbudgets", $budget );
 }
 
 # -------------------------------------------------------------------
 sub ModBudget {
     my ($budget) = @_;
-	return UpdateInTable("aqbudgets",$budget);
+    return UpdateInTable( "aqbudgets", $budget );
 }
 
 # -------------------------------------------------------------------
 sub DelBudget {
-	my ($budget_id) = @_;
-	my $dbh         = C4::Context->dbh;
-	my $sth         = $dbh->prepare("delete from aqbudgets where budget_id=?");
-	my $rc          = $sth->execute($budget_id);
-	return $rc;
+    my ($budget_id) = @_;
+    my $dbh         = C4::Context->dbh;
+    my $sth         = $dbh->prepare("delete from aqbudgets where budget_id=?");
+    my $rc          = $sth->execute($budget_id);
+    return $rc;
 }
 
 =head2 FUNCTIONS ABOUT BUDGETS
@@ -654,15 +672,15 @@ get a specific budget
 
 # -------------------------------------------------------------------
 sub GetBudget {
-    my ( $budget_id ) = @_;
-    my $dbh = C4::Context->dbh;
-    my $query = "
+    my ($budget_id) = @_;
+    my $dbh         = C4::Context->dbh;
+    my $query       = "
         SELECT *
         FROM   aqbudgets
         WHERE  budget_id=?
         ";
     my $sth = $dbh->prepare($query);
-    $sth->execute( $budget_id );
+    $sth->execute($budget_id);
     my $result = $sth->fetchrow_hashref;
     return $result;
 }
@@ -681,19 +699,20 @@ gets all budgets
 
 # -------------------------------------------------------------------
 sub GetChildBudgetsSpent {
-    my ( $budget_id ) = @_;
-    my $dbh = C4::Context->dbh;
-    my $query = "
+    my ($budget_id) = @_;
+    my $dbh         = C4::Context->dbh;
+    my $query       = "
         SELECT *
         FROM   aqbudgets
         WHERE  budget_parent_id=?
         ";
     my $sth = $dbh->prepare($query);
-    $sth->execute( $budget_id );
-    my $result = $sth->fetchall_arrayref({});
+    $sth->execute($budget_id);
+    my $result = $sth->fetchall_arrayref( {} );
     my $total_spent = GetBudgetSpent($budget_id);
-    if ($result){
-        $total_spent += GetChildBudgetsSpent($_->{"budget_id"}) foreach @$result;    
+
+    if ($result) {
+        $total_spent += GetChildBudgetsSpent( $_->{"budget_id"} ) foreach @$result;
     }
     return $total_spent;
 }
@@ -712,8 +731,8 @@ gets the total spent of the level and sublevels of $budget_id
 
 # -------------------------------------------------------------------
 sub GetBudgets {
-    my ($filters,$orderby) = @_;
-    return SearchInTable("aqbudgets",$filters, $orderby, undef,undef, undef, "wide");
+    my ( $filters, $orderby ) = @_;
+    return SearchInTable( "aqbudgets", $filters, $orderby, undef, undef, undef, "wide" );
 }
 
 # -------------------------------------------------------------------
@@ -813,28 +832,29 @@ sub ConvertCurrency {
 =cut
 
 sub _columns(;$) {
-	my $tablename=shift||"aqbudgets";
-    return @{C4::Context->dbh->selectcol_arrayref("SHOW columns from $tablename",{Columns=>[1,4]})};
+    my $tablename = shift || "aqbudgets";
+    return @{ C4::Context->dbh->selectcol_arrayref( "SHOW columns from $tablename", { Columns => [ 1, 4 ] } ) };
 }
 
-sub _filter_fields{
-	my $budget=shift;
-	my $tablename=shift;
-    my @keys; 
-	my @values;
-	my %columns= _columns($tablename);
-	#Filter Primary Keys of table
-    my $elements=join "|",grep {$columns{$_} ne "PRI"} keys %columns;
-	foreach my $field (grep {/\b($elements)\b/} keys %$budget){
-		$$budget{$field}=format_date_in_iso($$budget{$field}) if ($field=~/date/ && $$budget{$field} !~C4::Dates->regexp("iso"));
-		my $strkeys= " $field = ? ";
-		if ($field=~/branch/){
-			$strkeys="( $strkeys OR $field='' OR $field IS NULL) ";
-		}
-		push @values, $$budget{$field};
-		push @keys, $strkeys;
-	}
-	return (\@keys,\@values);
+sub _filter_fields {
+    my $budget    = shift;
+    my $tablename = shift;
+    my @keys;
+    my @values;
+    my %columns = _columns($tablename);
+
+    #Filter Primary Keys of table
+    my $elements = join "|", grep { $columns{$_} ne "PRI" } keys %columns;
+    foreach my $field ( grep { /\b($elements)\b/ } keys %$budget ) {
+        $$budget{$field} = format_date_in_iso( $$budget{$field} ) if ( $field =~ /date/ && $$budget{$field} !~ C4::Dates->regexp("iso") );
+        my $strkeys = " $field = ? ";
+        if ( $field =~ /branch/ ) {
+            $strkeys = "( $strkeys OR $field='' OR $field IS NULL) ";
+        }
+        push @values, $$budget{$field};
+        push @keys,   $strkeys;
+    }
+    return ( \@keys, \@values );
 }
 
 END { }    # module clean-up code here (global destructor)

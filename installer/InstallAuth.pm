@@ -21,6 +21,7 @@ package InstallAuth;
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use Digest::MD5 qw(md5_base64);
 
@@ -110,9 +111,7 @@ sub get_template_and_user {
     my $in       = shift;
     my $query    = $in->{'query'};
     my $language = $query->cookie('KohaOpacLanguage');
-    my $path =
-      C4::Context->config('intrahtdocs') . "/prog/"
-      . ( $language ? $language : "en" );
+    my $path     = C4::Context->config('intrahtdocs') . "/prog/" . ( $language ? $language : "en" );
     my $template = HTML::Template::Pro->new(
         filename          => "$path/modules/" . $in->{template_name},
         die_on_bad_params => 1,
@@ -121,12 +120,7 @@ sub get_template_and_user {
         path              => ["$path/includes"]
     );
 
-    my ( $user, $cookie, $sessionID, $flags ) = checkauth(
-        $in->{'query'},
-        $in->{'authnotrequired'},
-        $in->{'flagsrequired'},
-        $in->{'type'}
-    );
+    my ( $user, $cookie, $sessionID, $flags ) = checkauth( $in->{'query'}, $in->{'authnotrequired'}, $in->{'flagsrequired'}, $in->{'type'} );
 
     #     use Data::Dumper;warn "utilisateur $user cookie : ".Dumper($cookie);
 
@@ -220,7 +214,7 @@ has authenticated.
 sub checkauth {
     my $query = shift;
 
-# $authnotrequired will be set for scripts which will run without authentication
+    # $authnotrequired will be set for scripts which will run without authentication
     my $authnotrequired = shift;
     my $flagsrequired   = shift;
     my $type            = shift;
@@ -237,21 +231,12 @@ sub checkauth {
     my $logout = $query->param('logout.x');
     if ( $sessionID = $query->cookie("CGISESSID") ) {
         C4::Context->_new_userenv($sessionID);
-        my $session =
-          new CGI::Session( "driver:File;serializer:yaml", $sessionID,
-            { Directory => '/tmp' } );
+        my $session = new CGI::Session( "driver:File;serializer:yaml", $sessionID, { Directory => '/tmp' } );
         if ( $session->param('cardnumber') ) {
             C4::Context::set_userenv(
-                $session->param('number'),
-                $session->param('id'),
-                $session->param('cardnumber'),
-                $session->param('firstname'),
-                $session->param('surname'),
-                $session->param('branch'),
-                $session->param('branchname'),
-                $session->param('flags'),
-                $session->param('emailaddress'),
-                $session->param('branchprinter')
+                $session->param('number'),       $session->param('id'),     $session->param('cardnumber'), $session->param('firstname'),
+                $session->param('surname'),      $session->param('branch'), $session->param('branchname'), $session->param('flags'),
+                $session->param('emailaddress'), $session->param('branchprinter')
             );
             $cookie   = $query->cookie( CGISESSID => $session->id );
             $loggedin = 1;
@@ -267,14 +252,12 @@ sub checkauth {
             $userid    = undef;
             open L, ">>/tmp/sessionlog";
             my $time = localtime( time() );
-            printf L "%20s from %16s logged out at %30s (manually).\n", $userid,
-              $ip, $time;
+            printf L "%20s from %16s logged out at %30s (manually).\n", $userid, $ip, $time;
             close L;
         }
     }
     unless ($userid) {
-        my $session =
-          new CGI::Session( "driver:File;serializer:yaml", undef, { Directory => '/tmp' } );
+        my $session = new CGI::Session( "driver:File;serializer:yaml", undef, { Directory => '/tmp' } );
         $sessionID = $session->id;
         $userid    = $query->param('userid');
         C4::Context->_new_userenv($sessionID);
@@ -285,38 +268,29 @@ sub checkauth {
             $loggedin = 1;
             open L, ">>/tmp/sessionlog";
             my $time = localtime( time() );
-            printf L "%20s from %16s logged in  at %30s.\n", $userid,
-              $ENV{'REMOTE_ADDR'}, $time;
+            printf L "%20s from %16s logged in  at %30s.\n", $userid, $ENV{'REMOTE_ADDR'}, $time;
             close L;
             $cookie = $query->cookie( CGISESSID => $sessionID );
             if ( $return == 2 ) {
 
-           #Only superlibrarian should have access to this page.
-           #Since if it is a user, it is supposed that there is a borrower table
-           #And thus that data structure is loaded.
-                my $hash = C4::Context::set_userenv(
-                    0,                           0,
-                    C4::Context->config('user'), C4::Context->config('user'),
-                    C4::Context->config('user'), "",
-                    "NO_LIBRARY_SET",            1,
-                    ""
-                );
-                $session->param( 'number',     0 );
-                $session->param( 'id',         C4::Context->config('user') );
-                $session->param( 'cardnumber', C4::Context->config('user') );
-                $session->param( 'firstname',  C4::Context->config('user') );
-                $session->param( 'surname',    C4::Context->config('user'), );
-                $session->param( 'branch',     'NO_LIBRARY_SET' );
-                $session->param( 'branchname', 'NO_LIBRARY_SET' );
-                $session->param( 'flags',      1 );
-                $session->param( 'emailaddress',
-                    C4::Context->preference('KohaAdminEmailAddress') );
-                $session->param( 'ip',       $session->remote_addr() );
-                $session->param( 'lasttime', time() );
+                #Only superlibrarian should have access to this page.
+                #Since if it is a user, it is supposed that there is a borrower table
+                #And thus that data structure is loaded.
+                my $hash = C4::Context::set_userenv( 0, 0, C4::Context->config('user'), C4::Context->config('user'), C4::Context->config('user'), "", "NO_LIBRARY_SET", 1, "" );
+                $session->param( 'number',       0 );
+                $session->param( 'id',           C4::Context->config('user') );
+                $session->param( 'cardnumber',   C4::Context->config('user') );
+                $session->param( 'firstname',    C4::Context->config('user') );
+                $session->param( 'surname',      C4::Context->config('user'), );
+                $session->param( 'branch',       'NO_LIBRARY_SET' );
+                $session->param( 'branchname',   'NO_LIBRARY_SET' );
+                $session->param( 'flags',        1 );
+                $session->param( 'emailaddress', C4::Context->preference('KohaAdminEmailAddress') );
+                $session->param( 'ip',           $session->remote_addr() );
+                $session->param( 'lasttime',     time() );
                 $userid = C4::Context->config('user');
             }
-        }
-        else {
+        } else {
             if ($userid) {
                 $info{'invalid_username_or_password'} = 1;
                 C4::Context->_unset_userenv($sessionID);
@@ -337,8 +311,7 @@ sub checkauth {
         }
         if ($envcookie) {
             return ( $userid, [ $cookie, $envcookie ], $sessionID, $flags );
-        }
-        else {
+        } else {
             return ( $userid, $cookie, $sessionID, $flags );
         }
     }
@@ -352,9 +325,7 @@ sub checkauth {
         push @inputs, { name => $name, value => $value };
     }
 
-    my $path =
-      C4::Context->config('intrahtdocs') . "/prog/"
-      . ( $query->param('language') ? $query->param('language') : "en" );
+    my $path = C4::Context->config('intrahtdocs') . "/prog/" . ( $query->param('language') ? $query->param('language') : "en" );
     my $template = HTML::Template::Pro->new(
         filename          => "$path/modules/$template_name",
         die_on_bad_params => 1,
@@ -378,8 +349,8 @@ sub checkauth {
         -expires => ''
     );
     print $query->header(
-        -type    => 'text/html; charset=utf-8',
-        -cookie  => $cookie
+        -type   => 'text/html; charset=utf-8',
+        -cookie => $cookie
       ),
       $template->output;
     exit;
@@ -390,28 +361,20 @@ sub checkpw {
     my ( $userid, $password ) = @_;
 
     if (   $userid
-        && $userid     eq C4::Context->config('user')
-        && "$password" eq C4::Context->config('pass') )
-    {
+        && $userid eq C4::Context->config('user')
+        && "$password" eq C4::Context->config('pass') ) {
 
         # Koha superuser account
-        C4::Context->set_userenv(
-            0, 0,
-            C4::Context->config('user'),
-            C4::Context->config('user'),
-            C4::Context->config('user'),
-            "", 1
-        );
+        C4::Context->set_userenv( 0, 0, C4::Context->config('user'), C4::Context->config('user'), C4::Context->config('user'), "", 1 );
         return 2;
     }
     if (   $userid
-        && $userid     eq 'demo'
+        && $userid eq 'demo'
         && "$password" eq 'demo'
-        && C4::Context->config('demo') )
-    {
+        && C4::Context->config('demo') ) {
 
-# DEMO => the demo user is allowed to do everything (if demo set to 1 in koha.conf
-# some features won't be effective : modify systempref, modify MARC structure,
+        # DEMO => the demo user is allowed to do everything (if demo set to 1 in koha.conf
+        # some features won't be effective : modify systempref, modify MARC structure,
         return 2;
     }
     return 0;

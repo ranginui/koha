@@ -18,8 +18,6 @@
 # with Koha; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-
-
 package C4::URL::Checker;
 
 =head1 NAME 
@@ -80,62 +78,55 @@ use LWP::UserAgent;
 use HTTP::Request;
 use C4::Biblio;
 
-
-
 sub new {
 
     my $self = {};
-    my ($class, $timeout) = @_;
-    
+    my ( $class, $timeout ) = @_;
+
     my $uagent = new LWP::UserAgent;
-    $uagent->timeout( $timeout) if $timeout;
-    $self->{ user_agent } = $uagent;
-    $self->{ bad_url    } = { };
-    
+    $uagent->timeout($timeout) if $timeout;
+    $self->{user_agent} = $uagent;
+    $self->{bad_url}    = {};
+
     bless $self, $class;
     return $self;
 }
 
-
 sub check_biblio {
-    my $self            = shift;
-    my $biblionumber    = shift;
-    my $uagent          = $self->{ user_agent   };
-    my $host            = $self->{ host_default };
-    my $bad_url         = $self->{ bad_url      };
+    my $self         = shift;
+    my $biblionumber = shift;
+    my $uagent       = $self->{user_agent};
+    my $host         = $self->{host_default};
+    my $bad_url      = $self->{bad_url};
 
-    my $record = GetMarcBiblio( $biblionumber ); 
+    my $record = GetMarcBiblio($biblionumber);
     return unless $record->field('856');
 
     my @urls = ();
     foreach my $field ( $record->field('856') ) {
         my $url = $field->subfield('u');
-        next unless $url; 
+        next unless $url;
         $url = "$host/$url" unless $url =~ /^http/;
         my $check = { url => $url };
-        if ( $bad_url->{ $url } ) {
-            $check->{ is_success } = 1;
-            $check->{ status     } = '500 Site already checked';
-        }
-        else {
+        if ( $bad_url->{$url} ) {
+            $check->{is_success} = 1;
+            $check->{status}     = '500 Site already checked';
+        } else {
             my $req = HTTP::Request->new( GET => $url );
             my $res = $uagent->request( $req, sub { die }, 1 );
             if ( $res->is_success ) {
-                $check->{ is_success } = 1;
-                $check->{ status     } = 'ok';
-            }
-            else {
-                $check->{ is_success } = 0;
-                $check->{ status     } = $res->status_line;
-                $bad_url->{ $url     } = 1;
+                $check->{is_success} = 1;
+                $check->{status}     = 'ok';
+            } else {
+                $check->{is_success} = 0;
+                $check->{status}     = $res->status_line;
+                $bad_url->{$url}     = 1;
             }
         }
         push @urls, $check;
     }
     return \@urls;
 }
-
-
 
 package Main;
 
@@ -148,51 +139,45 @@ use Pod::Usage;
 use Getopt::Long;
 use C4::Context;
 
-
-
-my $verbose     = 0;
-my $help        = 0;
-my $host        = '';
-my $host_pro    = '';
-my $html        = 0;
-my $uriedit     = "/cgi-bin/koha/cataloguing/addbiblio.pl?biblionumber=";
-my $timeout     = 15;
-GetOptions( 
-    'verbose'       => \$verbose,
-    'html'          => \$html,
-    'help'          => \$help,
-    'host=s'        => \$host,
-    'host-pro=s'    => \$host_pro,
-    'timeout=i',    => \$timeout,
+my $verbose  = 0;
+my $help     = 0;
+my $host     = '';
+my $host_pro = '';
+my $html     = 0;
+my $uriedit  = "/cgi-bin/koha/cataloguing/addbiblio.pl?biblionumber=";
+my $timeout  = 15;
+GetOptions(
+    'verbose'    => \$verbose,
+    'html'       => \$html,
+    'help'       => \$help,
+    'host=s'     => \$host,
+    'host-pro=s' => \$host_pro,
+    'timeout=i', => \$timeout,
 );
-
 
 sub usage {
     pod2usage( -verbose => 2 );
     exit;
-} 
-
+}
 
 sub bibediturl {
     my $biblionumber = shift;
-    my $html = "<a href=\"$host_pro$uriedit$biblionumber\">$biblionumber</a>";
+    my $html         = "<a href=\"$host_pro$uriedit$biblionumber\">$biblionumber</a>";
     return $html;
 }
 
-
-# 
+#
 # Check all URLs from all current Koha biblio records
 #
 sub check_all_url {
     my $checker = C4::URL::Checker->new($timeout);
-    $checker->{ host_default }  = $host;
-    
-    my $context = new C4::Context(  );  
-    my $dbh = $context->dbh;
-    my $sth = $dbh->prepare( 
-        "SELECT biblionumber FROM biblioitems WHERE url <> ''" );
+    $checker->{host_default} = $host;
+
+    my $context = new C4::Context();
+    my $dbh     = $context->dbh;
+    my $sth     = $dbh->prepare("SELECT biblionumber FROM biblioitems WHERE url <> ''");
     $sth->execute;
-    if ( $html ) {
+    if ($html) {
         print <<EOS;
 <html>
 <body>
@@ -200,40 +185,33 @@ sub check_all_url {
 EOS
     }
     while ( my ($biblionumber) = $sth->fetchrow ) {
-        my $result = $checker->check_biblio( $biblionumber );  
-        next unless $result;  # No URL
-        foreach my $url ( @$result ) {
-            if ( ! $url->{ is_success } || $verbose ) {
+        my $result = $checker->check_biblio($biblionumber);
+        next unless $result;    # No URL
+        foreach my $url (@$result) {
+            if ( !$url->{is_success} || $verbose ) {
                 print $html
-                      ? "<tr>\n<td>" . bibediturl( $biblionumber ) . 
-                        "</td>\n<td>" . $url->{url} . "</td>\n<td>" . 
-                        $url->{status} . "</td>\n</tr>\n\n"
-                      : "$biblionumber\t" . $url->{ url } . "\t" .
-                        $url->{ status } . "\n";
+                  ? "<tr>\n<td>" . bibediturl($biblionumber) . "</td>\n<td>" . $url->{url} . "</td>\n<td>" . $url->{status} . "</td>\n</tr>\n\n"
+                  : "$biblionumber\t" . $url->{url} . "\t" . $url->{status} . "\n";
             }
         }
     }
     print "</table>\n</body>\n</html>\n" if $html;
 }
 
-
 # BEGIN
 
-usage() if $help;          
+usage() if $help;
 
 if ( $html && !$host_pro ) {
-    if ( $host ) {
+    if ($host) {
         $host_pro = $host;
-    }
-    else {
+    } else {
         print "Error: host-pro parameter or host must be provided in html mode\n";
         exit;
     }
 }
 
-check_all_url(); 
-
-
+check_all_url();
 
 =head1 NAME
 
@@ -285,5 +263,4 @@ Print this help page.
 =back
 
 =cut
-
 

@@ -17,8 +17,8 @@
 # with Koha; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use C4::Koha;
 use CGI;
@@ -26,35 +26,39 @@ use C4::Biblio;
 use C4::Items;
 use C4::Branch;
 use C4::Acquisition;
-use C4::Output;             # contains gettemplate
+use C4::Output;    # contains gettemplate
 use C4::Auth;
 use C4::Serials;
 use C4::Dates qw/format_date/;
-use C4::Circulation;  # to use itemissues
-use C4::Search;		# enabled_staff_search_views
+use C4::Circulation;    # to use itemissues
+use C4::Search;         # enabled_staff_search_views
 
-my $query=new CGI;
+my $query = new CGI;
 
 # FIXME  subject is not exported to the template?
-my $subject=$query->param('subject');
+my $subject = $query->param('subject');
 
 # if its a subject we need to use the subject.tmpl
-my ($template, $loggedinuser, $cookie) = get_template_and_user({
-    template_name   => ($subject? 'catalogue/subject.tmpl':
-                      'catalogue/moredetail.tmpl'),
-    query           => $query,
-    type            => "intranet",
-    authnotrequired => 0,
-    flagsrequired   => {catalogue => 1},
-    });
+my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
+    {   template_name => (
+            $subject
+            ? 'catalogue/subject.tmpl'
+            : 'catalogue/moredetail.tmpl'
+        ),
+        query           => $query,
+        type            => "intranet",
+        authnotrequired => 0,
+        flagsrequired   => { catalogue => 1 },
+    }
+);
 
 # get variables
 
-my $biblionumber=$query->param('biblionumber');
-my $title=$query->param('title');
-my $bi=$query->param('bi');
+my $biblionumber = $query->param('biblionumber');
+my $title        = $query->param('title');
+my $bi           = $query->param('bi');
 $bi = $biblionumber unless $bi;
-my $data=GetBiblioData($biblionumber);
+my $data  = GetBiblioData($biblionumber);
 my $dewey = $data->{'dewey'};
 
 #coping with subscriptions
@@ -72,68 +76,70 @@ my $subscriptionsnumber = CountSubscriptionFromBiblionumber($biblionumber);
 # $data->{'dewey'}=$dewey;
 
 my @results;
-my $fw = GetFrameworkCode($biblionumber);
-my @items= GetItemsInfo($biblionumber);
-my $count=@items;
-$data->{'count'}=$count;
+my $fw    = GetFrameworkCode($biblionumber);
+my @items = GetItemsInfo($biblionumber);
+my $count = @items;
+$data->{'count'} = $count;
 
-my $ccodes= GetKohaAuthorisedValues('items.ccode',$fw);
+my $ccodes = GetKohaAuthorisedValues( 'items.ccode', $fw );
 my $itemtypes = GetItemTypes;
 
-$data->{'itemtypename'} = $itemtypes->{$data->{'itemtype'}}->{'description'};
-$results[0]=$data;
+$data->{'itemtypename'} = $itemtypes->{ $data->{'itemtype'} }->{'description'};
+$results[0] = $data;
 my $itemnumber;
-($itemnumber) and @items = (grep {$_->{'itemnumber'} == $itemnumber} @items);
-foreach my $item (@items){
-    $item->{itemlostloop}= GetAuthorisedValues(GetAuthValCode('items.itemlost',$fw),$item->{itemlost}) if GetAuthValCode('items.itemlost',$fw);
-    $item->{itemdamagedloop}= GetAuthorisedValues(GetAuthValCode('items.damaged',$fw),$item->{damaged}) if GetAuthValCode('items.damaged',$fw);
-    $item->{'collection'}              = $ccodes->{ $item->{ccode} };
-    $item->{'itype'}                   = $itemtypes->{ $item->{'itype'} }->{'description'};
-    $item->{'replacementprice'}        = sprintf( "%.2f", $item->{'replacementprice'} );
-    $item->{'datelastborrowed'}        = format_date( $item->{'datelastborrowed'} );
-    $item->{'dateaccessioned'}         = format_date( $item->{'dateaccessioned'} );
-    $item->{'datelastseen'}            = format_date( $item->{'datelastseen'} );
-    $item->{'copyvol'}                 = $item->{'copynumber'};
+($itemnumber) and @items = ( grep { $_->{'itemnumber'} == $itemnumber } @items );
+foreach my $item (@items) {
+    $item->{itemlostloop}    = GetAuthorisedValues( GetAuthValCode( 'items.itemlost', $fw ), $item->{itemlost} ) if GetAuthValCode( 'items.itemlost', $fw );
+    $item->{itemdamagedloop} = GetAuthorisedValues( GetAuthValCode( 'items.damaged',  $fw ), $item->{damaged} )  if GetAuthValCode( 'items.damaged',  $fw );
+    $item->{'collection'}    = $ccodes->{ $item->{ccode} };
+    $item->{'itype'}         = $itemtypes->{ $item->{'itype'} }->{'description'};
+    $item->{'replacementprice'} = sprintf( "%.2f", $item->{'replacementprice'} );
+    $item->{'datelastborrowed'} = format_date( $item->{'datelastborrowed'} );
+    $item->{'dateaccessioned'}  = format_date( $item->{'dateaccessioned'} );
+    $item->{'datelastseen'}     = format_date( $item->{'datelastseen'} );
+    $item->{'copyvol'}          = $item->{'copynumber'};
 
     my $order = GetOrderFromItemnumber( $item->{'itemnumber'} );
     $item->{'ordernumber'}             = $order->{'ordernumber'};
     $item->{'basketno'}                = $order->{'basketno'};
     $item->{'booksellerinvoicenumber'} = $order->{'booksellerinvoicenumber'};
 
-    if ($item->{notforloantext} or $item->{itemlost} or $item->{damaged} or $item->{wthdrawn}) {
+    if ( $item->{notforloantext} or $item->{itemlost} or $item->{damaged} or $item->{wthdrawn} ) {
         $item->{status_advisory} = 1;
     }
 
-    if (C4::Context->preference("IndependantBranches")) {
+    if ( C4::Context->preference("IndependantBranches") ) {
+
         #verifying rights
         my $userenv = C4::Context->userenv();
-        unless (($userenv->{'flags'} == 1) or ($userenv->{'branch'} eq $item->{'homebranch'})) {
-                $item->{'nomod'}=1;
+        unless ( ( $userenv->{'flags'} == 1 ) or ( $userenv->{'branch'} eq $item->{'homebranch'} ) ) {
+            $item->{'nomod'} = 1;
         }
     }
-    $item->{'homebranchname'} = GetBranchName($item->{'homebranch'});
-    $item->{'holdingbranchname'} = GetBranchName($item->{'holdingbranch'});
-    if ($item->{'datedue'}) {
-        $item->{'datedue'} = format_date($item->{'datedue'});
-        $item->{'issue'}= 1;
+    $item->{'homebranchname'}    = GetBranchName( $item->{'homebranch'} );
+    $item->{'holdingbranchname'} = GetBranchName( $item->{'holdingbranch'} );
+    if ( $item->{'datedue'} ) {
+        $item->{'datedue'} = format_date( $item->{'datedue'} );
+        $item->{'issue'}   = 1;
     } else {
-        $item->{'issue'}= 0;
+        $item->{'issue'} = 0;
     }
 }
-$template->param(count => $data->{'count'},
-	subscriptionsnumber => $subscriptionsnumber,
+$template->param(
+    count               => $data->{'count'},
+    subscriptionsnumber => $subscriptionsnumber,
     subscriptiontitle   => $data->{title},
-	C4::Search::enabled_staff_search_views,
+    C4::Search::enabled_staff_search_views,
 );
-$template->param(BIBITEM_DATA => \@results);
-$template->param(ITEM_DATA => \@items);
-$template->param(moredetailview => 1);
-$template->param(loggedinuser => $loggedinuser);
-$template->param(biblionumber => $biblionumber);
-$template->param(biblioitemnumber => $bi);
-$template->param(itemnumber => $itemnumber);
-$template->param(ONLY_ONE => 1) if ( $itemnumber && $count != @items );
-$template->param(z3950_search_params => C4::Search::z3950_search_args(GetBiblioData($biblionumber)));
+$template->param( BIBITEM_DATA        => \@results );
+$template->param( ITEM_DATA           => \@items );
+$template->param( moredetailview      => 1 );
+$template->param( loggedinuser        => $loggedinuser );
+$template->param( biblionumber        => $biblionumber );
+$template->param( biblioitemnumber    => $bi );
+$template->param( itemnumber          => $itemnumber );
+$template->param( ONLY_ONE            => 1 ) if ( $itemnumber && $count != @items );
+$template->param( z3950_search_params => C4::Search::z3950_search_args( GetBiblioData($biblionumber) ) );
 
 output_html_with_http_headers $query, $cookie, $template->output;
 

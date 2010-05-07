@@ -1,6 +1,5 @@
 #!/usr/bin/perl
 
-
 #script to recieve orders
 #written by chris@katipo.co.nz 24/2/2000
 
@@ -57,10 +56,11 @@ The biblionumber of this order.
 =cut
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use CGI;
 use C4::Context;
-use C4::Koha;   # GetKohaAuthorisedValues GetItemTypes
+use C4::Koha;    # GetKohaAuthorisedValues GetItemTypes
 use C4::Acquisition;
 use C4::Auth;
 use C4::Output;
@@ -71,55 +71,51 @@ use C4::Branch;    # GetBranches
 use C4::Items;
 use C4::Biblio;
 
-
-my $input      = new CGI;
+my $input = new CGI;
 
 my $dbh          = C4::Context->dbh;
 my $supplierid   = $input->param('supplierid');
-my $ordernumber       = $input->param('ordernumber');
+my $ordernumber  = $input->param('ordernumber');
 my $search       = $input->param('receive');
 my $invoice      = $input->param('invoice');
 my $freight      = $input->param('freight');
 my $datereceived = $input->param('datereceived');
 
-
-$datereceived = $datereceived ? C4::Dates->new($datereceived, 'iso') : C4::Dates->new();
+$datereceived = $datereceived ? C4::Dates->new( $datereceived, 'iso' ) : C4::Dates->new();
 
 my $bookseller = GetBookSellerFromId($supplierid);
-my $gst= $input->param('gst') || $bookseller->{gstrate} || C4::Context->preference("gist") || 0;
-my $results = SearchOrder($ordernumber,$search);
+my $gst        = $input->param('gst') || $bookseller->{gstrate} || C4::Context->preference("gist") || 0;
+my $results    = SearchOrder( $ordernumber, $search );
 
-
-my $count   = scalar @$results;
-my $order 	= GetOrder($ordernumber);
-
+my $count = scalar @$results;
+my $order = GetOrder($ordernumber);
 
 my $date = @$results[0]->{'entrydate'};
 
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => "acqui/orderreceive.tmpl",
+    {   template_name   => "acqui/orderreceive.tmpl",
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
-        flagsrequired   => {acquisition => 'order_receive'},
+        flagsrequired   => { acquisition => 'order_receive' },
         debug           => 1,
     }
 );
 
 # prepare the form for receiving
 if ( $count == 1 ) {
-    if (C4::Context->preference('AcqCreateItem') eq 'receiving') {
+    if ( C4::Context->preference('AcqCreateItem') eq 'receiving' ) {
+
         # prepare empty item form
-        my $cell = PrepareItemrecordDisplay('','','','ACQ');
+        my $cell = PrepareItemrecordDisplay( '', '', '', 'ACQ' );
         unless ($cell) {
-            $cell = PrepareItemrecordDisplay('','','','');
-            $template->param('NoACQframework' => 1);
+            $cell = PrepareItemrecordDisplay( '', '', '', '' );
+            $template->param( 'NoACQframework' => 1 );
         }
         my @itemloop;
-        push @itemloop,$cell;
-        
-        $template->param(items => \@itemloop);
+        push @itemloop, $cell;
+
+        $template->param( items => \@itemloop );
     }
 
     if ( @$results[0]->{'quantityreceived'} == 0 ) {
@@ -152,11 +148,10 @@ if ( $count == 1 ) {
         unitprice             => @$results[0]->{'unitprice'},
         invoice               => $invoice,
         datereceived          => $datereceived->output(),
-        datereceived_iso          => $datereceived->output('iso'),
-        notes                       =>              $order->{notes}
+        datereceived_iso      => $datereceived->output('iso'),
+        notes                 => $order->{notes}
     );
-}
-else {
+} else {
     my @loop;
     for ( my $i = 0 ; $i < $count ; $i++ ) {
         my %line = %{ @$results[$i] };
@@ -172,12 +167,12 @@ else {
     }
 
     $template->param(
-        loop         => \@loop,
-        supplierid   => $supplierid,
+        loop       => \@loop,
+        supplierid => $supplierid,
     );
 }
 my $op = $input->param('op');
-if ($op eq 'edit'){
-    $template->param(edit   =>   1);
+if ( $op eq 'edit' ) {
+    $template->param( edit => 1 );
 }
 output_html_with_http_headers $input, $cookie, $template->output;

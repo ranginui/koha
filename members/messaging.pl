@@ -17,7 +17,6 @@
 # with Koha; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-
 use strict;
 use warnings;
 
@@ -34,14 +33,14 @@ use C4::Koha;
 use C4::Letters;
 use C4::Biblio;
 use C4::Reserves;
-use C4::Branch; # GetBranchName
+use C4::Branch;    # GetBranchName
 
 use Data::Dumper;
 
 use vars qw($debug);
 
 BEGIN {
-	$debug = $ENV{DEBUG} || 0;
+    $debug = $ENV{DEBUG} || 0;
 }
 
 my $dbh = C4::Context->dbh;
@@ -49,8 +48,7 @@ my $dbh = C4::Context->dbh;
 my $query = CGI->new();
 
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => 'members/messaging.tmpl',
+    {   template_name   => 'members/messaging.tmpl',
         query           => $query,
         type            => "intranet",
         authnotrequired => 0,
@@ -62,41 +60,42 @@ my $borrowernumber = $query->param('borrowernumber');
 my $borrower       = GetMember( 'borrowernumber' => $borrowernumber );
 my $branch         = C4::Context->userenv->{'branch'};
 
-$template->param( $borrower );
+$template->param($borrower);
 
-$borrower = GetMemberDetails( $borrowernumber );
+$borrower = GetMemberDetails($borrowernumber);
 
+if ( $borrower->{'category_type'} eq 'C' ) {
+    my ( $catcodes, $labels ) = GetborCatFromCatType( 'A', 'WHERE category_type = ?' );
+    my $cnt = scalar(@$catcodes);
+    $template->param( 'CATCODE_MULTI' => 1 ) if $cnt > 1;
+    $template->param( 'catcode' => $catcodes->[0] ) if $cnt == 1;
+}
 
-    if ( $borrower->{'category_type'} eq 'C') {
-        my  ( $catcodes, $labels ) =  GetborCatFromCatType( 'A', 'WHERE category_type = ?' );
-        my $cnt = scalar(@$catcodes);
-        $template->param( 'CATCODE_MULTI' => 1) if $cnt > 1;
-        $template->param( 'catcode' =>    $catcodes->[0])  if $cnt == 1;
-    }
-	
-my ($picture, $dberror) = GetPatronImage($borrower->{'cardnumber'});
+my ( $picture, $dberror ) = GetPatronImage( $borrower->{'cardnumber'} );
 $template->param( picture => 1 ) if $picture;
 
 # get some recent messages sent to this borrower for display:
 my $message_queue = C4::Letters::GetQueuedMessages( { borrowernumber => $query->param('borrowernumber') } );
 
-$template->param( messagingview               => 1,
-                  message_queue               => $message_queue,
-                  DHTMLcalendar_dateformat    => C4::Dates->DHTMLcalendar(), 
-                  borrowernumber              => $borrowernumber,
-                  branchcode                  => $borrower->{'branchcode'},
-                  branchname		      => GetBranchName($borrower->{'branchcode'}),
-                  dateformat                  => C4::Context->preference("dateformat"),
-                  categoryname                => $borrower->{'description'},
-                  $borrower->{'categorycode'} => 1,
+$template->param(
+    messagingview               => 1,
+    message_queue               => $message_queue,
+    DHTMLcalendar_dateformat    => C4::Dates->DHTMLcalendar(),
+    borrowernumber              => $borrowernumber,
+    branchcode                  => $borrower->{'branchcode'},
+    branchname                  => GetBranchName( $borrower->{'branchcode'} ),
+    dateformat                  => C4::Context->preference("dateformat"),
+    categoryname                => $borrower->{'description'},
+    $borrower->{'categorycode'} => 1,
 );
 
 #$messaging_preferences->{'SMSnumber'}{'value'} = defined $borrower->{'smsalertnumber'}
 #  ? $borrower->{'smsalertnumber'} : $borrower->{'mobile'};
 
-$template->param( BORROWER_INFO         => [ $borrower ],
-                  messagingview         => 1,
-				  is_child        => ($borrower->{'category_type'} eq 'C'),
-                );
+$template->param(
+    BORROWER_INFO => [$borrower],
+    messagingview => 1,
+    is_child      => ( $borrower->{'category_type'} eq 'C' ),
+);
 
 output_html_with_http_headers $query, $cookie, $template->output;

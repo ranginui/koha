@@ -26,7 +26,7 @@ sub basic_usage : Test( 12 ) {
 
     my @keys = qw( opensearch icon value name checked zed label id encoding );
     is( scalar keys %$firstserver, scalar @keys, 'the hash has the right number of keys' );
-    foreach my $key ( @keys ) {
+    foreach my $key (@keys) {
         ok( exists $firstserver->{$key}, "There is a $key key" );
     }
 
@@ -43,7 +43,7 @@ that we get none back.
 sub position_does_not_exist : Test( 2 ) {
     my $self = shift;
 
-    my $servers = C4::Koha::displayServers( 'this does not exist' );
+    my $servers = C4::Koha::displayServers('this does not exist');
     isa_ok( $servers, 'ARRAY' );
     is( scalar @$servers, 0, 'received no servers' );
 
@@ -62,8 +62,8 @@ sub position_does_exist : Test( 3 ) {
 
     my $position = $self->_get_a_position();
     ok( $position, 'We have a position that exists' );
-    
-    my $servers = C4::Koha::displayServers( $position );
+
+    my $servers = C4::Koha::displayServers($position);
     isa_ok( $servers, 'ARRAY' );
     ok( scalar @$servers, 'received at least one server' );
 
@@ -99,7 +99,7 @@ sub type_does_exist : Test( 3 ) {
 
     my $type = $self->_get_a_type();
     ok( $type, 'We have a type that exists' );
-    
+
     my $servers = C4::Koha::displayServers( undef, $type );
     isa_ok( $servers, 'ARRAY' );
     ok( scalar @$servers, 'received at least one server' );
@@ -120,8 +120,8 @@ sub position_and_type : Test( 8 ) {
 
     my ( $position, $type ) = $self->_get_a_position_and_type();
     ok( $position, 'We have a type that exists' );
-    ok( $type, 'We have a type that exists' );
-    
+    ok( $type,     'We have a type that exists' );
+
     my $servers = C4::Koha::displayServers( $position, 'type does not exist' );
     isa_ok( $servers, 'ARRAY' );
     is( scalar @$servers, 0, 'received no servers' );
@@ -178,7 +178,7 @@ returns a position and type for a server
 sub _get_a_position_and_type {
     my $self = shift;
 
-    my $dbh    = C4::Context->dbh;
+    my $dbh = C4::Context->dbh;
     my $sql = 'SELECT position, type FROM z3950servers';
     my $sth = $dbh->prepare($sql) or return;
     $sth->execute or return;
@@ -188,5 +188,4 @@ sub _get_a_position_and_type {
 
 }
 
-  
 1;

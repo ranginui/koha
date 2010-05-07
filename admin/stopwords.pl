@@ -28,15 +28,15 @@ use C4::Context;
 use C4::Output;
 use C4::Auth;
 
-sub StringSearch  {
-	my $sth = C4::Context->dbh->prepare("
+sub StringSearch {
+    my $sth = C4::Context->dbh->prepare( "
 		SELECT word FROM stopwords WHERE (word LIKE ?) ORDER BY word
-	");
-	$sth->execute((shift || '') . "%");
-	return $sth->fetchall_arrayref({});
+	" );
+    $sth->execute( ( shift || '' ) . "%" );
+    return $sth->fetchall_arrayref( {} );
 }
 
-my $input = new CGI;
+my $input       = new CGI;
 my $searchfield = $input->param('searchfield');
 my $offset      = $input->param('offset') || 0;
 my $script_name = "/cgi-bin/koha/admin/stopwords.pl";
@@ -44,52 +44,60 @@ my $script_name = "/cgi-bin/koha/admin/stopwords.pl";
 my $pagesize = 20;
 my $op = $input->param('op') || '';
 
-my ($template, $loggedinuser, $cookie) 
-    = get_template_and_user({template_name => "admin/stopwords.tmpl",
-    query => $input,
-    type => "intranet",
-    flagsrequired => {parameters => 1},
-    authnotrequired => 0,
-    debug => 1,
-    });
+my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
+    {   template_name   => "admin/stopwords.tmpl",
+        query           => $input,
+        type            => "intranet",
+        flagsrequired   => { parameters => 1 },
+        authnotrequired => 0,
+        debug           => 1,
+    }
+);
 
-$template->param(script_name => $script_name,
-		 searchfield => $searchfield);
+$template->param(
+    script_name => $script_name,
+    searchfield => $searchfield
+);
 
 my $dbh = C4::Context->dbh;
-if ($op eq 'add_form') {
-	$template->param(add_form => 1);
-} elsif ($op eq 'add_validate') {
-	$template->param(add_validate => 1);
-	my @tab = split / |,/, $input->param('word');
-	my $sth=$dbh->prepare("INSERT INTO stopwords (word) VALUES (?)");
-	foreach my $insert_value (@tab) {
-		$sth->execute($insert_value);
-	}
-} elsif ($op eq 'delete_confirm') {
-	$template->param(delete_confirm => 1);
-} elsif ($op eq 'delete_confirmed') {
-	$template->param(delete_confirmed => 1);
-	my $sth=$dbh->prepare("delete from stopwords where word=?");
-	$sth->execute($searchfield);
-} else { # DEFAULT
-	$template->param(else => 1);
+if ( $op eq 'add_form' ) {
+    $template->param( add_form => 1 );
+} elsif ( $op eq 'add_validate' ) {
+    $template->param( add_validate => 1 );
+    my @tab = split / |,/, $input->param('word');
+    my $sth = $dbh->prepare("INSERT INTO stopwords (word) VALUES (?)");
+    foreach my $insert_value (@tab) {
+        $sth->execute($insert_value);
+    }
+} elsif ( $op eq 'delete_confirm' ) {
+    $template->param( delete_confirm => 1 );
+} elsif ( $op eq 'delete_confirmed' ) {
+    $template->param( delete_confirmed => 1 );
+    my $sth = $dbh->prepare("delete from stopwords where word=?");
+    $sth->execute($searchfield);
+} else {    # DEFAULT
+    $template->param( else => 1 );
     my $results = StringSearch($searchfield);
-    my $count = scalar(@$results);
-	my @loop;
+    my $count   = scalar(@$results);
+    my @loop;
+
     # FIXME: limit and offset should get to the SQL query
-	for (my $i=$offset; $i < ($offset+$pagesize<$count?$offset+$pagesize:$count); $i++){
-		push @loop, {word => $results->[$i]{'word'}};
-	}
-	$template->param(loop => \@loop);
-	if ($offset > 0) {
-		$template->param(offsetgtzero => 1,
-				 prevpage => $offset-$pagesize);
-	}
-	if ($offset+$pagesize < scalar(@$results)) {
-		$template->param(ltcount => 1,
-				 nextpage => $offset+$pagesize);
-	}
+    for ( my $i = $offset ; $i < ( $offset + $pagesize < $count ? $offset + $pagesize : $count ) ; $i++ ) {
+        push @loop, { word => $results->[$i]{'word'} };
+    }
+    $template->param( loop => \@loop );
+    if ( $offset > 0 ) {
+        $template->param(
+            offsetgtzero => 1,
+            prevpage     => $offset - $pagesize
+        );
+    }
+    if ( $offset + $pagesize < scalar(@$results) ) {
+        $template->param(
+            ltcount  => 1,
+            nextpage => $offset + $pagesize
+        );
+    }
 }
 
 output_html_with_http_headers $input, $cookie, $template->output;

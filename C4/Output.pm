@@ -21,11 +21,11 @@ package C4::Output;
 # with Koha; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-
 # NOTE: I'm pretty sure this module is deprecated in favor of
 # templates.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 
 use C4::Context;
@@ -37,21 +37,25 @@ use HTML::Template::Pro;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
 BEGIN {
+
     # set the version for version checking
     $VERSION = 3.03;
     require Exporter;
-    @ISA    = qw(Exporter);
-	@EXPORT_OK = qw(&is_ajax ajax_fail); # More stuff should go here instead
-	%EXPORT_TAGS = ( all =>[qw(&themelanguage &gettemplate setlanguagecookie pagination_bar
-								&output_with_http_headers &output_html_with_http_headers)],
-					ajax =>[qw(&output_with_http_headers is_ajax)],
-					html =>[qw(&output_with_http_headers &output_html_with_http_headers)]
-				);
-    push @EXPORT, qw(
-        &themelanguage &gettemplate setlanguagecookie getlanguagecookie pagination_bar
+    @ISA         = qw(Exporter);
+    @EXPORT_OK   = qw(&is_ajax ajax_fail);    # More stuff should go here instead
+    %EXPORT_TAGS = (
+        all => [
+            qw(&themelanguage &gettemplate setlanguagecookie pagination_bar
+              &output_with_http_headers &output_html_with_http_headers)
+        ],
+        ajax => [qw(&output_with_http_headers is_ajax)],
+        html => [qw(&output_with_http_headers &output_html_with_http_headers)]
     );
     push @EXPORT, qw(
-        &output_html_with_http_headers &output_with_http_headers FormatData FormatNumber
+      &themelanguage &gettemplate setlanguagecookie getlanguagecookie pagination_bar
+    );
+    push @EXPORT, qw(
+      &output_html_with_http_headers &output_with_http_headers FormatData FormatNumber
     );
 }
 
@@ -80,8 +84,8 @@ sub _get_template_file {
 
     # if the template doesn't exist, load the English one as a last resort
     my $filename = "$htdocs/$theme/$lang/modules/$tmplbase";
-    unless (-f $filename) {
-        $lang = 'en';
+    unless ( -f $filename ) {
+        $lang     = 'en';
         $filename = "$htdocs/$theme/$lang/modules/$tmplbase";
     }
 
@@ -95,19 +99,18 @@ sub gettemplate {
     my $opacstylesheet = C4::Context->preference('opacstylesheet');
     my ( $htdocs, $theme, $lang, $filename ) = _get_template_file( $tmplbase, $interface, $query );
 
-    my $template       = HTML::Template::Pro->new(
+    my $template = HTML::Template::Pro->new(
         filename          => $filename,
         die_on_bad_params => 1,
         global_vars       => 1,
         case_sensitive    => 1,
-        loop_context_vars => 1, # enable: __first__, __last__, __inner__, __odd__, __counter__ 
+        loop_context_vars => 1,                               # enable: __first__, __last__, __inner__, __odd__, __counter__
         path              => ["$htdocs/$theme/$lang/$path"]
     );
-    my $themelang=( $interface ne 'intranet' ? '/opac-tmpl' : '/intranet-tmpl' )
-          . "/$theme/$lang";
+    my $themelang = ( $interface ne 'intranet' ? '/opac-tmpl' : '/intranet-tmpl' ) . "/$theme/$lang";
     $template->param(
         themelang => $themelang,
-        yuipath   => (C4::Context->preference("yuipath") eq "local"?"$themelang/lib/yui":C4::Context->preference("yuipath")),
+        yuipath   => ( C4::Context->preference("yuipath") eq "local" ? "$themelang/lib/yui" : C4::Context->preference("yuipath") ),
         interface => ( $interface ne 'intranet' ? '/opac-tmpl' : '/intranet-tmpl' ),
         theme     => $theme,
         lang      => $lang
@@ -116,20 +119,21 @@ sub gettemplate {
     # Bidirectionality
     my $current_lang = regex_lang_subtags($lang);
     my $bidi;
-    $bidi = get_bidi($current_lang->{script}) if $current_lang->{script};
+    $bidi = get_bidi( $current_lang->{script} ) if $current_lang->{script};
+
     # Languages
-    my $languages_loop = getTranslatedLanguages($interface,$theme,$lang);
+    my $languages_loop = getTranslatedLanguages( $interface, $theme, $lang );
     my $num_languages_enabled = 0;
     foreach my $lang (@$languages_loop) {
-        foreach my $sublang (@{ $lang->{'sublanguages_loop'} }) {
+        foreach my $sublang ( @{ $lang->{'sublanguages_loop'} } ) {
             $num_languages_enabled++ if $sublang->{enabled};
-         }
+        }
     }
     $template->param(
-            languages_loop       => $languages_loop,
-            bidi                 => $bidi,
-            one_language_enabled => ($num_languages_enabled <= 1) ? 1 : 0, # deal with zero enabled langs as well
-    ) unless @$languages_loop<2;
+        languages_loop       => $languages_loop,
+        bidi                 => $bidi,
+        one_language_enabled => ( $num_languages_enabled <= 1 ) ? 1 : 0,    # deal with zero enabled langs as well
+    ) unless @$languages_loop < 2;
 
     return $template;
 }
@@ -143,53 +147,57 @@ sub themelanguage {
     # Set some defaults for language and theme
     # First, check the user's preferences
     my $lang;
-    my $http_accept_language = $ENV{ HTTP_ACCEPT_LANGUAGE };
-    $lang = accept_language( $http_accept_language, 
-              getTranslatedLanguages($interface,'prog') )
+    my $http_accept_language = $ENV{HTTP_ACCEPT_LANGUAGE};
+    $lang = accept_language( $http_accept_language, getTranslatedLanguages( $interface, 'prog' ) )
       if $http_accept_language;
+
     # But, if there's a cookie set, obey it
-    $lang = $query->cookie('KohaOpacLanguage') if (defined $query and $query->cookie('KohaOpacLanguage'));
+    $lang = $query->cookie('KohaOpacLanguage') if ( defined $query and $query->cookie('KohaOpacLanguage') );
+
     # Fall back to English
     my @languages;
-    if ($interface eq 'intranet') {
+    if ( $interface eq 'intranet' ) {
         @languages = split ",", C4::Context->preference("language");
     } else {
         @languages = split ",", C4::Context->preference("opaclanguages");
     }
-    if ($lang){  
-        @languages=($lang,@languages);
+    if ($lang) {
+        @languages = ( $lang, @languages );
     } else {
         $lang = $languages[0];
-    }      
-    my $theme = 'prog';	# in the event of theme failure default to 'prog' -fbcit
-    my $dbh = C4::Context->dbh;
+    }
+    my $theme = 'prog';             # in the event of theme failure default to 'prog' -fbcit
+    my $dbh   = C4::Context->dbh;
     my @themes;
     if ( $interface eq "intranet" ) {
-        @themes    = split " ", C4::Context->preference("template");
-    }
-    else {
-      # we are in the opac here, what im trying to do is let the individual user
-      # set the theme they want to use.
-      # and perhaps the them as well.
+        @themes = split " ", C4::Context->preference("template");
+    } else {
+
+        # we are in the opac here, what im trying to do is let the individual user
+        # set the theme they want to use.
+        # and perhaps the them as well.
         #my $lang = $query->cookie('KohaOpacLanguage');
         @themes = split " ", C4::Context->preference("opacthemes");
     }
 
- # searches through the themes and languages. First template it find it returns.
- # Priority is for getting the theme right.
-    THEME:
+    # searches through the themes and languages. First template it find it returns.
+    # Priority is for getting the theme right.
+  THEME:
     foreach my $th (@themes) {
         foreach my $la (@languages) {
+
             #for ( my $pass = 1 ; $pass <= 2 ; $pass += 1 ) {
-                # warn "$htdocs/$th/$la/modules/$interface-"."tmpl";
-                #$la =~ s/([-_])/ $1 eq '-'? '_': '-' /eg if $pass == 2;
-				if ( -e "$htdocs/$th/$la/modules/$tmpl") {
+            # warn "$htdocs/$th/$la/modules/$interface-"."tmpl";
+            #$la =~ s/([-_])/ $1 eq '-'? '_': '-' /eg if $pass == 2;
+            if ( -e "$htdocs/$th/$la/modules/$tmpl" ) {
+
                 #".($interface eq 'intranet'?"modules":"")."/$tmpl" ) {
-                    $theme = $th;
-                    $lang  = $la;
-                    last THEME;
-                }
-                last unless $la =~ /[-_]/;
+                $theme = $th;
+                $lang  = $la;
+                last THEME;
+            }
+            last unless $la =~ /[-_]/;
+
             #}
         }
     }
@@ -212,41 +220,42 @@ sub setlanguagecookie {
 sub getlanguagecookie {
     my ($query) = @_;
     my $lang;
-    if ($query->cookie('KohaOpacLanguage')){
-        $lang = $query->cookie('KohaOpacLanguage') ;
-    }else{
+    if ( $query->cookie('KohaOpacLanguage') ) {
+        $lang = $query->cookie('KohaOpacLanguage');
+    } else {
         $lang = $ENV{HTTP_ACCEPT_LANGUAGE};
-        
+
     }
-    $lang = substr($lang, 0, 2);
+    $lang = substr( $lang, 0, 2 );
 
     return $lang;
 }
 
 =item FormatNumber
 =cut
-sub FormatNumber{
-my $cur  =  GetCurrency;
-my $cur_format = C4::Context->preference("CurrencyFormat");
-my $num;
 
-if ( $cur_format eq 'FR' ) {
-    $num = new Number::Format(
-        'decimal_fill'      => '2',
-        'decimal_point'     => ',',
-        'int_curr_symbol'   => $cur->{symbol},
-        'mon_thousands_sep' => ' ',
-        'thousands_sep'     => ' ',
-        'mon_decimal_point' => ','
-    );
-} else {  # US by default..
-    $num = new Number::Format(
-        'int_curr_symbol'   => '',
-        'mon_thousands_sep' => ',',
-        'mon_decimal_point' => '.'
-    );
-}
-return $num;
+sub FormatNumber {
+    my $cur        = GetCurrency;
+    my $cur_format = C4::Context->preference("CurrencyFormat");
+    my $num;
+
+    if ( $cur_format eq 'FR' ) {
+        $num = new Number::Format(
+            'decimal_fill'      => '2',
+            'decimal_point'     => ',',
+            'int_curr_symbol'   => $cur->{symbol},
+            'mon_thousands_sep' => ' ',
+            'thousands_sep'     => ' ',
+            'mon_decimal_point' => ','
+        );
+    } else {    # US by default..
+        $num = new Number::Format(
+            'int_curr_symbol'   => '',
+            'mon_thousands_sep' => ',',
+            'mon_decimal_point' => '.'
+        );
+    }
+    return $num;
 }
 
 =item FormatData
@@ -258,9 +267,9 @@ Format dates of data those dates are assumed to contain date in their noun
 Could be used in order to centralize all the formatting for HTML output
 =cut
 
-sub FormatData{
-		my $data_hashref=shift;
-        $$data_hashref{$_} = format_date( $$data_hashref{$_} ) for grep{/date/} keys (%$data_hashref);
+sub FormatData {
+    my $data_hashref = shift;
+    $$data_hashref{$_} = format_date( $$data_hashref{$_} ) for grep { /date/ } keys(%$data_hashref);
 }
 
 =item pagination_bar
@@ -283,26 +292,26 @@ This function returns HTML, without any language dependency.
 =cut
 
 sub pagination_bar {
-	my $base_url = (@_ ? shift : $ENV{SCRIPT_NAME} . $ENV{QUERY_STRING}) or return undef;
+    my $base_url = ( @_ ? shift : $ENV{SCRIPT_NAME} . $ENV{QUERY_STRING} ) or return undef;
     my $nb_pages       = (@_) ? shift : 1;
-    my $current_page   = (@_) ? shift : undef;	# delay default until later
+    my $current_page   = (@_) ? shift : undef;    # delay default until later
     my $startfrom_name = (@_) ? shift : 'page';
 
     # how many pages to show before and after the current page?
     my $pages_around = 2;
 
-	my $delim = qr/\&(?:amp;)?|;/;		# "non memory" cluster: no backreference
-	$base_url =~ s/$delim*\b$startfrom_name=(\d+)//g; # remove previous pagination var
-    unless (defined $current_page and $current_page > 0 and $current_page <= $nb_pages) {
-        $current_page = ($1) ? $1 : 1;	# pull current page from param in URL, else default to 1
-		# $debug and	# FIXME: use C4::Debug;
-		# warn "with QUERY_STRING:" .$ENV{QUERY_STRING}. "\ncurrent_page:$current_page\n1:$1  2:$2  3:$3";
+    my $delim = qr/\&(?:amp;)?|;/;                # "non memory" cluster: no backreference
+    $base_url =~ s/$delim*\b$startfrom_name=(\d+)//g;    # remove previous pagination var
+    unless ( defined $current_page and $current_page > 0 and $current_page <= $nb_pages ) {
+        $current_page = ($1) ? $1 : 1;                   # pull current page from param in URL, else default to 1
+                                                         # $debug and	# FIXME: use C4::Debug;
+                                                         # warn "with QUERY_STRING:" .$ENV{QUERY_STRING}. "\ncurrent_page:$current_page\n1:$1  2:$2  3:$3";
     }
-	$base_url =~ s/($delim)+/$1/g;	# compress duplicate delims
-	$base_url =~ s/$delim;//g;		# remove empties
-	$base_url =~ s/$delim$//;		# remove trailing delim
+    $base_url =~ s/($delim)+/$1/g;                       # compress duplicate delims
+    $base_url =~ s/$delim;//g;                           # remove empties
+    $base_url =~ s/$delim$//;                            # remove trailing delim
 
-    my $url = $base_url . (($base_url =~ m/$delim/ or $base_url =~ m/\?/) ? '&amp;' : '?' ) . $startfrom_name . '=';
+    my $url = $base_url . ( ( $base_url =~ m/$delim/ or $base_url =~ m/\?/ ) ? '&amp;' : '?' ) . $startfrom_name . '=';
     my $pagination_bar = '';
 
     # navigation bar useful only if more than one page to display !
@@ -310,32 +319,18 @@ sub pagination_bar {
 
         # link to first page?
         if ( $current_page > 1 ) {
-            $pagination_bar .=
-                "\n" . '&nbsp;'
-              . '<a href="'
-              . $url
-              . '1" rel="start">'
-              . '&lt;&lt;' . '</a>';
-        }
-        else {
-            $pagination_bar .=
-              "\n" . '&nbsp;<span class="inactive">&lt;&lt;</span>';
+            $pagination_bar .= "\n" . '&nbsp;' . '<a href="' . $url . '1" rel="start">' . '&lt;&lt;' . '</a>';
+        } else {
+            $pagination_bar .= "\n" . '&nbsp;<span class="inactive">&lt;&lt;</span>';
         }
 
         # link on previous page ?
         if ( $current_page > 1 ) {
             my $previous = $current_page - 1;
 
-            $pagination_bar .=
-                "\n" . '&nbsp;'
-              . '<a href="'
-              . $url
-              . $previous
-              . '" rel="prev">' . '&lt;' . '</a>';
-        }
-        else {
-            $pagination_bar .=
-              "\n" . '&nbsp;<span class="inactive">&lt;</span>';
+            $pagination_bar .= "\n" . '&nbsp;' . '<a href="' . $url . $previous . '" rel="prev">' . '&lt;' . '</a>';
+        } else {
+            $pagination_bar .= "\n" . '&nbsp;<span class="inactive">&lt;</span>';
         }
 
         my $min_to_display      = $current_page - $pages_around;
@@ -343,34 +338,20 @@ sub pagination_bar {
         my $last_displayed_page = undef;
 
         for my $page_number ( 1 .. $nb_pages ) {
-            if (
-                   $page_number == 1
+            if (   $page_number == 1
                 or $page_number == $nb_pages
                 or (    $page_number >= $min_to_display
                     and $page_number <= $max_to_display )
-              )
-            {
+              ) {
                 if ( defined $last_displayed_page
-                    and $last_displayed_page != $page_number - 1 )
-                {
-                    $pagination_bar .=
-                      "\n" . '&nbsp;<span class="inactive">...</span>';
+                    and $last_displayed_page != $page_number - 1 ) {
+                    $pagination_bar .= "\n" . '&nbsp;<span class="inactive">...</span>';
                 }
 
                 if ( $page_number == $current_page ) {
-                    $pagination_bar .=
-                        "\n" . '&nbsp;'
-                      . '<span class="currentPage">'
-                      . $page_number
-                      . '</span>';
-                }
-                else {
-                    $pagination_bar .=
-                        "\n" . '&nbsp;'
-                      . '<a href="'
-                      . $url
-                      . $page_number . '">'
-                      . $page_number . '</a>';
+                    $pagination_bar .= "\n" . '&nbsp;' . '<span class="currentPage">' . $page_number . '</span>';
+                } else {
+                    $pagination_bar .= "\n" . '&nbsp;' . '<a href="' . $url . $page_number . '">' . $page_number . '</a>';
                 }
                 $last_displayed_page = $page_number;
             }
@@ -380,29 +361,16 @@ sub pagination_bar {
         if ( $current_page < $nb_pages ) {
             my $next = $current_page + 1;
 
-            $pagination_bar .= "\n"
-              . '&nbsp;<a href="'
-              . $url
-              . $next
-              . '" rel="next">' . '&gt;' . '</a>';
-        }
-        else {
-            $pagination_bar .=
-              "\n" . '&nbsp;<span class="inactive">&gt;</span>';
+            $pagination_bar .= "\n" . '&nbsp;<a href="' . $url . $next . '" rel="next">' . '&gt;' . '</a>';
+        } else {
+            $pagination_bar .= "\n" . '&nbsp;<span class="inactive">&gt;</span>';
         }
 
         # link to last page?
         if ( $current_page != $nb_pages ) {
-            $pagination_bar .= "\n"
-              . '&nbsp;<a href="'
-              . $url
-              . $nb_pages
-              . '" rel="last">'
-              . '&gt;&gt;' . '</a>';
-        }
-        else {
-            $pagination_bar .=
-              "\n" . '&nbsp;<span class="inactive">&gt;&gt;</span>';
+            $pagination_bar .= "\n" . '&nbsp;<a href="' . $url . $nb_pages . '" rel="last">' . '&gt;&gt;' . '</a>';
+        } else {
+            $pagination_bar .= "\n" . '&nbsp;<span class="inactive">&gt;&gt;</span>';
         }
     }
 
@@ -434,6 +402,7 @@ sub output_with_http_headers($$$$;$) {
         'js'   => 'text/javascript',
         'json' => 'application/json',
         'xml'  => 'text/xml',
+
         # NOTE: not using application/atom+xml or application/rss+xml because of
         # Internet Explorer 6; see bug 2078.
         'rss'  => 'text/xml',
@@ -442,17 +411,18 @@ sub output_with_http_headers($$$$;$) {
 
     die "Unknown content type '$content_type'" if ( !defined( $content_type_map{$content_type} ) );
     my $options = {
-        type    => $content_type_map{$content_type},
-        status  => $status,
-        charset => 'UTF-8',
+        type            => $content_type_map{$content_type},
+        status          => $status,
+        charset         => 'UTF-8',
         Pragma          => 'no-cache',
         'Cache-Control' => 'no-cache',
     };
     $options->{cookie} = $cookie if $cookie;
-    if ($content_type eq 'html') {  # guaranteed to be one of the content_type_map keys, else we'd have died
-        $options->{'Content-Style-Type' } = 'text/css';
+    if ( $content_type eq 'html' ) {    # guaranteed to be one of the content_type_map keys, else we'd have died
+        $options->{'Content-Style-Type'}  = 'text/css';
         $options->{'Content-Script-Type'} = 'text/javascript';
     }
+
     # remove SUDOC specific NSB NSE
     $data =~ s/\x{C2}\x{98}|\x{C2}\x{9C}/ /g;
     $data =~ s/\x{C2}\x{88}|\x{C2}\x{89}/ /g;

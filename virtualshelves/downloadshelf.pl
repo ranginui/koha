@@ -35,9 +35,8 @@ use C4::Csv;
 use utf8;
 my $query = new CGI;
 
-my ( $template, $borrowernumber, $cookie ) = get_template_and_user (
-    {
-        template_name   => "virtualshelves/downloadshelf.tmpl",
+my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
+    {   template_name   => "virtualshelves/downloadshelf.tmpl",
         query           => $query,
         type            => "intranet",
         authnotrequired => 0,
@@ -49,47 +48,48 @@ my $shelfid = $query->param('shelfid');
 my $format  = $query->param('format');
 my $dbh     = C4::Context->dbh;
 
-if ($shelfid && $format) {
+if ( $shelfid && $format ) {
 
-    my @shelf               = GetShelf($shelfid);
-    my ($items, $totitems)  = GetShelfContents($shelfid);
-    my $marcflavour         = C4::Context->preference('marcflavour');
+    my @shelf = GetShelf($shelfid);
+    my ( $items, $totitems ) = GetShelfContents($shelfid);
+    my $marcflavour = C4::Context->preference('marcflavour');
     my $output;
 
-    # CSV 
-    if ($format =~ /^\d+$/) {
-	my @biblios;
-	foreach (@$items) {
-	    push @biblios, $_->{biblionumber};
-	}
-	$output = marc2csv(\@biblios, $format);
+    # CSV
+    if ( $format =~ /^\d+$/ ) {
+        my @biblios;
+        foreach (@$items) {
+            push @biblios, $_->{biblionumber};
+        }
+        $output = marc2csv( \@biblios, $format );
 
-    # Other formats
+        # Other formats
     } else {
-	foreach my $biblio (@$items) {
-	    my $biblionumber = $biblio->{biblionumber};
+        foreach my $biblio (@$items) {
+            my $biblionumber = $biblio->{biblionumber};
 
-	    my $record = GetMarcBiblio($biblionumber);
+            my $record = GetMarcBiblio($biblionumber);
 
-	    switch ($format) {
-		case "iso2709" { $output .= $record->as_usmarc(); }
-		case "ris"     { $output .= marc2ris($record); }
-		case "bibtex"  { $output .= marc2bibtex($record, $biblionumber); }
-	    }
-	}
+            switch ($format) {
+                case "iso2709" { $output .= $record->as_usmarc(); }
+                case "ris"     { $output .= marc2ris($record); }
+                case "bibtex"  { $output .= marc2bibtex( $record, $biblionumber ); }
+            }
+        }
     }
 
     # If it was a CSV export we change the format after the export so the file extension is fine
-    $format = "csv" if ($format =~ m/^\d+$/);
-    
+    $format = "csv" if ( $format =~ m/^\d+$/ );
+
     print $query->header(
-	-type => 'application/octet-stream',
-	-'Content-Transfer-Encoding' => 'binary',
-	-attachment=>"shelf.$format");
+        -type                        => 'application/octet-stream',
+        -'Content-Transfer-Encoding' => 'binary',
+        -attachment                  => "shelf.$format"
+    );
     print $output;
 
 } else {
-    $template->param(csv_profiles => GetCsvProfilesLoop());
-    $template->param(shelfid => $shelfid); 
+    $template->param( csv_profiles => GetCsvProfilesLoop() );
+    $template->param( shelfid      => $shelfid );
     output_html_with_http_headers $query, $cookie, $template->output;
 }

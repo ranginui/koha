@@ -20,20 +20,21 @@ package C4::Members::Attributes;
 use strict;
 use warnings;
 
-use Text::CSV;      # Don't be tempted to use Text::CSV::Unicode -- even in binary mode it fails.
+use Text::CSV;    # Don't be tempted to use Text::CSV::Unicode -- even in binary mode it fails.
 use C4::Context;
 use C4::Members::AttributeTypes;
 
 use vars qw($VERSION @ISA @EXPORT_OK @EXPORT %EXPORT_TAGS);
-our ($csv, $AttributeTypes);
+our ( $csv, $AttributeTypes );
 
 BEGIN {
+
     # set the version for version checking
-    $VERSION = 3.01;
-    @ISA = qw(Exporter);
+    $VERSION   = 3.01;
+    @ISA       = qw(Exporter);
     @EXPORT_OK = qw(GetBorrowerAttributes CheckUniqueness SetBorrowerAttributes
-                    extended_attributes_code_value_arrayref extended_attributes_merge
-					SearchIdMatchingAttribute);
+      extended_attributes_code_value_arrayref extended_attributes_merge
+      SearchIdMatchingAttribute);
     %EXPORT_TAGS = ( all => \@EXPORT_OK );
 }
 
@@ -79,7 +80,7 @@ sub GetBorrowerAttributes {
     my $borrowernumber = shift;
     my $opac_only = @_ ? shift : 0;
 
-    my $dbh = C4::Context->dbh();
+    my $dbh   = C4::Context->dbh();
     my $query = "SELECT code, description, attribute, lib, password, display_checkout
                  FROM borrower_attributes
                  JOIN borrower_attribute_types USING (code)
@@ -90,15 +91,15 @@ sub GetBorrowerAttributes {
     my $sth = $dbh->prepare_cached($query);
     $sth->execute($borrowernumber);
     my @results = ();
-    while (my $row = $sth->fetchrow_hashref()) {
-        push @results, {
-            code              => $row->{'code'},
+    while ( my $row = $sth->fetchrow_hashref() ) {
+        push @results,
+          { code              => $row->{'code'},
             description       => $row->{'description'},
-            value             => $row->{'attribute'},  
-            value_description => $row->{'lib'},  
+            value             => $row->{'attribute'},
+            value_description => $row->{'lib'},
             password          => $row->{'password'},
             display_checkout  => $row->{'display_checkout'},
-        }
+          };
     }
     return \@results;
 }
@@ -114,10 +115,10 @@ my $matching_records = C4::Members::Attributes::SearchIdMatchingAttribute($filte
 
 =cut
 
-sub SearchIdMatchingAttribute{
+sub SearchIdMatchingAttribute {
     my $filter = shift;
 
-    my $dbh = C4::Context->dbh();
+    my $dbh   = C4::Context->dbh();
     my $query = qq{
 SELECT borrowernumber
 FROM borrower_attributes
@@ -126,7 +127,7 @@ WHERE staff_searchable = 1
 AND attribute like ?};
     my $sth = $dbh->prepare_cached($query);
     $sth->execute($filter);
-	return $sth->fetchall_arrayref;
+    return $sth->fetchall_arrayref;
 }
 
 =head2 CheckUniqueness
@@ -148,8 +149,8 @@ value would violate the uniqueness constraint.
 =cut
 
 sub CheckUniqueness {
-    my $code = shift;
-    my $value = shift;
+    my $code           = shift;
+    my $value          = shift;
     my $borrowernumber = @_ ? shift : undef;
 
     my $attr_type = C4::Members::AttributeTypes->fetch($code);
@@ -159,22 +160,26 @@ sub CheckUniqueness {
 
     my $dbh = C4::Context->dbh;
     my $sth;
-    if (defined($borrowernumber)) {
-        $sth = $dbh->prepare("SELECT COUNT(*) 
+    if ( defined($borrowernumber) ) {
+        $sth = $dbh->prepare(
+            "SELECT COUNT(*) 
                               FROM borrower_attributes 
                               WHERE code = ? 
                               AND attribute = ?
-                              AND borrowernumber <> ?");
-        $sth->execute($code, $value, $borrowernumber);
+                              AND borrowernumber <> ?"
+        );
+        $sth->execute( $code, $value, $borrowernumber );
     } else {
-        $sth = $dbh->prepare("SELECT COUNT(*) 
+        $sth = $dbh->prepare(
+            "SELECT COUNT(*) 
                               FROM borrower_attributes 
                               WHERE code = ? 
-                              AND attribute = ?");
-        $sth->execute($code, $value);
+                              AND attribute = ?"
+        );
+        $sth->execute( $code, $value );
     }
     my ($count) = $sth->fetchrow_array;
-    return ($count == 0);
+    return ( $count == 0 );
 }
 
 =head2 SetBorrowerAttributes 
@@ -192,17 +197,19 @@ replacing any that existed previously.
 
 sub SetBorrowerAttributes {
     my $borrowernumber = shift;
-    my $attr_list = shift;
+    my $attr_list      = shift;
 
-    my $dbh = C4::Context->dbh;
+    my $dbh    = C4::Context->dbh;
     my $delsth = $dbh->prepare("DELETE FROM borrower_attributes WHERE borrowernumber = ?");
     $delsth->execute($borrowernumber);
 
-    my $sth = $dbh->prepare("INSERT INTO borrower_attributes (borrowernumber, code, attribute, password)
-                             VALUES (?, ?, ?, ?)");
+    my $sth = $dbh->prepare(
+        "INSERT INTO borrower_attributes (borrowernumber, code, attribute, password)
+                             VALUES (?, ?, ?, ?)"
+    );
     foreach my $attr (@$attr_list) {
         $attr->{password} = undef unless exists $attr->{password};
-        $sth->execute($borrowernumber, $attr->{code}, $attr->{value}, $attr->{password});
+        $sth->execute( $borrowernumber, $attr->{code}, $attr->{value}, $attr->{password} );
     }
 }
 
@@ -225,15 +232,18 @@ Caches Text::CSV parser object for efficiency.
 
 sub extended_attributes_code_value_arrayref {
     my $string = shift or return;
-    $csv or $csv = Text::CSV->new({binary => 1});  # binary needed for non-ASCII Unicode
-    my $ok   = $csv->parse($string);  # parse field again to get subfields!
+    $csv or $csv = Text::CSV->new( { binary => 1 } );    # binary needed for non-ASCII Unicode
+    my $ok   = $csv->parse($string);                     # parse field again to get subfields!
     my @list = $csv->fields();
+
     # TODO: error handling (check $ok)
     return [
-        sort {&_sort_by_code($a,$b)}
-        map { map { my @arr = split /:/, $_, 2; { code => $arr[0], value => $arr[1] } } $_ }
-        @list
+        sort { &_sort_by_code( $a, $b ) }
+          map {
+            map { my @arr = split /:/, $_, 2; { code => $arr[0], value => $arr[1] } } $_
+          } @list
     ];
+
     # nested map because of split
 }
 
@@ -268,26 +278,26 @@ sub extended_attributes_merge {
     $AttributeTypes or $AttributeTypes = C4::Members::AttributeTypes::GetAttributeTypes_hashref(1);
     my @merged = @$old;
     foreach my $att (@$new) {
-        unless ($att->{code}) {
+        unless ( $att->{code} ) {
             warn "Cannot merge element: no 'code' defined";
             next;
         }
-        unless ($AttributeTypes->{$att->{code}}) {
+        unless ( $AttributeTypes->{ $att->{code} } ) {
             warn "Cannot merge element: unrecognized code = '$att->{code}'";
             next;
         }
-        unless ($AttributeTypes->{$att->{code}}->{repeatable} and $keep) {
-            @merged = grep {$att->{code} ne $_->{code}} @merged;    # filter out any existing attributes of the same code
+        unless ( $AttributeTypes->{ $att->{code} }->{repeatable} and $keep ) {
+            @merged = grep { $att->{code} ne $_->{code} } @merged;    # filter out any existing attributes of the same code
         }
         push @merged, $att;
     }
-    return [( sort {&_sort_by_code($a,$b)} @merged )];
+    return [ ( sort { &_sort_by_code( $a, $b ) } @merged ) ];
 }
 
 sub _sort_by_code {
-    my ($x, $y) = @_;
-    defined ($x->{code}) or return -1;
-    defined ($y->{code}) or return 1;
+    my ( $x, $y ) = @_;
+    defined( $x->{code} ) or return -1;
+    defined( $y->{code} ) or return 1;
     return $x->{code} cmp $y->{code} || $x->{value} cmp $y->{value};
 }
 

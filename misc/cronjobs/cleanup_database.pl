@@ -30,6 +30,7 @@ BEGIN {
 
 use C4::Context;
 use C4::Dates;
+
 #use C4::Debug;
 #use C4::Letters;
 #use File::Spec;
@@ -47,12 +48,12 @@ USAGE
     exit $_[0];
 }
 
-my ($help, $sessions, $verbose, $zebraqueue_days);
+my ( $help, $sessions, $verbose, $zebraqueue_days );
 
 GetOptions(
-    'h|help' => \$help,
-    'sessions' => \$sessions,
-    'v|verbose' => \$verbose,
+    'h|help'       => \$help,
+    'sessions'     => \$sessions,
+    'v|verbose'    => \$verbose,
     'zebraqueue:i' => \$zebraqueue_days,
 ) || usage(1);
 
@@ -60,7 +61,7 @@ if ($help) {
     usage(0);
 }
 
-if (!($sessions || $zebraqueue_days)){
+if ( !( $sessions || $zebraqueue_days ) ) {
     print "You did not specify any cleanup work for the script to do.\n\n";
     usage(1);
 }
@@ -72,7 +73,7 @@ my $sth2;
 my $count;
 
 if ($sessions) {
-    if ($verbose){
+    if ($verbose) {
         print "Session purge triggered.\n";
         $sth = $dbh->prepare("SELECT COUNT(*) FROM sessions");
         $sth->execute() or die $dbh->errstr;
@@ -80,26 +81,28 @@ if ($sessions) {
         print "$count_arr[0] entries will be deleted.\n";
     }
     $sth = $dbh->prepare("TRUNCATE sessions");
-    $sth->execute() or die $dbh->errstr;;
-    if ($verbose){
+    $sth->execute() or die $dbh->errstr;
+    if ($verbose) {
         print "Done with session purge.\n";
     }
 }
 
-if ($zebraqueue_days){
+if ($zebraqueue_days) {
     $count = 0;
-    if ($verbose){
+    if ($verbose) {
         print "Zebraqueue purge triggered for $zebraqueue_days days.\n";
     }
-    $sth = $dbh->prepare("SELECT id,biblio_auth_number,server,time FROM zebraqueue
-                          WHERE done=1 and time < date_sub(curdate(), interval ? day)");
+    $sth = $dbh->prepare(
+        "SELECT id,biblio_auth_number,server,time FROM zebraqueue
+                          WHERE done=1 and time < date_sub(curdate(), interval ? day)"
+    );
     $sth->execute($zebraqueue_days) or die $dbh->errstr;
     $sth2 = $dbh->prepare("DELETE FROM zebraqueue WHERE id=?");
-    while (my $record = $sth->fetchrow_hashref){
-        $sth2->execute($record->{id}) or die $dbh->errstr;
+    while ( my $record = $sth->fetchrow_hashref ) {
+        $sth2->execute( $record->{id} ) or die $dbh->errstr;
         $count++;
     }
-    if ($verbose){
+    if ($verbose) {
         print "$count records were deleted.\nDone with zebraqueue purge.\n";
     }
 }

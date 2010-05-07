@@ -32,59 +32,61 @@ use C4::Items;
 
 my $query = new CGI;
 
-unless (C4::Context->preference('WebBasedSelfCheck')) {
+unless ( C4::Context->preference('WebBasedSelfCheck') ) {
+
     # redirect to OPAC home if self-check is not enabled
     print $query->redirect("/cgi-bin/koha/opac-main.pl");
     exit;
 }
 
-if (C4::Context->preference('AutoSelfCheckAllowed')) 
-{
-	my $AutoSelfCheckID = C4::Context->preference('AutoSelfCheckID');
-	my $AutoSelfCheckPass = C4::Context->preference('AutoSelfCheckPass');
-	$query->param(-name=>'userid',-values=>[$AutoSelfCheckID]);
-	$query->param(-name=>'password',-values=>[$AutoSelfCheckPass]);
-    $query->param(-name=>'koha_login_context',-values=>['sco']);
+if ( C4::Context->preference('AutoSelfCheckAllowed') ) {
+    my $AutoSelfCheckID   = C4::Context->preference('AutoSelfCheckID');
+    my $AutoSelfCheckPass = C4::Context->preference('AutoSelfCheckPass');
+    $query->param( -name => 'userid',             -values => [$AutoSelfCheckID] );
+    $query->param( -name => 'password',           -values => [$AutoSelfCheckPass] );
+    $query->param( -name => 'koha_login_context', -values => ['sco'] );
 }
-my ($template, $loggedinuser, $cookie) = get_template_and_user({
-    template_name   => "sco/sco-main.tmpl",
-    authnotrequired => 0,
-      flagsrequired => { circulate => "circulate_remaining_permissions" },
-    query => $query,
-    type  => "opac",
-    debug => 1,
-});
+my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
+    {   template_name   => "sco/sco-main.tmpl",
+        authnotrequired => 0,
+        flagsrequired   => { circulate => "circulate_remaining_permissions" },
+        query           => $query,
+        type            => "opac",
+        debug           => 1,
+    }
+);
 
 my $issuerid = $loggedinuser;
-my ($op, $patronid, $barcode, $confirmed, $timedout) = (
-    $query->param("op")         || '',
-    $query->param("patronid")   || '',
-    $query->param("barcode")    || '',
-    $query->param("confirmed")  || '',
-    $query->param("timedout")   || '', #not actually using this...
+my ( $op, $patronid, $barcode, $confirmed, $timedout ) = (
+    $query->param("op")        || '',
+    $query->param("patronid")  || '',
+    $query->param("barcode")   || '',
+    $query->param("confirmed") || '',
+    $query->param("timedout")  || '',    #not actually using this...
 );
 
 my %confirmation_strings = ( RENEW_ISSUE => "This item is already checked out to you.  Return it?", );
-my $issuenoconfirm = 1; #don't need to confirm on issue.
+my $issuenoconfirm = 1;    #don't need to confirm on issue.
+
 #warn "issuerid: " . $issuerid;
 my $issuer   = GetMemberDetails($issuerid);
-my $item     = GetItem(undef,$barcode);
-my $borrower = GetMemberDetails(undef,$patronid);
+my $item     = GetItem( undef, $barcode );
+my $borrower = GetMemberDetails( undef, $patronid );
 
-my $branch = $issuer->{branchcode};
+my $branch           = $issuer->{branchcode};
 my $confirm_required = 0;
-my $return_only = 0;
+my $return_only      = 0;
+
 #warn "issuer cardnumber: " .   $issuer->{cardnumber};
 #warn "patron cardnumber: " . $borrower->{cardnumber};
-if ($op eq "logout") {
+if ( $op eq "logout" ) {
     $query->param( patronid => undef );
-}
-elsif ( $op eq "returnbook" ) {
+} elsif ( $op eq "returnbook" ) {
     my ($doreturn) = AddReturn( $barcode, $branch );
+
     #warn "returnbook: " . $doreturn;
-    $borrower = GetMemberDetails( undef, $patronid );   # update borrower
-}
-elsif ( $op eq "checkout" ) {
+    $borrower = GetMemberDetails( undef, $patronid );    # update borrower
+} elsif ( $op eq "checkout" ) {
     my $impossible  = {};
     my $needconfirm = {};
     if ( !$confirmed ) {
@@ -93,11 +95,11 @@ elsif ( $op eq "checkout" ) {
     $confirm_required = scalar keys %$needconfirm;
 
     #warn "confirm_required: " . $confirm_required ;
-    if (scalar keys %$impossible) {
+    if ( scalar keys %$impossible ) {
 
         #  warn "impossible: numkeys: " . scalar (keys(%$impossible));
         #warn join " ", keys %$impossible;
-        my $issue_error = (keys %$impossible)[0];
+        my $issue_error = ( keys %$impossible )[0];
 
         # FIXME  we assume only one error.
         $template->param(
@@ -106,9 +108,10 @@ elsif ( $op eq "checkout" ) {
             title                     => $item->{title},
             hide_main                 => 1,
         );
-        if ($issue_error eq 'DEBT') {
-            $template->param(amount => $impossible->{DEBT});
+        if ( $issue_error eq 'DEBT' ) {
+            $template->param( amount => $impossible->{DEBT} );
         }
+
         #warn "issue_error: " . $issue_error ;
         if ( $issue_error eq "NO_MORE_RENEWALS" ) {
             $return_only = 1;
@@ -119,9 +122,11 @@ elsif ( $op eq "checkout" ) {
         }
     } elsif ( $needconfirm->{RENEW_ISSUE} ) {
         if ($confirmed) {
+
             #warn "renewing";
             AddRenewal( $borrower, $item->{itemnumber} );
         } else {
+
             #warn "renew confirmation";
             $template->param(
                 renew               => 1,
@@ -132,17 +137,19 @@ elsif ( $op eq "checkout" ) {
             );
         }
     } elsif ( $confirm_required && !$confirmed ) {
+
         #warn "failed confirmation";
-        my $issue_error = (keys %$needconfirm)[0];
+        my $issue_error = ( keys %$needconfirm )[0];
         $template->param(
-            impossible                => (keys %$needconfirm)[0],
+            impossible                => ( keys %$needconfirm )[0],
             "circ_error_$issue_error" => 1,
             hide_main                 => 1,
         );
     } else {
         if ( $confirmed || $issuenoconfirm ) {    # we'll want to call getpatroninfo again to get updated issues.
-            # warn "issuing book?";
+                                                  # warn "issuing book?";
             AddIssue( $borrower, $barcode );
+
             # ($borrower, $flags) = getpatroninformation(undef,undef, $patronid);
             # $template->param(
             #   patronid => $patronid,
@@ -150,6 +157,7 @@ elsif ( $op eq "checkout" ) {
             # );
         } else {
             $confirm_required = 1;
+
             #warn "issue confirmation";
             $template->param(
                 confirm    => "Issuing title: " . $item->{title},
@@ -159,38 +167,41 @@ elsif ( $op eq "checkout" ) {
             );
         }
     }
-} # $op
+}    # $op
 
-if ($borrower->{cardnumber}) {
-#   warn "issuer's  branchcode: " .   $issuer->{branchcode};
-#   warn   "user's  branchcode: " . $borrower->{branchcode};
-    my $borrowername = sprintf "%s %s", ($borrower->{firstname} || ''), ($borrower->{surname} || '');
+if ( $borrower->{cardnumber} ) {
+
+    #   warn "issuer's  branchcode: " .   $issuer->{branchcode};
+    #   warn   "user's  branchcode: " . $borrower->{branchcode};
+    my $borrowername = sprintf "%s %s", ( $borrower->{firstname} || '' ), ( $borrower->{surname} || '' );
     my @issues;
     my ($issueslist) = GetPendingIssues( $borrower->{'borrowernumber'} );
     foreach my $it (@$issueslist) {
-        $it->{date_due_display} = format_date($it->{date_due});
-        my ($renewokay, $renewerror) = CanBookBeIssued($borrower, $it->{'barcode'},'','');
+        $it->{date_due_display} = format_date( $it->{date_due} );
+        my ( $renewokay, $renewerror ) = CanBookBeIssued( $borrower, $it->{'barcode'}, '', '' );
         $it->{'norenew'} = 1 if $renewokay->{'NO_MORE_RENEWALS'};
         push @issues, $it;
     }
 
     $template->param(
-        validuser => 1,
+        validuser    => 1,
         borrowername => $borrowername,
         issues_count => scalar(@issues),
-        ISSUES => \@issues,
-        patronid => $patronid,
-        noitemlinks => 1 ,
+        ISSUES       => \@issues,
+        patronid     => $patronid,
+        noitemlinks  => 1,
     );
-    my $inputfocus = ($return_only      == 1) ? 'returnbook' :
-                     ($confirm_required == 1) ? 'confirm'    : 'barcode' ;
+    my $inputfocus =
+        ( $return_only == 1 )      ? 'returnbook'
+      : ( $confirm_required == 1 ) ? 'confirm'
+      :                              'barcode';
     $template->param(
-        inputfocus => $inputfocus,
-		nofines => 1,
+        inputfocus                                            => $inputfocus,
+        nofines                                               => 1,
         "dateformat_" . C4::Context->preference('dateformat') => 1,
     );
-    if (C4::Context->preference('ShowPatronImageInWebBasedSelfCheck')) {
-        my ($image, $dberror) = GetPatronImage($borrower->{cardnumber});
+    if ( C4::Context->preference('ShowPatronImageInWebBasedSelfCheck') ) {
+        my ( $image, $dberror ) = GetPatronImage( $borrower->{cardnumber} );
         if ($image) {
             $template->param(
                 display_patron_image => 1,
@@ -200,8 +211,8 @@ if ($borrower->{cardnumber}) {
     }
 } else {
     $template->param(
-        patronid   => $patronid,
-        nouser     => $patronid,
+        patronid => $patronid,
+        nouser   => $patronid,
     );
 }
 

@@ -18,6 +18,7 @@ package C4::Numberpattern;
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use C4::Context;
 use C4::SQLHelper qw<:all>;
@@ -26,56 +27,59 @@ use C4::Debug;
 use vars qw($VERSION @ISA @EXPORT);
 
 BEGIN {
-	# set the version for version checking
-	$VERSION = 3.01;
-	require Exporter;
-	@ISA    = qw(Exporter);
-	@EXPORT = qw(
 
-        &GetNumberpatterns
-        &GetNumberpattern
-		&new
-		&all
-	    &AddNumberpattern
-        &ModNumberpattern
-        &DelNumberpattern
+    # set the version for version checking
+    $VERSION = 3.01;
+    require Exporter;
+    @ISA    = qw(Exporter);
+    @EXPORT = qw(
 
-	);
+      &GetNumberpatterns
+      &GetNumberpattern
+      &new
+      &all
+      &AddNumberpattern
+      &ModNumberpattern
+      &DelNumberpattern
+
+    );
 }
 
 # -------------------------------------------------------------------
 sub new {
-    my ($class, $opts) = @_;
+    my ( $class, $opts ) = @_;
     bless $opts => $class;
 }
 
-
 sub AddNumberpattern {
-    my ($class,$numberpattern) = @_;
-	return InsertInTable("subscription_numberpattern",$numberpattern);
+    my ( $class, $numberpattern ) = @_;
+    return InsertInTable( "subscription_numberpattern", $numberpattern );
 }
 
 # -------------------------------------------------------------------
 sub ModNumberpattern {
-    my ($class,$numberpattern) = @_;
-	return UpdateInTable("subscription_numberpattern",$numberpattern);
+    my ( $class, $numberpattern ) = @_;
+    return UpdateInTable( "subscription_numberpattern", $numberpattern );
 }
 
 # -------------------------------------------------------------------
 sub DelNumberpattern {
-	my ($class,$numberpattern) = @_;
-	return DeleteInTable("subscription_numberpattern",$numberpattern);
+    my ( $class, $numberpattern ) = @_;
+    return DeleteInTable( "subscription_numberpattern", $numberpattern );
 }
 
 sub all {
     my ($class) = @_;
     my $dbh = C4::Context->dbh;
-    return    map { $class->new($_) }    @{$dbh->selectall_arrayref(
-        # The subscription_numberpattern table is small enough for
-        # `SELECT *` to be harmless.
-        "SELECT * FROM subscription_numberpattern ORDER BY description",
-        { Slice => {} },
-    )};
+    return map { $class->new($_) } @{
+        $dbh->selectall_arrayref(
+
+            # The subscription_numberpattern table is small enough for
+            # `SELECT *` to be harmless.
+            "SELECT * FROM subscription_numberpattern ORDER BY description",
+            { Slice => {} },
+        )
+      };
 }
 
 =head3 GetNumberpattern
@@ -93,10 +97,10 @@ gets numberpattern where $freq_id is the identifier
 # -------------------------------------------------------------------
 sub GetNumberpattern {
     my ($numpattern_id) = @_;
-	return undef unless $num_patternid;
-    my $results= SearchInTable("subscription_numberpattern",{numberpattern_id=>$freq_id}, undef, undef,undef, undef, "wide");
-	return undef unless ($results);
-	return $$results[0];
+    return undef unless $num_patternid;
+    my $results = SearchInTable( "subscription_numberpattern", { numberpattern_id => $freq_id }, undef, undef, undef, undef, "wide" );
+    return undef unless ($results);
+    return $$results[0];
 }
 
 =head3 GetFrequencies
@@ -113,8 +117,8 @@ gets frequencies restricted on filters
 
 # -------------------------------------------------------------------
 sub GetNumberPatterns {
-    my ($filters,$orderby) = @_;
-    return SearchInTable("subscription_numberpattern",$filters, $orderby, undef,undef, undef, "wide");
+    my ( $filters, $orderby ) = @_;
+    return SearchInTable( "subscription_numberpattern", $filters, $orderby, undef, undef, undef, "wide" );
 }
 
 END { }    # module clean-up code here (global destructor)

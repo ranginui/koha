@@ -47,7 +47,7 @@ my @authtypesloop;
 foreach my $thisauthtype ( keys %$authtypes ) {
     my %row = (
         value        => $thisauthtype,
-        selected     => ($thisauthtype eq $authtypecode),
+        selected     => ( $thisauthtype eq $authtypecode ),
         authtypetext => $authtypes->{$thisauthtype}{'authtypetext'},
         index        => $index,
     );
@@ -60,16 +60,14 @@ if ( $op eq "do_search" ) {
     my @and_or    = $query->param('and_or');
     my @excluding = $query->param('excluding');
     my @operator  = $query->param('operator');
-    my @value     = ($query->param('value_mainstr')||undef, $query->param('value_main')||undef, $query->param('value_any')||undef);
+    my @value     = ( $query->param('value_mainstr') || undef, $query->param('value_main') || undef, $query->param('value_any') || undef );
     my $orderby   = $query->param('orderby');
 
     $resultsperpage = $query->param('resultsperpage');
     $resultsperpage = 20 if ( !defined $resultsperpage );
 
-    my ( $results, $total ) =
-      SearchAuthorities( \@marclist, \@and_or, \@excluding, \@operator, \@value,
-        $startfrom * $resultsperpage,
-        $resultsperpage, $authtypecode, $orderby);
+    my ( $results, $total ) = SearchAuthorities( \@marclist, \@and_or, \@excluding, \@operator, \@value, $startfrom * $resultsperpage, $resultsperpage, $authtypecode, $orderby );
+
     # multi page display gestion
     my $displaynext = 0;
     my $displayprev = $startfrom;
@@ -79,9 +77,7 @@ if ( $op eq "do_search" ) {
 
     my @field_data = ();
 
-    my @marclist_ini =
-      $query->param('marclist')
-      ; # get marclist again, as the previous one has been modified by catalogsearch (mainentry replaced by field name
+    my @marclist_ini = $query->param('marclist');    # get marclist again, as the previous one has been modified by catalogsearch (mainentry replaced by field name
     for ( my $i = 0 ; $i <= $#marclist ; $i++ ) {
         push @field_data, { term => "marclist",  val => $marclist_ini[$i] };
         push @field_data, { term => "and_or",    val => $and_or[$i] };
@@ -91,7 +87,7 @@ if ( $op eq "do_search" ) {
 
     push @field_data, { term => "value_mainstr", val => $query->param('value_mainstr') || "" };
     push @field_data, { term => "value_main",    val => $query->param('value_main')    || "" };
-    push @field_data, { term => "value_any",     val => $query->param('value_any')     || ""};
+    push @field_data, { term => "value_any",     val => $query->param('value_any')     || "" };
 
     my @numbers = ();
 
@@ -101,8 +97,7 @@ if ( $op eq "do_search" ) {
                 my $highlight = 0;
                 ( $startfrom == ( $i - 1 ) ) && ( $highlight = 1 );
                 push @numbers,
-                  {
-                    number     => $i,
+                  { number     => $i,
                     highlight  => $highlight,
                     searchdata => \@field_data,
                     startfrom  => ( $i - 1 )
@@ -116,13 +111,11 @@ if ( $op eq "do_search" ) {
 
     if ( $total < ( ( $startfrom + 1 ) * $resultsperpage ) ) {
         $to = $total;
-    }
-    else {
+    } else {
         $to = ( ( $startfrom + 1 ) * $resultsperpage );
     }
     ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-        {
-            template_name   => "authorities/searchresultlist-auth.tmpl",
+        {   template_name   => "authorities/searchresultlist-auth.tmpl",
             query           => $query,
             type            => 'intranet',
             authnotrequired => 0,
@@ -132,27 +125,26 @@ if ( $op eq "do_search" ) {
 
     $template->param( result => $results ) if $results;
     $template->param(
-        orderby      => $orderby,
+        orderby        => $orderby,
         startfrom      => $startfrom,
-    displaynext    => $displaynext,
-    displayprev    => $displayprev,
-    resultsperpage => $resultsperpage,
-    startfromnext  => $startfrom + 1,
-    startfromprev  => $startfrom - 1,
+        displaynext    => $displaynext,
+        displayprev    => $displayprev,
+        resultsperpage => $resultsperpage,
+        startfromnext  => $startfrom + 1,
+        startfromprev  => $startfrom - 1,
         searchdata     => \@field_data,
         total          => $total,
         from           => $from,
         to             => $to,
         numbers        => \@numbers,
         authtypecode   => $authtypecode,
-        value_mainstr  => $query->param('value_mainstr') || "", 
+        value_mainstr  => $query->param('value_mainstr') || "",
         value_main     => $query->param('value_main') || "",
         value_any      => $query->param('value_any') || "",
     );
 } else {
     ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-        {
-            template_name   => "authorities/auth_finder.tmpl",
+        {   template_name   => "authorities/auth_finder.tmpl",
             query           => $query,
             type            => 'intranet',
             authnotrequired => 0,
@@ -160,22 +152,20 @@ if ( $op eq "do_search" ) {
         }
     );
 
-    $template->param(
-        resultstring => $resultstring,
-    );
+    $template->param( resultstring => $resultstring, );
 }
 
 $template->param(
-    value_mainstr => $query->param('value_mainstr') || "", 
-    value_main    => $query->param('value_main') || "",
-    value_any     => $query->param('value_any') || "",
+    value_mainstr => $query->param('value_mainstr') || "",
+    value_main    => $query->param('value_main')    || "",
+    value_any     => $query->param('value_any')     || "",
     tagid         => $tagid,
     index         => $index,
     authtypesloop => \@authtypesloop,
     authtypecode  => $authtypecode,
-    value_mainstr  => $query->param('value_mainstr') || "", 
-    value_main     => $query->param('value_main')    || "",
-    value_any      => $query->param('value_any')     || "",
+    value_mainstr => $query->param('value_mainstr') || "",
+    value_main    => $query->param('value_main')    || "",
+    value_any     => $query->param('value_any')     || "",
 );
 
 # Print the page

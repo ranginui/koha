@@ -42,6 +42,7 @@ script to administer the budget periods table
 
 ## modules
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use Number::Format qw(format_price);
 use CGI;
@@ -57,29 +58,29 @@ use C4::Debug;
 
 my $dbh = C4::Context->dbh;
 
-my $input       = new CGI;
+my $input = new CGI;
 
-my $searchfield          = $input->param('searchfield');
-my $budget_period_id     = $input->param('budget_period_id');
-my $op                   = $input->param('op')||"else";
+my $searchfield      = $input->param('searchfield');
+my $budget_period_id = $input->param('budget_period_id');
+my $op               = $input->param('op') || "else";
 
-my $budget_period_hashref= $input->Vars;
+my $budget_period_hashref = $input->Vars;
+
 #my $sort1_authcat = $input->param('sort1_authcat');
 #my $sort2_authcat = $input->param('sort2_authcat');
 
-my $pagesize    = 20;
+my $pagesize = 20;
 $searchfield =~ s/\,//g;
 
-my ($template, $borrowernumber, $cookie, $staff_flags ) = get_template_and_user(
-	{   template_name   => "admin/aqbudgetperiods.tmpl",
-		query           => $input,
-		type            => "intranet",
-		authnotrequired => 0,
-		flagsrequired   => { acquisition => 'period_manage' },
-		debug           => 1,
-	}
+my ( $template, $borrowernumber, $cookie, $staff_flags ) = get_template_and_user(
+    {   template_name   => "admin/aqbudgetperiods.tmpl",
+        query           => $input,
+        type            => "intranet",
+        authnotrequired => 0,
+        flagsrequired   => { acquisition => 'period_manage' },
+        debug           => 1,
+    }
 );
-
 
 my $cur = GetCurrency();
 $template->param( cur => $cur->{symbol} );
@@ -103,17 +104,16 @@ if ( $cur_format eq 'US' ) {
     );
 }
 
-
 # ADD OR MODIFY A BUDGET PERIOD - BUILD SCREEN
 if ( $op eq 'add_form' ) {
     ## add or modify a budget period (preparation)
     ## get information about the budget period that must be modified
 
-
     if ($budget_period_id) {    # MOD
-		my $budgetperiod_hash=GetBudgetPeriod($budget_period_id);
+        my $budgetperiod_hash = GetBudgetPeriod($budget_period_id);
+
         # get dropboxes
-		FormatData($budgetperiod_hash);
+        FormatData($budgetperiod_hash);
 
         my $editnum = new Number::Format(
             'int_curr_symbol'   => '',
@@ -121,26 +121,23 @@ if ( $op eq 'add_form' ) {
             'mon_decimal_point' => '.'
         );
 
-        $$budgetperiod_hash{budget_period_total}= $editnum->format_price($$budgetperiod_hash{'budget_period_total'});
-        $template->param(
-			%$budgetperiod_hash
-        );
-    } # IF-MOD
-    $template->param( DHTMLcalendar_dateformat 	=> C4::Dates->DHTMLcalendar(),);
+        $$budgetperiod_hash{budget_period_total} = $editnum->format_price( $$budgetperiod_hash{'budget_period_total'} );
+        $template->param( %$budgetperiod_hash );
+    }    # IF-MOD
+    $template->param( DHTMLcalendar_dateformat => C4::Dates->DHTMLcalendar(), );
 }
 
 elsif ( $op eq 'add_validate' ) {
 ## add or modify a budget period (confirmation)
 
-	## update budget period data
-	if ( $budget_period_id ne '' ) {
-		$$budget_period_hashref{$_}||=0 for qw(budget_period_active budget_period_locked);
-		my $status=ModBudgetPeriod($budget_period_hashref);
-	} 
-	else {    # ELSE ITS AN ADD
-		my $budget_period_id=AddBudgetPeriod($budget_period_hashref);
-	}
-	$op='else';
+    ## update budget period data
+    if ( $budget_period_id ne '' ) {
+        $$budget_period_hashref{$_} ||= 0 for qw(budget_period_active budget_period_locked);
+        my $status = ModBudgetPeriod($budget_period_hashref);
+    } else {    # ELSE ITS AN ADD
+        my $budget_period_id = AddBudgetPeriod($budget_period_hashref);
+    }
+    $op = 'else';
 }
 
 #--------------------------------------------------
@@ -149,49 +146,48 @@ elsif ( $op eq 'delete_confirm' ) {
     my $dbh = C4::Context->dbh;
     ## $total = number of records linked to the record that must be deleted
     my $total = 0;
-    my $data = GetBudgetPeriod( $budget_period_id);
+    my $data  = GetBudgetPeriod($budget_period_id);
 
-	FormatData($data);
-	$$data{'budget_period_total'}=$num->format_price(  $data->{'budget_period_total'});
-    $template->param(
-		%$data
-    );
+    FormatData($data);
+    $$data{'budget_period_total'} = $num->format_price( $data->{'budget_period_total'} );
+    $template->param( %$data );
 }
 
 elsif ( $op eq 'delete_confirmed' ) {
 ## delete the budget period record
 
-    my $data = GetBudgetPeriod( $budget_period_id);
+    my $data = GetBudgetPeriod($budget_period_id);
     DelBudgetPeriod($budget_period_id);
-	$op='else';
+    $op = 'else';
 }
 
 # DEFAULT - DISPLAY AQPERIODS TABLE
 # -------------------------------------------------------------------
 # display the list of budget periods
-    my $results = GetBudgetPeriods();
-	$template->param( period_button_only => 1 ) unless (@$results) ;
-    my $page = $input->param('page') || 1;
-    my $first = ( $page - 1 ) * $pagesize;
-    # if we are on the last page, the number of the last word to display
-    # must not exceed the length of the results array
-    my $last = min( $first + $pagesize - 1, scalar @{$results} - 1, );
-    my $toggle = 0;
-    my @period_loop;
-    foreach my $result ( @{$results}[ $first .. $last ] ) {
-        my $budgetperiod = $result;
-		FormatData($budgetperiod);
-        $budgetperiod->{'budget_period_total'}     = $num->format_price( $budgetperiod->{'budget_period_total'} );
-        $budgetperiod->{budget_active} = 1;
-        push( @period_loop, $budgetperiod );
-    }
-    my $budget_period_dropbox = GetBudgetPeriodsDropbox();
+my $results = GetBudgetPeriods();
+$template->param( period_button_only => 1 ) unless (@$results);
+my $page = $input->param('page') || 1;
+my $first = ( $page - 1 ) * $pagesize;
 
-    $template->param(
-        budget_period_dropbox => $budget_period_dropbox,
-        period_loop           => \@period_loop,
-		pagination_bar		  => pagination_bar("aqbudgetperiods.pl",getnbpages(scalar(@$results),$pagesize),$page),
-    );
+# if we are on the last page, the number of the last word to display
+# must not exceed the length of the results array
+my $last = min( $first + $pagesize - 1, scalar @{$results} - 1, );
+my $toggle = 0;
+my @period_loop;
+foreach my $result ( @{$results}[ $first .. $last ] ) {
+    my $budgetperiod = $result;
+    FormatData($budgetperiod);
+    $budgetperiod->{'budget_period_total'} = $num->format_price( $budgetperiod->{'budget_period_total'} );
+    $budgetperiod->{budget_active} = 1;
+    push( @period_loop, $budgetperiod );
+}
+my $budget_period_dropbox = GetBudgetPeriodsDropbox();
 
-$template->param($op=>1);
+$template->param(
+    budget_period_dropbox => $budget_period_dropbox,
+    period_loop           => \@period_loop,
+    pagination_bar        => pagination_bar( "aqbudgetperiods.pl", getnbpages( scalar(@$results), $pagesize ), $page ),
+);
+
+$template->param( $op => 1 );
 output_html_with_http_headers $input, $cookie, $template->output;

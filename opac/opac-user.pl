@@ -15,8 +15,8 @@
 # Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA  02111-1307 USA
 
-
 use strict;
+
 #use warnings; FIXME - Bug 2505
 
 use CGI;
@@ -24,28 +24,27 @@ use CGI;
 use C4::Auth;
 use C4::Koha;
 use C4::Circulation;
-use C4::Reserves;# qw/GetMaxPickupDate GetReservesFromBorrowernumber/; 
+use C4::Reserves;    # qw/GetMaxPickupDate GetReservesFromBorrowernumber/;
 use C4::Members;
 use C4::Output;
 use C4::Biblio;
 use C4::Items;
 use C4::Dates qw/format_date/;
 use C4::Letters;
-use C4::Branch; # GetBranches
+use C4::Branch;      # GetBranches
 use C4::Overdues qw/CheckBorrowerDebarred/;
 
 my $query = new CGI;
 
 BEGIN {
-    if (C4::Context->preference('BakerTaylorEnabled')) {
+    if ( C4::Context->preference('BakerTaylorEnabled') ) {
         require C4::External::BakerTaylor;
         import C4::External::BakerTaylor qw(&image_url &link_url);
     }
 }
 
 my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
-    {
-        template_name   => "opac-user.tmpl",
+    {   template_name   => "opac-user.tmpl",
         query           => $query,
         type            => "opac",
         authnotrequired => 0,
@@ -54,15 +53,15 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
     }
 );
 
-my $OPACDisplayRequestPriority = (C4::Context->preference("OPACDisplayRequestPriority")) ? 1 : 0;
-my $OPACPatronDetails          = (C4::Context->preference("OPACPatronDetails")) ? 1 : 0;
-my $patronupdate = $query->param('patronupdate');
+my $OPACDisplayRequestPriority = ( C4::Context->preference("OPACDisplayRequestPriority") ) ? 1 : 0;
+my $OPACPatronDetails          = ( C4::Context->preference("OPACPatronDetails") )          ? 1 : 0;
+my $patronupdate               = $query->param('patronupdate');
 
 # get borrower information ....
-my ( $borr ) = GetMemberDetails( $borrowernumber );
+my ($borr) = GetMemberDetails($borrowernumber);
 
 for (qw(dateenrolled dateexpiry dateofbirth)) {
-    ($borr->{$_}) and $borr->{$_} = format_date($borr->{$_});
+    ( $borr->{$_} ) and $borr->{$_} = format_date( $borr->{$_} );
 }
 $borr->{'ethnicity'} = fixEthnicity( $borr->{'ethnicity'} );
 
@@ -77,11 +76,9 @@ if ( 5 >= $borr->{'amountoutstanding'} && $borr->{'amountoutstanding'} > 0 ) {
     $borr->{'amountoverzero'} = 1;
 }
 
-if ( $borr->{'amountoutstanding'} > C4::Context->preference( 'OPACFineNoRenewals' ) ) {
+if ( $borr->{'amountoutstanding'} > C4::Context->preference('OPACFineNoRenewals') ) {
     $borr->{'flagged'} = 1;
-    $template->param(
-        renewal_blocked_fines => sprintf( "%.02f", C4::Context->preference( 'OPACFineNoRenewals' ) ),
-    );
+    $template->param( renewal_blocked_fines => sprintf( "%.02f", C4::Context->preference('OPACFineNoRenewals') ), );
 }
 
 if ( $borr->{'amountoutstanding'} < 0 ) {
@@ -94,73 +91,75 @@ $borr->{'amountoutstanding'} = sprintf "%.02f", $borr->{'amountoutstanding'};
 my @bordat;
 $bordat[0] = $borr;
 
-$template->param(   BORROWER_INFO  => \@bordat,
-                    borrowernumber => $borrowernumber,
-                    patron_flagged => $borr->{flagged},
-                );
+$template->param(
+    BORROWER_INFO  => \@bordat,
+    borrowernumber => $borrowernumber,
+    patron_flagged => $borr->{flagged},
+);
 
 #get issued items ....
 
 my $count          = 0;
-my $toggle = 0;
+my $toggle         = 0;
 my $overdues_count = 0;
 my @overdues;
 my @issuedat;
 my $itemtypes = GetItemTypes();
 my ($issues) = GetPendingIssues($borrowernumber);
-if ($issues){
-	foreach my $issue ( sort sort { $b->{'date_due'} cmp $a->{'date_due'} } @$issues ) {
-		# check for reserves
-		my ( $restype, $res ) = CheckReserves( $issue->{'itemnumber'} );
-		if ( $restype ) {
-			$issue->{'reserved'} = 1;
-		}
-		
-		my ( $total , $accts, $numaccts) = GetMemberAccountRecords( $borrowernumber );
-		my $charges = 0;
-		foreach my $ac (@$accts) {
-			if ( $ac->{'itemnumber'} == $issue->{'itemnumber'} ) {
-				$charges += $ac->{'amountoutstanding'}
-				  if $ac->{'accounttype'} eq 'F';
-				$charges += $ac->{'amountoutstanding'}
-				  if $ac->{'accounttype'} eq 'L';
-			}
-		}
-		$issue->{'charges'} = $charges;
+if ($issues) {
+    foreach my $issue ( sort sort { $b->{'date_due'} cmp $a->{'date_due'} } @$issues ) {
 
-		# get publictype for icon
+        # check for reserves
+        my ( $restype, $res ) = CheckReserves( $issue->{'itemnumber'} );
+        if ($restype) {
+            $issue->{'reserved'} = 1;
+        }
 
-		my $publictype = $issue->{'publictype'};
-		$issue->{$publictype} = 1;
+        my ( $total, $accts, $numaccts ) = GetMemberAccountRecords($borrowernumber);
+        my $charges = 0;
+        foreach my $ac (@$accts) {
+            if ( $ac->{'itemnumber'} == $issue->{'itemnumber'} ) {
+                $charges += $ac->{'amountoutstanding'}
+                  if $ac->{'accounttype'} eq 'F';
+                $charges += $ac->{'amountoutstanding'}
+                  if $ac->{'accounttype'} eq 'L';
+            }
+        }
+        $issue->{'charges'} = $charges;
 
-		# check if item is renewable
-		my ($status,$renewerror) = CanBookBeRenewed( $borrowernumber, $issue->{'itemnumber'} );
-		($issue->{'renewcount'},$issue->{'renewsallowed'},$issue->{'renewsleft'}) = GetRenewCount($borrowernumber, $issue->{'itemnumber'});
-		$issue->{'status'} = $status && C4::Context->preference("OpacRenewalAllowed");
-		$issue->{'too_many'} = 1 if $renewerror and $renewerror eq 'too_many';
-		$issue->{'on_reserve'} = 1 if $renewerror and $renewerror eq 'on_reserve';
+        # get publictype for icon
 
-		if ( $issue->{'overdue'} ) {
-			push @overdues, $issue;
-			$overdues_count++;
-			$issue->{'overdue'} = 1;
-		}
-		else {
-			$issue->{'issued'} = 1;
-		}
-		# imageurl:
-		my $itemtype = $issue->{'itemtype'};
-		if ( $itemtype ) {
-			$issue->{'imageurl'}    = getitemtypeimagelocation( 'opac', $itemtypes->{$itemtype}->{'imageurl'} );
-			$issue->{'description'} = $itemtypes->{$itemtype}->{'description'};
-		}
-		$issue->{date_due} = format_date($issue->{date_due});
-		push @issuedat, $issue;
-		$count++;
-		
-		my $isbn = GetNormalizedISBN($issue->{'isbn'});
-		$issue->{normalized_isbn} = $isbn;
-	}
+        my $publictype = $issue->{'publictype'};
+        $issue->{$publictype} = 1;
+
+        # check if item is renewable
+        my ( $status, $renewerror ) = CanBookBeRenewed( $borrowernumber, $issue->{'itemnumber'} );
+        ( $issue->{'renewcount'}, $issue->{'renewsallowed'}, $issue->{'renewsleft'} ) = GetRenewCount( $borrowernumber, $issue->{'itemnumber'} );
+        $issue->{'status'} = $status && C4::Context->preference("OpacRenewalAllowed");
+        $issue->{'too_many'}   = 1 if $renewerror and $renewerror eq 'too_many';
+        $issue->{'on_reserve'} = 1 if $renewerror and $renewerror eq 'on_reserve';
+
+        if ( $issue->{'overdue'} ) {
+            push @overdues, $issue;
+            $overdues_count++;
+            $issue->{'overdue'} = 1;
+        } else {
+            $issue->{'issued'} = 1;
+        }
+
+        # imageurl:
+        my $itemtype = $issue->{'itemtype'};
+        if ($itemtype) {
+            $issue->{'imageurl'} = getitemtypeimagelocation( 'opac', $itemtypes->{$itemtype}->{'imageurl'} );
+            $issue->{'description'} = $itemtypes->{$itemtype}->{'description'};
+        }
+        $issue->{date_due} = format_date( $issue->{date_due} );
+        push @issuedat, $issue;
+        $count++;
+
+        my $isbn = GetNormalizedISBN( $issue->{'isbn'} );
+        $issue->{normalized_isbn} = $isbn;
+    }
 }
 $template->param( ISSUES       => \@issuedat );
 $template->param( issues_count => $count );
@@ -171,39 +170,38 @@ $template->param( overdues_count => $overdues_count );
 # load the branches
 my $branches = GetBranches();
 my @branch_loop;
-for my $branch_hash (sort keys %$branches ) {
-    my $selected=(C4::Context->userenv && ($branch_hash eq C4::Context->userenv->{branch})) if (C4::Context->preference('SearchMyLibraryFirst'));
+for my $branch_hash ( sort keys %$branches ) {
+    my $selected = ( C4::Context->userenv && ( $branch_hash eq C4::Context->userenv->{branch} ) ) if ( C4::Context->preference('SearchMyLibraryFirst') );
     push @branch_loop,
-      {
-        value      => "branch: $branch_hash",
+      { value      => "branch: $branch_hash",
         branchname => $branches->{$branch_hash}->{'branchname'},
-        selected => $selected
+        selected   => $selected
       };
 }
 $template->param( branchloop => \@branch_loop );
 
 # now the reserved items....
-my @reserves  = GetReservesFromBorrowernumber( $borrowernumber );
+my @reserves = GetReservesFromBorrowernumber($borrowernumber);
 foreach my $res (@reserves) {
     warn $res->{'waitingdate'};
     $res->{'reservedate'} = format_date( $res->{'reservedate'} );
 
     if ( $res->{'expirationdate'} ne '0000-00-00' ) {
-      $res->{'expirationdate'} = format_date( $res->{'expirationdate'} ) 
+        $res->{'expirationdate'} = format_date( $res->{'expirationdate'} );
     } else {
-      $res->{'expirationdate'} = '';
+        $res->{'expirationdate'} = '';
     }
-    
+
     my $publictype = $res->{'publictype'};
     $res->{$publictype} = 1;
-    if ($res->{'found'} eq 'W'){
+    if ( $res->{'found'} eq 'W' ) {
         $res->{'waiting'} = 1;
-        my @maxpickupdate = GetMaxPickupDate($res->{'waitingdate'},$borrowernumber, $res);
-        $res->{'maxpickupdate'} = sprintf("%d-%02d-%02d", @maxpickupdate);
-        $res->{'formattedwaitingdate'} = format_date($res->{'maxpickupdate'});
+        my @maxpickupdate = GetMaxPickupDate( $res->{'waitingdate'}, $borrowernumber, $res );
+        $res->{'maxpickupdate'} = sprintf( "%d-%02d-%02d", @maxpickupdate );
+        $res->{'formattedwaitingdate'} = format_date( $res->{'maxpickupdate'} );
     }
     $res->{'branch'} = $branches->{ $res->{'branchcode'} }->{'branchname'};
-    my $biblioData = GetBiblioData($res->{'biblionumber'});
+    my $biblioData = GetBiblioData( $res->{'biblionumber'} );
     $res->{'reserves_title'} = $biblioData->{'title'};
     if ($OPACDisplayRequestPriority) {
         $res->{'priority'} = '' if $res->{'priority'} eq '0';
@@ -213,41 +211,42 @@ foreach my $res (@reserves) {
 # use Data::Dumper;
 # warn Dumper(@reserves);
 
-$template->param( RESERVES       => \@reserves );
-$template->param( reserves_count => $#reserves+1 );
-$template->param( showpriority=>1 ) if $OPACDisplayRequestPriority;
+$template->param( RESERVES          => \@reserves );
+$template->param( reserves_count    => $#reserves + 1 );
+$template->param( showpriority      => 1 ) if $OPACDisplayRequestPriority;
 $template->param( OPACPatronDetails => 1 ) if $OPACPatronDetails;
 
 my @waiting;
 my $wcount = 0;
 foreach my $res (@reserves) {
     if ( $res->{'itemnumber'} ) {
-        my $item = GetItem( $res->{'itemnumber'});
-        $res->{'holdingbranch'} =
-          $branches->{ $item->{'holdingbranch'} }->{'branchname'};
-        $res->{'branch'} = $branches->{ $res->{'branchcode'} }->{'branchname'};
+        my $item = GetItem( $res->{'itemnumber'} );
+        $res->{'holdingbranch'} = $branches->{ $item->{'holdingbranch'} }->{'branchname'};
+        $res->{'branch'}        = $branches->{ $res->{'branchcode'} }->{'branchname'};
+
         # get document reserve status
-        my $biblioData = GetBiblioData($res->{'biblionumber'});
+        my $biblioData = GetBiblioData( $res->{'biblionumber'} );
         $res->{'waiting_title'} = $biblioData->{'title'};
         if ( ( $res->{'found'} eq 'W' ) ) {
             my $item = $res->{'itemnumber'};
-            $item = GetBiblioFromItemNumber($item,undef);
-            $res->{'wait'}= 1; 
-            $res->{'holdingbranch'}=$item->{'holdingbranch'};
-            $res->{'biblionumber'}=$item->{'biblionumber'};
+            $item = GetBiblioFromItemNumber( $item, undef );
+            $res->{'wait'}          = 1;
+            $res->{'holdingbranch'} = $item->{'holdingbranch'};
+            $res->{'biblionumber'}  = $item->{'biblionumber'};
             $res->{'barcodenumber'} = $item->{'barcode'};
-            $res->{'wbrcode'} = $res->{'branchcode'};
+            $res->{'wbrcode'}       = $res->{'branchcode'};
             $res->{'itemnumber'}    = $res->{'itemnumber'};
-            $res->{'wbrname'} = $branches->{$res->{'branchcode'}}->{'branchname'};
-            if($res->{'holdingbranch'} eq $res->{'wbrcode'}){
+            $res->{'wbrname'}       = $branches->{ $res->{'branchcode'} }->{'branchname'};
+            if ( $res->{'holdingbranch'} eq $res->{'wbrcode'} ) {
                 $res->{'atdestination'} = 1;
             }
+
             # set found to 1 if reserve is waiting for patron pickup
             $res->{'found'} = 1 if $res->{'found'} eq 'W';
         } else {
-            my ($transfertwhen, $transfertfrom, $transfertto) = GetTransfers( $res->{'itemnumber'} );
+            my ( $transfertwhen, $transfertfrom, $transfertto ) = GetTransfers( $res->{'itemnumber'} );
             if ($transfertwhen) {
-                $res->{intransit} = 1;
+                $res->{intransit}  = 1;
                 $res->{datesent}   = format_date($transfertwhen);
                 $res->{frombranch} = GetBranchName($transfertfrom);
             }
@@ -255,56 +254,57 @@ foreach my $res (@reserves) {
         push @waiting, $res;
         $wcount++;
     }
+
     # can be cancelled
     #$res->{'cancelable'} = 1 if ($res->{'wait'} && $res->{'atdestination'} && $res->{'found'} ne "1");
-    $res->{'cancelable'} = 1 if    ($res->{wait} and not $res->{found}) or (not $res->{wait} and not $res->{intransit});
-    
+    $res->{'cancelable'} = 1 if ( $res->{wait} and not $res->{found} ) or ( not $res->{wait} and not $res->{intransit} );
+
 }
 
 $template->param( WAITING => \@waiting );
 
 # current alert subscriptions
 my $alerts = getalert($borrowernumber);
-foreach ( @$alerts ) {
+foreach (@$alerts) {
     $_->{ $_->{type} } = 1;
     $_->{relatedto} = findrelatedto( $_->{type}, $_->{externalid} );
 }
 
-if (C4::Context->preference('BakerTaylorEnabled')) {
+if ( C4::Context->preference('BakerTaylorEnabled') ) {
     $template->param(
-        BakerTaylorEnabled  => 1,
-        BakerTaylorImageURL => &image_url(),
-        BakerTaylorLinkURL  => &link_url(),
+        BakerTaylorEnabled      => 1,
+        BakerTaylorImageURL     => &image_url(),
+        BakerTaylorLinkURL      => &link_url(),
         BakerTaylorBookstoreURL => C4::Context->preference('BakerTaylorBookstoreURL'),
     );
 }
 
-if (C4::Context->preference("OPACAmazonCoverImages") or 
-    C4::Context->preference("GoogleJackets") or
-    C4::Context->preference("BakerTaylorEnabled") or
-	C4::Context->preference("SyndeticsCoverImages")) {
-        $template->param(JacketImages=>1);
+if (   C4::Context->preference("OPACAmazonCoverImages")
+    or C4::Context->preference("GoogleJackets")
+    or C4::Context->preference("BakerTaylorEnabled")
+    or C4::Context->preference("SyndeticsCoverImages") ) {
+    $template->param( JacketImages => 1 );
 }
 
 if ( GetMessagesCount( $borrowernumber, 'B' ) ) {
-	$template->param( bor_messages => 1 );
+    $template->param( bor_messages => 1 );
 }
 
 if ( $borr->{'opacnote'} ) {
-  $template->param( 
-    bor_messages => 1,
-    opacnote => $borr->{'opacnote'},
-  );
+    $template->param(
+        bor_messages => 1,
+        opacnote     => $borr->{'opacnote'},
+    );
 }
 
 $template->param(
-    bor_messages_loop	=> GetMessages( $borrowernumber, 'B', 'NONE' ),
+    bor_messages_loop  => GetMessages( $borrowernumber, 'B', 'NONE' ),
     waiting_count      => $wcount,
     textmessaging      => $borr->{textmessaging},
-    patronupdate => $patronupdate,
+    patronupdate       => $patronupdate,
     OpacRenewalAllowed => C4::Context->preference("OpacRenewalAllowed"),
-    userview => 1,
-    dateformat    => C4::Context->preference("dateformat"),
+    userview           => 1,
+    dateformat         => C4::Context->preference("dateformat"),
 );
 
 output_html_with_http_headers $query, $cookie, $template->output;

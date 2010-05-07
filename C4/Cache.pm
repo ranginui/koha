@@ -49,17 +49,17 @@ use base qw(Class::Accessor);
 use C4::Cache::Memcached;
 use C4::Cache::FastMemcached;
 
-__PACKAGE__->mk_ro_accessors( qw( cache ) );
+__PACKAGE__->mk_ro_accessors(qw( cache ));
 
 sub new {
-    my $class = shift;                                                          
-    my %param = @_;                                                             
-    
+    my $class = shift;
+    my %param = @_;
+
     my $cache_type = $param{cache_type} || 'memcached';
-    my $subclass = __PACKAGE__."::".ucfirst($cache_type);
-    my $cache    = $subclass->_cache_handle(\%param)
+    my $subclass   = __PACKAGE__ . "::" . ucfirst($cache_type);
+    my $cache      = $subclass->_cache_handle( \%param )
       or croak "Cannot create cache handle for '$cache_type'";
-    return bless $class->SUPER::new({cache => $cache}), $subclass;              
+    return bless $class->SUPER::new( { cache => $cache } ), $subclass;
 }
 
 =head2 EXPORT

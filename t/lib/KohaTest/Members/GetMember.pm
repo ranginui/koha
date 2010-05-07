@@ -25,20 +25,20 @@ sub startup_create_borrower : Test( startup => 1 ) {
     my $self = shift;
 
     my $memberinfo = {
-        surname      => 'surname'   . $self->random_string(),
+        surname      => 'surname' . $self->random_string(),
         firstname    => 'firstname' . $self->random_string(),
-        address      => 'address'   . $self->random_string(),
-        city         => 'city'      . $self->random_string(),
-        cardnumber   => 'card'      . $self->random_string(),
+        address      => 'address' . $self->random_string(),
+        city         => 'city' . $self->random_string(),
+        cardnumber   => 'card' . $self->random_string(),
         branchcode   => 'U1BCG',
-        categorycode => 'D',    # B  => Board
+        categorycode => 'D',                                    # B  => Board
         dateexpiry   => '2020-01-01',
         password     => 'testpassword',
         userid       => 'testuser',
         dateofbirth  => $self->random_date(),
     };
 
-    my $borrowernumber = AddMember( %$memberinfo );
+    my $borrowernumber = AddMember(%$memberinfo);
     ok( $borrowernumber, "created member: $borrowernumber" );
     $self->{get_new_borrowernumber} = $borrowernumber;
     $self->{get_new_cardnumber}     = $memberinfo->{cardnumber};
@@ -61,23 +61,17 @@ Validates that GetMember can search by borrowernumber
 sub borrowernumber_get : Test( 6 ) {
     my $self = shift;
 
-    ok( $self->{get_new_borrowernumber},
-        "we have a valid memberid $self->{get_new_borrowernumber} to test with" );
+    ok( $self->{get_new_borrowernumber}, "we have a valid memberid $self->{get_new_borrowernumber} to test with" );
 
     #search by borrowernumber
-    my $results =
-      C4::Members::GetMember( borrowernumber=>$self->{get_new_borrowernumber});
+    my $results = C4::Members::GetMember( borrowernumber => $self->{get_new_borrowernumber} );
     ok( $results, 'we successfully called GetMember searching by borrowernumber' );
 
-    ok( exists $results->{borrowernumber},
-        'member details has a "borrowernumber" attribute' );
-    is( $results->{borrowernumber},
-        $self->{get_new_borrowernumber},
-        '...and it matches the created borrowernumber'
-    );
+    ok( exists $results->{borrowernumber}, 'member details has a "borrowernumber" attribute' );
+    is( $results->{borrowernumber}, $self->{get_new_borrowernumber}, '...and it matches the created borrowernumber' );
 
     ok( exists $results->{'category_type'}, "categories in the join returned values" );
-    ok( $results->{description}, "...and description is valid: $results->{description}" );
+    ok( $results->{description},            "...and description is valid: $results->{description}" );
 }
 
 =head3 cardnumber_get
@@ -89,21 +83,17 @@ Validates that GetMember can search by cardnumber
 sub cardnumber_get : Test( 6 ) {
     my $self = shift;
 
-    ok( $self->{get_new_cardnumber},
-        "we have a valid cardnumber $self->{get_new_cardnumber} to test with" );
+    ok( $self->{get_new_cardnumber}, "we have a valid cardnumber $self->{get_new_cardnumber} to test with" );
 
     #search by cardnumber
-    my $results = C4::Members::GetMember( 'cardnumber'=>$self->{get_new_cardnumber} );
+    my $results = C4::Members::GetMember( 'cardnumber' => $self->{get_new_cardnumber} );
     ok( $results, 'we successfully called GetMember searching by cardnumber' );
 
     ok( exists $results->{cardnumber}, 'member details has a "cardnumber" attribute' );
-    is( $results->{cardnumber},
-        $self->{get_new_cardnumber},
-        '..and it matches the created cardnumber'
-    );
+    is( $results->{cardnumber}, $self->{get_new_cardnumber}, '..and it matches the created cardnumber' );
 
     ok( exists $results->{'category_type'}, "categories in the join returned values" );
-    ok( $results->{description}, "...and description is valid: $results->{description}" );
+    ok( $results->{description},            "...and description is valid: $results->{description}" );
 }
 
 =head3 firstname_get
@@ -116,21 +106,17 @@ Note that only the first result is used.
 sub firstname_get : Test( 6 ) {
     my $self = shift;
 
-    ok( $self->{get_new_firstname},
-        "we have a valid firstname $self->{get_new_firstname} to test with" );
+    ok( $self->{get_new_firstname}, "we have a valid firstname $self->{get_new_firstname} to test with" );
 
     ##search by firstname
-    my $results = C4::Members::GetMember( 'firstname'=>$self->{get_new_firstname} );
+    my $results = C4::Members::GetMember( 'firstname' => $self->{get_new_firstname} );
     ok( $results, 'we successfully called GetMember searching by firstname' );
 
     ok( exists $results->{firstname}, 'member details has a "firstname" attribute' );
-    is( $results->{'firstname'},
-        $self->{get_new_firstname},
-        '..and it matches the created firstname'
-    );
+    is( $results->{'firstname'}, $self->{get_new_firstname}, '..and it matches the created firstname' );
 
     ok( exists $results->{'category_type'}, "categories in the join returned values" );
-    ok( $results->{description}, "...and description is valid: $results->{description}" );
+    ok( $results->{description},            "...and description is valid: $results->{description}" );
 }
 
 =head3 userid_get
@@ -142,21 +128,17 @@ Validates that GetMember can search by userid.
 sub userid_get : Test( 6 ) {
     my $self = shift;
 
-    ok( $self->{get_new_userid},
-        "we have a valid userid $self->{get_new_userid} to test with" );
+    ok( $self->{get_new_userid}, "we have a valid userid $self->{get_new_userid} to test with" );
 
     #search by userid
-    my $results = C4::Members::GetMember( 'userid'=>$self->{get_new_userid} );
+    my $results = C4::Members::GetMember( 'userid' => $self->{get_new_userid} );
     ok( $results, 'we successfully called GetMember searching by userid' );
 
     ok( exists $results->{'userid'}, 'member details has a "userid" attribute' );
-    is( $results->{userid},
-        $self->{get_new_userid},
-        '..and it matches the created userid'
-    );
+    is( $results->{userid}, $self->{get_new_userid}, '..and it matches the created userid' );
 
     ok( exists $results->{'category_type'}, "categories in the join returned values" );
-    ok( $results->{description}, "...and description is valid: $results->{description}" );
+    ok( $results->{description},            "...and description is valid: $results->{description}" );
 }
 
 =head3 missing_params

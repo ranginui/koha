@@ -1,6 +1,5 @@
 #!/usr/bin/perl
 
-
 # script to find a guarantor
 
 # Copyright 2006 OUEST PROVENCE
@@ -21,6 +20,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use C4::Auth;
 use C4::Output;
@@ -29,79 +29,84 @@ use C4::Dates qw/format_date/;
 use C4::Members;
 
 my $input = new CGI;
-my ($template, $loggedinuser, $cookie);
+my ( $template, $loggedinuser, $cookie );
 
-	($template, $loggedinuser, $cookie)
-    = get_template_and_user({template_name => "members/guarantor_search.tmpl",
-			     query => $input,
-			     type => "intranet",
-			     authnotrequired => 0,
-			     flagsrequired => {borrowers => 1},
-			     debug => 1,
-			     });
+( $template, $loggedinuser, $cookie ) = get_template_and_user(
+    {   template_name   => "members/guarantor_search.tmpl",
+        query           => $input,
+        type            => "intranet",
+        authnotrequired => 0,
+        flagsrequired   => { borrowers => 1 },
+        debug           => 1,
+    }
+);
+
 # }
 my $theme = $input->param('theme') || "default";
-			# only used if allowthemeoverride is set
 
+# only used if allowthemeoverride is set
 
-my $member=$input->param('member');
-my $orderby=$input->param('orderby');
+my $member  = $input->param('member');
+my $orderby = $input->param('orderby');
 $orderby = "surname,firstname" unless $orderby;
-$member =~ s/,//g;   #remove any commas from search string
+$member =~ s/,//g;     #remove any commas from search string
 $member =~ s/\*/%/g;
-if ($member eq ''){
-		$template->param(results=>0);
-}else{
-		$template->param(results=>1);
-}	
+if ( $member eq '' ) {
+    $template->param( results => 0 );
+} else {
+    $template->param( results => 1 );
+}
 
-my ($count,$results);
+my ( $count, $results );
 my @resultsdata;
 my $background = 0;
 
-if ($member ne ''){
-	if(length($member) == 1)
-	{
-		($count,$results)=SearchMember($member,$orderby,"simple",'A');
-	}
-	else
-	{
-		($count,$results)=SearchMember($member,$orderby,"advanced",'A');
-	}
-	for (my $i=0; $i < $count; $i++){
-	#find out stats
-	my ($od,$issue,$fines)=GetMemberIssuesAndFines($results->[$i]{'borrowerid'});
-	my $guarantorinfo=uc($results->[$i]{'surname'})." , ".ucfirst($results->[$i]{'firstname'});
-	my %row = (
-		background => $background,
-		count => $i+1,
-		borrowernumber => $results->[$i]{'borrowernumber'},
-		cardnumber => $results->[$i]{'cardnumber'},
-		surname => $results->[$i]{'surname'},
-		firstname => $results->[$i]{'firstname'},
-		categorycode => $results->[$i]{'categorycode'},
-		streetnumber => $results->[$i]{'streetnumber'},
-		address => $results->[$i]{'address'},
-		city => $results->[$i]{'city'},
-		zipcode => $results->[$i]{'zipcode'},
-		country => $results->[$i]{'country'},
-		branchcode => $results->[$i]{'branchcode'},
-		guarantorinfo =>$guarantorinfo,
-		#op
-		dateofbirth =>format_date($results->[$i]{'dateofbirth'}),
-		#fi op	
-		
-		odissue => "$od/$issue",
-		fines => $fines,
-		borrowernotes => $results->[$i]{'borrowernotes'});
-	if ( $background ) { $background = 0; } else {$background = 1; }
-	push(@resultsdata, \%row);
-		}
+if ( $member ne '' ) {
+    if ( length($member) == 1 ) {
+        ( $count, $results ) = SearchMember( $member, $orderby, "simple", 'A' );
+    } else {
+        ( $count, $results ) = SearchMember( $member, $orderby, "advanced", 'A' );
+    }
+    for ( my $i = 0 ; $i < $count ; $i++ ) {
+
+        #find out stats
+        my ( $od, $issue, $fines ) = GetMemberIssuesAndFines( $results->[$i]{'borrowerid'} );
+        my $guarantorinfo = uc( $results->[$i]{'surname'} ) . " , " . ucfirst( $results->[$i]{'firstname'} );
+        my %row           = (
+            background     => $background,
+            count          => $i + 1,
+            borrowernumber => $results->[$i]{'borrowernumber'},
+            cardnumber     => $results->[$i]{'cardnumber'},
+            surname        => $results->[$i]{'surname'},
+            firstname      => $results->[$i]{'firstname'},
+            categorycode   => $results->[$i]{'categorycode'},
+            streetnumber   => $results->[$i]{'streetnumber'},
+            address        => $results->[$i]{'address'},
+            city           => $results->[$i]{'city'},
+            zipcode        => $results->[$i]{'zipcode'},
+            country        => $results->[$i]{'country'},
+            branchcode     => $results->[$i]{'branchcode'},
+            guarantorinfo  => $guarantorinfo,
+
+            #op
+            dateofbirth => format_date( $results->[$i]{'dateofbirth'} ),
+
+            #fi op
+
+            odissue       => "$od/$issue",
+            fines         => $fines,
+            borrowernotes => $results->[$i]{'borrowernotes'}
+        );
+        if   ($background) { $background = 0; }
+        else               { $background = 1; }
+        push( @resultsdata, \%row );
+    }
 }
-$template->param( 
-			member          => $member,
-			numresults		=> $count,
-			
-			resultsloop     => \@resultsdata );
+$template->param(
+    member     => $member,
+    numresults => $count,
+
+    resultsloop => \@resultsdata
+);
 
 output_html_with_http_headers $input, $cookie, $template->output;

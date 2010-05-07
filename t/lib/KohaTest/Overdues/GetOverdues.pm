@@ -13,41 +13,44 @@ use Test::More;
 
 sub startup_60_create_overdue_item : Test( startup => 17 ) {
     my $self = shift;
-    
+
     $self->add_biblios( add_items => 1 );
-    
+
     my $biblionumber = $self->{'biblios'}[0];
     ok( $biblionumber, 'biblionumber' );
-    my @biblioitems = C4::Biblio::GetBiblioItemByBiblioNumber( $biblionumber );
+    my @biblioitems = C4::Biblio::GetBiblioItemByBiblioNumber($biblionumber);
     ok( scalar @biblioitems > 0, 'there is at least one biblioitem' );
     my $biblioitemnumber = $biblioitems[0]->{'biblioitemnumber'};
     ok( $biblioitemnumber, 'got a biblioitemnumber' );
 
-    my $items = C4::Items::GetItemsByBiblioitemnumber( $biblioitemnumber);
-                           
+    my $items = C4::Items::GetItemsByBiblioitemnumber($biblioitemnumber);
+
     my $item = $items->[0];
     ok( $item->{'itemnumber'}, 'item number' );
     $self->{'overdueitemnumber'} = $item->{'itemnumber'};
-    
+
     # let's use the database to do date math for us.
     # This is a US date, but that's how C4::Dates likes it, apparently.
-    my $dbh = C4::Context->dbh();
-    my $date_list = $dbh->selectcol_arrayref( q( select DATE_FORMAT( FROM_DAYS( TO_DAYS( NOW() ) - 6 ), '%m/%d/%Y' ) ) );
-    my $six_days_ago = shift( @$date_list );
-    
-    my $duedate = C4::Dates->new( $six_days_ago );
+    my $dbh          = C4::Context->dbh();
+    my $date_list    = $dbh->selectcol_arrayref(q( select DATE_FORMAT( FROM_DAYS( TO_DAYS( NOW() ) - 6 ), '%m/%d/%Y' ) ));
+    my $six_days_ago = shift(@$date_list);
+
+    my $duedate = C4::Dates->new($six_days_ago);
+
     # diag( Data::Dumper->Dump( [ $duedate ], [ 'duedate' ] ) );
-    
+
     ok( $item->{'barcode'}, 'barcode' )
-      or diag( Data::Dumper->Dump( [ $item ], [ 'item' ] ) );
+      or diag( Data::Dumper->Dump( [$item], ['item'] ) );
+
     # my $item_from_barcode = C4::Items::GetItem( undef, $item->{'barcode'} );
     # diag( Data::Dumper->Dump( [ $item_from_barcode ], [ 'item_from_barcode' ] ) );
 
     ok( $self->{'memberid'}, 'memberid' );
-    my $borrower = C4::Members::GetMember( borrowernumber=>$self->{'memberid'} );
+    my $borrower = C4::Members::GetMember( borrowernumber => $self->{'memberid'} );
     ok( $borrower->{'borrowernumber'}, 'borrowernumber' );
-    
+
     my ( $issuingimpossible, $needsconfirmation ) = C4::Circulation::CanBookBeIssued( $borrower, $item->{'barcode'}, $duedate, 0 );
+
     # diag( Data::Dumper->Dump( [ $issuingimpossible, $needsconfirmation ], [ qw( issuingimpossible needsconfirmation ) ] ) );
     is( keys %$issuingimpossible, 0, 'issuing is not impossible' );
     is( keys %$needsconfirmation, 0, 'issuing needs no confirmation' );
@@ -111,16 +114,11 @@ sub run_overduenotices_script : Test( 1 ) {
 sub count_message_queue {
     my $self = shift;
 
-    my $dbh = C4::Context->dbh();
+    my $dbh       = C4::Context->dbh();
     my $statement = q( select count(0) from message_queue where status = 'pending' );
-    my $countlist = $dbh->selectcol_arrayref( $statement );
+    my $countlist = $dbh->selectcol_arrayref($statement);
     return $countlist->[0];
 }
 
 1;
-
-
-
-
-
 

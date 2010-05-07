@@ -21,9 +21,6 @@ use C4::Context;
 
 our $AUTOLOAD;
 
-
-
-
 =head1 NAME
 
 C4::ItemType - objects from the itemtypes table
@@ -56,12 +53,9 @@ The database is not touched.
 =cut
 
 sub new {
-    my ($class, $opts) = @_;
+    my ( $class, $opts ) = @_;
     bless $opts => $class;
 }
-
-
-
 
 =head3 C4::ItemType->all
 
@@ -73,16 +67,16 @@ C<description>.
 sub all {
     my ($class) = @_;
     my $dbh = C4::Context->dbh;
-    return    map { $class->new($_) }    @{$dbh->selectall_arrayref(
-        # The itemtypes table is small enough for
-        # `SELECT *` to be harmless.
-        "SELECT * FROM itemtypes ORDER BY description",
-        { Slice => {} },
-    )};
+    return map { $class->new($_) } @{
+        $dbh->selectall_arrayref(
+
+            # The itemtypes table is small enough for
+            # `SELECT *` to be harmless.
+            "SELECT * FROM itemtypes ORDER BY description",
+            { Slice => {} },
+        )
+      };
 }
-
-
-
 
 =head2 Object Methods
 
@@ -108,7 +102,7 @@ sub AUTOLOAD {
     my $self = shift;
     my $attr = $AUTOLOAD;
     $attr =~ s/.*://;
-    if (exists $self->{$attr}) {
+    if ( exists $self->{$attr} ) {
         return $self->{$attr};
     } else {
         return undef;
@@ -116,8 +110,6 @@ sub AUTOLOAD {
 }
 
 sub DESTROY { }
-
-
 
 # ack itemtypes | grep '\.pm' | awk '{ print $1 }' | sed 's/:.*$//' | sort | uniq | sed -e 's,/,::,g' -e 's/\.pm//' -e 's/^/L<C4::/' -e 's/$/>,/'
 

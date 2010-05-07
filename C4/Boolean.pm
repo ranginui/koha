@@ -3,7 +3,6 @@ package C4::Boolean;
 #package to handle Boolean values in the parameters table
 # Note: This is just a utility module; it should not be instantiated.
 
-
 # Copyright 2003 Katipo Communications
 #
 # This file is part of Koha.
@@ -29,16 +28,17 @@ use POSIX;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
 
 BEGIN {
-	# set the version for version checking
-	$VERSION = 0.02;
-	require Exporter;
-	@EXPORT = qw(
-		&INVALID_BOOLEAN_STRING_EXCEPTION
+
+    # set the version for version checking
+    $VERSION = 0.02;
+    require Exporter;
+    @EXPORT = qw(
+      &INVALID_BOOLEAN_STRING_EXCEPTION
     );
-	@EXPORT_OK = qw(
-		true_p
+    @EXPORT_OK = qw(
+      true_p
     );
-	@ISA = qw(Exporter);
+    @ISA = qw(Exporter);
 }
 
 =head1 NAME
@@ -63,19 +63,22 @@ Boolean values in a consistent way which makes common sense.
 
 =cut
 
-sub INVALID_BOOLEAN_STRING_EXCEPTION ()
-    { 'The given value does not seem to be interpretable as a Boolean value' }
+sub INVALID_BOOLEAN_STRING_EXCEPTION () { 'The given value does not seem to be interpretable as a Boolean value' }
 
 use vars qw( %strings );
 
 %strings = (
-   '0'     => 0,	'1'     => 1,	# C
-   			'-1'    => 1,	# BASIC
-   'nil'   => 0,	't'     => 1,	# LISP
-   'false' => 0,	'true'  => 1,	# Pascal
-   'off'   => 0,	'on'    => 1,
-   'no'    => 0,	'yes'   => 1,
-   'n'     => 0,	'y'     => 1,
+    '0'     => 0,
+    '1'     => 1,                 # C
+    '-1'    => 1,                 # BASIC
+    'nil'   => 0, 't' => 1,       # LISP
+    'false' => 0, 'true' => 1,    # Pascal
+    'off'   => 0,
+    'on'    => 1,
+    'no'    => 0,
+    'yes'   => 1,
+    'n'     => 0,
+    'y'     => 1,
 );
 
 =item true_p
@@ -91,25 +94,24 @@ exception is thrown.
 =cut
 
 sub true_p ($) {
-    my($x) = @_;
+    my ($x) = @_;
     my $it;
-    if (!defined $x || ref($x) ne '') {
-	warn INVALID_BOOLEAN_STRING_EXCEPTION;
+    if ( !defined $x || ref($x) ne '' ) {
+        warn INVALID_BOOLEAN_STRING_EXCEPTION;
     }
     $x = lc($x);
     $x =~ s/\s//g;
-    if (defined $strings{$x}) {
-	$it = $strings{$x};
+    if ( defined $strings{$x} ) {
+        $it = $strings{$x};
     } else {
-	warn INVALID_BOOLEAN_STRING_EXCEPTION;
+        warn INVALID_BOOLEAN_STRING_EXCEPTION;
     }
     return $it;
 }
 
-
 #---------------------------------
 
-END { }       # module clean-up code here (global destructor)
+END { }    # module clean-up code here (global destructor)
 
 1;
 __END__

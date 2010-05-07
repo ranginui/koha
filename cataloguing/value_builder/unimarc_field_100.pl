@@ -1,6 +1,5 @@
 #!/usr/bin/perl
 
-
 # Copyright 2000-2002 Katipo Communications
 #
 # This file is part of Koha.
@@ -19,12 +18,12 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use C4::Auth;
 use CGI;
 use C4::Context;
 use C4::Output;
-
 
 =head1
 
@@ -39,7 +38,7 @@ sub plugin_parameters {
 
 sub plugin_javascript {
     my ( $dbh, $record, $tagslib, $field_number, $tabloop ) = @_;
-    my $res           = "
+    my $res = "
         <script type='text/javascript'>
             function Focus$field_number() {
                 return 1;
@@ -67,16 +66,15 @@ sub plugin_javascript {
 
 sub plugin {
     my ($input) = @_;
-    my $index  = $input->param('index');
-    my $result = $input->param('result');
+    my $index   = $input->param('index');
+    my $result  = $input->param('result');
 
     my $dbh = C4::Context->dbh;
 
     my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-        {
-            template_name => "cataloguing/value_builder/unimarc_field_100.tmpl",
-            query         => $input,
-            type          => "intranet",
+        {   template_name   => "cataloguing/value_builder/unimarc_field_100.tmpl",
+            query           => $input,
+            type            => "intranet",
             authnotrequired => 0,
             flagsrequired   => { editcatalogue => '*' },
             debug           => 1,
@@ -86,13 +84,13 @@ sub plugin {
     my $f1 = substr( $result, 0, 8 );
     if ( $f1 eq '        ' ) {
         my @today = Date::Calc::Today();
-        $f1 = $today[0] . sprintf('%02s',$today[1]) . sprintf('%02s',$today[2]);
+        $f1 = $today[0] . sprintf( '%02s', $today[1] ) . sprintf( '%02s', $today[2] );
     }
-    my $f2  = substr( $result, 8,  1 );
-    my $f3  = substr( $result, 9,  4 );
-    $f3='' if $f3 eq '    '; # empty publication year if only spaces, otherwise it's hard to fill the field
-    my $f4  = substr( $result, 13, 4 );
-    $f4='' if $f4 eq '    ';
+    my $f2 = substr( $result, 8, 1 );
+    my $f3 = substr( $result, 9, 4 );
+    $f3 = '' if $f3 eq '    ';    # empty publication year if only spaces, otherwise it's hard to fill the field
+    my $f4 = substr( $result, 13, 4 );
+    $f4 = '' if $f4 eq '    ';
     my $f5  = substr( $result, 17, 1 );
     my $f6  = substr( $result, 18, 1 );
     my $f7  = substr( $result, 19, 1 );

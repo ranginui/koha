@@ -18,12 +18,12 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use C4::Output;
 use C4::Auth;
 use CGI;
 use C4::Context;
-
 
 sub string_search {
     my ( $searchstring, $frameworkcode ) = @_;
@@ -31,10 +31,7 @@ sub string_search {
     $searchstring =~ s/\'/\\\'/g;
     my @data  = split( ' ', $searchstring );
     my $count = @data;
-    my $sth   =
-      $dbh->prepare(
-"Select * from marc_subfield_structure where (tagfield like ? and frameworkcode=?) order by tagfield"
-      );
+    my $sth   = $dbh->prepare( "Select * from marc_subfield_structure where (tagfield like ? and frameworkcode=?) order by tagfield" );
     $sth->execute( "$searchstring%", $frameworkcode );
     my @results;
     my $cnt = 0;
@@ -51,10 +48,10 @@ sub string_search {
 }
 
 sub marc_subfield_structure_exists {
-    my ($tagfield, $tagsubfield, $frameworkcode) = @_;
+    my ( $tagfield, $tagsubfield, $frameworkcode ) = @_;
     my $dbh  = C4::Context->dbh;
     my $sql  = "select tagfield from marc_subfield_structure where tagfield = ? and tagsubfield = ? and frameworkcode = ?";
-    my $rows = $dbh->selectall_arrayref($sql, {}, $tagfield, $tagsubfield, $frameworkcode);
+    my $rows = $dbh->selectall_arrayref( $sql, {}, $tagfield, $tagsubfield, $frameworkcode );
     return @$rows > 0;
 }
 
@@ -67,8 +64,7 @@ my $offset        = $input->param('offset');
 my $script_name   = "/cgi-bin/koha/admin/marc_subfields_structure.pl";
 
 my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
-    {
-        template_name   => "admin/marc_subfields_structure.tmpl",
+    {   template_name   => "admin/marc_subfields_structure.tmpl",
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
@@ -87,8 +83,7 @@ if ($op) {
         frameworkcode => $frameworkcode,
         $op           => 1
     );    # we show only the TMPL_VAR names $op
-}
-else {
+} else {
     $template->param(
         script_name   => $script_name,
         tagfield      => $tagfield,
@@ -165,25 +160,21 @@ if ( $op eq 'add_form' ) {
             push( @value_builder, $line );
         }
     }
-    @value_builder= sort {$a cmp $b} @value_builder;
+    @value_builder = sort { $a cmp $b } @value_builder;
     closedir DIR;
 
     # build values list
-    my $sth =
-      $dbh->prepare(
-"select * from marc_subfield_structure where tagfield=? and frameworkcode=?"
-      );    # and tagsubfield='$tagsubfield'");
+    my $sth = $dbh->prepare( "select * from marc_subfield_structure where tagfield=? and frameworkcode=?" );    # and tagsubfield='$tagsubfield'");
     $sth->execute( $tagfield, $frameworkcode );
     my @loop_data = ();
     my $i         = 0;
     while ( $data = $sth->fetchrow_hashref ) {
-        my %row_data;    # get a fresh hash for the row data
+        my %row_data;                                                                                           # get a fresh hash for the row data
         $row_data{defaultvalue} = $data->{defaultvalue};
-        $row_data{tab} = CGI::scrolling_list(
+        $row_data{tab}          = CGI::scrolling_list(
             -name   => 'tab',
             -id     => "tab$i",
-            -values =>
-              [ '-1', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10' ],
+            -values => [ '-1', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10' ],
             -labels => {
                 '-1' => 'ignore',
                 '0'  => '0',
@@ -202,17 +193,13 @@ if ( $op eq 'add_form' ) {
             -size     => 1,
             -multiple => 0,
         );
-        $row_data{tagsubfield} =
-            $data->{'tagsubfield'}
-          . "<input type=\"hidden\" name=\"tagsubfield\" value=\""
-          . $data->{'tagsubfield'}
-          . "\" id=\"tagsubfield\" />";
-        $row_data{subfieldcode} = $data->{'tagsubfield'} eq '@'?'_':$data->{'tagsubfield'};
+        $row_data{tagsubfield}     = $data->{'tagsubfield'} . "<input type=\"hidden\" name=\"tagsubfield\" value=\"" . $data->{'tagsubfield'} . "\" id=\"tagsubfield\" />";
+        $row_data{subfieldcode}    = $data->{'tagsubfield'} eq '@' ? '_' : $data->{'tagsubfield'};
         $row_data{urisubfieldcode} = $row_data{subfieldcode} eq '%' ? 'pct' : $row_data{subfieldcode};
-        $row_data{liblibrarian} = CGI::escapeHTML( $data->{'liblibrarian'} );
-        $row_data{libopac}      = CGI::escapeHTML( $data->{'libopac'} );
-        $row_data{seealso}      = CGI::escapeHTML( $data->{'seealso'} );
-        $row_data{kohafield}    = CGI::scrolling_list(
+        $row_data{liblibrarian}    = CGI::escapeHTML( $data->{'liblibrarian'} );
+        $row_data{libopac}         = CGI::escapeHTML( $data->{'libopac'} );
+        $row_data{seealso}         = CGI::escapeHTML( $data->{'seealso'} );
+        $row_data{kohafield}       = CGI::scrolling_list(
             -name     => "kohafield",
             -id       => "kohafield$i",
             -values   => \@kohafields,
@@ -245,29 +232,29 @@ if ( $op eq 'add_form' ) {
             -multiple => 0,
         );
         $row_data{repeatable} = CGI::checkbox(
-            -name     => "repeatable$i",
-            -checked  => $data->{'repeatable'} ? 'checked' : '',
-            -value    => 1,
-            -label    => '',
-            -id       => "repeatable$i"
+            -name    => "repeatable$i",
+            -checked => $data->{'repeatable'} ? 'checked' : '',
+            -value   => 1,
+            -label   => '',
+            -id      => "repeatable$i"
         );
         $row_data{mandatory} = CGI::checkbox(
-            -name     => "mandatory$i",
-            -checked  => $data->{'mandatory'} ? 'checked' : '',
-            -value    => 1,
-            -label    => '',
-            -id       => "mandatory$i"
+            -name    => "mandatory$i",
+            -checked => $data->{'mandatory'} ? 'checked' : '',
+            -value   => 1,
+            -label   => '',
+            -id      => "mandatory$i"
         );
         $row_data{hidden} = CGI::escapeHTML( $data->{hidden} );
         $row_data{isurl}  = CGI::checkbox(
-            -name     => "isurl$i",
-            -id       => "isurl$i",
-            -checked  => $data->{'isurl'} ? 'checked' : '',
-            -value    => 1,
-            -label    => ''
+            -name    => "isurl$i",
+            -id      => "isurl$i",
+            -checked => $data->{'isurl'} ? 'checked' : '',
+            -value   => 1,
+            -label   => ''
         );
-        $row_data{row}    = $i;
-        $row_data{link}   = CGI::escapeHTML( $data->{'link'} ); 
+        $row_data{row}  = $i;
+        $row_data{link} = CGI::escapeHTML( $data->{'link'} );
         push( @loop_data, \%row_data );
         $i++;
     }
@@ -281,8 +268,7 @@ if ( $op eq 'add_form' ) {
         $row_data{tab} = CGI::scrolling_list(
             -name   => 'tab',
             -id     => "tab$j",
-            -values =>
-              [ '-1', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10' ],
+            -values => [ '-1', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10' ],
             -labels => {
                 '-1' => 'ignore',
                 '0'  => '0',
@@ -301,10 +287,7 @@ if ( $op eq 'add_form' ) {
             -size     => 1,
             -multiple => 0,
         );
-        $row_data{tagsubfield} =
-            "<input type=\"text\" name=\"tagsubfield\" value=\""
-          . $data->{'tagsubfield'}
-          . "\" size=\"1\" id=\"tagsubfield\" maxlength=\"1\" />";
+        $row_data{tagsubfield}  = "<input type=\"text\" name=\"tagsubfield\" value=\"" . $data->{'tagsubfield'} . "\" size=\"1\" id=\"tagsubfield\" maxlength=\"1\" />";
         $row_data{liblibrarian} = "";
         $row_data{libopac}      = "";
         $row_data{seealso}      = "";
@@ -318,25 +301,25 @@ if ( $op eq 'add_form' ) {
         );
         $row_data{hidden}     = "";
         $row_data{repeatable} = CGI::checkbox(
-            -name     => "repeatable$j",
-            -id       => "repeatable$j",
-            -checked  => '',
-            -value    => 1,
-            -label    => ''
+            -name    => "repeatable$j",
+            -id      => "repeatable$j",
+            -checked => '',
+            -value   => 1,
+            -label   => ''
         );
         $row_data{mandatory} = CGI::checkbox(
-            -name     => "mandatory$j",
-            -id       => "mandatory$j",
-            -checked  => '',
-            -value    => 1,
-            -label    => ''
+            -name    => "mandatory$j",
+            -id      => "mandatory$j",
+            -checked => '',
+            -value   => 1,
+            -label   => ''
         );
         $row_data{isurl} = CGI::checkbox(
-            -name     => "isurl$j",
-            -id       => "isurl$j",
-            -checked  => '',
-            -value    => 1,
-            -label    => ''
+            -name    => "isurl$j",
+            -id      => "isurl$j",
+            -checked => '',
+            -value   => 1,
+            -label   => ''
         );
         $row_data{value_builder} = CGI::scrolling_list(
             -name     => "value_builder",
@@ -360,15 +343,15 @@ if ( $op eq 'add_form' ) {
             -size     => 1,
             -multiple => 0,
         );
-        $row_data{link}   = CGI::escapeHTML( $data->{'link'} );
-        $row_data{row}    = $j;
+        $row_data{link} = CGI::escapeHTML( $data->{'link'} );
+        $row_data{row}  = $j;
         push( @loop_data, \%row_data );
     }
     $template->param( 'use-heading-flags-p'      => 1 );
     $template->param( 'heading-edit-subfields-p' => 1 );
     $template->param(
-        action   => "Edit subfields",
-        tagfield => $tagfield,
+        action         => "Edit subfields",
+        tagfield       => $tagfield,
         loop           => \@loop_data,
         more_subfields => $more_subfields,
         more_tag       => $tagfield
@@ -377,22 +360,26 @@ if ( $op eq 'add_form' ) {
     # END $OP eq ADD_FORM
 ################## ADD_VALIDATE ##################################
     # called by add_form, used to insert/modify data in DB
-}
-elsif ( $op eq 'add_validate' ) {
+} elsif ( $op eq 'add_validate' ) {
     my $dbh = C4::Context->dbh;
     $template->param( tagfield => "$input->param('tagfield')" );
+
 #     my $sth = $dbh->prepare(
 # "replace marc_subfield_structure (tagfield,tagsubfield,liblibrarian,libopac,repeatable,mandatory,kohafield,tab,seealso,authorised_value,authtypecode,value_builder,hidden,isurl,frameworkcode, link,defaultvalue)
 #                                     values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
 #     );
-    my $sth_insert = $dbh->prepare(qq{
+    my $sth_insert = $dbh->prepare(
+        qq{
         insert into marc_subfield_structure (tagfield,tagsubfield,liblibrarian,libopac,repeatable,mandatory,kohafield,tab,seealso,authorised_value,authtypecode,value_builder,hidden,isurl,frameworkcode, link,defaultvalue)
         values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-    });
-    my $sth_update = $dbh->prepare(qq{
+    }
+    );
+    my $sth_update = $dbh->prepare(
+        qq{
         update marc_subfield_structure set tagfield=?, tagsubfield=?, liblibrarian=?, libopac=?, repeatable=?, mandatory=?, kohafield=?, tab=?, seealso=?, authorised_value=?, authtypecode=?, value_builder=?, hidden=?, isurl=?, frameworkcode=?,  link=?, defaultvalue=?
         where tagfield=? and tagsubfield=? and frameworkcode=?
-    });
+    }
+    );
     my @tagsubfield       = $input->param('tagsubfield');
     my @liblibrarian      = $input->param('liblibrarian');
     my @libopac           = $input->param('libopac');
@@ -405,7 +392,7 @@ elsif ( $op eq 'add_validate' ) {
     my @value_builder     = $input->param('value_builder');
     my @link              = $input->param('link');
     my @defaultvalue      = $input->param('defaultvalue');
-    
+
     for ( my $i = 0 ; $i <= $#tagsubfield ; $i++ ) {
         my $tagfield    = $input->param('tagfield');
         my $tagsubfield = $tagsubfield[$i];
@@ -421,57 +408,22 @@ elsif ( $op eq 'add_validate' ) {
         my $authorised_value = $authorised_values[$i];
         my $authtypecode     = $authtypecodes[$i];
         my $value_builder    = $value_builder[$i];
-        my $hidden = $hidden[$i];                     #input->param("hidden$i");
-        my $isurl  = $input->param("isurl$i") ? 1 : 0;
-        my $link   = $link[$i];
-        my $defaultvalue = $defaultvalue[$i];
-        
+        my $hidden           = $hidden[$i];                             #input->param("hidden$i");
+        my $isurl            = $input->param("isurl$i") ? 1 : 0;
+        my $link             = $link[$i];
+        my $defaultvalue     = $defaultvalue[$i];
+
         if ($liblibrarian) {
             unless ( C4::Context->config('demo') eq 1 ) {
-                if (marc_subfield_structure_exists($tagfield, $tagsubfield, $frameworkcode)) {
-                    $sth_update->execute(
-                        $tagfield,
-                        $tagsubfield,
-                        $liblibrarian,
-                        $libopac,
-                        $repeatable,
-                        $mandatory,
-                        $kohafield,
-                        $tab,
-                        $seealso,
-                        $authorised_value,
-                        $authtypecode,
-                        $value_builder,
-                        $hidden,
-                        $isurl,
-                        $frameworkcode,
-                        $link,
-                        $defaultvalue,
-                        (
-                            $tagfield,
-                            $tagsubfield,
-                            $frameworkcode,
-                        ),
+                if ( marc_subfield_structure_exists( $tagfield, $tagsubfield, $frameworkcode ) ) {
+                    $sth_update->execute( $tagfield, $tagsubfield, $liblibrarian, $libopac, $repeatable, $mandatory, $kohafield, $tab, $seealso, $authorised_value, $authtypecode,
+                        $value_builder, $hidden, $isurl, $frameworkcode, $link, $defaultvalue, ( $tagfield, $tagsubfield, $frameworkcode, ),
                     );
                 } else {
                     $sth_insert->execute(
-                        $tagfield,
-                        $tagsubfield,
-                        $liblibrarian,
-                        $libopac,
-                        $repeatable,
-                        $mandatory,
-                        $kohafield,
-                        $tab,
-                        $seealso,
-                        $authorised_value,
-                        $authtypecode,
-                        $value_builder,
-                        $hidden,
-                        $isurl,
-                        $frameworkcode,
-                        $link,
-                        $defaultvalue,
+                        $tagfield,  $tagsubfield, $liblibrarian,  $libopac,          $repeatable,   $mandatory,
+                        $kohafield, $tab,         $seealso,       $authorised_value, $authtypecode, $value_builder,
+                        $hidden,    $isurl,       $frameworkcode, $link,             $defaultvalue,
                     );
                 }
             }
@@ -479,20 +431,15 @@ elsif ( $op eq 'add_validate' ) {
     }
     $sth_insert->finish;
     $sth_update->finish;
-    print
-"Content-Type: text/html\n\n<META HTTP-EQUIV=Refresh CONTENT=\"0; URL=marc_subfields_structure.pl?tagfield=$tagfield&frameworkcode=$frameworkcode\"></html>";
+    print "Content-Type: text/html\n\n<META HTTP-EQUIV=Refresh CONTENT=\"0; URL=marc_subfields_structure.pl?tagfield=$tagfield&frameworkcode=$frameworkcode\"></html>";
     exit;
 
     # END $OP eq ADD_VALIDATE
 ################## DELETE_CONFIRM ##################################
     # called by default form, used to confirm deletion of data in DB
-}
-elsif ( $op eq 'delete_confirm' ) {
+} elsif ( $op eq 'delete_confirm' ) {
     my $dbh = C4::Context->dbh;
-    my $sth =
-      $dbh->prepare(
-"select * from marc_subfield_structure where tagfield=? and tagsubfield=? and frameworkcode=?"
-      );
+    my $sth = $dbh->prepare( "select * from marc_subfield_structure where tagfield=? and tagsubfield=? and frameworkcode=?" );
 
     $sth->execute( $tagfield, $tagsubfield, $frameworkcode );
     my $data = $sth->fetchrow_hashref;
@@ -508,35 +455,24 @@ elsif ( $op eq 'delete_confirm' ) {
 
     # END $OP eq DELETE_CONFIRM
 ################## DELETE_CONFIRMED ##################################
-  # called by delete_confirm, used to effectively confirm deletion of data in DB
-}
-elsif ( $op eq 'delete_confirmed' ) {
+    # called by delete_confirm, used to effectively confirm deletion of data in DB
+} elsif ( $op eq 'delete_confirmed' ) {
     my $dbh = C4::Context->dbh;
     unless ( C4::Context->config('demo') eq 1 ) {
-        my $sth =
-          $dbh->prepare(
-"delete from marc_subfield_structure where tagfield=? and tagsubfield=? and frameworkcode=?"
-          );
+        my $sth = $dbh->prepare( "delete from marc_subfield_structure where tagfield=? and tagsubfield=? and frameworkcode=?" );
         $sth->execute( $tagfield, $tagsubfield, $frameworkcode );
         $sth->finish;
     }
-    print
-"Content-Type: text/html\n\n<META HTTP-EQUIV=Refresh CONTENT=\"0; URL=marc_subfields_structure.pl?tagfield=$tagfield&frameworkcode=$frameworkcode\"></html>";
+    print "Content-Type: text/html\n\n<META HTTP-EQUIV=Refresh CONTENT=\"0; URL=marc_subfields_structure.pl?tagfield=$tagfield&frameworkcode=$frameworkcode\"></html>";
     exit;
     $template->param( tagfield => $tagfield );
 
     # END $OP eq DELETE_CONFIRMED
 ################## DEFAULT ##################################
-}
-else {    # DEFAULT
+} else {    # DEFAULT
     my ( $count, $results ) = string_search( $tagfield, $frameworkcode );
     my @loop_data = ();
-    for (
-        my $i = $offset ;
-        $i < ( $offset + $pagesize < $count ? $offset + $pagesize : $count ) ;
-        $i++
-      )
-    {
+    for ( my $i = $offset ; $i < ( $offset + $pagesize < $count ? $offset + $pagesize : $count ) ; $i++ ) {
         my %row_data;    # get a fresh hash for the row data
         $row_data{tagfield}         = $results->[$i]{'tagfield'};
         $row_data{tagsubfield}      = $results->[$i]{'tagsubfield'};
@@ -552,10 +488,7 @@ else {    # DEFAULT
         $row_data{hidden}           = $results->[$i]{'hidden'};
         $row_data{isurl}            = $results->[$i]{'isurl'};
         $row_data{link}             = $results->[$i]{'link'};
-        $row_data{delete}           =
-"$script_name?op=delete_confirm&amp;tagfield=$tagfield&amp;tagsubfield="
-          . $results->[$i]{'tagsubfield'}
-          . "&amp;frameworkcode=$frameworkcode";
+        $row_data{delete} = "$script_name?op=delete_confirm&amp;tagfield=$tagfield&amp;tagsubfield=" . $results->[$i]{'tagsubfield'} . "&amp;frameworkcode=$frameworkcode";
 
         if ( $row_data{tab} eq -1 ) {
             $row_data{subfield_ignored} = 1;
@@ -571,13 +504,11 @@ else {    # DEFAULT
 
     if ( $offset > 0 ) {
         my $prevpage = $offset - $pagesize;
-        $template->param(
-            prev => "<a href=\"$script_name?offset=$prevpage\&tagfield=$tagfield\&frameworkcode=$frameworkcode \">" );
+        $template->param( prev => "<a href=\"$script_name?offset=$prevpage\&tagfield=$tagfield\&frameworkcode=$frameworkcode \">" );
     }
     if ( $offset + $pagesize < $count ) {
         my $nextpage = $offset + $pagesize;
-        $template->param(
-            next => "<a href=\"$script_name?offset=$nextpage\&tagfield=$tagfield\&frameworkcode=$frameworkcode \">" );
+        $template->param( next => "<a href=\"$script_name?offset=$nextpage\&tagfield=$tagfield\&frameworkcode=$frameworkcode \">" );
     }
 }    #---- END $OP eq DEFAULT
 

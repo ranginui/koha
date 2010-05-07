@@ -30,8 +30,10 @@ my $DEBUG = 0;
 plugin_parameters : other parameters added when the plugin is called by the dopop function
 
 =cut
+
 sub plugin_parameters {
-#   my ($dbh,$record,$tagslib,$i,$tabloop) = @_;
+
+    #   my ($dbh,$record,$tagslib,$i,$tabloop) = @_;
     return "";
 }
 
@@ -49,63 +51,66 @@ returns :
 the 3 scripts are inserted after the <input> in the html code
 
 =cut
+
 sub plugin_javascript {
-	my ($dbh,$record,$tagslib,$field_number,$tabloop) = @_;
-	my $function_name= "barcode".(int(rand(100000))+1);
+    my ( $dbh, $record, $tagslib, $field_number, $tabloop ) = @_;
+    my $function_name = "barcode" . ( int( rand(100000) ) + 1 );
 
-	# find today's date
-	my ($year, $mon, $day) = split('-', C4::Dates->today('iso'));
-	my ($tag,$subfield)       =  GetMarcFromKohaField("items.barcode", '');
-	my ($loctag,$locsubfield) =  GetMarcFromKohaField("items.homebranch", '');
+    # find today's date
+    my ( $year, $mon, $day ) = split( '-', C4::Dates->today('iso') );
+    my ( $tag,    $subfield )    = GetMarcFromKohaField( "items.barcode",    '' );
+    my ( $loctag, $locsubfield ) = GetMarcFromKohaField( "items.homebranch", '' );
 
-	my $nextnum;
-	my $query;
+    my $nextnum;
+    my $query;
     my $scr;
-	my $autoBarcodeType = C4::Context->preference("autoBarcode");
+    my $autoBarcodeType = C4::Context->preference("autoBarcode");
     warn "Barcode type = $autoBarcodeType" if $DEBUG;
-	if ((not $autoBarcodeType) or $autoBarcodeType eq 'OFF') {
+    if ( ( not $autoBarcodeType ) or $autoBarcodeType eq 'OFF' ) {
+
         # don't return a value unless we have the appropriate syspref set
-		return ($function_name, 
-        "<script type=\"text/javascript\">
+        return (
+            $function_name,
+            "<script type=\"text/javascript\">
         // autoBarcodeType OFF (or not defined)
         function Focus$function_name() { return 0;}
         function  Clic$function_name() { return 0;}
         function  Blur$function_name() { return 0;}
-        </script>");
+        </script>"
+        );
     }
-	if ($autoBarcodeType eq 'annual') {
-		$query = "select max(cast( substring_index(barcode, '-',-1) as signed)) from items where barcode like ?";
-		my $sth=$dbh->prepare($query);
-		$sth->execute("$year%");
-		while (my ($count)= $sth->fetchrow_array) {
-            warn "Examining Record: $count" if $DEBUG;
-    		$nextnum = $count if $count;
-		}
-		$nextnum++;
-		$nextnum = sprintf("%0*d", "4",$nextnum);
-		$nextnum = "$year-$nextnum";
-	}
-	elsif ($autoBarcodeType eq 'incremental') {
-		# not the best, two catalogers could add the same barcode easily this way :/
-		$query = "select max(abs(barcode)) from items";
+    if ( $autoBarcodeType eq 'annual' ) {
+        $query = "select max(cast( substring_index(barcode, '-',-1) as signed)) from items where barcode like ?";
         my $sth = $dbh->prepare($query);
-		$sth->execute();
-		while (my ($count)= $sth->fetchrow_array) {
-			$nextnum = $count;
-		}
-		$nextnum++;
-    }
-    elsif ($autoBarcodeType eq 'hbyymmincr') {      # Generates a barcode where hb = home branch Code, yymm = year/month catalogued, incr = incremental number, reset yearly -fbcit
-        $year = substr($year, -2);
+        $sth->execute("$year%");
+        while ( my ($count) = $sth->fetchrow_array ) {
+            warn "Examining Record: $count" if $DEBUG;
+            $nextnum = $count if $count;
+        }
+        $nextnum++;
+        $nextnum = sprintf( "%0*d", "4", $nextnum );
+        $nextnum = "$year-$nextnum";
+    } elsif ( $autoBarcodeType eq 'incremental' ) {
+
+        # not the best, two catalogers could add the same barcode easily this way :/
+        $query = "select max(abs(barcode)) from items";
+        my $sth = $dbh->prepare($query);
+        $sth->execute();
+        while ( my ($count) = $sth->fetchrow_array ) {
+            $nextnum = $count;
+        }
+        $nextnum++;
+    } elsif ( $autoBarcodeType eq 'hbyymmincr' ) { # Generates a barcode where hb = home branch Code, yymm = year/month catalogued, incr = incremental number, reset yearly -fbcit
+        $year = substr( $year, -2 );
         $query = "SELECT MAX(CAST(SUBSTRING(barcode,7,4) AS signed)) FROM items WHERE barcode REGEXP ?";
         my $sth = $dbh->prepare($query);
         $sth->execute("^[a-zA-Z]{1,}$year");
-        while (my ($count)= $sth->fetchrow_array) {
+        while ( my ($count) = $sth->fetchrow_array ) {
             $nextnum = $count if $count;
             warn "Existing incremental number = $nextnum" if $DEBUG;
         }
         $nextnum++;
-        $nextnum = sprintf("%0*d", "4",$nextnum);
+        $nextnum = sprintf( "%0*d", "4", $nextnum );
         $nextnum = $year . $mon . $nextnum;
         warn "New hbyymmincr Barcode = $nextnum" if $DEBUG;
         $scr = " 
@@ -127,7 +132,7 @@ if (\$('#' + id).val() == '' || force) {
 }
 END_OF_JS
 
-    my $js  = <<END_OF_JS;
+    my $js = <<END_OF_JS;
 <script type="text/javascript">
 //<![CDATA[
 
@@ -146,7 +151,7 @@ function Clic$function_name(id) {
 //]]>
 </script>
 END_OF_JS
-    return ($function_name, $js);
+    return ( $function_name, $js );
 }
 
 =head1
@@ -156,6 +161,7 @@ plugin: useless here
 =cut
 
 sub plugin {
+
     # my ($input) = @_;
     return "";
 }

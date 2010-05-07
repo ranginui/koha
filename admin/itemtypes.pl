@@ -41,6 +41,7 @@ written 20/02/2002 by paul.poulain@free.fr
 =cut
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use CGI;
 
@@ -57,12 +58,10 @@ sub StringSearch {
     my $dbh = C4::Context->dbh;
     $searchstring =~ s/\'/\\\'/g;
     my @data = split( ' ', $searchstring );
-    my $sth = $dbh->prepare(
-        "SELECT * FROM itemtypes WHERE (description LIKE ?) ORDER BY itemtype"
-	);
+    my $sth = $dbh->prepare( "SELECT * FROM itemtypes WHERE (description LIKE ?) ORDER BY itemtype" );
     $sth->execute("$data[0]%");
-    return $sth->fetchall_arrayref({});		# return ref-to-array of ref-to-hashes
-								# like [ fetchrow_hashref(), fetchrow_hashref() ... ]
+    return $sth->fetchall_arrayref( {} );    # return ref-to-array of ref-to-hashes
+                                             # like [ fetchrow_hashref(), fetchrow_hashref() ... ]
 }
 
 my $input       = new CGI;
@@ -73,8 +72,7 @@ my $pagesize    = 10;
 my $op          = $input->param('op');
 $searchfield =~ s/\,//g;
 my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
-    {
-        template_name   => "admin/itemtypes.tmpl",
+    {   template_name   => "admin/itemtypes.tmpl",
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
@@ -83,11 +81,11 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
     }
 );
 
-$template->param(script_name => $script_name);
+$template->param( script_name => $script_name );
 if ($op) {
-	$template->param($op  => 1); # we show only the TMPL_VAR names $op
+    $template->param( $op => 1 );    # we show only the TMPL_VAR names $op
 } else {
-    $template->param(else => 1);
+    $template->param( else => 1 );
 }
 
 my $dbh = C4::Context->dbh;
@@ -95,6 +93,7 @@ my $dbh = C4::Context->dbh;
 ################## ADD_FORM ##################################
 # called by default. Used to create form to add or  modify a record
 if ( $op eq 'add_form' ) {
+
     #---- if primkey exists, it's a modify action, so read values to modify...
     my $data;
     if ($itemtype) {
@@ -111,22 +110,21 @@ if ( $op eq 'add_form' ) {
     }
 
     $template->param(
-        itemtype        => $itemtype,
-        description     => $data->{'description'},
-        rentalcharge    => sprintf( "%.2f", $data->{'rentalcharge'} ),
-        notforloan      => $data->{'notforloan'},
-        imageurl        => $data->{'imageurl'},
-        template        => C4::Context->preference('template'),
-        summary         => $data->{summary},
-        imagesets       => $imagesets,
-        remote_image    => $remote_image,
+        itemtype     => $itemtype,
+        description  => $data->{'description'},
+        rentalcharge => sprintf( "%.2f", $data->{'rentalcharge'} ),
+        notforloan   => $data->{'notforloan'},
+        imageurl     => $data->{'imageurl'},
+        template     => C4::Context->preference('template'),
+        summary      => $data->{summary},
+        imagesets    => $imagesets,
+        remote_image => $remote_image,
     );
 
     # END $OP eq ADD_FORM
 ################## ADD_VALIDATE ##################################
     # called by add_form, used to insert/modify data in DB
-}
-elsif ( $op eq 'add_validate' ) {
+} elsif ( $op eq 'add_validate' ) {
     my $query = "
         SELECT itemtype
         FROM   itemtypes
@@ -134,7 +132,7 @@ elsif ( $op eq 'add_validate' ) {
     ";
     my $sth = $dbh->prepare($query);
     $sth->execute($itemtype);
-    if ( $sth->fetchrow ) {		# it's a modification
+    if ( $sth->fetchrow ) {    # it's a modification
         my $query2 = '
             UPDATE itemtypes
             SET    description = ?
@@ -149,34 +147,31 @@ elsif ( $op eq 'add_validate' ) {
             $input->param('description'),
             $input->param('rentalcharge'),
             ( $input->param('notforloan') ? 1 : 0 ),
-            (
-                $input->param('image') eq 'removeImage' ? '' : (
-                      $input->param('image') eq 'remoteImage'
-                    ? $input->param('remoteImage')
+            (   $input->param('image') eq 'removeImage' ? ''
+                : (   $input->param('image') eq 'remoteImage' ? $input->param('remoteImage')
                     : $input->param('image') . ""
                 )
             ),
             $input->param('summary'),
             $input->param('itemtype')
         );
-    }
-    else {    # add a new itemtype & not modif an old
+    } else {    # add a new itemtype & not modif an old
         my $query = "
             INSERT INTO itemtypes
                 (itemtype,description,rentalcharge, notforloan, imageurl,summary)
             VALUES
                 (?,?,?,?,?,?);
             ";
-        my $sth = $dbh->prepare($query);
-		my $image = $input->param('image');
+        my $sth   = $dbh->prepare($query);
+        my $image = $input->param('image');
         $sth->execute(
             $input->param('itemtype'),
             $input->param('description'),
             $input->param('rentalcharge'),
             $input->param('notforloan') ? 1 : 0,
-            $image eq 'removeImage' ?           ''                 :
-            $image eq 'remoteImage' ? $input->param('remoteImage') :
-            $image,
+            $image   eq 'removeImage' ? ''
+            : $image eq 'remoteImage' ? $input->param('remoteImage')
+            : $image,
             $input->param('summary'),
         );
     }
@@ -187,37 +182,31 @@ elsif ( $op eq 'add_validate' ) {
     # END $OP eq ADD_VALIDATE
 ################## DELETE_CONFIRM ##################################
     # called by default form, used to confirm deletion of data in DB
-}
-elsif ( $op eq 'delete_confirm' ) {
+} elsif ( $op eq 'delete_confirm' ) {
+
     # Check both categoryitem and biblioitems, see Bug 199
     my $total = 0;
     for my $table ('biblioitems') {
-        my $sth =
-          $dbh->prepare(
-            "select count(*) as total from $table where itemtype=?");
+        my $sth = $dbh->prepare("select count(*) as total from $table where itemtype=?");
         $sth->execute($itemtype);
         $total += $sth->fetchrow_hashref->{total};
     }
 
-    my $sth =
-      $dbh->prepare(
-"select itemtype,description,rentalcharge from itemtypes where itemtype=?"
-      );
+    my $sth = $dbh->prepare( "select itemtype,description,rentalcharge from itemtypes where itemtype=?" );
     $sth->execute($itemtype);
     my $data = $sth->fetchrow_hashref;
     $template->param(
-        itemtype        => $itemtype,
-        description     => $data->{description},
-        rentalcharge    => sprintf( "%.2f", $data->{rentalcharge} ),
-        imageurl        => $data->{imageurl},
-        total           => $total
+        itemtype     => $itemtype,
+        description  => $data->{description},
+        rentalcharge => sprintf( "%.2f", $data->{rentalcharge} ),
+        imageurl     => $data->{imageurl},
+        total        => $total
     );
 
     # END $OP eq DELETE_CONFIRM
 ################## DELETE_CONFIRMED ##################################
-  # called by delete_confirm, used to effectively confirm deletion of data in DB
-}
-elsif ( $op eq 'delete_confirmed' ) {
+    # called by delete_confirm, used to effectively confirm deletion of data in DB
+} elsif ( $op eq 'delete_confirmed' ) {
     my $itemtype = uc( $input->param('itemtype') );
     my $sth      = $dbh->prepare("delete from itemtypes where itemtype=?");
     $sth->execute($itemtype);
@@ -225,10 +214,10 @@ elsif ( $op eq 'delete_confirmed' ) {
     $sth->execute($itemtype);
     print $input->redirect('itemtypes.pl');
     exit;
+
     # END $OP eq DELETE_CONFIRMED
 ################## DEFAULT ##################################
-}
-else {    # DEFAULT
+} else {    # DEFAULT
     my ($results) = StringSearch( $searchfield, 'web' );
     my $page = $input->param('page') || 1;
     my $first = ( $page - 1 ) * $pagesize;
@@ -245,10 +234,7 @@ else {    # DEFAULT
 
     $template->param(
         loop           => \@loop,
-        pagination_bar => pagination_bar(
-            $script_name, getnbpages( scalar @{$results}, $pagesize ),
-            $page,        'page'
-        )
+        pagination_bar => pagination_bar( $script_name, getnbpages( scalar @{$results}, $pagesize ), $page, 'page' )
     );
 }    #---- END $OP eq DEFAULT
 

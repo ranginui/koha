@@ -25,19 +25,20 @@
 =cut
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use CGI;
 use C4::Context;
 use C4::Auth qw/check_cookie_auth/;
 
-my $input   = new CGI;
-my $query   = $input->param('query');
+my $input = new CGI;
+my $query = $input->param('query');
 
 binmode STDOUT, ":utf8";
-print $input->header(-type => 'text/plain', -charset => 'UTF-8');
+print $input->header( -type => 'text/plain', -charset => 'UTF-8' );
 
-my ($auth_status, $sessionID) = check_cookie_auth($input->cookie('CGISESSID'), { circulate => '*' });
-if ($auth_status ne "ok") {
+my ( $auth_status, $sessionID ) = check_cookie_auth( $input->cookie('CGISESSID'), { circulate => '*' } );
+if ( $auth_status ne "ok" ) {
     exit 0;
 }
 
@@ -47,22 +48,22 @@ my $sql = qq(SELECT surname, firstname, cardnumber, address, city, zipcode, coun
              WHERE surname LIKE ?
              OR firstname LIKE ?
              OR cardnumber LIKE ?);
-if (C4::Context->preference("IndependentBranchPatron")){
-  if (C4::Context->userenv && (C4::Context->userenv->{flags} % 2) !=1 && C4::Context->userenv->{'branch'}){
-     $sql.=" AND borrowers.branchcode =".$dbh->quote(C4::Context->userenv->{'branch'}) unless (C4::Context->userenv->{'branch'} eq "insecure");
-  }
+if ( C4::Context->preference("IndependentBranchPatron") ) {
+    if ( C4::Context->userenv && ( C4::Context->userenv->{flags} % 2 ) != 1 && C4::Context->userenv->{'branch'} ) {
+        $sql .= " AND borrowers.branchcode =" . $dbh->quote( C4::Context->userenv->{'branch'} ) unless ( C4::Context->userenv->{'branch'} eq "insecure" );
+    }
 }
 
-$sql    .= qq( ORDER BY surname, firstname);
-my $sth = $dbh->prepare( $sql );
-$sth->execute("$query%", "$query%", "$query%");
+$sql .= qq( ORDER BY surname, firstname);
+my $sth = $dbh->prepare($sql);
+$sth->execute( "$query%", "$query%", "$query%" );
 
 while ( my $rec = $sth->fetchrow_hashref ) {
-    print $rec->{surname} . ", " . $rec->{firstname} . "\t" .
-          $rec->{cardnumber} . "\t" .
-          $rec->{address} . "\t" .
-          $rec->{city} . "\t" .
-          $rec->{zip} . "\t" .
-          $rec->{country} .
-          "\n";
+    print $rec->{surname} . ", "
+      . $rec->{firstname} . "\t"
+      . $rec->{cardnumber} . "\t"
+      . $rec->{address} . "\t"
+      . $rec->{city} . "\t"
+      . $rec->{zip} . "\t"
+      . $rec->{country} . "\n";
 }

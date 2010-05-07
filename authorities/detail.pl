@@ -37,7 +37,6 @@ parameters tables.
 
 =cut
 
-
 use strict;
 use warnings;
 
@@ -48,6 +47,7 @@ use C4::Output;
 use CGI;
 use MARC::Record;
 use C4::Koha;
+
 # use C4::Biblio;
 # use C4::Catalogue;
 
@@ -58,7 +58,7 @@ our ($tagslib);
 =cut
 
 sub build_authorized_values_list ($$$$$$$) {
-    my ( $tag, $subfield, $value, $dbh, $authorised_values_sth,$index_tag,$index_subfield ) = @_;
+    my ( $tag, $subfield, $value, $dbh, $authorised_values_sth, $index_tag, $index_subfield ) = @_;
 
     my @authorised_values;
     my %authorised_lib;
@@ -67,9 +67,7 @@ sub build_authorized_values_list ($$$$$$$) {
 
     #---- branch
     if ( $tagslib->{$tag}->{$subfield}->{'authorised_value'} eq "branches" ) {
-        my $sth =
-          $dbh->prepare(
-            "select branchcode,branchname from branches order by branchname");
+        my $sth = $dbh->prepare("select branchcode,branchname from branches order by branchname");
         $sth->execute;
         push @authorised_values, ""
           unless ( $tagslib->{$tag}->{$subfield}->{mandatory} );
@@ -80,17 +78,14 @@ sub build_authorized_values_list ($$$$$$$) {
         }
 
         #----- itemtypes
-    }
-    elsif ( $tagslib->{$tag}->{$subfield}->{authorised_value} eq "itemtypes" ) {
-        my $sth =
-          $dbh->prepare(
-            "select itemtype,description from itemtypes order by description");
+    } elsif ( $tagslib->{$tag}->{$subfield}->{authorised_value} eq "itemtypes" ) {
+        my $sth = $dbh->prepare("select itemtype,description from itemtypes order by description");
         $sth->execute;
         push @authorised_values, ""
           unless ( $tagslib->{$tag}->{$subfield}->{mandatory} );
-          
+
         my $itemtype;
-        
+
         while ( my ( $itemtype, $description ) = $sth->fetchrow_array ) {
             push @authorised_values, $itemtype;
             $authorised_lib{$itemtype} = $description;
@@ -98,10 +93,8 @@ sub build_authorized_values_list ($$$$$$$) {
         $value = $itemtype unless ($value);
 
         #---- "true" authorised value
-    }
-    else {
-        $authorised_values_sth->execute(
-            $tagslib->{$tag}->{$subfield}->{authorised_value} );
+    } else {
+        $authorised_values_sth->execute( $tagslib->{$tag}->{$subfield}->{authorised_value} );
 
         push @authorised_values, ""
           unless ( $tagslib->{$tag}->{$subfield}->{mandatory} );
@@ -112,7 +105,7 @@ sub build_authorized_values_list ($$$$$$$) {
         }
     }
     return CGI::scrolling_list(
-        -name     => "tag_".$tag."_subfield_".$subfield."_".$index_tag."_".$index_subfield,
+        -name     => "tag_" . $tag . "_subfield_" . $subfield . "_" . $index_tag . "_" . $index_subfield,
         -values   => \@authorised_values,
         -default  => $value,
         -labels   => \%authorised_lib,
@@ -120,20 +113,19 @@ sub build_authorized_values_list ($$$$$$$) {
         -size     => 1,
         -multiple => 0,
         -tabindex => 1,
-        -id       => "tag_".$tag."_subfield_".$subfield."_".$index_tag."_".$index_subfield,
+        -id       => "tag_" . $tag . "_subfield_" . $subfield . "_" . $index_tag . "_" . $index_subfield,
         -class    => "input_marceditor",
     );
 }
-
 
 =item create_input
  builds the <input ...> entry for a subfield.
 =cut
 
 sub create_input {
-    my ( $tag, $subfield, $value, $index_tag, $tabloop, $rec, $authorised_values_sth,$cgi ) = @_;
-    
-    my $index_subfield = CreateKey(); # create a specifique key for each subfield
+    my ( $tag, $subfield, $value, $index_tag, $tabloop, $rec, $authorised_values_sth, $cgi ) = @_;
+
+    my $index_subfield = CreateKey();    # create a specifique key for each subfield
 
     $value =~ s/"/&quot;/g;
 
@@ -149,73 +141,69 @@ sub create_input {
         $value =~ s/MM/$month/g;
         $value =~ s/DD/$day/g;
     }
-    my $dbh = C4::Context->dbh;
+    my $dbh           = C4::Context->dbh;
     my %subfield_data = (
-        tag        => $tag,
-        subfield   => $subfield,
-        marc_lib   => substr( $tagslib->{$tag}->{$subfield}->{lib}, 0, 22 ),
-        marc_lib_plain => $tagslib->{$tag}->{$subfield}->{lib}, 
+        tag            => $tag,
+        subfield       => $subfield,
+        marc_lib       => substr( $tagslib->{$tag}->{$subfield}->{lib}, 0, 22 ),
+        marc_lib_plain => $tagslib->{$tag}->{$subfield}->{lib},
         tag_mandatory  => $tagslib->{$tag}->{mandatory},
         mandatory      => $tagslib->{$tag}->{$subfield}->{mandatory},
         repeatable     => $tagslib->{$tag}->{$subfield}->{repeatable},
         kohafield      => $tagslib->{$tag}->{$subfield}->{kohafield},
         index          => $index_tag,
-        id             => "tag_".$tag."_subfield_".$subfield."_".$index_tag."_".$index_subfield,
+        id             => "tag_" . $tag . "_subfield_" . $subfield . "_" . $index_tag . "_" . $index_subfield,
         value          => $value,
     );
-    if($subfield eq '@'){
-        $subfield_data{id} = "tag_".$tag."_subfield_00_".$index_tag."_".$index_subfield;
+    if ( $subfield eq '@' ) {
+        $subfield_data{id} = "tag_" . $tag . "_subfield_00_" . $index_tag . "_" . $index_subfield;
     } else {
-         $subfield_data{id} = "tag_".$tag."_subfield_".$subfield."_".$index_tag."_".$index_subfield;
+        $subfield_data{id} = "tag_" . $tag . "_subfield_" . $subfield . "_" . $index_tag . "_" . $index_subfield;
     }
 
-    
     $subfield_data{visibility} = "display:none;"
-        if (    ($tagslib->{$tag}->{$subfield}->{hidden} % 2 == 1) and $value ne ''
-            or ($value eq '' and !$tagslib->{$tag}->{$subfield}->{mandatory})
-        );
-    
+      if ( ( $tagslib->{$tag}->{$subfield}->{hidden} % 2 == 1 ) and $value ne ''
+        or ( $value eq '' and !$tagslib->{$tag}->{$subfield}->{mandatory} ) );
+
     # it's an authorised field
     if ( $tagslib->{$tag}->{$subfield}->{authorised_value} ) {
-        $subfield_data{marc_value} =
-          build_authorized_values_list( $tag, $subfield, $value, $dbh,
-            $authorised_values_sth,$index_tag,$index_subfield );
+        $subfield_data{marc_value} = build_authorized_values_list( $tag, $subfield, $value, $dbh, $authorised_values_sth, $index_tag, $index_subfield );
 
-    # it's a thesaurus / authority field
-    }
-    elsif ( $tagslib->{$tag}->{$subfield}->{authtypecode} ) {
-        $subfield_data{marc_value} =
-    "<input type=\"text\"
-                        id=\"".$subfield_data{id}."\"
-                        name=\"".$subfield_data{id}."\"
+        # it's a thesaurus / authority field
+    } elsif ( $tagslib->{$tag}->{$subfield}->{authtypecode} ) {
+        $subfield_data{marc_value} = "<input type=\"text\"
+                        id=\"" . $subfield_data{id} . "\"
+                        name=\"" . $subfield_data{id} . "\"
       value=\"$value\"
       class=\"input_marceditor\"
                         tabindex=\"1\"                     
       DISABLE READONLY \/>
       <span class=\"buttonDot\"
-        onclick=\"Dopop('/cgi-bin/koha/authorities/auth_finder.pl?authtypecode=".$tagslib->{$tag}->{$subfield}->{authtypecode}."&index=$subfield_data{id}','$subfield_data{id}')\">...</span>
+        onclick=\"Dopop('/cgi-bin/koha/authorities/auth_finder.pl?authtypecode="
+          . $tagslib->{$tag}->{$subfield}->{authtypecode}
+          . "&index=$subfield_data{id}','$subfield_data{id}')\">...</span>
     ";
-    # it's a plugin field
-    }
-    elsif ( $tagslib->{$tag}->{$subfield}->{'value_builder'} ) {
+
+        # it's a plugin field
+    } elsif ( $tagslib->{$tag}->{$subfield}->{'value_builder'} ) {
 
         # opening plugin. Just check wether we are on a developper computer on a production one
         # (the cgidir differs)
         my $cgidir = C4::Context->intranetdir . "/cgi-bin/cataloguing/value_builder";
-        unless (-r $cgidir and -d $cgidir) {
+        unless ( -r $cgidir and -d $cgidir ) {
             $cgidir = C4::Context->intranetdir . "/cataloguing/value_builder";
         }
         my $plugin = $cgidir . "/" . $tagslib->{$tag}->{$subfield}->{'value_builder'};
-        do $plugin || die "Plugin Failed: ".$plugin;
+        do $plugin || die "Plugin Failed: " . $plugin;
         my $extended_param = plugin_parameters( $dbh, $rec, $tagslib, $subfield_data{id}, $tabloop );
         my ( $function_name, $javascript ) = plugin_javascript( $dbh, $rec, $tagslib, $subfield_data{id}, $tabloop );
-#         my ( $function_name, $javascript,$extended_param );
-        
-        $subfield_data{marc_value} =
-    "<input tabindex=\"1\"
+
+        #         my ( $function_name, $javascript,$extended_param );
+
+        $subfield_data{marc_value} = "<input tabindex=\"1\"
                         type=\"text\"
-                        id=".$subfield_data{id}."
-      name=".$subfield_data{id}."
+                        id=" . $subfield_data{id} . "
+      name=" . $subfield_data{id} . "
       value=\"$value\"
                         class=\"input_marceditor\"
       onfocus=\"javascript:Focus$function_name($index_tag)\"
@@ -223,55 +211,44 @@ sub create_input {
     <span class=\"buttonDot\"
       onclick=\"Clic$function_name('$subfield_data{id}')\">...</a>
     $javascript";
+
         # it's an hidden field
-    }
-    elsif ( $tag eq '' ) {
-        $subfield_data{marc_value} =
-            "<input tabindex=\"1\"
+    } elsif ( $tag eq '' ) {
+        $subfield_data{marc_value} = "<input tabindex=\"1\"
                     type=\"hidden\"
-                    id=".$subfield_data{id}."
-                    name=".$subfield_data{id}."
+                    id=" . $subfield_data{id} . "
+                    name=" . $subfield_data{id} . "
                     value=\"$value\" \/>
             ";
-    }
-    elsif ( $tagslib->{$tag}->{$subfield}->{'hidden'} ) {
-        $subfield_data{marc_value} =
-            "<input type=\"text\"
-                    id=".$subfield_data{id}."
-                    name=".$subfield_data{id}."
+    } elsif ( $tagslib->{$tag}->{$subfield}->{'hidden'} ) {
+        $subfield_data{marc_value} = "<input type=\"text\"
+                    id=" . $subfield_data{id} . "
+                    name=" . $subfield_data{id} . "
                     class=\"input_marceditor\"
                     tabindex=\"1\"
                     value=\"$value\"
             \/>";
 
         # it's a standard field
-    }
-    else {
-        if (
-            length($value) > 100
-            or
-            ( C4::Context->preference("marcflavour") eq "UNIMARC" && $tag >= 300
+    } else {
+        if (length($value) > 100
+            or ( C4::Context->preference("marcflavour") eq "UNIMARC" && $tag >= 300
                 and $tag < 400 && $subfield eq 'a' )
             or (    $tag >= 500
-                and $tag < 600
-                && C4::Context->preference("marcflavour") eq "MARC21" )
-          )
-        {
-            $subfield_data{marc_value} =
-                "<textarea cols=\"70\"
+                and $tag < 600 && C4::Context->preference("marcflavour") eq "MARC21" )
+          ) {
+            $subfield_data{marc_value} = "<textarea cols=\"70\"
                            rows=\"4\"
-                           id=".$subfield_data{id}."
-                           name=".$subfield_data{id}."
+                           id=" . $subfield_data{id} . "
+                           name=" . $subfield_data{id} . "
                            class=\"input_marceditor\"
                            tabindex=\"1\"
                            >$value</textarea>
                 ";
-        }
-        else {
-            $subfield_data{marc_value} =
-                "<input type=\"text\"
-                        id=".$subfield_data{id}."
-                        name=".$subfield_data{id}."
+        } else {
+            $subfield_data{marc_value} = "<input type=\"text\"
+                        id=" . $subfield_data{id} . "
+                        name=" . $subfield_data{id} . "
                         value=\"$value\"
                         tabindex=\"1\"
                         class=\"input_marceditor\"
@@ -289,12 +266,12 @@ sub create_input {
 
 =cut
 
-sub CreateKey(){
-    return int(rand(1000000));
+sub CreateKey() {
+    return int( rand(1000000) );
 }
 
 sub build_tabs ($$$$$) {
-    my ( $template, $record, $dbh, $encoding,$input ) = @_;
+    my ( $template, $record, $dbh, $encoding, $input ) = @_;
 
     # fill arrays
     my @loop_data = ();
@@ -305,26 +282,27 @@ sub build_tabs ($$$$$) {
         from authorised_values
         where category=? order by lib"
     );
-    
+
     # in this array, we will push all the 10 tabs
     # to avoid having 10 tabs in the template : they will all be in the same BIG_LOOP
     my @BIG_LOOP;
     my %seen;
-    my @tab_data; # all tags to display
-    
-    foreach my $used ( keys %$tagslib ){
-        push @tab_data,$used if not $seen{$used};
+    my @tab_data;    # all tags to display
+
+    foreach my $used ( keys %$tagslib ) {
+        push @tab_data, $used if not $seen{$used};
         $seen{$used}++;
     }
-        
-    my $max_num_tab=9;
+
+    my $max_num_tab = 9;
+
     # loop through each tab 0 through 9
     for ( my $tabloop = 0 ; $tabloop <= $max_num_tab ; $tabloop++ ) {
-        my @loop_data = (); #innerloop in the template.
-        my $i = 0;
-        foreach my $tag (sort @tab_data) {
+        my @loop_data = ();    #innerloop in the template.
+        my $i         = 0;
+        foreach my $tag ( sort @tab_data ) {
             $i++;
-            next if ! $tag;
+            next if !$tag;
             my $index_tag = CreateKey;
 
             # if MARC::Record is not empty =>use it as master loop, then add missing subfields that should be in the tab.
@@ -333,126 +311,113 @@ sub build_tabs ($$$$$) {
                 my @fields;
                 if ( $tag ne '000' ) {
                     @fields = $record->field($tag);
+                } else {
+                    push @fields, MARC::Field->new( '000', $record->leader() );    # if tag == 000
                 }
-                else {
-                  push @fields, MARC::Field->new('000', $record->leader()); # if tag == 000
-                }
+
                 # loop through each field
                 foreach my $field (@fields) {
                     my @subfields_data;
-                    if ($field->tag()<10) {
+                    if ( $field->tag() < 10 ) {
                         next
-                        if (
-                            $tagslib->{ $field->tag() }->{ '@' }->{tab}
-                            ne $tabloop );
-                      next if ($tagslib->{$field->tag()}->{'@'}->{hidden});
-                      my %subfield_data;
-                      $subfield_data{marc_lib}=$tagslib->{$field->tag()}->{'@'}->{lib};
-                      $subfield_data{marc_value}=$field->data();
-                      $subfield_data{marc_subfield}='@';
-                      $subfield_data{marc_tag}=$field->tag();
-                      push(@subfields_data, \%subfield_data);
-                    } else {
-                      my @subf=$field->subfields;
-                  # loop through each subfield
-                      for my $i (0..$#subf) {
-                        $subf[$i][0] = "@" unless $subf[$i][0];
-                        next
-                        if (
-                            $tagslib->{ $field->tag() }->{ $subf[$i][0] }->{tab}
-                            ne $tabloop );
-                        next
-                        if ( $tagslib->{ $field->tag() }->{ $subf[$i][0] }
-                            ->{hidden} );
+                          if ( $tagslib->{ $field->tag() }->{'@'}->{tab} ne $tabloop );
+                        next if ( $tagslib->{ $field->tag() }->{'@'}->{hidden} );
                         my %subfield_data;
-                        $subfield_data{marc_lib}=$tagslib->{$field->tag()}->{$subf[$i][0]}->{lib};
-                        if ($tagslib->{$field->tag()}->{$subf[$i][0]}->{isurl}) {
-                          $subfield_data{marc_value}="<a href=\"$subf[$i][1]\">$subf[$i][1]</a>";
-                        } else {
-                          $subfield_data{marc_value}=$subf[$i][1];
+                        $subfield_data{marc_lib}      = $tagslib->{ $field->tag() }->{'@'}->{lib};
+                        $subfield_data{marc_value}    = $field->data();
+                        $subfield_data{marc_subfield} = '@';
+                        $subfield_data{marc_tag}      = $field->tag();
+                        push( @subfields_data, \%subfield_data );
+                    } else {
+                        my @subf = $field->subfields;
+
+                        # loop through each subfield
+                        for my $i ( 0 .. $#subf ) {
+                            $subf[$i][0] = "@" unless $subf[$i][0];
+                            next
+                              if ( $tagslib->{ $field->tag() }->{ $subf[$i][0] }->{tab} ne $tabloop );
+                            next
+                              if ( $tagslib->{ $field->tag() }->{ $subf[$i][0] }->{hidden} );
+                            my %subfield_data;
+                            $subfield_data{marc_lib} = $tagslib->{ $field->tag() }->{ $subf[$i][0] }->{lib};
+                            if ( $tagslib->{ $field->tag() }->{ $subf[$i][0] }->{isurl} ) {
+                                $subfield_data{marc_value} = "<a href=\"$subf[$i][1]\">$subf[$i][1]</a>";
+                            } else {
+                                $subfield_data{marc_value} = $subf[$i][1];
+                            }
+                            $subfield_data{short_desc}    = substr( $tagslib->{ $field->tag() }->{ $subf[$i][0] }->{lib}, 0, 20 );
+                            $subfield_data{long_desc}     = $tagslib->{ $field->tag() }->{ $subf[$i][0] }->{lib};
+                            $subfield_data{marc_subfield} = $subf[$i][0];
+                            $subfield_data{marc_tag}      = $field->tag();
+                            push( @subfields_data, \%subfield_data );
                         }
-                              $subfield_data{short_desc} = substr(
-                                  $tagslib->{ $field->tag() }->{ $subf[$i][0] }->{lib},
-                                  0, 20
-                              );
-                              $subfield_data{long_desc} =
-                                $tagslib->{ $field->tag() }->{ $subf[$i][0] }->{lib};
-                        $subfield_data{marc_subfield}=$subf[$i][0];
-                        $subfield_data{marc_tag}=$field->tag();
-                        push(@subfields_data, \%subfield_data);
-                      }
                     }
-                    if ($#subfields_data>=0) {
-                      my %tag_data;
-                      $tag_data{tag}=$field->tag(). ' '  
-                                     . C4::Koha::display_marc_indicators($field) 
-                                     . ' - '
-                                     . $tagslib->{$field->tag()}->{lib};
-                      $tag_data{subfield} = \@subfields_data;
-                      push (@loop_data, \%tag_data);
+                    if ( $#subfields_data >= 0 ) {
+                        my %tag_data;
+                        $tag_data{tag}      = $field->tag() . ' ' . C4::Koha::display_marc_indicators($field) . ' - ' . $tagslib->{ $field->tag() }->{lib};
+                        $tag_data{subfield} = \@subfields_data;
+                        push( @loop_data, \%tag_data );
                     }
-                  }
-              }
-            }
-            if ( $#loop_data >= 0 ) {
-                push @BIG_LOOP, {
-                    number    => $tabloop,
-                    innerloop => \@loop_data,
-                };
+                }
             }
         }
-        $template->param( singletab => (scalar(@BIG_LOOP)==1), BIG_LOOP => \@BIG_LOOP );
+        if ( $#loop_data >= 0 ) {
+            push @BIG_LOOP,
+              { number    => $tabloop,
+                innerloop => \@loop_data,
+              };
+        }
+    }
+    $template->param( singletab => ( scalar(@BIG_LOOP) == 1 ), BIG_LOOP => \@BIG_LOOP );
 }
 
+#
+my $query = new CGI;
 
-# 
-my $query=new CGI;
-
-my $dbh=C4::Context->dbh;
+my $dbh = C4::Context->dbh;
 
 # open template
-my ($template, $loggedinuser, $cookie)
-		= get_template_and_user({template_name => "authorities/detail.tmpl",
-			     query => $query,
-			     type => "intranet",
-			     authnotrequired => 0,
-			     flagsrequired => {catalogue => 1},
-			     debug => 1,
-			     });
+my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
+    {   template_name   => "authorities/detail.tmpl",
+        query           => $query,
+        type            => "intranet",
+        authnotrequired => 0,
+        flagsrequired   => { catalogue => 1 },
+        debug           => 1,
+    }
+);
 
 my $authid = $query->param('authid');
 
-
-
 # Using default authtypecode, so all fields are seen
 my $authtypecode = '';
-$tagslib = &GetTagsLabels(1,$authtypecode);
+$tagslib = &GetTagsLabels( 1, $authtypecode );
 
 my $record;
-if (C4::Context->preference("AuthDisplayHierarchy")){
-  my $trees=BuildUnimarcHierarchies($authid);
-  my @trees = split /;/,$trees ;
-  push @trees,$trees unless (@trees);
-  my @loophierarchies;
-  foreach my $tree (@trees){
-    my @tree=split /,/,$tree;
-    push @tree,$tree unless (@tree);
-    my $cnt=0;
-    my @loophierarchy;
-    foreach my $element (@tree){
-      my $elementdata = GetAuthority($element);
-      $record= $elementdata if ($authid==$element);
-      push @loophierarchy, BuildUnimarcHierarchy($elementdata,"child".$cnt, $authid);
-      $cnt++;
+if ( C4::Context->preference("AuthDisplayHierarchy") ) {
+    my $trees = BuildUnimarcHierarchies($authid);
+    my @trees = split /;/, $trees;
+    push @trees, $trees unless (@trees);
+    my @loophierarchies;
+    foreach my $tree (@trees) {
+        my @tree = split /,/, $tree;
+        push @tree, $tree unless (@tree);
+        my $cnt = 0;
+        my @loophierarchy;
+        foreach my $element (@tree) {
+            my $elementdata = GetAuthority($element);
+            $record = $elementdata if ( $authid == $element );
+            push @loophierarchy, BuildUnimarcHierarchy( $elementdata, "child" . $cnt, $authid );
+            $cnt++;
+        }
+        push @loophierarchies, { 'loopelement' => \@loophierarchy };
     }
-    push @loophierarchies, { 'loopelement' =>\@loophierarchy};
-  }
-  $template->param(
-    'displayhierarchy' =>C4::Context->preference("AuthDisplayHierarchy"),
-    'loophierarchies' =>\@loophierarchies,
-  );
+    $template->param(
+        'displayhierarchy' => C4::Context->preference("AuthDisplayHierarchy"),
+        'loophierarchies'  => \@loophierarchies,
+    );
 } else {
-  $record=GetAuthority($authid);
+    $record = GetAuthority($authid);
 }
 my $count = CountUsage($authid);
 
@@ -460,35 +425,37 @@ my $count = CountUsage($authid);
 my $sth = $dbh->prepare("select distinct tagfield from marc_subfield_structure where authtypecode=?");
 $sth->execute($authtypecode);
 my $biblio_fields;
-while (my ($tagfield) = $sth->fetchrow) {
-	$biblio_fields.= $tagfield."9,";
+while ( my ($tagfield) = $sth->fetchrow ) {
+    $biblio_fields .= $tagfield . "9,";
 }
 chop $biblio_fields;
 
-
 # fill arrays
-my @loop_data =();
+my @loop_data = ();
 my $tag;
+
 # loop through each tab 0 through 9
 # for (my $tabloop = 0; $tabloop<=10;$tabloop++) {
 # loop through each tag
-  build_tabs ($template, $record, $dbh,"",$query);
+build_tabs( $template, $record, $dbh, "", $query );
 
 my $authtypes = getauthtypes;
 my @authtypesloop;
-foreach my $thisauthtype (sort { $authtypes->{$b} cmp $authtypes->{$a} } keys %$authtypes) {
-	my %row =(value => $thisauthtype,
-				selected => $thisauthtype eq $authtypecode,
-				authtypetext => $authtypes->{$thisauthtype}{'authtypetext'},
-			);
-	push @authtypesloop, \%row;
+foreach my $thisauthtype ( sort { $authtypes->{$b} cmp $authtypes->{$a} } keys %$authtypes ) {
+    my %row = (
+        value        => $thisauthtype,
+        selected     => $thisauthtype eq $authtypecode,
+        authtypetext => $authtypes->{$thisauthtype}{'authtypetext'},
+    );
+    push @authtypesloop, \%row;
 }
 
-$template->param(authid => $authid,
-		count => $count,
-		biblio_fields => $biblio_fields,
-		authtypetext => $authtypes->{$authtypecode}{'authtypetext'},
-		authtypesloop => \@authtypesloop,
-		);
+$template->param(
+    authid        => $authid,
+    count         => $count,
+    biblio_fields => $biblio_fields,
+    authtypetext  => $authtypes->{$authtypecode}{'authtypetext'},
+    authtypesloop => \@authtypesloop,
+);
 output_html_with_http_headers $query, $cookie, $template->output;
 

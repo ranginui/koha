@@ -1,4 +1,5 @@
 package C4::XSLT;
+
 # Copyright (C) 2006 LibLime
 # <jmf at liblime dot com>
 #
@@ -37,10 +38,10 @@ use vars qw($VERSION @ISA @EXPORT);
 BEGIN {
     require Exporter;
     $VERSION = 0.03;
-    @ISA = qw(Exporter);
-    @EXPORT = qw(
-        &XSLTParse4Display
-        &GetURI
+    @ISA     = qw(Exporter);
+    @EXPORT  = qw(
+      &XSLTParse4Display
+      &GetURI
     );
 }
 
@@ -59,7 +60,7 @@ C4::XSLT - Functions for displaying XSLT-generated content
 sub GetURI {
     my ($uri) = @_;
     my $string;
-    $string = get $uri ; 
+    $string = get $uri ;
     return $string;
 }
 
@@ -70,32 +71,26 @@ sub GetURI {
 =cut
 
 sub transformMARCXML4XSLT {
-    my ($biblionumber, $record) = @_;
+    my ( $biblionumber, $record ) = @_;
     my $frameworkcode = GetFrameworkCode($biblionumber);
-    my $tagslib = &GetMarcStructure(1,$frameworkcode);
+    my $tagslib = &GetMarcStructure( 1, $frameworkcode );
     my @fields;
+
     # FIXME: wish there was a better way to handle exceptions
-    eval {
-        @fields = $record->fields();
-    };
+    eval { @fields = $record->fields(); };
     if ($@) { warn "PROBLEM WITH RECORD"; next; }
     my $av = getAuthorisedValues4MARCSubfields($frameworkcode);
     foreach my $tag ( keys %$av ) {
-        foreach my $field ( $record->field( $tag ) ) {
-            if ( $av->{ $tag } ) {
+        foreach my $field ( $record->field($tag) ) {
+            if ( $av->{$tag} ) {
                 my @new_subfields = ();
                 for my $subfield ( $field->subfields() ) {
                     my ( $letter, $value ) = @$subfield;
                     $value = GetAuthorisedValueDesc( $tag, $letter, $value, '', $tagslib )
-                        if $av->{ $tag }->{ $letter };
+                      if $av->{$tag}->{$letter};
                     push( @new_subfields, $letter, $value );
-                } 
-                $field ->replace_with( MARC::Field->new(
-                    $tag,
-                    $field->indicator(1),
-                    $field->indicator(2),
-                    @new_subfields
-                ) );
+                }
+                $field->replace_with( MARC::Field->new( $tag, $field->indicator(1), $field->indicator(2), @new_subfields ) );
             }
         }
     }
@@ -114,121 +109,125 @@ my %authval_per_framework;
 
 sub getAuthorisedValues4MARCSubfields {
     my ($frameworkcode) = @_;
-    unless ( $authval_per_framework{ $frameworkcode } ) {
+    unless ( $authval_per_framework{$frameworkcode} ) {
         my $dbh = C4::Context->dbh;
-        my $sth = $dbh->prepare("SELECT DISTINCT tagfield, tagsubfield
+        my $sth = $dbh->prepare(
+            "SELECT DISTINCT tagfield, tagsubfield
                                  FROM marc_subfield_structure
                                  WHERE authorised_value IS NOT NULL
                                    AND authorised_value!=''
-                                   AND frameworkcode=?");
-        $sth->execute( $frameworkcode );
-        my $av = { };
+                                   AND frameworkcode=?"
+        );
+        $sth->execute($frameworkcode);
+        my $av = {};
         while ( my ( $tag, $letter ) = $sth->fetchrow() ) {
-            $av->{ $tag }->{ $letter } = 1;
+            $av->{$tag}->{$letter} = 1;
         }
-        $authval_per_framework{ $frameworkcode } = $av;
+        $authval_per_framework{$frameworkcode} = $av;
     }
-    return $authval_per_framework{ $frameworkcode };
+    return $authval_per_framework{$frameworkcode};
 }
 
 my $stylesheet;
 
 sub XSLTParse4Display {
     my ( $biblionumber, $orig_record, $xslfilename ) = @_;
+
     # grab the XML, run it through our stylesheet, push it out to the browser
-    my $record = transformMARCXML4XSLT($biblionumber, $orig_record);
+    my $record = transformMARCXML4XSLT( $biblionumber, $orig_record );
+
     #return $record->as_formatted();
     my $itemsxml  = buildKohaItemsNamespace($biblionumber);
-    my $xmlrecord = $record->as_xml(C4::Context->preference('marcflavour'));
-    my $sysxml = "<sysprefs>\n";
-    foreach my $syspref ( qw/OPACURLOpenInNewWindow DisplayOPACiconsXSLT URLLinkText viewISBD/ ) {
-        $sysxml .= "<syspref name=\"$syspref\">" .
-                   C4::Context->preference( $syspref ) .
-                   "</syspref>\n";
+    my $xmlrecord = $record->as_xml( C4::Context->preference('marcflavour') );
+    my $sysxml    = "<sysprefs>\n";
+    foreach my $syspref (qw/OPACURLOpenInNewWindow DisplayOPACiconsXSLT URLLinkText viewISBD/) {
+        $sysxml .= "<syspref name=\"$syspref\">" . C4::Context->preference($syspref) . "</syspref>\n";
     }
     $sysxml .= "</sysprefs>\n";
     $xmlrecord =~ s/\<\/record\>/$itemsxml$sysxml\<\/record\>/;
     $xmlrecord =~ s/\& /\&amp\; /;
-    $xmlrecord=~ s/\&amp\;amp\; /\&amp\; /;
+    $xmlrecord =~ s/\&amp\;amp\; /\&amp\; /;
 
     my $parser = XML::LibXML->new();
+
     # don't die when you find &, >, etc
     $parser->recover_silently(0);
     my $source = $parser->parse_string($xmlrecord);
     unless ( $stylesheet->{$xslfilename} ) {
         my $xslt = XML::LibXSLT->new();
         my $style_doc;
-        if ($xslfilename=~/http:/){
-            my $xsltstring=GetURI($xslfilename);
+        if ( $xslfilename =~ /http:/ ) {
+            my $xsltstring = GetURI($xslfilename);
             $style_doc = $parser->parse_string($xsltstring);
-        }
-        else {
+        } else {
             use Cwd;
             $style_doc = $parser->parse_file($xslfilename);
         }
         $stylesheet->{$xslfilename} = $xslt->parse_stylesheet($style_doc);
     }
-    my $results = $stylesheet->{$xslfilename}->transform($source);
+    my $results      = $stylesheet->{$xslfilename}->transform($source);
     my $newxmlrecord = $stylesheet->{$xslfilename}->output_string($results);
     return $newxmlrecord;
 }
 
 sub buildKohaItemsNamespace {
     my ($biblionumber) = @_;
-    my @items = C4::Items::GetItemsInfo($biblionumber);
-    my $branches = GetBranches();
-    my $itemtypes = GetItemTypes();
-    my $xml = '';
+    my @items          = C4::Items::GetItemsInfo($biblionumber);
+    my $branches       = GetBranches();
+    my $itemtypes      = GetItemTypes();
+    my $xml            = '';
     for my $item (@items) {
         my $status;
 
-        my ( $transfertwhen, $transfertfrom, $transfertto ) = C4::Circulation::GetTransfers($item->{itemnumber});
+        my ( $transfertwhen, $transfertfrom, $transfertto ) = C4::Circulation::GetTransfers( $item->{itemnumber} );
 
-	my ( $reservestatus, $reserveitem ) = C4::Reserves::CheckReserves($item->{itemnumber});
+        my ( $reservestatus, $reserveitem ) = C4::Reserves::CheckReserves( $item->{itemnumber} );
 
-        if ( $itemtypes->{ $item->{itype} }->{notforloan} || $item->{notforloan} || $item->{onloan} || $item->{wthdrawn} || $item->{itemlost} || $item->{damaged} || 
-             (defined $transfertwhen && $transfertwhen ne '') || $item->{itemnotforloan} || (defined $reservestatus && $reservestatus eq "Waiting") ){ 
-            if ( $item->{notforloan} < 0) {
+        if (   $itemtypes->{ $item->{itype} }->{notforloan}
+            || $item->{notforloan}
+            || $item->{onloan}
+            || $item->{wthdrawn}
+            || $item->{itemlost}
+            || $item->{damaged}
+            || ( defined $transfertwhen && $transfertwhen ne '' )
+            || $item->{itemnotforloan}
+            || ( defined $reservestatus && $reservestatus eq "Waiting" ) ) {
+            if ( $item->{notforloan} < 0 ) {
                 $status = "On order";
-            } 
+            }
             if ( $item->{itemnotforloan} > 0 || $item->{notforloan} > 0 || $itemtypes->{ $item->{itype} }->{notforloan} == 1 ) {
                 $status = "reference";
             }
-            if ($item->{onloan}) {
+            if ( $item->{onloan} ) {
                 $status = "Checked out";
             }
-            if ( $item->{wthdrawn}) {
+            if ( $item->{wthdrawn} ) {
                 $status = "Withdrawn";
             }
-            if ($item->{itemlost}) {
+            if ( $item->{itemlost} ) {
                 $status = "Lost";
             }
-            if ($item->{damaged}) {
-                $status = "Damaged"; 
+            if ( $item->{damaged} ) {
+                $status = "Damaged";
             }
-            if (defined $transfertwhen && $transfertwhen ne '') {
+            if ( defined $transfertwhen && $transfertwhen ne '' ) {
                 $status = 'In transit';
             }
-            if (defined $reservestatus && $reservestatus eq "Waiting") {
+            if ( defined $reservestatus && $reservestatus eq "Waiting" ) {
                 $status = 'Waiting';
             }
         } else {
             $status = "available";
         }
-        my $homebranch = $branches->{$item->{homebranch}}->{'branchname'};
-	 my $itemcallnumber = $item->{itemcallnumber} || '';
+        my $homebranch = $branches->{ $item->{homebranch} }->{'branchname'};
+        my $itemcallnumber = $item->{itemcallnumber} || '';
         $itemcallnumber =~ s/\&/\&amp\;/g;
-        $xml.= "<item><homebranch>$homebranch</homebranch>".
-		"<status>$status</status>".
-		"<itemcallnumber>".$itemcallnumber."</itemcallnumber>"
-        . "</item>";
+        $xml .= "<item><homebranch>$homebranch</homebranch>" . "<status>$status</status>" . "<itemcallnumber>" . $itemcallnumber . "</itemcallnumber>" . "</item>";
 
     }
-    $xml = "<items xmlns=\"http://www.koha.org/items\">".$xml."</items>";
+    $xml = "<items xmlns=\"http://www.koha.org/items\">" . $xml . "</items>";
     return $xml;
 }
-
-
 
 1;
 __END__

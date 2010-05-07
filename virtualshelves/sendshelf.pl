@@ -34,9 +34,8 @@ use C4::VirtualShelves;
 
 my $query = new CGI;
 
-my ( $template, $borrowernumber, $cookie ) = get_template_and_user (
-    {
-        template_name   => "virtualshelves/sendshelfform.tmpl",
+my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
+    {   template_name   => "virtualshelves/sendshelfform.tmpl",
         query           => $query,
         type            => "intranet",
         authnotrequired => 0,
@@ -47,9 +46,9 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user (
 my $shelfid = $query->param('shelfid');
 my $email   = $query->param('email');
 
-my $dbh          = C4::Context->dbh;
+my $dbh = C4::Context->dbh;
 
-if ( $email ) {
+if ($email) {
     my $email_from = C4::Context->preference('KohaAdminEmailAddress');
     my $comment    = $query->param('comment');
 
@@ -59,18 +58,17 @@ if ( $email ) {
     );
 
     my ( $template2, $borrowernumber, $cookie ) = get_template_and_user(
-        {
-	    template_name   => "virtualshelves/sendshelf.tmpl",
-	    query           => $query,
-	    type            => "intranet",
-	    authnotrequired => 0,
-	    flagsrequired   => { catalogue => 1 },
+        {   template_name   => "virtualshelves/sendshelf.tmpl",
+            query           => $query,
+            type            => "intranet",
+            authnotrequired => 0,
+            flagsrequired   => { catalogue => 1 },
         }
     );
 
-    my @shelf               = GetShelf($shelfid);
-    my ($items, $totitems)  = GetShelfContents($shelfid);
-    my $marcflavour         = C4::Context->preference('marcflavour');
+    my @shelf = GetShelf($shelfid);
+    my ( $items, $totitems ) = GetShelfContents($shelfid);
+    my $marcflavour = C4::Context->preference('marcflavour');
     my $iso2709;
     my @results;
 
@@ -111,8 +109,9 @@ if ( $email ) {
     # Analysing information and getting mail properties
     if ( $template_res =~ /<SUBJECT>\n(.*)\n<END_SUBJECT>/s ) {
         $mail{'subject'} = $1;
+    } else {
+        $mail{'subject'} = "no subject";
     }
-    else { $mail{'subject'} = "no subject"; }
 
     my $email_header = "";
     if ( $template_res =~ /<HEADER>\n(.*)\n<END_HEADER>/s ) {
@@ -131,7 +130,7 @@ if ( $email ) {
     # We set and put the multipart content
     $mail{'content-type'} = "multipart/mixed; boundary=\"$boundary\"";
 
-    my $isofile = encode_base64(encode("UTF-8", $iso2709));
+    my $isofile = encode_base64( encode( "UTF-8", $iso2709 ) );
     $boundary = '--' . $boundary;
 
     $mail{body} = <<END_OF_BODY;
@@ -152,10 +151,11 @@ END_OF_BODY
 
     # Sending mail
     if ( sendmail %mail ) {
+
         # do something if it works....
-        $template->param( SENT      => "1" );
-    }
-    else {
+        $template->param( SENT => "1" );
+    } else {
+
         # do something if it doesnt work....
         warn "Error sending mail: $Mail::Sendmail::error \n";
         $template->param( error => 1 );
@@ -164,10 +164,10 @@ END_OF_BODY
     $template->param( email => $email );
     output_html_with_http_headers $query, $cookie, $template->output;
 
-
-}else{
-    $template->param( shelfid => $shelfid,
-                      url     => "/cgi-bin/koha/virtualshelves/sendshelf.pl",
-                    );
+} else {
+    $template->param(
+        shelfid => $shelfid,
+        url     => "/cgi-bin/koha/virtualshelves/sendshelf.pl",
+    );
     output_html_with_http_headers $query, $cookie, $template->output;
 }

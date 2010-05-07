@@ -14,8 +14,8 @@ sub my_branch_has_no_rules : Tests( 2 ) {
 
     my @branches = C4::Overdues::GetBranchcodesWithOverdueRules;
     my @found_branches = grep { $_ eq $self->{'branchcode'} } @branches;
-    is( scalar @found_branches, 0, '...and it is not in the list of branches')
-    
+    is( scalar @found_branches, 0, '...and it is not in the list of branches' )
+
 }
 
 sub my_branch_has_overdue_rules : Tests( 3 ) {
@@ -38,22 +38,14 @@ VALUES
 END_SQL
 
     my $sth = $dbh->prepare($sql);
-    my $success = $sth->execute( $self->{'branchcode'}, $self->random_string(2),
-                                 1, $self->random_string(), 0,
-                                 5, $self->random_string(), 0,
-                                 9, $self->random_string(), 1, );
+    my $success = $sth->execute( $self->{'branchcode'}, $self->random_string(2), 1, $self->random_string(), 0, 5, $self->random_string(), 0, 9, $self->random_string(), 1, );
     ok( $success, '...and we have successfully given it an overdue rule' );
 
     my @branches = C4::Overdues::GetBranchcodesWithOverdueRules;
     my @found_branches = grep { $_ eq $self->{'branchcode'} } @branches;
-    is( scalar @found_branches, 1, '...and it IS in the list of branches.')
-    
+    is( scalar @found_branches, 1, '...and it IS in the list of branches.' )
+
 }
 
 1;
-
-
-
-
-
 

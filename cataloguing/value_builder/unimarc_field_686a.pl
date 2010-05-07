@@ -18,6 +18,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use C4::Auth;
 use CGI;
@@ -43,9 +44,9 @@ This plug-in deals with unimarc field 686a (
 =cut
 
 sub plugin_javascript {
-my ($dbh,$record,$tagslib,$field_number,$tabloop) = @_;
-my $function_name= $field_number;
-my $res  = "
+    my ( $dbh, $record, $tagslib, $field_number, $tabloop ) = @_;
+    my $function_name = $field_number;
+    my $res           = "
 <script>
 function Focus$function_name(index) {
 	return 1;
@@ -63,31 +64,33 @@ function Clic$function_name(subfield_managed) {
 </script>
 ";
 
-return ($function_name,$res);
+    return ( $function_name, $res );
 }
 
 sub plugin {
-my ($input) = @_;
-	my $index= $input->param('index');
-	my $index2= $input->param('index2');
-	$index2=-1 unless($index2);
-	my $result= $input->param('result');
+    my ($input) = @_;
+    my $index   = $input->param('index');
+    my $index2  = $input->param('index2');
+    $index2 = -1 unless ($index2);
+    my $result = $input->param('result');
 
-	my $dbh = C4::Context->dbh;
+    my $dbh = C4::Context->dbh;
 
-	my ($template, $loggedinuser, $cookie)
-	= get_template_and_user({template_name => "cataloguing/value_builder/unimarc_field_686a.tmpl",
-					query => $input,
-					type => "intranet",
-					authnotrequired => 0,
-					flagsrequired => {editcatalogue => '*'},
-					debug => 1,
-					});
-	$template->param(index => $index,
-							index2 => $index2,
-							authtypecode => 'CLASSCD',
-							);
-        output_html_with_http_headers $input, $cookie, $template->output;
+    my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
+        {   template_name   => "cataloguing/value_builder/unimarc_field_686a.tmpl",
+            query           => $input,
+            type            => "intranet",
+            authnotrequired => 0,
+            flagsrequired   => { editcatalogue => '*' },
+            debug           => 1,
+        }
+    );
+    $template->param(
+        index        => $index,
+        index2       => $index2,
+        authtypecode => 'CLASSCD',
+    );
+    output_html_with_http_headers $input, $cookie, $template->output;
 }
 
 1;

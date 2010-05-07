@@ -19,7 +19,6 @@
 # if $op=delete_confirm
 #	- we delete the record having primkey=$primkey
 
-
 # Copyright 2000-2002 Katipo Communications
 #
 # This file is part of Koha.
@@ -46,26 +45,28 @@ use C4::Dates qw(format_date);
 use C4::Output;
 use C4::Budgets qw/GetCurrency GetCurrencies/;
 
-my $input = CGI->new;
+my $input       = CGI->new;
 my $searchfield = $input->param('searchfield') || $input->param('description') || q{};
 my $offset      = $input->param('offset') || 0;
-my $op          = $input->param('op')     || q{};
+my $op          = $input->param('op') || q{};
 my $script_name = '/cgi-bin/koha/admin/currency.pl';
-my $pagesize = 20;
+my $pagesize    = 20;
 
-my ($template, $loggedinuser, $cookie) = get_template_and_user({
-    template_name => 'admin/currency.tmpl',
-    query => $input,
-    type => 'intranet',
-    flagsrequired => {parameters => 1},
-    authnotrequired => 0,
-});
+my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
+    {   template_name   => 'admin/currency.tmpl',
+        query           => $input,
+        type            => 'intranet',
+        flagsrequired   => { parameters => 1 },
+        authnotrequired => 0,
+    }
+);
 
-$searchfield=~ s/\,//g;
+$searchfield =~ s/\,//g;
 
-
-$template->param(searchfield => $searchfield,
-        script_name => $script_name);
+$template->param(
+    searchfield => $searchfield,
+    script_name => $script_name
+);
 
 my $dbh = C4::Context->dbh;
 
@@ -136,13 +137,9 @@ sub delete_confirm {
     my $curr = shift;
 
     $template->param( delete_confirm => 1 );
-    my $total_row = $dbh->selectrow_hashref(
-        'select count(*) as total from aqbooksellers where currency=?',
-        {}, $curr );
+    my $total_row = $dbh->selectrow_hashref( 'select count(*) as total from aqbooksellers where currency=?', {}, $curr );
 
-    my $curr_ref = $dbh->selectrow_hashref(
-        'select currency,rate from currency where currency=?',
-        {}, $curr );
+    my $curr_ref = $dbh->selectrow_hashref( 'select currency,rate from currency where currency=?', {}, $curr );
 
     if ( $total_row->{total} ) {
         $template->param( totalgtzero => 1 );
@@ -163,9 +160,7 @@ sub add_form {
 
     #---- if primkey exists, it's a modify action, so read values to modify...
     if ($curr) {
-        my $curr_rec =
-          $dbh->selectrow_hashref( 'select * from currency where currency=?',
-            {}, $curr );
+        my $curr_rec = $dbh->selectrow_hashref( 'select * from currency where currency=?', {}, $curr );
         for ( keys %{$curr_rec} ) {
             $template->param( $_ => $curr_rec->{$_} );
         }
@@ -192,27 +187,11 @@ sub add_validate {
         $dbh->do('UPDATE currency SET active = 0');
     }
 
-    my ($row_count) = $dbh->selectrow_array(
-        'select count(*) as count from currency where currency = ?',
-        {}, $input->param('currency') );
+    my ($row_count) = $dbh->selectrow_array( 'select count(*) as count from currency where currency = ?', {}, $input->param('currency') );
     if ($row_count) {
-        $dbh->do(
-q|UPDATE currency SET rate = ?, symbol = ?, active = ? WHERE currency = ? |,
-            {},
-            $rec->{rate},
-            $rec->{symbol},
-            $rec->{active},
-            $rec->{currency}
-        );
+        $dbh->do( q|UPDATE currency SET rate = ?, symbol = ?, active = ? WHERE currency = ? |, {}, $rec->{rate}, $rec->{symbol}, $rec->{active}, $rec->{currency} );
     } else {
-        $dbh->do(
-q|INSERT INTO currency (currency, rate, symbol, active) VALUES (?,?,?,?) |,
-            {},
-            $rec->{currency},
-            $rec->{rate},
-            $rec->{symbol},
-            $rec->{active}
-        );
+        $dbh->do( q|INSERT INTO currency (currency, rate, symbol, active) VALUES (?,?,?,?) |, {}, $rec->{currency}, $rec->{rate}, $rec->{symbol}, $rec->{active} );
 
     }
     return;

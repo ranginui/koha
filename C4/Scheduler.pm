@@ -18,6 +18,7 @@ package C4::Scheduler;
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
@@ -25,12 +26,12 @@ use C4::Context;
 use Schedule::At;
 
 BEGIN {
-	# set the version for version checking
-	$VERSION = 0.02;
-	require Exporter;
-	@ISA = qw(Exporter);
-	@EXPORT =
-		qw(get_jobs get_at_jobs get_at_job add_at_job remove_at_job);
+
+    # set the version for version checking
+    $VERSION = 0.02;
+    require Exporter;
+    @ISA    = qw(Exporter);
+    @EXPORT = qw(get_jobs get_at_jobs get_at_job add_at_job remove_at_job);
 }
 
 =head1 NAME
@@ -58,7 +59,8 @@ This will return all scheduled jobs
 
 sub get_jobs {
     my $jobs = get_at_jobs();
-# add call to get cron jobs here too
+
+    # add call to get cron jobs here too
     return ($jobs);
 }
 
@@ -69,8 +71,8 @@ This will return all At scheduled jobs
 =cut
 
 sub get_at_jobs {
-	my %jobs = Schedule::At::getJobs();
-	return (\%jobs);
+    my %jobs = Schedule::At::getJobs();
+    return ( \%jobs );
 }
 
 =item get_at_job($id)
@@ -80,8 +82,8 @@ This will return the At job with the given id
 =cut
 
 sub get_at_job {
-	my ($id)=@_;
-	my %jobs = Schedule::At::getJobs(JOBID => $id);
+    my ($id) = @_;
+    my %jobs = Schedule::At::getJobs( JOBID => $id );
 }
 
 =item add_at_job ($time,$command)
@@ -93,12 +95,13 @@ Returns true if the job is added to the queue and false otherwise.
 =cut
 
 sub add_at_job {
-	my ($time,$command) = @_;
-    # FIXME - a description of the task to be run 
+    my ( $time, $command ) = @_;
+
+    # FIXME - a description of the task to be run
     # may be a better tag, since the tag is displayed
     # in the job list that the administrator sees - e.g.,
     # "run report foo, send to foo@bar.com"
-	Schedule::At::add(TIME => $time, COMMAND => $command, TAG => $command);
+    Schedule::At::add( TIME => $time, COMMAND => $command, TAG => $command );
 
     # FIXME - this method of checking whether the job was added
     # to the queue is less than perfect:
@@ -119,8 +122,8 @@ sub add_at_job {
     #    and completed instantly, thus dropping off the queue.
     my $job_found = 0;
     eval {
-	    my %jobs = Schedule::At::getJobs(TAG => $command);
-        $job_found = scalar(keys %jobs) > 0;
+        my %jobs = Schedule::At::getJobs( TAG => $command );
+        $job_found = scalar( keys %jobs ) > 0;
     };
     if ($@) {
         return 0;
@@ -130,8 +133,8 @@ sub add_at_job {
 }
 
 sub remove_at_job {
-	my ($jobid)=@_;
-	Schedule::At::remove(JOBID => $jobid);
+    my ($jobid) = @_;
+    Schedule::At::remove( JOBID => $jobid );
 }
 
 1;

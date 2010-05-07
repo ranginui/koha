@@ -27,17 +27,18 @@ use Memoize;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
 BEGIN {
-	# set the version for version checking
-	$VERSION = 3.0.5;
-	@ISA    = qw(Exporter);
-	@EXPORT = qw(
-	    &GetIssuingRule
-		&GetIssuingRulesByBranchCode
-		&GetIssuingRules
-		&AddIssuingRule
-		&ModIssuingRule
-		&DelIssuingRule
-	);
+
+    # set the version for version checking
+    $VERSION = 3.0.5;
+    @ISA     = qw(Exporter);
+    @EXPORT  = qw(
+      &GetIssuingRule
+      &GetIssuingRulesByBranchCode
+      &GetIssuingRules
+      &AddIssuingRule
+      &ModIssuingRule
+      &DelIssuingRule
+    );
 }
 
 =head1 NAME
@@ -74,45 +75,45 @@ The rules are applied from most specific to less specific, using the first found
 The values in the returned hashref are inherited from a more generic rules if undef.
 
 =cut
+
 #Caching GetIssuingRule
 memoize('GetIssuingRule');
 
 sub GetIssuingRule {
     my ( $categorycode, $itemtype, $branchcode ) = @_;
-    $categorycode||="*";
-    $itemtype||="*";
-    $branchcode||="*";
+    $categorycode ||= "*";
+    $itemtype     ||= "*";
+    $branchcode   ||= "*";
 
     # This configuration table defines the order of inheritance. We'll loop over it.
     my @attempts = (
-        [ "*"          , "*"      , "*"         ],
-        [ "*"          , $itemtype, "*"         ],
-        [ $categorycode, "*"      , "*"         ],
-        [ $categorycode, $itemtype, "*"         ],
-        [ "*"          , "*"      , $branchcode ],
-        [ "*"          , $itemtype, $branchcode ],
-        [ $categorycode, "*"      , $branchcode ],
+        [ "*",           "*",       "*" ],
+        [ "*",           $itemtype, "*" ],
+        [ $categorycode, "*",       "*" ],
+        [ $categorycode, $itemtype, "*" ],
+        [ "*",           "*",       $branchcode ],
+        [ "*",           $itemtype, $branchcode ],
+        [ $categorycode, "*",       $branchcode ],
         [ $categorycode, $itemtype, $branchcode ],
     );
 
     # This complex query returns a nested hashref, so we can access a rule using :
     # my $rule = $$rules{$categorycode}{$itemtype}{$branchcode};
     # this will be usefull in the inheritance computation code
-    my $dbh = C4::Context->dbh;
+    my $dbh   = C4::Context->dbh;
     my $rules = $dbh->selectall_hashref(
         "SELECT * FROM issuingrules where branchcode IN ('*',?) and itemtype IN ('*', ?) and categorycode IN ('*',?)",
-        ["branchcode", "itemtype", "categorycode"],
-        undef,
-        ( $branchcode, $itemtype, $categorycode )
+        [ "branchcode", "itemtype", "categorycode" ],
+        undef, ( $branchcode, $itemtype, $categorycode )
     );
 
-    # This block is for inheritance. It loops over rules returned by the 
-    # previous query. If a value is found in a more specific rule, it replaces 
+    # This block is for inheritance. It loops over rules returned by the
+    # previous query. If a value is found in a more specific rule, it replaces
     # the old value from the more generic rule.
     my $oldrule;
-    for my $attempt ( @attempts ) {
-        if ( my $rule = $$rules{@$attempt[2]}{@$attempt[1]}{@$attempt[0]} ) {
-            if ( $oldrule ) {
+    for my $attempt (@attempts) {
+        if ( my $rule = $$rules{ @$attempt[2] }{ @$attempt[1] }{ @$attempt[0] } ) {
+            if ($oldrule) {
                 for ( keys %$oldrule ) {
                     if ( defined $rule->{$_} ) {
                         $oldrule->{$_} = $rule->{$_};
@@ -123,15 +124,16 @@ sub GetIssuingRule {
             }
         }
     }
-    if($oldrule){
+    if ($oldrule) {
         return $oldrule;
-    }else{
+    } else {
         return {
-            'itemtype'          => $itemtype,
-            'categorycode'      => $categorycode,
-            'branchcode'        => $branchcode,
-            'holdspickupdelay'  => 0,
-       #     'maxissueqty'       => 0,
+            'itemtype'         => $itemtype,
+            'categorycode'     => $categorycode,
+            'branchcode'       => $branchcode,
+            'holdspickupdelay' => 0,
+
+            #     'maxissueqty'       => 0,
             'renewalsallowed'   => 0,
             'firstremind'       => 0,
             'accountsent'       => 0,
@@ -145,8 +147,9 @@ sub GetIssuingRule {
             'allowonshelfholds' => 0,
             'reservesallowed'   => 0,
             'chargeperiod'      => 0,
-       #     'issuelength'       => 0,
-            'renewalperiod'     => 0,
+
+            #     'issuelength'       => 0,
+            'renewalperiod' => 0,
         };
     }
 }
@@ -164,7 +167,7 @@ sub GetIssuingRule {
 
 sub GetIssuingRulesByBranchCode {
     my $dbh = C4::Context->dbh;
-    my $sth = $dbh->prepare("
+    my $sth = $dbh->prepare( "
         SELECT issuingrules.*, itemtypes.description AS humanitemtype, categories.description AS humancategorycode
         FROM issuingrules
         LEFT JOIN itemtypes
@@ -173,11 +176,11 @@ sub GetIssuingRulesByBranchCode {
             ON (categories.categorycode = issuingrules.categorycode)
         WHERE issuingrules.branchcode = ?
         ORDER BY humancategorycode, humanitemtype
-    ");
+    " );
     $sth->execute(shift);
-    
-    my $res = $sth->fetchall_arrayref({});
-    
+
+    my $res = $sth->fetchall_arrayref( {} );
+
     return @$res;
 }
 
@@ -195,7 +198,7 @@ sub GetIssuingRulesByBranchCode {
 =cut
 
 sub GetIssuingRules {
-    my $res = SearchInTable('issuingrules', shift);
+    my $res = SearchInTable( 'issuingrules', shift );
     return @$res;
 }
 
@@ -222,7 +225,7 @@ sub GetIssuingRules {
 
 =cut
 
-sub AddIssuingRule { InsertInTable('issuingrules',shift); }
+sub AddIssuingRule { InsertInTable( 'issuingrules', shift ); }
 
 =head2 ModIssuingRule
   
@@ -233,7 +236,7 @@ sub AddIssuingRule { InsertInTable('issuingrules',shift); }
 
 =cut
 
-sub ModIssuingRule { UpdateInTable('issuingrules',shift); }
+sub ModIssuingRule { UpdateInTable( 'issuingrules', shift ); }
 
 =head2 DelIssuingRule
   
@@ -248,7 +251,7 @@ sub ModIssuingRule { UpdateInTable('issuingrules',shift); }
 
 =cut
 
-sub DelIssuingRule { DeleteInTable('issuingrules',shift); }
+sub DelIssuingRule { DeleteInTable( 'issuingrules', shift ); }
 
 1;
 

@@ -17,6 +17,7 @@
 # Suite 330, Boston, MA  02111-1307 USA
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use C4::Context;
 use CGI;
@@ -57,17 +58,18 @@ use C4::Debug;
 
 =cut
 
-my $input       = new CGI;
-my $dbh = C4::Context->dbh;
+my $input = new CGI;
+my $dbh   = C4::Context->dbh;
 
-my ( $template, $loggedinuser, $cookie ) = get_template_and_user({
-        template_name   => "circ/branchoverdues.tmpl",
+my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
+    {   template_name   => "circ/branchoverdues.tmpl",
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
         flagsrequired   => { circulate => "circulate_remaining_permissions" },
         debug           => 1,
-});
+    }
+);
 
 my $default = C4::Context->userenv->{'branch'};
 
@@ -84,27 +86,25 @@ my $location       = $input->param('location');
 
 # now create the line in bdd (notifys)
 if ( $input->param('action') eq 'add' ) {
-    my $addnotify =
-      AddNotifyLine( $borrowernumber, $itemnumber, $overduelevel, $method,
-        $notifyId )    # FIXME: useless variable, no TMPL code for "action" exists.;
-}
-elsif ( $input->param('action') eq 'remove' ) {
+    my $addnotify = AddNotifyLine( $borrowernumber, $itemnumber, $overduelevel, $method, $notifyId )    # FIXME: useless variable, no TMPL code for "action" exists.;
+} elsif ( $input->param('action') eq 'remove' ) {
     my $notify_date  = $input->param('notify_date');
-    my $removenotify =
-      RemoveNotifyLine( $borrowernumber, $itemnumber, $notify_date );    # FIXME: useless variable, no TMPL code for "action" exists.
+    my $removenotify = RemoveNotifyLine( $borrowernumber, $itemnumber, $notify_date );                  # FIXME: useless variable, no TMPL code for "action" exists.
 }
 
 my @overduesloop;
 my @getoverdues = GetOverduesForBranch( $default, $location );
 use Data::Dumper;
 $debug and warn "HERE : $default / $location" . Dumper(@getoverdues);
+
 # search for location authorised value
-my ($tag,$subfield) = GetMarcFromKohaField('items.location','');
-my $tagslib = &GetMarcStructure(1,'');
-if ($tagslib->{$tag}->{$subfield}->{authorised_value}) {
-    my $values= GetAuthorisedValues($tagslib->{$tag}->{$subfield}->{authorised_value});
-    $template->param(locationsloop => $values);
+my ( $tag, $subfield ) = GetMarcFromKohaField( 'items.location', '' );
+my $tagslib = &GetMarcStructure( 1, '' );
+if ( $tagslib->{$tag}->{$subfield}->{authorised_value} ) {
+    my $values = GetAuthorisedValues( $tagslib->{$tag}->{$subfield}->{authorised_value} );
+    $template->param( locationsloop => $values );
 }
+
 # now display infos
 foreach my $num (@getoverdues) {
 
@@ -127,12 +127,10 @@ foreach my $num (@getoverdues) {
     if ( $num->{'notify_level'} eq '1' ) {
         $overdueforbranch{'overdue1'}     = 1;
         $overdueforbranch{'overdueLevel'} = 1;
-    }
-    elsif ( $num->{'notify_level'} eq '2' ) {
+    } elsif ( $num->{'notify_level'} eq '2' ) {
         $overdueforbranch{'overdue2'}     = 1;
         $overdueforbranch{'overdueLevel'} = 2;
-    }
-    elsif ( $num->{'notify_level'} eq '3' ) {
+    } elsif ( $num->{'notify_level'} eq '3' ) {
         $overdueforbranch{'overdue3'}     = 1;
         $overdueforbranch{'overdueLevel'} = 3;
     }
@@ -144,7 +142,7 @@ foreach my $num (@getoverdues) {
 # initiate the templates for the overdueloop
 $template->param(
     overduesloop => \@overduesloop,
-    show_date    => format_date(C4::Dates->today('iso')),
+    show_date    => format_date( C4::Dates->today('iso') ),
     location     => $location,
 );
 

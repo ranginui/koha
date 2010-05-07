@@ -40,9 +40,7 @@ save them back to the database.
 
 =cut
 
-
 our $AUTOLOAD;
-
 
 =head2 Class Methods
 
@@ -54,11 +52,10 @@ This method creates an in-memory version of a message object.
 
 # C4::Message->new(\%attributes) -- constructor
 sub new {
-    my ($class, $opts) = @_;
+    my ( $class, $opts ) = @_;
     $opts ||= {};
     bless {%$opts} => $class;
 }
-
 
 =head3 C4::Message->find($id)
 
@@ -69,15 +66,11 @@ C<message_id> and it'll return a C4::Message object if it finds one.
 
 # C4::Message->find($id) -- find a message by its message_id
 sub find {
-    my ($class, $id) = @_;
+    my ( $class, $id ) = @_;
     my $dbh = C4::Context->dbh;
-    my $msgs = $dbh->selectall_arrayref(
-        qq{SELECT * FROM message_queue WHERE message_id = ?},
-        { Slice => {} },
-        $id,
-    );
+    my $msgs = $dbh->selectall_arrayref( qq{SELECT * FROM message_queue WHERE message_id = ?}, { Slice => {} }, $id, );
     if (@$msgs) {
-        return $class->new($msgs->[0]);
+        return $class->new( $msgs->[0] );
     } else {
         return undef;
     }
@@ -94,10 +87,11 @@ message before it gets sent out.)
 # C4::Message->find_last_message($borrower, $letter_code, $transport)
 # -- get the borrower's most recent pending checkin or checkout notification
 sub find_last_message {
-    my ($class, $borrower, $letter_code, $transport) = @_;
+    my ( $class, $borrower, $letter_code, $transport ) = @_;
+
     # $type is the message_transport_type
     $transport ||= 'email';
-    my $dbh = C4::Context->dbh;
+    my $dbh  = C4::Context->dbh;
     my $msgs = $dbh->selectall_arrayref(
         qq{
             SELECT *
@@ -113,12 +107,11 @@ sub find_last_message {
         $transport,
     );
     if (@$msgs) {
-        return $class->new($msgs->[0]);
+        return $class->new( $msgs->[0] );
     } else {
         return undef;
     }
 }
-
 
 =head3 C4::Message->enqueue($letter, $borrower, $transport)
 
@@ -129,39 +122,41 @@ the message.
 
 # C4::Message->enqueue($letter, $borrower, $transport)
 sub enqueue {
-    my ($class, $letter, $borrower, $transport) = @_;
-    my $metadata   = _metadata($letter);
-    my $to_address = _to_address($borrower, $transport);
+    my ( $class, $letter, $borrower, $transport ) = @_;
+    my $metadata = _metadata($letter);
+    my $to_address = _to_address( $borrower, $transport );
     $letter->{metadata} = Dump($metadata);
+
     #carp "enqueuing... to $to_address";
-    C4::Letters::EnqueueLetter({
-        letter                 => $letter,
-        borrowernumber         => $borrower->{borrowernumber},
-        message_transport_type => $transport,
-        to_address             => $to_address,
-    });
+    C4::Letters::EnqueueLetter(
+        {   letter                 => $letter,
+            borrowernumber         => $borrower->{borrowernumber},
+            message_transport_type => $transport,
+            to_address             => $to_address,
+        }
+    );
 }
 
 # based on message $transport, pick an appropriate address to send to
 sub _to_address {
-    my ($borrower, $transport) = @_;
+    my ( $borrower, $transport ) = @_;
     my $address;
-    if ($transport eq 'email') {
-        $address = $borrower->{email}
-            || $borrower->{emailpro}
-            || $borrower->{B_email};
-    } elsif ($transport eq 'sms') {
-        $address = $borrower->{smsalertnumber}
-            || $borrower->{phone}
-            || $borrower->{phonepro}
-            || $borrower->{B_phone};
+    if ( $transport eq 'email' ) {
+        $address =
+             $borrower->{email}
+          || $borrower->{emailpro}
+          || $borrower->{B_email};
+    } elsif ( $transport eq 'sms' ) {
+        $address =
+             $borrower->{smsalertnumber}
+          || $borrower->{phone}
+          || $borrower->{phonepro}
+          || $borrower->{B_phone};
     } else {
         warn "'$transport' is an unknown message transport.";
     }
-    if (not defined $address) {
-        warn "An appropriate $transport address "
-            . "for borrower $borrower->{userid} "
-            . "could not be found.";
+    if ( not defined $address ) {
+        warn "An appropriate $transport address " . "for borrower $borrower->{userid} " . "could not be found.";
     }
     return $address;
 }
@@ -169,8 +164,8 @@ sub _to_address {
 # _metadata($letter) -- return the letter split into head/body/footer
 sub _metadata {
     my ($letter) = @_;
-    if ($letter->{content} =~ /----/) {
-        my ($header, $body, $footer) = split(/----\r?\n?/, $letter->{content});
+    if ( $letter->{content} =~ /----/ ) {
+        my ( $header, $body, $footer ) = split( /----\r?\n?/, $letter->{content} );
         return {
             header => $header,
             body   => [$body],
@@ -179,7 +174,7 @@ sub _metadata {
     } else {
         return {
             header => '',
-            body   => [$letter->{content}],
+            body   => [ $letter->{content} ],
             footer => '',
         };
     }
@@ -219,7 +214,7 @@ sub update {
         $self->borrowernumber,
         $self->subject,
         $self->content,
-        $self->{metadata}, # we want the raw YAML here
+        $self->{metadata},    # we want the raw YAML here
         $self->letter_code,
         $self->message_transport_type,
         $self->status,
@@ -241,26 +236,26 @@ attribute.  (It is stored in YAML format.)
 # $object->metadata -- this is a YAML serialized column that contains a
 # structured representation of $object->content
 sub metadata {
-    my ($self, $data) = @_;
+    my ( $self, $data ) = @_;
     if ($data) {
         $data->{header} ||= '';
         $data->{body}   ||= [];
         $data->{footer} ||= '';
         $self->{metadata} = Dump($data);
-        $self->content($self->render_metadata);
+        $self->content( $self->render_metadata );
         return $data;
     } else {
-        return Load($self->{metadata});
+        return Load( $self->{metadata} );
     }
 }
 
 # turn $object->metadata into a string suitable for $object->content
 sub render_metadata {
-    my ($self, $format) = @_;
+    my ( $self, $format ) = @_;
     $format ||= sub { $_[0] || "" };
     my $metadata = $self->metadata;
     my $body     = $metadata->{body};
-    my $text     = join('', map { $format->($_) } @$body);
+    my $text     = join( '', map { $format->($_) } @$body );
     return $metadata->{header} . $text . $metadata->{footer};
 }
 
@@ -278,21 +273,21 @@ If passed a string, it'll append the string to the message.
 
 # $object->append($letter_or_item) -- add a new item to a message's content
 sub append {
-    my ($self, $letter_or_item, $format) = @_;
+    my ( $self, $letter_or_item, $format ) = @_;
     my $item;
-    if (ref($letter_or_item)) {
+    if ( ref($letter_or_item) ) {
         my $letter   = $letter_or_item;
         my $metadata = _metadata($letter);
         $item = $metadata->{body}->[0];
     } else {
         $item = $letter_or_item;
     }
-    if (not $self->metadata) {
+    if ( not $self->metadata ) {
         carp "Can't append to messages that don't have metadata.";
         return undef;
     }
     my $metadata = $self->metadata;
-    push @{$metadata->{body}}, $item;
+    push @{ $metadata->{body} }, $item;
     $self->metadata($metadata);
     my $new_content = $self->render_metadata($format);
     return $self->content($new_content);
@@ -328,11 +323,11 @@ sub append {
 
 # $object->$method -- treat keys as methods
 sub AUTOLOAD {
-    my ($self, @args) = @_;
+    my ( $self, @args ) = @_;
     my $attr = $AUTOLOAD;
     $attr =~ s/.*://;
-    if (ref($self->{$attr}) eq 'CODE') {
-        $self->{$attr}->($self, @args);
+    if ( ref( $self->{$attr} ) eq 'CODE' ) {
+        $self->{$attr}->( $self, @args );
     } else {
         if (@args) {
             $self->{$attr} = $args[0];

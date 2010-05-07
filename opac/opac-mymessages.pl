@@ -29,8 +29,7 @@ use C4::Output;
 my $query = CGI->new();
 
 my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
-    {
-        template_name   => 'opac-mymessages.tmpl',
+    {   template_name   => 'opac-mymessages.tmpl',
         query           => $query,
         type            => 'opac',
         authnotrequired => 0,
@@ -39,11 +38,12 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
     }
 );
 
+my $messages = C4::Letters::GetRSSMessages(
+    {   borrowernumber => $borrowernumber,
+        limit          => 20
+    }
+);
 
-my $messages = C4::Letters::GetRSSMessages( { borrowernumber => $borrowernumber,
-                                            limit           => 20 } );
-
-$template->param( message_list => $messages,
-             );
+$template->param( message_list => $messages, );
 
 output_html_with_http_headers $query, $cookie, $template->output;

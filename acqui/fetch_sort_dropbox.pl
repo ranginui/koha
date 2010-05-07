@@ -18,6 +18,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use CGI;
 use C4::Context;
@@ -37,12 +38,12 @@ my $budget_id = $input->param('budget_id');
 my $sort_id   = $input->param('sort');
 
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {   template_name   => "acqui/ajax.tmpl", # FIXME: REMOVE TMPL DEP?
+    {   template_name   => "acqui/ajax.tmpl",                       # FIXME: REMOVE TMPL DEP?
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
-        flagsrequired => {editcatalogue => 'edit_catalogue'},
-        debug => 0,
+        flagsrequired   => { editcatalogue => 'edit_catalogue' },
+        debug           => 0,
     }
 );
 

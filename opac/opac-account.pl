@@ -29,8 +29,7 @@ use warnings;
 
 my $query = new CGI;
 my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
-    {
-        template_name   => "opac-account.tmpl",
+    {   template_name   => "opac-account.tmpl",
         query           => $query,
         type            => "opac",
         authnotrequired => 0,
@@ -40,23 +39,22 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
 );
 
 # get borrower information ....
-my $borr = GetMemberDetails( $borrowernumber );
+my $borr = GetMemberDetails($borrowernumber);
 my @bordat;
 $bordat[0] = $borr;
 
 $template->param( BORROWER_INFO => \@bordat );
 
 #get account details
-my ( $total , $accts, $numaccts) = GetMemberAccountRecords( $borrowernumber );
+my ( $total, $accts, $numaccts ) = GetMemberAccountRecords($borrowernumber);
 
 for ( my $i = 0 ; $i < $numaccts ; $i++ ) {
     $accts->[$i]{'date'} = format_date( $accts->[$i]{'date'} );
-    $accts->[$i]{'amount'} = sprintf( "%.2f", $accts->[$i]{'amount'} || '0.00');
+    $accts->[$i]{'amount'} = sprintf( "%.2f", $accts->[$i]{'amount'} || '0.00' );
     if ( $accts->[$i]{'amount'} >= 0 ) {
         $accts->[$i]{'amountcredit'} = 1;
     }
-    $accts->[$i]{'amountoutstanding'} =
-      sprintf( "%.2f", $accts->[$i]{'amountoutstanding'} || '0.00' );
+    $accts->[$i]{'amountoutstanding'} = sprintf( "%.2f", $accts->[$i]{'amountoutstanding'} || '0.00' );
     if ( $accts->[$i]{'amountoutstanding'} >= 0 ) {
         $accts->[$i]{'amountoutstandingcredit'} = 1;
     }
@@ -70,10 +68,10 @@ foreach my $row (@$accts) {
     $num++;
 }
 
-$template->param (
+$template->param(
     ACCOUNT_LINES => $accts,
-    total => sprintf( "%.2f", $total ),
-	accountview => 1
+    total         => sprintf( "%.2f", $total ),
+    accountview   => 1
 );
 
 output_html_with_http_headers $query, $cookie, $template->output;

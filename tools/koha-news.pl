@@ -22,6 +22,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use CGI;
 use C4::Auth;
@@ -38,16 +39,15 @@ my $cgi = new CGI;
 my $id             = $cgi->param('id');
 my $title          = $cgi->param('title');
 my $new            = $cgi->param('new');
-my $expirationdate = format_date_in_iso($cgi->param('expirationdate'));
-my $timestamp      = format_date_in_iso($cgi->param('timestamp'));
+my $expirationdate = format_date_in_iso( $cgi->param('expirationdate') );
+my $timestamp      = format_date_in_iso( $cgi->param('timestamp') );
 my $number         = $cgi->param('number');
 my $lang           = $cgi->param('lang');
 
 my $new_detail = get_opac_new($id);
 
 my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
-    {
-        template_name   => "tools/koha-news.tmpl",
+    {   template_name   => "tools/koha-news.tmpl",
         query           => $cgi,
         type            => "intranet",
         authnotrequired => 0,
@@ -58,11 +58,10 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
 
 # get lang list
 my @lang_list;
-my $tlangs = getTranslatedLanguages() ;
-foreach my $language ( @$tlangs ) {
+my $tlangs = getTranslatedLanguages();
+foreach my $language (@$tlangs) {
     push @lang_list,
-      {
-        language => $language->{'rfc4646_subtag'},
+      { language => $language->{'rfc4646_subtag'},
         selected => ( $new_detail->{lang} eq $language->{'rfc4646_subtag'} ? 1 : 0 ),
       };
 }
@@ -74,25 +73,21 @@ my $op = $cgi->param('op');
 if ( $op eq 'add_form' ) {
     $template->param( add_form => 1 );
     if ($id) {
-        $template->param( 
+        $template->param(
             op => 'edit',
             id => $new_detail->{'idnew'}
         );
         $template->param($new_detail);
-    }
-    else {
+    } else {
         $template->param( op => 'add' );
     }
-}
-elsif ( $op eq 'add' ) {
+} elsif ( $op eq 'add' ) {
     add_opac_new( $title, $new, $lang, $expirationdate, $timestamp, $number );
     print $cgi->redirect("/cgi-bin/koha/tools/koha-news.pl");
-}
-elsif ( $op eq 'edit' ) {
-    upd_opac_new( $id, $title, $new, $lang, $expirationdate, $timestamp ,$number );
+} elsif ( $op eq 'edit' ) {
+    upd_opac_new( $id, $title, $new, $lang, $expirationdate, $timestamp, $number );
     print $cgi->redirect("/cgi-bin/koha/tools/koha-news.pl");
-}
-elsif ( $op eq 'del' ) {
+} elsif ( $op eq 'del' ) {
     my @ids = $cgi->param('ids');
     del_opac_new( join ",", @ids );
     print $cgi->redirect("/cgi-bin/koha/tools/koha-news.pl");
@@ -101,24 +96,25 @@ elsif ( $op eq 'del' ) {
 else {
 
     my ( $opac_news_count, $opac_news ) = &get_opac_news( undef, $lang );
-    
-    foreach my $new ( @$opac_news ) {
+
+    foreach my $new (@$opac_news) {
         next unless $new->{'expirationdate'};
-       	#$new->{'expirationdate'}=format_date_in_iso($new->{'expirationdate'});
-        my @date = split (/-/,$new->{'expirationdate'});
-        if ($date[0]*$date[1]*$date[2]>0 && Date_to_Days( @date ) < Date_to_Days(&Today) ){
-			$new->{'expired'} = 1;
+
+        #$new->{'expirationdate'}=format_date_in_iso($new->{'expirationdate'});
+        my @date = split( /-/, $new->{'expirationdate'} );
+        if ( $date[0] * $date[1] * $date[2] > 0 && Date_to_Days(@date) < Date_to_Days(&Today) ) {
+            $new->{'expired'} = 1;
         }
     }
-    
+
     $template->param(
         $lang           => 1,
         opac_news       => $opac_news,
         opac_news_count => $opac_news_count,
-		);
+    );
 }
 $template->param(
-				DHTMLcalendar_dateformat =>  C4::Dates->DHTMLcalendar(),
-				dateformat    => C4::Context->preference("dateformat"),
-		);
+    DHTMLcalendar_dateformat => C4::Dates->DHTMLcalendar(),
+    dateformat               => C4::Context->preference("dateformat"),
+);
 output_html_with_http_headers $cgi, $cookie, $template->output;

@@ -2,9 +2,11 @@
 use strict;
 use warnings;
 use C4::Context;
-my $dbh=C4::Context->dbh;
+my $dbh = C4::Context->dbh;
 
-$dbh->do("INSERT INTO `systempreferences` (`variable`, `value`, `options`, `explanation`, `type`) VALUES ('EnableOpacSearchHistory', '1', '', 'Enable or disable opac search history', 'YesNo')");
+$dbh->do(
+"INSERT INTO `systempreferences` (`variable`, `value`, `options`, `explanation`, `type`) VALUES ('EnableOpacSearchHistory', '1', '', 'Enable or disable opac search history', 'YesNo')"
+);
 
 my $create = <<END;
 CREATE TABLE IF NOT EXISTS `search_history` (

@@ -16,7 +16,6 @@
 # with Koha; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-
 =head1 NAME
 
 checkexpiration.pl
@@ -46,7 +45,7 @@ use strict;
 use warnings;
 use CGI;
 use C4::Auth;
-use C4::Serials; # GetExpirationDate
+use C4::Serials;    # GetExpirationDate
 use C4::Output;
 use C4::Context;
 use C4::Dates qw/format_date format_date_in_iso/;
@@ -54,9 +53,8 @@ use Date::Calc qw/Today Date_to_Days/;
 
 my $query = new CGI;
 
-my ( $template, $loggedinuser, $cookie ) = get_template_and_user (
-    {
-        template_name   => "serials/checkexpiration.tmpl",
+my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
+    {   template_name   => "serials/checkexpiration.tmpl",
         query           => $query,
         type            => "intranet",
         authnotrequired => 0,
@@ -67,35 +65,33 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user (
 
 my $title = $query->param('title');
 my $issn  = $query->param('issn');
-my $date  = format_date_in_iso($query->param('date'));
+my $date  = format_date_in_iso( $query->param('date') );
 
 if ($date) {
     my @subscriptions = GetSubscriptions( $title, $issn );
     my @subscriptions_loop;
 
-    foreach my $subscription ( @subscriptions ) {
+    foreach my $subscription (@subscriptions) {
         my $subscriptionid = $subscription->{'subscriptionid'};
         my $expirationdate = GetExpirationDate($subscriptionid);
 
         $subscription->{expirationdate} = $expirationdate;
-        next if $expirationdate !~ /\d{4}-\d{2}-\d{2}/; # next if not in ISO format.
-        if ( Date_to_Days(split "-",$expirationdate) < Date_to_Days(split "-",$date) &&
-			 Date_to_Days(split "-",$expirationdate) > Date_to_Days(&Today) ) {
-            $subscription->{expirationdate}=format_date($subscription->{expirationdate});
-            push @subscriptions_loop,$subscription;
+        next if $expirationdate !~ /\d{4}-\d{2}-\d{2}/;    # next if not in ISO format.
+        if (   Date_to_Days( split "-", $expirationdate ) < Date_to_Days( split "-", $date )
+            && Date_to_Days( split "-", $expirationdate ) > Date_to_Days(&Today) ) {
+            $subscription->{expirationdate} = format_date( $subscription->{expirationdate} );
+            push @subscriptions_loop, $subscription;
         }
     }
 
-    $template->param (
-        title           => $title,
-        issn            => $issn,
-        numsubscription => scalar @subscriptions_loop,
-        date => format_date($date),
-        subscriptions_loop => \@subscriptions_loop,
-        "BiblioDefaultView".C4::Context->preference("BiblioDefaultView") => 1,
+    $template->param(
+        title                                                              => $title,
+        issn                                                               => $issn,
+        numsubscription                                                    => scalar @subscriptions_loop,
+        date                                                               => format_date($date),
+        subscriptions_loop                                                 => \@subscriptions_loop,
+        "BiblioDefaultView" . C4::Context->preference("BiblioDefaultView") => 1,
     );
 }
-$template->param (
-    DHTMLcalendar_dateformat => C4::Dates->DHTMLcalendar(),
-);
+$template->param( DHTMLcalendar_dateformat => C4::Dates->DHTMLcalendar(), );
 output_html_with_http_headers $query, $cookie, $template->output;

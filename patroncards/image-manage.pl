@@ -17,140 +17,134 @@ use C4::Patroncards 1.000000;
 
 my $cgi = CGI->new;
 
-my ($template, $loggedinuser, $cookie) = get_template_and_user({
-                    template_name       => "patroncards/image-manage.tmpl",
-                    query               => $cgi,
-                    type                => "intranet",
-                    authnotrequired     => 0,
-                    flagsrequired       => {tools => 'batch_upload_patron_images'}, # FIXME: establish flag for patron card creator
-                    debug               => 0,
-                    });
+my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
+    {   template_name   => "patroncards/image-manage.tmpl",
+        query           => $cgi,
+        type            => "intranet",
+        authnotrequired => 0,
+        flagsrequired   => { tools => 'batch_upload_patron_images' },    # FIXME: establish flag for patron card creator
+        debug           => 0,
+    }
+);
 
-my $image_name = $cgi->param('image_name') || '';
-my $file_name = $cgi->param('uploadfile') || '';
+my $image_name  = $cgi->param('image_name')  || '';
+my $file_name   = $cgi->param('uploadfile')  || '';
 my $upload_file = $cgi->upload('uploadfile') || '';
-my $op = $cgi->param('op') || 'none';
+my $op          = $cgi->param('op')          || 'none';
 my @image_ids = $cgi->param('image_id') if $cgi->param('image_id');
 
-my $source_file = "$file_name"; # otherwise we end up with what amounts to a pointer to a filehandle rather than a user-friendly filename
+my $source_file = "$file_name";                                          # otherwise we end up with what amounts to a pointer to a filehandle rather than a user-friendly filename
 
-my $display_columns = { image =>    [  #{db column      => {label => 'col label', is link?          }},
-                                        {image_id       => {label => 'ID',      link_field      => 0}},
-                                        {image_name     => {label => 'Name',    link_field      => 0}},
-                                        {select         => {label => 'Select',  value           => 'image_id'}},
-                                    ],
+my $display_columns = {
+    image => [                                                           #{db column      => {label => 'col label', is link?          }},
+        { image_id   => { label => 'ID',     link_field => 0 } },
+        { image_name => { label => 'Name',   link_field => 0 } },
+        { select     => { label => 'Select', value      => 'image_id' } },
+    ],
 };
-my $table = html_table($display_columns->{'image'}, get_image(undef, "image_id, image_name"));
+my $table = html_table( $display_columns->{'image'}, get_image( undef, "image_id, image_name" ) );
 
 my $image_limit = C4::Context->preference('ImageLimit') || '';
-my $errstr = '';        # NOTE: For error codes see error-messages.inc
+my $errstr      = '';                                                    # NOTE: For error codes see error-messages.inc
 
-if ($op eq 'upload') {
-    if (!$upload_file) {
-        warn sprintf('An error occurred while attempting to upload file %s.', $source_file);
+if ( $op eq 'upload' ) {
+    if ( !$upload_file ) {
+        warn sprintf( 'An error occurred while attempting to upload file %s.', $source_file );
         $errstr = 301;
         $template->param(
             IMPORT_SUCCESSFUL => 0,
-            SOURCE_FILE => $source_file,
-            IMAGE_NAME => $image_name,
-            TABLE => $table,
-            error => 1,
-            $errstr => 1,
+            SOURCE_FILE       => $source_file,
+            IMAGE_NAME        => $image_name,
+            TABLE             => $table,
+            error             => 1,
+            $errstr           => 1,
         );
-    }
-    else {
+    } else {
         my $image = Graphics::Magick->new;
-        eval{$image->Read($cgi->tmpFileName($file_name));};
+        eval { $image->Read( $cgi->tmpFileName($file_name) ); };
         if ($@) {
-            warn sprintf('An error occurred while creating the image object: %s',$@);
+            warn sprintf( 'An error occurred while creating the image object: %s', $@ );
             $errstr = 202;
             $template->param(
                 IMPORT_SUCCESSFUL => 0,
-                SOURCE_FILE => $source_file,
-                IMAGE_NAME => $image_name,
-                TABLE => $table,
-                error => 1,
-                $errstr => 1,
+                SOURCE_FILE       => $source_file,
+                IMAGE_NAME        => $image_name,
+                TABLE             => $table,
+                error             => 1,
+                $errstr           => 1,
             );
-        }
-        else {
+        } else {
             my $errstr = '';
-            my $size = $image->Get('filesize');
-            $errstr =  302 if $size > 500000;
-            $image->Set(magick => 'png'); # convert all images to png as this is a lossless format which is important for resizing operations later on
-            my $err = put_image($image_name, $image->ImageToBlob()) || '0';
+            my $size   = $image->Get('filesize');
+            $errstr = 302 if $size > 500000;
+            $image->Set( magick => 'png' );    # convert all images to png as this is a lossless format which is important for resizing operations later on
+            my $err = put_image( $image_name, $image->ImageToBlob() ) || '0';
             $errstr = 101 if $err == 1;
             $errstr = 303 if $err == 202;
             if ($errstr) {
                 $template->param(
                     IMPORT_SUCCESSFUL => 0,
-                    SOURCE_FILE => $source_file,
-                    IMAGE_NAME => $image_name,
-                    TABLE => $table,
-                    error => 1,
-                    $errstr => 1,
-                    image_limit => $image_limit,
+                    SOURCE_FILE       => $source_file,
+                    IMAGE_NAME        => $image_name,
+                    TABLE             => $table,
+                    error             => 1,
+                    $errstr           => 1,
+                    image_limit       => $image_limit,
                 );
-            }
-            else {
-                $table = html_table($display_columns->{'image'}, get_image(undef, "image_id, image_name"));  # refresh table data after successfully performing save operation
+            } else {
+                $table = html_table( $display_columns->{'image'}, get_image( undef, "image_id, image_name" ) );  # refresh table data after successfully performing save operation
                 $template->param(
                     IMPORT_SUCCESSFUL => 1,
-                    SOURCE_FILE => $source_file,
-                    IMAGE_NAME => $image_name,
-                    TABLE => $table,
+                    SOURCE_FILE       => $source_file,
+                    IMAGE_NAME        => $image_name,
+                    TABLE             => $table,
                 );
             }
         }
     }
-}
-elsif ($op eq 'delete') {
-    my $err = '';
+} elsif ( $op eq 'delete' ) {
+    my $err    = '';
     my $errstr = '';
     if (@image_ids) {
-        $err = rm_image(\@image_ids);
+        $err = rm_image( \@image_ids );
         $errstr = 102 if $err;
-    }
-    else {
+    } else {
         warn sprintf('No image ids passed in to delete.');
         $errstr = 202;
     }
     if ($errstr) {
         $template->param(
             DELETE_SUCCESSFULL => 0,
-            IMAGE_IDS => join(', ', @image_ids),
-            TABLE => $table,
-            error => 1,
-            $errstr => 1,
-            image_ids => join(',',@image_ids),
+            IMAGE_IDS          => join( ', ', @image_ids ),
+            TABLE              => $table,
+            error              => 1,
+            $errstr            => 1,
+            image_ids          => join( ',', @image_ids ),
         );
-    }
-    else {
-        $table = html_table($display_columns->{'image'}, get_image(undef, "image_id, image_name"));  # refresh table data after successfully performing delete operation
+    } else {
+        $table = html_table( $display_columns->{'image'}, get_image( undef, "image_id, image_name" ) );    # refresh table data after successfully performing delete operation
         $template->param(
             DELETE_SUCCESSFULL => 1,
-            TABLE => $table,
+            TABLE              => $table,
         );
     }
-}
-elsif ($op eq 'none') {
+} elsif ( $op eq 'none' ) {
     $template->param(
         IMPORT_SUCCESSFUL => 0,
-        SOURCE_FILE => $source_file,
-        IMAGE_NAME => $image_name,
-        TABLE => $table,
+        SOURCE_FILE       => $source_file,
+        IMAGE_NAME        => $image_name,
+        TABLE             => $table,
     );
-}
-else { # to trap unsupported operations
-    warn sprintf('Image upload interface called an unsupported operation: %s',$op);
+} else {    # to trap unsupported operations
+    warn sprintf( 'Image upload interface called an unsupported operation: %s', $op );
     $errstr = 201;
     $template->param(
         IMPORT_SUCCESSFUL => 0,
-        SOURCE_FILE => $source_file,
-        IMAGE_NAME => $image_name,
-        TABLE => $table,
-        error => 1,
-        $errstr => 1,
+        SOURCE_FILE       => $source_file,
+        IMAGE_NAME        => $image_name,
+        TABLE             => $table,
+        error             => 1,
+        $errstr           => 1,
     );
 }
 

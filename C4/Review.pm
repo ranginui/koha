@@ -25,12 +25,13 @@ use C4::Context;
 use vars qw($VERSION @ISA @EXPORT);
 
 BEGIN {
-	# set the version for version checking
-	$VERSION = 3.00;
-	require Exporter;
-	@ISA    = qw(Exporter);
-	@EXPORT = qw(getreview savereview updatereview numberofreviews
-		getreviews getallreviews approvereview deletereview);
+
+    # set the version for version checking
+    $VERSION = 3.00;
+    require Exporter;
+    @ISA    = qw(Exporter);
+    @EXPORT = qw(getreview savereview updatereview numberofreviews
+      getreviews getallreviews approvereview deletereview);
 }
 
 =head1 NAME
@@ -65,9 +66,8 @@ Takes a borrowernumber and a biblionumber and returns the review of that biblio
 sub getreview {
     my ( $biblionumber, $borrowernumber ) = @_;
     my $dbh   = C4::Context->dbh;
-    my $query =
-      "SELECT * FROM reviews WHERE biblionumber=? and borrowernumber=?";
-    my $sth = $dbh->prepare($query);
+    my $query = "SELECT * FROM reviews WHERE biblionumber=? and borrowernumber=?";
+    my $sth   = $dbh->prepare($query);
     $sth->execute( $biblionumber, $borrowernumber );
     return $sth->fetchrow_hashref();
 }
@@ -79,45 +79,42 @@ sub savereview {
 	review,approved,datereviewed) VALUES 
   (?,?,?,0,now())";
     my $sth = $dbh->prepare($query);
-    $sth->execute( $borrowernumber, $biblionumber, $review);
+    $sth->execute( $borrowernumber, $biblionumber, $review );
 }
 
 sub updatereview {
     my ( $biblionumber, $borrowernumber, $review ) = @_;
     my $dbh   = C4::Context->dbh;
     my $query = "UPDATE reviews SET review=?,datereviewed=now(),approved=0  WHERE borrowernumber=? and biblionumber=?";
-    my $sth = $dbh->prepare($query);
+    my $sth   = $dbh->prepare($query);
     $sth->execute( $review, $borrowernumber, $biblionumber );
 }
 
 sub numberofreviews {
     my ($biblionumber) = @_;
     my $dbh            = C4::Context->dbh;
-    my $query          =
-      "SELECT count(*) FROM reviews WHERE biblionumber=? and approved=?";
-    my $sth = $dbh->prepare($query);
+    my $query          = "SELECT count(*) FROM reviews WHERE biblionumber=? and approved=?";
+    my $sth            = $dbh->prepare($query);
     $sth->execute( $biblionumber, 1 );
-	return $sth->fetchrow;
+    return $sth->fetchrow;
 }
 
 sub getreviews {
     my ( $biblionumber, $approved ) = @_;
     my $dbh   = C4::Context->dbh;
-    my $query =
-"SELECT * FROM reviews WHERE biblionumber=? and approved=? order by datereviewed desc";
-    my $sth = $dbh->prepare($query) || warn $dbh->err_str;
+    my $query = "SELECT * FROM reviews WHERE biblionumber=? and approved=? order by datereviewed desc";
+    my $sth   = $dbh->prepare($query) || warn $dbh->err_str;
     $sth->execute( $biblionumber, $approved );
-	return $sth->fetchall_arrayref({});
+    return $sth->fetchall_arrayref( {} );
 }
 
 sub getallreviews {
     my ($status) = @_;
     my $dbh      = C4::Context->dbh;
-    my $query    =
-      "SELECT * FROM reviews WHERE approved=? order by datereviewed desc";
-    my $sth = $dbh->prepare($query);
+    my $query    = "SELECT * FROM reviews WHERE approved=? order by datereviewed desc";
+    my $sth      = $dbh->prepare($query);
     $sth->execute($status);
-	return $sth->fetchall_arrayref({});
+    return $sth->fetchall_arrayref( {} );
 }
 
 =head2 approvereview

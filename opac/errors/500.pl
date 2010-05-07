@@ -15,7 +15,6 @@
 # Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA  02111-1307 USA
 
-
 use strict;
 use warnings;
 
@@ -27,8 +26,7 @@ use C4::Context;
 my $query = new CGI;
 my $admin = C4::Context->preference('KohaAdminEmailAddress');
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => "errors/500.tmpl",
+    {   template_name   => "errors/500.tmpl",
         query           => $query,
         type            => "opac",
         authnotrequired => 1,

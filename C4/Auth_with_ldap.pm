@@ -18,6 +18,7 @@ package C4::Auth_with_ldap;
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use Digest::MD5 qw(md5_base64);
 
@@ -34,155 +35,160 @@ use Net::LDAP::Filter;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $debug);
 
 BEGIN {
-	require Exporter;
-	$VERSION = 3.10;	# set the version for version checking
-	@ISA    = qw(Exporter);
-	@EXPORT = qw( checkpw_ldap );
+    require Exporter;
+    $VERSION = 3.10;                 # set the version for version checking
+    @ISA     = qw(Exporter);
+    @EXPORT  = qw( checkpw_ldap );
 }
 
 # Redefine checkpw_ldap:
 # connect to LDAP (named or anonymous)
 # ~ retrieves $userid from KOHA_CONF mapping
-# ~ then compares $password with userPassword 
+# ~ then compares $password with userPassword
 # ~ then gets the LDAP entry
 # ~ and calls the memberadd if necessary
 
 sub ldapserver_error ($) {
-	return sprintf('No ldapserver "%s" defined in KOHA_CONF: ' . $ENV{KOHA_CONF}, shift);
+    return sprintf( 'No ldapserver "%s" defined in KOHA_CONF: ' . $ENV{KOHA_CONF}, shift );
 }
 
 use vars qw($mapping @ldaphosts $base $ldapname $ldappassword);
-my $context = C4::Context->new() 	or die 'C4::Context->new failed';
-my $ldap = C4::Context->config("ldapserver") or die 'No "ldapserver" in server hash from KOHA_CONF: ' . $ENV{KOHA_CONF};
-my $prefhost  = $ldap->{hostname}	or die ldapserver_error('hostname');
-my $base      = $ldap->{base}		or die ldapserver_error('base');
-$ldapname     = $ldap->{user}		;
-$ldappassword = $ldap->{pass}		;
-our %mapping  = %{$ldap->{mapping}}; # FIXME dpavlin -- don't die because of || (); from 6eaf8511c70eb82d797c941ef528f4310a15e9f9
+my $context  = C4::Context->new()                or die 'C4::Context->new failed';
+my $ldap     = C4::Context->config("ldapserver") or die 'No "ldapserver" in server hash from KOHA_CONF: ' . $ENV{KOHA_CONF};
+my $prefhost = $ldap->{hostname}                 or die ldapserver_error('hostname');
+my $base     = $ldap->{base}                     or die ldapserver_error('base');
+$ldapname     = $ldap->{user};
+$ldappassword = $ldap->{pass};
+our %mapping = %{ $ldap->{mapping} };    # FIXME dpavlin -- don't die because of || (); from 6eaf8511c70eb82d797c941ef528f4310a15e9f9
 my @mapkeys = keys %mapping;
 $debug and print STDERR "Got ", scalar(@mapkeys), " ldap mapkeys (  total  ): ", join ' ', @mapkeys, "\n";
-@mapkeys = grep {defined $mapping{$_}->{is}} @mapkeys;
+@mapkeys = grep { defined $mapping{$_}->{is} } @mapkeys;
 $debug and print STDERR "Got ", scalar(@mapkeys), " ldap mapkeys (populated): ", join ' ', @mapkeys, "\n";
 
 my %config = (
-	anonymous => ($ldapname and $ldappassword) ? 0 : 1,
-    replicate => defined($ldap->{replicate}) ? $ldap->{replicate} : 1,  #    add from LDAP to Koha database for new user
-       update => defined($ldap->{update}   ) ? $ldap->{update}    : 1,  # update from LDAP to Koha database for existing user
+    anonymous => ( $ldapname and $ldappassword ) ? 0 : 1,
+    replicate => defined( $ldap->{replicate} ) ? $ldap->{replicate} : 1,    #    add from LDAP to Koha database for new user
+    update    => defined( $ldap->{update} )    ? $ldap->{update}    : 1,    # update from LDAP to Koha database for existing user
 );
 
 sub description ($) {
-	my $result = shift or return undef;
-	return "LDAP error #" . $result->code
-			. ": " . $result->error_name . "\n"
-			. "# " . $result->error_text . "\n";
+    my $result = shift or return undef;
+    return "LDAP error #" . $result->code . ": " . $result->error_name . "\n" . "# " . $result->error_text . "\n";
 }
 
 sub search_method {
-    my $db     = shift or return;
-    my $userid = shift or return;
-	my $uid_field = $mapping{userid}->{is} or die ldapserver_error("mapping for 'userid'");
-	my $filter = Net::LDAP::Filter->new("$uid_field=$userid") or die "Failed to create new Net::LDAP::Filter";
-    my $res = ($config{anonymous}) ? $db->bind : $db->bind($ldapname, password=>$ldappassword);
-    if ($res->code) {		# connection refused
-        warn "LDAP bind failed as ldapuser " . ($ldapname || '[ANONYMOUS]') . ": " . description($res);
+    my $db        = shift                                        or return;
+    my $userid    = shift                                        or return;
+    my $uid_field = $mapping{userid}->{is}                       or die ldapserver_error("mapping for 'userid'");
+    my $filter    = Net::LDAP::Filter->new("$uid_field=$userid") or die "Failed to create new Net::LDAP::Filter";
+    my $res = ( $config{anonymous} ) ? $db->bind : $db->bind( $ldapname, password => $ldappassword );
+    if ( $res->code ) {    # connection refused
+        warn "LDAP bind failed as ldapuser " . ( $ldapname || '[ANONYMOUS]' ) . ": " . description($res);
         return 0;
     }
-	my $search = $db->search(
-		  base => $base,
-	 	filter => $filter,
-		# attrs => ['*'],
-	) or die "LDAP search failed to return object.";
-	my $count = $search->count;
-	if ($search->code > 0) {
-		warn sprintf("LDAP Auth rejected : %s gets %d hits\n", $filter->as_string, $count) . description($search);
-		return 0;
-	}
-	if ($count != 1) {
-		warn sprintf("LDAP Auth rejected : %s gets %d hits\n", $filter->as_string, $count);
-		return 0;
-	}
+    my $search = $db->search(
+        base   => $base,
+        filter => $filter,
+
+        # attrs => ['*'],
+    ) or die "LDAP search failed to return object.";
+    my $count = $search->count;
+    if ( $search->code > 0 ) {
+        warn sprintf( "LDAP Auth rejected : %s gets %d hits\n", $filter->as_string, $count ) . description($search);
+        return 0;
+    }
+    if ( $count != 1 ) {
+        warn sprintf( "LDAP Auth rejected : %s gets %d hits\n", $filter->as_string, $count );
+        return 0;
+    }
     return $search;
 }
 
 sub checkpw_ldap {
-    my ($dbh, $userid, $password) = @_;
-    my @hosts = split(',', $prefhost);
-    my $db = Net::LDAP->new(\@hosts);
-	#$debug and $db->debug(5);
+    my ( $dbh, $userid, $password ) = @_;
+    my @hosts = split( ',', $prefhost );
+    my $db = Net::LDAP->new( \@hosts );
+
+    #$debug and $db->debug(5);
     my $userldapentry;
-	if ( $ldap->{auth_by_bind} ) {
+    if ( $ldap->{auth_by_bind} ) {
         my $principal_name = $ldap->{principal_name};
-        if ($principal_name and $principal_name =~ /\%/) {
-            $principal_name = sprintf($principal_name,$userid);
+        if ( $principal_name and $principal_name =~ /\%/ ) {
+            $principal_name = sprintf( $principal_name, $userid );
         } else {
             $principal_name = $userid;
         }
-		my $res = $db->bind( $principal_name, password => $password );
+        my $res = $db->bind( $principal_name, password => $password );
         if ( $res->code ) {
-            $debug and warn "LDAP bind failed as kohauser $principal_name: ". description($res);
+            $debug and warn "LDAP bind failed as kohauser $principal_name: " . description($res);
             return 0;
         }
 
-	# FIXME dpavlin -- we really need $userldapentry leater on even if using auth_by_bind!
-	my $search = search_method($db, $userid) or return 0;   # warnings are in the sub
-	$userldapentry = $search->shift_entry;
-
-	} else {
-        my $search = search_method($db, $userid) or return 0;   # warnings are in the sub
+        # FIXME dpavlin -- we really need $userldapentry leater on even if using auth_by_bind!
+        my $search = search_method( $db, $userid ) or return 0;    # warnings are in the sub
         $userldapentry = $search->shift_entry;
-		my $cmpmesg = $db->compare( $userldapentry, attr=>'userpassword', value => $password );
-		if ($cmpmesg->code != 6) {
-			warn "LDAP Auth rejected : invalid password for user '$userid'. " . description($cmpmesg);
-			return 0;
-		}
-	}
+
+    } else {
+        my $search = search_method( $db, $userid ) or return 0;    # warnings are in the sub
+        $userldapentry = $search->shift_entry;
+        my $cmpmesg = $db->compare( $userldapentry, attr => 'userpassword', value => $password );
+        if ( $cmpmesg->code != 6 ) {
+            warn "LDAP Auth rejected : invalid password for user '$userid'. " . description($cmpmesg);
+            return 0;
+        }
+    }
 
     # To get here, LDAP has accepted our user's login attempt.
     # But we still have work to do.  See perldoc below for detailed breakdown.
 
     my (%borrower);
-	my ($borrowernumber,$cardnumber,$local_userid,$savedpw) = exists_local($userid);
+    my ( $borrowernumber, $cardnumber, $local_userid, $savedpw ) = exists_local($userid);
 
-    if (( $borrowernumber and $config{update}   ) or
-        (!$borrowernumber and $config{replicate})   ) {
-        %borrower = ldap_entry_2_hash($userldapentry,$userid);
-        $debug and print STDERR "checkpw_ldap received \%borrower w/ " . keys(%borrower), " keys: ", join(' ', keys %borrower), "\n";
+    if (   ( $borrowernumber and $config{update} )
+        or ( !$borrowernumber and $config{replicate} ) ) {
+        %borrower = ldap_entry_2_hash( $userldapentry, $userid );
+        $debug and print STDERR "checkpw_ldap received \%borrower w/ " . keys(%borrower), " keys: ", join( ' ', keys %borrower ), "\n";
     }
 
     if ($borrowernumber) {
-        if ($config{update}) { # A1, B1
-            my $c2 = &update_local($local_userid,$password,$borrowernumber,\%borrower) || '';
-            ($cardnumber eq $c2) or warn "update_local returned cardnumber '$c2' instead of '$cardnumber'";
-        } else { # C1, D1
-            # maybe update just the password?
-		return(1, $cardnumber); # FIXME dpavlin -- don't destroy ExtendedPatronAttributes
+        if ( $config{update} ) {    # A1, B1
+            my $c2 = &update_local( $local_userid, $password, $borrowernumber, \%borrower ) || '';
+            ( $cardnumber eq $c2 ) or warn "update_local returned cardnumber '$c2' instead of '$cardnumber'";
+        } else {                    # C1, D1
+                                    # maybe update just the password?
+            return ( 1, $cardnumber );    # FIXME dpavlin -- don't destroy ExtendedPatronAttributes
         }
-    } elsif ($config{replicate}) { # A2, C2
+    } elsif ( $config{replicate} ) {    # A2, C2
         $borrowernumber = AddMember(%borrower) or die "AddMember failed";
-   } else {
-        return 0;   # B2, D2
+    } else {
+        return 0;                       # B2, D2
     }
-	if (C4::Context->preference('ExtendedPatronAttributes') && $borrowernumber && ($config{update} ||$config{replicate})) {
-   		my @types = C4::Members::AttributeTypes::GetAttributeTypes();
-		my @attributes = grep{my $key=$_; any{$_ eq $key}@types;} keys %borrower;
-		my $extended_patron_attributes = map{{code=>$_,value=>$borrower{$_}}}@attributes;
-		my $extended_patron_attributes = [] unless $extended_patron_attributes;
-		my @errors;
-		#Check before add
-		for (my $i; $i< scalar(@$extended_patron_attributes)-1;$i++) {
-			my $attr=$extended_patron_attributes->[$i];
-			unless (C4::Members::Attributes::CheckUniqueness($attr->{code}, $attr->{value}, $borrowernumber)) {
-				unshift @errors, $i;
-				warn "ERROR_extended_unique_id_failed $attr->{code} $attr->{value}";
-			}
-		}
-		#Removing erroneous attributes
-		foreach my $index (@errors){
-			@$extended_patron_attributes=splice(@$extended_patron_attributes,$index,1);
-		}
-           C4::Members::Attributes::SetBorrowerAttributes($borrowernumber, $extended_patron_attributes);
-  	}
-return(1, $cardnumber);
+    if ( C4::Context->preference('ExtendedPatronAttributes') && $borrowernumber && ( $config{update} || $config{replicate} ) ) {
+        my @types      = C4::Members::AttributeTypes::GetAttributeTypes();
+        my @attributes = grep {
+            my $key = $_;
+            any { $_ eq $key } @types;
+        } keys %borrower;
+        my $extended_patron_attributes = map { { code => $_, value => $borrower{$_} } } @attributes;
+        my $extended_patron_attributes = [] unless $extended_patron_attributes;
+        my @errors;
+
+        #Check before add
+        for ( my $i ; $i < scalar(@$extended_patron_attributes) - 1 ; $i++ ) {
+            my $attr = $extended_patron_attributes->[$i];
+            unless ( C4::Members::Attributes::CheckUniqueness( $attr->{code}, $attr->{value}, $borrowernumber ) ) {
+                unshift @errors, $i;
+                warn "ERROR_extended_unique_id_failed $attr->{code} $attr->{value}";
+            }
+        }
+
+        #Removing erroneous attributes
+        foreach my $index (@errors) {
+            @$extended_patron_attributes = splice( @$extended_patron_attributes, $index, 1 );
+        }
+        C4::Members::Attributes::SetBorrowerAttributes( $borrowernumber, $extended_patron_attributes );
+    }
+    return ( 1, $cardnumber );
 }
 
 # Pass LDAP entry object and local cardnumber (userid).
@@ -191,95 +197,87 @@ return(1, $cardnumber);
 # Ensure that mandatory fields are correctly filled!
 #
 sub ldap_entry_2_hash ($$) {
-	my $userldapentry = shift;
-	my %borrower = ( cardnumber => shift );
-	my %memberhash;
-	$userldapentry->exists('uid');	# This is bad, but required!  By side-effect, this initializes the attrs hash. 
-	if ($debug) {
-		print STDERR "\nkeys(\%\$userldapentry) = " . join(', ', keys %$userldapentry), "\n", $userldapentry->dump();
-		foreach (keys %$userldapentry) {
-			print STDERR "\n\nLDAP key: $_\t", sprintf('(%s)', ref $userldapentry->{$_}), "\n";
-			hashdump("LDAP key: ",$userldapentry->{$_});
-		}
-	}
-	my $x = $userldapentry->{attrs} or return undef;
-	foreach (keys %$x) {
-		$memberhash{$_} = join ' ', @{$x->{$_}};	
-		$debug and print STDERR sprintf("building \$memberhash{%s} = ", $_, join(' ', @{$x->{$_}})), "\n";
-	}
-	$debug and print STDERR "Finsihed \%memberhash has ", scalar(keys %memberhash), " keys\n",
-					"Referencing \%mapping with ", scalar(keys %mapping), " keys\n";
-	foreach my $key (keys %mapping) {
-		my  $data = $memberhash{$mapping{$key}->{is}}; 
-		$debug and printf STDERR "mapping %20s ==> %-20s (%s)\n", $key, $mapping{$key}->{is}, $data;
-		unless (defined $data) { 
-			$data = $mapping{$key}->{content} || '';	# default or failsafe ''
-		}
-		$borrower{$key} = ($data ne '') ? $data : ' ' ;
-	}
-	$borrower{initials} = $memberhash{initials} || 
-		( substr($borrower{'firstname'},0,1)
-  		. substr($borrower{ 'surname' },0,1)
-  		. " ");
-	return %borrower;
+    my $userldapentry = shift;
+    my %borrower = ( cardnumber => shift );
+    my %memberhash;
+    $userldapentry->exists('uid');    # This is bad, but required!  By side-effect, this initializes the attrs hash.
+    if ($debug) {
+        print STDERR "\nkeys(\%\$userldapentry) = " . join( ', ', keys %$userldapentry ), "\n", $userldapentry->dump();
+        foreach ( keys %$userldapentry ) {
+            print STDERR "\n\nLDAP key: $_\t", sprintf( '(%s)', ref $userldapentry->{$_} ), "\n";
+            hashdump( "LDAP key: ", $userldapentry->{$_} );
+        }
+    }
+    my $x = $userldapentry->{attrs} or return undef;
+    foreach ( keys %$x ) {
+        $memberhash{$_} = join ' ', @{ $x->{$_} };
+        $debug and print STDERR sprintf( "building \$memberhash{%s} = ", $_, join( ' ', @{ $x->{$_} } ) ), "\n";
+    }
+    $debug and print STDERR "Finsihed \%memberhash has ", scalar( keys %memberhash ), " keys\n", "Referencing \%mapping with ", scalar( keys %mapping ), " keys\n";
+    foreach my $key ( keys %mapping ) {
+        my $data = $memberhash{ $mapping{$key}->{is} };
+        $debug and printf STDERR "mapping %20s ==> %-20s (%s)\n", $key, $mapping{$key}->{is}, $data;
+        unless ( defined $data ) {
+            $data = $mapping{$key}->{content} || '';    # default or failsafe ''
+        }
+        $borrower{$key} = ( $data ne '' ) ? $data : ' ';
+    }
+    $borrower{initials} = $memberhash{initials}
+      || ( substr( $borrower{'firstname'}, 0, 1 ) . substr( $borrower{'surname'}, 0, 1 ) . " " );
+    return %borrower;
 }
 
 sub exists_local($) {
-	my $arg = shift;
-	my $dbh = C4::Context->dbh;
-	my $select = "SELECT borrowernumber,cardnumber,userid,password FROM borrowers ";
+    my $arg    = shift;
+    my $dbh    = C4::Context->dbh;
+    my $select = "SELECT borrowernumber,cardnumber,userid,password FROM borrowers ";
 
-	my $sth = $dbh->prepare("$select WHERE userid=?");	# was cardnumber=?
-	$sth->execute($arg);
-	$debug and printf STDERR "Userid '$arg' exists_local? %s\n", $sth->rows;
-	($sth->rows == 1) and return $sth->fetchrow;
+    my $sth = $dbh->prepare("$select WHERE userid=?");    # was cardnumber=?
+    $sth->execute($arg);
+    $debug and printf STDERR "Userid '$arg' exists_local? %s\n", $sth->rows;
+    ( $sth->rows == 1 ) and return $sth->fetchrow;
 
-	$sth = $dbh->prepare("$select WHERE cardnumber=?");
-	$sth->execute($arg);
-	$debug and printf STDERR "Cardnumber '$arg' exists_local? %s\n", $sth->rows;
-	($sth->rows == 1) and return $sth->fetchrow;
-	return 0;
+    $sth = $dbh->prepare("$select WHERE cardnumber=?");
+    $sth->execute($arg);
+    $debug and printf STDERR "Cardnumber '$arg' exists_local? %s\n", $sth->rows;
+    ( $sth->rows == 1 ) and return $sth->fetchrow;
+    return 0;
 }
 
 sub _do_changepassword {
-    my ($userid, $borrowerid, $digest) = @_;
+    my ( $userid, $borrowerid, $digest ) = @_;
     $debug and print STDERR "changing local password for borrowernumber=$borrowerid to '$digest'\n";
-    changepassword($userid, $borrowerid, $digest);
+    changepassword( $userid, $borrowerid, $digest );
 
-	# Confirm changes
-	my $sth = C4::Context->dbh->prepare("SELECT password,cardnumber FROM borrowers WHERE borrowernumber=? ");
-	$sth->execute($borrowerid);
-	if ($sth->rows) {
-		my ($md5password, $cardnum) = $sth->fetchrow;
-        ($digest eq $md5password) and return $cardnum;
-		warn "Password mismatch after update to cardnumber=$cardnum (borrowernumber=$borrowerid)";
-		return undef;
-	}
-	die "Unexpected error after password update to userid/borrowernumber: $userid / $borrowerid.";
+    # Confirm changes
+    my $sth = C4::Context->dbh->prepare("SELECT password,cardnumber FROM borrowers WHERE borrowernumber=? ");
+    $sth->execute($borrowerid);
+    if ( $sth->rows ) {
+        my ( $md5password, $cardnum ) = $sth->fetchrow;
+        ( $digest eq $md5password ) and return $cardnum;
+        warn "Password mismatch after update to cardnumber=$cardnum (borrowernumber=$borrowerid)";
+        return undef;
+    }
+    die "Unexpected error after password update to userid/borrowernumber: $userid / $borrowerid.";
 }
 
 sub update_local($$$$) {
-	my   $userid   = shift             or return undef;
-	my   $digest   = md5_base64(shift) or return undef;
-	my $borrowerid = shift             or return undef;
-	my $borrower   = shift             or return undef;
-	my @keys = keys %$borrower;
-	my $dbh = C4::Context->dbh;
-	my $query = "UPDATE  borrowers\nSET     " . 
-		join(',', map {"$_=?"} @keys) .
-		"\nWHERE   borrowernumber=? "; 
-	my $sth = $dbh->prepare($query);
-	if ($debug) {
-		print STDERR $query, "\n",
-			join "\n", map {"$_ = '" . $borrower->{$_} . "'"} @keys;
-		print STDERR "\nuserid = $userid\n";
-	}
-	$sth->execute(
-		((map {$borrower->{$_}} @keys), $borrowerid)
-	);
+    my $userid     = shift             or return undef;
+    my $digest     = md5_base64(shift) or return undef;
+    my $borrowerid = shift             or return undef;
+    my $borrower   = shift             or return undef;
+    my @keys       = keys %$borrower;
+    my $dbh        = C4::Context->dbh;
+    my $query = "UPDATE  borrowers\nSET     " . join( ',', map { "$_=?" } @keys ) . "\nWHERE   borrowernumber=? ";
+    my $sth = $dbh->prepare($query);
+    if ($debug) {
+        print STDERR $query, "\n", join "\n", map { "$_ = '" . $borrower->{$_} . "'" } @keys;
+        print STDERR "\nuserid = $userid\n";
+    }
+    $sth->execute( ( ( map { $borrower->{$_} } @keys ), $borrowerid ) );
 
-	# MODIFY PASSWORD/LOGIN
-	_do_changepassword($userid, $borrowerid, $digest);
+    # MODIFY PASSWORD/LOGIN
+    _do_changepassword( $userid, $borrowerid, $digest );
 }
 
 1;

@@ -1,6 +1,5 @@
 #!/usr/bin/perl
 
-
 # Copyright 2009 Kyle Hall <kyle.m.hall@gmail.com>
 #
 # This file is part of Koha.
@@ -19,6 +18,7 @@
 # Suite 330, Boston, MA  02111-1307 USA
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use C4::Context;
 
@@ -48,10 +48,10 @@ the 3 scripts are inserted after the <input> in the html code
 =cut
 
 sub plugin_javascript {
-    my ($dbh,$record,$tagslib,$field_number,$tabloop) = @_;
+    my ( $dbh, $record, $tagslib, $field_number, $tabloop ) = @_;
     my $function_name = $field_number;
 
-    my $res  = "
+    my $res = "
 <script type=\"text/javascript\">
 //<![CDATA[
 
@@ -76,7 +76,7 @@ function Clic$function_name(subfield_managed) {
 //]]>
 </script>
 ";
-return ($function_name,$res);
+    return ( $function_name, $res );
 }
 
 =head1

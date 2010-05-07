@@ -1,4 +1,5 @@
 package C4::Output::JSONStream;
+
 #
 # Copyright 2008 LibLime
 #
@@ -43,8 +44,8 @@ use JSON;
 
 sub new {
     my $class = shift;
-    my $self = {
-        data => {},
+    my $self  = {
+        data    => {},
         options => {}
     };
 
@@ -60,8 +61,8 @@ sub param {
         die 'param() received odd number of arguments (should be called with param => "value" pairs)';
     }
 
-    for ( my $i = 0; $i < $#_; $i += 2 ) {
-        $self->{data}->{$_[$i]} = $_[$i + 1];
+    for ( my $i = 0 ; $i < $#_ ; $i += 2 ) {
+        $self->{data}->{ $_[$i] } = $_[ $i + 1 ];
     }
 }
 

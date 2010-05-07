@@ -19,6 +19,7 @@
 #
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use CGI;
 use C4::Auth;
@@ -30,43 +31,43 @@ use C4::Members::AttributeTypes;
 my $script_name = "/cgi-bin/koha/admin/patron-attr-types.pl";
 
 my $input = new CGI;
-my $op = $input->param('op');
+my $op    = $input->param('op');
 
+my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
+    {   template_name   => "admin/patron-attr-types.tmpl",
+        query           => $input,
+        type            => "intranet",
+        authnotrequired => 0,
+        flagsrequired   => { parameters => 1 },
+        debug           => 1,
+    }
+);
 
-my ($template, $loggedinuser, $cookie)
-    = get_template_and_user({template_name => "admin/patron-attr-types.tmpl",
-                 query => $input,
-                 type => "intranet",
-                 authnotrequired => 0,
-                 flagsrequired => {parameters => 1},
-                 debug => 1,
-                 });
-
-$template->param(script_name => $script_name);
+$template->param( script_name => $script_name );
 
 my $code = $input->param("code");
 
 my $display_list = 0;
-if ($op eq "edit_attribute_type") {
-    edit_attribute_type_form($template, $code);
-} elsif ($op eq "edit_attribute_type_confirmed") {
-    $display_list = add_update_attribute_type('edit', $template, $code);
-} elsif ($op eq "add_attribute_type") {
+if ( $op eq "edit_attribute_type" ) {
+    edit_attribute_type_form( $template, $code );
+} elsif ( $op eq "edit_attribute_type_confirmed" ) {
+    $display_list = add_update_attribute_type( 'edit', $template, $code );
+} elsif ( $op eq "add_attribute_type" ) {
     add_attribute_type_form($template);
-} elsif ($op eq "add_attribute_type_confirmed") {
-    $display_list = add_update_attribute_type('add', $template, $code);
-} elsif ($op eq "delete_attribute_type") {
-    $display_list = delete_attribute_type_form($template, $code);
-} elsif ($op eq "delete_attribute_type_confirmed") {
-    delete_attribute_type($template, $code);
+} elsif ( $op eq "add_attribute_type_confirmed" ) {
+    $display_list = add_update_attribute_type( 'add', $template, $code );
+} elsif ( $op eq "delete_attribute_type" ) {
+    $display_list = delete_attribute_type_form( $template, $code );
+} elsif ( $op eq "delete_attribute_type_confirmed" ) {
+    delete_attribute_type( $template, $code );
     $display_list = 1;
 } else {
     $display_list = 1;
 }
 
 if ($display_list) {
-    unless (C4::Context->preference('ExtendedPatronAttributes')) {
-        $template->param(WARNING_extended_attributes_off => 1); 
+    unless ( C4::Context->preference('ExtendedPatronAttributes') ) {
+        $template->param( WARNING_extended_attributes_off => 1 );
     }
     patron_attribute_type_list($template);
 }
@@ -80,7 +81,7 @@ sub add_attribute_type_form {
 
     $template->param(
         attribute_type_form => 1,
-        confirm_op => 'add_attribute_type_confirmed',
+        confirm_op          => 'add_attribute_type_confirmed',
     );
     authorised_value_category_list($template);
 }
@@ -88,53 +89,53 @@ sub add_attribute_type_form {
 sub error_add_attribute_type_form {
     my $template = shift;
 
-    $template->param(description => $input->param('description'));
+    $template->param( description => $input->param('description') );
 
-    if ($input->param('repeatable')) {
-        $template->param(repeatable_checked => 'checked="checked"');
+    if ( $input->param('repeatable') ) {
+        $template->param( repeatable_checked => 'checked="checked"' );
     }
-    if ($input->param('unique_id')) {
-        $template->param(unique_id_checked => 'checked="checked"');
+    if ( $input->param('unique_id') ) {
+        $template->param( unique_id_checked => 'checked="checked"' );
     }
-    if ($input->param('password_allowed')) {
-        $template->param(password_allowed_checked => 'checked="checked"');
+    if ( $input->param('password_allowed') ) {
+        $template->param( password_allowed_checked => 'checked="checked"' );
     }
-    if ($input->param('opac_display')) {
-        $template->param(opac_display_checked => 'checked="checked"');
+    if ( $input->param('opac_display') ) {
+        $template->param( opac_display_checked => 'checked="checked"' );
     }
-    if ($input->param('staff_searchable')) {
-        $template->param(staff_searchable_checked => 'checked="checked"');
+    if ( $input->param('staff_searchable') ) {
+        $template->param( staff_searchable_checked => 'checked="checked"' );
     }
-    if ($input->param('display_checkout')) {
-        $template->param(display_checkout_checked => 'checked="checked"');
+    if ( $input->param('display_checkout') ) {
+        $template->param( display_checkout_checked => 'checked="checked"' );
     }
 
     $template->param(
         attribute_type_form => 1,
-        confirm_op => 'add_attribute_type_confirmed',
+        confirm_op          => 'add_attribute_type_confirmed',
     );
-    authorised_value_category_list($template, $input->param('authorised_value_category'));
+    authorised_value_category_list( $template, $input->param('authorised_value_category') );
 }
 
 sub add_update_attribute_type {
-    my $op = shift;
+    my $op       = shift;
     my $template = shift;
-    my $code = shift;
+    my $code     = shift;
 
     my $description = $input->param('description');
 
     my $attr_type;
-    if ($op eq 'edit') {
+    if ( $op eq 'edit' ) {
         $attr_type = C4::Members::AttributeTypes->fetch($code);
         $attr_type->description($description);
     } else {
         my $existing = C4::Members::AttributeTypes->fetch($code);
-        if (defined($existing)) {
-            $template->param(duplicate_code_error => $code);
+        if ( defined($existing) ) {
+            $template->param( duplicate_code_error => $code );
             error_add_attribute_type_form($template);
             return 0;
         }
-        $attr_type = C4::Members::AttributeTypes->new($code, $description);
+        $attr_type = C4::Members::AttributeTypes->new( $code, $description );
         my $repeatable = $input->param('repeatable');
         $attr_type->repeatable($repeatable);
         my $unique_id = $input->param('unique_id');
@@ -152,10 +153,10 @@ sub add_update_attribute_type {
     my $display_checkout = $input->param('display_checkout');
     $attr_type->display_checkout($display_checkout);
 
-    if ($op eq 'edit') {
-        $template->param(edited_attribute_type => $attr_type->code());
+    if ( $op eq 'edit' ) {
+        $template->param( edited_attribute_type => $attr_type->code() );
     } else {
-        $template->param(added_attribute_type => $attr_type->code());
+        $template->param( added_attribute_type => $attr_type->code() );
     }
     $attr_type->store();
 
@@ -164,19 +165,19 @@ sub add_update_attribute_type {
 
 sub delete_attribute_type_form {
     my $template = shift;
-    my $code = shift;
+    my $code     = shift;
 
-    my $attr_type = C4::Members::AttributeTypes->fetch($code);
+    my $attr_type    = C4::Members::AttributeTypes->fetch($code);
     my $display_list = 0;
-    if (defined($attr_type)) {
+    if ( defined($attr_type) ) {
         $template->param(
             delete_attribute_type_form => 1,
-            confirm_op => "delete_attribute_type_confirmed",
-            code => $code,
-            description => $attr_type->description(),
+            confirm_op                 => "delete_attribute_type_confirmed",
+            code                       => $code,
+            description                => $attr_type->description(),
         );
     } else {
-        $template->param(ERROR_delete_not_found => $code);
+        $template->param( ERROR_delete_not_found => $code );
         $display_list = 1;
     }
     return $display_list;
@@ -184,67 +185,67 @@ sub delete_attribute_type_form {
 
 sub delete_attribute_type {
     my $template = shift;
-    my $code = shift;
+    my $code     = shift;
 
     my $attr_type = C4::Members::AttributeTypes->fetch($code);
-    if (defined($attr_type)) {
-        if ($attr_type->num_patrons() > 0) {
-            $template->param(ERROR_delete_in_use => $code);
-            $template->param(ERROR_num_patrons => $attr_type->num_patrons());
+    if ( defined($attr_type) ) {
+        if ( $attr_type->num_patrons() > 0 ) {
+            $template->param( ERROR_delete_in_use => $code );
+            $template->param( ERROR_num_patrons   => $attr_type->num_patrons() );
         } else {
             $attr_type->delete();
-            $template->param(deleted_attribute_type => $code);
+            $template->param( deleted_attribute_type => $code );
         }
     } else {
-        $template->param(ERROR_delete_not_found => $code);
+        $template->param( ERROR_delete_not_found => $code );
     }
 }
 
 sub edit_attribute_type_form {
     my $template = shift;
-    my $code = shift;
+    my $code     = shift;
 
     my $attr_type = C4::Members::AttributeTypes->fetch($code);
 
-    $template->param(code => $code);
-    $template->param(description => $attr_type->description());
+    $template->param( code        => $code );
+    $template->param( description => $attr_type->description() );
 
-    if ($attr_type->repeatable()) {
-        $template->param(repeatable_checked => 'checked="checked"');
+    if ( $attr_type->repeatable() ) {
+        $template->param( repeatable_checked => 'checked="checked"' );
     }
-    $template->param(repeatable_disabled => 'disabled="disabled"');
-    if ($attr_type->unique_id()) {
-        $template->param(unique_id_checked => 'checked="checked"');
+    $template->param( repeatable_disabled => 'disabled="disabled"' );
+    if ( $attr_type->unique_id() ) {
+        $template->param( unique_id_checked => 'checked="checked"' );
     }
-    $template->param(unique_id_disabled => 'disabled="disabled"');
-    if ($attr_type->password_allowed()) {
-        $template->param(password_allowed_checked => 'checked="checked"');
+    $template->param( unique_id_disabled => 'disabled="disabled"' );
+    if ( $attr_type->password_allowed() ) {
+        $template->param( password_allowed_checked => 'checked="checked"' );
     }
-    if ($attr_type->opac_display()) {
-        $template->param(opac_display_checked => 'checked="checked"');
+    if ( $attr_type->opac_display() ) {
+        $template->param( opac_display_checked => 'checked="checked"' );
     }
-    if ($attr_type->staff_searchable()) {
-        $template->param(staff_searchable_checked => 'checked="checked"');
+    if ( $attr_type->staff_searchable() ) {
+        $template->param( staff_searchable_checked => 'checked="checked"' );
     }
-    if ($attr_type->display_checkout()) {
-        $template->param(display_checkout_checked => 'checked="checked"');
+    if ( $attr_type->display_checkout() ) {
+        $template->param( display_checkout_checked => 'checked="checked"' );
     }
-    authorised_value_category_list($template, $attr_type->authorised_value_category());
+    authorised_value_category_list( $template, $attr_type->authorised_value_category() );
 
     $template->param(
         attribute_type_form => 1,
         edit_attribute_type => 1,
-        confirm_op => 'edit_attribute_type_confirmed',
+        confirm_op          => 'edit_attribute_type_confirmed',
     );
 
 }
 
 sub patron_attribute_type_list {
     my $template = shift;
-    
+
     my @attr_types = C4::Members::AttributeTypes::GetAttributeTypes();
-    $template->param(available_attribute_types => \@attr_types);
-    $template->param(display_list => 1);
+    $template->param( available_attribute_types => \@attr_types );
+    $template->param( display_list              => 1 );
 }
 
 sub authorised_value_category_list {
@@ -252,11 +253,11 @@ sub authorised_value_category_list {
     my $selected = @_ ? shift : '';
 
     my $categories = GetAuthorisedValueCategories();
-    my @list = ();
+    my @list       = ();
     foreach my $category (@$categories) {
         my $entry = { category => $category };
         $entry->{selected} = 1 if $category eq $selected;
         push @list, $entry;
     }
-    $template->param(authorised_value_categories => \@list);
+    $template->param( authorised_value_categories => \@list );
 }

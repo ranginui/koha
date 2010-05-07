@@ -16,6 +16,7 @@ package C4::Barcodes::PrinterConfig;
 # Suite 330, Boston, MA  02111-1307 USA
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use vars qw($VERSION @EXPORT);
 
@@ -23,10 +24,11 @@ use PDF::API2;
 use PDF::API2::Page;
 
 BEGIN {
-	# set the version for version checking
-	$VERSION = 0.02;
-	require Exporter;
-	@EXPORT = qw(&labelsPage &getLabelPosition setPositionsForX setPositionsForY);
+
+    # set the version for version checking
+    $VERSION = 0.02;
+    require Exporter;
+    @EXPORT = qw(&labelsPage &getLabelPosition setPositionsForX setPositionsForY);
 }
 
 =head1 NAME
@@ -49,9 +51,9 @@ environment of the pdf file.
 
 =cut
 
-my @positionsForX; # Takes all the X positions of the pdf file.
-my @positionsForY; # Takes all the Y positions of the pdf file.
-my $firstLabel = 1; # Test if the label passed as a parameter is the first label to be printed into the pdf file.
+my @positionsForX;    # Takes all the X positions of the pdf file.
+my @positionsForY;    # Takes all the Y positions of the pdf file.
+my $firstLabel = 1;   # Test if the label passed as a parameter is the first label to be printed into the pdf file.
 
 =item setPositionsForX
 
@@ -68,18 +70,19 @@ C<$columns> Indicates how many columns do you want in your page type.
 C<$pageType> Page type to print (eg: a4, legal, etc).
 
 =cut
+
 #'
 sub setPositionsForX {
-	my ($marginLeft, $labelWidth, $columns, $pageType) = @_;
-	my $defaultDpi = 72/25.4; # By default we know 25.4 mm -> 1 inch -> 72 dots per inch
-	my $whereToStart = ($marginLeft + ($labelWidth/2));
-	my $firstLabel = $whereToStart*$defaultDpi;
-	my $spaceBetweenLabels = $labelWidth*$defaultDpi;
-	my @positions;
-	for (my $i = 0; $i < $columns ; $i++) {
-		push @positions, ($firstLabel+($spaceBetweenLabels*$i));
-	}
-	@positionsForX = @positions;
+    my ( $marginLeft, $labelWidth, $columns, $pageType ) = @_;
+    my $defaultDpi         = 72 / 25.4;                               # By default we know 25.4 mm -> 1 inch -> 72 dots per inch
+    my $whereToStart       = ( $marginLeft + ( $labelWidth / 2 ) );
+    my $firstLabel         = $whereToStart * $defaultDpi;
+    my $spaceBetweenLabels = $labelWidth * $defaultDpi;
+    my @positions;
+    for ( my $i = 0 ; $i < $columns ; $i++ ) {
+        push @positions, ( $firstLabel + ( $spaceBetweenLabels * $i ) );
+    }
+    @positionsForX = @positions;
 }
 
 =item setPositionsForY
@@ -97,18 +100,19 @@ C<$rows> Indicates how many rows do you want in your page type.
 C<$pageType> Page type to print (eg: a4, legal, etc).
 
 =cut
+
 #'
 sub setPositionsForY {
-	my ($marginBottom, $labelHeigth, $rows, $pageType) = @_;
-	my $defaultDpi = 72/25.4; # By default we know 25.4 mm -> 1 inch -> 72 dots per inch
-	my $whereToStart = ($marginBottom + ($labelHeigth/2));
-	my $firstLabel = $whereToStart*$defaultDpi;
-	my $spaceBetweenLabels = $labelHeigth*$defaultDpi;
-	my @positions;
-	for (my $i = 0; $i < $rows; $i++) {
-		unshift @positions, ($firstLabel+($spaceBetweenLabels*$i));
-	}
-	@positionsForY = @positions;
+    my ( $marginBottom, $labelHeigth, $rows, $pageType ) = @_;
+    my $defaultDpi         = 72 / 25.4;                                  # By default we know 25.4 mm -> 1 inch -> 72 dots per inch
+    my $whereToStart       = ( $marginBottom + ( $labelHeigth / 2 ) );
+    my $firstLabel         = $whereToStart * $defaultDpi;
+    my $spaceBetweenLabels = $labelHeigth * $defaultDpi;
+    my @positions;
+    for ( my $i = 0 ; $i < $rows ; $i++ ) {
+        unshift @positions, ( $firstLabel + ( $spaceBetweenLabels * $i ) );
+    }
+    @positionsForY = @positions;
 }
 
 =item getLabelPosition
@@ -139,33 +143,35 @@ C<$fontObject> The font object
 C<$pageType> Page type to print (eg: a4, legal, etc).
 
 =cut
+
 #'
 sub getLabelPosition {
-	my ($labelNum, $pdf, $page, $gfxObject, $textObject, $fontObject, $pageType) = @_;
-	my $indexX = $labelNum % @positionsForX;
-	my $indexY = int($labelNum / @positionsForX);
-	# Calculates the next label position and return that label number
-	my $nextIndexX = $labelNum % @positionsForX;
-	my $nextIndexY = $labelNum % @positionsForY;
-	if ($firstLabel) {
-          $page = $pdf->page;
-          $page->mediabox($pageType);
-          $gfxObject = $page->gfx;
-          $textObject = $page->text;
-          $textObject->font($fontObject, 7);
-		  $firstLabel = 0;
-	} elsif (($nextIndexX == 0) && ($nextIndexY == 0)) {
-          $page = $pdf->page;
-          $page->mediabox($pageType);
-          $gfxObject = $page->gfx;
-          $textObject = $page->text;
-          $textObject->font($fontObject, 7);
-	}
-	$labelNum = $labelNum + 1;	
-	if ($labelNum == (@positionsForX*@positionsForY)) {
-		$labelNum = 0;
-	}
-	return ($positionsForX[$indexX], $positionsForY[$indexY], $pdf, $page, $gfxObject, $textObject, $fontObject, $labelNum);
+    my ( $labelNum, $pdf, $page, $gfxObject, $textObject, $fontObject, $pageType ) = @_;
+    my $indexX = $labelNum % @positionsForX;
+    my $indexY = int( $labelNum / @positionsForX );
+
+    # Calculates the next label position and return that label number
+    my $nextIndexX = $labelNum % @positionsForX;
+    my $nextIndexY = $labelNum % @positionsForY;
+    if ($firstLabel) {
+        $page = $pdf->page;
+        $page->mediabox($pageType);
+        $gfxObject  = $page->gfx;
+        $textObject = $page->text;
+        $textObject->font( $fontObject, 7 );
+        $firstLabel = 0;
+    } elsif ( ( $nextIndexX == 0 ) && ( $nextIndexY == 0 ) ) {
+        $page = $pdf->page;
+        $page->mediabox($pageType);
+        $gfxObject  = $page->gfx;
+        $textObject = $page->text;
+        $textObject->font( $fontObject, 7 );
+    }
+    $labelNum = $labelNum + 1;
+    if ( $labelNum == ( @positionsForX * @positionsForY ) ) {
+        $labelNum = 0;
+    }
+    return ( $positionsForX[$indexX], $positionsForY[$indexY], $pdf, $page, $gfxObject, $textObject, $fontObject, $labelNum );
 }
 
 =item labelsPage
@@ -180,33 +186,36 @@ C<$rows> Indicates how many rows do you want in your page type.
 C<$columns> Indicates how many rows do you want in your page type.
 
 =cut
+
 #'
-sub labelsPage{
-	my ($rows, $columns) = @_;
-	my @pageType;
-	my $tagname = 0;
-	my $labelname = 1;
-	my $check;
-	for (my $i = 1; $i <= $rows; $i++) {
-		my @column;
-		for (my $j = 1; $j <= $columns; $j++) {
-			my %cell;
-			if ($tagname == 0) {
-				$check = 'checked';
-			} else {
-				$check = '';
-			}		
-			%cell = (check => $check,
-					 tagname => $tagname,
-			         labelname => $labelname);
-			$tagname = $tagname + 1;	
-			$labelname = $labelname + 1;	
-			push @column, \%cell;
-		}
-		my %columns = (columns => \@column);
-		push @pageType, \%columns;
-	}
-	return @pageType;
+sub labelsPage {
+    my ( $rows, $columns ) = @_;
+    my @pageType;
+    my $tagname   = 0;
+    my $labelname = 1;
+    my $check;
+    for ( my $i = 1 ; $i <= $rows ; $i++ ) {
+        my @column;
+        for ( my $j = 1 ; $j <= $columns ; $j++ ) {
+            my %cell;
+            if ( $tagname == 0 ) {
+                $check = 'checked';
+            } else {
+                $check = '';
+            }
+            %cell = (
+                check     => $check,
+                tagname   => $tagname,
+                labelname => $labelname
+            );
+            $tagname   = $tagname + 1;
+            $labelname = $labelname + 1;
+            push @column, \%cell;
+        }
+        my %columns = ( columns => \@column );
+        push @pageType, \%columns;
+    }
+    return @pageType;
 }
 
 1;

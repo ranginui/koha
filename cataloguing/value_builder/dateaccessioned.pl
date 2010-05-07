@@ -27,9 +27,11 @@
 plugin_parameters : useless here
 
 =cut
+
 sub plugin_parameters {
-	# my ($dbh,$record,$tagslib,$i,$tabloop) = @_;
-	return "";
+
+    # my ($dbh,$record,$tagslib,$i,$tabloop) = @_;
+    return "";
 }
 
 =head1
@@ -46,16 +48,18 @@ returns :
 the 3 scripts are inserted after the <input> in the html code
 
 =cut
+
 sub plugin_javascript {
-	# my ($dbh,$record,$tagslib,$field_number,$tabloop) = @_;
-	my $function_name = "dateaccessioned".(int(rand(100000))+1);
+
+    # my ($dbh,$record,$tagslib,$field_number,$tabloop) = @_;
+    my $function_name = "dateaccessioned" . ( int( rand(100000) ) + 1 );
 
     require C4::Dates;
-	my $date = C4::Dates->today('iso');
+    my $date = C4::Dates->today('iso');
 
-	# find the tag/subfield mapped to items.dateaccessioned
-	my ($tag,$subfield) =  GetMarcFromKohaField("items.dateaccessioned","");
-	my $res  = <<END_OF_JS;
+    # find the tag/subfield mapped to items.dateaccessioned
+    my ( $tag, $subfield ) = GetMarcFromKohaField( "items.dateaccessioned", "" );
+    my $res = <<END_OF_JS;
 <script type="text/javascript">
 //<![CDATA[
 //  
@@ -82,7 +86,7 @@ function Clic$function_name(id) {
 //]]>
 </script>
 END_OF_JS
-	return ($function_name, $res);
+    return ( $function_name, $res );
 }
 
 =head1
@@ -92,7 +96,8 @@ plugin: useless here.
 =cut
 
 sub plugin {
-#    my ($input) = @_;
+
+    #    my ($input) = @_;
     return "";
 }
 

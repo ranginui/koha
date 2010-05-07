@@ -1,6 +1,5 @@
 #!/usr/bin/perl
 
-
 # Copyright 2000-2002 Katipo Communications
 #
 # This file is part of Koha.
@@ -19,6 +18,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use C4::Auth;
 use CGI;
@@ -34,14 +34,14 @@ plugin_parameters : other parameters added when the plugin is called by the dopo
 =cut
 
 sub plugin_parameters {
-my ($dbh,$record,$tagslib,$i,$tabloop) = @_;
-return "";
+    my ( $dbh, $record, $tagslib, $i, $tabloop ) = @_;
+    return "";
 }
 
 sub plugin_javascript {
-my ($dbh,$record,$tagslib,$field_number,$tabloop) = @_;
-my $function_name= $field_number;
-my $res="
+    my ( $dbh, $record, $tagslib, $field_number, $tabloop ) = @_;
+    my $function_name = $field_number;
+    my $res           = "
 <script>
 function Focus$function_name(subfield_managed) {
 return 1;
@@ -59,28 +59,31 @@ function Clic$function_name(i) {
 </script>
 ";
 
-return ($function_name,$res);
+    return ( $function_name, $res );
 }
+
 sub plugin {
-my ($input) = @_;
-	my $index= $input->param('index');
-	my $result= $input->param('result');
+    my ($input) = @_;
+    my $index   = $input->param('index');
+    my $result  = $input->param('result');
 
+    my $dbh = C4::Context->dbh;
 
-	my $dbh = C4::Context->dbh;
-
-my ($template, $loggedinuser, $cookie)
-    = get_template_and_user({template_name => "cataloguing/value_builder/unimarc_field_124c.tmpl",
-			     query => $input,
-			     type => "intranet",
-			     authnotrequired => 0,
-			     flagsrequired => {editcatalogue => '*'},
-			     debug => 1,
-			     });
-	my $f1 = substr($result,0,1);
-	$template->param(index => $index,
-			 "f1$f1" => 1);
-        output_html_with_http_headers $input, $cookie, $template->output;
+    my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
+        {   template_name   => "cataloguing/value_builder/unimarc_field_124c.tmpl",
+            query           => $input,
+            type            => "intranet",
+            authnotrequired => 0,
+            flagsrequired   => { editcatalogue => '*' },
+            debug           => 1,
+        }
+    );
+    my $f1 = substr( $result, 0, 1 );
+    $template->param(
+        index   => $index,
+        "f1$f1" => 1
+    );
+    output_html_with_http_headers $input, $cookie, $template->output;
 }
 
 1;

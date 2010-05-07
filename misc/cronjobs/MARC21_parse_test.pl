@@ -37,6 +37,7 @@ use C4::Debug;
 use vars qw($VERSION);
 
 BEGIN {
+
     # find Koha's Perl modules
     # test carefully before changing this
     use FindBin;
@@ -51,30 +52,30 @@ my $help    = 0;
 my $man     = 0;
 my $verbose = 0;
 
-my $limit;      # undef, not zero.
-my $offset  = 0;
-my $dump    = 0;
-my $all     = 0;
-my $summary = 1;
-my $lint    = 0;
-my $fix     = 0;
+my $limit;    # undef, not zero.
+my $offset   = 0;
+my $dump     = 0;
+my $all      = 0;
+my $summary  = 1;
+my $lint     = 0;
+my $fix      = 0;
 my $filename = "/tmp/MARC21_parse_test.$$.marc";
 
 GetOptions(
-       'help|?' => \$help,
-          'man' => \$man,
-      'verbose' => \$verbose,
-      'limit=i' => \$limit,
-     'offset=i' => \$offset,
-     'filename' => \$filename,
-         'All!' => \$all,
-        'Lint!' => \$lint,
-        'dump!' => \$dump,
-     'summary!' => \$summary,
-         'fix!' => \$fix,
+    'help|?'   => \$help,
+    'man'      => \$man,
+    'verbose'  => \$verbose,
+    'limit=i'  => \$limit,
+    'offset=i' => \$offset,
+    'filename' => \$filename,
+    'All!'     => \$all,
+    'Lint!'    => \$lint,
+    'dump!'    => \$dump,
+    'summary!' => \$summary,
+    'fix!'     => \$fix,
 ) or pod2usage(2);
 pod2usage( -verbose => 2 ) if ($man);
-pod2usage( -verbose => 2 ) if ($help and $verbose);
+pod2usage( -verbose => 2 ) if ( $help and $verbose );
 pod2usage(1) if $help;
 
 if ($debug) {
@@ -89,19 +90,19 @@ if ($lint) {
     $lint_object = new MARC::Lint;
 }
 my $marcflavour = C4::Context->preference('marcflavour') or die "No marcflavour (MARC21 or UNIMARC) set in syspref";
-(uc($marcflavour) eq 'MARC21') or die "Only marcflavour MARC21, not '$marcflavour'";
+( uc($marcflavour) eq 'MARC21' ) or die "Only marcflavour MARC21, not '$marcflavour'";
 
 # my $countq = C4::Context->dbh->prepare("SELECT COUNT(*) FROM biblioitems");    # Too SLOW on large systems
 # $countq->execute; $countq->fetchrow();
-my $max = 999999;   # arbitrary ceiling
+my $max = 999999;    # arbitrary ceiling
 
-$limit or $limit = $max;       # limit becomes max if unspecified
+$limit or $limit = $max;    # limit becomes max if unspecified
 
 if ($summary) {
-    printf "# Examining marcxml from %s\n", ($all ? 'ALL biblioitems' : 'SELECT biblionumbers');
+    printf "# Examining marcxml from %s\n", ( $all ? 'ALL biblioitems' : 'SELECT biblionumbers' );
     printf "# limit %d, offset %d:\n", $limit, $offset;
-    printf "# MARC::Lint warnings: %s\n", ($lint ? 'ON' : 'OFF');
-    $verbose and print "# Using temp file: $filename\n"
+    printf "# MARC::Lint warnings: %s\n", ( $lint ? 'ON' : 'OFF' );
+    $verbose and print "# Using temp file: $filename\n";
 }
 
 MARC::File::XML->default_record_format($marcflavour) or die "FAILED MARC::File::XML->default_record_format($marcflavour)";
@@ -109,8 +110,8 @@ MARC::File::XML->default_record_format($marcflavour) or die "FAILED MARC::File::
 my $query = "SELECT  *  FROM biblioitems ";
 my $recs;
 if ($all) {
-    if ($limit or $offset) {
-        my $limit_clause = sprintf "LIMIT %d, %d", ($offset || 0), ($limit || $max);
+    if ( $limit or $offset ) {
+        my $limit_clause = sprintf "LIMIT %d, %d", ( $offset || 0 ), ( $limit || $max );
         $query .= $limit_clause;
     }
     $verbose and print "# Query: $query\n";
@@ -120,103 +121,106 @@ if ($all) {
     $query .= "WHERE biblionumber=?";
     $verbose and print "# Query: $query\n";
     $recs = C4::Context->dbh->prepare($query);
+
     # no execute, we execute per biblionumber
     print "# Reading biblionumbers from STDIN\n";
 }
 
 sub next_row {
-    $all and return $recs->fetchrow_hashref();  # no WHERE clause, just get it
-    while (my $biblionumber = <>) {
+    $all and return $recs->fetchrow_hashref();    # no WHERE clause, just get it
+    while ( my $biblionumber = <> ) {
         chomp($biblionumber);
-        unless (defined $biblionumber) {
+        unless ( defined $biblionumber ) {
             print "Skipping blank line $.\n";
             next;
-        } 
-        unless ($biblionumber =~ s/^\s*(\d+)\s*$/$1/ and $biblionumber != 0) {
+        }
+        unless ( $biblionumber =~ s/^\s*(\d+)\s*$/$1/ and $biblionumber != 0 ) {
             print "Skipping illegal biblionumber: $biblionumber  (line $.)\n";
             next;
         }
-        ($verbose > 1) and printf("(%9d) plausible biblionumber\n", $biblionumber);
+        ( $verbose > 1 ) and printf( "(%9d) plausible biblionumber\n", $biblionumber );
         $recs->execute($biblionumber);
         return $recs->fetchrow_hashref();
     }
-    return undef;   # just in case
+    return undef;    # just in case
 }
 
 my $ilimit = $limit;
 $ilimit += $offset unless $all;    # increase ilimit for offset.  if $all, then offset is built into query.
-my $i = 0;
-my $found  = 0;
-my $fixed  = 0;
-my $fine   = 0;
-my $failed = 0;
-my $warns  = 0;
+my $i         = 0;
+my $found     = 0;
+my $fixed     = 0;
+my $fine      = 0;
+my $failed    = 0;
+my $warns     = 0;
 my $printline = 0;
 while ( my $row = next_row() ) {
     ++$i;
     unless ($all) {
-        ($i > $ilimit) and last;  # controls for user-input data/files
-        ($i > $offset) or next;
+        ( $i > $ilimit ) and last;    # controls for user-input data/files
+        ( $i > $offset ) or next;
     }
     my $xml = $row->{marcxml};
     my $bibnum_prefix = sprintf "(%9d)", $row->{biblionumber};
+
     # $xml now pared down to just the <leader> element
     $verbose and printf "# %4d of %4d: biblionumber %s\n", ++$printline, $limit, $row->{biblionumber};
     my $stripped = StripNonXmlChars($xml);
-    ($stripped eq $xml) or printf "$bibnum_prefix: %d NON-XML Characters removed!!\n", (length($xml) - length($stripped));
+    ( $stripped eq $xml ) or printf "$bibnum_prefix: %d NON-XML Characters removed!!\n", ( length($xml) - length($stripped) );
     my $record = eval { MARC::Record::new_from_xml( $stripped, 'utf8', $marcflavour ) };
-    if (not $record) {
+    if ( not $record ) {
         $found++;
-    	my $msg = $@ || '';
+        my $msg = $@ || '';
         $verbose or $msg =~ s# at /usr/.*$##gs;    # shorten common error message
         print "$bibnum_prefix ERROR: $msg\n";
     } else {
         $fine++;
     }
     if ($lint) {
-        open (FILE, ">$filename") or die "Cannot write to temp file: $filename";
+        open( FILE, ">$filename" ) or die "Cannot write to temp file: $filename";
         print FILE $xml;
         close FILE;
-        my $file = MARC::File::XML->in( $filename );
-        while ( my $marc = $file->next() ) {    # should be only 1
-            # $marc->field("245") or print "pre check_record 245 check 1: FAIL\n"; use Data::Dumper;  print Dumper($marc);
-            $lint_object->check_record( $marc );
-            if ($lint_object->warnings) {
+        my $file = MARC::File::XML->in($filename);
+        while ( my $marc = $file->next() ) {       # should be only 1
+                                                   # $marc->field("245") or print "pre check_record 245 check 1: FAIL\n"; use Data::Dumper;  print Dumper($marc);
+            $lint_object->check_record($marc);
+            if ( $lint_object->warnings ) {
                 $warns++;
-                print join("\n", map {"$bibnum_prefix $_"} $lint_object->warnings), "\n";
+                print join( "\n", map { "$bibnum_prefix $_" } $lint_object->warnings ), "\n";
             }
         }
     }
-    if ($fix and not $record) {
-        my $record_from_blob = MARC::Record->new_from_usmarc($row->{marc});
+    if ( $fix and not $record ) {
+        my $record_from_blob = MARC::Record->new_from_usmarc( $row->{marc} );
         unless ($record_from_blob) {
             print "$bibnum_prefix ERROR: Cannot recover from biblioitems.marc\n";
             $failed++;
         } else {
-            my $mod = ModBiblioMarc($record_from_blob, $row->{biblionumber}, '');
+            my $mod = ModBiblioMarc( $record_from_blob, $row->{biblionumber}, '' );
             if ($mod) {
-                $fixed++;  print "$bibnum_prefix FIXED\n";
+                $fixed++;
+                print "$bibnum_prefix FIXED\n";
             } else {
-                $failed++; print "$bibnum_prefix FAILED from marc.  Manual intervention required.\n";
+                $failed++;
+                print "$bibnum_prefix FAILED from marc.  Manual intervention required.\n";
             }
         }
     }
     $dump and print $row->{marcxml}, "\n";
 }
 
-(-f $filename) and unlink ($filename);  # remove tempfile
+( -f $filename ) and unlink($filename);    # remove tempfile
 
 if ($summary) {
-    printf "# Examining marcxml from %s\n", ($all ? 'ALL biblioitems' : 'SELECT biblionumbers');
+    printf "# Examining marcxml from %s\n", ( $all ? 'ALL biblioitems' : 'SELECT biblionumbers' );
     printf "# limit %d, offset %d:\n", $limit, $offset;
     print "\nRESULTS (number of records)...\n";
-    printf "  %6d -- OK              \n",  $fine;
-    printf "  %6d -- w/ bad marcxml  \n",  $found;
+    printf "  %6d -- OK              \n",       $fine;
+    printf "  %6d -- w/ bad marcxml  \n",       $found;
     printf "  %6d -- w/ MARC::Lint warnings\n", $warns;
-    printf "  %6d -- fixed from marc \n",  $fixed;
-    printf "  %6d -- failed to fix   \n",  $failed;
+    printf "  %6d -- fixed from marc \n",       $fixed;
+    printf "  %6d -- failed to fix   \n",       $failed;
 }
-
 
 __END__
 

@@ -24,45 +24,48 @@ use Exporter;
 
 # use CGI;
 use vars qw($VERSION @ISA @EXPORT $debug $cgi_debug);
+
 # use vars qw(@EXPORT_OK %EXPORT_TAGS);
 
 BEGIN {
-	$VERSION = 1.00;	# set the version for version checking
-	@ISA       = qw(Exporter);
-	@EXPORT    = qw($debug $cgi_debug);
-	# @EXPOR_OK    = qw();
-	# %EXPORT_TAGS = ( all=>[qw($debug $cgi_debug)], );
+    $VERSION = 1.00;                    # set the version for version checking
+    @ISA     = qw(Exporter);
+    @EXPORT  = qw($debug $cgi_debug);
+
+    # @EXPOR_OK    = qw();
+    # %EXPORT_TAGS = ( all=>[qw($debug $cgi_debug)], );
 }
 
 BEGIN {
-	# this stuff needs a begin block too, since dependencies might alter their compilations
-	# for example, adding DataDumper
 
-	$debug = $ENV{KOHA_DEBUG} || $ENV{DEBUG} || 0;
+    # this stuff needs a begin block too, since dependencies might alter their compilations
+    # for example, adding DataDumper
 
-	# CGI->new conflicts w/ some upload functionality, 
-	# since we would get the "first" CGI object here.
-	# Instead we have to parse for ourselves if we want QUERY_STRING triggers.
-	#	my $query = CGI->new();		# conflicts!
-	#	$cgi_debug = $ENV{KOHA_CGI_DEBUG} || $query->param('debug') || 0;
+    $debug = $ENV{KOHA_DEBUG} || $ENV{DEBUG} || 0;
 
-	$cgi_debug = $ENV{KOHA_CGI_DEBUG} || 0;
-	unless ($cgi_debug or not $ENV{QUERY_STRING}) {
-		foreach (split /\&/,  $ENV{QUERY_STRING}) {
-			/^debug\=(.+)$/ or next;
-			$cgi_debug = $1;
-			last;
-		}
-	}
-	unless ($debug =~ /^\d$/) {
-		warn "Invalid \$debug value attempted: $debug";
-		$debug=1;
-	}
-	unless ($cgi_debug =~ /^\d$/) {
-		$debug and
-		warn "Invalid \$cgi_debug value attempted: $cgi_debug";
-		$cgi_debug=1;
-	}
+    # CGI->new conflicts w/ some upload functionality,
+    # since we would get the "first" CGI object here.
+    # Instead we have to parse for ourselves if we want QUERY_STRING triggers.
+    #	my $query = CGI->new();		# conflicts!
+    #	$cgi_debug = $ENV{KOHA_CGI_DEBUG} || $query->param('debug') || 0;
+
+    $cgi_debug = $ENV{KOHA_CGI_DEBUG} || 0;
+    unless ( $cgi_debug or not $ENV{QUERY_STRING} ) {
+        foreach ( split /\&/, $ENV{QUERY_STRING} ) {
+            /^debug\=(.+)$/ or next;
+            $cgi_debug = $1;
+            last;
+        }
+    }
+    unless ( $debug =~ /^\d$/ ) {
+        warn "Invalid \$debug value attempted: $debug";
+        $debug = 1;
+    }
+    unless ( $cgi_debug =~ /^\d$/ ) {
+        $debug
+          and warn "Invalid \$cgi_debug value attempted: $cgi_debug";
+        $cgi_debug = 1;
+    }
 }
 
 # sub import {

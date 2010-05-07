@@ -15,7 +15,6 @@
 # Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA  02111-1307 USA
 
-
 =head1 view_holdsqueue
 
 This script displays items in the tmp_holdsqueue table
@@ -29,14 +28,13 @@ use C4::Auth;
 use C4::Output;
 use C4::Biblio;
 use C4::Items;
-use C4::Koha;   # GetItemTypes
-use C4::Branch; # GetBranches
+use C4::Koha;      # GetItemTypes
+use C4::Branch;    # GetBranches
 use C4::Dates qw/format_date/;
 
 my $query = new CGI;
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => "circ/view_holdsqueue.tmpl",
+    {   template_name   => "circ/view_holdsqueue.tmpl",
         query           => $query,
         type            => "intranet",
         authnotrequired => 0,
@@ -45,13 +43,13 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
     }
 );
 
-my $params = $query->Vars;
+my $params         = $query->Vars;
 my $run_report     = $params->{'run_report'};
 my $branchlimit    = $params->{'branchlimit'};
 my $itemtypeslimit = $params->{'itemtypeslimit'};
 
-if ( $run_report ) {
-    my $items = GetHoldsQueueItems($branchlimit, $itemtypeslimit);
+if ($run_report) {
+    my $items = GetHoldsQueueItems( $branchlimit, $itemtypeslimit );
     $template->param(
         branch     => $branchlimit,
         total      => scalar @$items,
@@ -65,41 +63,43 @@ if ( $run_report ) {
 my $itemtypes = &GetItemTypes();
 my @itemtypesloop;
 foreach my $thisitemtype ( sort keys %$itemtypes ) {
-    push @itemtypesloop, {
-        value       => $thisitemtype,
+    push @itemtypesloop,
+      { value       => $thisitemtype,
         description => $itemtypes->{$thisitemtype}->{'description'},
-    };
+      };
 }
 
 $template->param(
-     branchloop => GetBranchesLoop(C4::Context->userenv->{'branch'}),
-   itemtypeloop => \@itemtypesloop,
+    branchloop   => GetBranchesLoop( C4::Context->userenv->{'branch'} ),
+    itemtypeloop => \@itemtypesloop,
 );
 
 sub GetHoldsQueueItems {
-	my ($branchlimit,$itemtypelimit) = @_;
-	my $dbh = C4::Context->dbh;
+    my ( $branchlimit, $itemtypelimit ) = @_;
+    my $dbh = C4::Context->dbh;
 
     my @bind_params = ();
-	my $query = q/SELECT tmp_holdsqueue.*, biblio.author, items.ccode, items.location, items.enumchron, items.cn_sort, biblioitems.publishercode,biblio.copyrightdate,biblioitems.publicationyear,biblioitems.pages,biblioitems.size,biblioitems.publicationyear,biblioitems.isbn
+    my $query =
+q/SELECT tmp_holdsqueue.*, biblio.author, items.ccode, items.location, items.enumchron, items.cn_sort, biblioitems.publishercode,biblio.copyrightdate,biblioitems.publicationyear,biblioitems.pages,biblioitems.size,biblioitems.publicationyear,biblioitems.isbn
                   FROM tmp_holdsqueue
                        JOIN biblio      USING (biblionumber)
 				  LEFT JOIN biblioitems USING (biblionumber)
                   LEFT JOIN items       USING (  itemnumber)
                 /;
     if ($branchlimit) {
-	    $query .=" WHERE tmp_holdsqueue.holdingbranch = ?";
+        $query .= " WHERE tmp_holdsqueue.holdingbranch = ?";
         push @bind_params, $branchlimit;
     }
     $query .= " ORDER BY ccode, location, cn_sort, author, title, pickbranch, reservedate";
-	my $sth = $dbh->prepare($query);
-	$sth->execute(@bind_params);
-	my $items = [];
-    while ( my $row = $sth->fetchrow_hashref ){
-		$row->{reservedate} = format_date($row->{reservedate});
+    my $sth = $dbh->prepare($query);
+    $sth->execute(@bind_params);
+    my $items = [];
+    while ( my $row = $sth->fetchrow_hashref ) {
+        $row->{reservedate} = format_date( $row->{reservedate} );
         push @$items, $row;
     }
     return $items;
 }
+
 # writing the template
 output_html_with_http_headers $query, $cookie, $template->output;

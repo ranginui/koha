@@ -18,12 +18,14 @@ package C4::Members::AttributeTypes;
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use C4::Context;
 
 use vars qw($VERSION);
 
 BEGIN {
+
     # set the version for version checking
     $VERSION = 3.00;
 }
@@ -77,17 +79,17 @@ If $all_fields is true, then each hashref also contains the other fields from bo
 =cut
 
 sub GetAttributeTypes {
-    my $all = @_ ? shift : 0;
-    my $select = $all ? '*' : 'code, description';
-    my $dbh = C4::Context->dbh;
-    my $sth = $dbh->prepare("SELECT $select FROM borrower_attribute_types ORDER by code");
+    my $all    = @_   ? shift : 0;
+    my $select = $all ? '*'   : 'code, description';
+    my $dbh    = C4::Context->dbh;
+    my $sth    = $dbh->prepare("SELECT $select FROM borrower_attribute_types ORDER by code");
     $sth->execute();
-    my $results = $sth->fetchall_arrayref({});
+    my $results = $sth->fetchall_arrayref( {} );
     return @$results;
 }
 
 sub GetAttributeTypes_hashref {
-    my %hash = map {$_->{code} => $_} GetAttributeTypes(@_);
+    my %hash = map { $_->{code} => $_ } GetAttributeTypes(@_);
     return \%hash;
 }
 
@@ -105,16 +107,16 @@ Create a new attribute type.
 
 sub new {
     my $class = shift;
-    my $self = {};
+    my $self  = {};
 
-    $self->{'code'} = shift;
-    $self->{'description'} = shift;
-    $self->{'repeatable'} = 0;
-    $self->{'unique_id'} = 0;
-    $self->{'opac_display'} = 0;
-    $self->{'password_allowed'} = 0;
-    $self->{'staff_searchable'} = 0;
-    $self->{'display_checkout'} = 0;
+    $self->{'code'}                      = shift;
+    $self->{'description'}               = shift;
+    $self->{'repeatable'}                = 0;
+    $self->{'unique_id'}                 = 0;
+    $self->{'opac_display'}              = 0;
+    $self->{'password_allowed'}          = 0;
+    $self->{'staff_searchable'}          = 0;
+    $self->{'display_checkout'}          = 0;
     $self->{'authorised_value_category'} = '';
 
     bless $self, $class;
@@ -136,15 +138,15 @@ type with the given C<$code> exists, returns undef.
 
 sub fetch {
     my $class = shift;
-    my $code = shift;
-    my $self = {};
-    my $dbh = C4::Context->dbh();
+    my $code  = shift;
+    my $self  = {};
+    my $dbh   = C4::Context->dbh();
 
     my $sth = $dbh->prepare_cached("SELECT * FROM borrower_attribute_types WHERE code = ?");
     $sth->execute($code);
     my $row = $sth->fetchrow_hashref;
     $sth->finish();
-    return undef unless defined $row;    
+    return undef unless defined $row;
 
     $self->{'code'}                      = $row->{'code'};
     $self->{'description'}               = $row->{'description'};
@@ -179,9 +181,10 @@ sub store {
 
     my $dbh = C4::Context->dbh;
     my $sth;
-    my $existing = __PACKAGE__->fetch($self->{'code'});
-    if (defined $existing) {
-        $sth = $dbh->prepare_cached("UPDATE borrower_attribute_types
+    my $existing = __PACKAGE__->fetch( $self->{'code'} );
+    if ( defined $existing ) {
+        $sth = $dbh->prepare_cached(
+            "UPDATE borrower_attribute_types
                                      SET description = ?,
                                          repeatable = ?,
                                          unique_id = ?,
@@ -190,23 +193,26 @@ sub store {
                                          staff_searchable = ?,
                                          authorised_value_category = ?,
                                          display_checkout = ?
-                                     WHERE code = ?");
+                                     WHERE code = ?"
+        );
     } else {
-        $sth = $dbh->prepare_cached("INSERT INTO borrower_attribute_types 
+        $sth = $dbh->prepare_cached(
+            "INSERT INTO borrower_attribute_types 
                                         (description, repeatable, unique_id, opac_display, password_allowed,
                                          staff_searchable, authorised_value_category, display_checkout,code)
                                         VALUES (?, ?, ?, ?, ?,
-                                                ?, ?, ?, ?)");
+                                                ?, ?, ?, ?)"
+        );
     }
-    $sth->bind_param(1, $self->{'description'});
-    $sth->bind_param(2, $self->{'repeatable'});
-    $sth->bind_param(3, $self->{'unique_id'});
-    $sth->bind_param(4, $self->{'opac_display'});
-    $sth->bind_param(5, $self->{'password_allowed'});
-    $sth->bind_param(6, $self->{'staff_searchable'});
-    $sth->bind_param(7, $self->{'authorised_value_category'});
-    $sth->bind_param(8, $self->{'display_checkout'});
-    $sth->bind_param(9, $self->{'code'});
+    $sth->bind_param( 1, $self->{'description'} );
+    $sth->bind_param( 2, $self->{'repeatable'} );
+    $sth->bind_param( 3, $self->{'unique_id'} );
+    $sth->bind_param( 4, $self->{'opac_display'} );
+    $sth->bind_param( 5, $self->{'password_allowed'} );
+    $sth->bind_param( 6, $self->{'staff_searchable'} );
+    $sth->bind_param( 7, $self->{'authorised_value_category'} );
+    $sth->bind_param( 8, $self->{'display_checkout'} );
+    $sth->bind_param( 9, $self->{'code'} );
     $sth->execute;
 
 }
@@ -264,7 +270,7 @@ is interpreted as a Perl boolean.
 
 sub repeatable {
     my $self = shift;
-    @_ ? $self->{'repeatable'} = ((shift) ? 1 : 0) : $self->{'repeatable'};
+    @_ ? $self->{'repeatable'} = ( (shift) ? 1 : 0 ) : $self->{'repeatable'};
 }
 
 =head2 unique_id
@@ -283,8 +289,9 @@ is interpreted as a Perl boolean.
 
 sub unique_id {
     my $self = shift;
-    @_ ? $self->{'unique_id'} = ((shift) ? 1 : 0) : $self->{'unique_id'};
+    @_ ? $self->{'unique_id'} = ( (shift) ? 1 : 0 ) : $self->{'unique_id'};
 }
+
 =head2 opac_display
 
 =over 4
@@ -301,8 +308,9 @@ is interpreted as a Perl boolean.
 
 sub opac_display {
     my $self = shift;
-    @_ ? $self->{'opac_display'} = ((shift) ? 1 : 0) : $self->{'opac_display'};
+    @_ ? $self->{'opac_display'} = ( (shift) ? 1 : 0 ) : $self->{'opac_display'};
 }
+
 =head2 password_allowed
 
 =over 4
@@ -319,8 +327,9 @@ is interpreted as a Perl boolean.
 
 sub password_allowed {
     my $self = shift;
-    @_ ? $self->{'password_allowed'} = ((shift) ? 1 : 0) : $self->{'password_allowed'};
+    @_ ? $self->{'password_allowed'} = ( (shift) ? 1 : 0 ) : $self->{'password_allowed'};
 }
+
 =head2 staff_searchable
 
 =over 4
@@ -337,7 +346,7 @@ is interpreted as a Perl boolean.
 
 sub staff_searchable {
     my $self = shift;
-    @_ ? $self->{'staff_searchable'} = ((shift) ? 1 : 0) : $self->{'staff_searchable'};
+    @_ ? $self->{'staff_searchable'} = ( (shift) ? 1 : 0 ) : $self->{'staff_searchable'};
 }
 
 =head2 display_checkout
@@ -356,7 +365,7 @@ is interpreted as a Perl boolean.
 
 sub display_checkout {
     my $self = shift;
-    @_ ? $self->{'display_checkout'} = ((shift) ? 1 : 0) : $self->{'display_checkout'};
+    @_ ? $self->{'display_checkout'} = ( (shift) ? 1 : 0 ) : $self->{'display_checkout'};
 }
 
 =head2 authorised_value_category
@@ -394,7 +403,7 @@ type may be specified either by an object or by a code.
 sub delete {
     my $arg = shift;
     my $code;
-    if (ref($arg) eq __PACKAGE__) {
+    if ( ref($arg) eq __PACKAGE__ ) {
         $code = $arg->{'code'};
     } else {
         $code = shift;
@@ -422,10 +431,12 @@ sub num_patrons {
     my $self = shift;
 
     my $dbh = C4::Context->dbh;
-    my $sth = $dbh->prepare_cached("SELECT COUNT(DISTINCT borrowernumber)
+    my $sth = $dbh->prepare_cached(
+        "SELECT COUNT(DISTINCT borrowernumber)
                                     FROM borrower_attributes
-                                    WHERE code = ?");
-    $sth->execute($self->{code});
+                                    WHERE code = ?"
+    );
+    $sth->execute( $self->{code} );
     my ($count) = $sth->fetchrow_array;
     $sth->finish;
     return $count;
@@ -445,19 +456,21 @@ have an attribute with the specifie value.
 =cut
 
 sub get_patrons {
-    my $self = shift;
+    my $self  = shift;
     my $value = shift;
 
     my $dbh = C4::Context->dbh;
-    my $sth = $dbh->prepare_cached("SELECT DISTINCT borrowernumber
+    my $sth = $dbh->prepare_cached(
+        "SELECT DISTINCT borrowernumber
                                     FROM borrower_attributes
                                     WHERE code = ?
-                                    AND   attribute = ?");
-    $sth->execute($self->{code}, $value);
+                                    AND   attribute = ?"
+    );
+    $sth->execute( $self->{code}, $value );
     my @results;
-    while (my ($borrowernumber) = $sth->fetchrow_array) {
+    while ( my ($borrowernumber) = $sth->fetchrow_array ) {
         push @results, $borrowernumber;
-    } 
+    }
     return @results;
 }
 

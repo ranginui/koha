@@ -1,6 +1,5 @@
 #!/usr/bin/perl
 
-
 #written 14/1/2000
 #script to display reports
 
@@ -22,6 +21,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use CGI;
 use C4::Context;
@@ -34,11 +34,10 @@ use C4::Debug;
 use vars qw($debug);
 
 my $input = new CGI;
-my $time  = $input->param('time') || '';
+my $time = $input->param('time') || '';
 
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => "circ/stats.tmpl",
+    {   template_name   => "circ/stats.tmpl",
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
@@ -52,25 +51,21 @@ my $date2;
 if ( $time eq 'yesterday' ) {
     $date  = ParseDate('yesterday');
     $date2 = ParseDate('today');
-}
-elsif ( $time eq 'today' ) {
+} elsif ( $time eq 'today' ) {
     $date  = ParseDate('today');
     $date2 = ParseDate('tomorrow');
-}
-elsif ( $time eq 'daybefore' ) {
+} elsif ( $time eq 'daybefore' ) {
     $date  = ParseDate('2 days ago');
     $date2 = ParseDate('yesterday');
-}
-elsif ( $time eq 'month' ) {
+} elsif ( $time eq 'month' ) {
     $date  = ParseDate('1 month ago');
     $date2 = ParseDate('today');
-}
-elsif ( $time =~ /\// ) {
+} elsif ( $time =~ /\// ) {
     $date  = ParseDate($time);
     $date2 = ParseDateDelta('+ 1 day');
     $date2 = DateCalc( $date, $date2 );
 } else {
-    $template->param(notime => '1');    # TODO: add error feedback if time sent, but unrecognized
+    $template->param( notime => '1' );    # TODO: add error feedback if time sent, but unrecognized
     output_html_with_http_headers $input, $cookie, $template->output;
     exit;
 }
@@ -90,13 +85,12 @@ my $i = 0;
 
 while ( $i < $count ) {
     $debug and warn " pay : " . $payments[$i]{'timestamp'};
-    my $time     = $payments[$i]{'datetime'};
-    my $payments = $payments[$i]{'value'};
-    my $charge   = 0;
-    my @temp     = split(/ /, $payments[$i]{'datetime'});
-    my $date     = $temp[0];
-    my @charges  =
-      getcharges( $payments[$i]{'borrowernumber'}, $payments[$i]{'timestamp'} );
+    my $time         = $payments[$i]{'datetime'};
+    my $payments     = $payments[$i]{'value'};
+    my $charge       = 0;
+    my @temp         = split( / /, $payments[$i]{'datetime'} );
+    my $date         = $temp[0];
+    my @charges      = getcharges( $payments[$i]{'borrowernumber'}, $payments[$i]{'timestamp'} );
     my $count        = @charges;
     my $temptotalf   = 0;
     my $temptotalr   = 0;
@@ -117,55 +111,42 @@ while ( $i < $count ) {
         push( @loop, \%row );
         if ( $payments[$i]{'accountytpe'} ne 'W' ) {
             if ( $charges[$i2]->{'accounttype'} eq 'Rent' ) {
-                $temptotalr +=
-                  $charges[$i2]->{'amount'} -
-                  $charges[$i2]->{'amountoutstanding'};
+                $temptotalr += $charges[$i2]->{'amount'} - $charges[$i2]->{'amountoutstanding'};
             }
             if (   $charges[$i2]->{'accounttype'} eq 'F'
                 || $charges[$i2]->{'accounttype'} eq 'FU'
-                || $charges[$i2]->{'accounttype'} eq 'FN' )
-            {
-                $temptotalf +=
-                  $charges[$i2]->{'amount'} -
-                  $charges[$i2]->{'amountoutstanding'};
+                || $charges[$i2]->{'accounttype'} eq 'FN' ) {
+                $temptotalf += $charges[$i2]->{'amount'} - $charges[$i2]->{'amountoutstanding'};
             }
             if ( $charges[$i2]->{'accounttype'} eq 'Res' ) {
-                $temptotalres +=
-                  $charges[$i2]->{'amount'} -
-                  $charges[$i2]->{'amountoutstanding'};
+                $temptotalres += $charges[$i2]->{'amount'} - $charges[$i2]->{'amountoutstanding'};
             }
             if ( $charges[$i2]->{'accounttype'} eq 'R' ) {
-                $temptotalren +=
-                  $charges[$i2]->{'amount'} -
-                  $charges[$i2]->{'amountoutstanding'};
+                $temptotalren += $charges[$i2]->{'amount'} - $charges[$i2]->{'amountoutstanding'};
             }
         }
     }
-    my $time2 = $payments[$i]{'date'};
-    my $branch = Getpaidbranch( $time2, $payments[$i]{'borrowernumber'} );
+    my $time2          = $payments[$i]{'date'};
+    my $branch         = Getpaidbranch( $time2, $payments[$i]{'borrowernumber'} );
     my $borrowernumber = $payments[$i]{'borrowernumber'};
     my $oldtime        = $payments[$i]{'timestamp'};
     my $oldtype        = $payments[$i]{'accounttype'};
 
     while ($borrowernumber eq $payments[$i]{'borrowernumber'}
         && $oldtype == $payments[$i]{'accounttype'}
-        && $oldtime eq $payments[$i]{'timestamp'} )
-    {
+        && $oldtime eq $payments[$i]{'timestamp'} ) {
         my $xtime2 = $payments[$i]{'date'};
         my $branch = Getpaidbranch( $xtime2, $payments[$i]{'borrowernumber'} );
         if ( $payments[$i]{'accounttype'} eq 'W' ) {
             $totalw += $payments[$i]{'amount'};
-        }
-        else {
+        } else {
             $payments[$i]{'amount'} = $payments[$i]{'amount'} * -1;
             $total += $payments[$i]{'amount'};
         }
 
         #FIXME: display layer HTML
         %row = (
-            name => "<b>"
-              . $payments[$i]{'firstname'}
-              . $payments[$i]{'surname'} . "</b>",
+            name   => "<b>" . $payments[$i]{'firstname'} . $payments[$i]{'surname'} . "</b>",
             type   => $payments[$i]{'accounttype'},
             time   => $payments[$i]{'date'},
             amount => $payments[$i]{'amount'},

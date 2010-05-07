@@ -17,7 +17,6 @@
 # with Koha; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-
 =head1 NAME
 
 opac-ISBDdetail.pl : script to show a biblio in ISBD format
@@ -59,8 +58,7 @@ use C4::External::Amazon;
 
 my $query = CGI->new();
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => "opac-ISBDdetail.tmpl",
+    {   template_name   => "opac-ISBDdetail.tmpl",
         query           => $query,
         type            => "opac",
         authnotrequired => 1,
@@ -71,47 +69,45 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
 my $biblionumber = $query->param('biblionumber');
 
 $template->param( 'AllowOnShelfHolds' => C4::Context->preference('AllowOnShelfHolds') );
-$template->param( 'ItemsIssued' => CountItemsIssued( $biblionumber ) );
+$template->param( 'ItemsIssued'       => CountItemsIssued($biblionumber) );
 
-my $marcflavour      = C4::Context->preference("marcflavour");
-my $record = GetMarcBiblio($biblionumber);
+my $marcflavour = C4::Context->preference("marcflavour");
+my $record      = GetMarcBiblio($biblionumber);
 
 # some useful variables for enhanced content;
 # in each case, we're grabbing the first value we find in
 # the record and normalizing it
-my $upc = GetNormalizedUPC($record,$marcflavour);
-my $ean = GetNormalizedEAN($record,$marcflavour);
-my $oclc = GetNormalizedOCLCNumber($record,$marcflavour);
-my $isbn = GetNormalizedISBN(undef,$record,$marcflavour);
-my $content_identifier_exists = 1 if ($isbn or $ean or $oclc or $upc);
+my $upc = GetNormalizedUPC( $record, $marcflavour );
+my $ean = GetNormalizedEAN( $record, $marcflavour );
+my $oclc = GetNormalizedOCLCNumber( $record, $marcflavour );
+my $isbn = GetNormalizedISBN( undef, $record, $marcflavour );
+my $content_identifier_exists = 1 if ( $isbn or $ean or $oclc or $upc );
 $template->param(
-    normalized_upc => $upc,
-    normalized_ean => $ean,
-    normalized_oclc => $oclc,
-    normalized_isbn => $isbn,
-	content_identifier_exists => $content_identifier_exists,
+    normalized_upc            => $upc,
+    normalized_ean            => $ean,
+    normalized_oclc           => $oclc,
+    normalized_isbn           => $isbn,
+    content_identifier_exists => $content_identifier_exists,
 );
 
 #coping with subscriptions
 my $subscriptionsnumber = CountSubscriptionFromBiblionumber($biblionumber);
-my $dbh = C4::Context->dbh;
+my $dbh                 = C4::Context->dbh;
 my $dat                 = TransformMarcToKoha( $dbh, $record );
-my @subscriptions       =
-  GetSubscriptions( $dat->{title}, $dat->{issn}, $biblionumber );
+my @subscriptions       = GetSubscriptions( $dat->{title}, $dat->{issn}, $biblionumber );
 my @subs;
 foreach my $subscription (@subscriptions) {
     my %cell;
-	my $serials_to_display;
+    my $serials_to_display;
     $cell{subscriptionid}    = $subscription->{subscriptionid};
     $cell{subscriptionnotes} = $subscription->{notes};
     $cell{branchcode}        = $subscription->{branchcode};
 
     #get the three latest serials.
-	$serials_to_display = $subscription->{opacdisplaycount};
-	$serials_to_display = C4::Context->preference('OPACSerialIssueDisplayCount') unless $serials_to_display;
-	$cell{opacdisplaycount} = $serials_to_display;
-    $cell{latestserials} =
-      GetLatestSerials( $subscription->{subscriptionid}, $serials_to_display );
+    $serials_to_display     = $subscription->{opacdisplaycount};
+    $serials_to_display     = C4::Context->preference('OPACSerialIssueDisplayCount') unless $serials_to_display;
+    $cell{opacdisplaycount} = $serials_to_display;
+    $cell{latestserials} = GetLatestSerials( $subscription->{subscriptionid}, $serials_to_display );
     push @subs, \%cell;
 }
 
@@ -120,8 +116,6 @@ $template->param(
     subscriptionsnumber => $subscriptionsnumber,
 );
 
-<<<<<<< HEAD:opac/opac-ISBDdetail.pl
-=======
 ## Check if an item Can be holds on shelf
 $template->param(C4::Search::enabled_opac_search_views);
 my @all_items = &GetItemsInfo( $biblionumber, 'opac' );
@@ -131,26 +125,25 @@ for my $item (@all_items){
 }
 $template->param( 'AllowOnShelfHolds' => $allowonshelfholds );
 
->>>>>>> MT2631 : adds sysprefs for MARC or ISBD display in OPAC:opac/opac-ISBDdetail.pl
 # my @blocs = split /\@/,$ISBD;
 # my @fields = $record->fields();
 my $res = GetISBDView($biblionumber, "opac");
 
-my $reviews = getreviews( $biblionumber, 1 );
-foreach ( @$reviews ) {
+  my $reviews = getreviews( $biblionumber, 1 );
+foreach (@$reviews) {
     my $borrower_number_review = $_->{borrowernumber};
-    my $borrowerData           = GetMember('borrowernumber' =>$borrower_number_review);
+    my $borrowerData = GetMember( 'borrowernumber' => $borrower_number_review );
+
     # setting some borrower info into this hash
     $_->{title}     = $borrowerData->{'title'};
     $_->{surname}   = $borrowerData->{'surname'};
     $_->{firstname} = $borrowerData->{'firstname'};
 }
 
-
 $template->param(
     ISBD         => $res,
     biblionumber => $biblionumber,
-    reviews             => $reviews,
+    reviews      => $reviews,
 );
 
 ## Amazon.com stuff
@@ -179,8 +172,7 @@ if ( C4::Context->preference("OPACAmazonEnabled") == 1 ) {
         }
         for my $reviews ( @{ $details->{Reviews}->{CustomerReview} } ) {
             push @reviews,
-              +{
-                Summary => $reviews->{Summary},
+              +{Summary => $reviews->{Summary},
                 Comment => $reviews->{Comment},
               };
         }

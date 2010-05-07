@@ -1,6 +1,5 @@
 #!/usr/bin/perl 
 
-
 # Copyright 2000-2002 Katipo Communications
 #
 # This file is part of Koha.
@@ -19,6 +18,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use CGI;
 use C4::Output;
@@ -29,7 +29,7 @@ use C4::AuthoritiesMarc;
 use C4::Context;
 use MARC::Record;
 use C4::Log;
-use C4::Koha;    # XXX subfield_is_koha_internal_p
+use C4::Koha;      # XXX subfield_is_koha_internal_p
 use C4::Branch;    # XXX subfield_is_koha_internal_p
 use C4::ClassSource;
 use C4::ImportBatch;
@@ -43,7 +43,7 @@ if ( C4::Context->preference('marcflavour') eq 'UNIMARC' ) {
     MARC::File::XML->default_record_format('UNIMARC');
 }
 
-our($tagslib,$authorised_values_sth,$is_a_modif,$usedTagsLib,$mandatory_z3950);
+our ( $tagslib, $authorised_values_sth, $is_a_modif, $usedTagsLib, $mandatory_z3950 );
 
 =item MARCfindbreeding
 
@@ -57,12 +57,13 @@ Returns as second parameter the character encoding.
 =cut
 
 sub MARCfindbreeding {
-    my ( $id ) = @_;
-    my ($marc, $encoding) = GetImportRecordMarc($id);
+    my ($id) = @_;
+    my ( $marc, $encoding ) = GetImportRecordMarc($id);
+
     # remove the - in isbn, koha store isbn without any -
     if ($marc) {
         my $record = MARC::Record->new_from_usmarc($marc);
-        my ($isbnfield,$isbnsubfield) = GetMarcFromKohaField('biblioitems.isbn','');
+        my ( $isbnfield, $isbnsubfield ) = GetMarcFromKohaField( 'biblioitems.isbn', '' );
         if ( $record->field($isbnfield) ) {
             foreach my $field ( $record->field($isbnfield) ) {
                 foreach my $subfield ( $field->subfield($isbnsubfield) ) {
@@ -72,10 +73,11 @@ sub MARCfindbreeding {
                 }
             }
         }
+
         # fix the unimarc 100 coded field (with unicode information)
-        if (C4::Context->preference('marcflavour') eq 'UNIMARC' && $record->subfield(100,'a')) {
-            my $f100a=$record->subfield(100,'a');
-            my $f100 = $record->field(100);
+        if ( C4::Context->preference('marcflavour') eq 'UNIMARC' && $record->subfield( 100, 'a' ) ) {
+            my $f100a    = $record->subfield( 100, 'a' );
+            my $f100     = $record->field(100);
             my $f100temp = $f100->as_string;
             $record->delete_field($f100);
             if ( length($f100temp) > 28 ) {
@@ -85,38 +87,32 @@ sub MARCfindbreeding {
                 $record->insert_fields_ordered($f100);
             }
         }
-		
-        if ( !defined(ref($record)) ) {
+
+        if ( !defined( ref($record) ) ) {
             return -1;
-        }
-        else {
+        } else {
+
             # normalize author : probably UNIMARC specific...
             if (    C4::Context->preference("z3950NormalizeAuthor")
-                and C4::Context->preference("z3950AuthorAuthFields") )
-            {
-                my ( $tag, $subfield ) = GetMarcFromKohaField("biblio.author", '');
+                and C4::Context->preference("z3950AuthorAuthFields") ) {
+                my ( $tag, $subfield ) = GetMarcFromKohaField( "biblio.author", '' );
 
- #                 my $summary = C4::Context->preference("z3950authortemplate");
-                my $auth_fields =
-                  C4::Context->preference("z3950AuthorAuthFields");
+                #                 my $summary = C4::Context->preference("z3950authortemplate");
+                my $auth_fields = C4::Context->preference("z3950AuthorAuthFields");
                 my @auth_fields = split /,/, $auth_fields;
                 my $field;
 
                 if ( $record->field($tag) ) {
                     foreach my $tmpfield ( $record->field($tag)->subfields ) {
 
-       #                        foreach my $subfieldcode ($tmpfield->subfields){
+                        #                        foreach my $subfieldcode ($tmpfield->subfields){
                         my $subfieldcode  = shift @$tmpfield;
                         my $subfieldvalue = shift @$tmpfield;
                         if ($field) {
-                            $field->add_subfields(
-                                "$subfieldcode" => $subfieldvalue )
+                            $field->add_subfields( "$subfieldcode" => $subfieldvalue )
                               if ( $subfieldcode ne $subfield );
-                        }
-                        else {
-                            $field =
-                              MARC::Field->new( $tag, "", "",
-                                $subfieldcode => $subfieldvalue )
+                        } else {
+                            $field = MARC::Field->new( $tag, "", "", $subfieldcode => $subfieldvalue )
                               if ( $subfieldcode ne $subfield );
                         }
                     }
@@ -130,18 +126,12 @@ sub MARCfindbreeding {
                     my $number    = $record->field($fieldtag)->subfield('d');
                     if ($title) {
 
-#                         $field->add_subfields("$subfield"=>"[ ".ucfirst($title).ucfirst($firstname)." ".$number." ]");
-                        $field->add_subfields(
-                                "$subfield" => ucfirst($title) . " "
-                              . ucfirst($firstname) . " "
-                              . $number );
-                    }
-                    else {
+                        #                         $field->add_subfields("$subfield"=>"[ ".ucfirst($title).ucfirst($firstname)." ".$number." ]");
+                        $field->add_subfields( "$subfield" => ucfirst($title) . " " . ucfirst($firstname) . " " . $number );
+                    } else {
 
-#                       $field->add_subfields("$subfield"=>"[ ".ucfirst($firstname).", ".ucfirst($lastname)." ]");
-                        $field->add_subfields(
-                            "$subfield" => ucfirst($firstname) . ", "
-                              . ucfirst($lastname) );
+                        #                       $field->add_subfields("$subfield"=>"[ ".ucfirst($firstname).", ".ucfirst($lastname)." ]");
+                        $field->add_subfields( "$subfield" => ucfirst($firstname) . ", " . ucfirst($lastname) );
                     }
                 }
                 $record->insert_fields_ordered($field);
@@ -157,7 +147,7 @@ sub MARCfindbreeding {
 =cut
 
 sub build_authorized_values_list ($$$$$$$) {
-    my ( $tag, $subfield, $value, $dbh, $authorised_values_sth,$index_tag,$index_subfield ) = @_;
+    my ( $tag, $subfield, $value, $dbh, $authorised_values_sth, $index_tag, $index_subfield ) = @_;
 
     my @authorised_values;
     my %authorised_lib;
@@ -166,11 +156,13 @@ sub build_authorized_values_list ($$$$$$$) {
 
     #---- branch
     if ( $tagslib->{$tag}->{$subfield}->{'authorised_value'} eq "branches" ) {
+
         #Use GetBranches($onlymine)
-        my $onlymine=C4::Context->preference('IndependantBranches') && 
-                C4::Context->userenv && 
-                C4::Context->userenv->{flags} % 2 == 0 && 
-                C4::Context->userenv->{branch};
+        my $onlymine =
+             C4::Context->preference('IndependantBranches')
+          && C4::Context->userenv
+          && C4::Context->userenv->{flags} % 2 == 0
+          && C4::Context->userenv->{branch};
         my $branches = GetBranches($onlymine);
         my @branchloop;
         foreach my $thisbranch ( sort keys %$branches ) {
@@ -179,26 +171,22 @@ sub build_authorized_values_list ($$$$$$$) {
         }
 
         #----- itemtypes
-    }
-    elsif ( $tagslib->{$tag}->{$subfield}->{authorised_value} eq "itemtypes" ) {
-        my $sth =
-          $dbh->prepare(
-            "select itemtype,description from itemtypes order by description");
+    } elsif ( $tagslib->{$tag}->{$subfield}->{authorised_value} eq "itemtypes" ) {
+        my $sth = $dbh->prepare("select itemtype,description from itemtypes order by description");
         $sth->execute;
         push @authorised_values, ""
           unless ( $tagslib->{$tag}->{$subfield}->{mandatory} );
-          
+
         my $itemtype;
-        
+
         while ( my ( $itemtype, $description ) = $sth->fetchrow_array ) {
             push @authorised_values, $itemtype;
             $authorised_lib{$itemtype} = $description;
         }
         $value = $itemtype unless ($value);
 
-          #---- class_sources
-    }
-    elsif ( $tagslib->{$tag}->{$subfield}->{authorised_value} eq "cn_source" ) {
+        #---- class_sources
+    } elsif ( $tagslib->{$tag}->{$subfield}->{authorised_value} eq "cn_source" ) {
         push @authorised_values, ""
           unless ( $tagslib->{$tag}->{$subfield}->{mandatory} );
 
@@ -206,20 +194,20 @@ sub build_authorized_values_list ($$$$$$$) {
 
         my $default_source = C4::Context->preference("DefaultClassificationSource");
 
-        foreach my $class_source (sort keys %$class_sources) {
-            next unless $class_sources->{$class_source}->{'used'} or
-                        ($value and $class_source eq $value) or
-                        ($class_source eq $default_source);
+        foreach my $class_source ( sort keys %$class_sources ) {
+            next
+              unless $class_sources->{$class_source}->{'used'}
+                  or ( $value and $class_source eq $value )
+                  or ( $class_source eq $default_source );
             push @authorised_values, $class_source;
             $authorised_lib{$class_source} = $class_sources->{$class_source}->{'description'};
-            $value = $class_source unless ($value);
+            $value = $class_source   unless ($value);
             $value = $default_source unless ($value);
         }
+
         #---- "true" authorised value
-    }
-    else {
-        $authorised_values_sth->execute(
-            $tagslib->{$tag}->{$subfield}->{authorised_value} );
+    } else {
+        $authorised_values_sth->execute( $tagslib->{$tag}->{$subfield}->{authorised_value} );
 
         push @authorised_values, ""
           unless ( $tagslib->{$tag}->{$subfield}->{mandatory} );
@@ -230,7 +218,7 @@ sub build_authorized_values_list ($$$$$$$) {
         }
     }
     return CGI::scrolling_list(
-        -name     => "tag_".$tag."_subfield_".$subfield."_".$index_tag."_".$index_subfield,
+        -name     => "tag_" . $tag . "_subfield_" . $subfield . "_" . $index_tag . "_" . $index_subfield,
         -values   => \@authorised_values,
         -default  => $value,
         -labels   => \%authorised_lib,
@@ -238,7 +226,7 @@ sub build_authorized_values_list ($$$$$$$) {
         -size     => 1,
         -multiple => 0,
         -tabindex => 1,
-        -id       => "tag_".$tag."_subfield_".$subfield."_".$index_tag."_".$index_subfield,
+        -id       => "tag_" . $tag . "_subfield_" . $subfield . "_" . $index_tag . "_" . $index_subfield,
         -class    => "input_marceditor",
     );
 }
@@ -249,8 +237,8 @@ sub build_authorized_values_list ($$$$$$$) {
 
 =cut
 
-sub CreateKey(){
-    return int(rand(1000000));
+sub CreateKey() {
+    return int( rand(1000000) );
 }
 
 =item GetMandatoryFieldZ3950
@@ -260,20 +248,20 @@ sub CreateKey(){
     
 =cut
 
-sub GetMandatoryFieldZ3950($){
+sub GetMandatoryFieldZ3950($) {
     my $frameworkcode = shift;
-    my @isbn   = GetMarcFromKohaField('biblioitems.isbn',$frameworkcode);
-    my @title  = GetMarcFromKohaField('biblio.title',$frameworkcode);
-    my @author = GetMarcFromKohaField('biblio.author',$frameworkcode);
-    my @issn   = GetMarcFromKohaField('biblioitems.issn',$frameworkcode);
-    my @lccn   = GetMarcFromKohaField('biblioitems.lccn',$frameworkcode);
-    
+    my @isbn          = GetMarcFromKohaField( 'biblioitems.isbn', $frameworkcode );
+    my @title         = GetMarcFromKohaField( 'biblio.title', $frameworkcode );
+    my @author        = GetMarcFromKohaField( 'biblio.author', $frameworkcode );
+    my @issn          = GetMarcFromKohaField( 'biblioitems.issn', $frameworkcode );
+    my @lccn          = GetMarcFromKohaField( 'biblioitems.lccn', $frameworkcode );
+
     return {
-        $isbn[0].$isbn[1]     => 'isbn',
-        $title[0].$title[1]   => 'title',
-        $author[0].$author[1] => 'author',
-        $issn[0].$issn[1]     => 'issn',
-        $lccn[0].$lccn[1]     => 'lccn',
+        $isbn[0] . $isbn[1]     => 'isbn',
+        $title[0] . $title[1]   => 'title',
+        $author[0] . $author[1] => 'author',
+        $issn[0] . $issn[1]     => 'issn',
+        $lccn[0] . $lccn[1]     => 'lccn',
     };
 }
 
@@ -284,17 +272,17 @@ sub GetMandatoryFieldZ3950($){
 =cut
 
 sub create_input {
-    my ( $tag, $subfield, $value, $index_tag, $tabloop, $rec, $authorised_values_sth,$cgi ) = @_;
-    
-    my $index_subfield = CreateKey(); # create a specifique key for each subfield
+    my ( $tag, $subfield, $value, $index_tag, $tabloop, $rec, $authorised_values_sth, $cgi ) = @_;
+
+    my $index_subfield = CreateKey();    # create a specifique key for each subfield
 
     $value =~ s/"/&quot;/g;
 
     # determine maximum length; 9999 bytes per ISO 2709 except for leader and MARC21 008
     my $max_length = 9999;
-    if ($tag eq '000') {
+    if ( $tag eq '000' ) {
         $max_length = 24;
-    } elsif ($tag eq '008' and C4::Context->preference('marcflavour') eq 'MARC21')  {
+    } elsif ( $tag eq '008' and C4::Context->preference('marcflavour') eq 'MARC21' ) {
         $max_length = 40;
     }
 
@@ -309,9 +297,9 @@ sub create_input {
         $value =~ s/YYYY/$year/g;
         $value =~ s/MM/$month/g;
         $value =~ s/DD/$day/g;
-        my $username=(C4::Context->userenv?C4::Context->userenv->{'surname'}:"superlibrarian");    
-        $value=~s/user/$username/g;
-    
+        my $username = ( C4::Context->userenv ? C4::Context->userenv->{'surname'} : "superlibrarian" );
+        $value =~ s/user/$username/g;
+
     }
     my $dbh = C4::Context->dbh;
 
@@ -321,48 +309,46 @@ sub create_input {
     $id_subfield = "00" if $id_subfield eq "@";
 
     my %subfield_data = (
-        tag        => $tag,
-        subfield   => $id_subfield,
-        marc_lib   => substr( $tagslib->{$tag}->{$subfield}->{lib}, 0, 22 ),
-        marc_lib_plain => $tagslib->{$tag}->{$subfield}->{lib}, 
+        tag            => $tag,
+        subfield       => $id_subfield,
+        marc_lib       => substr( $tagslib->{$tag}->{$subfield}->{lib}, 0, 22 ),
+        marc_lib_plain => $tagslib->{$tag}->{$subfield}->{lib},
         tag_mandatory  => $tagslib->{$tag}->{mandatory},
         mandatory      => $tagslib->{$tag}->{$subfield}->{mandatory},
         repeatable     => $tagslib->{$tag}->{$subfield}->{repeatable},
         kohafield      => $tagslib->{$tag}->{$subfield}->{kohafield},
         index          => $index_tag,
-        id             => "tag_".$tag."_subfield_".$id_subfield."_".$index_tag."_".$index_subfield,
+        id             => "tag_" . $tag . "_subfield_" . $id_subfield . "_" . $index_tag . "_" . $index_subfield,
         value          => $value,
         random         => CreateKey(),
     );
 
-    if(exists $mandatory_z3950->{$tag.$subfield}){
-        $subfield_data{z3950_mandatory} = $mandatory_z3950->{$tag.$subfield};
+    if ( exists $mandatory_z3950->{ $tag . $subfield } ) {
+        $subfield_data{z3950_mandatory} = $mandatory_z3950->{ $tag . $subfield };
     }
+
     # decide if the subfield must be expanded (visible) by default or not
     # if it is mandatory, then expand. If it is hidden explicitly by the hidden flag, hidden anyway
     $subfield_data{visibility} = "display:none;"
-        if (    ($tagslib->{$tag}->{$subfield}->{hidden} % 2 == 1) and $value ne ''
-            or ($value eq '' and !$tagslib->{$tag}->{$subfield}->{mandatory})
-        );
+      if ( ( $tagslib->{$tag}->{$subfield}->{hidden} % 2 == 1 ) and $value ne ''
+        or ( $value eq '' and !$tagslib->{$tag}->{$subfield}->{mandatory} ) );
+
     # always expand all subfields of a mandatory field
     $subfield_data{visibility} = "" if $tagslib->{$tag}->{mandatory};
+
     # it's an authorised field
     if ( $tagslib->{$tag}->{$subfield}->{authorised_value} ) {
-        $subfield_data{marc_value} =
-          build_authorized_values_list( $tag, $subfield, $value, $dbh,
-            $authorised_values_sth,$index_tag,$index_subfield );
+        $subfield_data{marc_value} = build_authorized_values_list( $tag, $subfield, $value, $dbh, $authorised_values_sth, $index_tag, $index_subfield );
 
-    # it's a subfield $9 linking to an authority record - see bug 2206
-    }
-    elsif ($subfield eq "9" and
-           exists($tagslib->{$tag}->{'a'}->{authtypecode}) and
-           defined($tagslib->{$tag}->{'a'}->{authtypecode}) and
-           $tagslib->{$tag}->{'a'}->{authtypecode} ne '') {
+        # it's a subfield $9 linking to an authority record - see bug 2206
+    } elsif ( $subfield eq "9"
+        and exists( $tagslib->{$tag}->{'a'}->{authtypecode} )
+        and defined( $tagslib->{$tag}->{'a'}->{authtypecode} )
+        and $tagslib->{$tag}->{'a'}->{authtypecode} ne '' ) {
 
-        $subfield_data{marc_value} =
-            "<input type=\"text\"
-                    id=\"".$subfield_data{id}."\"
-                    name=\"".$subfield_data{id}."\"
+        $subfield_data{marc_value} = "<input type=\"text\"
+                    id=\"" . $subfield_data{id} . "\"
+                    name=\"" . $subfield_data{id} . "\"
                     value=\"$value\"
                     class=\"input_marceditor\"
                     tabindex=\"1\"
@@ -371,14 +357,12 @@ sub create_input {
                     readonly=\"readonly\"
                     \/>";
 
-    # it's a thesaurus / authority field
-    }
-    elsif ( $tagslib->{$tag}->{$subfield}->{authtypecode} ) {
-     if (C4::Context->preference("BiblioAddsAuthorities")) {
-        $subfield_data{marc_value} =
-            "<input type=\"text\"
-                    id=\"".$subfield_data{id}."\"
-                    name=\"".$subfield_data{id}."\"
+        # it's a thesaurus / authority field
+    } elsif ( $tagslib->{$tag}->{$subfield}->{authtypecode} ) {
+        if ( C4::Context->preference("BiblioAddsAuthorities") ) {
+            $subfield_data{marc_value} = "<input type=\"text\"
+                    id=\"" . $subfield_data{id} . "\"
+                    name=\"" . $subfield_data{id} . "\"
                     value=\"$value\"
                     class=\"input_marceditor\"
                     tabindex=\"1\"
@@ -386,13 +370,14 @@ sub create_input {
                     maxlength=\"$max_length\"
                     \/>
                     <a href=\"#\" class=\"buttonDot\"
-                        onclick=\"openAuth(this.parentNode.getElementsByTagName('input')[1].id,'".$tagslib->{$tag}->{$subfield}->{authtypecode}."'); return false;\" tabindex=\"1\" title=\"Tag Editor\">...</a>
+                        onclick=\"openAuth(this.parentNode.getElementsByTagName('input')[1].id,'"
+              . $tagslib->{$tag}->{$subfield}->{authtypecode}
+              . "'); return false;\" tabindex=\"1\" title=\"Tag Editor\">...</a>
             ";
-      } else {
-        $subfield_data{marc_value} =
-            "<input type=\"text\"
-                    id=\"".$subfield_data{id}."\"
-                    name=\"".$subfield_data{id}."\"
+        } else {
+            $subfield_data{marc_value} = "<input type=\"text\"
+                    id=\"" . $subfield_data{id} . "\"
+                    name=\"" . $subfield_data{id} . "\"
                     value=\"$value\"
                     class=\"input_marceditor\"
                     tabindex=\"1\"
@@ -400,30 +385,31 @@ sub create_input {
                     maxlength=\"$max_length\"
                     readonly=\"readonly\"
                     \/><a href=\"#\" class=\"buttonDot\"
-                        onclick=\"openAuth(this.parentNode.getElementsByTagName('input')[1].id,'".$tagslib->{$tag}->{$subfield}->{authtypecode}."'); return false;\" tabindex=\"1\" title=\"Tag Editor\">...</a>
+                        onclick=\"openAuth(this.parentNode.getElementsByTagName('input')[1].id,'"
+              . $tagslib->{$tag}->{$subfield}->{authtypecode}
+              . "'); return false;\" tabindex=\"1\" title=\"Tag Editor\">...</a>
             ";
-      }
-    # it's a plugin field
-    }
-    elsif ( $tagslib->{$tag}->{$subfield}->{'value_builder'} ) {
+        }
+
+        # it's a plugin field
+    } elsif ( $tagslib->{$tag}->{$subfield}->{'value_builder'} ) {
 
         # opening plugin. Just check wether we are on a developper computer on a production one
         # (the cgidir differs)
         my $cgidir = C4::Context->intranetdir . "/cgi-bin/cataloguing/value_builder";
         unless ( opendir( DIR, "$cgidir" ) ) {
             $cgidir = C4::Context->intranetdir . "/cataloguing/value_builder";
-            closedir( DIR );
+            closedir(DIR);
         }
         my $plugin = $cgidir . "/" . $tagslib->{$tag}->{$subfield}->{'value_builder'};
-        if (do $plugin) {
+        if ( do $plugin ) {
             my $extended_param = plugin_parameters( $dbh, $rec, $tagslib, $subfield_data{id}, $tabloop );
             my ( $function_name, $javascript ) = plugin_javascript( $dbh, $rec, $tagslib, $subfield_data{id}, $tabloop );
-        
-            $subfield_data{marc_value} =
-                    "<input tabindex=\"1\"
+
+            $subfield_data{marc_value} = "<input tabindex=\"1\"
                             type=\"text\"
-                            id=\"".$subfield_data{id}."\"
-                            name=\"".$subfield_data{id}."\"
+                            id=\"" . $subfield_data{id} . "\"
+                            name=\"" . $subfield_data{id} . "\"
                             value=\"$value\"
                             class=\"input_marceditor\"
                             onfocus=\"Focus$function_name($index_tag)\"
@@ -434,11 +420,11 @@ sub create_input {
                     $javascript";
         } else {
             warn "Plugin Failed: $plugin";
+
             # supply default input form
-            $subfield_data{marc_value} =
-                "<input type=\"text\"
-                        id=\"".$subfield_data{id}."\"
-                        name=\"".$subfield_data{id}."\"
+            $subfield_data{marc_value} = "<input type=\"text\"
+                        id=\"" . $subfield_data{id} . "\"
+                        name=\"" . $subfield_data{id} . "\"
                         value=\"$value\"
                         tabindex=\"1\"
                         size=\"67\"
@@ -447,24 +433,21 @@ sub create_input {
                 \/>
                 ";
         }
+
         # it's an hidden field
-    }
-    elsif ( $tag eq '' ) {
-        $subfield_data{marc_value} =
-            "<input tabindex=\"1\"
+    } elsif ( $tag eq '' ) {
+        $subfield_data{marc_value} = "<input tabindex=\"1\"
                     type=\"hidden\"
-                    id=\"".$subfield_data{id}."\"
-                    name=\"".$subfield_data{id}."\"
+                    id=\"" . $subfield_data{id} . "\"
+                    name=\"" . $subfield_data{id} . "\"
                     size=\"67\"
                     maxlength=\"$max_length\"
                     value=\"$value\" \/>
             ";
-    }
-    elsif ( $tagslib->{$tag}->{$subfield}->{'hidden'} ) {
-        $subfield_data{marc_value} =
-            "<input type=\"text\"
-                    id=\"".$subfield_data{id}."\"
-                    name=\"".$subfield_data{id}."\"
+    } elsif ( $tagslib->{$tag}->{$subfield}->{'hidden'} ) {
+        $subfield_data{marc_value} = "<input type=\"text\"
+                    id=\"" . $subfield_data{id} . "\"
+                    name=\"" . $subfield_data{id} . "\"
                     class=\"input_marceditor\"
                     tabindex=\"1\"
                     size=\"67\"
@@ -473,33 +456,25 @@ sub create_input {
             \/>";
 
         # it's a standard field
-    }
-    else {
-        if (
-            length($value) > 100
-            or
-            ( C4::Context->preference("marcflavour") eq "UNIMARC" && $tag >= 300
+    } else {
+        if (length($value) > 100
+            or ( C4::Context->preference("marcflavour") eq "UNIMARC" && $tag >= 300
                 and $tag < 400 && $subfield eq 'a' )
             or (    $tag >= 500
-                and $tag < 600
-                && C4::Context->preference("marcflavour") eq "MARC21" )
-          )
-        {
-            $subfield_data{marc_value} =
-                "<textarea cols=\"70\"
+                and $tag < 600 && C4::Context->preference("marcflavour") eq "MARC21" )
+          ) {
+            $subfield_data{marc_value} = "<textarea cols=\"70\"
                            rows=\"4\"
-                           id=\"".$subfield_data{id}."\"
-                           name=\"".$subfield_data{id}."\"
+                           id=\"" . $subfield_data{id} . "\"
+                           name=\"" . $subfield_data{id} . "\"
                            class=\"input_marceditor\"
                            tabindex=\"1\"
                            >$value</textarea>
                 ";
-        }
-        else {
-            $subfield_data{marc_value} =
-                "<input type=\"text\"
-                        id=\"".$subfield_data{id}."\"
-                        name=\"".$subfield_data{id}."\"
+        } else {
+            $subfield_data{marc_value} = "<input type=\"text\"
+                        id=\"" . $subfield_data{id} . "\"
+                        name=\"" . $subfield_data{id} . "\"
                         value=\"$value\"
                         tabindex=\"1\"
                         size=\"67\"
@@ -512,7 +487,6 @@ sub create_input {
     $subfield_data{'index_subfield'} = $index_subfield;
     return \%subfield_data;
 }
-
 
 =item format_indicator
 
@@ -530,7 +504,7 @@ sub format_indicator {
 }
 
 sub build_tabs ($$$$$) {
-    my ( $template, $record, $dbh, $encoding,$input ) = @_;
+    my ( $template, $record, $dbh, $encoding, $input ) = @_;
 
     # fill arrays
     my @loop_data = ();
@@ -541,165 +515,133 @@ sub build_tabs ($$$$$) {
         from authorised_values
         where category=? order by lib"
     );
-    
+
     # in this array, we will push all the 10 tabs
     # to avoid having 10 tabs in the template : they will all be in the same BIG_LOOP
     my @BIG_LOOP;
     my %seen;
-    my @tab_data; # all tags to display
-    
-    foreach my $used ( @$usedTagsLib ){
-        push @tab_data,$used->{tagfield} if not $seen{$used->{tagfield}};
-        $seen{$used->{tagfield}}++;
+    my @tab_data;    # all tags to display
+
+    foreach my $used (@$usedTagsLib) {
+        push @tab_data, $used->{tagfield} if not $seen{ $used->{tagfield} };
+        $seen{ $used->{tagfield} }++;
     }
-        
-    my $max_num_tab=-1;
-    foreach(@$usedTagsLib){
-        if($_->{tab} > -1 && $_->{tab} >= $max_num_tab && $_->{tagfield} != '995'){ # FIXME : MARC21 ?
-            $max_num_tab = $_->{tab}; 
+
+    my $max_num_tab = -1;
+    foreach (@$usedTagsLib) {
+        if ( $_->{tab} > -1 && $_->{tab} >= $max_num_tab && $_->{tagfield} != '995' ) {    # FIXME : MARC21 ?
+            $max_num_tab = $_->{tab};
         }
     }
-    if($max_num_tab >= 9){
+    if ( $max_num_tab >= 9 ) {
         $max_num_tab = 9;
     }
+
     # loop through each tab 0 through 9
     for ( my $tabloop = 0 ; $tabloop <= $max_num_tab ; $tabloop++ ) {
-        my @loop_data = (); #innerloop in the template.
-        my $i = 0;
+        my @loop_data = ();                                                                #innerloop in the template.
+        my $i         = 0;
         foreach my $tag (@tab_data) {
             $i++;
-            next if ! $tag;
-            my ($indicator1, $indicator2);
+            next if !$tag;
+            my ( $indicator1, $indicator2 );
             my $index_tag = CreateKey;
 
             # if MARC::Record is not empty =>use it as master loop, then add missing subfields that should be in the tab.
             # if MARC::Record is empty => use tab as master loop.
             if ( $record ne -1 && ( $record->field($tag) || $tag eq '000' ) ) {
                 my @fields;
-		if ( $tag ne '000' ) {
+                if ( $tag ne '000' ) {
                     @fields = $record->field($tag);
-		}
-		else {
-		   push @fields, $record->leader(); # if tag == 000
-		}
-		# loop through each field
+                } else {
+                    push @fields, $record->leader();    # if tag == 000
+                }
+
+                # loop through each field
                 foreach my $field (@fields) {
-                    
+
                     my @subfields_data;
                     if ( $tag < 10 ) {
                         my ( $value, $subfield );
                         if ( $tag ne '000' ) {
                             $value    = $field->data();
                             $subfield = "@";
-                        }
-                        else {
+                        } else {
                             $value    = $field;
                             $subfield = '@';
                         }
                         next if ( $tagslib->{$tag}->{$subfield}->{tab} ne $tabloop );
                         next
-                          if ( $tagslib->{$tag}->{$subfield}->{kohafield} eq
-                            'biblio.biblionumber' );
-                        push(
-                            @subfields_data,
-                            &create_input(
-                                $tag, $subfield, $value, $index_tag, $tabloop, $record,
-                                $authorised_values_sth,$input
-                            )
-                        );
-                    }
-                    else {
+                          if ( $tagslib->{$tag}->{$subfield}->{kohafield} eq 'biblio.biblionumber' );
+                        push( @subfields_data, &create_input( $tag, $subfield, $value, $index_tag, $tabloop, $record, $authorised_values_sth, $input ) );
+                    } else {
                         my @subfields = $field->subfields();
                         foreach my $subfieldcount ( 0 .. $#subfields ) {
                             my $subfield = $subfields[$subfieldcount][0];
                             my $value    = $subfields[$subfieldcount][1];
                             next if ( length $subfield != 1 );
                             next if ( $tagslib->{$tag}->{$subfield}->{tab} ne $tabloop );
-                            push(
-                                @subfields_data,
-                                &create_input(
-                                    $tag, $subfield, $value, $index_tag, $tabloop,
-                                    $record, $authorised_values_sth,$input
-                                )
-                            );
+                            push( @subfields_data, &create_input( $tag, $subfield, $value, $index_tag, $tabloop, $record, $authorised_values_sth, $input ) );
                         }
                     }
 
                     # now, loop again to add parameter subfield that are not in the MARC::Record
-                    foreach my $subfield ( sort( keys %{ $tagslib->{$tag} } ) )
-                    {
+                    foreach my $subfield ( sort( keys %{ $tagslib->{$tag} } ) ) {
                         next if ( length $subfield != 1 );
                         next if ( $tagslib->{$tag}->{$subfield}->{tab} ne $tabloop );
                         next if ( $tag < 10 );
                         next
                           if ( ( $tagslib->{$tag}->{$subfield}->{hidden} <= -4 )
                             or ( $tagslib->{$tag}->{$subfield}->{hidden} >= 5 ) )
-                            and not ( $subfield eq "9" and
-                                      exists($tagslib->{$tag}->{'a'}->{authtypecode}) and
-                                      defined($tagslib->{$tag}->{'a'}->{authtypecode}) and
-                                      $tagslib->{$tag}->{'a'}->{authtypecode} ne ""
-                                    )
-                          ;    #check for visibility flag
-                               # if subfield is $9 in a field whose $a is authority-controlled,
-                               # always include in the form regardless of the hidden setting - bug 2206
+                          and not( $subfield eq "9"
+                            and exists( $tagslib->{$tag}->{'a'}->{authtypecode} )
+                            and defined( $tagslib->{$tag}->{'a'}->{authtypecode} )
+                            and $tagslib->{$tag}->{'a'}->{authtypecode} ne "" );    #check for visibility flag
+                                                                                    # if subfield is $9 in a field whose $a is authority-controlled,
+                                                                                    # always include in the form regardless of the hidden setting - bug 2206
                         next if ( defined( $field->subfield($subfield) ) );
-                        push(
-                            @subfields_data,
-                            &create_input(
-                                $tag, $subfield, '', $index_tag, $tabloop, $record,
-                                $authorised_values_sth,$input
-                            )
-                        );
+                        push( @subfields_data, &create_input( $tag, $subfield, '', $index_tag, $tabloop, $record, $authorised_values_sth, $input ) );
                     }
                     if ( $#subfields_data >= 0 ) {
+
                         # build the tag entry.
-                        # note that the random() field is mandatory. Otherwise, on repeated fields, you'll 
+                        # note that the random() field is mandatory. Otherwise, on repeated fields, you'll
                         # have twice the same "name" value, and cgi->param() will return only one, making
                         # all subfields to be merged in a single field.
                         my %tag_data = (
                             tag           => $tag,
                             index         => $index_tag,
                             tag_lib       => $tagslib->{$tag}->{lib},
-                            repeatable       => $tagslib->{$tag}->{repeatable},
-                            mandatory       => $tagslib->{$tag}->{mandatory},
+                            repeatable    => $tagslib->{$tag}->{repeatable},
+                            mandatory     => $tagslib->{$tag}->{mandatory},
                             subfield_loop => \@subfields_data,
-                            fixedfield    => $tag < 10?1:0,
+                            fixedfield    => $tag < 10 ? 1 : 0,
                             random        => CreateKey,
                         );
-                        if ($tag >= 10){ # no indicator for 00x tags
-                           $tag_data{indicator1} = format_indicator($field->indicator(1)),
-                           $tag_data{indicator2} = format_indicator($field->indicator(2)),
+                        if ( $tag >= 10 ) {    # no indicator for 00x tags
+                            $tag_data{indicator1} = format_indicator( $field->indicator(1) ), $tag_data{indicator2} = format_indicator( $field->indicator(2) ),;
                         }
                         push( @loop_data, \%tag_data );
                     }
-                 } # foreach $field end
+                }    # foreach $field end
 
-            # if breeding is empty
-            }
-            else {
+                # if breeding is empty
+            } else {
                 my @subfields_data;
                 foreach my $subfield ( sort( keys %{ $tagslib->{$tag} } ) ) {
                     next if ( length $subfield != 1 );
                     next
                       if ( ( $tagslib->{$tag}->{$subfield}->{hidden} <= -5 )
                         or ( $tagslib->{$tag}->{$subfield}->{hidden} >= 4 ) )
-                      and not ( $subfield eq "9" and
-                                exists($tagslib->{$tag}->{'a'}->{authtypecode}) and
-                                defined($tagslib->{$tag}->{'a'}->{authtypecode}) and
-                                $tagslib->{$tag}->{'a'}->{authtypecode} ne ""
-                              )
-                      ;    #check for visibility flag
-                           # if subfield is $9 in a field whose $a is authority-controlled,
-                           # always include in the form regardless of the hidden setting - bug 2206
+                      and not( $subfield eq "9"
+                        and exists( $tagslib->{$tag}->{'a'}->{authtypecode} )
+                        and defined( $tagslib->{$tag}->{'a'}->{authtypecode} )
+                        and $tagslib->{$tag}->{'a'}->{authtypecode} ne "" );    #check for visibility flag
+                                                                                # if subfield is $9 in a field whose $a is authority-controlled,
+                                                                                # always include in the form regardless of the hidden setting - bug 2206
                     next
                       if ( $tagslib->{$tag}->{$subfield}->{tab} ne $tabloop );
-                    push(
-                        @subfields_data,
-                        &create_input(
-                            $tag, $subfield, '', $index_tag, $tabloop, $record,
-                            $authorised_values_sth,$input
-                        )
-                    );
+                    push( @subfields_data, &create_input( $tag, $subfield, '', $index_tag, $tabloop, $record, $authorised_values_sth, $input ) );
                 }
                 if ( $#subfields_data >= 0 ) {
                     my %tag_data = (
@@ -707,23 +649,23 @@ sub build_tabs ($$$$$) {
                         index            => $index_tag,
                         tag_lib          => $tagslib->{$tag}->{lib},
                         repeatable       => $tagslib->{$tag}->{repeatable},
-                        mandatory       => $tagslib->{$tag}->{mandatory},
+                        mandatory        => $tagslib->{$tag}->{mandatory},
                         indicator1       => $indicator1,
                         indicator2       => $indicator2,
                         subfield_loop    => \@subfields_data,
                         tagfirstsubfield => $subfields_data[0],
-                        fixedfield       => $tag < 10?1:0,
+                        fixedfield       => $tag < 10 ? 1 : 0,
                     );
-                    
-                    push @loop_data, \%tag_data ;
+
+                    push @loop_data, \%tag_data;
                 }
             }
         }
         if ( $#loop_data >= 0 ) {
-            push @BIG_LOOP, {
-                number    => $tabloop,
+            push @BIG_LOOP,
+              { number    => $tabloop,
                 innerloop => \@loop_data,
-            };
+              };
         }
     }
     $template->param( BIG_LOOP => \@BIG_LOOP );
@@ -739,91 +681,98 @@ sub build_tabs ($$$$$) {
 # if the authority is not found, it's added, and the biblio is then modified to be connected to the authority.
 #
 
-sub BiblioAddAuthorities{
-  my ( $record, $frameworkcode ) = @_;
-  my $dbh=C4::Context->dbh;
-  my $query=$dbh->prepare(qq|
+sub BiblioAddAuthorities {
+    my ( $record, $frameworkcode ) = @_;
+    my $dbh   = C4::Context->dbh;
+    my $query = $dbh->prepare(
+        qq|
 SELECT authtypecode,tagfield
 FROM marc_subfield_structure 
 WHERE frameworkcode=? 
-AND (authtypecode IS NOT NULL AND authtypecode<>\"\")|);
-# SELECT authtypecode,tagfield
-# FROM marc_subfield_structure 
-# WHERE frameworkcode=? 
-# AND (authtypecode IS NOT NULL OR authtypecode<>\"\")|);
-  $query->execute($frameworkcode);
-  my ($countcreated,$countlinked);
-  while (my $data=$query->fetchrow_hashref){
-    foreach my $field ($record->field($data->{tagfield})){
-      next if ($field->subfield('3')||$field->subfield('9'));
-      # No authorities id in the tag.
-      # Search if there is any authorities to link to.
-      my $query='at='.$data->{authtypecode}.' ';
-      map {$query.= ' and he,ext="'.$_->[1].'"' if ($_->[0]=~/[A-z]/)}  $field->subfields();
-      my ($error, $results, $total_hits)=SimpleSearch( $query, undef, undef, [ "authorityserver" ] );
-    # there is only 1 result 
-	  if ( $error ) {
-        warn "BIBLIOADDSAUTHORITIES: $error";
-	    return (0,0) ;
-	  }
-      if ($results && scalar(@$results)==1) {
-        my $marcrecord = MARC::File::USMARC::decode($results->[0]);
-        $field->add_subfields('9'=>$marcrecord->field('001')->data);
-        $countlinked++;
-      } elsif (scalar(@$results)>1) {
-   #More than One result 
-   #This can comes out of a lack of a subfield.
-#         my $marcrecord = MARC::File::USMARC::decode($results->[0]);
-#         $record->field($data->{tagfield})->add_subfields('9'=>$marcrecord->field('001')->data);
-  $countlinked++;
-      } else {
-  #There are no results, build authority record, add it to Authorities, get authid and add it to 9
-  ###NOTICE : This is only valid if a subfield is linked to one and only one authtypecode     
-  ###NOTICE : This can be a problem. We should also look into other types and rejected forms.
-         my $authtypedata=GetAuthType($data->{authtypecode});
-         next unless $authtypedata;
-         my $marcrecordauth=MARC::Record->new();
-		if (C4::Context->preference('marcflavour') eq 'MARC21') {
-			$marcrecordauth->leader('     nz  a22     o  4500');
-			SetMarcUnicodeFlag($marcrecordauth, 'MARC21');
-			}
-         my $authfield=MARC::Field->new($authtypedata->{auth_tag_to_report},'','',"a"=>"".$field->subfield('a'));
-         map { $authfield->add_subfields($_->[0]=>$_->[1]) if ($_->[0]=~/[A-z]/ && $_->[0] ne "a" )}  $field->subfields();
-         $marcrecordauth->insert_fields_ordered($authfield);
+AND (authtypecode IS NOT NULL AND authtypecode<>\"\")|
+    );
 
-         # bug 2317: ensure new authority knows it's using UTF-8; currently
-         # only need to do this for MARC21, as MARC::Record->as_xml_record() handles
-         # automatically for UNIMARC (by not transcoding)
-         # FIXME: AddAuthority() instead should simply explicitly require that the MARC::Record
-         # use UTF-8, but as of 2008-08-05, did not want to introduce that kind
-         # of change to a core API just before the 3.0 release.
+    # SELECT authtypecode,tagfield
+    # FROM marc_subfield_structure
+    # WHERE frameworkcode=?
+    # AND (authtypecode IS NOT NULL OR authtypecode<>\"\")|);
+    $query->execute($frameworkcode);
+    my ( $countcreated, $countlinked );
+    while ( my $data = $query->fetchrow_hashref ) {
+        foreach my $field ( $record->field( $data->{tagfield} ) ) {
+            next if ( $field->subfield('3') || $field->subfield('9') );
 
-				if (C4::Context->preference('marcflavour') eq 'MARC21') {
-					$marcrecordauth->insert_fields_ordered(MARC::Field->new('667','','','a'=>"Machine generated authority record."));
-					my $cite = $record->author() . ", " .  $record->title_proper() . ", " . $record->publication_date() . " "; 
-					$cite =~ s/^[\s\,]*//;
-					$cite =~ s/[\s\,]*$//;
-					$cite = "Work cat.: (" . C4::Context->preference('MARCOrgCode') . ")". $record->subfield('999','c') . ": " . $cite;
-					$marcrecordauth->insert_fields_ordered(MARC::Field->new('670','','','a'=>$cite));
-				}
+            # No authorities id in the tag.
+            # Search if there is any authorities to link to.
+            my $query = 'at=' . $data->{authtypecode} . ' ';
+            map { $query .= ' and he,ext="' . $_->[1] . '"' if ( $_->[0] =~ /[A-z]/ ) } $field->subfields();
+            my ( $error, $results, $total_hits ) = SimpleSearch( $query, undef, undef, ["authorityserver"] );
 
-#          warn "AUTH RECORD ADDED : ".$marcrecordauth->as_formatted;
+            # there is only 1 result
+            if ($error) {
+                warn "BIBLIOADDSAUTHORITIES: $error";
+                return ( 0, 0 );
+            }
+            if ( $results && scalar(@$results) == 1 ) {
+                my $marcrecord = MARC::File::USMARC::decode( $results->[0] );
+                $field->add_subfields( '9' => $marcrecord->field('001')->data );
+                $countlinked++;
+            } elsif ( scalar(@$results) > 1 ) {
 
-         my $authid=AddAuthority($marcrecordauth,'',$data->{authtypecode});
-         $countcreated++;
-         $field->add_subfields('9'=>$authid);
-      }
-    }  
-  }
-  return ($countlinked,$countcreated);
+                #More than One result
+                #This can comes out of a lack of a subfield.
+                #         my $marcrecord = MARC::File::USMARC::decode($results->[0]);
+                #         $record->field($data->{tagfield})->add_subfields('9'=>$marcrecord->field('001')->data);
+                $countlinked++;
+            } else {
+
+                #There are no results, build authority record, add it to Authorities, get authid and add it to 9
+                ###NOTICE : This is only valid if a subfield is linked to one and only one authtypecode
+                ###NOTICE : This can be a problem. We should also look into other types and rejected forms.
+                my $authtypedata = GetAuthType( $data->{authtypecode} );
+                next unless $authtypedata;
+                my $marcrecordauth = MARC::Record->new();
+                if ( C4::Context->preference('marcflavour') eq 'MARC21' ) {
+                    $marcrecordauth->leader('     nz  a22     o  4500');
+                    SetMarcUnicodeFlag( $marcrecordauth, 'MARC21' );
+                }
+                my $authfield = MARC::Field->new( $authtypedata->{auth_tag_to_report}, '', '', "a" => "" . $field->subfield('a') );
+                map { $authfield->add_subfields( $_->[0] => $_->[1] ) if ( $_->[0] =~ /[A-z]/ && $_->[0] ne "a" ) } $field->subfields();
+                $marcrecordauth->insert_fields_ordered($authfield);
+
+                # bug 2317: ensure new authority knows it's using UTF-8; currently
+                # only need to do this for MARC21, as MARC::Record->as_xml_record() handles
+                # automatically for UNIMARC (by not transcoding)
+                # FIXME: AddAuthority() instead should simply explicitly require that the MARC::Record
+                # use UTF-8, but as of 2008-08-05, did not want to introduce that kind
+                # of change to a core API just before the 3.0 release.
+
+                if ( C4::Context->preference('marcflavour') eq 'MARC21' ) {
+                    $marcrecordauth->insert_fields_ordered( MARC::Field->new( '667', '', '', 'a' => "Machine generated authority record." ) );
+                    my $cite = $record->author() . ", " . $record->title_proper() . ", " . $record->publication_date() . " ";
+                    $cite =~ s/^[\s\,]*//;
+                    $cite =~ s/[\s\,]*$//;
+                    $cite = "Work cat.: (" . C4::Context->preference('MARCOrgCode') . ")" . $record->subfield( '999', 'c' ) . ": " . $cite;
+                    $marcrecordauth->insert_fields_ordered( MARC::Field->new( '670', '', '', 'a' => $cite ) );
+                }
+
+                #          warn "AUTH RECORD ADDED : ".$marcrecordauth->as_formatted;
+
+                my $authid = AddAuthority( $marcrecordauth, '', $data->{authtypecode} );
+                $countcreated++;
+                $field->add_subfields( '9' => $authid );
+            }
+        }
+    }
+    return ( $countlinked, $countcreated );
 }
 
 # ========================
 #          MAIN
 #=========================
-my $input = new CGI;
-my $error = $input->param('error');
-my $biblionumber  = $input->param('biblionumber'); # if biblionumber exists, it's a modif, not a new biblio.
+my $input         = new CGI;
+my $error         = $input->param('error');
+my $biblionumber  = $input->param('biblionumber');    # if biblionumber exists, it's a modif, not a new biblio.
 my $breedingid    = $input->param('breedingid');
 my $z3950         = $input->param('z3950');
 my $op            = $input->param('op');
@@ -832,15 +781,14 @@ my $frameworkcode = $input->param('frameworkcode');
 my $redirect      = $input->param('redirect');
 my $dbh           = C4::Context->dbh;
 
-my $userflags = ($frameworkcode eq 'FA') ? "fast_cataloging" : "edit_catalogue";
+my $userflags = ( $frameworkcode eq 'FA' ) ? "fast_cataloging" : "edit_catalogue";
 
 $frameworkcode = &GetFrameworkCode($biblionumber)
   if ( $biblionumber and not($frameworkcode) );
 
 $frameworkcode = '' if ( $frameworkcode eq 'Default' );
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => "cataloguing/addbiblio.tmpl",
+    {   template_name   => "cataloguing/addbiblio.tmpl",
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
@@ -853,152 +801,146 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
 my $frameworks = getframeworks;
 my @frameworkcodeloop;
 foreach my $thisframeworkcode ( keys %$frameworks ) {
-	my %row = (
-		value         => $thisframeworkcode,
-		frameworktext => $frameworks->{$thisframeworkcode}->{'frameworktext'},
-	);
-	if ($frameworkcode eq $thisframeworkcode){
-		$row{'selected'}="selected=\"selected\"";
-		}
-	push @frameworkcodeloop, \%row;
-} 
-$template->param( frameworkcodeloop => \@frameworkcodeloop,
-	breedingid => $breedingid );
+    my %row = (
+        value         => $thisframeworkcode,
+        frameworktext => $frameworks->{$thisframeworkcode}->{'frameworktext'},
+    );
+    if ( $frameworkcode eq $thisframeworkcode ) {
+        $row{'selected'} = "selected=\"selected\"";
+    }
+    push @frameworkcodeloop, \%row;
+}
+$template->param(
+    frameworkcodeloop => \@frameworkcodeloop,
+    breedingid        => $breedingid
+);
 
 # ++ Global
 $tagslib         = &GetMarcStructure( 1, $frameworkcode );
-$usedTagsLib     = &GetUsedMarcStructure( $frameworkcode );
+$usedTagsLib     = &GetUsedMarcStructure($frameworkcode);
 $mandatory_z3950 = GetMandatoryFieldZ3950($frameworkcode);
+
 # -- Global
 
 my $record   = -1;
 my $encoding = "";
-my (
-	$biblionumbertagfield,
-	$biblionumbertagsubfield,
-	$biblioitemnumtagfield,
-	$biblioitemnumtagsubfield,
-	$bibitem,
-	$biblioitemnumber
-);
+my ( $biblionumbertagfield, $biblionumbertagsubfield, $biblioitemnumtagfield, $biblioitemnumtagsubfield, $bibitem, $biblioitemnumber );
 
-if (($biblionumber) && !($breedingid)){
-	$record = GetMarcBiblio($biblionumber);
+if ( ($biblionumber) && !($breedingid) ) {
+    $record = GetMarcBiblio($biblionumber);
 }
 if ($breedingid) {
-    ( $record, $encoding ) = MARCfindbreeding( $breedingid ) ;
+    ( $record, $encoding ) = MARCfindbreeding($breedingid);
 }
 
 $is_a_modif = 0;
-    
+
 if ($biblionumber) {
     $is_a_modif = 1;
-	$template->param( title => $record->title(), );
+    $template->param( title => $record->title(), );
 
     # if it's a modif, retrieve bibli and biblioitem numbers for the future modification of old-DB.
-    ( $biblionumbertagfield, $biblionumbertagsubfield ) =
-	&GetMarcFromKohaField( "biblio.biblionumber", $frameworkcode );
-    ( $biblioitemnumtagfield, $biblioitemnumtagsubfield ) =
-	&GetMarcFromKohaField( "biblioitems.biblioitemnumber", $frameworkcode );
-	    
+    ( $biblionumbertagfield,  $biblionumbertagsubfield )  = &GetMarcFromKohaField( "biblio.biblionumber",          $frameworkcode );
+    ( $biblioitemnumtagfield, $biblioitemnumtagsubfield ) = &GetMarcFromKohaField( "biblioitems.biblioitemnumber", $frameworkcode );
+
     # search biblioitems value
-    my $sth =  $dbh->prepare("select biblioitemnumber from biblioitems where biblionumber=?");
+    my $sth = $dbh->prepare("select biblioitemnumber from biblioitems where biblionumber=?");
     $sth->execute($biblionumber);
     ($biblioitemnumber) = $sth->fetchrow;
 }
 
 #-------------------------------------------------------------------------------------
 if ( $op eq "addbiblio" ) {
-#-------------------------------------------------------------------------------------
+
+    #-------------------------------------------------------------------------------------
     # getting html input
     my @params = $input->param();
-    $record = TransformHtmlToMarc( \@params , $input );
+    $record = TransformHtmlToMarc( \@params, $input );
+
     # check for a duplicate
-    my ($duplicatebiblionumber,$duplicatetitle) = FindDuplicate($record) if (!$is_a_modif);
+    my ( $duplicatebiblionumber, $duplicatetitle ) = FindDuplicate($record) if ( !$is_a_modif );
     my $confirm_not_duplicate = $input->param('confirm_not_duplicate');
+
     # it is not a duplicate (determined either by Koha itself or by user checking it's not a duplicate)
     if ( !$duplicatebiblionumber or $confirm_not_duplicate ) {
         my $oldbibnum;
         my $oldbibitemnum;
-        if (C4::Context->preference("BiblioAddsAuthorities")){
-          my ($countlinked,$countcreated)=BiblioAddAuthorities($record,$frameworkcode);
-        } 
-        if ( $is_a_modif ) {
-            ModBiblioframework( $biblionumber, $frameworkcode ); 
-            ModBiblio( $record, $biblionumber, $frameworkcode );
+        if ( C4::Context->preference("BiblioAddsAuthorities") ) {
+            my ( $countlinked, $countcreated ) = BiblioAddAuthorities( $record, $frameworkcode );
         }
-        else {
+        if ($is_a_modif) {
+            ModBiblioframework( $biblionumber, $frameworkcode );
+            ModBiblio( $record, $biblionumber, $frameworkcode );
+        } else {
             ( $biblionumber, $oldbibitemnum ) = AddBiblio( $record, $frameworkcode );
         }
 
-        if (($mode ne "popup" && !$is_a_modif) || $redirect eq "items"){
-            print $input->redirect(
-                "/cgi-bin/koha/cataloguing/additem.pl?biblionumber=$biblionumber&frameworkcode=$frameworkcode"
-            );
+        if ( ( $mode ne "popup" && !$is_a_modif ) || $redirect eq "items" ) {
+            print $input->redirect( "/cgi-bin/koha/cataloguing/additem.pl?biblionumber=$biblionumber&frameworkcode=$frameworkcode" );
             exit;
-        }
-		elsif($is_a_modif || $redirect eq "view"){
+        } elsif ( $is_a_modif || $redirect eq "view" ) {
             my $defaultview = C4::Context->preference('IntranetBiblioDefaultView');
-            my $views = { C4::Search::enabled_staff_search_views };
-            if ($defaultview eq 'isbd' && $views->{can_view_ISBD}) {
+            my $views       = {C4::Search::enabled_staff_search_views};
+            if ( $defaultview eq 'isbd' && $views->{can_view_ISBD} ) {
                 print $input->redirect("/cgi-bin/koha/catalogue/ISBDdetail.pl?biblionumber=$biblionumber");
-            } elsif  ($defaultview eq 'marc' && $views->{can_view_MARC}) {
+            } elsif ( $defaultview eq 'marc' && $views->{can_view_MARC} ) {
                 print $input->redirect("/cgi-bin/koha/catalogue/MARCdetail.pl?biblionumber=$biblionumber&frameworkcode=$frameworkcode");
-            } elsif  ($defaultview eq 'labeled_marc' && $views->{can_view_labeledMARC}) {
+            } elsif ( $defaultview eq 'labeled_marc' && $views->{can_view_labeledMARC} ) {
                 print $input->redirect("/cgi-bin/koha/catalogue/labeledMARCdetail.pl?biblionumber=$biblionumber");
             } else {
                 print $input->redirect("/cgi-bin/koha/catalogue/detail.pl?biblionumber=$biblionumber");
             }
             exit;
 
-		}else {
-          $template->param(
-            biblionumber => $biblionumber,
-            done         =>1,
-            popup        =>1
-          );
-          $template->param( title => $record->subfield('200',"a") ) if ($record ne "-1" && C4::Context->preference('marcflavour') =~/unimarc/i);
-          $template->param( title => $record->title() ) if ($record ne "-1" && C4::Context->preference('marcflavour') eq "usmarc");
-          $template->param(
-            popup => $mode,
-            itemtype => $frameworkcode,
-          );
-          output_html_with_http_headers $input, $cookie, $template->output;
-          exit;     
+        } else {
+            $template->param(
+                biblionumber => $biblionumber,
+                done         => 1,
+                popup        => 1
+            );
+            $template->param( title => $record->subfield( '200', "a" ) ) if ( $record ne "-1" && C4::Context->preference('marcflavour') =~ /unimarc/i );
+            $template->param( title => $record->title() ) if ( $record ne "-1" && C4::Context->preference('marcflavour') eq "usmarc" );
+            $template->param(
+                popup    => $mode,
+                itemtype => $frameworkcode,
+            );
+            output_html_with_http_headers $input, $cookie, $template->output;
+            exit;
         }
     } else {
-    # it may be a duplicate, warn the user and do nothing
-        build_tabs ($template, $record, $dbh,$encoding,$input);
+
+        # it may be a duplicate, warn the user and do nothing
+        build_tabs( $template, $record, $dbh, $encoding, $input );
         $template->param(
-            biblionumber             => $biblionumber,
-            biblioitemnumber         => $biblioitemnumber,
-            duplicatebiblionumber    => $duplicatebiblionumber,
-            duplicatebibid           => $duplicatebiblionumber,
-            duplicatetitle           => $duplicatetitle,
+            biblionumber          => $biblionumber,
+            biblioitemnumber      => $biblioitemnumber,
+            duplicatebiblionumber => $duplicatebiblionumber,
+            duplicatebibid        => $duplicatebiblionumber,
+            duplicatetitle        => $duplicatetitle,
         );
     }
-}
-elsif ( $op eq "delete" ) {
-    
+} elsif ( $op eq "delete" ) {
+
     my $error = &DelBiblio($biblionumber);
     if ($error) {
         warn "ERROR when DELETING BIBLIO $biblionumber : $error";
         print "Content-Type: text/html\n\n<html><body><h1>ERROR when DELETING BIBLIO $biblionumber : $error</h1></body></html>";
-	exit;
+        exit;
     }
-    
+
     print $input->redirect('/cgi-bin/koha/catalogue/search.pl');
     exit;
-    
+
 } else {
-   #----------------------------------------------------------------------------
-   # If we're in a duplication case, we have to set to "" the biblionumber
-   # as we'll save the biblio as a new one.
+
+    #----------------------------------------------------------------------------
+    # If we're in a duplication case, we have to set to "" the biblionumber
+    # as we'll save the biblio as a new one.
     if ( $op eq "duplicate" ) {
         $biblionumber = "";
     }
 
-#FIXME: it's kind of silly to go from MARC::Record to MARC::File::XML and then back again just to fix the encoding
+    #FIXME: it's kind of silly to go from MARC::Record to MARC::File::XML and then back again just to fix the encoding
     eval {
         my $uxml = $record->as_xml;
         MARC::Record::default_record_format("UNIMARC")
@@ -1006,11 +948,11 @@ elsif ( $op eq "delete" ) {
         my $urecord = MARC::Record::new_from_xml( $uxml, 'UTF-8' );
         $record = $urecord;
     };
-    build_tabs( $template, $record, $dbh, $encoding,$input );
+    build_tabs( $template, $record, $dbh, $encoding, $input );
     $template->param(
         biblionumber             => $biblionumber,
-        biblionumbertagfield        => $biblionumbertagfield,
-        biblionumbertagsubfield     => $biblionumbertagsubfield,
+        biblionumbertagfield     => $biblionumbertagfield,
+        biblionumbertagsubfield  => $biblionumbertagsubfield,
         biblioitemnumtagfield    => $biblioitemnumtagfield,
         biblioitemnumtagsubfield => $biblioitemnumtagsubfield,
         biblioitemnumber         => $biblioitemnumber,
@@ -1019,9 +961,9 @@ elsif ( $op eq "delete" ) {
 
 $template->param( title => $record->title() ) if ( $record ne "-1" );
 $template->param(
-    popup => $mode,
+    popup         => $mode,
     frameworkcode => $frameworkcode,
-    itemtype => $frameworkcode,
+    itemtype      => $frameworkcode,
 );
 
 output_html_with_http_headers $input, $cookie, $template->output;

@@ -11,53 +11,52 @@ use C4::Labels 1.000000;
 
 my $cgi = new CGI;
 
-my $batch_id    = $cgi->param('batch_id') if $cgi->param('batch_id');
+my $batch_id = $cgi->param('batch_id') if $cgi->param('batch_id');
 my $template_id = $cgi->param('template_id') || undef;
-my $layout_id   = $cgi->param('layout_id') || undef;
+my $layout_id   = $cgi->param('layout_id')   || undef;
 my $start_label = $cgi->param('start_label') || 1;
-my @label_ids   = $cgi->param('label_id') if $cgi->param('label_id');
-my @item_numbers  = $cgi->param('item_number') if $cgi->param('item_number');
+my @label_ids    = $cgi->param('label_id')    if $cgi->param('label_id');
+my @item_numbers = $cgi->param('item_number') if $cgi->param('item_number');
 
 my $items = undef;
 
-my $pdf_file = (@label_ids || @item_numbers ? "label_single_" . scalar(@label_ids || @item_numbers) : "label_batch_$batch_id");
-print $cgi->header( -type       => 'application/pdf',
-                    -encoding   => 'utf-8',
-                    -attachment => "$pdf_file.pdf",
-                  );
+my $pdf_file = ( @label_ids || @item_numbers ? "label_single_" . scalar( @label_ids || @item_numbers ) : "label_batch_$batch_id" );
+print $cgi->header(
+    -type       => 'application/pdf',
+    -encoding   => 'utf-8',
+    -attachment => "$pdf_file.pdf",
+);
 
-my $pdf = C4::Creators::PDF->new(InitVars => 0);
-my $batch = C4::Labels::Batch->retrieve(batch_id => $batch_id);
-my $template = C4::Labels::Template->retrieve(template_id => $template_id, profile_id => 1);
-my $layout = C4::Labels::Layout->retrieve(layout_id => $layout_id);
+my $pdf = C4::Creators::PDF->new( InitVars => 0 );
+my $batch = C4::Labels::Batch->retrieve( batch_id => $batch_id );
+my $template = C4::Labels::Template->retrieve( template_id => $template_id, profile_id => 1 );
+my $layout = C4::Labels::Layout->retrieve( layout_id => $layout_id );
 
 sub _calc_next_label_pos {
-    my ($row_count, $col_count, $llx, $lly) = @_;
-    if ($col_count lt $template->get_attr('cols')) {
-        $llx = ($llx + $template->get_attr('label_width') + $template->get_attr('col_gap'));
+    my ( $row_count, $col_count, $llx, $lly ) = @_;
+    if ( $col_count lt $template->get_attr('cols') ) {
+        $llx = ( $llx + $template->get_attr('label_width') + $template->get_attr('col_gap') );
         $col_count++;
-    }
-    else {
+    } else {
         $llx = $template->get_attr('left_margin');
-        if ($row_count eq $template->get_attr('rows')) {
+        if ( $row_count eq $template->get_attr('rows') ) {
             $pdf->Page();
-            $lly = ($template->get_attr('page_height') - $template->get_attr('top_margin') - $template->get_attr('label_height'));
+            $lly       = ( $template->get_attr('page_height') - $template->get_attr('top_margin') - $template->get_attr('label_height') );
             $row_count = 1;
-        }
-        else {
-            $lly = ($lly - $template->get_attr('row_gap') - $template->get_attr('label_height'));
+        } else {
+            $lly = ( $lly - $template->get_attr('row_gap') - $template->get_attr('label_height') );
             $row_count++;
         }
         $col_count = 1;
     }
-    return ($row_count, $col_count, $llx, $lly);
+    return ( $row_count, $col_count, $llx, $lly );
 }
 
 sub _print_text {
     my $label_text = shift;
     foreach my $text_line (@$label_text) {
-        my $pdf_font = $pdf->Font($text_line->{'font'});
-        my $line = "BT /$pdf_font $text_line->{'font_size'} Tf $text_line->{'text_llx'} $text_line->{'text_lly'} Td ($text_line->{'line'}) Tj ET";
+        my $pdf_font = $pdf->Font( $text_line->{'font'} );
+        my $line     = "BT /$pdf_font $text_line->{'font_size'} Tf $text_line->{'text_llx'} $text_line->{'text_lly'} Td ($text_line->{'line'}) Tj ET";
         $pdf->Add($line);
     }
 }
@@ -71,100 +70,95 @@ my $upperRightX = $template->get_attr('page_width');
 my $upperRightY = $template->get_attr('page_height');
 
 $pdf->Compress(1);
-$pdf->Mbox($lowerLeftX, $lowerLeftY, $upperRightX, $upperRightY);
+$pdf->Mbox( $lowerLeftX, $lowerLeftY, $upperRightX, $upperRightY );
 
-my ($row_count, $col_count, $llx, $lly) = $template->get_label_position($start_label);
+my ( $row_count, $col_count, $llx, $lly ) = $template->get_label_position($start_label);
 
 if (@label_ids) {
     my $batch_items = $batch->get_attr('items');
     grep {
         my $label_id = $_;
-        push(@{$items}, grep{$_->{'label_id'} == $label_id;} @{$batch_items});
+        push( @{$items}, grep { $_->{'label_id'} == $label_id; } @{$batch_items} );
     } @label_ids;
-}
-elsif (@item_numbers) {
-    grep {
-        push(@{$items}, {item_number => $_});
-    } @item_numbers;
-}
-else {
+} elsif (@item_numbers) {
+    grep { push( @{$items}, { item_number => $_ } ); } @item_numbers;
+} else {
     $items = $batch->get_attr('items');
 }
 
 LABEL_ITEMS:
-foreach my $item (@{$items}) {
-    my ($barcode_llx, $barcode_lly, $barcode_width, $barcode_y_scale_factor) = 0,0,0,0;
-    if ($layout->get_attr('printing_type') eq 'ALT') {  # we process the ALT style printing type here because it is not an atomic printing type
+foreach my $item ( @{$items} ) {
+    my ( $barcode_llx, $barcode_lly, $barcode_width, $barcode_y_scale_factor ) = 0, 0, 0, 0;
+    if ( $layout->get_attr('printing_type') eq 'ALT' ) {    # we process the ALT style printing type here because it is not an atomic printing type
         my $label_a = C4::Labels::Label->new(
-                                        batch_id            => $batch_id,
-                                        item_number         => $item->{'item_number'},
-                                        llx                 => $llx,
-                                        lly                 => $lly,
-                                        width               => $template->get_attr('label_width'),
-                                        height              => $template->get_attr('label_height'),
-                                        top_text_margin     => $template->get_attr('top_text_margin'),
-                                        left_text_margin    => $template->get_attr('left_text_margin'),
-                                        barcode_type        => $layout->get_attr('barcode_type'),
-                                        printing_type       => 'BIB',
-                                        guidebox            => $layout->get_attr('guidebox'),
-                                        font                => $layout->get_attr('font'),
-                                        font_size           => $layout->get_attr('font_size'),
-                                        callnum_split       => $layout->get_attr('callnum_split'),
-                                        justify             => $layout->get_attr('text_justify'),
-                                        format_string       => $layout->get_attr('format_string'),
-                                        text_wrap_cols      => $layout->get_text_wrap_cols(label_width => $template->get_attr('label_width'), left_text_margin => $template->get_attr('left_text_margin')),
-                                          );
+            batch_id         => $batch_id,
+            item_number      => $item->{'item_number'},
+            llx              => $llx,
+            lly              => $lly,
+            width            => $template->get_attr('label_width'),
+            height           => $template->get_attr('label_height'),
+            top_text_margin  => $template->get_attr('top_text_margin'),
+            left_text_margin => $template->get_attr('left_text_margin'),
+            barcode_type     => $layout->get_attr('barcode_type'),
+            printing_type    => 'BIB',
+            guidebox         => $layout->get_attr('guidebox'),
+            font             => $layout->get_attr('font'),
+            font_size        => $layout->get_attr('font_size'),
+            callnum_split    => $layout->get_attr('callnum_split'),
+            justify          => $layout->get_attr('text_justify'),
+            format_string    => $layout->get_attr('format_string'),
+            text_wrap_cols   => $layout->get_text_wrap_cols( label_width => $template->get_attr('label_width'), left_text_margin => $template->get_attr('left_text_margin') ),
+        );
         my $label_a_text = $label_a->create_label();
         _print_text($label_a_text);
-        ($row_count, $col_count, $llx, $lly) = _calc_next_label_pos($row_count, $col_count, $llx, $lly);
+        ( $row_count, $col_count, $llx, $lly ) = _calc_next_label_pos( $row_count, $col_count, $llx, $lly );
         my $label_b = C4::Labels::Label->new(
-                                        batch_id            => $batch_id,
-                                        item_number         => $item->{'item_number'},
-                                        llx                 => $llx,
-                                        lly                 => $lly,
-                                        width               => $template->get_attr('label_width'),
-                                        height              => $template->get_attr('label_height'),
-                                        top_text_margin     => $template->get_attr('top_text_margin'),
-                                        left_text_margin    => $template->get_attr('left_text_margin'),
-                                        barcode_type        => $layout->get_attr('barcode_type'),
-                                        printing_type       => 'BAR',
-                                        guidebox            => $layout->get_attr('guidebox'),
-                                        font                => $layout->get_attr('font'),
-                                        font_size           => $layout->get_attr('font_size'),
-                                        callnum_split       => $layout->get_attr('callnum_split'),
-                                        justify             => $layout->get_attr('text_justify'),
-                                        format_string       => $layout->get_attr('format_string'),
-                                        text_wrap_cols      => $layout->get_text_wrap_cols(label_width => $template->get_attr('label_width'), left_text_margin => $template->get_attr('left_text_margin')),
-                                          );
+            batch_id         => $batch_id,
+            item_number      => $item->{'item_number'},
+            llx              => $llx,
+            lly              => $lly,
+            width            => $template->get_attr('label_width'),
+            height           => $template->get_attr('label_height'),
+            top_text_margin  => $template->get_attr('top_text_margin'),
+            left_text_margin => $template->get_attr('left_text_margin'),
+            barcode_type     => $layout->get_attr('barcode_type'),
+            printing_type    => 'BAR',
+            guidebox         => $layout->get_attr('guidebox'),
+            font             => $layout->get_attr('font'),
+            font_size        => $layout->get_attr('font_size'),
+            callnum_split    => $layout->get_attr('callnum_split'),
+            justify          => $layout->get_attr('text_justify'),
+            format_string    => $layout->get_attr('format_string'),
+            text_wrap_cols   => $layout->get_text_wrap_cols( label_width => $template->get_attr('label_width'), left_text_margin => $template->get_attr('left_text_margin') ),
+        );
         my $label_b_text = $label_b->create_label();
-        ($row_count, $col_count, $llx, $lly) = _calc_next_label_pos($row_count, $col_count, $llx, $lly);
+        ( $row_count, $col_count, $llx, $lly ) = _calc_next_label_pos( $row_count, $col_count, $llx, $lly );
         next LABEL_ITEMS;
+    } else {
     }
-    else {
-    }
-        my $label = C4::Labels::Label->new(
-                                        batch_id            => $batch_id,
-                                        item_number         => $item->{'item_number'},
-                                        llx                 => $llx,
-                                        lly                 => $lly,
-                                        width               => $template->get_attr('label_width'),
-                                        height              => $template->get_attr('label_height'),
-                                        top_text_margin     => $template->get_attr('top_text_margin'),
-                                        left_text_margin    => $template->get_attr('left_text_margin'),
-                                        barcode_type        => $layout->get_attr('barcode_type'),
-                                        printing_type       => $layout->get_attr('printing_type'),
-                                        guidebox            => $layout->get_attr('guidebox'),
-                                        font                => $layout->get_attr('font'),
-                                        font_size           => $layout->get_attr('font_size'),
-                                        callnum_split       => $layout->get_attr('callnum_split'),
-                                        justify             => $layout->get_attr('text_justify'),
-                                        format_string       => $layout->get_attr('format_string'),
-                                        text_wrap_cols      => $layout->get_text_wrap_cols(label_width => $template->get_attr('label_width'), left_text_margin => $template->get_attr('left_text_margin')),
-                                          );
-        my $label_text = $label->create_label();
-        _print_text($label_text) if $label_text;
-        ($row_count, $col_count, $llx, $lly) = _calc_next_label_pos($row_count, $col_count, $llx, $lly);
-        next LABEL_ITEMS;
+    my $label = C4::Labels::Label->new(
+        batch_id         => $batch_id,
+        item_number      => $item->{'item_number'},
+        llx              => $llx,
+        lly              => $lly,
+        width            => $template->get_attr('label_width'),
+        height           => $template->get_attr('label_height'),
+        top_text_margin  => $template->get_attr('top_text_margin'),
+        left_text_margin => $template->get_attr('left_text_margin'),
+        barcode_type     => $layout->get_attr('barcode_type'),
+        printing_type    => $layout->get_attr('printing_type'),
+        guidebox         => $layout->get_attr('guidebox'),
+        font             => $layout->get_attr('font'),
+        font_size        => $layout->get_attr('font_size'),
+        callnum_split    => $layout->get_attr('callnum_split'),
+        justify          => $layout->get_attr('text_justify'),
+        format_string    => $layout->get_attr('format_string'),
+        text_wrap_cols   => $layout->get_text_wrap_cols( label_width => $template->get_attr('label_width'), left_text_margin => $template->get_attr('left_text_margin') ),
+    );
+    my $label_text = $label->create_label();
+    _print_text($label_text) if $label_text;
+    ( $row_count, $col_count, $llx, $lly ) = _calc_next_label_pos( $row_count, $col_count, $llx, $lly );
+    next LABEL_ITEMS;
 }
 
 $pdf->End();

@@ -1,7 +1,7 @@
 package C4::ClassSortRoutine::LCC;
 
 # Copyright (C) 2007 LibLime
-# 
+#
 # This file is part of Koha.
 #
 # Koha is free software; you can redistribute it and/or modify it under the
@@ -46,7 +46,7 @@ Generates sorting key for LC call numbers.
 =cut
 
 sub get_class_sort_key {
-    my ($cn_class, $cn_item) = @_;
+    my ( $cn_class, $cn_item ) = @_;
 
     $cn_class = '' unless defined $cn_class;
     $cn_item  = '' unless defined $cn_item;
@@ -56,6 +56,7 @@ sub get_class_sort_key {
     $key =~ s/^[^\p{IsAlnum}\s.]//g;
     $key =~ s/^([A-Z]+)/$1 /;
     $key =~ s/(\.[A-Z])/ $1/g;
+
     # handle first digit group
     $key =~ s/(\d+)/sprintf("%-05.5d", $1)/xe;
     $key =~ s/\s+/_/g;

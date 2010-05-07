@@ -17,7 +17,6 @@
 # with Koha; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-
 =head1 opac-browser.pl
 
 TODO :: Description here
@@ -32,7 +31,7 @@ use C4::Context;
 use C4::Output;
 use CGI;
 use C4::Biblio;
-use C4::Koha;       # use getitemtypeinfo
+use C4::Koha;    # use getitemtypeinfo
 
 my $query = new CGI;
 
@@ -40,8 +39,7 @@ my $dbh = C4::Context->dbh;
 
 # open template
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => "opac-browser.tmpl",
+    {   template_name   => "opac-browser.tmpl",
         query           => $query,
         type            => "opac",
         authnotrequired => 1,
@@ -53,16 +51,16 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
 my $level = $query->param('level') || 0;
 my $filter = $query->param('filter');
 $filter = '' unless defined $filter;
-$level++; # the level passed is the level of the PREVIOUS list, not the current one. Thus the ++
+$level++;    # the level passed is the level of the PREVIOUS list, not the current one. Thus the ++
 
 # build this level loop
 my $sth = $dbh->prepare("SELECT * FROM browser WHERE level=? and classification like ? ORDER BY classification");
-$sth->execute($level,$filter."%");
+$sth->execute( $level, $filter . "%" );
 my @level_loop;
-my $i=0;
-while (my $line = $sth->fetchrow_hashref) {
+my $i = 0;
+while ( my $line = $sth->fetchrow_hashref ) {
     $line->{description} =~ s/\((.*)\)//g;
-    push @level_loop,$line;
+    push @level_loop, $line;
 }
 
 my $have_hierarchy = 0;
@@ -70,33 +68,34 @@ my $have_hierarchy = 0;
 # now rebuild hierarchy loop
 $filter =~ s/\.//g;
 my @hierarchy_loop;
-if ($filter eq '' and $level == 1) {
+if ( $filter eq '' and $level == 1 ) {
+
     # we're starting from the top
     $have_hierarchy = 1 if @level_loop;
     unless (@level_loop) {
-        $sth->execute(1, "%");
-        while (my $line = $sth->fetchrow_hashref) {
+        $sth->execute( 1, "%" );
+        while ( my $line = $sth->fetchrow_hashref ) {
             $line->{description} =~ s/\((.*)\)//g;
-            push @level_loop,$line;
+            push @level_loop, $line;
         }
     }
 } else {
     $sth = $dbh->prepare("SELECT * FROM browser where classification=?");
-    for (my $i=1;$i <=length($filter);$i++) {
-        $sth->execute(substr($filter,0,$i));
+    for ( my $i = 1 ; $i <= length($filter) ; $i++ ) {
+        $sth->execute( substr( $filter, 0, $i ) );
         my $line = $sth->fetchrow_hashref;
-        push @hierarchy_loop,$line;
+        push @hierarchy_loop, $line;
     }
     $have_hierarchy = 1 if @hierarchy_loop;
 }
 
 # mark every third entry in level_loop
-for (my $i = 0; $i <= $#level_loop; $i++) {
+for ( my $i = 0 ; $i <= $#level_loop ; $i++ ) {
     $level_loop[$i]->{count3} = 1 if 2 == $i % 3 && $i != $#level_loop;
 }
 
 $template->param(
-    LEVEL_LOOP => \@level_loop,
+    LEVEL_LOOP     => \@level_loop,
     HIERARCHY_LOOP => \@hierarchy_loop,
     have_hierarchy => $have_hierarchy,
 );

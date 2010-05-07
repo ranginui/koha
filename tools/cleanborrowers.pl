@@ -17,7 +17,6 @@
 #
 #   Written by Antoine Farnault antoine@koha-fr.org on Nov. 2006.
 
-
 =head1 cleanborrowers.pl
 
 This script allows to do 2 things.
@@ -33,6 +32,7 @@ This script allows to do 2 things.
 =cut
 
 use strict;
+
 #use warnings; FIXME - Bug 2505
 use CGI;
 use C4::Auth;
@@ -50,13 +50,12 @@ my $cgi = new CGI;
 #  * multivalued CGI paramaters are returned as a packaged string separated by "\0" (null)
 my $params = $cgi->Vars;
 
-my $filterdate1;               # the date which filter on issue history.
-my $filterdate2;               # the date which filter on borrowers last issue.
+my $filterdate1;        # the date which filter on issue history.
+my $filterdate2;        # the date which filter on borrowers last issue.
 
 # getting the template
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => "tools/cleanborrowers.tmpl",
+    {   template_name   => "tools/cleanborrowers.tmpl",
         query           => $cgi,
         type            => "intranet",
         authnotrequired => 0,
@@ -65,33 +64,32 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
 );
 
 if ( $params->{'step2'} ) {
-    $filterdate1 = format_date_in_iso($params->{'filterdate1'});
-    $filterdate2 = format_date_in_iso($params->{'filterdate2'});
+    $filterdate1 = format_date_in_iso( $params->{'filterdate1'} );
+    $filterdate2 = format_date_in_iso( $params->{'filterdate2'} );
     my %checkboxes = map { $_ => 1 } split /\0/, $params->{'checkbox'};
 
     my $totalDel;
     my $membersToDelete;
-    if ($checkboxes{borrower}) {
-        $membersToDelete = GetBorrowersWhoHaveNotBorrowedSince($filterdate1, 1);
+    if ( $checkboxes{borrower} ) {
+        $membersToDelete = GetBorrowersWhoHaveNotBorrowedSince( $filterdate1, 1 );
         $totalDel = scalar @$membersToDelete;
-            
+
     }
     my $totalAno;
     my $membersToAnonymize;
-    if ($checkboxes{issue}) {
-        $membersToAnonymize =
-          GetBorrowersWithIssuesHistoryOlderThan($filterdate2);
-        $totalAno = scalar @$membersToAnonymize;
+    if ( $checkboxes{issue} ) {
+        $membersToAnonymize = GetBorrowersWithIssuesHistoryOlderThan($filterdate2);
+        $totalAno           = scalar @$membersToAnonymize;
     }
 
     $template->param(
-        step2            => 1,
-        totalToDelete    => $totalDel,
-        totalToAnonymize => $totalAno,
-        memberstodelete_list => $membersToDelete,    
-        memberstoanonymize_list => $membersToAnonymize,    
-        filterdate1      => format_date($filterdate1),
-        filterdate2      => format_date($filterdate2),
+        step2                   => 1,
+        totalToDelete           => $totalDel,
+        totalToAnonymize        => $totalAno,
+        memberstodelete_list    => $membersToDelete,
+        memberstoanonymize_list => $membersToAnonymize,
+        filterdate1             => format_date($filterdate1),
+        filterdate2             => format_date($filterdate2),
     );
 ### TODO : Use GetBorrowersNamesAndLatestIssue function in order to get the borrowers to delete or anonymize.
 ### Now, we are only using total, which is not enough imlo
@@ -101,16 +99,16 @@ if ( $params->{'step2'} ) {
 }
 
 if ( $params->{'step3'} ) {
-    $filterdate1 = format_date_in_iso($params->{'filterdate1'});
-    $filterdate2 = format_date_in_iso($params->{'filterdate2'});
+    $filterdate1 = format_date_in_iso( $params->{'filterdate1'} );
+    $filterdate2 = format_date_in_iso( $params->{'filterdate2'} );
     my $do_delete = $params->{'do_delete'};
     my $do_anonym = $params->{'do_anonym'};
 
     my ( $totalDel, $totalAno, $radio ) = ( 0, 0, 0 );
-    
+
     # delete members
     if ($do_delete) {
-        my $membersToDelete = GetBorrowersWhoHaveNotBorrowedSince($filterdate1, 1);
+        my $membersToDelete = GetBorrowersWhoHaveNotBorrowedSince( $filterdate1, 1 );
         $totalDel = scalar(@$membersToDelete);
         $radio    = $params->{'radio'};
         if ( $radio eq 'trash' ) {
@@ -119,11 +117,10 @@ if ( $params->{'step3'} ) {
                 MoveMemberToDeleted( $membersToDelete->[$i]->{'borrowernumber'} );
                 DelMember( $membersToDelete->[$i]->{'borrowernumber'} );
             }
-        }
-        else {    # delete completly.
+        } else {    # delete completly.
             my $i;
             for ( $i = 0 ; $i < $totalDel ; $i++ ) {
-               DelMember($membersToDelete->[$i]->{'borrowernumber'});
+                DelMember( $membersToDelete->[$i]->{'borrowernumber'} );
             }
         }
         $template->param(
@@ -131,7 +128,7 @@ if ( $params->{'step3'} ) {
             TotalDel  => $totalDel
         );
     }
-    
+
     # Anonymising all members
     if ($do_anonym) {
         $totalAno = AnonymiseIssueHistory($filterdate2);
@@ -140,7 +137,7 @@ if ( $params->{'step3'} ) {
             do_anonym   => '1',
         );
     }
-    
+
     $template->param(
         step3 => '1',
         trash => ( $radio eq "trash" ) ? (1) : (0),
@@ -153,13 +150,13 @@ if ( $params->{'step3'} ) {
 
 #default value set to the template are the 'CNIL' value.
 my ( $year, $month, $day ) = &Today();
-$filterdate1 = format_date(sprintf("%-04.4d-%-02.2d-%02.2d", Add_Delta_YM($year, $month, $day, -1, 0)));
-$filterdate2 = format_date(sprintf("%-04.4d-%-02.2d-%02.2d", Add_Delta_YM($year, $month, $day, 0, -3)));
+$filterdate1 = format_date( sprintf( "%-04.4d-%-02.2d-%02.2d", Add_Delta_YM( $year, $month, $day, -1, 0 ) ) );
+$filterdate2 = format_date( sprintf( "%-04.4d-%-02.2d-%02.2d", Add_Delta_YM( $year, $month, $day, 0,  -3 ) ) );
 
 $template->param(
-    step1       => '1',
-    filterdate1 => $filterdate1,
-    filterdate2 => $filterdate2,
+    step1                    => '1',
+    filterdate1              => $filterdate1,
+    filterdate2              => $filterdate2,
     DHTMLcalendar_dateformat => C4::Dates->DHTMLcalendar(),
 );
 

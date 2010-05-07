@@ -30,15 +30,14 @@ my $query        = new CGI;
 my $biblionumber = $query->param('biblionumber');
 
 my ( $template, $borrowernumber, $cookie ) = &get_template_and_user(
-    {
-        template_name   => "opac-showreviews.tmpl",
+    {   template_name   => "opac-showreviews.tmpl",
         query           => $query,
         type            => "opac",
         authnotrequired => 1,
     }
 );
 
-my $biblio  = GetBiblioData( $biblionumber );
+my $biblio = GetBiblioData($biblionumber);
 my $reviews = getreviews( $biblionumber, 1 );
 
 $template->param(

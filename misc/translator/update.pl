@@ -4,15 +4,16 @@ use strict;
 use warnings;
 use lib '/home/chris/git/koha.git';
 use C4::Languages;
+
 # Go through the theme/module combinations we need to update.
 my $dir = "po";
 my $po;
-opendir (DIR,$dir);
-while (defined($po = readdir(DIR))) {
+opendir( DIR, $dir );
+while ( defined( $po = readdir(DIR) ) ) {
     next if $po =~ /^\.\.?$/;
     print "processing $po...\n";
     my $interface = 'intranet';
-    if ($po =~ /opac/) {
+    if ( $po =~ /opac/ ) {
         $interface = 'opac';
     }
     system("./tmpl_process3.pl update -i ../../koha-tmpl/$interface-tmpl/prog/en/ -s po/$po -r");

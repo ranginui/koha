@@ -3,7 +3,6 @@
 #written 11/1/2000 by chris@katipo.oc.nz
 #script to display borrowers account details
 
-
 # Copyright 2000-2002 Katipo Communications
 #
 # This file is part of Koha.
@@ -33,62 +32,63 @@ use C4::Branch;
 use C4::Accounts;
 use C4::Items;
 
-my $input=new CGI;
+my $input = new CGI;
 
-my $borrowernumber=$input->param('borrowernumber');
+my $borrowernumber = $input->param('borrowernumber');
 
 #get borrower details
-my $data=GetMember('borrowernumber' => $borrowernumber);
-my $add=$input->param('add');
+my $data = GetMember( 'borrowernumber' => $borrowernumber );
+my $add = $input->param('add');
 
-if ($add){
-    my $barcode=$input->param('barcode');
+if ($add) {
+    my $barcode = $input->param('barcode');
     my $itemnum = GetItemnumberFromBarcode($barcode) if $barcode;
-    my $desc=$input->param('desc');
-    my $amount=$input->param('amount') || 0;
+    my $desc    = $input->param('desc');
+    my $amount  = $input->param('amount') || 0;
     $amount = -$amount;
-    my $type=$input->param('type');
-    manualinvoice($borrowernumber,$itemnum,$desc,$type,$amount);
+    my $type = $input->param('type');
+    manualinvoice( $borrowernumber, $itemnum, $desc, $type, $amount );
     print $input->redirect("/cgi-bin/koha/members/boraccount.pl?borrowernumber=$borrowernumber");
 } else {
-	my ($template, $loggedinuser, $cookie)
-	  = get_template_and_user({template_name => "members/mancredit.tmpl",
-					  query => $input,
-					  type => "intranet",
-					  authnotrequired => 0,
-					  flagsrequired => {borrowers => 1, updatecharges => 1},
-					  debug => 1,
-					  });
-					  
-    if ( $data->{'category_type'} eq 'C') {
-        my  ( $catcodes, $labels ) =  GetborCatFromCatType( 'A', 'WHERE category_type = ?' );
+    my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
+        {   template_name   => "members/mancredit.tmpl",
+            query           => $input,
+            type            => "intranet",
+            authnotrequired => 0,
+            flagsrequired   => { borrowers => 1, updatecharges => 1 },
+            debug           => 1,
+        }
+    );
+
+    if ( $data->{'category_type'} eq 'C' ) {
+        my ( $catcodes, $labels ) = GetborCatFromCatType( 'A', 'WHERE category_type = ?' );
         my $cnt = scalar(@$catcodes);
-        $template->param( 'CATCODE_MULTI' => 1) if $cnt > 1;
-        $template->param( 'catcode' =>    $catcodes->[0])  if $cnt == 1;
+        $template->param( 'CATCODE_MULTI' => 1 ) if $cnt > 1;
+        $template->param( 'catcode' => $catcodes->[0] ) if $cnt == 1;
     }
-					  
+
     $template->param( adultborrower => 1 ) if ( $data->{category_type} eq 'A' );
-    my ($picture, $dberror) = GetPatronImage($data->{'cardnumber'});
+    my ( $picture, $dberror ) = GetPatronImage( $data->{'cardnumber'} );
     $template->param( picture => 1 ) if $picture;
-    
+
     $template->param(
         borrowernumber => $borrowernumber,
-        firstname => $data->{'firstname'},
-        surname  => $data->{'surname'},
-		    cardnumber => $data->{'cardnumber'},
-		    categorycode => $data->{'categorycode'},
-		    category_type => $data->{'category_type'},
-		    categoryname  => $data->{'description'},
-		    address => $data->{'address'},
-		    address2 => $data->{'address2'},
-		    city => $data->{'city'},
-		    zipcode => $data->{'zipcode'},
-		    country => $data->{'country'},
-		    phone => $data->{'phone'},
-		    email => $data->{'email'},
-		    branchcode => $data->{'branchcode'},
-		    branchname => GetBranchName($data->{'branchcode'}),
-		    is_child        => ($data->{'category_type'} eq 'C'),
-        );
+        firstname      => $data->{'firstname'},
+        surname        => $data->{'surname'},
+        cardnumber     => $data->{'cardnumber'},
+        categorycode   => $data->{'categorycode'},
+        category_type  => $data->{'category_type'},
+        categoryname   => $data->{'description'},
+        address        => $data->{'address'},
+        address2       => $data->{'address2'},
+        city           => $data->{'city'},
+        zipcode        => $data->{'zipcode'},
+        country        => $data->{'country'},
+        phone          => $data->{'phone'},
+        email          => $data->{'email'},
+        branchcode     => $data->{'branchcode'},
+        branchname     => GetBranchName( $data->{'branchcode'} ),
+        is_child       => ( $data->{'category_type'} eq 'C' ),
+    );
     output_html_with_http_headers $input, $cookie, $template->output;
 }

@@ -40,8 +40,8 @@ sub plugin_parameters {
 }
 
 sub plugin_javascript {
-    my ($dbh,$record,$tagslib,$field_number,$tabloop) = @_;
-    my $res="
+    my ( $dbh, $record, $tagslib, $field_number, $tabloop ) = @_;
+    my $res = "
     <script type='text/javascript'>
         function Focus$field_number() {
             return 1;
@@ -67,47 +67,45 @@ sub plugin_javascript {
     </script>
     ";
 
-    return ($field_number,$res);
+    return ( $field_number, $res );
 }
 
 sub plugin {
     my ($input) = @_;
     my $code = $input->param('code');
 
-    my ($template, $loggedinuser, $cookie) = get_template_and_user({
-        template_name   => "cataloguing/value_builder/ajax.tmpl",
-        query           => $input,
-        type            => "intranet",
-        authnotrequired => 0,
-        flagsrequired   => {editcatalogue => '*'},
-        debug           => 1,
-    });
+    my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
+        {   template_name   => "cataloguing/value_builder/ajax.tmpl",
+            query           => $input,
+            type            => "intranet",
+            authnotrequired => 0,
+            flagsrequired   => { editcatalogue => '*' },
+            debug           => 1,
+        }
+    );
 
     my $dbh = C4::Context->dbh;
+
     # If the textbox is empty, we return a simple incremented callnumber
     if ( $code eq "" ) {
         my $sth = $dbh->prepare("SELECT MAX(CAST(itemcallnumber AS SIGNED)) FROM items");
         $sth->execute;
-    
+
         if ( my $max = $sth->fetchrow ) {
-            $template->param(
-                return => $max+1,
-            );
+            $template->param( return => $max + 1, );
         }
-    # If a prefix is submited, we look for the highest itemcallnumber with this prefix, and return it incremented
+
+        # If a prefix is submited, we look for the highest itemcallnumber with this prefix, and return it incremented
     } elsif ( $code =~ m/^[A-Z]+$/ ) {
         my $sth = $dbh->prepare("SELECT MAX(CAST(SUBSTRING_INDEX(itemcallnumber,' ',-1) AS SIGNED)) FROM items WHERE itemcallnumber LIKE ?");
-        $sth->execute($code.' %');
+        $sth->execute( $code . ' %' );
         if ( my $max = $sth->fetchrow ) {
-            $template->param(
-                return => $code.' '.($max+1)
-            );
+            $template->param( return => $code . ' ' . ( $max + 1 ) );
         }
-    # The user entered a custom value, we don't touch it, this could be handled in js
+
+        # The user entered a custom value, we don't touch it, this could be handled in js
     } else {
-        $template->param(
-            return => $code,
-        );
+        $template->param( return => $code, );
     }
     output_html_with_http_headers $input, $cookie, $template->output;
 }

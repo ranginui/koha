@@ -27,99 +27,104 @@ use C4::Debug;
 use C4::Dates;
 
 use vars qw($VERSION @ISA);
-use vars qw($debug $cgi_debug);	# from C4::Debug, of course
+use vars qw($debug $cgi_debug);    # from C4::Debug, of course
 use vars qw($branch $width);
 
 BEGIN {
     $VERSION = 0.01;
-    @ISA = qw(C4::Barcodes);
+    @ISA     = qw(C4::Barcodes);
 }
 
 INIT {
-	$branch = '';
-	$width = 4;		# FIXME: 4 is too small for sizeable or multi-branch libraries.
+    $branch = '';
+    $width  = 4;                   # FIXME: 4 is too small for sizeable or multi-branch libraries.
 }
+
 # Generates barcode where hb = home branch Code, yymm = year/month catalogued, incr = incremental number,
 # 	increment resets yearly -fbcit
 
 sub db_max ($;$) {
-	my $self = shift;
-	my $query = "SELECT MAX(SUBSTRING(barcode,-$width)), barcode FROM items WHERE barcode REGEXP ? GROUP BY barcode";
-	$debug and print STDERR "(hbyymmincr) db_max query: $query\n";
-	my $sth = C4::Context->dbh->prepare($query);
-	my ($iso);
-	if (@_) {
-		my $input = shift;
-		$iso = C4::Dates->new($input,'iso')->output('iso'); # try to set the date w/ 2nd arg
-		unless ($iso) {
-			warn "Failed to create 'iso' Dates object with input '$input'.  Reverting to today's date.";
-			$iso = C4::Dates->new->output('iso');	# failover back to today
-		}
-	} else {
-		$iso = C4::Dates->new->output('iso');
-	}
-	my $year = substr($iso,2,2);    # i.e. "08" for 2008
-	my $andtwo = $width+2;
-	$sth->execute("^[a-zA-Z]{1,}" . $year . "[0-9]{$andtwo}");	# the extra two digits are the month.  we don't care what they are, just that they are there.
-	unless ($sth->rows) {
-		warn "No existing hbyymmincr barcodes found.  Reverting to initial value.";
-		return $self->initial;
-	}
-	my ($row) = $sth->fetchrow_hashref;
-	my $max = $row->{barcode};
-	warn "barcode max (hbyymmincr format): $max" if $debug;
-	return ($max || 0);
+    my $self  = shift;
+    my $query = "SELECT MAX(SUBSTRING(barcode,-$width)), barcode FROM items WHERE barcode REGEXP ? GROUP BY barcode";
+    $debug and print STDERR "(hbyymmincr) db_max query: $query\n";
+    my $sth = C4::Context->dbh->prepare($query);
+    my ($iso);
+    if (@_) {
+        my $input = shift;
+        $iso = C4::Dates->new( $input, 'iso' )->output('iso');    # try to set the date w/ 2nd arg
+        unless ($iso) {
+            warn "Failed to create 'iso' Dates object with input '$input'.  Reverting to today's date.";
+            $iso = C4::Dates->new->output('iso');                 # failover back to today
+        }
+    } else {
+        $iso = C4::Dates->new->output('iso');
+    }
+    my $year = substr( $iso, 2, 2 );                              # i.e. "08" for 2008
+    my $andtwo = $width + 2;
+    $sth->execute( "^[a-zA-Z]{1,}" . $year . "[0-9]{$andtwo}" );    # the extra two digits are the month.  we don't care what they are, just that they are there.
+    unless ( $sth->rows ) {
+        warn "No existing hbyymmincr barcodes found.  Reverting to initial value.";
+        return $self->initial;
+    }
+    my ($row) = $sth->fetchrow_hashref;
+    my $max = $row->{barcode};
+    warn "barcode max (hbyymmincr format): $max" if $debug;
+    return ( $max || 0 );
 }
 
 sub initial () {
-	my $self = shift;
-	# FIXME: populated branch?
-	my $iso = C4::Dates->new->output('iso'); 	# like "2008-07-02"
-	return $self->branch . substr($iso,2,2) . substr($iso,5,2) . sprintf('%' . "$width.$width" . 'd',1);
+    my $self = shift;
+
+    # FIXME: populated branch?
+    my $iso = C4::Dates->new->output('iso');    # like "2008-07-02"
+    return $self->branch . substr( $iso, 2, 2 ) . substr( $iso, 5, 2 ) . sprintf( '%' . "$width.$width" . 'd', 1 );
 }
 
-sub parse ($;$) {   # return 3 parts of barcode: non-incrementing, incrementing, non-incrementing
-	my $self = shift;
-	my $barcode = (@_) ? shift : $self->value;
-	my $branch = $self->branch;
-	unless ($barcode =~ /($branch\d{4})(\d+)$/) {
-		carp "Barcode '$barcode' has no incrementing part!";
-		return ($barcode,undef,undef);
-	}
-	$debug and warn "Barcode '$barcode' parses into: '$1', '$2', ''";
-	return ($1,$2,'');  # the third part is in anticipation of barcodes that include checkdigits
+sub parse ($;$) {                               # return 3 parts of barcode: non-incrementing, incrementing, non-incrementing
+    my $self    = shift;
+    my $barcode = (@_) ? shift : $self->value;
+    my $branch  = $self->branch;
+    unless ( $barcode =~ /($branch\d{4})(\d+)$/ ) {
+        carp "Barcode '$barcode' has no incrementing part!";
+        return ( $barcode, undef, undef );
+    }
+    $debug and warn "Barcode '$barcode' parses into: '$1', '$2', ''";
+    return ( $1, $2, '' );                      # the third part is in anticipation of barcodes that include checkdigits
 }
 
 sub branch ($;$) {
-	my $self = shift;
-	(@_) and $self->{branch} = shift;
-	return $self->{branch};
+    my $self = shift;
+    (@_) and $self->{branch} = shift;
+    return $self->{branch};
 }
+
 sub width ($;$) {
-	my $self = shift;
-	(@_) and $width = shift;	# hitting the class variable.
-	return $width;
+    my $self = shift;
+    (@_) and $width = shift;                    # hitting the class variable.
+    return $width;
 }
-sub process_head($$;$$) {	# (self,head,whole,specific)
-	my ($self,$head,$whole,$specific) = @_;
-	$specific and return $head;	# if this is built off an existing barcode, just return the head unchanged.
-	$head =~ s/\d{4}$//;		# else strip the old yymm
-	my $iso = C4::Dates->new->output('iso'); 	# like "2008-07-02"
-	return $head . substr($iso,2,2) . substr($iso,5,2);
+
+sub process_head($$;$$) {                       # (self,head,whole,specific)
+    my ( $self, $head, $whole, $specific ) = @_;
+    $specific and return $head;                 # if this is built off an existing barcode, just return the head unchanged.
+    $head =~ s/\d{4}$//;                        # else strip the old yymm
+    my $iso = C4::Dates->new->output('iso');    # like "2008-07-02"
+    return $head . substr( $iso, 2, 2 ) . substr( $iso, 5, 2 );
 }
 
 sub new_object {
-	$debug and warn "hbyymmincr: new_object called";
-	my $class_or_object = shift;
-	my $type = ref($class_or_object) || $class_or_object;
-	my $from_obj = ref($class_or_object) ? 1 : 0;   # are we building off another Barcodes object?
-	my $self = $class_or_object->default_self('hbyymmincr');
-	bless $self, $type;
-	$self->branch(@_ ? shift : $from_obj ? $class_or_object->branch : $branch);
-		# take the branch from argument, or existing object, or default
-	use Data::Dumper;
-	$debug and print STDERR "(hbyymmincr) new_object: ", Dumper($self), "\n";
-	return $self;
+    $debug and warn "hbyymmincr: new_object called";
+    my $class_or_object = shift;
+    my $type            = ref($class_or_object) || $class_or_object;
+    my $from_obj        = ref($class_or_object) ? 1 : 0;                  # are we building off another Barcodes object?
+    my $self            = $class_or_object->default_self('hbyymmincr');
+    bless $self, $type;
+    $self->branch( @_ ? shift : $from_obj ? $class_or_object->branch : $branch );
+
+    # take the branch from argument, or existing object, or default
+    use Data::Dumper;
+    $debug and print STDERR "(hbyymmincr) new_object: ", Dumper($self), "\n";
+    return $self;
 }
 
 1;

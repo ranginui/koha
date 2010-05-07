@@ -49,7 +49,7 @@ sub GetTab {
         $local_currency = $active_currency->{currency};
     }
     $tab_template->param(
-        local_currency => $local_currency, # currency code is used, because we do not know how a given currency is formatted.
+        local_currency => $local_currency,    # currency code is used, because we do not know how a given currency is formatted.
     );
 
     return YAML::Syck::Load( $tab_template->output() );
@@ -69,25 +69,27 @@ sub _get_chunk {
         my $theme;
         my $interface;
         if ( $options{'type'} eq 'opac-languages' ) {
+
             # this is the OPAC
             $interface = 'opac';
             $theme     = C4::Context->preference('opacthemes');
         } else {
+
             # this is the staff client
             $interface = 'intranet';
             $theme     = C4::Context->preference('template');
         }
         $chunk->{'languages'} = getTranslatedLanguages( $interface, $theme, $lang, $current_languages );
         $chunk->{'type'} = 'languages';
-    } elsif ( $options{ 'choices' } ) {
-        if ( $options{'choices'} && ref( $options{ 'choices' } ) eq '' ) {
+    } elsif ( $options{'choices'} ) {
+        if ( $options{'choices'} && ref( $options{'choices'} ) eq '' ) {
             if ( $options{'choices'} eq 'class-sources' ) {
                 my $sources = GetClassSources();
                 $options{'choices'} = { map { $_ => $sources->{$_}->{'description'} } keys %$sources };
             } elsif ( $options{'choices'} eq 'opac-templates' ) {
-                $options{'choices'} = { map { $_ => $_ } getallthemes( 'opac' ) }
+                $options{'choices'} = { map { $_ => $_ } getallthemes('opac') };
             } elsif ( $options{'choices'} eq 'staff-templates' ) {
-                $options{'choices'} = { map { $_ => $_ } getallthemes( 'intranet' ) }
+                $options{'choices'} = { map { $_ => $_ } getallthemes('intranet') };
             } else {
                 die 'Unrecognized source of preference values: ' . $options{'choices'};
             }
@@ -95,11 +97,11 @@ sub _get_chunk {
 
         $value ||= 0;
 
-        $chunk->{'type'} = 'select';
+        $chunk->{'type'}    = 'select';
         $chunk->{'CHOICES'} = [
             sort { $a->{'text'} cmp $b->{'text'} }
-            map { { text => $options{'choices'}->{$_}, value => $_, selected => ( $_ eq $value || ( $_ eq '' && ( $value eq '0' || !$value ) ) ) } }
-            keys %{ $options{'choices'} }
+              map { { text => $options{'choices'}->{$_}, value => $_, selected => ( $_ eq $value || ( $_ eq '' && ( $value eq '0' || !$value ) ) ) } }
+              keys %{ $options{'choices'} }
         ];
     }
 
@@ -112,28 +114,28 @@ sub TransformPrefsToHTML {
     my ( $data, $searchfield ) = @_;
 
     my @lines;
-    my $dbh = C4::Context->dbh;
-    my $title = ( keys( %$data ) )[0];
-    my $tab = $data->{ $title };
-    $tab = { '' => $tab } if ( ref( $tab ) eq 'ARRAY' );
+    my $dbh   = C4::Context->dbh;
+    my $title = ( keys(%$data) )[0];
+    my $tab   = $data->{$title};
+    $tab = { '' => $tab } if ( ref($tab) eq 'ARRAY' );
 
     foreach my $group ( sort keys %$tab ) {
-        if ( $group ) {
+        if ($group) {
             push @lines, { is_group_title => 1, title => $group };
         }
 
-        foreach my $line ( @{ $tab->{ $group } } ) {
+        foreach my $line ( @{ $tab->{$group} } ) {
             my @chunks;
             my @names;
 
-            foreach my $piece ( @$line ) {
-                if ( ref ( $piece ) eq 'HASH' ) {
+            foreach my $piece (@$line) {
+                if ( ref($piece) eq 'HASH' ) {
                     my $name = $piece->{'pref'};
 
-                    if ( $name ) {
+                    if ($name) {
                         my $row = $dbh->selectrow_hashref( "SELECT value, type FROM systempreferences WHERE variable = ?", {}, $name );
                         my $value;
-                        if ( ( !defined( $row ) || ( !defined( $row->{'value'} ) && $row->{'type'} ne 'YesNo' ) ) && defined( $piece->{'default'} ) ) {
+                        if ( ( !defined($row) || ( !defined( $row->{'value'} ) && $row->{'type'} ne 'YesNo' ) ) && defined( $piece->{'default'} ) ) {
                             $value = $piece->{'default'};
                         } else {
                             $value = $row->{'value'};
@@ -146,7 +148,7 @@ sub TransformPrefsToHTML {
                         push @chunks, $chunk;
 
                         my $name_entry = { name => $name };
-                        if ( $searchfield ) {
+                        if ($searchfield) {
                             if ( $name =~ /^$searchfield$/i ) {
                                 $name_entry->{'jumped'} = 1;
                             } elsif ( $name =~ /$searchfield/i ) {
@@ -176,8 +178,8 @@ sub _get_pref_files {
 
     my %results;
 
-    foreach my $file ( glob( "$htdocs/$theme/$lang/modules/admin/preferences/*.pref" ) ) {
-        my ( $tab ) = ( $file =~ /([a-z0-9_-]+)\.pref$/ );
+    foreach my $file ( glob("$htdocs/$theme/$lang/modules/admin/preferences/*.pref") ) {
+        my ($tab) = ( $file =~ /([a-z0-9_-]+)\.pref$/ );
 
         $results{$tab} = $open_files ? new IO::File( $file, 'r' ) : '';
     }
@@ -189,58 +191,58 @@ sub SearchPrefs {
     my ( $input, $searchfield ) = @_;
     my @tabs;
 
-    my %tab_files = _get_pref_files( $input );
+    my %tab_files = _get_pref_files($input);
     our @terms = split( /\s+/, $searchfield );
 
     sub matches {
-        my ( $text ) = @_;
+        my ($text) = @_;
 
         return !grep( { $text !~ /$_/i } @terms );
     }
 
     foreach my $tab_name ( keys %tab_files ) {
-        my $data = GetTab( $input, $tab_name );
-        my $title = ( keys( %$data ) )[0];
-        my $tab = $data->{ $title };
-        $tab = { '' => $tab } if ( ref( $tab ) eq 'ARRAY' );
+        my $data  = GetTab( $input, $tab_name );
+        my $title = ( keys(%$data) )[0];
+        my $tab   = $data->{$title};
+        $tab = { '' => $tab } if ( ref($tab) eq 'ARRAY' );
 
         my $matched_groups;
 
         while ( my ( $group_title, $contents ) = each %$tab ) {
-            if ( matches( $group_title ) ) {
+            if ( matches($group_title) ) {
                 $matched_groups->{$group_title} = $contents;
                 next;
             }
 
             my @new_contents;
 
-            foreach my $line ( @$contents ) {
+            foreach my $line (@$contents) {
                 my $matched;
 
-                foreach my $piece ( @$line ) {
-                    if ( ref( $piece ) eq 'HASH' ) {
+                foreach my $piece (@$line) {
+                    if ( ref($piece) eq 'HASH' ) {
                         if ( $piece->{'pref'} =~ /^$searchfield$/i ) {
                             my ( undef, $LINES ) = TransformPrefsToHTML( $data, $searchfield );
 
                             return { search_jumped => 1, tab => $tab_name, tab_title => $title, LINES => $LINES };
                         } elsif ( matches( $piece->{'pref'} ) ) {
                             $matched = 1;
-                        } elsif ( ref( $piece->{'choices'} ) eq 'HASH' && grep( { $_ && matches( $_ ) } values( %{ $piece->{'choices'} } ) ) ) {
+                        } elsif ( ref( $piece->{'choices'} ) eq 'HASH' && grep( { $_ && matches($_) } values( %{ $piece->{'choices'} } ) ) ) {
                             $matched = 1;
                         }
-                    } elsif ( matches( $piece ) ) {
+                    } elsif ( matches($piece) ) {
                         $matched = 1;
                     }
-                    last if ( $matched );
+                    last if ($matched);
                 }
 
-                push @new_contents, $line if ( $matched );
+                push @new_contents, $line if ($matched);
             }
 
-            $matched_groups->{$group_title} = \@new_contents if ( @new_contents );
+            $matched_groups->{$group_title} = \@new_contents if (@new_contents);
         }
 
-        if ( $matched_groups ) {
+        if ($matched_groups) {
             my ( $title, $LINES ) = TransformPrefsToHTML( { $title => $matched_groups }, $searchfield );
 
             push @tabs, { tab => $tab, tab_title => $title, LINES => $LINES, };
@@ -263,21 +265,21 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
     }
 );
 
-$lang = $template->param( 'lang' );
-my $op = $input->param( 'op' ) || '';
-my $tab = $input->param( 'tab' );
+$lang = $template->param('lang');
+my $op = $input->param('op') || '';
+my $tab = $input->param('tab');
 $tab ||= 'local-use';
 
 my $highlighted;
 
 if ( $op eq 'save' ) {
-    unless ( C4::Context->config( 'demo' ) ) {
+    unless ( C4::Context->config('demo') ) {
         foreach my $param ( $input->param() ) {
-            my ( $pref ) = ( $param =~ /pref_(.*)/ );
+            my ($pref) = ( $param =~ /pref_(.*)/ );
 
-            next if ( !defined( $pref ) );
+            next if ( !defined($pref) );
 
-            my $value = join( ',', $input->param( $param ) );
+            my $value = join( ',', $input->param($param) );
 
             C4::Context->set_preference( $pref, $value );
             logaction( 'SYSTEMPREFERENCE', 'MODIFY', undef, $pref . " | " . $value );
@@ -291,7 +293,7 @@ if ( $op eq 'save' ) {
 my @TABS;
 
 if ( $op eq 'search' ) {
-    my $searchfield = $input->param( 'searchfield' );
+    my $searchfield = $input->param('searchfield');
 
     $searchfield =~ s/[^a-zA-Z0-9_ -]//g;
 
@@ -299,29 +301,25 @@ if ( $op eq 'search' ) {
 
     @TABS = SearchPrefs( $input, $searchfield );
 
-    foreach my $tabh ( @TABS ) {
-        $template->param(
-            $tabh->{'tab'} => 1
-        );
+    foreach my $tabh (@TABS) {
+        $template->param( $tabh->{'tab'} => 1 );
     }
 
-    if ( @TABS ) {
-        $tab = ''; # No need to load a particular tab, as we found results
+    if (@TABS) {
+        $tab = '';    # No need to load a particular tab, as we found results
         $template->param( search_jumped => 1 ) if ( $TABS[0]->{'search_jumped'} );
     } else {
-        $template->param(
-            search_not_found => 1,
-        );
+        $template->param( search_not_found => 1, );
     }
 }
 
-if ( $tab ) {
+if ($tab) {
     my ( $tab_title, $LINES ) = TransformPrefsToHTML( GetTab( $input, $tab ), $highlighted );
 
     push @TABS, { tab_title => $tab_title, LINES => $LINES };
     $template->param(
         $tab => 1,
-        tab => $tab,
+        tab  => $tab,
     );
 }
 

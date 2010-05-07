@@ -28,15 +28,15 @@ use base qw(C4::Cache);
 sub _cache_handle {
     my $class  = shift;
     my $params = shift;
-    
+
     my @servers = split /,/, $params->{'cache_servers'};
-    
+
     my $memcached = {
-	servers    => \@servers,
-	key_prefix => $params->{'namespace'} || 'koha',
+        servers    => \@servers,
+        key_prefix => $params->{'namespace'} || 'koha',
     };
     my $cache = {};
-    $cache->{memcache}=$memcached;
+    $cache->{memcache} = $memcached;
     return $cache;
 }
 
@@ -44,7 +44,7 @@ sub memcached_memoize {
     my $self     = shift;
     my $function = shift;
     my $ttl      = shift;
-    memoize_memcached($function, memcached => $self->{memcached}, expire_time => $ttl);
+    memoize_memcached( $function, memcached => $self->{memcached}, expire_time => $ttl );
 }
 
 1;

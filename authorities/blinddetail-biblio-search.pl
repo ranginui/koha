@@ -66,8 +66,7 @@ if ($authid) {
 
 # open template
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {
-        template_name   => "authorities/blinddetail-biblio-search.tmpl",
+    {   template_name   => "authorities/blinddetail-biblio-search.tmpl",
         query           => $query,
         type            => "intranet",
         authnotrequired => 0,
@@ -99,15 +98,17 @@ if ($authid) {
         }
         if ( $#subfields_data >= 0 ) {
             my %tag_data;
-            $tag_data{tag} = $field->tag() . ' -' . $tagslib->{ $field->tag() }->{lib};
+            $tag_data{tag}      = $field->tag() . ' -' . $tagslib->{ $field->tag() }->{lib};
             $tag_data{subfield} = \@subfields_data;
             push( @loop_data, \%tag_data );
         }
     }
 } else {
+
     # authid is empty => the user want to empty the entry.
     $template->param( "clear" => 1 );
-#     warn Data::Dumper::Dumper(\@loop_data);
+
+    #     warn Data::Dumper::Dumper(\@loop_data);
 }
 
 $template->param( "0XX" => \@loop_data );

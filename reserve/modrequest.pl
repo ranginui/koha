@@ -4,7 +4,6 @@
 #written 2/1/00 by chris@katipo.oc.nz
 #last update 27/1/2000 by chris@katipo.co.nz
 
-
 # Copyright 2000-2002 Katipo Communications
 #
 # This file is part of Koha.
@@ -31,8 +30,7 @@ use C4::Auth;
 
 my $query = new CGI;
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {   
-        template_name   => "about.tmpl",
+    {   template_name   => "about.tmpl",
         query           => $query,
         type            => "intranet",
         authnotrequired => 0,
@@ -41,46 +39,46 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
     }
 );
 
-my @rank=$query->param('rank-request');
-my @biblionumber=$query->param('biblionumber');
-my @borrower=$query->param('borrowernumber');
-my @branch=$query->param('pickup');
-my @itemnumber=$query->param('itemnumber');
-my $multi_hold = $query->param('multi_hold');
+my @rank          = $query->param('rank-request');
+my @biblionumber  = $query->param('biblionumber');
+my @borrower      = $query->param('borrowernumber');
+my @branch        = $query->param('pickup');
+my @itemnumber    = $query->param('itemnumber');
+my $multi_hold    = $query->param('multi_hold');
 my $biblionumbers = $query->param('biblionumbers');
-my $count=@rank;
+my $count         = @rank;
 
-my $CancelBiblioNumber=$query->param('CancelBiblioNumber');
-my $CancelBorrowerNumber=$query->param('CancelBorrowerNumber');
-my $CancelItemnumber=$query->param('CancelItemnumber');
+my $CancelBiblioNumber   = $query->param('CancelBiblioNumber');
+my $CancelBorrowerNumber = $query->param('CancelBorrowerNumber');
+my $CancelItemnumber     = $query->param('CancelItemnumber');
 
 # 2 possibilitys : cancel an item reservation, or modify or cancel the queded list
 
 # 1) cancel an item reservation by fonction ModReserveCancelAll (in reserves.pm)
 if ($CancelBorrowerNumber) {
-    ModReserveCancelAll($CancelItemnumber, $CancelBorrowerNumber);
-    $biblionumber[0] = $CancelBiblioNumber,
+    ModReserveCancelAll( $CancelItemnumber, $CancelBorrowerNumber );
+    $biblionumber[0] = $CancelBiblioNumber,;
 }
 
 # 2) Cancel or modify the queue list of reserves (without item linked)
 else {
-    for (my $i=0;$i<$count;$i++){
+    for ( my $i = 0 ; $i < $count ; $i++ ) {
         undef $itemnumber[$i] unless $itemnumber[$i] ne '';
-        ModReserve($rank[$i],$biblionumber[$i],$borrower[$i],$branch[$i],$itemnumber[$i]); #from C4::Reserves
+        ModReserve( $rank[$i], $biblionumber[$i], $borrower[$i], $branch[$i], $itemnumber[$i] );    #from C4::Reserves
     }
 }
-my $from=$query->param('from');
+my $from = $query->param('from');
 $from ||= q{};
-if ( $from eq 'borrower'){
+if ( $from eq 'borrower' ) {
     print $query->redirect("/cgi-bin/koha/members/moremember.pl?borrowernumber=$borrower[0]");
-} elsif ( $from eq 'circ'){
+} elsif ( $from eq 'circ' ) {
     print $query->redirect("/cgi-bin/koha/circ/circulation.pl?borrowernumber=$borrower[0]");
 } else {
-     my $url = "/cgi-bin/koha/reserve/request.pl?";
-     if ($multi_hold) {
-         $url .= "multi_hold=1&biblionumbers=$biblionumbers";
-     } else {
-         $url .= "biblionumber=$biblionumber[0]";
-     }
-     print $query->redirect($url);
+    my $url = "/cgi-bin/koha/reserve/request.pl?";
+    if ($multi_hold) {
+        $url .= "multi_hold=1&biblionumbers=$biblionumbers";
+    } else {
+        $url .= "biblionumber=$biblionumber[0]";
+    }
+    print $query->redirect($url);
 }

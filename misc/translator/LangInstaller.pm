@@ -24,25 +24,21 @@ use C4::Context;
 use YAML::Syck qw( Dump LoadFile );
 use Locale::PO;
 
-
 sub set_lang {
-    my ($self, $lang) = @_;
+    my ( $self, $lang ) = @_;
 
-    $self->{lang} = $lang;
-    $self->{po_path_lang} = $self->{context}->config('intrahtdocs') .
-                            "/prog/$lang/modules/admin/preferences";
+    $self->{lang}         = $lang;
+    $self->{po_path_lang} = $self->{context}->config('intrahtdocs') . "/prog/$lang/modules/admin/preferences";
 }
 
-
 sub new {
-    my ($class, $lang, $pref_only) = @_;
+    my ( $class, $lang, $pref_only ) = @_;
 
-    my $self                 = { };
+    my $self = {};
 
-    my $context              = C4::Context->new();
-    $self->{context}         = $context;
-    $self->{path_pref_en}    = $context->config('intrahtdocs') .
-                               '/prog/en/modules/admin/preferences';
+    my $context = C4::Context->new();
+    $self->{context}      = $context;
+    $self->{path_pref_en} = $context->config('intrahtdocs') . '/prog/en/modules/admin/preferences';
     set_lang( $self, $lang ) if $lang;
     $self->{pref_only}       = $pref_only;
     $self->{translator_path} = $context->config('intranetdir') . "/misc/translator";
@@ -57,8 +53,8 @@ sub new {
 
     # Get all available language codes
     opendir $fh, $self->{path_po};
-    my @langs =  map { ($_) =~ /(.*)-i-opac/ } 
-        grep { $_ =~ /.*-opac-/ } readdir($fh);
+    my @langs = map { ($_) =~ /(.*)-i-opac/ }
+      grep { $_ =~ /.*-opac-/ } readdir($fh);
     closedir $fh;
     $self->{langs} = \@langs;
 
@@ -77,7 +73,6 @@ sub new {
     bless $self, $class;
 }
 
-
 sub po_filename {
     my $self = shift;
 
@@ -87,15 +82,13 @@ sub po_filename {
     return $trans_file;
 }
 
-
 sub po_append {
-    my ($self, $id, $comment) = @_;
+    my ( $self, $id, $comment ) = @_;
     my $po = $self->{po};
-    my $p = $po->{$id};
-    if ( $p ) {
+    my $p  = $po->{$id};
+    if ($p) {
         $p->comment( $p->comment . "\n" . $comment );
-    }
-    else {
+    } else {
         $po->{$id} = Locale::PO->new(
             -comment => $comment,
             -msgid   => $id,
@@ -104,21 +97,20 @@ sub po_append {
     }
 }
 
-
 sub add_prefs {
-    my ($self, $comment, $prefs) = @_;
+    my ( $self, $comment, $prefs ) = @_;
 
-    for my $pref ( @$prefs ) {
+    for my $pref (@$prefs) {
         my $pref_name = '';
-        for my $element ( @$pref ) {
-            if ( ref( $element) eq 'HASH' ) {
+        for my $element (@$pref) {
+            if ( ref($element) eq 'HASH' ) {
                 $pref_name = $element->{pref};
                 last;
             }
         }
-        for my $element ( @$pref ) {
-            if ( ref( $element) eq 'HASH' ) {
-                while ( my ($key, $value) = each(%$element) ) {
+        for my $element (@$pref) {
+            if ( ref($element) eq 'HASH' ) {
+                while ( my ( $key, $value ) = each(%$element) ) {
                     next unless $key eq 'choices';
                     next unless ref($value) eq 'HASH';
                     for my $ckey ( keys %$value ) {
@@ -126,50 +118,46 @@ sub add_prefs {
                         $self->po_append( $id, $comment );
                     }
                 }
-            }
-            elsif ( $element ) {
+            } elsif ($element) {
                 $self->po_append( $self->{file} . "#$pref_name# $element", $comment );
             }
         }
     }
 }
 
-
 sub get_trans_text {
-    my ($self, $id) = @_;
+    my ( $self, $id ) = @_;
 
     my $po = $self->{po}->{$id};
     return unless $po;
-    return Locale::PO->dequote($po->msgstr);
+    return Locale::PO->dequote( $po->msgstr );
 }
 
-
 sub update_tab_prefs {
-    my ($self, $pref, $prefs) = @_;
+    my ( $self, $pref, $prefs ) = @_;
 
-    for my $p ( @$prefs ) {
+    for my $p (@$prefs) {
         my $pref_name = '';
         next unless $p;
-        for my $element ( @$p ) {
-            if ( ref( $element) eq 'HASH' ) {
+        for my $element (@$p) {
+            if ( ref($element) eq 'HASH' ) {
                 $pref_name = $element->{pref};
                 last;
             }
         }
-        for my $i ( 0..@$p-1 ) {
+        for my $i ( 0 .. @$p - 1 ) {
             my $element = $p->[$i];
-            if ( ref( $element) eq 'HASH' ) {
-                while ( my ($key, $value) = each(%$element) ) {
+            if ( ref($element) eq 'HASH' ) {
+                while ( my ( $key, $value ) = each(%$element) ) {
                     next unless $key eq 'choices';
                     next unless ref($value) eq 'HASH';
                     for my $ckey ( keys %$value ) {
-                        my $id = $self->{file} . "#$pref_name# " . $value->{$ckey};
-                        my $text = $self->get_trans_text( $id );
+                        my $id   = $self->{file} . "#$pref_name# " . $value->{$ckey};
+                        my $text = $self->get_trans_text($id);
                         $value->{$ckey} = $text if $text;
                     }
                 }
-            }
-            elsif ( $element ) {
+            } elsif ($element) {
                 my $text = $self->get_trans_text( $self->{file} . "#$pref_name# $element" );
                 $p->[$i] = $text if $text;
             }
@@ -177,20 +165,20 @@ sub update_tab_prefs {
     }
 }
 
-
 sub get_po_from_prefs {
     my $self = shift;
 
-    for my $file ( @{$self->{pref_files}} ) {
+    for my $file ( @{ $self->{pref_files} } ) {
         my $pref = LoadFile( $self->{path_pref_en} . "/$file" );
         $self->{file} = $file;
+
         #print Dump($pref), "\n";
-        while ( my ($tab, $tab_content) = each %$pref ) {
+        while ( my ( $tab, $tab_content ) = each %$pref ) {
             if ( ref($tab_content) eq 'ARRAY' ) {
                 $self->add_prefs( $tab, $tab_content );
                 next;
             }
-            while ( my ($section, $sysprefs) = each %$tab_content ) {
+            while ( my ( $section, $sysprefs ) = each %$tab_content ) {
                 my $comment = "$tab > $section";
                 $self->po_append( $self->{file} . " " . $section, $comment );
                 $self->add_prefs( $comment, $sysprefs );
@@ -199,19 +187,19 @@ sub get_po_from_prefs {
     }
 }
 
-
 sub save_po {
     my $self = shift;
+
     # Write .po entries into a file put in Koha standard po directory
     Locale::PO->save_file_fromhash( $self->po_filename, $self->{po} );
     print "Saved in file: ", $self->po_filename, "\n";
 }
 
-
 sub update_prefs {
     my $self = shift;
 
     print "Update '", $self->{lang}, "' preferences .po file from 'en' .pref files\n";
+
     # Get po from current 'en' .pref files
     $self->get_po_from_prefs();
     my $po_current = $self->{po};
@@ -220,15 +208,14 @@ sub update_prefs {
     my $po_previous = Locale::PO->load_file_ashash( $self->po_filename );
 
     for my $id ( keys %$po_current ) {
-        my $po =  $po_previous->{'"'.$id.'"'};
+        my $po = $po_previous->{ '"' . $id . '"' };
         next unless $po;
         my $text = Locale::PO->dequote( $po->msgstr );
-        $po_current->{$id}->msgstr( $text );
+        $po_current->{$id}->msgstr($text);
     }
 
     $self->save_po();
 }
-
 
 sub install_prefs {
     my $self = shift;
@@ -242,20 +229,20 @@ sub install_prefs {
     # and load it.
     $self->update_prefs();
 
-    for my $file ( @{$self->{pref_files}} ) {
+    for my $file ( @{ $self->{pref_files} } ) {
         my $pref = LoadFile( $self->{path_pref_en} . "/$file" );
         $self->{file} = $file;
-        while ( my ($tab, $tab_content) = each %$pref ) {
+        while ( my ( $tab, $tab_content ) = each %$pref ) {
             if ( ref($tab_content) eq 'ARRAY' ) {
                 $self->update_tab_prefs( $pref, $tab_content );
                 next;
             }
-            while ( my ($section, $sysprefs) = each %$tab_content ) {
+            while ( my ( $section, $sysprefs ) = each %$tab_content ) {
                 $self->update_tab_prefs( $pref, $sysprefs );
             }
             my $ntab = {};
             for my $section ( keys %$tab_content ) {
-                my $text = $self->get_trans_text($self->{file} . " $section");
+                my $text = $self->get_trans_text( $self->{file} . " $section" );
                 my $nsection = $text ? $text : $section;
                 $ntab->{$nsection} = $tab_content->{$section};
             }
@@ -268,48 +255,39 @@ sub install_prefs {
     }
 }
 
-
 sub install_tmpl {
     my $self = shift;
 
-    print
-        "Install templates\n";
-    while ( my ($interface, $tmpl) = each %{$self->{interface}} ) {
+    print "Install templates\n";
+    while ( my ( $interface, $tmpl ) = each %{ $self->{interface} } ) {
         print
-            "  Install templates '$interface\n",
-            "    From: $tmpl->{dir}/en/\n",
-            "    To  : $tmpl->{dir}/$self->{lang}\n",
-            "    With: $self->{path_po}/$self->{lang}$tmpl->{suffix}\n";
+          "  Install templates '$interface\n",
+          "    From: $tmpl->{dir}/en/\n",
+          "    To  : $tmpl->{dir}/$self->{lang}\n",
+          "    With: $self->{path_po}/$self->{lang}$tmpl->{suffix}\n";
         my $lang_dir = "$tmpl->{dir}/$self->{lang}";
         mkdir $lang_dir unless -d $lang_dir;
-        system
-            "$self->{translator_path}/tmpl_process3.pl install " .
-            "-i $tmpl->{dir}/en/ " .
-            "-o $tmpl->{dir}/$self->{lang} ".
-            "-s $self->{path_po}/$self->{lang}$tmpl->{suffix} -r"
+        system "$self->{translator_path}/tmpl_process3.pl install "
+          . "-i $tmpl->{dir}/en/ "
+          . "-o $tmpl->{dir}/$self->{lang} "
+          . "-s $self->{path_po}/$self->{lang}$tmpl->{suffix} -r";
     }
 }
-
 
 sub update_tmpl {
     my $self = shift;
 
-    print
-        "Update templates\n";
-    while ( my ($interface, $tmpl) = each %{$self->{interface}} ) {
+    print "Update templates\n";
+    while ( my ( $interface, $tmpl ) = each %{ $self->{interface} } ) {
         print
-            "  Update templates '$interface'\n",
-            "    From: $tmpl->{dir}/en/\n",
-            "    To  : $self->{path_po}/$self->{lang}$tmpl->{suffix}\n";
+          "  Update templates '$interface'\n",
+          "    From: $tmpl->{dir}/en/\n",
+          "    To  : $self->{path_po}/$self->{lang}$tmpl->{suffix}\n";
         my $lang_dir = "$tmpl->{dir}/$self->{lang}";
         mkdir $lang_dir unless -d $lang_dir;
-        system
-            "$self->{translator_path}/tmpl_process3.pl update " .
-            "-i $tmpl->{dir}/en/ " .
-            "-s $self->{path_po}/$self->{lang}$tmpl->{suffix} -r"
+        system "$self->{translator_path}/tmpl_process3.pl update " . "-i $tmpl->{dir}/en/ " . "-s $self->{path_po}/$self->{lang}$tmpl->{suffix} -r";
     }
 }
-
 
 sub create_prefs {
     my $self = shift;
@@ -318,24 +296,18 @@ sub create_prefs {
     $self->save_po();
 }
 
-
 sub create_tmpl {
     my $self = shift;
 
-    print
-        "Create templates\n";
-    while ( my ($interface, $tmpl) = each %{$self->{interface}} ) {
+    print "Create templates\n";
+    while ( my ( $interface, $tmpl ) = each %{ $self->{interface} } ) {
         print
-            "  Create templates .po files for '$interface'\n",
-            "    From: $tmpl->{dir}/en/\n",
-            "    To  : $self->{path_po}/$self->{lang}$tmpl->{suffix}\n";
-        system
-            "$self->{translator_path}/tmpl_process3.pl create " .
-            "-i $tmpl->{dir}/en/ " .
-            "-s $self->{path_po}/$self->{lang}$tmpl->{suffix} -r"
+          "  Create templates .po files for '$interface'\n",
+          "    From: $tmpl->{dir}/en/\n",
+          "    To  : $self->{path_po}/$self->{lang}$tmpl->{suffix}\n";
+        system "$self->{translator_path}/tmpl_process3.pl create " . "-i $tmpl->{dir}/en/ " . "-s $self->{path_po}/$self->{lang}$tmpl->{suffix} -r";
     }
 }
-
 
 sub install {
     my $self = shift;
@@ -344,14 +316,12 @@ sub install {
     $self->install_prefs();
 }
 
-
 sub update {
     my $self = shift;
     return unless $self->{lang};
     $self->update_tmpl() unless $self->{pref_only};
     $self->update_prefs();
 }
-
 
 sub create {
     my $self = shift;
@@ -360,10 +330,7 @@ sub create {
     $self->create_prefs();
 }
 
-
-
 1;
-
 
 =head1 NAME
 

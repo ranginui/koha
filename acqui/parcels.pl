@@ -1,8 +1,6 @@
 #!/usr/bin/perl
 
-
 #script to show display basket of orders
-
 
 # Copyright 2000-2002 Katipo Communications
 # Copyright 2008-2009 BibLibre SARL
@@ -96,8 +94,8 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
     }
 );
 
-my $bookseller = GetBookSellerFromId($supplierid);
-my @parcels = GetParcels( $supplierid, $order, $code, $datefrom, $dateto );
+my $bookseller    = GetBookSellerFromId($supplierid);
+my @parcels       = GetParcels( $supplierid, $order, $code, $datefrom, $dateto );
 my $count_parcels = @parcels;
 
 # multi page display gestion
@@ -108,8 +106,8 @@ if ( $count_parcels > $resultsperpage ) {
 my $loopres = [];
 
 my $next_page_start = $startfrom + $resultsperpage;
-my $last_row = ( $next_page_start < $count_parcels  ) ? $next_page_start - 1 : $count_parcels - 1;
-for my $i ( $startfrom .. $last_row) {
+my $last_row = ( $next_page_start < $count_parcels ) ? $next_page_start - 1 : $count_parcels - 1;
+for my $i ( $startfrom .. $last_row ) {
     my $p = $parcels[$i];
 
     push @{$loopres},
@@ -174,9 +172,9 @@ sub set_page_navigation {
     }
 
     $template->param(
-        numbers     => $numbers,
-        displaynext => $displaynext,
-        displayprev => $displayprev,
+        numbers       => $numbers,
+        displaynext   => $displaynext,
+        displayprev   => $displayprev,
         nextstartfrom => ( ( $next_row < $total_rows ) ? $next_row : $total_rows ),
         prevstartfrom => ( ( $prev_row > 0 ) ? $prev_row : 0 )
     );

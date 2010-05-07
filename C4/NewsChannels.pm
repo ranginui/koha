@@ -25,13 +25,13 @@ use C4::Dates qw(format_date);
 
 use vars qw($VERSION @ISA @EXPORT);
 
-BEGIN { 
-	$VERSION = 3.01;	# set the version for version checking
-	@ISA = qw(Exporter);
-	@EXPORT = qw(
-		&GetNewsToDisplay
-		&add_opac_new &upd_opac_new &del_opac_new &get_opac_new &get_opac_news
-	);
+BEGIN {
+    $VERSION = 3.01;           # set the version for version checking
+    @ISA     = qw(Exporter);
+    @EXPORT  = qw(
+      &GetNewsToDisplay
+      &add_opac_new &upd_opac_new &del_opac_new &get_opac_new &get_opac_news
+    );
 }
 
 =head1 NAME
@@ -47,18 +47,18 @@ This module provides the functions needed to mange OPAC and intranet news.
 =cut
 
 sub add_opac_new {
-    my ($title, $new, $lang, $expirationdate, $timestamp, $number) = @_;
+    my ( $title, $new, $lang, $expirationdate, $timestamp, $number ) = @_;
     my $dbh = C4::Context->dbh;
     my $sth = $dbh->prepare("INSERT INTO opac_news (title, new, lang, expirationdate, timestamp, number) VALUES (?,?,?,?,?,?)");
-    $sth->execute($title, $new, $lang, $expirationdate, $timestamp, $number);
+    $sth->execute( $title, $new, $lang, $expirationdate, $timestamp, $number );
     $sth->finish;
     return 1;
 }
 
 sub upd_opac_new {
-    my ($idnew, $title, $new, $lang, $expirationdate, $timestamp,$number) = @_;
+    my ( $idnew, $title, $new, $lang, $expirationdate, $timestamp, $number ) = @_;
     my $dbh = C4::Context->dbh;
-    my $sth = $dbh->prepare("
+    my $sth = $dbh->prepare( "
         UPDATE opac_news SET 
             title = ?,
             new = ?,
@@ -67,8 +67,8 @@ sub upd_opac_new {
             timestamp = ?,
             number = ?
         WHERE idnew = ?
-    ");
-    $sth->execute($title, $new, $lang, $expirationdate, $timestamp,$number,$idnew);
+    " );
+    $sth->execute( $title, $new, $lang, $expirationdate, $timestamp, $number, $idnew );
     $sth->finish;
     return 1;
 }
@@ -88,25 +88,26 @@ sub del_opac_new {
 
 sub get_opac_new {
     my ($idnew) = @_;
-    my $dbh = C4::Context->dbh;
-    my $sth = $dbh->prepare("SELECT * FROM opac_news WHERE idnew = ?");
+    my $dbh     = C4::Context->dbh;
+    my $sth     = $dbh->prepare("SELECT * FROM opac_news WHERE idnew = ?");
     $sth->execute($idnew);
     my $data = $sth->fetchrow_hashref;
-    $data->{$data->{'lang'}} = 1 if defined $data->{lang};
-    $data->{expirationdate} = format_date($data->{expirationdate});
-    $data->{timestamp}      = format_date($data->{timestamp});
+    $data->{ $data->{'lang'} } = 1 if defined $data->{lang};
+    $data->{expirationdate}    = format_date( $data->{expirationdate} );
+    $data->{timestamp}         = format_date( $data->{timestamp} );
     $sth->finish;
     return $data;
 }
 
 sub get_opac_news {
-    my ($limit, $lang) = @_;
-    my $dbh = C4::Context->dbh;
+    my ( $limit, $lang ) = @_;
+    my $dbh   = C4::Context->dbh;
     my $query = "SELECT *, timestamp AS newdate FROM opac_news";
     if ($lang) {
-        $query.= " WHERE lang = '" .$lang ."' ";
+        $query .= " WHERE lang = '" . $lang . "' ";
     }
-    $query.= " ORDER BY timestamp DESC ";
+    $query .= " ORDER BY timestamp DESC ";
+
     #if ($limit) {
     #    $query.= "LIMIT 0, " . $limit;
     #}
@@ -114,15 +115,15 @@ sub get_opac_news {
     $sth->execute();
     my @opac_news;
     my $count = 0;
-    while (my $row = $sth->fetchrow_hashref) {
-        if ((($limit) && ($count < $limit)) || (!$limit)) {
-            $row->{'newdate'} = format_date($row->{'newdate'});
-            $row->{'expirationdate'} = format_date($row->{'expirationdate'});
+    while ( my $row = $sth->fetchrow_hashref ) {
+        if ( ( ($limit) && ( $count < $limit ) ) || ( !$limit ) ) {
+            $row->{'newdate'}        = format_date( $row->{'newdate'} );
+            $row->{'expirationdate'} = format_date( $row->{'expirationdate'} );
             push @opac_news, $row;
         }
         $count++;
     }
-    return ($count, \@opac_news);
+    return ( $count, \@opac_news );
 }
 
 =head2 GetNewsToDisplay
@@ -135,7 +136,8 @@ sub get_opac_news {
 
 sub GetNewsToDisplay {
     my $lang = shift;
-    my $dbh = C4::Context->dbh;
+    my $dbh  = C4::Context->dbh;
+
     # SELECT *,DATE_FORMAT(timestamp, '%d/%m/%Y') AS newdate
     my $query = "
      SELECT *,timestamp AS newdate
@@ -148,12 +150,12 @@ sub GetNewsToDisplay {
       AND   `timestamp` <= CURRENT_DATE()
       AND   lang = ?
       ORDER BY number
-    ";				# expirationdate field is NOT in ISO format?
+    ";    # expirationdate field is NOT in ISO format?
     my $sth = $dbh->prepare($query);
     $sth->execute($lang);
     my @results;
-    while ( my $row = $sth->fetchrow_hashref ){
-		$row->{newdate} = format_date($row->{newdate});
+    while ( my $row = $sth->fetchrow_hashref ) {
+        $row->{newdate} = format_date( $row->{newdate} );
         push @results, $row;
     }
     return \@results;
