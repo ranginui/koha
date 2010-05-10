@@ -35,6 +35,7 @@ our @EXPORT  = qw<
   &ConnectSuggestionAndBiblio
   &CountSuggestion
   &DelSuggestion
+  &DelSuggestionsOlderThan
   &GetSuggestion
   &GetSuggestionByStatus
   &GetSuggestionFromBiblionumber
@@ -58,6 +59,7 @@ BEGIN {
       &GetSuggestion
       &GetSuggestionByStatus
       &DelSuggestion
+      &DelSuggestionsOlderThan
       &CountSuggestion
       &ModSuggestion
       &ConnectSuggestionAndBiblio
@@ -452,6 +454,23 @@ sub DelSuggestion {
         my $suggestiondeleted = $sth->execute($suggestionid);
         return $suggestiondeleted;
     }
+}
+
+=head2 DelSuggestionsOlderThan
+    &DelSuggestionsOlderThan($days)
+    
+    Delete all suggestions older than TODAY-$days , that have be accepted or rejected.
+    
+=cut
+sub DelSuggestionsOlderThan {
+    my ($days) = @_;
+    return if not $days;
+    my $dbh = C4::Context->dbh;
+    
+    my $sth = $dbh->prepare("
+        DELETE FROM suggestions WHERE STATUS <> 'ASKED' AND date < ADDDATE(NOW(), ?);
+    ");
+    $sth->execute("-$days");
 }
 
 1;
