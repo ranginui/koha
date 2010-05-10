@@ -622,7 +622,7 @@ sub IsMemberBlocked {
     return ( 1, $blockeddate ) if $blockeddate;
 
     # if he have late issues
-    $sth = $dbh->prepare(
+    my $sth = $dbh->prepare(
         "SELECT COUNT(*) as latedocs
          FROM issues
          WHERE borrowernumber = ?
