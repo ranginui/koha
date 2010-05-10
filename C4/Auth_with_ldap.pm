@@ -170,7 +170,7 @@ sub checkpw_ldap {
             any { $_ eq $key } @types;
         } keys %borrower;
         my $extended_patron_attributes = map { { code => $_, value => $borrower{$_} } } @attributes;
-        my $extended_patron_attributes = [] unless $extended_patron_attributes;
+        $extended_patron_attributes = [] unless $extended_patron_attributes;
         my @errors;
 
         #Check before add
