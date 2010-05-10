@@ -125,6 +125,11 @@ foreach my $num (@getreserves) {
 
         if ( $today > $calcDate ) {
             $getreserv{'messcompa'} = 1;
+            push @overloop, \%getreserv;
+            $overcount++;
+        } else {
+            push @reservloop, \%getreserv;
+            $reservcount++;
         }
     }
     $getreserv{'itemtype'}       = $itemtypeinfo->{'description'};
@@ -135,6 +140,7 @@ foreach my $num (@getreserves) {
     $getreserv{'homebranch'}     = GetBranchName( $gettitle->{'homebranch'} );
     $getreserv{'holdingbranch'}  = $gettitle->{'holdingbranch'};
     $getreserv{'itemcallnumber'} = $gettitle->{'itemcallnumber'};
+
     if ( $gettitle->{'homebranch'} ne $gettitle->{'holdingbranch'} ) {
         $getreserv{'dotransfer'} = 1;
     }
@@ -144,14 +150,6 @@ foreach my $num (@getreserves) {
     $getreserv{'borrowerphone'}     = $getborrower->{'phone'};
     if ( $getborrower->{'emailaddress'} ) {
         $getreserv{'borrowermail'} = $getborrower->{'emailaddress'};
-    }
-
-    if ( $today > $calcDate ) {
-        push @overloop, \%getreserv;
-        $overcount++;
-    } else {
-        push @reservloop, \%getreserv;
-        $reservcount++;
     }
 
 }
