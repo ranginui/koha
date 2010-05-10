@@ -150,7 +150,7 @@ if ( $query->param('resbarcode') ) {
 # i.e., whether to apply waiting status
     ModReserveAffect( $item, $borrowernumber, $diffBranchSend, $reservenumber );
 #   check if we have other reserves for this document, if we have a return send the message of transfer
-    my ( $messages, $nextreservinfo ) = GetOtherReserves($item);
+    my ( $reservemessages, $nextreservinfo ) = GetOtherReserves($item);
 
     my ($borr) = GetMemberDetails( $nextreservinfo, 0 );
     my $name = $borr->{'surname'} . ", " . $borr->{'title'} . " " . $borr->{'firstname'};
