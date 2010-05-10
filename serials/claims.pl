@@ -33,15 +33,6 @@ my $claimletter  = $input->param('claimletter');
 my $supplierid   = $input->param('supplierid');
 my $suppliername = $input->param('suppliername');
 my $order        = $input->param('order');
-my $supplierlist = GetSuppliersWithLateIssues();
-if ($supplierid) {
-    foreach my $s ( @{$supplierlist} ) {
-        if ( $s->{id} == $supplierid ) {
-            $s->{selected} = 1;
-            last;
-        }
-    }
-}
 
 # open template first (security & userenv set here)
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
@@ -54,15 +45,22 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
     }
 );
 
+my $supplierlist = GetSuppliersWithLateIssues();
 my @suploop;
-for ( sort { $supplierlist{$a} cmp $supplierlist{$b} } keys %supplierlist ) {
-    my ( $count, @dummy ) = GetLateOrMissingIssues( $_, "", $order );
-    push @suploop,
-      { id       => $_,
-        name     => $supplierlist{$_},
-        count    => $count,
-        selected => $_ == $supplierid,
-      };
+if ($supplierid) {
+    foreach my $s ( @{$supplierlist} ) {
+        if ( $s->{id} == $supplierid ) {
+            $s->{selected} = 1;
+            last;
+        }
+        my ( $count, @dummy ) = GetLateOrMissingIssues( $s, "", $order );
+        push @suploop,
+          { id       => $s,
+            name     => $s->{name},
+            count    => $count,
+            selected => $s->{'id'} == $supplierid,
+          };
+    }
 }
 
 my $letters = GetLetters("claimissues");
