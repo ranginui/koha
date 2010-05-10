@@ -124,7 +124,6 @@ for my $thisbranch ( sort { $branches->{$a}->{branchname} cmp $branches->{$b}->{
 
 my $shelflocations = GetKohaAuthorisedValues( 'items.location', '' );
 
-my @locationarg;
 my @locationarg =
   map { { code => $_, value => $shelflocations->{$_}, selected => ( ( $_ eq $subs->{location} ) ? "selected=\"selected\"" : "" ), } } sort keys %{$shelflocations};
 
@@ -234,7 +233,7 @@ sub redirect_add_subscription {
     my $staffdisplaycount = $query->param('staffdisplaycount');
     my $opacdisplaycount  = $query->param('opacdisplaycount');
     my $location          = $query->param('location');
-    $startdate = format_date_in_iso( $query->param('startdate') );
+    my $startdate = format_date_in_iso( $query->param('startdate') );
     my $enddate = format_date_in_iso( $query->param('enddate') );
     my $firstacquidate  = format_date_in_iso($query->param('firstacquidate'));
     my $histenddate = format_date_in_iso($query->param('histenddate'));
@@ -274,7 +273,7 @@ sub redirect_add_subscription {
           $query->param('nextacquidate')
           ? format_date_in_iso( $query->param('nextacquidate') )
           : format_date_in_iso( $query->param('startdate') );
-        $enddate = format_date_in_iso( $query->param('enddate') );
+        my $enddate = format_date_in_iso( $query->param('enddate') );
         my $periodicity = $query->param('periodicity');
         my $dow         = $query->param('dow');
 
