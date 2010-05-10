@@ -237,7 +237,6 @@ foreach my $biblionumber (@biblionumbers) {
         }
 
         if ( defined $borrowerinfo && ($borrowerinfo->{borrowernumber} eq $res->{borrowernumber}) && !CanHoldMultipleItems($res->{itemtype}) ) {
-        if ( $borrowerinfo->{borrowernumber} eq $res->{borrowernumber} && !CanHoldMultipleItems($res->{itemtype}) ) {
             $warnings = 1;
             $alreadyreserved = 1;
             $biblioloopiter{warn} = 1;
