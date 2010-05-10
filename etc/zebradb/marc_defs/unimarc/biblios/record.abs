@@ -39,6 +39,10 @@ melm 011$y    ISSN:w,Identifier-standard:w
 # wrong ISSN
 melm 011$z    ISSN:w,Identifier-standard:w
 
+melm 071$a	    Music-number:w,Identifier-standard:w
+melm 072$a  	UPC:w,Identifier-standard:w
+melm 073$a	    EAN:w,Identifier-standard:w
+
 melm 200$b      itemtype:w,itype:w
 melm 995$r      itemtype:w,itype:w
 
