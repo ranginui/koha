@@ -134,7 +134,7 @@ sub check_api_auth_cas {
                 $retnumber = $sth->fetchrow;
                 return ( 1, $retnumber, $userid );
             }
-            my $sth = $dbh->prepare("select userid from borrowers where cardnumber=?");
+            $sth = $dbh->prepare("select userid from borrowers where cardnumber=?");
             return $r->user;
             $sth->execute($userid);
             if ( $sth->rows ) {
