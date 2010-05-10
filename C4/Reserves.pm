@@ -120,6 +120,7 @@ BEGIN {
       &CheckReserves
       &CanBookBeReserved
       &CanItemBeReserved
+      &CanHoldOnShelf
       &CancelReserve
       &CancelExpiredReserves
 
