@@ -579,7 +579,11 @@ foreach ( sort { $a <=> $b } keys %returneditems ) {
         $ri{homebranch}       = $item->{'homebranch'};
         $ri{holdingbranch}    = $item->{'holdingbranch'};
         $ri{barcode}          = $bar_code;
-    } else {
+        my $shelflocations    = GetKohaAuthorisedValues('items.location','');
+        $ri{itemlocation}     = $shelflocations->{$biblio->{'location'}};
+        
+    }
+    else {
         last;
     }
     push @riloop, \%ri;
