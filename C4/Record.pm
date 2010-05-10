@@ -475,6 +475,9 @@ sub marcrecord2csv {
 
             my $field = $_->{field};
 
+            # Remove any blank char that might have unintentionally insered into the tag name
+            $field =~ s/\s+//g; 
+
             # If we have a user-supplied header, we use it
             if ( exists $_->{header} ) {
                 push @marcfieldsheaders, $_->{header};
