@@ -228,6 +228,8 @@ sub calculate {
           : ( $i == 8 )  ? "Item callnumber <"
           : ( $i == 9 )  ? "sort1 ="
           : ( $i == 10 ) ? "sort2 ="
+          : ( $i == 11 ) ? "Home branch ="
+          : ( $i == 12 )? "Holding branch ="
           :                "UNKNOWN FILTER ($i)";
 
         # FIXME - no translation mechanism !
@@ -243,33 +245,37 @@ sub calculate {
     my ( $colsource, $linesource );
     $linefilter[1] = @$filters[1] if ( $line =~ /datetime/ );
     $linefilter[0] =
-        ( $line =~ /datetime/ ) ? @$filters[0]
-      : ( $line =~ /category/ ) ? @$filters[2]
-      : ( $line =~ /itemtype/ ) ? @$filters[3]
-      : ( $line =~ /branch/ )   ? @$filters[4]
-      : ( $line =~ /ccode/ )    ? @$filters[5]
-      : ( $line =~ /location/ ) ? @$filters[6]
-      : ( $line =~ /sort1/ )    ? @$filters[9]
-      : ( $line =~ /sort2/ )    ? @$filters[10]
-      :                           undef;
+        ( $line =~ /datetime/ )     ? @$filters[0]
+      : ( $line =~ /category/ )     ? @$filters[2]
+      : ( $line =~ /itemtype/ )     ? @$filters[3]
+      : ( $line =~ /branch/ )       ? @$filters[4]
+      : ( $line =~ /ccode/ )        ? @$filters[5]
+      : ( $line =~ /location/ )     ? @$filters[6]
+      : ( $line =~ /sort1/ )        ? @$filters[9]
+      : ( $line =~ /sort2/ )        ? @$filters[10]
+      : ( $line =~ /homebranch/)    ? @$filters[11]
+      : ( $line =~ /holdingbranch/) ? @$filters[12]
+      :                               undef;
 
-    if ( $line =~ /ccode/ or $line =~ /location/ ) {
+    if ( $line =~ /ccode/ or $line =~ /location/ or $line =~ /homebranch/ or $line =~ /holdingbranch/ ) {
         $linesource = 'items';
     }
 
     my @colfilter;
     $colfilter[1] = @$filters[1] if ( $column =~ /datetime/ );
     $colfilter[0] =
-        ( $column =~ /datetime/ ) ? @$filters[0]
-      : ( $column =~ /category/ ) ? @$filters[2]
-      : ( $column =~ /itemtype/ ) ? @$filters[3]
-      : ( $column =~ /branch/ )   ? @$filters[4]
-      : ( $column =~ /ccode/ )    ? @$filters[5]
-      : ( $column =~ /location/ ) ? @$filters[6]
-      : ( $column =~ /sort1/ )    ? @$filters[9]
-      : ( $column =~ /sort1/ )    ? @$filters[10]
-      :                             undef;
-    if ( $column =~ /ccode/ or $column =~ /location/ ) {
+        ( $column =~ /datetime/ )     ? @$filters[0]
+      : ( $column =~ /category/ )     ? @$filters[2]
+      : ( $column =~ /itemtype/ )     ? @$filters[3]
+      : ( $column =~ /branch/ )       ? @$filters[4]
+      : ( $column =~ /ccode/ )        ? @$filters[5]
+      : ( $column =~ /location/ )     ? @$filters[6]
+      : ( $column =~ /sort1/ )        ? @$filters[9]
+      : ( $column =~ /sort1/ )        ? @$filters[10]
+      : ( $column =~ /homebranch/)    ? @$filters[11]
+      : ( $column =~ /holdingbranch/) ? @$filters[12]
+      :                                 undef;
+    if ( $column =~ /ccode/ or $column =~ /location/ or $column =~ /homebranch/ or $column =~ /holdingbranch/ ) {
         $colsource = 'items';
     }
 
