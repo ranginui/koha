@@ -557,12 +557,14 @@ function getElementsByClass( searchClass, domNode, tagName) {
 
 function calcTotalRow(cell) {
 
-    var bud_id =  cell.className;
+    var string = cell.name;
+    var pos = string.indexOf(",", 0);
+    var bud_id = string.substring(0, pos);
     var val1 =    cell.value;
-    var remainingTotal =   document.getElementById("budget_est_"+bud_id).textContent;
+    var remainingTotal =   document.getElementById("budget_est_"+bud_id);
     var remainingNew =0;
     var budgetTotal  =  document.getElementById("budget_tot_"+bud_id ).textContent;
-    var arr =  getElementsByClass(bud_id);
+    var arr =  getElementsByClass(cell.className);
 
     budgetTotal   =  budgetTotal.replace(/\,/, "");
 
