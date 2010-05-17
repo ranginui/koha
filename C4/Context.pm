@@ -511,6 +511,7 @@ sub preference {
 END_SQL
     my $sysprefs_arrayref;
     $sysprefs_arrayref = $dbh->selectcol_arrayref( $sql, { Columns => [ 1, 2 ] } );
+    return unless $sysprefs_arrayref;
     %sysprefs = @$sysprefs_arrayref;
     return $sysprefs{$var};
 }
