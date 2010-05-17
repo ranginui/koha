@@ -596,7 +596,7 @@ function calcTotalRow(cell) {
 
 function autoFillRow(bud_id) {
 
-    var remainingTotal =   document.getElementById("budget_est_"+bud_id).textContent;
+    var remainingTotal =   document.getElementById("budget_est_"+bud_id);
     var remainingNew = new Number;
     var budgetTotal  =  document.getElementById("budget_tot_"+bud_id ).textContent;
     var arr =  getElementsByClass("plan_entry_" + bud_id);
@@ -604,22 +604,27 @@ function autoFillRow(bud_id) {
     budgetTotal   =  budgetTotal.replace(/\,/, "");
     var qty = new Number;
 // get the totals
+    var novalueArr = new Array();
     for ( var i=0, len=arr.length; i<len; ++i ) {
         remainingNew   +=   Math.abs (arr[i].value );
 
         if ( arr[i].value == 0 ) {
+	    novalueArr[qty] = arr[i];
             qty += 1;
         }
     }
 
     remainingNew    =    Math.abs( budgetTotal) -  remainingNew   ;
     var newCell = new Number (remainingNew / qty);
+    var rest = new Number (remainingNew - (newCell.toFixed(2) * (novalueArr.length - 1)));
 
-    for ( var i=0, len=arr.length; i<len; ++i ) {
-        if (  Math.abs(arr[i].value) == 0 ) {
-            arr[i].value = newCell.toFixed(2) ;
-        }
-    }
+    for (var i = 0; i<novalueArr.length; ++i) {
+         if (i == novalueArr.length - 1) {
+             novalueArr[i].value = rest.toFixed(2);
+         }else {
+             novalueArr[i].value = newCell.toFixed(2);
+         }   
+     }
 
     remainingTotal.textContent = '0.00' ;
     remainingTotal.style.color = 'black';
