@@ -1227,12 +1227,13 @@ sub BuildUnimarcHierarchies{
         foreach (@trees){
           $_.= ",$authid";
         }
-
-        #Unless there is no ancestor, I am alone.
-        $hierarchies = "$authid" unless ($hierarchies);
-    }
-    AddAuthorityTrees( $authid, $hierarchies );
-    return $hierarchies;
+        @globalresult = (@globalresult,@trees); 
+        $found=1; 
+      }    
+      $hierarchies=join(";",@globalresult);
+    } 
+  AddAuthorityTrees($authid,$hierarchies);
+  return $hierarchies;
 }
 
 =head2 BuildUnimarcHierarchy
@@ -1257,27 +1258,24 @@ Those two latest ones should disappear soon.
 
 =cut
 
-sub BuildUnimarcHierarchy {
-    my $record             = shift @_;
-    my $class              = shift @_;
-    my $authid_constructed = shift @_;
-    return undef unless ($record);
-    my $authid = $record->subfield( '2..', '3' );
-    my %cell;
-    my $parents  = "";
-    my $children = "";
-    my ( @loopparents, @loopchildren );
-
-    foreach my $field ( $record->field('550') ) {
-        if ( $field->subfield('5') && $field->subfield('a') ) {
-            if ( $field->subfield('5') eq 'h' ) {
-                push @loopchildren, { "childauthid" => $field->subfield('3'), "childvalue" => $field->subfield('a') };
-            } elsif ( $field->subfield('5') eq 'g' ) {
-                push @loopparents, { "parentauthid" => $field->subfield('3'), "parentvalue" => $field->subfield('a') };
-            }
-
-            # brothers could get in there with an else
-        }
+sub BuildUnimarcHierarchy{
+  my $record = shift @_;
+  my $class = shift @_;
+  my $authid_constructed = shift @_;
+  return unless $record;
+  my $authid=$record->field('001')->data();
+  my %cell;
+  my $parents=""; my $children="";
+  my (@loopparents,@loopchildren);
+  foreach my $field ($record->field('5..')){
+	my $subfauthid=_get_authid_subfield($field);
+    if ($field->subfield('5') && $field->subfield('a')){
+      if ($field->subfield('5') eq 'h'){
+        push @loopchildren, { "childauthid"=>$subfauthid,"childvalue"=>$field->subfield('a')};
+      }elsif ($field->subfield('5') eq 'g'){
+        push @loopparents, { "parentauthid"=>$subfauthid,"parentvalue"=>$field->subfield('a')};
+      }
+          # brothers could get in there with an else
     }
     $cell{"ifparents"}     = 1              if ( scalar(@loopparents) > 0 );
     $cell{"ifchildren"}    = 1              if ( scalar(@loopchildren) > 0 );
