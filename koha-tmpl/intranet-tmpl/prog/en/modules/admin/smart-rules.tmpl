@@ -306,7 +306,7 @@ $(document).ready(function() {
                                     </select>
                                 </td>
                                 <td class="reserves"><!-- TMPL_IF NAME="holdrestricted"--><input type="checkbox" name="holdrestricted" checked="checked" value="1"/> <!--TMPL_ELSE--><input type="checkbox" name="holdrestricted" value="1"/> <!-- /TMPL_IF --></td>
-		                        <td><input class="issues" name="rentaldiscount" size="2" /></td>
+		                        <td class="issues"><input name="rentaldiscount" size="2" /></td>
                                 <td><input type="hidden" name="branchcode" value="<!-- TMPL_VAR NAME="branchcode" -->"/><input type="submit" value="Add" class="submit" /></td>
                             </tr>
                         </tfoot>
