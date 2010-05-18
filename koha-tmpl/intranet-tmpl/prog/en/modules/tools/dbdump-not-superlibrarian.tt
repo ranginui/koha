@@ -1,0 +1,20 @@
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Tools</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body>
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'cat-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; Tools</div>
+
+<div id="doc3">
+<div id="bd">
+	<div class="yui-gb">
+
+<p>You do not have permission to download the database dump. It is
+for superlibrarians only. Sorry.</p>
+
+</div>
+</div>
+[% INCLUDE 'intranet-bottom.inc' %]

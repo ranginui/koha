@@ -86,7 +86,9 @@
     <dt><a href="/cgi-bin/koha/tools/scheduler.pl">Task scheduler</a></dt>
     <dd>Schedule tasks to run</dd>
     [% END %]
-	
+
+    <dt><a href="/cgi-bin/koha/tools/dbdump.pl">Database dump</a></dt>
+    <dd>Download latest database dump.</dd>
 
 </dl>
 </div>
