@@ -1232,6 +1232,10 @@ sub BuildUnimarcHierarchies{
       }    
       $hierarchies=join(";",@globalresult);
     } 
+    #Unless there is no ancestor, I am alone.
+    $hierarchies="$authid" unless ($hierarchies);
+  } 
+
   AddAuthorityTrees($authid,$hierarchies);
   return $hierarchies;
 }
@@ -1277,15 +1281,16 @@ sub BuildUnimarcHierarchy{
       }
           # brothers could get in there with an else
     }
-    $cell{"ifparents"}     = 1              if ( scalar(@loopparents) > 0 );
-    $cell{"ifchildren"}    = 1              if ( scalar(@loopchildren) > 0 );
-    $cell{"loopparents"}   = \@loopparents  if ( scalar(@loopparents) > 0 );
-    $cell{"loopchildren"}  = \@loopchildren if ( scalar(@loopchildren) > 0 );
-    $cell{"class"}         = $class;
-    $cell{"loopauthid"}    = $authid;
-    $cell{"current_value"} = 1              if $authid eq $authid_constructed;
-    $cell{"value"} = $record->subfield( '2..', "a" );
-    return \%cell;
+  }
+  $cell{"ifparents"}     = 1              if ( scalar(@loopparents) > 0 );
+  $cell{"ifchildren"}    = 1              if ( scalar(@loopchildren) > 0 );
+  $cell{"loopparents"}   = \@loopparents  if ( scalar(@loopparents) > 0 );
+  $cell{"loopchildren"}  = \@loopchildren if ( scalar(@loopchildren) > 0 );
+  $cell{"class"}         = $class;
+  $cell{"loopauthid"}    = $authid;
+  $cell{"current_value"} = 1              if $authid eq $authid_constructed;
+  $cell{"value"} = $record->subfield( '2..', "a" );
+  return \%cell;
 }
 
 =head2 GetHeaderAuthority
