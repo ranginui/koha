@@ -1194,44 +1194,38 @@ Example of text:
 
 =cut
 
-sub BuildUnimarcHierarchies {
-    my $authid = shift @_;
-
-    #   warn "authid : $authid";
-    my $force = shift @_;
-    my @globalresult;
-    my $dbh = C4::Context->dbh;
-    my $hierarchies;
-    my $data = GetHeaderAuthority($authid);
-    if ( $data->{'authtrees'} and not $force ) {
-        return $data->{'authtrees'};
-    } elsif ( $data->{'authtrees'} ) {
-        $hierarchies = $data->{'authtrees'};
-    } else {
-        my $record = GetAuthority($authid);
-        my $found;
-        return unless $record;
-        foreach my $field ( $record->field('5..') ) {
-            if ( $field->subfield('5') && $field->subfield('5') eq 'g' ) {
-                my $subfauthid = _get_authid_subfield($field);
-                next if ( $subfauthid eq $authid );
-                my $parentrecord = GetAuthority($subfauthid);
-                my $localresult  = $hierarchies;
-                my $trees;
-                $trees = BuildUnimarcHierarchies($subfauthid);
-                my @trees;
-                if ( $trees =~ /;/ ) {
-                    @trees = split( /;/, $trees );
-                } else {
-                    push @trees, $trees;
-                }
-                foreach (@trees) {
-                    $_ .= ",$authid";
-                }
-                @globalresult = ( @globalresult, @trees );
-                $found = 1;
-            }
-            $hierarchies = join( ";", @globalresult );
+sub BuildUnimarcHierarchies{
+  my $authid = shift @_;
+#   warn "authid : $authid";
+  my $force = shift @_;
+  my @globalresult;
+  my $dbh=C4::Context->dbh;
+  my $hierarchies;
+  my $data = GetHeaderAuthority($authid);
+  if ($data->{'authtrees'} and not $force){
+    return $data->{'authtrees'};
+#  } elsif ($data->{'authtrees'}){
+#    $hierarchies=$data->{'authtrees'};
+  } else {
+    my $record = GetAuthority($authid);
+    my $found;
+    return unless $record;
+    foreach my $field ($record->field('5..')){
+      if ($field->subfield('5') && $field->subfield('5') eq 'g'){
+		my $subfauthid=_get_authid_subfield($field);
+        next if ($subfauthid eq $authid);
+        my $parentrecord = GetAuthority($subfauthid);
+        my $localresult=$hierarchies;
+        my $trees;
+        $trees = BuildUnimarcHierarchies($subfauthid);
+        my @trees;
+        if ($trees=~/;/){
+           @trees = split(/;/,$trees);
+        } else {
+           push @trees, $trees;
+        }
+        foreach (@trees){
+          $_.= ",$authid";
         }
 
         #Unless there is no ancestor, I am alone.
