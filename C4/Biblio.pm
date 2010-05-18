@@ -1079,8 +1079,10 @@ sub GetMarcBiblio {
     my $dbh          = C4::Context->dbh;
     my $strsth       = qq{SELECT marcxml FROM biblioitems WHERE biblionumber=?};
     $strsth .= qq{UNION SELECT marcxml FROM deletedbiblioitems WHERE biblionumber=?} if $deletedtable;
-    my $sth = $dbh->prepare("SELECT marcxml FROM biblioitems WHERE biblionumber=? ");
-    $sth->execute($biblionumber);
+    my $sth = $dbh->prepare($strsth);
+    my @params=($biblionumber);
+    push @params, $biblionumber if ($deletedtable);
+    $sth->execute(@params);
     my $row     = $sth->fetchrow_hashref;
     my $marcxml = StripNonXmlChars( $row->{'marcxml'} );
     MARC::File::XML->default_record_format( C4::Context->preference('marcflavour') );
