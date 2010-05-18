@@ -308,7 +308,10 @@ if ( $op eq 'add_form' ) {
             $$budget{$_} = $num->format_price( $$budget{$_} ) if defined( $$budget{$_} );
         }
 
-        my $borrower = &GetMember( borrowernumber => $budget->{budget_owner_id} );
+        # Value of budget_spent equals 0 instead of undefined value
+        $budget->{"budget_spent"} = $num->format_price(0) unless defined($budget->{"budget_spent"});
+
+        my $borrower = &GetMember( borrowernumber=>$budget->{budget_owner_id} );
         $budget->{"budget_owner_name"}     = $borrower->{'firstname'} . ' ' . $borrower->{'surname'};
         $budget->{"budget_borrowernumber"} = $borrower->{'borrowernumber'};
 
