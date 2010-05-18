@@ -137,10 +137,10 @@ sub plugin {
 
         my ( $results, $total ) = SearchAuthorities( \@tags, \@and_or, \@excluding, \@operator, \@value, $startfrom * $resultsperpage, $resultsperpage, $authtypecode, $orderby );
 
-        # Getting the $b if it exists
-        foreach my $_ (@$results) {
-            if ( $_->{reported_tag} =~ m/^\$b/ ) {
-                $_->{to_report} = substr( $_->{reported_tag}, 2 );
+    	for (@$results) {
+    	    my $authority = GetAuthority($_->{authid});
+    		if ($authority->field('200') and $authority->subfield('200','b')) {
+    		    $_->{to_report} = $authority->subfield('200','b');
             }
         }
 
@@ -189,7 +189,7 @@ sub plugin {
 "../cataloguing/plugin_launcher.pl?plugin_name=unimarc_field_210c.pl&amp;authtypecode=EDITORS&and_or=$and_or&amp;marclist=$marclist&amp;operator=$operator&amp;orderby=$orderby&amp;excluding=$excluding&amp;"
           . join( "&amp;", map { "value=" . $_ } @value )
           . "&amp;op=do_search&amp;type=intranet&amp;index=$index";
-        warn "$link ," . getnbpages( $total, $resultsperpage );
+
         $template->param( result => $results ) if $results;
         $template->param( 'index' => $query->param('index') );
         $template->param(
