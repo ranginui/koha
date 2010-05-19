@@ -93,6 +93,9 @@ my $marcseriesarray  = GetMarcSeries($record,$marcflavour);
 my $marcurlsarray    = GetMarcUrls    ($record,$marcflavour);
 my $subtitle         = GetRecordValue('subtitle', $record, $fw);
 
+# Turn newlines into HTML-y newlines
+$_->{marcnote} =~ s{\n}{<br />}g foreach (@$marcnotesarray);
+
 # Get Branches, Itemtypes and Locations
 my $branches = GetBranches();
 my $itemtypes = GetItemTypes();
