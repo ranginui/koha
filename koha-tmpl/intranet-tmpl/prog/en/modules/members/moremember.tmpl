@@ -168,6 +168,14 @@ if (nodename =="barcodes[]"){
         <!-- TMPL_IF NAME="patronimages" -->
         <li><a href="#manage-patron-image">Image</a></li>
         <!-- /TMPL_IF -->
+        <!-- TMPL_IF NAME="ExtendedPatronAttributes" -->
+        <!-- TMPL_UNLESS NAME="no_patron_attribute_types" -->
+        <li><a href="#patron-extended-attributes">Additional attributes and identifiers</a></li>
+        <!-- /TMPL_UNLESS -->
+        <!-- /TMPL_IF -->
+        <!-- TMPL_IF NAME="EnhancedMessagingPreferences" -->
+        <li><a href="#patron-messaging-prefs">Patron messaging preferences</a></li>
+        <!-- /TMPL_IF -->
         <li><a href="#patron-library-details">Library details</a></li>
         <li><a href="#patron-alternate-address">Alternate address</a></li>
         <li><a href="#patron-alternative-contact">Alternative contact</a></li>
