@@ -316,7 +316,6 @@ for ( my $i = 0 ; $i < $issuecount ; $i++ ) {
     if ( $row{'renew_failed'} ) {
         $row{ 'norenew_reason_' . $renew_failed{ $issue->[$i]->{'itemnumber'} }->{message} } = 1;
     }
-    warn Dump(%row);
     push( @issuedata, \%row );
 }
 
