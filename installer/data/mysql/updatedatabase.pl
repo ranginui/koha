@@ -4385,10 +4385,9 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     $dbh->do(q{
       ALTER TABLE borrower_attribute_types ADD `display_checkout` TINYINT(1) NOT NULL DEFAULT '0';
 });
-    print "Upgrade to $DBversion done. — Add display_checkout in borrowers attributes\n";
+    print "Upgrade to $DBversion done. — Add display_checkout in borrower_attribute_types table\n";
     SetVersion ($DBversion);
 }
-
 
 =item DropAllForeignKeys($table)
 
