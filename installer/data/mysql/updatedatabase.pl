@@ -4374,10 +4374,21 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
 });
     $dbh->do(q{
       ALTER TABLE old_reserves ADD `reservenumber` int(11) NOT NULL AUTO_INCREMENT FIRST, ADD PRIMARY KEY (`reservenumber`);
+});
 
     print "Upgrade to $DBversion done. — Add reservenumber in reserves table\n";
     SetVersion ($DBversion);
 }
+
+$DBversion = '3.02.00.020';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do(q{
+      ALTER TABLE borrower_attribute_types ADD `display_checkout` TINYINT(1) NOT NULL DEFAULT '0' AFTER `authorised_value_category`;
+});
+    print "Upgrade to $DBversion done. — Add display_checkout in borrowers attributes\n";
+    SetVersion ($DBversion);
+}
+
 
 =item DropAllForeignKeys($table)
 
