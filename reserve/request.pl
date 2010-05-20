@@ -394,7 +394,7 @@ foreach my $biblionumber (@biblionumbers) {
                 }
             }
 
-            my $branchitemrule = GetIssuingRule( $borrowerinfo->{borrowernumber}, $item->{'itype'}, GetReservesControlBranch( $borrowerinfo, $item ) );
+            my $branchitemrule = GetIssuingRule( $borrowerinfo->{categorycode}, $item->{'itype'}, GetReservesControlBranch( $borrowerinfo, $item ) );
             my $policy_holdrestricted = $branchitemrule->{'reservesallowed'};
             $item->{'holdrestricted'} = $branchitemrule->{'holdrestricted'};
 
