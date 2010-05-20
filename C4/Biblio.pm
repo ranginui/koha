@@ -804,7 +804,7 @@ sub GetISBDView {
     my ( $holdingbrtagf, $holdingbrtagsubf ) = &GetMarcFromKohaField( "items.holdingbranch", $itemtype );
     my $tagslib = &GetMarcStructure( 1, $itemtype );
 
-    my $ISBD = C4::Context->preference('ISBD');
+    my $ISBD = C4::Context->preference('isbd');
     my $bloc = $ISBD;
     my $res;
     my $blocres;
