@@ -36,10 +36,6 @@ $.tablesorter.addParser({
 		});
 
 var allcheckboxes = $(".checkboxed");
-	$("#renew_all").click(function(){
-		$(allcheckboxes).checkCheckboxes(":input[name*=items]"); 
-		$(allcheckboxes).unCheckCheckboxes(":input[name*=barcodes]");
-	});
 	$("#CheckAllitems").click(function(){
 		$(allcheckboxes).checkCheckboxes(":input[name*=items]");
 		$(allcheckboxes).unCheckCheckboxes(":input[name*=barcodes]"); return false;
@@ -377,7 +373,6 @@ function refocus(calendar) {
     <!-- /TMPL_IF -->
 
 </div></div>
-<!-- TMPL_ELSE -->
 <!-- TMPL_IF NAME="soundon" -->
 <audio src="/intranet-tmpl/prog/sound/beep.ogg" autoplay="autoplay" autobuffer="autobuffer"></audio>
 <!-- /TMPL_IF -->
@@ -735,7 +730,6 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
             </span>
             <!-- /TMPL_IF -->
         </td>
-        <!-- /TMPL_IF -->
   <!-- TMPL_IF NAME="return_failed" -->
             <td class="problem">Checkin Failed</td>
       <!--TMPL_ELSE-->
@@ -787,7 +781,6 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
             </span>
             <!-- /TMPL_IF -->
         </td>
-        <!-- /TMPL_IF -->
 		  <!-- TMPL_IF NAME="return_failed" -->
             <td class="problem">Checkin Failed</td>
       <!--TMPL_ELSE-->
@@ -803,7 +796,6 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
     <!--TMPL_IF NAME="issuecount"-->
     <fieldset class="action">
         <input type="submit" name="renew_checked" value="Renew or Return checked items" />
-        <input type="submit" id="renew_all" name="renew_all" value="Renew all" />
         </fieldset>
     <!-- /TMPL_IF -->
 </form>
