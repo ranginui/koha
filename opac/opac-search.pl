@@ -136,8 +136,14 @@ if ( C4::Context->preference('TagsEnabled') ) {
 # load the branches
 my $mybranch = ( C4::Context->preference('SearchMyLibraryFirst') && C4::Context->userenv && C4::Context->userenv->{branch} ) ? C4::Context->userenv->{branch} : '';
 my $branches = GetBranches();    # used later in *getRecords, probably should be internalized by those functions after caching in C4::Branch is established
+my $branchloop = GetBranchesLoop( $mybranch, 0 );
+unless ($mybranch){
+    foreach (@$branchloop){
+        $_->{'selected'}=0;
+    }
+}
 $template->param(
-    branchloop       => GetBranchesLoop( $mybranch, 0 ),
+    branchloop       => $branchloop,
     searchdomainloop => GetBranchCategories( undef, 'searchdomain' ),
 );
 
