@@ -1333,6 +1333,7 @@ CREATE TABLE `old_issues` (
 --
 DROP TABLE IF EXISTS `old_reserves`;
 CREATE TABLE `old_reserves` (
+  `reservenumber` int(11) NOT NULL AUTO_INCREMENT,
   `borrowernumber` int(11) default NULL,
   `reservedate` date default NULL,
   `biblionumber` int(11) default NULL,
@@ -1349,6 +1350,7 @@ CREATE TABLE `old_reserves` (
   `waitingdate` date default NULL,
   `expirationdate` DATE DEFAULT NULL,
   `lowestPriority` tinyint(1) NOT NULL,
+  PRIMARY KEY (`reservenumber`),
   KEY `old_reserves_borrowernumber` (`borrowernumber`),
   KEY `old_reserves_biblionumber` (`biblionumber`),
   KEY `old_reserves_itemnumber` (`itemnumber`),
@@ -1508,6 +1510,7 @@ CREATE TABLE `reserveconstraints` (
 
 DROP TABLE IF EXISTS `reserves`;
 CREATE TABLE `reserves` (
+  `reservenumber` int(11) NOT NULL AUTO_INCREMENT,
   `borrowernumber` int(11) NOT NULL default 0,
   `reservedate` date default NULL,
   `biblionumber` int(11) NOT NULL default 0,
@@ -1524,6 +1527,7 @@ CREATE TABLE `reserves` (
   `waitingdate` date default NULL,
   `expirationdate` DATE DEFAULT NULL,
   `lowestPriority` tinyint(1) NOT NULL,
+  PRIMARY KEY (`reservenumber`),
   KEY `borrowernumber` (`borrowernumber`),
   KEY `biblionumber` (`biblionumber`),
   KEY `itemnumber` (`itemnumber`),

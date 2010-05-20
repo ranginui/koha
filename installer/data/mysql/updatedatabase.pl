@@ -4367,6 +4367,18 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     SetVersion ($DBversion);
 }
 
+$DBversion = '3.02.00.019';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do(q{
+      ALTER TABLE reserves ADD `reservenumber` int(11) NOT NULL AUTO_INCREMENT FIRST, ADD PRIMARY KEY (`reservenumber`);
+});
+    $dbh->do(q{
+      ALTER TABLE old_reserves ADD `reservenumber` int(11) NOT NULL AUTO_INCREMENT FIRST, ADD PRIMARY KEY (`reservenumber`);
+
+    print "Upgrade to $DBversion done. — Add reservenumber in reserves table\n";
+    SetVersion ($DBversion);
+}
+
 =item DropAllForeignKeys($table)
 
   Drop all foreign keys of the table $table
