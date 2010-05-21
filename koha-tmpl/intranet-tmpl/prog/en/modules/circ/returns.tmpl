@@ -1,6 +1,9 @@
 <!-- TMPL_INCLUDE NAME="doc-head-open.inc" -->
 <title>Koha &rsaquo; Circulation &rsaquo; Check In <!-- TMPL_VAR Name="title" escape="html" --></title>
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
+<style type="text/css">
+    background-color: red;
+</style>
 <script type="text/javascript">
 //<![CDATA[
 function Dopop(link) {
@@ -47,33 +50,27 @@ function Dopop(link) {
 
 <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/circ/circulation-home.pl">Circulation</a> &rsaquo; Check In</div>
 <div id="doc" class="yui-t7">
-
+   
    <div id="bd">
 	<div id="yui-main">
 
 <div class="yui-g">
-
-<!-- TMPL_IF Name="collectionItemNeedsTransferred" -->
-	<div class="dialog message">This item is part of a Rotating Collection and needs to be Transferred to <!-- TMPL_VAR NAME="collectionBranch" --></div>
-<!-- /TMPL_IF -->
-
 <!-- TMPL_IF NAME="wrongbranch" -->
 <div class="dialog alert"><h3>Cannot Check In</h3><p>This item must be checked in at its home library: <!-- TMPL_VAR Name="rightbranch" -->. <strong>NOT CHECKED IN</strong></p>
 	     <form method="post" action="returns.pl" class="confirm">
-
+				
                 <input type="hidden" name="barcode" value="<!-- TMPL_VAR Name="barcode" -->" />
                 <input type="hidden" name="exemptfine" value="<!-- TMPL_VAR Name="exemptfine" -->" />
                 <input type="hidden" name="dropboxmode" value="<!-- TMPL_VAR Name="dropboxmode" -->" />
 				<input type="submit" name="override" value="Check-In" class="submit" />
 				<input type="submit" name="cancel" value="Cancel" class="submit" />
-				<input type="submit" name="OK" value="OK" class="submit" />
 		</form>
 </div>
 <!-- /TMPL_IF -->
 
 <!-- case of a mistake in transfer loop -->
 <!-- TMPL_IF Name="WrongTransfer" --><div class="dialog message"><!-- WrongTransfer --><h3>Please return <a href="/cgi-bin/koha/catalogue/detail.pl?type=intra&amp;biblionumber=<!-- TMPL_VAR NAME="itembiblionumber" -->"><!-- TMPL_VAR Name="title" escape="html" --></a> to <!-- TMPL_VAR Name="TransferWaitingAt" --></h3>
-<!-- TMPL_IF Name="wborcnum"--><h5>Hold for:</h5>
+<!-- TMPL_IF Name="wborcnum"--><h5>Hold for:</h5> 
         <ul><li><a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->">
             <!-- TMPL_VAR Name="borsurname" -->, <!-- TMPL_VAR Name="borfirstname" --></a> (<!-- TMPL_VAR Name="borcnum" -->)</li>
         <li><!-- TMPL_VAR Name="wboraddress" --><!-- TMPL_IF NAME="wboraddress2" --><br />
@@ -82,7 +79,7 @@ function Dopop(link) {
         <!-- TMPL_IF NAME="wborphone" --><li><!-- TMPL_VAR Name="wborphone" --></li><!-- /TMPL_IF -->
 		<!-- TMPL_IF NAME="wboremail" --><li><a id="boremail" href="mailto:<!-- TMPL_VAR NAME="wboremail" -->"><!-- TMPL_VAR NAME="wboremail" --></a></li><!-- /TMPL_IF -->
         </ul>
-
+  
     <form method="post" action="returns.pl" class="confirm">
             <input type="hidden" name="WT-itemNumber" value="<!-- TMPL_VAR Name="WrongTransferItem" -->" />
             <input type="hidden" name="WT-waitingAt" value="<!-- TMPL_VAR Name="TransferWaitingAt" -->" />
@@ -98,11 +95,6 @@ function Dopop(link) {
 <!-- case of a reservation found, and display info -->
     <!-- TMPL_IF Name="waiting" -->
 	<!-- waiting -->
-
-<!-- TMPL_IF NAME="soundon" -->
-<audio src="/intranet-tmpl/prog/sound/ending.ogg" autoplay="autoplay" autobuffer="autobuffer"></audio>
-<!-- /TMPL_IF -->	
-	
 <div class="dialog message">
         <h3>Hold Found (item is already waiting):  <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="itembiblionumber" -->"><!-- TMPL_VAR Name="title" escape="html" --></a></h3>
         <!-- TMPL_IF NAME="reservenotes" --><h4>Notes: <!-- TMPL_VAR Name="reservenotes" --></h4><!-- /TMPL_IF -->
@@ -183,28 +175,28 @@ function Dopop(link) {
     <!-- TMPL_IF Name="transfer" -->
     <!-- transfer: item with no reservation, must be returned to its homebranch -->
 	<div class="dialog message">
-	  <h3>Please return <a href="/cgi-bin/koha/catalogue/detail.pl?type=intra&amp;biblionumber=<!-- TMPL_VAR NAME="itembiblionumber" -->"><!-- TMPL_VAR NAME="title" escape="html" DEFAULT="item" --></a> to <!-- TMPL_VAR NAME="homebranchname" --></h3></div><!-- /TMPL_IF -->
-
+	  <h3>Please return <a href="/cgi-bin/koha/catalogue/detail.pl?type=intra&amp;biblionumber=<!-- TMPL_VAR NAME="itembiblionumber" -->"><!-- TMPL_VAR NAME="title" escape="html" DEFAULT="item" --></a> to <!-- TMPL_VAR NAME="homebranch" DEFAULT="homebranch" --></h3></div><!-- /TMPL_IF -->
+    
     <!-- TMPL_IF Name="needstransfer" -->
 	<!-- needstransfer -->
-	<div class="dialog message"><h3> This item needs to be transfered to <!-- TMPL_VAR Name="homebranchname" --></h3>
+	<div class="dialog message"><h3> This item needs to be transfered to <!-- TMPL_VAR Name="homebranch" --></h3>
 	Transfer Now?<br />
-    <form method="post" action="returns.pl" name="mainform" id="mainform">
+    <form method="post" action="returns.pl" name="mainform" id="mainform">              
 	<input type="submit" name="dotransfer" value="Yes" class="submit" />
 	<input type="submit" name="notransfer" value="No" class="submit" />
 	<input type="hidden" name="tobranch" value="<!-- TMPL_VAR NAME="homebranch" -->" />
 	<input type="hidden" name="transferitem" value="<!-- TMPL_VAR NAME="itemnumber" -->" />
         <input type="hidden" name="exemptfine" value="<!-- TMPL_VAR Name="exemptfine" -->" />
         <input type="hidden" name="dropboxmode" value="<!-- TMPL_VAR Name="dropboxmode" -->" />
-	<!--TMPL_LOOP Name="inputloop" -->
-	<input type="hidden" name="ri-<!-- TMPL_VAR Name="counter" -->" value="<!-- TMPL_VAR Name="barcode" -->" />
-	<input type="hidden" name="dd-<!-- TMPL_VAR Name="counter" -->" value="<!-- TMPL_VAR Name="duedate" -->" />
-	<input type="hidden" name="bn-<!-- TMPL_VAR Name="counter" -->" value="<!-- TMPL_VAR Name="bornum" -->" />
-	<!-- /TMPL_LOOP -->
-	<input type="hidden" name="barcode" value="0" />
+	<!--TMPL_LOOP Name="inputloop" -->     
+	<input type="hidden" name="ri-<!-- TMPL_VAR Name="counter" -->" value="<!-- TMPL_VAR Name="barcode" -->" /> 
+	<input type="hidden" name="dd-<!-- TMPL_VAR Name="counter" -->" value="<!-- TMPL_VAR Name="duedate" -->" /> 
+	<input type="hidden" name="bn-<!-- TMPL_VAR Name="counter" -->" value="<!-- TMPL_VAR Name="bornum" -->" /> 
+	<!-- /TMPL_LOOP -->                            
+	<input type="hidden" name="barcode" value="0" />    
 	</form>   </div>
 	<!-- /TMPL_IF -->
-
+    	
     <!-- TMPL_IF Name="diffbranch" -->
 	<!-- diffbranch -->
         <h3>Item Consigned:</h3>
@@ -226,16 +218,11 @@ function Dopop(link) {
             <input type="hidden" name="barcode" value="0" />
         </form>
     <!-- /TMPL_IF -->
-
-
+    
+    
     <!-- case of simple return no issue or transfer but with a reservation  -->
     <!-- TMPL_IF Name="reserved" -->
 	<!--  reserved  -->
-	
-<!-- TMPL_IF NAME="soundon" -->
-<audio src="/intranet-tmpl/prog/sound/opening.ogg" autoplay="autoplay" autobuffer="autobuffer"></audio>
-<!-- /TMPL_IF -->
-	
 	<div class="dialog message">
 	  <h3>Hold Found: <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="itembiblionumber" -->"><!-- TMPL_VAR Name="title" escape="html" --></a></h3>
         <!-- TMPL_IF NAME="reservenotes" --><h4>Notes: <!-- TMPL_VAR Name="reservenotes" --></h4><!-- /TMPL_IF -->
@@ -261,23 +248,16 @@ function Dopop(link) {
         <form method="post" action="returns.pl" class="confirm">
             <!-- TMPL_IF name="transfertodo" -->
                 <input type="submit" class="approve" value="Confirm hold and Transfer" />
-        	<!-- /TMPL_IF -->
-		<!-- TMPL_IF name="HoldButtonPrintConfirm" -->
-                <input type="submit" value="Print slip, Transfer, and Confirm" class="print" onclick="Dopop('hold-transfer-slip.pl?transfer=1&amp;borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->&amp;reservenumber=<!-- TMPL_VAR NAME="reservenumber" -->&amp;biblionumber=<!-- TMPL_VAR NAME="itembiblionumber" -->&amp;op=slip'); this.form.submit();" />
-        	<!-- /TMPL_IF -->
+                <input type="submit" value="Print slip, Transfer, and Confirm" class="print" onclick="Dopop('hold-transfer-slip.pl?transfer=1&amp;borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->&amp;biblionumber=<!-- TMPL_VAR NAME="itembiblionumber" -->&amp;op=slip'); this.form.submit();" />
             <!-- TMPL_ELSE -->
                 <input type="submit" class="approve" value="Confirm hold" />
-        	<!-- /TMPL_IF -->
-		<!-- TMPL_IF name="HoldButtonPrintConfirm" -->
-                <input type="submit" value="Print Slip and Confirm" class="print" onclick="Dopop('hold-transfer-slip.pl?borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->&amp;biblionumber=<!-- TMPL_VAR NAME="itembiblionumber" -->&amp;reservenumber=<!-- TMPL_VAR NAME="reservenumber" -->&amp;op=slip'); this.form.submit();" />
-        	<!-- /TMPL_IF -->
+                <input type="submit" value="Print Slip and Confirm" class="print" onclick="Dopop('hold-transfer-slip.pl?borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->&amp;biblionumber=<!-- TMPL_VAR NAME="itembiblionumber" -->&amp;op=slip'); this.form.submit();" />
             <!-- /TMPL_IF -->
                 <input type="submit" class="deny" value="Ignore" onclick="$('.dialog:visible').hide('slow'); $('#barcode').focus(); return false;" />
             <!-- TMPL_LOOP Name="inputloop" -->
 	<input type="hidden" name="ri-<!-- TMPL_VAR Name="counter" -->" value="<!-- TMPL_VAR Name="barcode" -->" />
 	<input type="hidden" name="dd-<!-- TMPL_VAR Name="counter" -->" value="<!-- TMPL_VAR Name="duedate" -->" />
 	<input type="hidden" name="bn-<!-- TMPL_VAR Name="counter" -->" value="<!-- TMPL_VAR Name="borrowernumber" -->" /><!-- /TMPL_LOOP -->
-            <input type="hidden" name="reservenumber" value="<!-- TMPL_VAR Name="reservenumber" -->" />
             <input type="hidden" name="itemnumber" value="<!-- TMPL_VAR Name="itemnumber" -->" />
             <input type="hidden" name="borrowernumber" value="<!-- TMPL_VAR Name="borrowernumber" -->" />
             <input type="hidden" name="resbarcode" value="<!-- TMPL_VAR Name="barcode" -->" />
@@ -292,7 +272,7 @@ function Dopop(link) {
 <!-- /TMPL_IF -->
 
 <!-- TMPL_IF NAME="errmsgloop" -->
-    <div class="dialog alert">
+    <div class="dialog message">
         <!-- TMPL_LOOP Name="errmsgloop" -->
                     <!-- TMPL_IF Name="badbarcode" -->
                         <p class="problem">No Item with barcode: <!-- TMPL_VAR Name="msg" --></p>
@@ -322,14 +302,6 @@ function Dopop(link) {
                         <p class="problem"><a href="/cgi-bin/koha/circ/circulation.pl?borrowernumber=<!-- TMPL_VAR NAME="debarborrowernumber" -->"><!-- TMPL_VAR NAME="debarname" -->(<!-- TMPL_VAR NAME="debarcardnumber" -->)</a> is now debarred until <!-- TMPL_VAR NAME="debarred" --> <!-- TMPL_IF Name="debarredcomment"-->(<!-- TMPL_VAR NAME="debarredcomment" -->)<!-- /TMPL_IF -->.</p>
                     <!-- /TMPL_IF -->
             <!-- /TMPL_LOOP -->
-<!-- TMPL_IF NAME="soundon" -->
-<audio src="/intranet-tmpl/prog/sound/critical.ogg" autoplay="autoplay" autobuffer="autobuffer"></audio>
-<!-- /TMPL_IF -->
-        <!-- TMPL_ELSE -->
-<!-- TMPL_IF NAME="soundon" -->
-<audio src="/intranet-tmpl/prog/sound/beep.ogg" autoplay="autoplay" autobuffer="autobuffer"></audio>
-<!-- /TMPL_IF -->
-        <!-- /TMPL_IF -->
     </div>
 <!-- /TMPL_IF -->
 
@@ -359,8 +331,8 @@ function Dopop(link) {
                 <input type="hidden" name="dd-<!-- TMPL_VAR Name="counter" -->" value="<!-- TMPL_VAR Name="duedate" -->" />
                 <input type="hidden" name="bn-<!-- TMPL_VAR Name="counter" -->" value="<!-- TMPL_VAR Name="borrowernumber" -->" />
             <!-- /TMPL_LOOP -->
-
-
+			
+   
             </fieldset>
             </div>
             <div class="yui-u">
@@ -393,6 +365,7 @@ function Dopop(link) {
 </div>
 <!-- TMPL_IF Name="flagloop" -->
 <div class="yui-g dialog message">    
+                
                 <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=<!-- TMPL_VAR Name="riborrowernumber" -->"><!-- TMPL_VAR Name="riborsurname" -->, <!-- TMPL_VAR Name="ribortitle" --> <!-- TMPL_VAR Name="riborfirstname" --></a> (<!-- TMPL_VAR Name="riborcnum" -->)
             <!-- TMPL_IF NAME="flagloop"-->
 		<ul>
@@ -435,7 +408,7 @@ function Dopop(link) {
 <!-- TMPL_IF Name="riloop" -->
     <h2>Checked-In items</h2>
     <table>
-	<tr><th>Due Date</th><th>Title and Author</th>	<th>Barcode (Type)</th><th>Home Branch</th><th>Holding Branch (Location Callnumber)</th>	<th>Patron</th><th>Note</th></tr>
+	<tr><th>Due Date</th><th>Title and Author</th>	<th>Barcode (Type)</th><th>Home Branch</th><th>Holding Branch</th>	<th>Patron</th><th>Note</th></tr>
         
         <!-- TMPL_LOOP Name="riloop" -->
             <tr>
@@ -453,7 +426,7 @@ function Dopop(link) {
             <td><a href="/cgi-bin/koha/catalogue/moredetail.pl?biblionumber=<!-- TMPL_VAR NAME="itembiblionumber" -->&amp;itemnumber=<!-- TMPL_VAR NAME="itemnumber" -->#item<!-- TMPL_VAR NAME="itemnumber" -->"><!-- TMPL_VAR Name="barcode" --></a>
             <!-- TMPL_IF name="itemtype"-->(<!-- TMPL_VAR Name="itemtype" -->) <!-- /TMPL_IF --><!-- TMPL_IF Name="ccode"-->(<!-- TMPL_VAR Name="ccode" -->)<!-- /TMPL_IF --></td>
             <td><!-- TMPL_VAR NAME="homebranch" --></td>
-            <td><!-- TMPL_VAR NAME="holdingbranch" --> <!-- TMPL_IF Name="itemcallnumber"-->(<!-- TMPL_IF NAME="itemlocation" --><!-- TMPL_VAR NAME="itemlocation" --><!-- /TMPL_IF --> <!-- TMPL_VAR NAME="itemcallnumber" -->)<!-- /TMPL_IF --></td>
+            <td><!-- TMPL_VAR NAME="holdingbranch" --> <!-- TMPL_IF Name="itemcallnumber"-->(<!-- TMPL_VAR NAME="itemcallnumber" -->)<!-- /TMPL_IF --></td>
 			<td><!-- TMPL_IF Name="duedate" -->
                 <a href="/cgi-bin/koha/circ/circulation.pl?borrowernumber=<!-- TMPL_VAR Name="borrowernumber" -->">
                     <!-- TMPL_VAR Name="borsurname" -->, <!-- TMPL_VAR Name="borfirstname" --> (<!-- TMPL_VAR name="borcategorycode" -->)
