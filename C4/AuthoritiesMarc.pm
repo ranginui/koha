@@ -1392,26 +1392,15 @@ sub merge {
             }
         }
     } else {
-
-        #zebra connection
-        my $oConnection = C4::Context->Zconn( "biblioserver", 0 );
-        $oConnection->option( "preferredRecordSyntax" => "XML" );
-        my $query;
-        $query = "an=" . $mergefrom;
-        my $oResult = $oConnection->search( new ZOOM::Query::CCL2RPN( $query, $oConnection ) );
-        my $count = 0;
-        if ($oResult) {
-            $count = $oResult->size();
+        #zebra connection  
+ 	my ($err,$res,$result) = C4::Search::SimpleSearch("an=$mergefrom",0,10);
+        my $z=0;
+	$debug && warn scalar(@$res);
+        foreach my $rawrecord( @$res ) {
+      	    my $marcrecord = MARC::File::USMARC::decode($rawrecord);
+	    SetUTF8Flag($marcrecord);
+            push @reccache, $marcrecord;
         }
-        my $z = 0;
-        while ( $z < $count ) {
-            my $rec;
-            $rec = $oResult->record($z);
-            my $marcdata = $rec->raw();
-            push @reccache, $marcdata;
-            $z++;
-        }
-        $oConnection->destroy();
     }
 
     #warn scalar(@reccache)." biblios to update";
@@ -1423,35 +1412,31 @@ sub merge {
     while ( my ($tagfield) = $sth->fetchrow ) {
         push @tags_using_authtype, $tagfield;
     }
-    my $tag_to = 0;
-    if ( $authtypecodeto ne $authtypecodefrom ) {
-
-        # If many tags, take the first
-        $sth->execute($authtypecodeto);
-        $tag_to = $sth->fetchrow;
-
-        #warn $tag_to;
-    }
-
+    my $tag_to=0;  
+#    if ($authtypecodeto ne $authtypecodefrom){  
+#        # If many tags, take the first
+#        $sth->execute($authtypecodeto);    
+#        $tag_to=$sth->fetchrow;
+#        #warn $tag_to;    
+#    }  
     # BulkEdit marc records
-    # May be used as a template for a bulkedit field
-    foreach my $marcrecord (@reccache) {
-        my $update;
-        $marcrecord = MARC::Record->new_from_xml( $marcrecord, "utf8", C4::Context->preference("marcflavour") ) unless ( C4::Context->preference('NoZebra') );
-        foreach my $tagfield (@tags_using_authtype) {
-
-            #             warn "tagfield : $tagfield ";
-            foreach my $field ( $marcrecord->field($tagfield) ) {
-                my $auth_number = $field->subfield("9");
-                my $tag         = $field->tag();
-                if ( $auth_number == $mergefrom ) {
-                    my $field_to = MARC::Field->new( ( $tag_to ? $tag_to : $tag ), $field->indicator(1), $field->indicator(2), "9" => $mergeto );
-                    foreach my $subfield (@record_to) {
-                        $field_to->add_subfields( $subfield->[0] => $subfield->[1] );
-                    }
-                    $marcrecord->delete_field($field);
-                    $marcrecord->insert_grouped_field($field_to);
-                    $update = 1;
+    # May be used as a template for a bulkedit field  
+    foreach my $marcrecord(@reccache){
+        my $update;           
+	    $debug && warn "before merge",$marcrecord->as_formatted;
+        foreach my $tagfield (@tags_using_authtype){
+#             warn "tagfield : $tagfield ";
+            foreach my $field ($marcrecord->field($tagfield)){
+                my $auth_number=$field->subfield("9");
+                my $tag=$field->tag();          
+                if ($auth_number==$mergefrom) {
+                my $field_to=MARC::Field->new(($tag_to?$tag_to:$tag),$field->indicator(1),$field->indicator(2),"9"=>$mergeto);
+                foreach my $subfield (@record_to) {
+                    $field_to->add_subfields($subfield->[0] =>$subfield->[1]);
+                }
+                $marcrecord->delete_field($field);
+                $marcrecord->insert_grouped_field($field_to);            
+                $update=1;
                 }
             }    #for each tag
         }    #foreach tagfield
@@ -1462,8 +1447,9 @@ sub merge {
         } else {
             $biblionumber = $marcrecord->subfield( $bibliotag, $bibliosubf );
         }
-        unless ($biblionumber) {
-            warn "pas de numéro de notice bibliographique dans : " . $marcrecord->as_formatted;
+	    $debug && warn $biblionumber,$marcrecord->as_formatted;
+        unless ($biblionumber){
+            warn "pas de numéro de notice bibliographique dans : ".$marcrecord->as_formatted;
             next;
         }
         if ( $update == 1 ) {
@@ -1472,6 +1458,7 @@ sub merge {
             warn $counteditedbiblio if ( ( $counteditedbiblio % 10 ) and $ENV{DEBUG} );
         }
     }    #foreach $marc
+    DelAuthority($mergefrom);
     return $counteditedbiblio;
 
     # now, find every other authority linked with this authority
