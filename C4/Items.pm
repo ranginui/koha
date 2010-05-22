@@ -1337,7 +1337,7 @@ sub GetItemsInfo {
             "SELECT * FROM branches WHERE branchcode = ?
         "
         );
-        $bsth->execute( $data->{'holdingbranch'} );
+        $bsth->execute( $data->{ C4::Context->preference('HomeOrHoldingBranch') } );
         if ( my $bdata = $bsth->fetchrow_hashref ) {
             $data->{'branchname'} = $bdata->{'branchname'};
         }
