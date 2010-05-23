@@ -22,7 +22,7 @@ package C4::Reserves;
 use strict;
 
 #use warnings; FIXME - Bug 2505
-use Date::Calc qw( Add_Delta_Days Time_to_Date);
+use Date::Calc qw( Add_Delta_Days Time_to_Date Today);
 use C4::Context;
 use C4::Biblio;
 use C4::Members;
