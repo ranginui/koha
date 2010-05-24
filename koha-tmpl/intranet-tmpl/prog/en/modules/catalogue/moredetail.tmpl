@@ -64,6 +64,7 @@
             <li><span class="label">Current Location:</span> <!-- TMPL_VAR NAME="holdingbranchname" -->&nbsp;</li>
             <li><span class="label">Checkout Status:</span> <!-- TMPL_IF NAME="issue" -->Checked out to <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->"><!-- TMPL_VAR NAME="cardnumber" --></a>, Due back on <!-- TMPL_VAR NAME="datedue" --><!-- TMPL_ELSE -->Not Checked out <!-- /TMPL_IF --></li>
             <li><span class="label">Current Renewals:</span> <!-- TMPL_VAR NAME="renewals" -->&nbsp;</li>
+<<<<<<< HEAD
             <!-- TMPL_IF name="itemlostloop" -->
                 <li><span class="label">Lost Status:</span>
                     <!-- TMPL_IF NAME="CAN_user_circulate" -->
@@ -72,6 +73,7 @@
                         <input type="hidden" name="biblioitemnumber" value="<!-- TMPL_VAR Name="biblioitemnumber" -->" />
                         <input type="hidden" name="itemnumber" value="<!-- TMPL_VAR Name="itemnumber" -->" />
                         <select name="itemlost" >
+                                    <option value="">Choose</option>
                         <!-- TMPL_LOOP NAME="itemlostloop" -->
                             <!-- TMPL_IF NAME="selected" -->
                                     <option value="<!-- TMPL_VAR NAME="authorised_value" -->" selected="selected"><!-- TMPL_VAR NAME="lib" --></option>
@@ -101,6 +103,7 @@
                     <input type="hidden" name="biblioitemnumber" value="<!-- TMPL_VAR Name="biblioitemnumber" -->" />
                     <input type="hidden" name="itemnumber" value="<!-- TMPL_VAR Name="itemnumber" -->" />
                     <select name="damaged" >
+                    <option value="">Choose</option>
             <!-- TMPL_LOOP NAME="itemdamagedloop" -->
                 <!-- TMPL_IF NAME="selected" -->
                     <option value="<!-- TMPL_VAR NAME="authorised_value" -->" selected="selected"><!-- TMPL_VAR NAME="lib" --></option>
