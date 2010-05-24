@@ -180,7 +180,7 @@ if ($duedatespec_allow) {
     $datedue = $globalduedate if ($globalduedate);
 }
 
-my $todaysdate = C4::Dates->new->output( C4::Context->preference('dateformat') );
+my $todaysdate = C4::Dates->new->output( 'iso' );
 
 # check and see if we should print
 if ( $barcode eq '' && $print eq 'maybe' ) {
@@ -495,7 +495,6 @@ if ($borrower) {
         $it->{'itemtype_image'} = $itemtypeinfo->{'imageurl'};
         $it->{'dd'}             = format_date( $it->{'date_due'} );
         $it->{'displaydate'}    = format_date( $it->{'issuedate'} );
-        $it->{'od'}             = ( $it->{'date_due'} lt $todaysdate ) ? 1 : 0;
         ( $it->{'author'} eq '' ) and $it->{'author'} = ' ';
         if ( defined( $return_failed{ $it->{'itemnumber'} } ) ) {
             $it->{ 'return_error_' . $return_failed{ $it->{'itemnumber'} }->{message} } = 1;
