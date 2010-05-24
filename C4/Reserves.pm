@@ -1504,7 +1504,7 @@ sub IsAvailableForItemLevelRequest {
     #         consolidated
     my $dbh = C4::Context->dbh;
     my $notforloan_query;
-    if ( C4::Context->preference('item-level_itypes') ) {
+    if (C4::Context->preference('item-level_itypes')) {
         $notforloan_query = "SELECT itemtypes.notforloan
                              FROM items
                              JOIN itemtypes ON (itemtypes.itemtype = items.itype)
@@ -1519,22 +1519,22 @@ sub IsAvailableForItemLevelRequest {
     my $sth = $dbh->prepare($notforloan_query);
     $sth->execute($itemnumber);
     my $notforloan_per_itemtype = 0;
-    if ( my ($notforloan) = $sth->fetchrow_array ) {
+    if (my ($notforloan) = $sth->fetchrow_array) {
         $notforloan_per_itemtype = 1 if $notforloan;
     }
 
     my $available_per_item = 1;
-    $available_per_item = 0
-      if $item->{itemlost}
-          or ( $item->{notforloan} > 0 )
-          or ( $item->{damaged} and not C4::Context->preference('AllowHoldsOnDamagedItems') )
-          or $item->{wthdrawn}
-          or $notforloan_per_itemtype;
+    $available_per_item = 0 if $item->{itemlost} or
+                               ( $item->{notforloan} > 0 ) or
+                               ($item->{damaged} and not C4::Context->preference('AllowHoldsOnDamagedItems')) or
+                               $item->{wthdrawn} or
+                               $notforloan_per_itemtype;
 
-    if ( C4::Context->preference('AllowOnShelfHolds') ) {
+
+    if (CanHoldOnShelf($itemnumber)) {
         return $available_per_item;
     } else {
-        return ( $available_per_item and ( $item->{onloan} or GetReserveStatus($itemnumber) eq "W" ) )?1:0;
+        return ($available_per_item and ($item->{onloan} or GetReserveStatus($itemnumber) eq "W"));
     }
 }
 
