@@ -851,15 +851,17 @@ sub CanBookBeIssued {
         my ($resborrower) = C4::Members::GetMemberDetails( $resbor, 0 );
         my $branches      = GetBranches();
         my $branchname    = $branches->{ $res->{'branchcode'} }->{'branchname'};
-        if ( $resbor ne $borrower->{'borrowernumber'} && $restype eq "Waiting" ) {
-
-            # The item is on reserve and waiting, but has been
-            # reserved by some other patron.
-            $needsconfirmation{RESERVE_WAITING} = "$resborrower->{'firstname'} $resborrower->{'surname'} ($resborrower->{'cardnumber'}, $branchname)";
-        } elsif ( $restype eq "Reserved" ) {
-
-            # The item is on reserve for someone else.
-            $needsconfirmation{RESERVED} = "$res->{'reservedate'} : $resborrower->{'firstname'} $resborrower->{'surname'} ($resborrower->{'cardnumber'})";
+        if( $resbor ne $borrower->{'borrowernumber'}){
+            if ( $restype eq "Waiting" ) {
+    
+                # The item is on reserve and waiting, but has been
+                # reserved by some other patron.
+                $needsconfirmation{RESERVE_WAITING} = "$resborrower->{'firstname'} $resborrower->{'surname'} ($resborrower->{'cardnumber'}, $branchname)";
+            } elsif (  $restype eq "Reserved" ) {
+    
+                # The item is on reserve for someone else.
+                $needsconfirmation{RESERVED} = "$res->{'reservedate'} : $resborrower->{'firstname'} $resborrower->{'surname'} ($resborrower->{'cardnumber'})";
+            }
         }
     }
     return ( \%issuingimpossible, \%needsconfirmation );
