@@ -2541,7 +2541,7 @@ sub GetDistinctValues {
         my $dbh = C4::Context->dbh;
         warn "select DISTINCT($column) as value, count(*) as cnt from $table group by lib order by $column " if $DEBUG;
         my $sth = $dbh->prepare(
-            "select DISTINCT($column) as value, count(*) as cnt from $table " . ( $string ? " where $column like \"$string%\"" : "" ) . "group by value order by $column " );
+            "select DISTINCT($column) as value, count(*) as cnt from $table " . ( $string ? " where $column like \"$string%\" and $column is not null " : " where $column is not null " ) . "group by value order by $column " );
         $sth->execute;
         my $elements = $sth->fetchall_arrayref( {} );
         return $elements;

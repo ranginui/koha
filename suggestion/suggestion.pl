@@ -57,7 +57,7 @@ sub GetCriteriumDesc {
     return ( $criteriumvalue eq 'ASKED' ? "Pending" : ucfirst( lc($criteriumvalue) ) ) if ( $displayby =~ /status/i );
     return ( GetBranchName($criteriumvalue) )  if ( $displayby =~ /branchcode/ );
     return ( GetSupportName($criteriumvalue) ) if ( $displayby =~ /itemtype/ );
-    if ( $displayby =~ /managedby/ || $displayby =~ /acceptedby/ ) {
+    if ( $displayby =~ /managedby/ || $displayby =~ /acceptedby/ || $displayby =~ /suggestedby/) {
         my $borr = C4::Members::GetMember( borrowernumber => $criteriumvalue );
         return "" unless $borr;
 
@@ -125,8 +125,8 @@ if ( $op =~ /save/i ) {
 } elsif ( $op eq "change" ) {
     if ( $$suggestion_ref{"STATUS"} ) {
         if ( my $tmpstatus = lc( $$suggestion_ref{"STATUS"} ) =~ /ACCEPTED|REJECTED/i ) {
-            $$suggestion_ref{ "$tmpstatus" . "date" } = C4::Dates->today;
-            $$suggestion_ref{ "$tmpstatus" . "by" }   = C4::Context->userenv->{number};
+            $$suggestion_ref{ lc( $$suggestion_ref{"STATUS"}) . "date" } = C4::Dates->today;
+            $$suggestion_ref{ lc( $$suggestion_ref{"STATUS"}) . "by" }   = C4::Context->userenv->{number};
         }
         $$suggestion_ref{"manageddate"} = C4::Dates->today;
         $$suggestion_ref{"managedby"}   = C4::Context->userenv->{number};
