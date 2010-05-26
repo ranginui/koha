@@ -343,10 +343,6 @@ function refocus(calendar) {
             <li>Patron's card is lost<!-- TMPL_IF NAME="lostcomment" -->: <!-- TMPL_VAR NAME="lostcomment" --><!-- /TMPL_IF --></li>
         <!-- /TMPL_IF -->
 
-        <!-- TMPL_IF NAME="DEBARRED" -->
-            <li>Patron is restricted <!--TMPL_IF EXPR="DEBARRED ne 1"-->until <!--TMPL_VAR Name="DEBARRED"--><!--/TMPL_IF--></li>
-        <!-- /TMPL_IF -->
-
         <!-- TMPL_IF NAME="NO_MORE_RENEWALS" -->
             <li>No more renewals possible</li>
         <!-- /TMPL_IF -->
