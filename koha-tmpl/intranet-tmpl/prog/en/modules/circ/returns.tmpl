@@ -408,7 +408,7 @@ function Dopop(link) {
 <!-- TMPL_IF Name="riloop" -->
     <h2>Checked-In items</h2>
     <table>
-	<tr><th>Due Date</th><th>Title and Author</th>	<th>Barcode (Type)</th><th>Home Branch</th><th>Holding Branch</th>	<th>Patron</th><th>Note</th></tr>
+	<tr><th>Due Date</th><th>Title and Author</th>	<th>Barcode (Type)</th><th>Home Branch</th><th>Holding Branch</th><th>Location</th><th>Callnumber</th><th>Patron</th><th>Note</th></tr>
         
         <!-- TMPL_LOOP Name="riloop" -->
             <tr>
@@ -427,6 +427,8 @@ function Dopop(link) {
             <!-- TMPL_IF name="itemtype"-->(<!-- TMPL_VAR Name="itemtype" -->) <!-- /TMPL_IF --><!-- TMPL_IF Name="ccode"-->(<!-- TMPL_VAR Name="ccode" -->)<!-- /TMPL_IF --></td>
             <td><!-- TMPL_VAR NAME="homebranch" --></td>
             <td><!-- TMPL_VAR NAME="holdingbranch" --> <!-- TMPL_IF Name="itemcallnumber"-->(<!-- TMPL_VAR NAME="itemcallnumber" -->)<!-- /TMPL_IF --></td>
+            <td><!-- TMPL_VAR NAME="itemlocation" --></td>
+            <td><!-- TMPL_VAR NAME="itemcallnumber" --></td>
 			<td><!-- TMPL_IF Name="duedate" -->
                 <a href="/cgi-bin/koha/circ/circulation.pl?borrowernumber=<!-- TMPL_VAR Name="borrowernumber" -->">
                     <!-- TMPL_VAR Name="borsurname" -->, <!-- TMPL_VAR Name="borfirstname" --> (<!-- TMPL_VAR name="borcategorycode" -->)
