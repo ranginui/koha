@@ -94,26 +94,26 @@ if ( $op eq "export" ) {
     }
 
     if ($branch) {
-        $query .= " AND biblioitems.biblionumber = items.biblionumber AND homebranch = ? ";
+        $query .= " AND homebranch = ? ";
         push @sql_params, $branch;
     }
 
     if ($start_callnumber) {
-        $query .= " AND biblioitems.biblionumber = items.biblionumber AND itemcallnumber <= ? ";
+        $query .= " AND itemcallnumber <= ? ";
         push @sql_params, $start_callnumber;
     }
 
     if ($end_callnumber) {
-        $query .= " AND biblioitems.biblionumber = items.biblionumber AND itemcallnumber >= ? ";
+        $query .= " AND itemcallnumber >= ? ";
         push @sql_params, $end_callnumber;
     }
     if ($start_accession) {
-        $query .= " AND biblioitems.biblionumber = items.biblionumber AND dateaccessioned >= ? ";
+        $query .= " AND dateaccessioned >= ? ";
         push @sql_params, $start_accession->output('iso');
     }
 
     if ($end_accession) {
-        $query .= " AND biblioitems.biblionumber = items.biblionumber AND dateaccessioned <= ? ";
+        $query .= " AND dateaccessioned <= ? ";
         push @sql_params, $end_accession->output('iso');
     }
 
