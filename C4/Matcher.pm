@@ -691,6 +691,14 @@ sub get_matches {
 
     my %matches = ();
 
+    # Normalizing ISBN
+    my ($itag, $isubf)  = GetMarcFromKohaField('biblioitems.isbn', '');
+    my @isbn_fields = $source_record->field($itag);
+    foreach my $isbn_field (@isbn_fields) {
+	my $isbn = _isbn_normalize($isbn_field->subfield($isubf));
+	$isbn_field->update($isubf, $isbn);
+    }
+
     foreach my $matchpoint ( @{ $self->{'matchpoints'} } ) {
         my @source_keys = _get_match_keys( $source_record, $matchpoint );
         next if scalar(@source_keys) == 0;
@@ -861,10 +869,18 @@ sub _normalize {
     #$value =~ s/^\s+$//;
     $value =~ s/\s+$//;
     $value =~ s/\s+/ /g;
-
     #$value =~ s/[.;,\]\[\)\(\/"']//g;
     return $value;
 }
+
+sub _isbn_normalize {
+    my $value = uc shift;
+    $value =~ s/[-]//g;
+    return $value;
+}
+
+
+
 
 1;
 __END__
