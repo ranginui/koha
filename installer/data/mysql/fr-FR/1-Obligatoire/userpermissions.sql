@@ -22,6 +22,7 @@ INSERT INTO permissions (module_bit, code, description) VALUES
    (13, 'rotating_collections', 'Gérer les collections tournantes'),
    (13, 'batchmod', 'Modifier les exemplaires par lot'),
    (13, 'batchdel', 'Supprimer les exemplaires par lot'),
+   (13, 'batchedit', 'Modifier les notices par lot'),
    (16, 'execute_reports', 'Lancer les rapports SQL'),
    (16, 'create_reports', 'Créer les rapports SQL Reports')
 

@@ -4389,6 +4389,15 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     SetVersion ($DBversion);
 }
 
+$DBversion = '3.02.00.021';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do(q{
+      INSERT INTO permissions (module_bit, code, description) VALUES(13, 'batchedit', 'Perform batch modification of records');
+});
+    print "Upgrade to $DBversion done. — Add permission to batch modifications on records\n";
+    SetVersion ($DBversion);
+}
+
 =item DropAllForeignKeys($table)
 
   Drop all foreign keys of the table $table
