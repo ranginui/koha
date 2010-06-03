@@ -3525,25 +3525,35 @@ sub get_biblio_authorised_values {
 =cut
 
 sub BatchModField {
-    my ( $field, $subfield, $action, $condval, $repval ) = @_;
+    my ( $record, $field, $subfield, $action, $condval, $repval ) = @_;
+
+    return unless $record;
 
     if ( $action eq "add" ) {
-        $field->add_subfields( $subfield => $repval );
+        for my $rfield ($record->field($field)){
+            $rfield->add_subfields( $subfield => $repval );
+        }
+    }elsif($action eq "addfield"){
+        my $new_field = MARC::Field->new($field,'','', 
+                                         $subfield => $repval);
+        $record->append_fields($new_field);
     } else {
-        my @subfields = $field->subfield($subfield);
-
-        $field->delete_subfield( code => $subfield );
-
-        foreach my $subf (@subfields) {
-            if ( $action eq "mod" ) {
-                if ( $subf =~ /^$condval$/ ) {
-                    $field->add_subfields( $subfield => $repval );
-                } else {
-                    $field->add_subfields( $subfield => $subf );
-                }
-            } elsif ( $action eq "del" ) {
-                if ( $subf !~ /^$condval$/ ) {
-                    $field->add_subfields( $subfield => $subf );
+        for my $rfield ($record->field($field)) {
+            my @subfields = $rfield->subfield($subfield);
+    
+            $rfield->delete_subfield( code => $subfield );
+    
+            foreach my $subf (@subfields) {
+                if ( $action eq "mod" ) {
+                    if ( $subf =~ /^$condval$/ ) {
+                        $rfield->add_subfields( $subfield => $repval );
+                    } else {
+                        $rfield->add_subfields( $subfield => $subf );
+                    }
+                } elsif ( $action eq "del" ) {
+                    if ( $subf !~ /^$condval$/ ) {
+                        $rfield->add_subfields( $subfield => $subf );
+                    }
                 }
             }
         }

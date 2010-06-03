@@ -118,71 +118,60 @@ if($input->param('field') and not defined $op){
 
     output_html_with_http_headers $input, $cookie, $template->output;
     exit;
-}
-elsif(!defined $op) {
-    ($template, $loggedinuser, $cookie)
-        = get_template_and_user({template_name => "tools/batchedit.tmpl",
-                 query => $input,
-                 type => "intranet",
-                 authnotrequired => 0,
-                 flagsrequired => "batchedit",
-                 });
-
-    my @modifiablefields;
-    
-    foreach my $tag (sort keys %{$tagslib}) {
-        my %subfield_data;        
-        foreach my $subfield (sort keys %{$tagslib->{$tag}}) {
-            next if $subfield_data{tag};
-            next if subfield_is_koha_internal_p($subfield);
-            next if ($tagslib->{$tag}->{$subfield}->{'tab'} eq "10");
-            
-            $subfield_data{tag}      = $tag;
-            
-            push @modifiablefields, \%subfield_data;
-        }
-    }
-    
-    $template->param( marcfields  => \@modifiablefields,
-                      bib_list    => $input->param('bib_list'),
-                     );        
-
 }else{
     ($template, $loggedinuser, $cookie)
-        = get_template_and_user({template_name => "tools/batchedit.tmpl",
-                 query => $input,
-                 type => "intranet",
-                 authnotrequired => 0,
-                 flagsrequired => "batchedit",
-                 });
-    my @fields    = $input->param('field');
-    my @subfields = $input->param('subfield');
-    my @actions   = $input->param('action');
-    my @condvals   = $input->param('condval');
-    my @repvals    = $input->param('repval');
+            = get_template_and_user({template_name => "tools/batchedit.tmpl",
+                     query => $input,
+                     type => "intranet",
+                     authnotrequired => 0,
+                     flagsrequired => "batchedit",
+                     });
 
-    foreach my $biblionumber ( @biblionumbers ){
-        my $record = GetMarcBiblio($biblionumber);
-        my $biblio = GetBiblio($biblionumber);
-        for(my $i = 0 ; $i < scalar(@fields) ; $i++ ){
-            my $field    = $fields[$i];
-            my $subfield = $subfields[$i];
-            my $action   = $actions[$i];
-            my $condval  = $condvals[$i];
-            my $repval   = $repvals[$i];
-
-            if($record->field($field)){
-                foreach my $rfield( $record->field($field) ){
-                    if($rfield->subfield($subfield)){
-                        BatchModField($rfield, $subfield, $action, $condval, $repval);
-                    }
-                }
+    
+    if(!defined $op) {
+        my @modifiablefields;
+    
+        foreach my $tag (sort keys %{$tagslib}) {
+            my %subfield_data;        
+            foreach my $subfield (sort keys %{$tagslib->{$tag}}) {
+                next if $subfield_data{tag};
+                next if subfield_is_koha_internal_p($subfield);
+                next if ($tagslib->{$tag}->{$subfield}->{'tab'} eq "10");
+                
+                $subfield_data{tag}      = $tag;
+                
+                push @modifiablefields, \%subfield_data;
             }
         }
-        ModBiblio($record, $biblionumber, $biblio->{frameworkcode});
-    }
     
-    $template->param('modsuccess' => 1);
+        $template->param( marcfields  => \@modifiablefields,
+                          bib_list    => $input->param('bib_list'),
+                         );        
+
+    }else{
+        my @fields    = $input->param('field');
+        my @subfields = $input->param('subfield');
+        my @actions   = $input->param('action');
+        my @condvals   = $input->param('condval');
+        my @repvals    = $input->param('repval');
+
+        foreach my $biblionumber ( @biblionumbers ){
+            my $record = GetMarcBiblio($biblionumber);
+            my $biblio = GetBiblio($biblionumber);
+            for(my $i = 0 ; $i < scalar(@fields) ; $i++ ){
+                my $field    = $fields[$i];
+                my $subfield = $subfields[$i];
+                my $action   = $actions[$i];
+                my $condval  = $condvals[$i];
+                my $repval   = $repvals[$i];
+
+                BatchModField($record, $field, $subfield, $action, $condval, $repval);
+            }
+            ModBiblio($record, $biblionumber, $biblio->{frameworkcode});
+        }
+    
+        $template->param('modsuccess' => 1);
+    }
     
 }
 
@@ -192,6 +181,7 @@ for my $biblionumber (@biblionumbers){
     my $biblio = GetBiblio($biblionumber);
     push @biblioinfos, $biblio;
 }
+
 $template->param(biblioinfos => \@biblioinfos);
 output_html_with_http_headers $input, $cookie, $template->output;
 exit;

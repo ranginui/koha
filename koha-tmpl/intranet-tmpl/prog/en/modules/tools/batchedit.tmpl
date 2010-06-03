@@ -15,7 +15,7 @@
         	url: CGIBIN + 'tools/batchedit.pl?field=' + field,
         	dataType: 'json',
             success: function(data){
-            	$("#subfield option").remove();
+            	$("#subfieldchoice option").remove();
             
         	    var subfield = $('#subfieldchoice'); 
                 for( var i=0; i < data.length ; i++){
@@ -153,9 +153,10 @@
             </td>
             <td>
                 <select name="actionchoice" id="actionchoice">
-                    <option value="add">Create field</option>
-                    <option value="mod">Modify field</option>
-                    <option value="del">Delete field</option>
+                    <option value="addfield">Create field and subfield</option>
+                    <option value="add">Create subfield</option>
+                    <option value="mod">Modify subfield</option>
+                    <option value="del">Delete subfield</option>
                 </select>
             </td>
             <td id="condvaltd">
