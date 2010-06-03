@@ -58,6 +58,7 @@
                     $("#condvaltd").html('<input type="text" name="condvalchoice" id="condvalchoice" />');
                     $("#repvaltd").html('<input type="text" name="repvalchoice"  id="repvalchoice" />');
         	    }
+                $('<input type="checkbox" id="nocond" name="nocond" value="nocond" onClick="$(\'#condvalchoice\').attr(\'disabled\', ! $(\'#condvalchoice\').attr(\'disabled\') ) ">All</input>').appendTo("#condvaltd");
             }
         });
         
@@ -69,20 +70,30 @@
                 del: _('Delete'),
                 add: _('Create')
                 };
-        var condvallabel = $('#condvalchoice :selected').text() || $("#condvalchoice").val();
         var repvallabel  = $('#repvalchoice :selected').text()  || $("#repvalchoice").val();
         
         var field    = $('#fieldchoice').val();
         var subfield = $('#subfieldchoice').val();
         var action   = $('#actionchoice').val();
-        var condval  = $('#condvalchoice').val();
+        var nocond   = $('#nocond').attr('checked');
+
+        if( ! nocond ) {
+            var condval  = $('#condvalchoice').val();
+            var condvallabel = $('#condvalchoice :selected').text() || $("#condvalchoice").val();
+        }else{
+            var condvallabel = _("No condition");
+        }
         var repval   = $('#repvalchoice').val();
 
         var tmpl = "<tr>"
                 + '<td><input type="hidden" name="field" value="'    + field + '" />'    + field               + '</td>'
                 + '<td><input type="hidden" name="subfield" value="' + subfield + '" />' + subfield            + '</td>'
                 + '<td><input type="hidden" name="action" value="'   + action + '" />'   + actionlabel[action] + '</td>'
-                + '<td><input type="hidden" name="condval" value="'  + condval + '" />'  + condvallabel        + '</td>'
+                + '<td><input type="hidden" name="condval" value="'  + condval + '" />'  
+                    + condvallabel        
+                    + '<input type="hidden" name="nocondval" value="' + nocond + '" />'
+                + '</td>'
+                
                 + '<td><input type="hidden" name="repval" value="'   + repval + '" />'   + repvallabel         + '</td>'
                 + '<td><input type="button" value="Delete" onclick="deleteRule(this)" /></td>'
             + '</tr>';
@@ -160,7 +171,8 @@
                 </select>
             </td>
             <td id="condvaltd">
-                <input type="text" name="condvalchoice" id="condvalcondvalchoice" />
+                <input type="text" name="condvalchoice" id="condvalchoice" />
+                <input type="checkbox" id="nocond" name="nocond" value="nocond" onClick="$('#condvalchoice').attr('disabled', ! $('#condvalchoice').attr('disabled') ) ">All</input> 
             </td>
             <td id="repvaltd">
                 <input type="text" name="repvalchoice" id="repvalchoice" />
