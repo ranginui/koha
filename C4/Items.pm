@@ -2008,17 +2008,45 @@ sub _koha_new_item {
             uri = ?,
             enumchron           = ?,
             more_subfields_xml  = ?,
-            copynumber          = ?
+            copynumber          = ?,
+            statisticvalue      = ?
           ";
     my $sth = $dbh->prepare($query);
-    $sth->execute(
-        $item->{'biblionumber'},  $item->{'biblioitemnumber'},   $barcode,                    $item->{'dateaccessioned'}, $item->{'booksellerid'},
-        $item->{'homebranch'},    $item->{'price'},              $item->{'replacementprice'}, $item->{datelastborrowed},  $item->{stack},
-        $item->{'notforloan'},    $item->{'damaged'},            $item->{'itemlost'},         $item->{'wthdrawn'},        $item->{'itemcallnumber'},
-        $item->{'restricted'},    $item->{'itemnotes'},          $item->{'holdingbranch'},    $item->{'paidfor'},         $item->{'location'},
-        $item->{'onloan'},        $item->{'issues'},             $item->{'renewals'},         $item->{'reserves'},        $item->{'items.cn_source'},
-        $item->{'items.cn_sort'}, $item->{'ccode'},              $item->{'itype'},            $item->{'materials'},       $item->{'uri'},
-        $item->{'enumchron'},     $item->{'more_subfields_xml'}, $item->{'copynumber'},
+   $sth->execute(
+            $item->{'biblionumber'},
+            $item->{'biblioitemnumber'},
+            $barcode,
+            $item->{'dateaccessioned'},
+            $item->{'booksellerid'},
+            $item->{'homebranch'},
+            $item->{'price'},
+            $item->{'replacementprice'},
+            $item->{datelastborrowed},
+            $item->{stack},
+            $item->{'notforloan'},
+            $item->{'damaged'},
+            $item->{'itemlost'},
+            $item->{'wthdrawn'},
+            $item->{'itemcallnumber'},
+            $item->{'restricted'},
+            $item->{'itemnotes'},
+            $item->{'holdingbranch'},
+            $item->{'paidfor'},
+            $item->{'location'},
+            $item->{'onloan'},
+            $item->{'issues'},
+            $item->{'renewals'},
+            $item->{'reserves'},
+            $item->{'items.cn_source'},
+            $item->{'items.cn_sort'},
+            $item->{'ccode'},
+            $item->{'itype'},
+            $item->{'materials'},
+            $item->{'uri'},
+            $item->{'enumchron'},
+            $item->{'more_subfields_xml'},
+            $item->{'copynumber'},
+            $item->{'statisticvalue'}
     );
     my $itemnumber = $dbh->{'mysql_insertid'};
 
