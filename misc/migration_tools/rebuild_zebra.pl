@@ -32,6 +32,7 @@ my $want_help;
 my $as_xml;
 my $process_zebraqueue;
 my $do_not_clear_zebraqueue;
+my $item_limit;
 my $verbose_logging;
 my $zebraidx_log_opt = " -v none,fatal ";
 my $result           = GetOptions(
@@ -49,6 +50,7 @@ my $result           = GetOptions(
     'x'            => \$as_xml,
     'y'            => \$do_not_clear_zebraqueue,
     'z'            => \$process_zebraqueue,
+    'l:i'          => \$item_limit,
     'v'            => \$verbose_logging,
 );
 
@@ -65,6 +67,12 @@ if ( not $biblios and not $authorities ) {
 
 if ( !$as_xml and $nosanitize ) {
     my $msg = "Cannot specify both -no_xml and -nosanitize\n";
+    $msg .= "Please do '$0 --help' to see usage.\n";
+    die $msg;
+}
+
+if ( $nosanitize and $item_limit ) {
+    my $msg = "Cannot specify both -item_limit and -nosanitize\n";
     $msg .= "Please do '$0 --help' to see usage.\n";
     die $msg;
 }
@@ -354,6 +362,7 @@ sub generate_deleted_marc_records {
         my $marc = MARC::Record->new();
         if ( $record_type eq 'biblio' ) {
             fix_biblio_ids( $marc, $record_number, $record_number );
+            fix_biblio_items( $marc ) if $item_limit;
         } else {
             fix_authority_id( $marc, $record_number );
         }
@@ -379,6 +388,7 @@ sub get_corrected_marc_record {
         fix_leader($marc);
         if ( $record_type eq 'biblio' ) {
             my $succeeded = fix_biblio_ids( $marc, $record_number );
+            fix_biblio_items( $marc ) if $item_limit;
             return unless $succeeded;
         } else {
             fix_authority_id( $marc, $record_number );
@@ -444,6 +454,18 @@ sub fix_leader {
     substr( $leader, 0,  5 ) = '     ';
     substr( $leader, 10, 7 ) = '22     ';
     $marc->leader( substr( $leader, 0, 24 ) );
+}
+
+sub fix_biblio_items {
+    my $marc = shift;
+
+    my ($itemtagfield, $itemtagsubfield) = GetMarcFromKohaField('items.itemnumber','');
+
+    my $i = 0;
+    for my $itemfield ( $marc->field($itemtagfield) ) {
+	$marc->delete_field($itemfield) if $i >= $item_limit;
+        $i++;
+    }
 }
 
 sub fix_biblio_ids {
@@ -585,6 +607,9 @@ Parameters:
                             a running zebraqueue_daemon doesn't try to reindex
                             the same records - specify -y to override this.  
                             Cannot be used with -z.
+
+    -l                      set a maximum number of exported items per biblio.
+                            Doesn't work with -nosanitize.
 
     -v                      increase the amount of logging.  Normally only 
                             warnings and errors from the indexing are shown.
