@@ -47,21 +47,17 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
 
 my $supplierlist = GetSuppliersWithLateIssues();
 my @suploop;
-if ($supplierid) {
-    foreach my $s ( @{$supplierlist} ) {
-        if ( $s->{id} == $supplierid ) {
-            $s->{selected} = 1;
-            last;
-        }
-        my ( $count, @dummy ) = GetLateOrMissingIssues( $s, "", $order );
-        push @suploop,
-          { id       => $s,
-            name     => $s->{name},
-            count    => $count,
-            selected => $s->{'id'} == $supplierid,
-          };
+foreach my $s ( @{$supplierlist} ) {
+    if ( defined $supplierid && $s->{id} == $supplierid ) {
+        $s->{selected} = 1;
     }
+    my ( @list ) = GetLateOrMissingIssues( $s->{id}, "", $order );
+    push @suploop,
+      { %$s,
+        count    => scalar(@list),
+      };
 }
+
 
 my $letters = GetLetters("claimissues");
 my @letters;
