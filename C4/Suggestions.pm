@@ -166,7 +166,7 @@ sub SearchSuggestion {
             my $fieldname = $_;
             any { $fieldname eq $_ } qw<
               STATUS branchcode itemtype suggestedby managedby acceptedby
-              bookfundid biblionumber
+              budgetid biblionumber
               >
         } keys %$suggestion
       ) {

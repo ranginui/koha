@@ -60,9 +60,12 @@ sub GetCriteriumDesc {
     if ( $displayby =~ /managedby/ || $displayby =~ /acceptedby/ || $displayby =~ /suggestedby/) {
         my $borr = C4::Members::GetMember( borrowernumber => $criteriumvalue );
         return "" unless $borr;
-
-        #		warn '$borr : ',Data::Dumper::Dumper($borr);
         return $$borr{firstname} . ", " . $$borr{surname};
+    }
+    if ( $displayby =~ /budgetid/) {
+        my $budget = GetBudget($criteriumvalue);
+        return "" unless $budget;
+        return $$budget{budget_name};
     }
 }
 
@@ -167,7 +170,8 @@ if ( $op =~ /else/ ) {
         $$suggestion_ref{$displayby} = $criteriumvalue;
 
         #        warn $$suggestion_ref{$displayby}."=$criteriumvalue; $displayby";
-
+        #warn "===========================================";
+        #warn Data::Dumper::Dumper($suggestion_ref);
         my $suggestions = &SearchSuggestion($suggestion_ref);
         foreach my $suggestion (@$suggestions) {
             $suggestion->{budget_name} = GetBudget( $suggestion->{budgetid} )->{budget_name} if $suggestion->{budgetid};
@@ -269,7 +273,7 @@ foreach my $budget (@$budgets) {
 $template->param( budgetsloop => $budgets );
 
 my %hashlists;
-foreach my $field qw(managedby acceptedby suggestedby STATUS) {
+foreach my $field qw(managedby acceptedby suggestedby budgetid STATUS) {
     my $values_list;
     $values_list = GetDistinctValues( "suggestions." . $field );
     my @codes_list = map { { 'code' => $$_{'value'}, 'desc' => GetCriteriumDesc( $$_{'value'}, $field ), 'selected' => $$_{'value'} eq $$suggestion_ref{$field} } } @$values_list;
