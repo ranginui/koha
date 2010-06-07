@@ -23,9 +23,11 @@
         <!-- /TMPL_IF -->
         <form method="post" action="<!-- TMPL_VAR NAME="script_name" -->" class="confirm">
             <!-- TMPL_IF name="transfertodo" -->
-                <input type="submit" value="Print slip, Transfer" class="print" onclick="Dopop('../circ/hold-transfer-slip.pl?transfer=1&amp;borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->&amp;biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->&amp;op=slip'); $('#reserve<!-- TMPL_VAR NAME="biblionumber" -->').hide(); return false;" />
+		<input type="submit" class="approve" value="Confirm hold and Transfer" />
+                <input type="submit" value="Print slip, Transfer, and Confirm" class="print" onclick="Dopop('../circ/hold-transfer-slip.pl?transfer=1&amp;borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->&amp;biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->&amp;op=slip'); $('#reserve<!-- TMPL_VAR NAME="biblionumber" -->').hide(); return false;" />
             <!-- TMPL_ELSE -->
-                <input type="submit" value="Print Slip" class="print" onclick="Dopop('../circ/hold-transfer-slip.pl?borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->&amp;biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->&amp;op=slip'); $('#reserve<!-- TMPL_VAR NAME="biblionumber" -->').hide(); return false;" />
+		<input type="submit" class="approve" value="Confirm hold" />
+                <input type="submit" value="Print Slip and Confirm" class="print" onclick="Dopop('../circ/hold-transfer-slip.pl?borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->&amp;biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->&amp;op=slip'); $('#reserve<!-- TMPL_VAR NAME="biblionumber" -->').hide(); return false;" />
             <!-- /TMPL_IF -->
             <input type="hidden" name="itemnumber" value="<!-- TMPL_VAR Name="itemnumber" -->" />
             <input type="hidden" name="borrowernumber" value="<!-- TMPL_VAR Name="circborrowernumber" -->" />
