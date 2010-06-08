@@ -27,6 +27,7 @@ use C4::Serials;
 use C4::Letters;
 use C4::Output;
 use C4::Context;
+use List::MoreUtils qw/uniq/;
 
 my $query = new CGI;
 my $op    = $query->param('op') || q{};
@@ -45,6 +46,7 @@ my ( $template, $loggedinuser, $cookie );
 my $biblionumber   = $query->param('biblionumber');
 my @subscriptionid = $query->param('subscriptionid');
 
+@subscriptionid= uniq @subscriptionid;
 my $subscriptiondescs;
 my $subscriptions;
 
