@@ -268,6 +268,10 @@ Circulation:
                   yes: Enable
                   no:  "Don't enable"
             - "sending an email to the Koha administrator email address whenever a hold request is placed."
+        -
+            - pref: AllowMultipleHoldsPerBib
+              class: multi
+            - This allows multiple items per record to be placed on hold by a single patron. To enable, enter a list of space separated itemtype codes in the field (i.e. "MAG JMAG YMAG"). Useful for magazines, encyclopedias and other bibs where the attached items are not identical.
     Fines Policy:
         -
             - Calculate fines based on days overdue
