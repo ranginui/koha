@@ -70,6 +70,7 @@ Administration:
                   mysql: in the MySQL database.
                   Pg: in the PostgreSQL database (not supported).
                   tmp: as temporary files.
+		  memcached: in a memcached server
         -
             - Control staff access to pages within Koha based on
             - pref: GranularPermissions
