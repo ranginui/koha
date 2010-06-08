@@ -62,6 +62,7 @@ BEGIN {
 					       servers => [ $servers ],
 					       debug   => 0,
 					       compress_threshold => 10_000,
+					       namespace => C4::Context->config('memcached_namespace') || 'koha',
 					   });
     }
 }
@@ -1357,7 +1358,7 @@ sub get_session {
         $session = new CGI::Session("driver:PostgreSQL;serializer:yaml;id:md5", $sessionID, {Handle=>$dbh});
     }
     elsif ($storage_method eq 'memcached' && $servers){
-	$session = new CGI::Session("driver:memcached", $sessionID, { Memcached => $memcached } );
+	$session = new CGI::Session("driver:memcached;serializer:yaml;id:md5", $sessionID, { Memcached => $memcached } );
     }
     else {
         # catch all defaults to tmp should work on all systems
