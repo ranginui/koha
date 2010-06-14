@@ -383,6 +383,7 @@ sub output_html_with_http_headers ($$$;$$) {
     //gx;
 
     my $content_type = @_ ? shift : "text/html";
+    my $status;
     $html =~ s/\x{C2}\x{98}|\x{C2}\x{9C}/ /g;
     $html =~ s/\x{C2}\x{88}|\x{C2}\x{89}/ /g;
 

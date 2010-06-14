@@ -127,6 +127,7 @@ SAMPLE:
   \$ perl misc/migration_tools/bulkmarcimport.pl -d -commit 1000 \\
     -file /home/jmf/koha.mrc -n 3000
 EOF
+;#' 
       exit;
 }
 
