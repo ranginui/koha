@@ -64,6 +64,13 @@
   </tr>
   </tfoot>
 </table>
+<!-- TMPL_IF NAME="show_back_link" -->
+<a href="boraccount.pl?borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->&amp;first=<!-- TMPL_VAR NAME="back_first_record" -->">&lt;&lt; Newer</a>
+<!-- /TMPL_IF -->
+&nbsp;Showing <!-- TMPL_VAR NAME="current_start" --> to <!-- TMPL_VAR NAME="current_last" --> of <!-- TMPL_VAR NAME="account_count" -->&nbsp;
+<!-- TMPL_IF NAME="show_forward_link" -->
+<a href="boraccount.pl?borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->&amp;first=<!-- TMPL_VAR NAME="forward_first_record" -->">Older &gt;&gt;</a>
+<!-- /TMPL_IF -->
 </div></div>
 
 </div>
