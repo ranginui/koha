@@ -345,8 +345,6 @@ sub get_template_and_user {
         'item-level_itypes' => C4::Context->preference('item-level_itypes'),
         patronimages        => C4::Context->preference("patronimages"),
         singleBranchMode    => C4::Context->preference("singleBranchMode"),
-        XSLTDetailsDisplay  => C4::Context->preference("XSLTDetailsDisplay"),
-        XSLTResultsDisplay  => C4::Context->preference("XSLTResultsDisplay"),
         BranchesLoop        => GetBranchesLoop(),
         using_https         => $in->{'query'}->https() ? 1 : 0,
     );
@@ -379,6 +377,8 @@ sub get_template_and_user {
             virtualshelves                                                             => C4::Context->preference("virtualshelves"),
             StaffSerialIssueDisplayCount                                               => C4::Context->preference("StaffSerialIssueDisplayCount"),
             NoZebra                                                                    => C4::Context->preference('NoZebra'),
+            IntranetXSLTDetailsDisplay                                                 => C4::Context->preference("IntranetXSLTDetailsDisplay"),
+            IntranetXSLTResultsDisplay                                                 => C4::Context->preference("IntranetXSLTResultsDisplay"),
         );
     } else {
         warn "template type should be OPAC, here it is=[" . $in->{'type'} . "]" unless ( $in->{'type'} eq 'opac' );

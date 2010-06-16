@@ -76,7 +76,7 @@ use C4::Charset;
 SetUTF8Flag($record);
 
 # XSLT processing of some stuff
-if ( C4::Context->preference("XSLTDetailsDisplay") ) {
+if ( C4::Context->preference("OPACXSLTDetailsDisplay") ) {
     $template->param( 'XSLTBloc' => XSLTParse4Display( $biblionumber, $record, C4::Context->preference("OPACXSLTDetailsDisplay") ) );
 }
 

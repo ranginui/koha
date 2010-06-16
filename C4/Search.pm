@@ -1608,9 +1608,11 @@ sub searchResults {
         SetUTF8Flag($marcrecord);
         $debug && warn $marcrecord->as_formatted;
 
-        # FIXME : This needs some work in order to be more flexible : Can not use a result list for intranet different from OPAC
-        if ( C4::Context->preference("XSLTResultsDisplay") && !$scan ) {
-            $oldbiblio->{XSLTResultsRecord} = XSLTParse4Display( $oldbiblio->{biblionumber}, $marcrecord, C4::Context->preference("XSLTResultsDisplay") );
+        if ( C4::Context->preference("OPACXSLTResultsDisplay") && !$scan ) {
+            $oldbiblio->{OPACXSLTResultsRecord} = XSLTParse4Display( $oldbiblio->{biblionumber}, $marcrecord, C4::Context->preference("OPACXSLTResultsDisplay") );
+        }
+        if ( C4::Context->preference("IntranetXSLTResultsDisplay") && !$scan ) {
+            $oldbiblio->{IntranetXSLTResultsRecord} = XSLTParse4Display( $oldbiblio->{biblionumber}, $marcrecord, C4::Context->preference("IntranetXSLTResultsDisplay") );
         }
 
         # last check for norequest : if itemtype is notforloan, it can't be reserved either, whatever the items

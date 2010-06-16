@@ -181,17 +181,19 @@ $tabsysprefs{OverdueNoticeBcc}                   = "Circulation";
 $tabsysprefs{OverduesBlockCirc}                  = "Circulation";
 
 # Staff Client
-$tabsysprefs{TemplateEncoding}        = "StaffClient";
-$tabsysprefs{template}                = "StaffClient";
-$tabsysprefs{intranetstylesheet}      = "StaffClient";
-$tabsysprefs{IntranetNav}             = "StaffClient";
-$tabsysprefs{intranetcolorstylesheet} = "StaffClient";
-$tabsysprefs{intranetuserjs}          = "StaffClient";
-$tabsysprefs{yuipath}                 = "StaffClient";
-$tabsysprefs{IntranetmainUserblock}   = "StaffClient";
-$tabsysprefs{viewMARC}                = "StaffClient";
-$tabsysprefs{viewLabeledMARC}         = "StaffClient";
-$tabsysprefs{viewISBD}                = "StaffClient";
+$tabsysprefs{TemplateEncoding}           = "StaffClient";
+$tabsysprefs{template}                   = "StaffClient";
+$tabsysprefs{intranetstylesheet}         = "StaffClient";
+$tabsysprefs{IntranetNav}                = "StaffClient";
+$tabsysprefs{intranetcolorstylesheet}    = "StaffClient";
+$tabsysprefs{intranetuserjs}             = "StaffClient";
+$tabsysprefs{yuipath}                    = "StaffClient";
+$tabsysprefs{IntranetmainUserblock}      = "StaffClient";
+$tabsysprefs{viewMARC}                   = "StaffClient";
+$tabsysprefs{viewLabeledMARC}            = "StaffClient";
+$tabsysprefs{viewISBD}                   = "StaffClient";
+$tabsysprefs{IntranetXSLTDetailsDisplay} = "StaffClient";
+$tabsysprefs{IntranetXSLTResultsDisplay} = "StaffClient";
 
 # Patrons
 $tabsysprefs{autoMemberNum}                = "Patrons";
@@ -332,30 +334,30 @@ $tabsysprefs{AutoSelfCheckID}            = "OPAC";
 $tabsysprefs{AutoSelfCheckPass}          = "OPAC";
 
 # OPAC
-$tabsysprefs{SearchMyLibraryFirst} = "OPAC";
-$tabsysprefs{hidelostitems}        = "OPAC";
-$tabsysprefs{opacbookbag}          = "OPAC";
-$tabsysprefs{OpacPasswordChange}   = "OPAC";
-$tabsysprefs{opacreadinghistory}   = "OPAC";
-$tabsysprefs{virtualshelves}       = "OPAC";
-$tabsysprefs{RequestOnOpac}        = "OPAC";
-$tabsysprefs{reviewson}            = "OPAC";
-$tabsysprefs{OpacTopissues}        = "OPAC";
-$tabsysprefs{OpacAuthorities}      = "OPAC";
-$tabsysprefs{OpacCloud}            = "OPAC";
-$tabsysprefs{opacuserlogin}        = "OPAC";
-$tabsysprefs{AnonSuggestions}      = "OPAC";
-$tabsysprefs{suggestion}           = "OPAC";
-$tabsysprefs{OpacTopissue}         = "OPAC";
-$tabsysprefs{OpacBrowser}          = "OPAC";
-$tabsysprefs{kohaspsuggest}        = "OPAC";
-$tabsysprefs{OpacRenewalAllowed}   = "OPAC";
-$tabsysprefs{OPACItemHolds}        = "OPAC";
-$tabsysprefs{OPACGroupResults}     = "OPAC";
-$tabsysprefs{XSLTDetailsDisplay}   = "OPAC";
-$tabsysprefs{XSLTResultsDisplay}   = "OPAC";
-$tabsysprefs{OPACShowCheckoutName} = "OPAC";
-$tabsysprefs{OPACSearchReboundBy}  = "OPAC";
+$tabsysprefs{SearchMyLibraryFirst}   = "OPAC";
+$tabsysprefs{hidelostitems}          = "OPAC";
+$tabsysprefs{opacbookbag}            = "OPAC";
+$tabsysprefs{OpacPasswordChange}     = "OPAC";
+$tabsysprefs{opacreadinghistory}     = "OPAC";
+$tabsysprefs{virtualshelves}         = "OPAC";
+$tabsysprefs{RequestOnOpac}          = "OPAC";
+$tabsysprefs{reviewson}              = "OPAC";
+$tabsysprefs{OpacTopissues}          = "OPAC";
+$tabsysprefs{OpacAuthorities}        = "OPAC";
+$tabsysprefs{OpacCloud}              = "OPAC";
+$tabsysprefs{opacuserlogin}          = "OPAC";
+$tabsysprefs{AnonSuggestions}        = "OPAC";
+$tabsysprefs{suggestion}             = "OPAC";
+$tabsysprefs{OpacTopissue}           = "OPAC";
+$tabsysprefs{OpacBrowser}            = "OPAC";
+$tabsysprefs{kohaspsuggest}          = "OPAC";
+$tabsysprefs{OpacRenewalAllowed}     = "OPAC";
+$tabsysprefs{OPACItemHolds}          = "OPAC";
+$tabsysprefs{OPACGroupResults}       = "OPAC";
+$tabsysprefs{OPACXSLTDetailsDisplay} = "OPAC";
+$tabsysprefs{OPACXSLTResultsDisplay} = "OPAC";
+$tabsysprefs{OPACShowCheckoutName}   = "OPAC";
+$tabsysprefs{OPACSearchReboundBy}    = "OPAC";
 
 # Serials
 $tabsysprefs{RoutingListAddReserves}       = "Serials";

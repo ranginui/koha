@@ -47,17 +47,13 @@ Staff Client:
               type: textarea
               class: code
         -   
-            - Show biblio records on result page in the staff client
-            - pref: XSLTResultsDisplay
-              choices:
-                  yes: using XSLT stylesheets.
-                  no: normally.
+            - XSLT path for the result page in the staff client
+            - pref: IntranetXSLTResultsDisplay
+              class: file
         -   
-            - Show item details pages in the staff client
-            - pref: XSLTDetailsDisplay
-              choices:
-                  yes: using XSLT stylesheets.
-                  no: normally.              
+            - XSLT path for the details pages in the staff client
+            - pref: IntranetXSLTDetailsDisplay
+              class: file
         -
             - Use the Yahoo UI libraries
             - pref: yuipath

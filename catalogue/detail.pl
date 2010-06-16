@@ -57,9 +57,9 @@ my $marcflavour = C4::Context->preference("marcflavour");
 my $record      = GetMarcBiblio($biblionumber);
 
 # XSLT processing of some stuff
-if ( C4::Context->preference("XSLTDetailsDisplay") ) {
+if ( C4::Context->preference("IntranetXSLTDetailsDisplay") ) {
     $template->param(
-        'XSLTDetailsDisplay' => '1',
+        'IntranetXSLTDetailsDisplay' => '1',
         'XSLTBloc'           => XSLTParse4Display( $biblionumber, $record, C4::Context->preference('IntranetXSLTDetailsDisplay') )
     );
 }

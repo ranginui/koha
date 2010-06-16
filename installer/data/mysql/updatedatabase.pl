@@ -4398,6 +4398,21 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     SetVersion ($DBversion);
 }
 
+$DBversion = '3.02.00.022';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do(q{
+      DELETE FROM `systempreferences` WHERE variable='XSLTDetailsDisplay';
+});
+    $dbh->do(q{
+      DELETE FROM `systempreferences` WHERE variable='XSLTResultsDisplay';
+});
+    $dbh->do(q{
+      INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('OPACXSLTResultsDisplay','','','Enable XSL stylesheet control over results page display on OPAC exemple : ../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl','Free');
+});
+    print "Upgrade to $DBversion done. — Delete XSLTDetailsDisplay and XSLTResultsDisplay system preferences, and add OPACXSLTResultsDisplay\n";
+    SetVersion ($DBversion);
+}
+
 =item DropAllForeignKeys($table)
 
   Drop all foreign keys of the table $table
