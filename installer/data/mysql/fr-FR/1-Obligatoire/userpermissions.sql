@@ -24,8 +24,7 @@ INSERT INTO permissions (module_bit, code, description) VALUES
    (13, 'batchdel', 'Supprimer les exemplaires par lot'),
    (13, 'batchedit', 'Modifier les notices par lot'),
    (16, 'execute_reports', 'Lancer les rapports SQL'),
-   (16, 'create_reports', 'Créer les rapports SQL Reports')
-
+   (16, 'create_reports', 'Créer les rapports SQL Reports'),
    (13, 'edit_news', 'Write news for the OPAC and staff interfaces'),
    (13, 'label_creator', 'Create printable labels and barcodes from catalog and patron data'),
    (13, 'edit_calendar', 'Define days when the library is closed'),
@@ -43,6 +42,4 @@ INSERT INTO permissions (module_bit, code, description) VALUES
    (13, 'schedule_tasks', 'Schedule tasks to run'),
    (13, 'items_batchmod', 'Modification Par lot des exemplaires'),
    (13, 'items_batchdel', 'Suppression par lot des exemplaires')
-   (13, 'manage_csv_profiles', 'Manage CSV export profiles'),
-   (13, 'moderate_tags', 'Moderer les tags adhérents'),
 ;
