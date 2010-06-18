@@ -564,42 +564,22 @@ my $onlymine = C4::Context->preference('IndependantBranches') &&
                C4::Context->userenv->{branch};
 my $branches = GetBranchesLoop(undef,$onlymine);  # build once ahead of time, instead of multiple times later.
 
-# We generate form, from actuel record
-my @fields;
-if($itemrecord){
-    foreach my $field ($itemrecord->fields()){
-        my $tag = $field->{_tag};
-        foreach my $subfield ( $field->subfields() ){
-            
-            my $subfieldtag = $subfield->[0];
-            my $value       = $subfield->[1];
-            my $subfieldlib = $tagslib->{$tag}->{$subfieldtag};
+# We generate form, and fill with values if defined
     
-            next if subfield_is_koha_internal_p($subfieldtag);
-            next if ($tagslib->{$tag}->{$subfieldtag}->{'tab'} ne "10");
-    
-            my $subfield_data = generate_subfield_form($tag, $subfieldtag, $value, $tagslib, $subfieldlib, $branches, $today_iso, $biblionumber, $temp, \@loop_data, $i);        
-    
-            push @fields, "$tag$subfieldtag";
+foreach my $tag ( keys %{$tagslib}){
+    foreach my $subtag (sort keys %{$tagslib->{$tag}}){
+        next if subfield_is_koha_internal_p($subtag);
+        next if ($tagslib->{$tag}->{$subtag}->{'tab'} ne "10");
+        
+        #if there is data, fill it
+
+        my @values = (undef);
+        @values = $itemrecord->field($tag)->subfield($subtag) if ($itemrecord && $itemrecord->field($tag)->subfield($subtag));
+        for my $value (@values){
+            my $subfield_data = generate_subfield_form($tag, $subtag, $value, $tagslib, $tagslib->{$tag}->{$subtag}, $branches, $today_iso, $biblionumber, $temp, \@loop_data, $i); 
             push (@loop_data, $subfield_data);
             $i++;
         }
-
-    }
-}
-    # and now we add fields that are empty
-    
-foreach my $tag ( keys %{$tagslib}){
-    foreach my $subtag (keys %{$tagslib->{$tag}}){
-        next if subfield_is_koha_internal_p($subtag);
-        next if ($tagslib->{$tag}->{$subtag}->{'tab'} ne "10");
-        next if any { /^$tag$subtag$/ }  @fields;
-        
-        my $value = "";
-        my $subfield_data = generate_subfield_form($tag, $subtag, $value, $tagslib, $tagslib->{$tag}->{$subtag}, $branches, $today_iso, $biblionumber, $temp, \@loop_data, $i);
-        
-        push (@loop_data, $subfield_data);
-        $i++;
     }
 }
 # what's the next op ? it's what we are not in : an add if we're editing, otherwise, and edit.
