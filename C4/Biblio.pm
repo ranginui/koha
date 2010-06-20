@@ -3520,47 +3520,82 @@ sub get_biblio_authorised_values {
 =head3 BatchModField
 
   Mod subfields in field record
-
+  
+  returns 1 if succeed
+  returns -1 if no record
+  returns -2 if no action done on record
 
 =cut
 
 sub BatchModField {
     my ( $record, $field, $subfield, $action, $condval, $nocond, $repval ) = @_;
 
-    return unless $record;
+    return -1 unless $record;
     $condval=NormalizeString($condval);
+    my $condition=qr/$condval/;
 
     if ( $action eq "add" ) {
         for my $rfield ($record->field($field)){
             $rfield->add_subfields( $subfield => $repval );
         }
+        return 1;
     }elsif($action eq "addfield"){
         my $new_field = MARC::Field->new($field,'','', 
                                          $subfield => $repval);
         $record->append_fields($new_field);
+        return 1;
     } else {
+        my $done=0;
         for my $rfield ($record->field($field)) {
-            my @subfields = $rfield->subfield($subfield);
-    
-            $rfield->delete_subfield( code => $subfield );
-    
-            foreach my $subf (@subfields) {
-                $subf=NormalizeString($subf);
-                if ( $action eq "mod" ) {
-                    if ( $subf =~ /^$condval$/ || $nocond eq "true" ) {
-                        $rfield->add_subfields( $subfield => $repval );
-                    } else {
-                        $rfield->add_subfields( $subfield => $subf );
+            my $initfield=$rfield->clone();
+            if ($subfield && $subfield ne "@"){
+                my @subfields = $rfield->subfields();
+                my @subfields_to_add; 
+                foreach my $subf (@subfields) {
+                    if ($subf->[0] eq $subfield){
+                        $subf->[1]=NormalizeString($subf->[1]);
+                        if ( $action eq "mod" ) {
+                            if ( $nocond ne "true" && $subf->[1] =~ s/$condition/$repval/ 
+                                ) {
+                                $done=1;
+                            } 
+                            if ($nocond eq "true"){
+                                $subf->[1] = $repval;
+                                $done=1;
+                            }
+                        } elsif ( $action eq "del" ) {
+                            if ( $subf->[1] =~ m/$condition/ || $nocond eq "true" ) {
+                                $done=1;
+                                next;
+                            }
+                        }
                     }
-                } elsif ( $action eq "del" ) {
-                    if ( $subf !~ /^$condval$/ && $nocond eq "false" ) {
-                        $rfield->add_subfields( $subfield => $subf );
+                    push @subfields_to_add,@$subf;
+                }
+                if ($done){
+                    if (@subfields_to_add){
+                        $rfield->replace_with(MARC::Field->new($rfield->tag,$rfield->indicator(1),$rfield->indicator(2),@subfields_to_add)) if ($done);
+                    }
+                    else {
+                        my $count= $record->delete_field($initfield);
+                    }
+                }
+            }
+            else {
+                if ($action eq "del"){
+                    my $count=$record->delete_field($rfield);
+                    $done=1; 
+                }
+                else {
+                    if ($field < 10){
+                       $record->field($field)->update($repval) if ($record->field($field)->data()=~ $condition || $nocond eq 'true')
                     }
                 }
             }
         }
+        return ($done,$record);
     }
-
+    return -2;
 }
 
 1;

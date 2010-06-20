@@ -38,6 +38,7 @@ my ($template, $loggedinuser, $cookie);
 
 my $frameworkcode="";
 my $tagslib = &GetMarcStructure(1,$frameworkcode);
+my %report_actions;
 
 if($input->param('field') and not defined $op){
     ($template, $loggedinuser, $cookie) 
@@ -107,6 +108,7 @@ if($input->param('field') and not defined $op){
         
         foreach my $subfield (sort keys %{$tagslib->{$tag}}) {
             next if subfield_is_koha_internal_p($subfield);
+            next if $subfield eq "@";
             next if ($tagslib->{$tag}->{$subfield}->{'tab'} eq "10");
             my %subfield_data;    
             $subfield_data{subfield} = $subfield;
@@ -155,10 +157,11 @@ if($input->param('field') and not defined $op){
         my @condvals   = $input->param('condval');
         my @nocondvals = $input->param('nocondval');
         my @repvals    = $input->param('repval');
-
         foreach my $biblionumber ( @biblionumbers ){
             my $record = GetMarcBiblio($biblionumber);
             my $biblio = GetBiblio($biblionumber);
+            my $report = 0;
+            my @failed_actions;
             for(my $i = 0 ; $i < scalar(@fields) ; $i++ ){
                 my $field    = $fields[$i];
                 my $subfield = $subfields[$i];
@@ -167,12 +170,22 @@ if($input->param('field') and not defined $op){
                 my $nocond   = $nocondvals[$i];
                 my $repval   = $repvals[$i];
 
-                BatchModField($record, $field, $subfield, $action, $condval, $nocond, $repval);
+                my ($result,$record)   = BatchModField($record, $field, $subfield, $action, $condval, $nocond, $repval);
+                push @failed_actions, {action=>"$field $subfield $action ".($nocond eq "true"?"all":$condval)." $repval"} if ($result<=0);
             }
-            ModBiblio($record, $biblionumber, $biblio->{frameworkcode});
+            if (@failed_actions == scalar(@fields)){
+                $report_actions{$biblionumber}->{status}="No_Actions";
+            }
+            elsif (@failed_actions>0 and @failed_actions < scalar(@fields)){ 
+                $report_actions{$biblionumber}->{status}="Actions_Failed";
+                $report_actions{$biblionumber}->{failed_actions}=\@failed_actions;
+            }
+            elsif (@failed_actions == 0){
+                $report_actions{$biblionumber}->{status}="OK"; 
+            }
+            ModBiblio($record, $biblionumber, $biblio->{frameworkcode}) unless ($report);
         }
-    
-        $template->param('modsuccess' => 1);
+        $template->param('moddone' => 1);
     }
     
 }
@@ -181,6 +194,10 @@ my @biblioinfos;
 
 for my $biblionumber (@biblionumbers){
     my $biblio = GetBiblio($biblionumber);
+    if (defined $op){
+        $biblio->{$report_actions{$biblionumber}->{status}}=1;
+        $biblio->{failed_actions}=$report_actions{$biblionumber}->{failed_actions};
+    }
     push @biblioinfos, $biblio;
 }
 

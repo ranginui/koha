@@ -18,6 +18,9 @@
             	$("#subfieldchoice option").remove();
             
         	    var subfield = $('#subfieldchoice'); 
+                	$("<option>").attr("value", "@")
+                                 .text( _('Whole field'))
+                                 .appendTo('#subfieldchoice');
                 for( var i=0; i < data.length ; i++){
                 	$("<option>").attr("value", data[i].subfield)
                                  .text(data[i].subfield)
@@ -123,7 +126,7 @@
 <table id="bibliolist">
     <thead>
         <tr>
-            <th>Biblionumber</th><th>Title</th><th>Author</th>
+            <th>Biblionumber</th><th>Title</th><th>Author</th><!-- TMPL_IF Name="moddone"--> <th>Status</th><!-- /TMPL_IF -->
         </tr>
     </thead>
     <!-- TMPL_LOOP NAME="biblioinfos" -->
@@ -131,13 +134,24 @@
             <td><!-- TMPL_VAR NAME="biblionumber" --></td>
             <td><!-- TMPL_VAR NAME="title" --></td>
             <td><!-- TMPL_VAR NAME="author" --></td>
+            <!-- TMPL_IF Name="moddone"-->
+            <!-- TMPL_IF NAME="OK" -->
+            <td>
+            <!--TMPL_ELSE-->
+            <td class="problem">
+            <!--/TMPL_IF-->
+            <!-- TMPL_IF NAME="OK" -->OK<!--/TMPL_IF-->
+            <!-- TMPL_IF NAME="No_Actions" -->Nothing done<!--/TMPL_IF-->
+            <!-- TMPL_IF NAME="Actions_Failed" -->Some Actions failed. List Follow : <ul><!-- TMPL_LOOP NAME="failed_actions" --><li><!-- TMPL_VAR NAME="action" --></li><!--/TMPL_LOOP --></ul><!--/TMPL_IF-->
+            </td><!-- /TMPL_IF -->
         </tr>
     <!-- /TMPL_LOOP -->
 </table>            
             
-<!-- TMPL_IF NAME="modsuccess" -->
-    <div class="dialog alert">Modifications made successfully</span>
+<!-- TMPL_IF NAME="moddone" -->
+    <div class="dialog alert">All operations processed</div>
 <!-- TMPL_ELSE -->
+
 <h2>Modification rules:</h2>
 <form method="post">
 <input type="submit" value="Submit" />
@@ -164,9 +178,9 @@
             </td>
             <td>
                 <select name="actionchoice" id="actionchoice">
-                    <option value="addfield">Create field and subfield</option>
-                    <option value="add">Create subfield</option>
                     <option value="mod">Modify subfield</option>
+                    <option value="add">Create subfield</option>
+                    <option value="addfield">Create field and subfield</option>
                     <option value="del">Delete subfield</option>
                 </select>
             </td>
