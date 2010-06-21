@@ -1364,11 +1364,16 @@ sub searchResults {
     # loop through all of the records we've retrieved
     for ( my $i = $offset ; $i <= $times - 1 ; $i++ ) {
         my $marcrecord = MARC::File::USMARC::decode( $marcresults[$i] );
-        if ( $bibliotag < 10 ) {
-            $fw = GetFrameworkCode( $marcrecord->field($bibliotag)->data );
-        } else {
-            $fw = GetFrameworkCode( $marcrecord->subfield( $bibliotag, $bibliosubf ) );
+	my $biblionumber;
+        if(not $scan){
+            if ($bibliotag<10){
+                $biblionumber = $marcrecord->field($bibliotag) ? $marcrecord->field($bibliotag)->data : undef;
+            }else{
+                $biblionumber = $marcrecord->subfield($bibliotag,$bibliosubf);
+            } 
+            $fw = (defined $biblionumber) ? GetFrameworkCode($biblionumber) : '';
         }
+
 
         my $oldbiblio = TransformMarcToKoha( $dbh, $marcrecord, $fw );
         $oldbiblio->{subtitle} = GetRecordValue( 'subtitle', $marcrecord, $fw );
