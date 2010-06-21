@@ -3556,7 +3556,7 @@ sub BatchModField {
                     if ($subf->[0] eq $subfield){
                         $subf->[1]=NormalizeString($subf->[1]);
                         if ( $action eq "mod" ) {
-                            if ( $nocond ne "true" && $subf->[1] =~ s/$condition/$repval/g
+                            if ( $nocond ne "true" && $subf->[1] =~ s/$condition/$repval/
                                 ) {
                                 $done=1;
                             } 
@@ -3590,7 +3590,7 @@ sub BatchModField {
                 else {
                     if ($field < 10){
                        my $value=$record->field($field)->data();
-                       if ($value=~ s/$condition/$repval/g){
+                       if ($value=~ s/$condition/$repval/){
                         $record->field($field)->update($value);
                         $done=1;
 
