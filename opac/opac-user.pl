@@ -196,7 +196,7 @@ foreach my $res (@reserves) {
     $res->{$publictype} = 1;
     if ( $res->{'found'} eq 'W' ) {
         $res->{'waiting'} = 1;
-        my @maxpickupdate = GetMaxPickupDate( $res->{'waitingdate'}, $borrowernumber, $res );
+        my @maxpickupdate = $res->{'waitingdate'} ? GetMaxPickupDate( $res->{'waitingdate'}, $borrowernumber, $res ) : '';
         $res->{'maxpickupdate'} = sprintf( "%d-%02d-%02d", @maxpickupdate );
         $res->{'formattedwaitingdate'} = format_date( $res->{'maxpickupdate'} );
     }
