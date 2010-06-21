@@ -1374,8 +1374,6 @@ sub searchResults {
     # loop through all of the records we've retrieved
     for ( my $i = $offset ; $i <= $times - 1 ; $i++ ) {
         my $marcrecord = MARC::File::USMARC::decode( $marcresults[$i] );
-	next unless $marcrecord;
-        SetUTF8Flag($marcrecord);
 	    my $biblionumber;
         if(not $scan){
             if ($bibliotag<10){
