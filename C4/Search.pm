@@ -28,6 +28,7 @@ use XML::Simple;
 use C4::Dates qw(format_date);
 use C4::XSLT;
 use C4::Branch;
+use C4::Charset;
 use C4::Reserves;    # CheckReserves
 use C4::Debug;
 use YAML;
@@ -1364,7 +1365,8 @@ sub searchResults {
     # loop through all of the records we've retrieved
     for ( my $i = $offset ; $i <= $times - 1 ; $i++ ) {
         my $marcrecord = MARC::File::USMARC::decode( $marcresults[$i] );
-	my $biblionumber;
+        SetUTF8Flag($marcrecord);
+	    my $biblionumber;
         if(not $scan){
             if ($bibliotag<10){
                 $biblionumber = $marcrecord->field($bibliotag) ? $marcrecord->field($bibliotag)->data : undef;
