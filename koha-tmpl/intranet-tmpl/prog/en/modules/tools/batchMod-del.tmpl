@@ -143,7 +143,7 @@
 <!-- /TMPL_IF -->
 
 <!-- TMPL_IF name="action" -->
-	<div class="dialog message"><p><!-- TMPL_VAR NAME="deleted_items" --> item(s) deleted.</p></div>
+	<div class="dialog message"><p><!-- TMPL_VAR NAME="deleted_items" --> item(s) deleted.<br /><!-- TMPL_VAR NAME="deleted_biblios" --> biblio(s) deleted.</p></div>
 	<!-- TMPL_IF NAME="not_deleted_items" -->
 	<div style="width:55%;margin:auto;">
 	    <p><!-- TMPL_VAR NAME="not_deleted_items" --> item(s) could not be deleted: <!-- TMPL_LOOP NAME="not_deleted_itemnumbers" --><!-- TMPL_VAR NAME="itemnumber" --><!-- /TMPL_LOOP --></p>

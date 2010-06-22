@@ -76,6 +76,7 @@ my $frameworkcode = "";
 my $tagslib = &GetMarcStructure( 1, '' );
 
 my $deleted_items     = 0;    # Numbers of deleted items
+my $deleted_biblios   = 0;    # Numbers of deleted biblios (when they have no more items)
 my $not_deleted_items = 0;    # Numbers of items that could not be deleted
 my @not_deleted;              # List of the itemnumbers that could not be deleted
 
@@ -176,6 +177,14 @@ if ( $op eq "action" ) {
                         $return      => 1
                       };
                 }
+
+		# If there are no items left, we delete the biblio
+		my $icount = GetItemsCount($itemdata->{'biblionumber'});
+		if ($icount == 0) {
+		    DelBiblio($itemdata->{'biblionumber'});
+		    $deleted_biblios++;
+		}
+
             } else {
                 if ( $values_to_modify || $values_to_blank ) {
                     my $localmarcitem = Item2Marc($itemdata);
@@ -476,6 +485,7 @@ if ( $op eq "action" ) {
     $template->param(
         not_deleted_items => $not_deleted_items,
         deleted_items     => $deleted_items,
+        deleted_biblios    => $deleted_biblios,
         not_deleted_loop  => \@not_deleted
     );
 }
