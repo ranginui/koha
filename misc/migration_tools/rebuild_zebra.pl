@@ -33,6 +33,8 @@ my $as_xml;
 my $process_zebraqueue;
 my $do_not_clear_zebraqueue;
 my $item_limit;
+my $min;
+my $ofset;
 my $verbose_logging;
 my $zebraidx_log_opt = " -v none,fatal ";
 my $result           = GetOptions(
@@ -51,6 +53,8 @@ my $result           = GetOptions(
     'y'            => \$do_not_clear_zebraqueue,
     'z'            => \$process_zebraqueue,
     'l:i'          => \$item_limit,
+    'min:i'        => \$min,
+    'ofset:i'      => \$ofset,
     'v'            => \$verbose_logging,
 );
 
@@ -271,13 +275,18 @@ sub select_all_records {
 }
 
 sub select_all_authorities {
-    my $sth = $dbh->prepare("SELECT authid FROM auth_header");
+    my $strsth=qq{SELECT authid from auth_header};
+    $strsth.=qq{ LIMIT $min,$ofset } if ($min && $ofset);
+    my $sth = $dbh->prepare($strsth);
     $sth->execute();
     return $sth;
 }
 
 sub select_all_biblios {
-    my $sth = $dbh->prepare("SELECT biblionumber FROM biblioitems ORDER BY biblionumber");
+    my $strsth = qq{ SELECT biblionumber FROM biblioitems WHERE biblionumber > 367910 ORDER BY biblionumber };
+    $strsth.=qq{ LIMIT $min } if ($min);
+    $strsth.=qq{ LIMIT $min,$ofset } if ($ofset);
+    my $sth = $dbh->prepare($strsth);
     $sth->execute();
     return $sth;
 }
@@ -635,6 +644,8 @@ Parameters:
     -v                      increase the amount of logging.  Normally only 
                             warnings and errors from the indexing are shown.
 
+    -min   1234                 minimum biblionumber 
+    -ofset 1243                 count biblios to process
     -munge-config           Deprecated option to try
                             to fix Zebra config files.
     --help or -h            show this message.
