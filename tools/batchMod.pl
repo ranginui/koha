@@ -268,8 +268,8 @@ if ( $op eq "show" ) {
     my $branches = GetBranchesLoop();    # build once ahead of time, instead of multiple times later.
 
     # Adding a default choice, in case the user does not want to modify the branch
-    my @nochange_branch = { branchname => '', value => '', selected => 1 };
-    unshift( @$branches, @nochange_branch );
+    my $nochange_branch = { branchname => '', value => '', selected => 1 };
+    unshift( @$branches, $nochange_branch );
 
     my $pref_itemcallnumber = C4::Context->preference('itemcallnumber');
 
@@ -355,8 +355,8 @@ if ( $op eq "show" ) {
                     foreach my $thisbranch (@$branches) {
                         push @authorised_values, $thisbranch->{value};
                         $authorised_lib{ $thisbranch->{value} } = $thisbranch->{branchname};
-                        $value = $thisbranch->{value} if $thisbranch->{selected};
                     }
+                    $value = "";
                 } elsif ( $tagslib->{$tag}->{$subfield}->{authorised_value} eq "itemtypes" ) {
                     push @authorised_values, "" unless ( $tagslib->{$tag}->{$subfield}->{mandatory} );
                     my $sth = $dbh->prepare("select itemtype,description from itemtypes order by description");
