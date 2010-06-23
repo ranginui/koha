@@ -123,6 +123,15 @@ sub FindDuplicate {
         }
     }
 
+    # If unimarc, then search duplicate on EAN
+    if ( C4::Context->preference("marcflavour") eq "UNIMARC" ) {
+	my @fields = $record->field('073');
+	foreach my $field (@fields) {
+	    my $ean = $field->subfield('a');
+	    $query .= " or ean=$ean";
+	}
+    }
+
     # FIXME: add error handling
     my ( $error, $searchresults ) = SimpleSearch($query);    # FIXME :: hardcoded !
     my @results;
