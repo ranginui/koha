@@ -53,6 +53,7 @@ use C4::Branch;    # GetBranchName
 use C4::Form::MessagingPreferences;
 use C4::Overdues qw/CheckBorrowerDebarred/;
 use JSON;
+use List::MoreUtils qw/uniq/;
 
 #use Smart::Comments;
 #use Data::Dumper;
@@ -225,14 +226,25 @@ $template->param( lib2 => $lib2 ) if ($lib2);
 
 # current issues
 #
-my $issue       = GetPendingIssues($borrowernumber);
+my @borrowernumbers = GetMemberRelatives($borrowernumber);
+push @borrowernumbers, $borrowernumber;
+my $issue       = GetPendingIssues(@borrowernumbers);
 my $issuecount  = scalar(@$issue);
 my $roaddetails = &GetRoadTypeDetails( $data->{'streettype'} );
 my $today       = POSIX::strftime( "%Y-%m-%d", localtime );       # iso format
 my @issuedata;
+my @borrowers_with_issues;
 my $overdues_exist = 0;
 my $totalprice     = 0;
 for ( my $i = 0 ; $i < $issuecount ; $i++ ) {
+
+    # Getting borrower details
+    my $memberdetails = GetMemberDetails($issue->[$i]{'borrowernumber'});
+    $issue->[$i]{'borrowername'} = $memberdetails->{'firstname'} . " " . $memberdetails->{'surname'};
+
+    # Adding this borrower to the list of borrowers with issue
+    push @borrowers_with_issues, $issue->[$i]{'borrowernumber'};
+
     my $datedue    = $issue->[$i]{'date_due'};
     my $issuedate  = $issue->[$i]{'issuedate'};
     my $itemnumber = $issue->[$i]{'itemnumber'};
@@ -318,6 +330,11 @@ for ( my $i = 0 ; $i < $issuecount ; $i++ ) {
     }
     push( @issuedata, \%row );
 }
+
+# If we have more than one borrower, we display their names
+@borrowers_with_issues = uniq @borrowers_with_issues;
+$template->param('multiple_borrowers' => 1) if (@borrowers_with_issues > 1);
+
 
 #BUILDS the LOOP for reserves when returning books with reserves
 my @reserveswaiting;

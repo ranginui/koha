@@ -48,6 +48,7 @@ use Date::Calc qw(
   Add_Delta_Days
   Date_to_Days
 );
+use List::MoreUtils qw/uniq/;
 
 #
 # PARAMETERS READING
@@ -466,6 +467,7 @@ my $todaysissues = '';
 my $previssues   = '';
 my @todaysissues;
 my @previousissues;
+my @borrowers_with_issues;
 ## ADDED BY JF: new itemtype issuingrules counter stuff
 my $issued_itemtypes_count;
 my @issued_itemtypes_count_loop;
@@ -473,12 +475,23 @@ my $totalprice = 0;
 
 if ($borrower) {
 
+    # Getting borrower relatives
+    my @borrowernumbers = GetMemberRelatives($borrower->{'borrowernumber'});
+    push @borrowernumbers, $borrower->{'borrowernumber'};
+
     # get each issue of the borrower & separate them in todayissues & previous issues
-    my ($issueslist) = GetPendingIssues( $borrower->{'borrowernumber'} );
+    my ($issueslist) = GetPendingIssues(@borrowernumbers);
 
     # split in 2 arrays for today & previous
     foreach my $it (@$issueslist) {
         my $itemtypeinfo = getitemtypeinfo( ( C4::Context->preference('item-level_itypes') ) ? $it->{'itype'} : $it->{'itemtype'} );
+
+	# Getting borrower details
+	my $memberdetails = GetMemberDetails($it->{'borrowernumber'});
+	$it->{'borrowername'} = $memberdetails->{'firstname'} . " " . $memberdetails->{'surname'};
+
+	# Adding this borrower to the list of borrowers with issue
+	push @borrowers_with_issues, $it->{'borrowernumber'};
 
         # set itemtype per item-level_itype syspref - FIXME this is an ugly hack
         $it->{'itemtype'} = ( C4::Context->preference('item-level_itypes') ) ? $it->{'itype'} : $it->{'itemtype'};
@@ -526,6 +539,11 @@ if ($borrower) {
             push @previousissues, $it;
         }
     }
+
+    # If we have more than one borrower, we display their names
+    @borrowers_with_issues = uniq @borrowers_with_issues;
+    $template->param('multiple_borrowers' => 1) if (@borrowers_with_issues > 1);
+
     if ( C4::Context->preference("todaysIssuesDefaultSortOrder") eq 'asc' ) {
         @todaysissues = sort { $a->{'timestamp'} cmp $b->{'timestamp'} } @todaysissues;
     } else {

@@ -637,22 +637,24 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
     <input type="hidden" name="cardnumber" value="<!-- TMPL_VAR NAME="cardnumber" -->" />
     <input type="hidden" name="borrowernumber" value="<!-- TMPL_VAR NAME="borrowernumber" -->" />
     <input type="hidden" name="branch" value="<!-- TMPL_VAR NAME="branch" -->" />
-        <table id="issuest">
-    <thead><tr>
+    <table id="issuest">
+    <thead>
+    <tr>
         <th scope="col">Due date</th>
         <th scope="col">Title</th>
         <th scope="col">Item Type</th>
         <th scope="col">Branch</th>
         <th scope="col">Checked out on</th> 
+	<!-- TMPL_IF NAME="multiple_borrowers" --><th scope="col">Borrower</th><!-- /TMPL_IF -->
         <th scope="col">Charge</th>
         <th scope="col">Material</th>
         <th scope="col">Renew <p class="column-tool"><a href="#" id="CheckAllitems">select all</a> | <a href="#" id="CheckNoitems">none</a></p></th>
         <th scope="col">Check in <p class="column-tool"><a href="#" id="CheckAllreturns">select all</a> | <a href="#" id="CheckNoreturns">none</a></p></th>
     </tr>
-</thead>
+    </thead>
 <tfoot>
 		<tr>
-            <td colspan="5" style="text-align: right; font-weight:bold;">Totals:</td>
+            <td colspan="<!-- TMPL_IF NAME="multiple_borrowers" -->6<!-- TMPL_ELSE -->5<!-- /TMPL_IF -->" style="text-align: right; font-weight:bold;">Totals:</td>
 			<td><!-- TMPL_VAR NAME="totaldue" --></td>
             <td><!-- TMPL_VAR NAME="totalprice" --></td>
             <td colspan="2">      
@@ -702,6 +704,7 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
 	<td><!-- TMPL_VAR NAME="branchdisplay" -->
         <!--TMPL_IF Name="itemcallnumber"-->(<!-- TMPL_VAR NAME="itemcallnumber" -->)<!--/TMPL_IF--></td>
         <td><!-- TMPL_VAR NAME="displaydate" --></td>
+	<!-- TMPL_IF NAME="multiple_borrowers" --><td><!-- TMPL_VAR NAME="borrowername" --></td><!-- /TMPL_IF -->
             <td><!-- TMPL_VAR NAME="charge" --></td>
             <td><!-- TMPL_VAR NAME="materials" --></td>
             <td><span style="padding: 0 1em;">
@@ -737,7 +740,7 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
     <!-- /TMPL_LOOP --> <!-- /loop todayissues -->
     <!-- /if todayissues --><!-- /TMPL_IF -->
 <!-- TMPL_IF NAME="previssues" -->
-<tr><th class="{sorter: false}" colspan="9"><a name="previous" id="previous"></a>Previous checkouts</th></tr>
+<tr><th class="{sorter: false}" colspan="<!-- TMPL_IF NAME="multiple_borrowers"-->10<!-- TMPL_ELSE -->9<!-- /TMPL_IF -->"><a name="previous" id="previous"></a>Previous checkouts</th></tr>
     <!-- TMPL_LOOP NAME="previssues" -->
     <!-- TMPL_IF NAME="__odd__" -->
         <tr>
@@ -754,6 +757,7 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
 	<td><!-- TMPL_VAR NAME="branchdisplay" -->
         <!--TMPL_IF NAME="itemcallnumber"-->(<!-- TMPL_VAR NAME="itemcallnumber" -->)<!--/TMPL_IF--></td>
         <td><!-- TMPL_VAR NAME="displaydate" --></td>
+	<!-- TMPL_IF NAME="multiple_borrowers" --><td><!-- TMPL_VAR NAME="borrowername" --></td><!-- /TMPL_IF -->
         <td><!-- TMPL_VAR NAME="charge" --></td>
         <td><!-- TMPL_VAR NAME="materials" --></td>
         <td style="text-align : center;"><span style="padding: 0 1em;">
