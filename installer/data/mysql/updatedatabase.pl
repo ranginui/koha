@@ -4413,6 +4413,21 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     SetVersion ($DBversion);
 }
 
+$DBversion = '3.02.00.023';
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do(q{
+	ALTER TABLE items 
+		DROP KEY `itemstocknumberidx`,
+		DROP KEY `itemsstocknumberidx`;
+    });
+    $dbh->do(q{
+	ALTER TABLE deleteditems 
+		DROP KEY `delitemstocknumberidx`;
+    });
+    print "Upgrade to $DBversion done. — Add permission to batch modifications on records\n";
+    SetVersion ($DBversion);
+}
+
 =item DropAllForeignKeys($table)
 
   Drop all foreign keys of the table $table
