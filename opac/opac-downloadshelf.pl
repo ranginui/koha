@@ -69,7 +69,7 @@ if ( $shelfid && $format ) {
             my $biblionumber = $biblio->{biblionumber};
 
             my $record = GetMarcBiblio($biblionumber);
-
+            next unless $record;
             switch ($format) {
                 case "iso2709" { $output .= $record->as_usmarc(); }
                 case "ris"     { $output .= marc2ris($record); }
