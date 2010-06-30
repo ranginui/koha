@@ -54,6 +54,7 @@ use C4::Review;
 use C4::Serials;    # uses getsubscriptionfrom biblionumber
 use C4::Koha;
 use C4::Members;    # GetMember
+use C4::Items;
 use C4::External::Amazon;
 
 my $query = CGI->new();
