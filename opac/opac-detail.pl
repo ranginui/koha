@@ -381,7 +381,7 @@ foreach (@$reviews) {
     }
 }
 
-if ( C4::Context->preference("ISBD") ) {
+if ( C4::Context->preference("OPACISBD") ) {
     $template->param( ISBD => 1 );
 }
 

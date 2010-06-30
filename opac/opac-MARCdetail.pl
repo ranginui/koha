@@ -242,7 +242,7 @@ foreach my $subfield_code ( keys(%witness) ) {
     push( @header_value_loop, \%header_value );
 }
 
-if ( C4::Context->preference("ISBD") ) {
+if ( C4::Context->preference("OPACISBD") ) {
     $template->param( ISBD => 1 );
 }
 
