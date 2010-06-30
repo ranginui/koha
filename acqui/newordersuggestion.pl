@@ -131,7 +131,7 @@ my $suggestions_loop = &SearchSuggestion(
         author        => $author,
         title         => $title,
         publishercode => $publishercode,
-        status        => 'ACCEPTED'
+        STATUS        => 'ACCEPTED'
     }
 );
 my $vendor = GetBookSellerFromId($supplierid);
