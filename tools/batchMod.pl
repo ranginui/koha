@@ -128,7 +128,6 @@ if ( $op eq "action" ) {
     } else {
 
         # While the job is getting done
-
         # Job size is the number of items we have to process
         my $job_size = scalar(@itemnumbers);
         my $job      = undef;
@@ -139,13 +138,17 @@ if ( $op eq "action" ) {
         if ($runinbackground) {
             $job = put_in_background($job_size);
             $callback = progress_callback( $job, $dbh );
-        }
+	}
 
         #initializing values for updates
         if ($values_to_modify) {
             my $xml = TransformHtmlToXml( \@tags, \@subfields, \@values, \@indicator, \@ind_tag, 'ITEM' );
+
+	    #TODO: An eval here to catch fatal errors would be a good idea
+	    # (if an error message is show to the user, of course)
             $marcitem = MARC::Record::new_from_xml( $xml, 'UTF-8' );
         }
+
         if ($values_to_blank) {
             foreach my $disabledsubf (@disabled) {
                 if ( $marcitem && $marcitem->field($itemtagfield) ) {
@@ -156,7 +159,6 @@ if ( $op eq "action" ) {
                 }
             }
         }
-
         # For each item
         my $i = 1;
         foreach my $itemnumber (@itemnumbers) {

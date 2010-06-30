@@ -10,7 +10,7 @@
 <script type="text/javascript" src="<!-- TMPL_VAR name="themelang" -->/lib/jquery/plugins/jquery.tablesorter.min.js"></script>
 <script type="text/JavaScript" language="JavaScript">
 //<![CDATA[
-	    $("#itemst").tablesorter( widgets : ['zebra'], headers: {0:{sorter: false}} });
+	    $("#itemst").tablesorter({ widgets : ['zebra'], headers: {0:{sorter: false}} });
 	    $("#selectallbutton").click(function() {
 		$("#itemst").find("input:checkbox").each(function() {
 		    $(this).attr("checked", true);
@@ -32,7 +32,6 @@
 	    });
 
 
-	 });
 //]]>
 </script>
 </head>
