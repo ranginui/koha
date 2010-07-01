@@ -639,7 +639,10 @@ sub checkauth {
     # when using authentication against multiple CAS servers, as configured in Auth_cas_servers.yaml
     my $casparam = $query->param('cas');
 
-    if ( $userid = $ENV{'REMOTE_USER'} ) {
+    # If you have httpauth protecting the OPAC from unwanted users, this
+    # will just make everything get upset, so it's turned off until it
+    # can be fixed properly.
+    if ( 0 && ($userid = $ENV{'REMOTE_USER'}) ) {
         # Using Basic Authentication, no cookies required
         $cookie = $query->cookie(
             -name    => 'CGISESSID',
