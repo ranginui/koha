@@ -613,8 +613,10 @@ sub checkauth {
     my %info;
     my ( $userid, $cookie, $sessionID, $flags, $barshelves, $pubshelves );
     my $logout = $query->param('logout.x');
-
-    if ( $userid = $ENV{'REMOTE_USER'} ) {
+    # If you have httpauth protecting the OPAC from unwanted users, this
+    # will just make everything get upset, so it's turned off until it
+    # can be fixed properly.
+    if ( 0 && ($userid = $ENV{'REMOTE_USER'}) ) {
         # Using Basic Authentication, no cookies required
         $cookie = $query->cookie(
             -name    => 'CGISESSID',
