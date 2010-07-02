@@ -49,6 +49,7 @@ $offset = 0 unless $offset;
 my $pagesize = $input->param('pagesize');
 $pagesize = 50 unless $pagesize;
 my $branchcode = $input->param('branchcode');
+my $branch     = $input->param('branch');
 my $op         = $input->param('op');
 my $res;                                            #contains the results loop
 
@@ -191,7 +192,7 @@ if ( !( $uploadbarcodes && length($uploadbarcodes) > 0 ) || ( $input->param('com
         }
     }
     if ( $markseen or $op ) {
-        $res = GetItemsForInventory( $minlocation, $maxlocation, $location, $ignoreissued, $itemtype, $datelastseen, $branchcode, $offset, $pagesize, $staton );
+        $res = GetItemsForInventory( $minlocation, $maxlocation, $location, $ignoreissued, $itemtype, $datelastseen, $branchcode, $branch, $offset, $pagesize, $staton );
         $template->param(
             loop       => $res,
             nextoffset => ( $offset + $pagesize ),

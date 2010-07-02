@@ -1029,7 +1029,7 @@ $statushash requires a hashref that has the authorized values fieldname (intems.
 =cut
 
 sub GetItemsForInventory {
-    my ( $minlocation, $maxlocation, $location, $itemtype, $ignoreissued, $datelastseen, $branch, $offset, $size, $statushash ) = @_;
+    my ( $minlocation, $maxlocation, $location, $itemtype, $ignoreissued, $datelastseen, $branchcode, $branch, $offset, $size, $statushash ) = @_;
     my $dbh = C4::Context->dbh;
     my ( @bind_params, @where_strings );
 
@@ -1069,9 +1069,13 @@ END_SQL
         push @bind_params,   $location;
     }
 
-    if ($branch) {
-        push @where_strings, 'items.homebranch = ?';
-        push @bind_params,   $branch;
+    if ( $branchcode ) {
+        if($branch eq "homebranch"){
+            push @where_strings, 'items.homebranch = ?';
+        }else{
+            push @where_strings, 'items.holdingbranch = ?';
+        }
+        push @bind_params, $branchcode;
     }
 
     if ($itemtype) {
