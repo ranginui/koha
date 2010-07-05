@@ -561,6 +561,7 @@ END_SQL
                                 borrowernumber         => $borrowernumber,
                                 message_transport_type => 'email',
                                 from_address           => $admin_email_address,
+                                to_address             => $email,
                             }
                         );
                     } else {
