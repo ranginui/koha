@@ -1381,7 +1381,7 @@ sub checkpw {
         ($retval) and return ( $retval, $retcard );
     }
 
-    if ( $cas && $query->param('ticket') ) {
+    if ($cas && $query && $query->param('ticket')) {
         $debug and print STDERR "## checkpw - checking CAS\n";
 
         # In case of a CAS authentication, we use the ticket instead of the password
