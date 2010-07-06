@@ -4428,6 +4428,19 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     SetVersion ($DBversion);
 }
 
+$DBversion = "3.02.00.024";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+	$dbh->do(q{
+    ALTER TABLE deletedborrowers ADD COLUMN gonenoaddresscomment VARCHAR(255) AFTER gonenoaddress, ADD COLUMN lostcomment VARCHAR(255) AFTER lost,ADD COLUMN debarredcomment VARCHAR(255) AFTER debarred;
+    });
+	$dbh->do(q{
+    ALTER TABLE deletedborrowers CHANGE COLUMN debarred debarred DATE;
+    });
+    print "Upgrade to $DBversion done (Synching  deletedborrowers with borrowers)\n";
+    SetVersion ($DBversion);
+}
+
+
 =item DropAllForeignKeys($table)
 
   Drop all foreign keys of the table $table
