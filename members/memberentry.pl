@@ -237,7 +237,7 @@ if ($op eq 'save' || $op eq 'insert'){
   }
 }
 
-if ($op eq 'modify' || $op eq 'insert' || $op eq 'save' ){
+if ( ($op eq 'modify' || $op eq 'insert' || $op eq 'save') and ($step == 0 or $step == 3 )){
     unless ($newdata{'dateexpiry'}){
         my $arg2 = $newdata{'dateenrolled'} || C4::Dates->today('iso');
         $newdata{'dateexpiry'} = GetExpiryDate($newdata{'categorycode'},$arg2);
