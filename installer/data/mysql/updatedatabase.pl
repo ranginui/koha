@@ -3316,6 +3316,8 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 
 $DBversion = '3.01.00.077';
 if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+
+    $dbh->do("SET FOREIGN_KEY_CHECKS=0 ");
     $dbh->do("DROP TABLE IF EXISTS `aqbudgetperiods` ");
     $dbh->do(
         qq|
@@ -3334,7 +3336,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 
     $dbh->do(<<ADDPERIODS);
 INSERT INTO aqbudgetperiods (budget_period_startdate,budget_period_enddate,budget_period_active,budget_period_description,budget_period_locked)
-SELECT DISTINCT startdate, enddate, 1, concat(startdate," ",enddate),1 from aqbudget
+SELECT DISTINCT startdate, enddate, NOW() BETWEEN startdate and enddate, concat(startdate," ",enddate),NOT NOW() BETWEEN startdate AND enddate from aqbudget
 ADDPERIODS
 
     # SORRY , NO AQBUDGET/AQBOOKFUND -> AQBUDGETS IMPORT JUST YET,
@@ -3351,16 +3353,17 @@ ADDPERIODS
 
     #$dbh->do("drop table aqbudget;");
 
-    $dbh->do(<<BUDGETNAME);
-ALTER TABLE aqbudget RENAME `aqbudgets`
-BUDGETNAME
     my $maxbudgetid = $dbh->selectcol_arrayref(<<IDsBUDGET);
-SELECT MAX(aqbudgetid) from aqbudgets
+SELECT MAX(aqbudgetid) from aqbudget
 IDsBUDGET
 
     $dbh->do(<<BUDGETAUTOINCREMENT);
-ALTER TABLE `aqbudgets` AUTO_INCREMENT=$$maxbudgetid[0]
+ALTER TABLE aqbudget AUTO_INCREMENT=$$maxbudgetid[0]
 BUDGETAUTOINCREMENT
+    
+    $dbh->do(<<BUDGETNAME);
+ALTER TABLE aqbudget RENAME `aqbudgets`
+BUDGETNAME
 
     $dbh->do(<<BUDGETS);
 ALTER TABLE `aqbudgets`
@@ -3443,6 +3446,7 @@ BUDGETDROPDATES
     #    $dbh->do("DROP TABLE aqbookfund ");
 
     #    $dbh->do("ALTER TABLE aqorders  ADD FOREIGN KEY (`budget_id`) REFERENCES `aqbudgets` (`budget_id`) ON UPDATE CASCADE  " ); ????
+    $dbh->do("SET FOREIGN_KEY_CHECKS=1 ");
 
     print "Upgrade to $DBversion done (Adding new aqbudgetperiods, aqbudgets and aqbudget_planning tables  )\n";
     SetVersion($DBversion);
