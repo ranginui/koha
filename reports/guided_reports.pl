@@ -536,7 +536,8 @@ elsif ( $phase eq 'Export' ) {
                 print join( "\t", @$row ), "\n";
             }
         } else {
-            my $csv = Text::CSV->new( { binary => 1 } );
+            my $delimiter=C4::Context->preference('delimiter')||',';
+            my $csv = Text::CSV->new( { binary => 1 , sep_char=>$delimiter} );
             $csv or die "Text::CSV->new({binary => 1}) FAILED: " . Text::CSV->error_diag();
             if ( $csv->combine( header_cell_values($sth) ) ) {
                 print $csv->string(), "\n";
