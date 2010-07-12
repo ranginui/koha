@@ -507,6 +507,12 @@ for ( my $i = 0 ; $i <= @servers ; $i++ ) {
                     $template->param( ShowOpacRecentSearchLink => 1 );
                 }
 
+		# Only the 15 more recent searches are kept
+		# TODO: This has been done because of cookies' max size, which is
+		# usually 4KB. A real check on cookie actual size would be better
+		# than setting an arbitrary limit on the number of searches
+		shift @recentSearches if (@recentSearches > 15);
+
                 # Pushing the cookie back
                 $newsearchcookie = $cgi->cookie(
                     -name => 'KohaOpacRecentSearches',
