@@ -135,6 +135,7 @@ $template->param(
     location                 => $location,
     ignoreissued             => $ignoreissued,
     branchcode               => $branchcode,
+    branch                   => $branch,
     offset                   => $offset,
     pagesize                 => $pagesize,
     datelastseen             => $datelastseen,
