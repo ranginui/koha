@@ -283,7 +283,7 @@ sub select_all_authorities {
 }
 
 sub select_all_biblios {
-    my $strsth = qq{ SELECT biblionumber FROM biblioitems WHERE biblionumber > 367910 ORDER BY biblionumber };
+    my $strsth = qq{ SELECT biblionumber FROM biblioitems ORDER BY biblionumber };
     $strsth.=qq{ LIMIT $min } if ($min);
     $strsth.=qq{ LIMIT $min,$ofset } if ($ofset);
     my $sth = $dbh->prepare($strsth);
