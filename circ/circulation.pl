@@ -360,7 +360,7 @@ if ($barcode) {
 my $resbarcode = $query->param("resbarcode");
 if ($resbarcode) {
     my $itemnumber = GetItemnumberFromBarcode($resbarcode);
-    my $query = "UPDATE reserves SET found='W' WHERE itemnumber=? AND found IS NULL";
+    my $query = "UPDATE reserves SET found='W', waitingdate=now() WHERE itemnumber=? AND found IS NULL";
     my $sth_set = $dbh->prepare($query);
     $sth_set->execute($itemnumber);
 }

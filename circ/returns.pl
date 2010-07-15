@@ -152,7 +152,7 @@ if ( $query->param('resbarcode') ) {
 
     # Setting the right status if an hold has been confirmed
     my $dbh = C4::Context->dbh;
-    my $query = "UPDATE reserves SET found='W' WHERE itemnumber=? AND found IS NULL";
+    my $query = "UPDATE reserves SET found='W', waitingdate=NOW() WHERE itemnumber=? AND found IS NULL";
     my $sth_set = $dbh->prepare($query);
     $sth_set->execute($item);
 
