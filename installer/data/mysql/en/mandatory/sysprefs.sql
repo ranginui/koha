@@ -292,3 +292,4 @@ INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES (
 INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('OPACPickUpLocation','1','Enable Pickup location choice for holds','','YesNo');
 INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('CI-3M:AuthorizedIPs','','Authorized IPs for CI3M magnetisation','','Free');
 INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES ( 'OPACSearchReboundBy', 'term', 'term|authority', 'determines if the rebound search use authority number or term.', 'Choice' );
+INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES ('AllowMultipleHoldsPerBib','','','Enter here the different itemtypes separated by space you want to allow librarians or OPAC users (if OPACItemHolds is enabled) to set holds on multiple items','Free');
