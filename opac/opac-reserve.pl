@@ -366,6 +366,7 @@ foreach my $biblioNum (@biblionumbers) {
             # sum canReserveMultiple : if at least one item can be multiple reserved, then the flag will be >0
             # FIXME : there can be complex & strange cases, where some items can be multiple reserved, and some can't
             # this case is not managed. Note it may be only theoric, and have no real case
+            $itemLoopIter->{canholdmultiple} = CanHoldMultipleItems( $itemInfo->{itype} );
             $canReserveMultiple = $canReserveMultiple + CanHoldMultipleItems( $itemInfo->{itype} );
         }
 
@@ -457,6 +458,7 @@ foreach my $biblioNum (@biblionumbers) {
         $biblioLoopIter{bib_available} = 1;
         $biblioLoopIter{holdable}      = 1;
     }
+#    $biblioLoopIter{multi} = $canReserveMultiple;
     if ( $biblioLoopIter{already_reserved} && !$canReserveMultiple ) {
         $biblioLoopIter{holdable} = undef;
         warn "Already_Reserved";

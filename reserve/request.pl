@@ -235,7 +235,10 @@ foreach my $biblionumber (@biblionumbers) {
         if ( defined $res->{found} && $res->{found} eq 'W' ) {
             $count--;
         }
-
+        if ($res->{itemnumber} && not $res->{itemtype}){
+            $res->{itemtype}=GetItem($res->{itemnumber},$res->{biblionumber})->{itype};
+        }
+        next if CanHoldMultipleItems($res->{itemtype});
         if ( defined $borrowerinfo && ($borrowerinfo->{borrowernumber} eq $res->{borrowernumber}) && !CanHoldMultipleItems($res->{itemtype}) ) {
             $warnings = 1;
             $alreadyreserved = 1;
@@ -425,6 +428,7 @@ foreach my $biblionumber (@biblionumbers) {
               $item->{available} = 0;
               $item->{override} = 0;
             }
+            $item->{canholdmultiple}=CanHoldMultipleItems($item->{itype}) && $item->{available};
             
             push @{ $biblioitem->{itemloop} }, $item;
         }

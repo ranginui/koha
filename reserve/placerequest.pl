@@ -50,7 +50,7 @@ my @rank           = $input->param('rank-request');
 my $type           = $input->param('type');
 my $title          = $input->param('title');
 my $borrowernumber = GetMember( 'cardnumber' => $borrower );
-my $checkitem      = $input->param('checkitem');
+my @checkitems     = $input->param('checkitem');
 my $expirationdate = $input->param('expiration_date');
 
 my $multi_hold    = $input->param('multi_hold');
@@ -70,12 +70,13 @@ my $found;
 
 # if we have an item selectionned, and the pickup branch is the same as the holdingbranch
 # of the document, we force the value $rank and $found .
-if ( $checkitem ne '' ) {
-    $rank[0] = '0' unless C4::Context->preference('ReservesNeedReturns');
-    my $item = $checkitem;
-    $item = GetItem($item);
-    if ( $item->{'holdingbranch'} eq $branch ) {
-        $found = 'W' unless C4::Context->preference('ReservesNeedReturns');
+for my $item (@checkitems){
+    if ( $item ne '' ) {
+        $rank[0] = '0' unless C4::Context->preference('ReservesNeedReturns');
+        my $itemdata = GetItem($item);
+        if ( $itemdata->{'holdingbranch'} eq $branch ) {
+            $found = 'W' unless C4::Context->preference('ReservesNeedReturns');
+        }
     }
 }
 
@@ -99,22 +100,28 @@ if ( $type eq 'str8' && $borrowernumber ne '' ) {
         if ($multi_hold) {
             my $bibinfo = $bibinfos{$biblionumber};
             AddReserve( $branch, $borrowernumber->{'borrowernumber'},
-                $biblionumber, 'a', [$biblionumber], $bibinfo->{rank}, $startdate, $expirationdate, $notes, $bibinfo->{title}, $checkitem, $found );
+                $biblionumber, 'a', [$biblionumber], $bibinfo->{rank}, $startdate, $expirationdate, $notes, $bibinfo->{title}, $checkitems[0], $found );
         } else {
             if ( $input->param('request') eq 'any' ) {
 
                 # place a request on 1st available
                 AddReserve( $branch, $borrowernumber->{'borrowernumber'},
-                    $biblionumber, 'a', \@realbi, $rank[0], $startdate, $expirationdate, $notes, $title, $checkitem, $found );
+                    $biblionumber, 'a', \@realbi, $rank[0], $startdate, $expirationdate, $notes, $title, $checkitems[0], $found );
             } elsif ( $reqbib[0] ne '' ) {
 
                 # FIXME : elsif probably never reached, (see top of the script)
                 # place a request on a given item
+                for my $item (@checkitems){
                 AddReserve( $branch, $borrowernumber->{'borrowernumber'},
-                    $biblionumber, 'o', \@reqbib, $rank[0], $startdate, $expirationdate, $notes, $title, $checkitem, $found );
+                    $biblionumber, 'o', \@reqbib, $rank[0], $startdate, $expirationdate, $notes, $title, $item, $found );
+                $rank[0]++;
+                }
             } else {
+                for my $item (@checkitems){
                 AddReserve( $branch, $borrowernumber->{'borrowernumber'},
-                    $biblionumber, 'a', \@realbi, $rank[0], $startdate, $expirationdate, $notes, $title, $checkitem, $found );
+                    $biblionumber, 'a', \@realbi, $rank[0], $startdate, $expirationdate, $notes, $title, $item, $found );
+                $rank[0]++;
+                }
             }
         }
     }

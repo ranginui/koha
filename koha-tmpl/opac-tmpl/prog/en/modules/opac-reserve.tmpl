@@ -114,27 +114,32 @@
         $(".confirmjs:checked").each(function() {
             var biblioNum = $(this).val();
             biblionumbers += biblioNum + "/";
-            selections += biblioNum + "/";
+
+            // Add the pickup location
+            var branchSel = $("#branch_" + biblioNum);
+            var branch = "";
+            if (branchSel.size() > 0) {
+                 branch = $(branchSel).val();
+            }
 
             // If the 'specific copy' radio button is checked
             if ($("#reqspecific_" + biblioNum + ":checked").size() > 0) {
                 // Find the selected copy
-                var item = $(".checkitem_" + biblioNum + ":checked");
-                if ($(item).size() == 0) {
+                var items = $(".checkitem_" + biblioNum + ":checked");
+                if ($(items).size() == 0) {
                     badBib = biblioNum;
                     return false;
                 } else {
-                  selections += $(item).val();
+                  $(items).each( function(idx,item){
+                    var separator="/";
+                    selections+=biblioNum+separator+item.value+separator+branch+separator;
+                  });
                 }
             }
-            selections += "/";
-
-            // Add the pickup location
-            var branchSel = $("#branch_" + biblioNum);
-            if (branchSel.size() > 0) {
-                selections += $(branchSel).val();
+            else {
+                selections=biblioNum+separator+separator+branch+separator;
             }
-            selections += "/";
+
             return true;
         });
 
@@ -261,10 +266,17 @@
                       <input class="single_bib" name="single_bib" type="hidden" value="<!-- TMPL_VAR NAME="biblionumber" -->"/>
                         <span class="confirmjs_hold" title="<!-- TMPL_VAR NAME="biblionumber" -->"></span>
                         <span class="confirm_nonjs">
+                          <!-- TMPL_IF Name="multi"-->
+                          <input type="checkbox" class="confirmbox checkitem <!-- TMPL_VAR NAME="checkitem_bib" -->"
+                                 name="<!-- TMPL_VAR NAME="checkitem_bib" -->" checked="checked"
+                                 id="<!-- TMPL_VAR NAME="checkitem_bib" -->"
+                                 value="any" />
+                          <!--TMPL_ELSE-->
                           <input type="radio" class="confirmbox checkitem <!-- TMPL_VAR NAME="checkitem_bib" -->"
                                  name="<!-- TMPL_VAR NAME="checkitem_bib" -->" checked="checked"
                                  id="<!-- TMPL_VAR NAME="checkitem_bib" -->"
                                  value="any" />
+                           <!-- /TMPL_IF -->
                           <label class="confirm_label" for="<!-- TMPL_VAR NAME="checkitem_bib" -->">Next available copy</label>
                         </span>
 					</td>
@@ -468,8 +480,13 @@
                               <td>
                                 <!-- TMPL_IF NAME="available" -->
 				  <!-- TMPL_UNLESS NAME="ReservedForThisBorrower" -->
+                                      <!-- TMPL_IF Name="canholdmultiple"-->
+	                                  <input type="checkbox" class="checkitem checkitem_<!-- TMPL_VAR NAME="biblionumber" -->" name="checkitem_<!-- TMPL_VAR NAME="biblionumber" -->"
+        	                                 value="<!-- TMPL_VAR NAME="itemnumber" -->" />
+                                      <!--TMPL_ELSE-->
 	                                  <input type="radio" class="checkitem checkitem_<!-- TMPL_VAR NAME="biblionumber" -->" name="checkitem_<!-- TMPL_VAR NAME="biblionumber" -->"
         	                                 value="<!-- TMPL_VAR NAME="itemnumber" -->" />
+                                      <!-- /TMPL_IF -->
 				  <!-- /TMPL_UNLESS -->
                                 <!-- TMPL_ELSE -->
                                   <input disabled="disabled" type="radio" class="checkitem" name="checkitem" value="<!-- TMPL_VAR NAME="itemnumber" -->" />
