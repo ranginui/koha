@@ -34,6 +34,7 @@ my $process_zebraqueue;
 my $do_not_clear_zebraqueue;
 my $item_limit;
 my $min;
+my $where;
 my $ofset;
 my $verbose_logging;
 my $zebraidx_log_opt = " -v none,fatal ";
@@ -53,6 +54,7 @@ my $result           = GetOptions(
     'y'            => \$do_not_clear_zebraqueue,
     'z'            => \$process_zebraqueue,
     'l:i'          => \$item_limit,
+    'where:s'        => \$where,
     'min:i'        => \$min,
     'ofset:i'      => \$ofset,
     'v'            => \$verbose_logging,
@@ -276,6 +278,7 @@ sub select_all_records {
 
 sub select_all_authorities {
     my $strsth=qq{SELECT authid from auth_header};
+    $strsth.=qq{ WHERE $where } if ($where);
     $strsth.=qq{ LIMIT $min,$ofset } if ($min && $ofset);
     my $sth = $dbh->prepare($strsth);
     $sth->execute();
@@ -283,7 +286,8 @@ sub select_all_authorities {
 }
 
 sub select_all_biblios {
-    my $strsth = qq{ SELECT biblionumber FROM biblioitems ORDER BY biblionumber };
+    my $strsth = qq{ SELECT biblionumber FROM biblioitems };
+    $strsth.=qq{ WHERE $where } if ($where);
     $strsth.=qq{ LIMIT $min } if ($min);
     $strsth.=qq{ LIMIT $min,$ofset } if ($ofset);
     my $sth = $dbh->prepare($strsth);
