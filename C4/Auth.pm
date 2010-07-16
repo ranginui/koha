@@ -326,7 +326,7 @@ sub get_template_and_user {
             "BiblioDefaultView".C4::Context->preference("BiblioDefaultView")         => 1,
             EnhancedMessagingPreferences => C4::Context->preference('EnhancedMessagingPreferences'),
             GoogleJackets                => C4::Context->preference("GoogleJackets"),
-	    OpenLibrary                  => C4::Context->preference("OpenLibrary") || 1,
+	    OpenLibrary                  => 1,
             KohaAdminEmailAddress        => "" . C4::Context->preference("KohaAdminEmailAddress"),
             LoginBranchcode              => (C4::Context->userenv?C4::Context->userenv->{"branch"}:"insecure"),
             LoginFirstname               => (C4::Context->userenv?C4::Context->userenv->{"firstname"}:"Bel"),
