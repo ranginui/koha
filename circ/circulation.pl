@@ -357,12 +357,15 @@ if ($barcode) {
 }
 
 # Setting the right status if an hold has been confirmed
+#This should never be used in fact
 my $resbarcode = $query->param("resbarcode");
 if ($resbarcode) {
-    my $itemnumber = GetItemnumberFromBarcode($resbarcode);
-    my $query = "UPDATE reserves SET found='W', waitingdate=now() WHERE itemnumber=? AND found IS NULL";
-    my $sth_set = $dbh->prepare($query);
-    $sth_set->execute($itemnumber);
+        if ( my ( $reservetype, $reserve ) = C4::Reserves::CheckReserves( undef, $resbarcode ) ) {
+            if ( $reservetype eq "Waiting" || $reservetype eq "Reserved" ) {
+                my $transfer = C4::Context->userenv->{branch} ne $reserve->{branchcode};
+                ModReserveAffect( $reserve->{itemnumber}, $reserve->{borrowernumber}, $transfer, $reserve->{"reservenumber"} );
+            }
+        }
 }
 
 

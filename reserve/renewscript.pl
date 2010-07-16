@@ -115,7 +115,7 @@ foreach my $barcode (@barcodes) {
         if ( my ( $reservetype, $reserve ) = C4::Reserves::CheckReserves( undef, $barcode ) ) {
             if ( $reservetype eq "Waiting" || $reservetype eq "Reserved" ) {
                 my $transfer = C4::Context->userenv->{branch} ne $reserve->{branchcode};
-                ModReserveAffect( $itemnumber, $reserve->{borrowernumber}, $transfer );
+                ModReserveAffect( $itemnumber, $reserve->{borrowernumber}, $transfer, $reserve->{"reservenumber"} );
                 my ( $message_reserve, $nextreservinfo ) = GetOtherReserves($itemnumber);
 
                 my ($borr) = GetMemberDetails( $nextreservinfo, 0 );
@@ -138,6 +138,7 @@ foreach my $barcode (@barcodes) {
                     gonenoaddress  => $borr->{'gonenoaddress'},
                     barcode        => $barcode,
                     transfertodo   => $transfer,
+                    reservenumber  => $reserve->{'reservenumber'},
                     destbranch     => $reserve->{'branchcode'},
                     borrowernumber => $reserve->{'borrowernumber'},
                     itemnumber     => $reserve->{'itemnumber'},

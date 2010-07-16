@@ -32,6 +32,7 @@
             <input type="hidden" name="itemnumber" value="<!-- TMPL_VAR Name="itemnumber" -->" />
             <input type="hidden" name="borrowernumber" value="<!-- TMPL_VAR Name="circborrowernumber" -->" />
             <input type="hidden" name="resbarcode" value="<!-- TMPL_VAR Name="barcode" -->" />
+            <input type="hidden" name="reservenumber" value="<!-- TMPL_VAR Name="reservenumber" -->" />
             <input type="hidden" name="diffBranch" value="<!-- TMPL_VAR Name="destbranch" -->" />
             <input type="hidden" name="exemptfine" value="<!-- TMPL_VAR Name="exemptfine" -->" />
             <input type="hidden" name="dropboxmode" value="<!-- TMPL_VAR Name="dropboxmode" -->" />
