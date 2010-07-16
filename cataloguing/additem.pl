@@ -705,7 +705,11 @@ foreach my $tag ( keys %{$tagslib}){
         my @values = (undef);
         @values = $itemrecord->field($tag)->subfield($subtag) if ($itemrecord && defined($itemrecord->field($tag)->subfield($subtag)));
         for my $value (@values){
-            my $subfield_data = generate_subfield_form($tag, $subtag, $value, $tagslib, $tagslib->{$tag}->{$subtag}, $branches, $today_iso, $biblionumber, $temp, \@loop_data, $i); 
+            my $subfield_data = generate_subfield_form($tag, $subtag, $value, $tagslib, $tagslib->{$tag}->{$subtag}, $branches, $today_iso, $biblionumber, $temp, \@loop_data, $i);
+            if ($subtag eq 'z') {
+            my $attributes_no_value = qq(tabindex="1" id="$subfield_data->{id}" name="field_value" class="input_marceditor" size="67" maxlength="255" );
+                $subfield_data->{marc_value} = qq{<textarea $attributes_no_value cols="65" rows="8">$value</textarea>\n};
+            }
             push (@loop_data, $subfield_data);
             $i++;
         } 
