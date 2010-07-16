@@ -3,7 +3,7 @@ if (typeof KOHA == "undefined" || !KOHA) {
 }
 
 /**
- * A namespace for Google related functions.
+ * A namespace for OpenLibrary related functions.
  */
 KOHA.OpenLibrary = {
 
