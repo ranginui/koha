@@ -41,7 +41,7 @@ use C4::Output;
 use C4::Members;
 use C4::Members::Attributes;
 use C4::Members::AttributeTypes;
-use C4::Dates;
+use C4::Dates qw(format_date);
 use C4::Reserves;
 use C4::Circulation;
 use C4::Koha;
@@ -377,6 +377,9 @@ if ($borrowernumber) {
         if ( $num_res->{'found'} eq 'W' ) {
             $getreserv{color}   = 'reserved';
             $getreserv{waiting} = 1;
+            my @maxpickupdate = $num_res->{'waitingdate'} ? GetMaxPickupDate( $num_res->{'waitingdate'}, $borrowernumber, $num_res ) : '';
+            $getreserv{'maxpickupdate'} = sprintf( "%d-%02d-%02d", @maxpickupdate );
+            $getreserv{'formattedwaitingdate'} = format_date( $getreserv{'maxpickupdate'} );
         }
 
         # 		check transfers with the itemnumber foud in th reservation loop

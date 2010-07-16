@@ -410,6 +410,10 @@ if ($borrowernumber) {
         if ( $num_res->{'found'} eq 'W' ) {
             $getreserv{color}   = 'reserved';
             $getreserv{waiting} = 1;
+            my @maxpickupdate = $num_res->{'waitingdate'} ? GetMaxPickupDate( $num_res->{'waitingdate'}, $borrowernumber, $num_res ) : '';
+            $getreserv{'maxpickupdate'} = sprintf( "%d-%02d-%02d", @maxpickupdate );
+            $getWaitingReserveInfo{'formattedwaitingdate'} = format_date( $getreserv{'maxpickupdate'} );
+            $getreserv{'formattedwaitingdate'} = format_date( $getreserv{'maxpickupdate'} );
 
             #     genarate information displaying only waiting reserves
             $getWaitingReserveInfo{title}        = $getiteminfo->{'title'};
@@ -420,7 +424,6 @@ if ($borrowernumber) {
             $getWaitingReserveInfo{waitingat}    = GetBranchName( $num_res->{'branchcode'} );
             $getWaitingReserveInfo{waitinghere}  = 1 if $num_res->{'branchcode'} eq $branch;
         }
-
         #         check transfers with the itemnumber foud in th reservation loop
         if ($transfertwhen) {
             $getreserv{color}      = 'transfered';

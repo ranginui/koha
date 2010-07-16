@@ -562,7 +562,7 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
 		    <h4>Holds waiting:</h4>
 			        <!-- TMPL_LOOP NAME="WaitingReserveLoop" -->
 			            <ul>
-			                <li> <a href="/cgi-bin/koha/reserve/request.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->"><!-- TMPL_VAR NAME="title" escape="html" --></a> (<!-- TMPL_VAR NAME="itemtype"-->), <!-- TMPL_IF NAME="author" -->by <!-- TMPL_VAR NAME="author"--><!-- /TMPL_IF --> Hold placed on <!-- TMPL_VAR NAME="reservedate"-->.
+			                <li> <a href="/cgi-bin/koha/reserve/request.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->"><!-- TMPL_VAR NAME="title" escape="html" --></a> (<!-- TMPL_VAR NAME="itemtype"-->), <!-- TMPL_IF NAME="author" -->by <!-- TMPL_VAR NAME="author"--><!-- /TMPL_IF --> Hold placed on <!-- TMPL_VAR NAME="reservedate"--> waiting until <!-- TMPL_VAR NAME="formattedwaitingdate" -->
 			            <!-- TMPL_IF NAME="waitingat" -->
 			                <br /><!-- TMPL_IF NAME="waitinghere" --><strong class="waitinghere"><!-- TMPL_ELSE --><strong><!-- /TMPL_IF -->Waiting at <!-- TMPL_VAR NAME="waitingat" --></strong>
 			            <!-- /TMPL_IF -->
@@ -825,7 +825,7 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
                     <td><a href="/cgi-bin/koha/reserve/request.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->"><strong><!-- TMPL_VAR NAME="title" escape="html" --></strong></a><!-- TMPL_IF NAME="author" -->, by <!-- TMPL_VAR NAME="author" --><!-- /TMPL_IF --></td>
                     <td><!-- TMPL_VAR NAME="itemcallnumber" --></td>
 					<td><em><!-- TMPL_IF name="barcodereserv" -->Item <!-- TMPL_VAR NAME="barcodereserv" -->
-                        <!-- /TMPL_IF --><!-- TMPL_IF name="waiting" --> <strong>waiting at <!-- TMPL_VAR NAME="waitingat" --></strong>
+                        <!-- /TMPL_IF --><!-- TMPL_IF name="waiting" --> <strong>waiting at <!-- TMPL_VAR NAME="waitingat" --> <!-- TMPL_IF name="formattedwaitingdate" --> until <!-- TMPL_VAR NAME="formattedwaitingdate" --><!--/TMPL_IF--></strong>
                         <!-- /TMPL_IF -->
                         <!-- TMPL_IF name="transfered" --> <strong>in transit</strong> from
                         <!-- TMPL_VAR NAME="frombranch" --> since <!-- TMPL_VAR NAME="datesent" -->
