@@ -544,9 +544,10 @@ foreach my $tag (sort keys %{$tagslib}) {
                   300 <= $tag && $tag < 400 && $subfield eq 'a' )
             or (C4::Context->preference("marcflavour") eq "MARC21"  and
                   500 <= $tag && $tag < 600                     )
+            or subfield_is_textarea($tag,$subfield)
           ) {
         # oversize field (textarea)
-        $subfield_data{marc_value} = "<textarea $attributes_no_value>$value</textarea>\n";
+        $subfield_data{marc_value} = qq{<textarea $attributes_no_value cols="65">$value</textarea>\n};
     } else {
         # it's a standard field
          $subfield_data{marc_value} = "<input $attributes />";
@@ -555,6 +556,12 @@ foreach my $tag (sort keys %{$tagslib}) {
     push (@loop_data, \%subfield_data);
     $i++
   }
+}
+sub subfield_is_textarea {
+    my ($tag,$subfield) = @_;
+    my $kohafield = $tagslib->{$tag}{$subfield}{kohafield} or return;
+
+    return $kohafield =~ m/itemnotes/;
 }
 
 # what's the next op ? it's what we are not in : an add if we're editing, otherwise, and edit.
