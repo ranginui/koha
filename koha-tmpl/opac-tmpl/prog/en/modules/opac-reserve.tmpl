@@ -113,7 +113,8 @@
         var badBib = null;
         $(".confirmjs:checked").each(function() {
             var biblioNum = $(this).val();
-            biblionumbers += biblioNum + "/";
+            var separator="/";
+            biblionumbers += biblioNum + separator;
 
             // Add the pickup location
             var branchSel = $("#branch_" + biblioNum);
@@ -131,7 +132,6 @@
                     return false;
                 } else {
                   $(items).each( function(idx,item){
-                    var separator="/";
                     selections+=biblioNum+separator+item.value+separator+branch+separator;
                   });
                 }
