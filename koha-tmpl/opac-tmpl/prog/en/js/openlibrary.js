@@ -47,7 +47,7 @@ KOHA.OpenLibrary = {
 	            	var img = document.createElement("img");
 	                img.src = book.thumbnail_url;
 					$(this).append(img);
-                    var re = /^gbs-thumbnail-preview/;
+                    var re = /^openlibrary-thumbnail-preview/;
                     if ( re.exec($(this).attr("id")) ) {
                         $(this).append(
                             '<div style="margin-bottom:5px; margin-top:-5px;font-size:9px">' +
