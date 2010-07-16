@@ -5,17 +5,17 @@ if (typeof KOHA == "undefined" || !KOHA) {
 /**
  * A namespace for Google related functions.
  */
-KOHA.Google = {
+KOHA.OpenLibrary = {
 
 
     /**
      * Search all:
-     *    <div title="biblionumber" id="isbn" class="gbs-thumbnail"></div>
+     *    <div title="biblionumber" id="isbn" class="openlibrary-thumbnail"></div>
      * or
-     *    <div title="biblionumber" id="isbn" class="gbs-thumbnail-preview"></div>
-     * and run a search with all collected isbns to Google Book Search.
-     * The result is asynchronously returned by Google and catched by
-     * gbsCallBack().
+     *    <div title="biblionumber" id="isbn" class="openlibrary-thumbnail-preview"></div>
+     * and run a search with all collected isbns to Open Library Book Search.
+     * The result is asynchronously returned by OpenLibrary and catched by
+     * olCallBack().
      */
     GetCoverFromIsbn: function() {
         var bibkeys = [];
@@ -26,8 +26,8 @@ KOHA.Google = {
         var scriptElement = document.createElement("script");
         scriptElement.setAttribute("id", "jsonScript");
         scriptElement.setAttribute("src",
-            "http://books.google.com/books?bibkeys=" + escape(bibkeys) +
-            "&jscmd=viewapi&callback=KOHA.Google.gbsCallBack");
+            "http://openlibrary.org/api/books?bibkeys=" + escape(bibkeys) +
+            "&jscmd=viewapi&callback=KOHA.OpenLibrary.olCallBack");
         scriptElement.setAttribute("type", "text/javascript");
         document.documentElement.firstChild.appendChild(scriptElement);
 
@@ -37,7 +37,7 @@ KOHA.Google = {
      * Add cover pages <div
      * and link to preview if div id is gbs-thumbnail-preview
      */
-    gbsCallBack: function(booksInfo) {
+    olCallBack: function(booksInfo) {
         for (id in booksInfo) {
             var book = booksInfo[id];
             $("."+book.bib_key).each(function() {
@@ -53,15 +53,13 @@ KOHA.Google = {
                             '<div style="margin-bottom:5px; margin-top:-5px;font-size:9px">' +
                             '<a href="' + 
                             book.info_url + 
-                            '"><img src="' +
-                            'http://books.google.com/intl/en/googlebooks/images/gbs_preview_sticker1.gif' +
-                            '"></a></div>' 
+                            '">Preview</a></div>' 
                             );
                     }
 				} else {
 					var message = document.createElement("span");
 					$(message).attr("class","no-image");
-					$(message).html(NO_GOOGLE_JACKET);
+					$(message).html(NO_OL_JACKET);
 					$(this).append(message);
 				}
             });
