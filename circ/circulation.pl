@@ -548,7 +548,7 @@ if ($borrower) {
 
     # If we have more than one borrower, we display their names
     @borrowers_with_issues = uniq @borrowers_with_issues;
-    $template->param('multiple_borrowers' => 1) if (@borrowers_with_issues > 1);
+    $template->param('multiple_borrowers' => 1) if (@borrowers_with_issues > 1 || (@borrowers_with_issues == 1 && @borrowers_with_issues[0] != $borrower->{'borrowernumber'}));
 
     if ( C4::Context->preference("todaysIssuesDefaultSortOrder") eq 'asc' ) {
         @todaysissues = sort { $a->{'timestamp'} cmp $b->{'timestamp'} } @todaysissues;

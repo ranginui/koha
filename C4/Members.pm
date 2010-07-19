@@ -604,6 +604,7 @@ sub GetMemberRelatives {
     $sth->execute($borrowernumber);
     my $data = $sth->fetchrow_arrayref();
     push @glist, $data->[0] if $data->[0];
+    my $guarantor = $data->[0] if $data->[0];
 
     # Getting guarantees
     $query = "SELECT borrowernumber FROM borrowers WHERE guarantorid=?";
@@ -613,6 +614,16 @@ sub GetMemberRelatives {
        push @glist, $data->[0];
     }
 
+    # Getting sibling guarantees
+    if ($guarantor) {
+    warn "guarantor $guarantor";
+        $query = "SELECT borrowernumber FROM borrowers WHERE guarantorid=?";
+        $sth = $dbh->prepare($query);
+        $sth->execute($guarantor);
+        while ($data = $sth->fetchrow_arrayref()) {
+           push @glist, $data->[0];
+        }
+    }
     return @glist;
 
 }

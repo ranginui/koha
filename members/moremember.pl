@@ -227,6 +227,7 @@ $template->param( lib2 => $lib2 ) if ($lib2);
 # current issues
 #
 my @borrowernumbers = GetMemberRelatives($borrowernumber);
+my @borrowernumbers;
 push @borrowernumbers, $borrowernumber;
 my $issue       = GetPendingIssues(@borrowernumbers);
 my $issuecount  = scalar(@$issue);
@@ -236,6 +237,14 @@ my @issuedata;
 my @borrowers_with_issues;
 my $overdues_exist = 0;
 my $totalprice     = 0;
+
+my @issue_data = build_issue_data($issue, $issuecount);
+
+sub build_issue_data {
+    my @issues = shift;
+    my $issuecount = shift;
+
+
 for ( my $i = 0 ; $i < $issuecount ; $i++ ) {
 
     # Getting borrower details
@@ -330,10 +339,13 @@ for ( my $i = 0 ; $i < $issuecount ; $i++ ) {
     }
     push( @issuedata, \%row );
 }
+    return @issuedata;
+
+}
 
 # If we have more than one borrower, we display their names
 @borrowers_with_issues = uniq @borrowers_with_issues;
-$template->param('multiple_borrowers' => 1) if (@borrowers_with_issues > 1);
+$template->param('multiple_borrowers' => 1) if (@borrowers_with_issues > 1 || (@borrowers_with_issues == 1 && @borrowers_with_issues[0] != $borrowernumber));
 
 
 #BUILDS the LOOP for reserves when returning books with reserves
