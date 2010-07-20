@@ -25,7 +25,17 @@
         KOHA.Google.GetCoverFromIsbn();<!-- /TMPL_IF --><!-- TMPL_IF NAME="TagsEnabled" -->
         $(".tagbutton").click(KOHA.Tags.add_tag_button);<!-- /TMPL_IF -->
 		<!-- TMPL_IF NAME="opacbookbag" -->$("a.print").parent().after("<li><a class=\"addtocart\" href=\"#\" onclick=\"addRecord('"+$("input[name=bib]").val()+"'); return false;\">"+_("Add to Your Cart")+"<\/a><\/li>");
-<!-- /TMPL_IF -->});
+<!-- /TMPL_IF --> 
+<!-- TMPL_IF NAME="MARCSUBJCTS" -->
+	$("#magnifier a").each(function(){
+	   var lgth = $(this).attr('href').length;
+           var authid = $(this).attr('href').substring(47, lgth ); 
+           if (!parseInt(authid)) {
+               $(this).hide();
+           } 
+        });
+<!-- /TMPL_IF -->
+});
 
 YAHOO.util.Event.onContentReady("furtherm", function () {
     $("#furtherm").css("display","block").css("visibility","hidden");
@@ -301,7 +311,7 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
                 <!-- TMPL_LOOP NAME="MARCSUBJCTS" -->
                     <!-- TMPL_LOOP NAME="MARCSUBJECT_SUBFIELDS_LOOP" -->
                         <!-- TMPL_VAR NAME="separator" -->
-                        <span>
+                        <span id="magnifier">
                             <a href="/cgi-bin/koha/opac-authoritiesdetail.pl?authid=<!-- TMPL_LOOP NAME="link_loop" --><!-- TMPL_VAR NAME="link" ESCAPE="URL" --><!-- /TMPL_LOOP -->"><img height="15" src="/opac-tmpl/prog/images/filefind.png"></a>                           
                         </span>
                         <a href="#" onclick="showSubjects(this, '<!-- TMPL_IF name="searchbyauthority" -->an:<!-- TMPL_LOOP name="link_loop" --><!-- TMPL_VAR name="link" --><!-- /TMPL_LOOP --><!-- TMPL_ELSE -->su,wrdl:<!-- TMPL_VAR name="value" --><!-- /TMPL_IF -->', '<!-- TMPL_VAR name="value" -->')"><!-- TMPL_VAR NAME="value" --></a><!-- /TMPL_LOOP -->
