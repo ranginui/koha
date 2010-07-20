@@ -4460,6 +4460,14 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     SetVersion ($DBversion);
 }
 
+$DBversion = "3.02.00.027";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+	$dbh->do(q{
+		UPDATE `letter` set content='Dear <<borrowers.firstname>> <<borrowers.surname>>,\r\n\r\nYou have a hold available for pickup as of <<reserves.waitingdate>>:\r\n\r\nTitle: <<biblio.title>>\r\nAuthor: <<biblio.author>>\r\nCopy: <<items.barcode>>\r\nLocation: <<branches.branchname>>\r\n<<branches.branchaddress1>>\r\n<<branches.branchaddress2>>\r\n<<branches.branchaddress3>>' where module='reserves' and code='HOLD'});
+	print "Upgrade to $DBversion done\n";
+	SetVersion ($DBversion);
+}
+
 
 =item DropAllForeignKeys($table)
 

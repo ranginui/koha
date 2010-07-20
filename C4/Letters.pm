@@ -782,6 +782,10 @@ ENDSQL
 
 sub _send_message_by_email ($;$$$) {
     my $message = shift or return;
+    my $value_for = { '0' => 'email',
+		      '1' => 'emailpro',
+		      '2' => 'B_email',
+		      '3' => 'cardnumber'};
 
     my $to_address = $message->{to_address};
     unless ($to_address) {
@@ -796,7 +800,12 @@ sub _send_message_by_email ($;$$$) {
             return;
         }
         my $which_address = C4::Context->preference('AutoEmailPrimaryAddress');
-        $to_address = $member->{$which_address};
+        $to_address = $member->{ $value_for->{$which_address} };
+
+	unless ($to_address) {
+	    $to_address = C4::Context->preference('KohaAdminEmailAddress');
+	}
+
         unless ($to_address) {
 
             # warn "FAIL: No 'to_address' and no email for " . ($member->{surname} ||'') . ", borrowernumber ($message->{borrowernumber})";
