@@ -32,7 +32,23 @@ use JSON;
 my $input = new CGI;
 my $dbh = C4::Context->dbh;
 
+my $filefh = $input->param('uploadfile');
+my $recordslist = $input->param('recordslist');
+my $bib_list = $input->param('bib_list'); 
+my @biblionumbers;
 my @biblionumbers = split('/', $input->param('bib_list'));
+
+if ($filefh) {
+    while ( my $biblionumber = <$filefh> ) {
+        $biblionumber =~ s/[\r\n]*$//g;
+        push @biblionumbers, $biblionumber if $biblionumber;
+    }
+} elsif ($recordslist) {
+    push @biblionumbers, split( /\s\n/, $recordslist );
+} elsif ($bib_list) {
+    push @biblionumbers, split('/', $bib_list);
+}
+
 my $op            = $input->param('op');
 my ($template, $loggedinuser, $cookie);
 
@@ -129,6 +145,7 @@ if($input->param('field') and not defined $op){
                      flagsrequired => "batchedit",
                      });
 
+    $template->param( inputform => 1, ) unless @biblionumbers;
     
     if(!defined $op) {
         my @modifiablefields;

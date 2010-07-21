@@ -122,6 +122,25 @@
         <div id="yui-main">
             <div class="yui-b">
 
+<form method="post" enctype="multipart/form-data">
+<!-- TMPL_IF NAME="inputform" -->
+<h2>Batch records modification</h2>
+    <fieldset class="rows">
+	<legend>Use a file</legend>
+	<ol>
+	    <li><label for="uploadfile">File: </label> <input type="file" id="uploadfile" name="uploadfile" /></li>
+	</ol>
+    </fieldset>
+    <fieldset class="rows">
+	<legend>Or enter records one by one</legend>
+	<ol>
+	    <li>
+		<label for="recordslist">Records numbers list (one number per line): </label>
+		<textarea rows="10" cols="30" id="recordslist" name="recordslist"></textarea>
+	    </li>
+	</ol>
+    </fieldset>
+<!-- TMPL_ELSE -->
 <h2>List of records:</h2>
 <table id="bibliolist">
     <thead>
@@ -147,13 +166,14 @@
         </tr>
     <!-- /TMPL_LOOP -->
 </table>            
+<!-- /TMPL_IF -->
             
 <!-- TMPL_IF NAME="moddone" -->
     <div class="dialog alert">All operations processed</div>
 <!-- TMPL_ELSE -->
 
+<fieldset>
 <h2>Modification rules:</h2>
-<form method="post">
 <input type="submit" value="Submit" />
 <input type="hidden" name="op" value="do" />
 <input type="hidden" name="bib_list" value="<!-- TMPL_VAR NAME="bib_list" -->" />
@@ -200,6 +220,7 @@
 <!-- /TMPL_LOOP -->
 </table>
 <input type="submit" value="Submit" />
+</fieldset>
 </form>
 <!-- /TMPL_IF -->
             </div>
