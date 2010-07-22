@@ -7,7 +7,7 @@
 # - commit any changes into git
 # - run this script
 
-set -e
+set -e -u
 
 die()
 {
@@ -55,7 +55,7 @@ then
 fi
 
 version="$(newversion)"
-if [ $1 ]
+if [ -n "$1" ]
 then
     pdebuildopts="--buildresult $1"
 fi
