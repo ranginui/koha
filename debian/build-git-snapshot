@@ -7,7 +7,7 @@
 # - commit any changes into git
 # - run this script
 
-set -e -u
+set -e
 
 die()
 {
