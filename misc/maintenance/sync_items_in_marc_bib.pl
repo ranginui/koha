@@ -53,7 +53,7 @@ exit 0;
 sub process_bibs {
     my $sql = "SELECT biblionumber FROM biblio JOIN biblioitems USING (biblionumber)";
     $sql .= "WHERE " . join( " AND ", @$wherestrings ) if ($wherestrings);
-    $sql .= "ORDER BY biblionumber ASC";
+    $sql .= " ORDER BY biblionumber ASC";
     my $sth = $dbh->prepare($sql);
     eval { $sth->execute(); };
     if ($@) { die "error $@"; }
