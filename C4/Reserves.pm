@@ -953,7 +953,7 @@ sub CancelExpiredReserves {
     $sth->execute();
 
     while ( my $res = $sth->fetchrow_hashref() ) {
-        CancelReserve( $res->{'biblionumber'}, '', $res->{'borrowernumber'} );
+        CancelReserve( $res->{'reservenumber'}, $res->{'biblionumber'} );
     }
 
 }

@@ -976,7 +976,7 @@ sub AddIssue {
                 } else {
 
                     # set waiting reserve to first in reserve queue as book isn't waiting now
-                    ModReserve( 1, $res->{'biblionumber'}, $res->{'borrowernumber'}, $res->{'branchcode'} );
+                    ModReserve( 1, $res->{'biblionumber'}, $res->{'borrowernumber'}, $res->{'branchcode'},undef,$res->{'reservenumber'} );
                 }
             }
 
