@@ -40,7 +40,7 @@ my @bibitems = $input->param('biblioitem');
 #       I bet it's a 2.x feature, reserving a given biblioitem, that is useless in Koha 3.0
 #       we can remove this line, the AddReserve of constrainttype 'o',
 #       and probably remove the reserveconstraint table as well, I never could fill anything in this table.
-my @reqbib         = $input->param('reqbib');
+#my @reqbib         = $input->param('reqbib');
 my $biblionumber   = $input->param('biblionumber');
 my $borrower       = $input->param('member');
 my $notes          = $input->param('notes');
@@ -102,20 +102,11 @@ if ( $type eq 'str8' && $borrowernumber ne '' ) {
             AddReserve( $branch, $borrowernumber->{'borrowernumber'},
                 $biblionumber, 'a', [$biblionumber], $bibinfo->{rank}, $startdate, $expirationdate, $notes, $bibinfo->{title}, $checkitems[0], $found );
         } else {
-            if ( $input->param('request') eq 'any' ) {
+            if ( lc($input->param('request')) eq 'any' ) {
 
                 # place a request on 1st available
                 AddReserve( $branch, $borrowernumber->{'borrowernumber'},
-                    $biblionumber, 'a', \@realbi, $rank[0], $startdate, $expirationdate, $notes, $title, $checkitems[0], $found );
-            } elsif ( $reqbib[0] ne '' ) {
-
-                # FIXME : elsif probably never reached, (see top of the script)
-                # place a request on a given item
-                for my $item (@checkitems){
-                AddReserve( $branch, $borrowernumber->{'borrowernumber'},
-                    $biblionumber, 'o', \@reqbib, $rank[0], $startdate, $expirationdate, $notes, $title, $item, $found );
-                $rank[0]++;
-                }
+                    $biblionumber, 'a', \@realbi, $rank[0], $startdate, $expirationdate, $notes, $title, undef, $found );
             } else {
                 for my $item (@checkitems){
                 AddReserve( $branch, $borrowernumber->{'borrowernumber'},
