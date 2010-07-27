@@ -63,6 +63,91 @@ $(document).ready(function() {
             $('#finesfilter').parent().attr('class',null);
             $('#nofilter').parent().attr('class',null);
         });
+
+        // Inline editor
+        var editor = false;
+        $('#smartrules>tbody>tr>td.editable').click(function() {
+            if ( ! editor ) {
+                var td = $(this);
+                var tdvalue = td.text().trim();
+                td.text('');
+
+                var type;
+                if ( $.inArray('boolean', td.attr('class').split(' ')) != -1 ) { // If the td is boolean, we display a checkbox
+                    editor = $('<input id="inlineeditor" type="checkbox" /\>');
+                    editor.attr('checked', tdvalue == 'Yes' ? 'checked' : '');
+                    type = 'boolean';
+                } else if ( $.inArray('triple', td.attr('class').split(' ')) != -1 ) { // else if it is a triple, we display a listbox
+                    var selectedn = tdvalue ==  ''   ? 'selected="selected"' : '';
+                    var selected1 = tdvalue == 'Yes' ? 'selected="selected"' : '';
+                    var selected0 = tdvalue == 'No'  ? 'selected="selected"' : '';
+                    var str  = '<select id="inlineeditor">';
+                        str += '<option value=""  ' + selectedn + '></option>';
+                        str += '<option value="1" ' + selected1 + '>Yes</option>';
+                        str += '<option value="0" ' + selected0 + '>No</option>';
+                        str += '</select>';
+                    editor = $(str);
+                    type = 'triple';
+                } else { // else we display a textbox
+                    editor = $('<input id="inlineeditor" type="text" size="4" /\>');
+                    editor.attr('value', tdvalue);
+                }
+
+                editor.focus();
+
+                editor.keyup(function(e) {   // on press
+                    if ( e.keyCode == 13 ) { // enter
+
+                        // let's build the atomic rule
+                        var branchcode   = $('#branchcode').val();
+                        var categorycode = td.parent().children('td.categorycode').children('span').text();
+                        var itemtype     = td.parent().children('td.itemtype').children('span').text();
+                        var varname      = td.attr('class').split(' ')[0];
+                        var inputvalue;
+                        switch ( type ) {
+                            case 'boolean':
+                                inputvalue = editor.attr('checked') ? 1 : 0;
+                                break;
+                            default:
+                                inputvalue = editor.val();
+                                break;
+                        }
+
+                        // post it to the server
+                        $.ajax({
+                            url: '/cgi-bin/koha/admin/smart-rules-service.pl',
+                            type: "POST",
+                            async: false,
+                            data: "branchcode="+branchcode+"&categorycode="+categorycode+"&itemtype="+itemtype+"&varname="+varname+"&inputvalue="+inputvalue,
+                            success: function(result) {
+
+                                // repopulate the td with data
+                                switch ( type ) {
+                                    case 'boolean':
+                                        td.text(result == '1' ? 'Yes' : 'No');
+                                        break;
+                                    case 'triple':
+                                        switch ( result ) {
+                                            case '' : td.text('');    break;
+                                            case '1': td.text('Yes'); break;
+                                            case '0': td.text('No');  break;
+                                        }
+                                        break;
+                                    default:
+                                        td.text(result);
+                                        break;
+                                }
+
+                                editor.remove();
+                                editor = false;
+                            }
+                        });
+                    }
+                });
+
+                td.append(editor);
+            }
+        });
 });
 //]]>
 </script>
@@ -111,9 +196,6 @@ $(document).ready(function() {
                 </div>
             </ul>
             <div class="tabs-container">
-                <form method="post" name="inputrules" action="/cgi-bin/koha/admin/smart-rules.pl">
-
-                    <input type="hidden" name="op" value="add" />
                     <table id="smartrules" width="100%">
                         <thead>
                             <tr>
@@ -142,13 +224,16 @@ $(document).ready(function() {
                             <!-- TMPL_ELSE -->
                             <tr>
                             <!-- /TMPL_UNLESS -->
-                                    <td><!-- TMPL_IF NAME="default_humancategorycode" -->
+                                    <td class="categorycode">
+                                        <span style="display:none;"><!-- TMPL_VAR NAME="categorycode" --></span>
+                                        <!-- TMPL_IF NAME="default_humancategorycode" -->
                                             <em>Default</em>
                                         <!-- TMPL_ELSE -->
                                             <!-- TMPL_VAR NAME="humancategorycode" -->
                                         <!-- /TMPL_IF -->
                                     </td>
-                                    <td>
+                                    <td class="itemtype">
+                                        <span style="display:none;"><!-- TMPL_VAR NAME="itemtype" --></span>
                                         <!-- TMPL_IF NAME="default_humanitemtype" -->
                                             <em>Default</em>
                                         <!-- TMPL_ELSE -->
@@ -156,9 +241,9 @@ $(document).ready(function() {
                                         <!-- /TMPL_IF -->
                                     </td>
                                     <!-- TMPL_IF NAME="herited_maxissueqty" -->
-                                    <td class="issues herited">
+                                    <td class="maxissueqty editable issues herited">
                                     <!-- TMPL_ELSE -->
-                                    <td class="issues">
+                                    <td class="maxissueqty editable issues">
                                     <!-- /TMPL_IF -->
                                         <!-- TMPL_IF NAME="unlimited_maxissueqty" -->
                                             Unlimited
@@ -167,72 +252,72 @@ $(document).ready(function() {
                                         <!-- /TMPL_IF -->
                                     </td>
                                     <!-- TMPL_IF NAME="herited_issuelength" -->
-                                    <td class="issues herited">
+                                    <td class="issuelength editable issues herited">
                                     <!-- TMPL_ELSE -->
-                                    <td class="issues">
+                                    <td class="issuelength editable issues">
                                     <!-- /TMPL_IF -->
                                     <!-- TMPL_VAR NAME="issuelength" -->
                                     </td>
                                     <!-- TMPL_IF NAME="herited_fine" -->
-                                    <td class="fines herited">
+                                    <td class="fine editable fines herited">
                                     <!-- TMPL_ELSE -->
-                                    <td class="fines">
+                                    <td class="fine editable fines">
                                     <!-- /TMPL_IF -->
                                     <!-- TMPL_VAR NAME="fine" -->
                                     </td>
                                     <!-- TMPL_IF NAME="herited_chargeperiod" -->
-                                    <td class="fines herited">
+                                    <td class="chargeperiod editable fines herited">
                                     <!-- TMPL_ELSE -->
-                                    <td class="fines">
+                                    <td class="chargeperiod editable fines">
                                     <!-- /TMPL_IF -->
                                     <!-- TMPL_VAR NAME="chargeperiod" -->
                                     </td>
                                     <!-- TMPL_IF NAME="herited_firstremind" -->
-                                    <td class="fines herited">
+                                    <td class="firstremind editable fines herited">
                                     <!-- TMPL_ELSE -->
-                                    <td class="fines">
+                                    <td class="firstremind editable fines">
                                     <!-- /TMPL_IF -->
                                     <!-- TMPL_VAR NAME="firstremind" -->
                                     </td>
                                     <!-- TMPL_IF NAME="herited_finedays" -->
-                                    <td class="fines herited">
+                                    <td class="finedays editable fines herited">
                                     <!-- TMPL_ELSE -->
-                                    <td class="fines">
+                                    <td class="finedays editable fines">
                                     <!-- /TMPL_IF -->
                                     <!-- TMPL_VAR NAME="finedays" -->
                                     </td>
                                     <!-- TMPL_IF NAME="herited_renewalsallowed" -->
-                                    <td class="issues herited">
+                                    <td class="renewalsallowed editable issues herited">
                                     <!-- TMPL_ELSE -->
-                                    <td class="issues">
+                                    <td class="renewalsallowed editable issues">
                                     <!-- /TMPL_IF -->
                                     <!-- TMPL_VAR NAME="renewalsallowed" -->
                                     </td>
                                     <!-- TMPL_IF NAME="herited_renewalperiod" -->
-                                    <td class="issues herited">
+                                    <td class="renewalperiod editable issues herited">
                                     <!-- TMPL_ELSE -->
-                                    <td class="issues">
+                                    <td class="renewalperiod editable issues">
                                     <!-- /TMPL_IF -->
                                     <!-- TMPL_VAR NAME="renewalperiod" -->
                                     </td>
                                     <!-- TMPL_IF NAME="herited_reservesallowed" -->
-                                    <td class="reserves herited">
+                                    <td class="reservesallowed editable reserves herited">
                                     <!-- TMPL_ELSE -->
-                                    <td class="reserves">
+                                    <td class="reservesallowed editable reserves">
                                     <!-- /TMPL_IF -->
                                     <!-- TMPL_VAR NAME="reservesallowed" -->
                                     </td>
                                      <!-- TMPL_IF NAME="herited_holdspickupdelay" -->
-                                    <td class="reserves herited">
+                                    <td class="holdspickupdelay editable reserves herited">
                                     <!--TMPL_ELSE-->
-                                    <td class="reserves">
+                                    <td class="holdspickupdelay editable reserves">
                                     <!--/TMPL_IF-->
                                     <!-- TMPL_VAR NAME="holdspickupdelay" -->
                                     </td>
                                     <!-- TMPL_IF NAME="herited_allowonshelfholds" -->
-                                    <td class="reserves herited">
+                                    <td class="allowonshelfholds editable reserves triple herited">
                                     <!--TMPL_ELSE-->
-                                    <td class="reserves">
+                                    <td class="allowonshelfholds editable reserves triple">
 				    <!--/TMPL_IF-->
                                     <!-- TMPL_IF NAME="allowonshelfholds" -->
                                     Yes
@@ -241,9 +326,9 @@ $(document).ready(function() {
                                     <!--/TMPL_IF-->
                                     </td>
                                     <!-- TMPL_IF NAME="herited_holdrestricted" -->
-                                    <td class="reserves herited">
+                                    <td class="holdrestricted editable reserves boolean herited">
                                     <!--TMPL_ELSE-->
-                                     <td class="reserves">
+                                     <td class="holdrestricted editable reserves boolean">
                                     <!--/TMPL_IF-->
                                     <!-- TMPL_IF NAME="holdrestricted" -->
                                     Yes
@@ -252,9 +337,9 @@ $(document).ready(function() {
                                     <!--/TMPL_IF-->
                                     </td>
                                     <!-- TMPL_IF NAME="herited_rentaldiscount" -->
-                                    <td class="issues herited">
+                                    <td class="rentaldiscount editable issues herited">
                                     <!-- TMPL_ELSE -->
-                                    <td class="issues">
+                                    <td class="rentaldiscount editable issues">
                                     <!-- /TMPL_IF -->
                                     <!-- TMPL_VAR NAME="rentaldiscount" -->
                                     </td>
@@ -264,54 +349,56 @@ $(document).ready(function() {
                                 </tr>
                             <!-- /TMPL_LOOP -->
                         </tbody>
-                        <tfoot>
-                            <tr>
-                                <td>
-                                    <select name="categorycode" id="categorycode" style="width:12em;">
-                                        <option value="*">Default</option>
-                                    <!-- TMPL_LOOP NAME="categoryloop" -->
-                                        <!-- TMPL_IF Name="selected"-->
-                                        <option value="<!-- TMPL_VAR NAME="categorycode" -->" selected="selected"><!-- TMPL_VAR NAME="description" --></option>
-                                        <!--TMPL_ELSE --> <option value="<!-- TMPL_VAR NAME="categorycode" -->" ><!-- TMPL_VAR NAME="description" --></option>
-                                        <!-- /TMPL_IF -->
-                                    <!-- /TMPL_LOOP -->
-                                    </select>
-                                </td>
-                                <td>
-                                    <select name="itemtype" style="width:12em;">
-                                        <option value="*">Default</option>
-                                    <!-- TMPL_LOOP NAME="itemtypeloop" -->
-                                        <!-- TMPL_IF Name="selected"-->
-                                        <option value="<!-- TMPL_VAR NAME="itemtype" -->" selected="selected"><!-- TMPL_VAR NAME="description" --></option>
-                                        <!--TMPL_ELSE --> <option value="<!-- TMPL_VAR NAME="itemtype" -->"><!-- TMPL_VAR NAME="description" --></option>
-                                        <!-- /TMPL_IF -->
-                                    <!-- /TMPL_LOOP -->
-                                    </select>
-                                </td>
-                                <td class="issues"><input name="maxissueqty" size="3" value="<!-- TMPL_VAR NAME="maxissueqty" -->"/></td>
-                                <td class="issues"><input name="issuelength" size="3" value="<!-- TMPL_VAR NAME="issuelength" -->"/> </td>
-                                <td class="fines"><input name="fine" size="4" value="<!-- TMPL_VAR NAME="fine" -->"/></td>
-                                <td class="fines"><input name="chargeperiod" size="2" value="<!-- TMPL_VAR NAME="chargeperiod" -->"/></td>
-                                <td class="fines"><input name="firstremind" size="2" value="<!-- TMPL_VAR NAME="firstremind" -->"/> </td>
-                                <td class="fines"><input name="finedays" size="3" value="<!-- TMPL_VAR NAME="finedays" -->"/> </td>
-                                <td class="issues"><input name="renewalsallowed" size="2" value="<!-- TMPL_VAR NAME="renewalsallowed" -->"/></td>
-                                <td class="issues"><input name="renewalperiod" size="2" value="<!-- TMPL_VAR NAME="renewalperiod" -->"/></td>
-                                <td class="reserves"><input name="reservesallowed" size="2" value="<!-- TMPL_VAR NAME="reservesallowed" -->"/></td>
-                                <td class="reserves"><input name="holdspickupdelay" size="2" value="<!-- TMPL_VAR NAME="holdspickupdelay" -->"/></td>
-                                <td class="reserves">
-                                    <select name="allowonshelfholds">
-                                        <option value=""></option>
-                                        <option value="1">Yes</option>
-                                        <option value="0">No</option>
-                                    </select>
-                                </td>
-                                <td class="reserves"><!-- TMPL_IF NAME="holdrestricted"--><input type="checkbox" name="holdrestricted" checked="checked" value="1"/> <!--TMPL_ELSE--><input type="checkbox" name="holdrestricted" value="1"/> <!-- /TMPL_IF --></td>
-		                        <td class="issues"><input name="rentaldiscount" size="2" /></td>
-                                <td><input type="hidden" name="branchcode" value="<!-- TMPL_VAR NAME="branchcode" -->"/><input type="submit" value="Add" class="submit" /></td>
-                            </tr>
-                        </tfoot>
+                        <form method="post" name="inputrules" action="/cgi-bin/koha/admin/smart-rules.pl">
+                            <input type="hidden" name="op" value="add" />
+                            <tfoot>
+                                <tr>
+                                    <td>
+                                        <select name="categorycode" id="categorycode" style="width:12em;">
+                                            <option value="*">Default</option>
+                                        <!-- TMPL_LOOP NAME="categoryloop" -->
+                                            <!-- TMPL_IF Name="selected"-->
+                                            <option value="<!-- TMPL_VAR NAME="categorycode" -->" selected="selected"><!-- TMPL_VAR NAME="description" --></option>
+                                            <!--TMPL_ELSE --> <option value="<!-- TMPL_VAR NAME="categorycode" -->" ><!-- TMPL_VAR NAME="description" --></option>
+                                            <!-- /TMPL_IF -->
+                                        <!-- /TMPL_LOOP -->
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select name="itemtype" style="width:12em;">
+                                            <option value="*">Default</option>
+                                        <!-- TMPL_LOOP NAME="itemtypeloop" -->
+                                            <!-- TMPL_IF Name="selected"-->
+                                            <option value="<!-- TMPL_VAR NAME="itemtype" -->" selected="selected"><!-- TMPL_VAR NAME="description" --></option>
+                                            <!--TMPL_ELSE --> <option value="<!-- TMPL_VAR NAME="itemtype" -->"><!-- TMPL_VAR NAME="description" --></option>
+                                            <!-- /TMPL_IF -->
+                                        <!-- /TMPL_LOOP -->
+                                        </select>
+                                    </td>
+                                    <td class="issues"><input name="maxissueqty" size="3" value="<!-- TMPL_VAR NAME="maxissueqty" -->"/></td>
+                                    <td class="issues"><input name="issuelength" size="3" value="<!-- TMPL_VAR NAME="issuelength" -->"/> </td>
+                                    <td class="fines"><input name="fine" size="4" value="<!-- TMPL_VAR NAME="fine" -->"/></td>
+                                    <td class="fines"><input name="chargeperiod" size="2" value="<!-- TMPL_VAR NAME="chargeperiod" -->"/></td>
+                                    <td class="fines"><input name="firstremind" size="2" value="<!-- TMPL_VAR NAME="firstremind" -->"/> </td>
+                                    <td class="fines"><input name="finedays" size="3" value="<!-- TMPL_VAR NAME="finedays" -->"/> </td>
+                                    <td class="issues"><input name="renewalsallowed" size="2" value="<!-- TMPL_VAR NAME="renewalsallowed" -->"/></td>
+                                    <td class="issues"><input name="renewalperiod" size="2" value="<!-- TMPL_VAR NAME="renewalperiod" -->"/></td>
+                                    <td class="reserves"><input name="reservesallowed" size="2" value="<!-- TMPL_VAR NAME="reservesallowed" -->"/></td>
+                                    <td class="reserves"><input name="holdspickupdelay" size="2" value="<!-- TMPL_VAR NAME="holdspickupdelay" -->"/></td>
+                                    <td class="reserves">
+                                        <select name="allowonshelfholds">
+                                            <option value=""></option>
+                                            <option value="1">Yes</option>
+                                            <option value="0">No</option>
+                                        </select>
+                                    </td>
+                                    <td class="reserves"><!-- TMPL_IF NAME="holdrestricted"--><input type="checkbox" name="holdrestricted" checked="checked" value="1"/> <!--TMPL_ELSE--><input type="checkbox" name="holdrestricted" value="1"/> <!-- /TMPL_IF --></td>
+		                            <td class="issues"><input name="rentaldiscount" size="2" /></td>
+                                    <td><input type="hidden" name="branchcode" value="<!-- TMPL_VAR NAME="branchcode" -->"/><input type="submit" value="Add" class="submit" /></td>
+                                </tr>
+                            </tfoot>
+                        </form>
                     </table>
-                </form>
             </div><!-- tabs-container -->
         </div><!-- toptabs -->
     </div>
