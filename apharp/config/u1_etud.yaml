@@ -1,0 +1,364 @@
+#NUM_CARTE_PUCE
+NOM: surname
+PRENOM: firstname
+#CIVILITE: title
+NOM_USAGE: othernames
+ADRESSE_ANNEE: address
+ADRESSE_ANNEE2: address2
+VILLE_ANNEE: city
+CP_ANNEE: zipcode
+EMAIL_ANNEE: email
+TEL_ANNEE: phone
+MOBILE_ANNEE: mobile
+EMAIL_PERSO: emailpro
+ADRESSE_FIXE: B_address
+VILLE_FIXE: B_city
+CP_FIXE: B_zipcode
+TEL_FIXE: B_phone
+DATE_NAISS: dateofbirth
+STATUT: [categorycode,STATUT]
+COMPOSANTE: [branchcode,COMPOSANTE,POLETHEM]
+#FILIERE
+CODE_ETAPE: CODEETAPE
+NUM_INE: INE
+NUM_APPLI_GEST: [APPLIGEST]
+IDENT_LDAP: LDAP
+--- 
+branchcode:
+    AOS: U1BULA
+    CFM: U1BULA
+    CH: U1BULA
+    GEO: U1BULA
+    LAC: U1BULA
+    LAG: U1BULA
+    MSH: U1BULA
+    PSY: U1BULA
+    UNI: U1BULA
+    AFC: U1BULA
+    MI1: U1BULA
+    CH2: U1BULA
+    IU1: U1BUFMAIX
+    ARL: U1BULA
+    IAR: U1BULA
+    ARC: U1BULA
+    IMG: U1BULA
+    MAC: U1BULA
+    SAT: U1BULA
+    IU4: U1BUFMAVI
+    IDI: U1BUSC
+    IU3: U1BUFMDIG
+    SCE: U1BULA
+    IU2: U1BUFMMRS
+    CFC: U1BUSC
+    ETS: U1BUSC
+    SM:  U1BUSC
+    ICF: U1BUSC
+    SVT: U1BUSC
+    GDM: U1BUSC
+    IUT: U1BUSC
+    AM1: U1BUSC
+    SRI: U1BUSC
+    DEN: U1BUSC
+    AC1: U1BUSC
+    LG1: U1BUSC
+    CH1: U1BUSC
+    GE1: U1BUSC
+    AO1: U1BUSC
+    MI2: U1BUSC
+    MI3: U1BUSC
+    SM2: U1BUSC
+    EP1: U1BUSC
+    IUF: U1BUFMMRS
+    GBM: U1BUSC
+    SV1: U1BUSC
+    MIM: U1BUCG
+    STI: U1BUCG
+    GSI: U1BUCG
+    EPU: U1BUCG
+    SM1: U1BUCG
+    IU5: U1BUCG
+    MI4: U1BUCG
+    PLU: U1BULA
+    LPS: U1BULA
+    L12: U1BULA
+    IUT: IUT 
+    IUT: IUT
+POLETHEM:
+    AOS: Lettres
+    CFC: Sciences
+    CFM: Lettres
+    CH: Lettres
+    ETS: Sciences
+    GBM: Sciences
+    GEO: Lettres
+    IMG: Sciences
+    LAC: Lettres
+    LAG: Lettres
+    MIM: Sciences
+    MSH: Lettres
+    PSY: Lettres
+    SCE: Lettres
+    SM: Sciences
+    STI: Sciences
+    UNI: Lettres
+    ICF: Sciences
+    SVT: Sciences
+    AFC: Lettres
+    ARL: Lettres
+    GSI: Sciences
+    GDM: Sciences
+    EPU: Sciences
+    IUT: Sciences
+    IAR: Sciences
+    IDI: Sciences
+    MAC: Lettres
+    AM1: Sciences
+    ARC: Lettres
+    SRI: Sciences
+    DEN: Sciences
+    SAT: Sciences
+    AC1: Lettres
+    PLU: Lettres
+    MI1: Sciences
+    LPS: Lettres
+    L12: Lettres
+    LG1: Lettres
+    CH1: Lettres
+    GE1: Lettres
+    AO1: Lettres
+    CH2: Lettres
+    MI2: Sciences
+    MI3: Sciences
+    MI4: Sciences
+    SM1: Sciences
+    SM2: Sciences
+    SV1: Sciences
+    EP1: Sciences
+    IUF: Lettres
+    IU1: Lettres
+    IU2: Lettres
+    IU3: Lettres
+    IU4: Lettres
+    IU5: Lettres
+    MED: Santé
+    PHA: Santé
+    ODO: Santé
+    SEC: Economie
+    ECM: Economie
+    ECG: Economie
+    STM: Sciences
+    STG: Sciences
+    SCE: Sciences
+    ESI: Sciences
+    OSU: Sciences
+    IM2: Sciences
+    IUT: IUT
+    IUT: IUT
+    IUG: Economie
+    IUL: Sciences
+    IUM: Sciences
+    JOU: Economie
+    40: Sciences
+    41: Sciences
+    C0: Droit
+    D0: Droit
+    D1: Droit
+    D2: Droit
+    D3: Droit
+    E0: Economie
+    E1: Economie
+    E2: Economie
+    E6: Economie
+    F0: Lettres
+    G0: Economie
+    G1: Economie
+    M0: Lettres
+    P0: Droit
+    S1: Sciences
+    S2: Sciences
+    S3: Sciences
+    S4: Sciences
+    T0: Economie
+COMPOSANTE:
+    AOS: U1AOS
+    CFC: U1CFC
+    CFM: U1CFMI
+    CH: U1CIV
+    ETS: U1IUPEN
+    GBM: U1GBM
+    GEO: U1GEO
+    IMG: U1IMG
+    LAC: U1LACS
+    LAG: U1LAG
+    MIM: U1MIM
+    MSH: U1MSH
+    PSY: U1PSY
+    SCE: U1SCE
+    SM: U1SM
+    STI: U1STI
+    UNI: U1SRIA
+    ICF: U1ICF
+    SVT: U1SVT
+    AFC: U1AFC
+    ARL: U1LACSAR
+    GSI: U1GSI
+    GDM: U1GDM
+    EPU: U1EPU
+    IUT: U1IUTM
+    IAR: U1IUTAR
+    IDI: U1IUTDI
+    MAC: U1MAC
+    AM1: U1
+    ARC: U1CIVAR
+    SRI: U1SRIM
+    DEN: U1DEN
+    SAT: U1SAT
+    AC1: U1LACM
+    PLU: U1PLU
+    MI1: U1MIMA
+    LPS: U1LPS
+    L12: U1L12
+    LG1: U1LAGM
+    CH1: U1CIVM
+    GE1: U1GEOM
+    AO1: U1AOSM
+    CH2: U1CIVJ
+    MI2: U1MIMSC
+    MI3: U1MIMSJ
+    MI4: U1MIMSA
+    SM1: U1SMCG
+    SM2: U1SVTSC
+    SV1: U1SVTLU
+    EP1: U1EPUSJ
+    IUF: U1IUFM
+    IU1: U1IUFMA
+    IU2: U1IUFMM
+    IU3: U1IUFMDI
+    IU4: U1IUFMAVI
+    IU5: U1IUFMCG
+--- 
+  - firstname,surname,dateofbirth
+--- |
+$$fromdata{'ETABLISSEM'}='U1';
+--- |
+$$targetdata{'city'}||=" ";
+$$targetdata{'branchcode'}||="U1INC";
+$$targetdata{'address'}||=" ";
+#$$targetdata{'cardnumber'}='U1'.$$targetdata{'cardnumber'};
+
+# correspondance code etape / statut
+my %ce2s = (
+    '0DA' => 'L1',
+    '2AG' => 'M2',
+    '2DO' => 'D',
+    '2HD' => 'D',
+    '2L1' => 'L1',
+    '2L2' => 'L2',
+    '2L3' => 'L3',
+    '2LP' => 'L3',
+    '2M0' => 'M1',
+    '2M1' => 'M1',
+    '2MP' => 'M2',
+    '2MR' => 'M2',
+    '2TH' => 'D',
+    '3AG' => 'M2',
+    '3DO' => 'D',
+    '3HD' => 'D',
+    '3L1' => 'L1',
+    '3L2' => 'L2',
+    '3L3' => 'L3',
+    '3LP' => 'L3',
+    '3M1' => 'M1',
+    '3MP' => 'M2',
+    '3MR' => 'M2',
+    '3TH' => 'D',
+    '4AG' => 'M2',
+    '4DI' => 'L1',
+    '4DO' => 'D',
+    '4DU' => 'L1',
+    '4HD' => 'D',
+    '4JIGB1' => 'L3',
+    '4JIGB2' => 'M1',
+    '4JIGB3' => 'M2',
+    '4L1' => 'L1',
+    '4L2' => 'L2',
+    '4L3' => 'L3',
+    '4LB' => 'L3',
+    '4LP' => 'L3',
+    '4M1' => 'M1',
+    '4MP' => 'M2',
+    '4MR' => 'M2',
+    '4TH' => 'D',
+    '5DO' => 'D',
+    '5IGC1' => 'L3',
+    '5IGC2' => 'M1',
+    '5IGC3' => 'M2',
+    '5IGC1' => 'L3',
+    '5IGC2' => 'M1',
+    '5IGC3' => 'M2',
+    '5IME1' => 'L3',
+    '5IME2' => 'M1',
+    '5IME3' => 'M2',
+    '5ISE1' => 'L3',
+    '5ISE2' => 'M1',
+    '5ISE3' => 'M2',
+    '5MP' => 'M2',
+    '5MR' => 'M2',
+    '6LP' => 'L3',
+    '7DR' => 'M2',
+    '7DS' => 'M2',
+    '7DU' => 'L2',
+    '7LI' => 'L3',
+    '7LP' => 'L3',
+    '7M1' => 'M1',
+    '7MI' => 'M1',
+    '7MP' => 'M2',
+    '8L3' => 'L3',
+    '8M1' => 'M1',
+    '8MP' => 'M2',
+    'A09' => 'M1',
+    'A13' => 'L1',
+    'A23' => 'L2',
+    'A52' => 'M2',
+    'A53' => 'M2',
+    'A90' => 'L1',
+    'A91' => 'L1',
+    'A92' => 'L1',
+    'A93' => 'L1',
+    'A94' => 'L1',
+    'A95' => 'L1',
+    'AH7' => 'D',
+    'C2I' => 'L1',
+    'CLE' => 'L1',
+    'DA' => 'D',
+    'FE' => 'M2',
+    'FS' => 'M2',
+    'FT' => 'M2',
+    'IAATC' => 'L3',
+    'IACAW' => 'L3',
+    'IAI' => 'L1',
+    'IAS' => 'L3',
+    'IDAC1' => 'L1',
+    'IDAC2' => 'L2',
+    'IDGB1' => 'L1',
+    'IDGB2A' => 'L2',
+    'IDGB2G' => 'L2',
+    'IDGB2I' => 'L2',
+    'IDQL1' => 'L1',
+    'IDQL2' => 'L2',
+    'LA1' => 'L1',
+    'LA2' => 'L2',
+    'LA3' => 'L3',
+    'MA4' => 'M1',
+    'MA6' => 'M2',
+    'MA8' => 'M2',
+    'UP2' => 'M2',
+);
+
+while (my ($k, $v) = each(%ce2s)) { if ($$targetdata{'CODEETAPE'} =~ /^$k/) {$$targetdata{'STATUT'} = $v;} }
+#$$targetdata{'CODEETAPE'} = $ce2s{$$targetdata{'CODEETAPE'}} if $ce2s{$$targetdata{'STATUT'}};
+
+$$targetdata{categorycode}=substr($$targetdata{'STATUT'},0,1);
+$$targetdata{'categorycode'}||="INC";
+#$debug && warn "targetdata postprocessed :",join(",",@$targetdata{qw(categorycode city)}); 
+---

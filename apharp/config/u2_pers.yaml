@@ -1,0 +1,177 @@
+NOM: surname
+PRENOM: firstname
+NOM_USAGE: othernames
+ADRESSE_ANNEE: address
+ADRESSE_ANNEE2: address2
+VILLE_ANNEE: city
+CP_ANNEE: zipcode
+EMAIL_ANNEE: email
+TEL_ANNEE: phone
+MOBILE_ANNEE: mobile
+EMAIL_PERSO: emailpro
+ADRESSE_FIXE: B_address
+VILLE_FIXE: B_city
+CP_FIXE: B_zipcode
+TEL_FIXE: B_phone
+DATE_NAISS: dateofbirth
+STATUT: [categorycode,STATUT]
+COMPOSANTE: [COMPOSANTE,POLETHEM,branchcode]
+CODE_ETAPE: CODEETAPE
+NUM_INE: INE
+NUM_APPLI_GEST: [APPLIGEST]
+IDENT_LDAP: LDAP
+LABO_COD: LABO_COD
+--- 
+categorycode:
+    Enseignant: P
+    Non Enseignant: P
+STATUT:
+    Enseignant: EC
+    Non Enseignant: PERS
+branchcode:
+    U2CISCA: U2TIMONMED
+    U2DIVER: U2TIMONMED
+    U2EJCOM: U2PHARMA
+    U2ESILM: U2LUMINY
+    U2IECJM: U2AIXECO
+    U2IM2CG: U2LUMINY
+    U2IREMM: U2LUMINY
+    U2IRTAX: U2IRT
+    U2IUTAX: U2IUTAX
+    U2OSUCO: U2LUMINY
+    U2POGAP: U2GAP
+    U2SCASC: U2TIMONMED
+    U2SCMDP: U2TIMONMED
+    U2SCUIO: U2TIMONMED
+    U2SCUNI: U2TIMONMED
+    U2SIUAP: U2SIUAP
+    U2SCDOC: U2SCDOC
+    U2SUFAA: U2TIMONMED
+    U2UFLUM: U2LUMINY
+    U2UFMED: U2UFMED
+    U2UFODO: U2TIMONMED
+    U2UFPHA: U2PHARMA
+    U2UFSEG: U2UFSEG
+    U2UFSTA: U2UFSTA
+POLETHEM:
+    U2CISCA: Santé
+    U2DIVER: Santé
+    U2EJCOM: Economie
+    U2ESILM: Sciences
+    U2IECJM: Economie
+    U2IM2CG: Sciences
+    U2IREMM: Sciences
+    U2IRTAX: Economie
+    U2IUTAX: Economie
+    U2OSUCO: Sciences
+    U2POGAP: Economie
+    U2SCASC: Santé
+    U2SCMDP: Santé
+    U2SCMPR: Santé
+    U2SCUIO: Santé
+    U2SCUNI: Santé
+    U2SIUAP: U2SIUAP
+    U2SCDOC: U2SCDOC
+    U2SUFAA: Santé
+    U2UFLUM: Sciences
+    U2UFMED: Santé
+    U2UFODO: Santé
+    U2UFPHA: Santé
+    U2UFSEG: Economie
+    U2UFSTA: Sciences
+COMPOSANTE:
+    U2CISCA: U2SCO
+    U2DIVER: U2SCO
+    U2EJCOM: U2JOU
+    U2ESILM: U2ESI
+    U2IECJM: U2SEC
+    U2IM2CG: U2IM2
+    U2IREMM: U2SCE
+    U2IRTAX: U2IRT
+    U2IUTAX: U2IUT
+    U2OSUCO: U2OSU
+    U2POGAP: U2GAP
+    U2SCASC: U2SCO
+    U2SCMDP: U2SCO
+    U2SCMPR: U2SCO
+    U2SCUIO: U2SCO
+    U2SCUNI: U2SCO
+    U2SIUAP: U2SCO
+    U2SCDOC: U2SCO
+    U2SUFAA: U2SCO
+    U2UFLUM: U2SCE
+    U2UFMED: U2MED
+    U2UFODO: U2ODO
+    U2UFPHA: U2PHA
+    U2UFSEG: U2SEC
+    U2UFSTA: U2STM
+--- 
+  - firstname,surname,dateofbirth
+---
+--- |
+$$targetdata{'city'}||=" ";
+$$targetdata{'address'}||=" ";
+# Cas particuliers branchcode
+if ( $$targetdata{branchcode} eq 'U2IUTAX' ) {
+    my %labo = (
+        'GAP16' => 'U2IUTMDL',
+        'GCP17' => 'U2IUTHSE',
+        'GGP19' => 'U2GAP',
+        'GLP18' => 'U2LUMINY',
+    );
+    $$targetdata{branchcode} = $labo{ $$targetdata{LABO_COD} } || 'U2AIXECO';
+} elsif ( $$targetdata{branchcode} eq 'U2SIUAP' ) {
+    my %labo = (
+        'OLA05' => 'U2LUMINY',
+        'OLP06' => 'U2LUMINY',      
+    );
+    $$targetdata{branchcode} = $labo{ $$targetdata{LABO_COD} } || 'U2TIMONMED';
+} elsif ( $$targetdata{branchcode} eq 'U2SCDOC' ) {
+    my %labo = (
+        'CAD06' => 'U2AIXECO',
+        'CGD08' => 'U2GAP',
+        'CLD05' => 'U2LUMINY',
+        'CMD07' => 'U2RMSECO',
+        'CTD06' => 'U2PHARMA',
+    );
+    $$targetdata{branchcode} = $labo{ $$targetdata{LABO_COD} } || 'U2TIMONMED';
+} elsif ( $$targetdata{branchcode} eq 'U2UFMED' ) {
+    if ( $$targetdata{LABO_COD} =~ m/^BN/ or $$targetdata{LABO_COD} =~ m/^BZN/ ) 
+         { $$targetdata{branchcode} = 'U2NORDMED'  }
+    else { $$targetdata{branchcode} = 'U2TIMONMED' }
+} elsif ( $$targetdata{branchcode} eq 'U2UFSEG' ) {
+    if    ( $$targetdata{LABO_COD} =~ m/^EA/  ) { $$targetdata{branchcode} = 'U2AIXECO' }
+    elsif ( $$targetdata{LABO_COD} =~ m/^EG/  ) { $$targetdata{branchcode} = 'U2GAP'    }
+    elsif ( $$targetdata{LABO_COD} =~ m/^EM/  ) { $$targetdata{branchcode} = 'U2MRSECO' }
+    elsif ( $$targetdata{LABO_COD} eq 'UFSEG' ) { $$targetdata{branchcode} = 'U2AIXECO' }
+} elsif ( $$targetdata{branchcode} eq 'U2UFSTA' ) {
+    if    ( $$targetdata{LABO_COD} =~ m/^JG/  ) { $$targetdata{branchcode} = 'U2GAP'    }
+    elsif ( $$targetdata{LABO_COD} =~ m/^JH/  ) { $$targetdata{branchcode} = 'U2LUMINY' }
+    elsif ( $$targetdata{LABO_COD} =~ m/^JL/  ) { $$targetdata{branchcode} = 'U2LUMINY' }
+    elsif ( $$targetdata{LABO_COD} eq 'UFSTA' ) { $$targetdata{branchcode} = 'U2LUMINY' }
+}
+
+# Cas particuliers POLETHEM
+if ( $$targetdata{POLETHEM} eq 'U2SIUAP' ) {
+    my %labo = (
+        'OLA05' => 'Sciences',
+        'OLP06' => 'Sciences',      
+    );
+    $$targetdata{POLETHEM} = $labo{ $$targetdata{LABO_COD} } || 'Santé';
+} elsif ( $$targetdata{POLETHEM} eq 'U2SCDOC' ) {
+    my %labo = (
+        'CAD06' => 'Economie',
+        'CGD08' => 'Economie',
+        'CLD05' => 'Sciences',
+        'CMD07' => 'Economie',
+    );
+    $$targetdata{POLETHEM} = $labo{ $$targetdata{LABO_COD} } || 'Santé';
+}
+
+$$targetdata{'ETABLISSEM'}     = 'U2';
+$$targetdata{'branchcode'}   ||= "U2INC";
+$$targetdata{'categorycode'} ||= "INC";
+#$$targetdata{'cardnumber'}     ='U2'.$$targetdata{'cardnumber'};
+
+#$debug && warn "targetdata postprocessed :",@$targetdata{qw(categorycode city)};
+---

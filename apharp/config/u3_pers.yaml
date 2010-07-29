@@ -1,0 +1,534 @@
+NOM: surname
+PRENOM: firstname
+NOM_USAGE: othernames
+ADRESSE_ANNEE: address
+ADRESSE_ANNEE2: address2
+VILLE_ANNEE: city
+CP_ANNEE: zipcode
+EMAIL_ANNEE: email
+TEL_ANNEE: phone
+MOBILE_ANNEE: mobile
+EMAIL_PERSO: emailpro
+ADRESSE_FIXE: B_address
+VILLE_FIXE: B_city
+CP_FIXE: B_zipcode
+TEL_FIXE: B_phone
+DATE_NAISS: dateofbirth
+TYPE_STATUT: STATUT
+AFF_3_COD: [COMPOSANTE,POLETHEM,branchcode]
+LOCAL_AG_COD: LOCAL_AG_COD
+CODE_ETAPE: CODEETAPE
+NUM_INE: INE
+NUM_APPLI_GEST: [APPLIGEST]
+IDENT_LDAP: LDAP
+--- 
+STATUT:
+    ADM: PERS
+    BIB: PERS
+    ENS: EC
+    CNRS: EC
+branchcode:
+    A2: U3BUDAIX
+    A301: U3BUDAIX
+    A302: U3BUDAIX
+    A303: U3BUDAIX
+    A305: U3BUDAIX
+    A308: U3BUDAIX
+    A311: U3BUDAIX
+    A312: U3BUDAIX
+    A313: U3BUDAIX
+    A314: U3BUDAIX
+    A316: U3BUDAIX
+    A317: U3BUDAIX
+    A319: U3BUDAIX
+    A321: U3BUDAIX
+    A324: U3BUCAN
+    A325: U3BUSSJ
+    D2: U3BUDAIX
+    D301: U3BUDAIX
+    D302: U3BUCAN
+    D302: U3BUDAIX
+    D303: U3BUDAIX
+    D304: U3BUDAIX
+    D305: U3BUDAIX
+    D306: U3BUDAIX
+    D307: U3BUDAIX
+    D308: U3BUDAIX
+    D309: U3BUDAIX
+    D310: U3BUDAIX
+    D399: U3BUDAIX
+    D3E2: U3BUDAIX
+    D3SN: U3BUDAIX
+    E2: U3BUDAIX
+    E301: U3BUDAIX
+    E302: U3BUCAN
+    E303: U3BUDAIX
+    E304: U3BUDAIX
+    E305: U3BUDAIX
+    E306: U3BUDAIX
+    E307: U3BUDAIX
+    E308: U3BUDAIX
+    E309: U3BUDAIX
+    E315: U3BUDAIX
+    E3E1: U3BUDAIX
+    E3SN: U3BUDAIX
+    F2: U3BUIEFEE
+    F301: U3BUIEFEE
+    F302: U3BUIEFEE
+    F303: U3BUIEFEE
+    F306: U3BUIEFEE
+    F307: U3BUIEFEE
+    F3E1: U3BUIEFEE
+    G2: U3BUIEFEE
+    G301: U3BUIEFEE
+    G302: U3BUIEFEE
+    G303: U3BUIEFEE
+    G306: U3BUIEFEE
+    G307: U3BUIEFEE
+    G3E1: U3BUIEFEE
+    N2: U3BUSSJ
+    N301: U3BUSSJ
+    N302: U3BUSSJ
+    N303: U3BUSSJ
+    N304: U3BUSSJ
+    N306: U3BUSSJ
+    N307: U3BUSSJ
+    N308: U3BUSSJ
+    N309: U3BUSSJ
+    N310: U3BUSSJ
+    N315: U3BUSSJ
+    N3E1: U3BUSSJ
+    N3E2: U3BUSSJ
+    N3E3: U3BUSSJ
+    N3E4: U3BUSSJ
+    N3E5: U3BUSSJ
+    N3E6: U3BUSSJ
+    N3E7: U3BUSSJ
+    N3E8: U3BUSSJ
+    R2: U3BUDAIX
+    R3E1: U3BUDAIX
+    S2: U3BUSSJ
+    S301: U3BUMTP
+    S301: U3BUSSJ
+    S302: U3BUMTP
+    S302: U3BUSSJ
+    S303: U3BUSSJ
+    S304: U3BUSSJ
+    S305: U3BUSSJ
+    S306: U3BUMTP
+    S306: U3BUSSJ
+    S307: U3BUSSJ
+    S308: U3BUSSJ
+    S309: U3BUSSJ
+    S310: U3BUSSJ
+    S315: U3BUSSJ
+    S399: U3BUSSJ
+    S3E1: U3BUSSJ
+    S3E2: U3BUSSJ
+    S3E3: U3BUSSJ
+    S3E4: U3BUSSJ
+    T2: U3BUIAE
+    T301: U3BUIAE
+    T302: U3BUIAE
+    T303: U3BUIAE
+    T305: U3BUIAE
+    T309: U3BUIAE
+    T310: U3BUIAE
+    T3E1: U3BUIAE
+    UPCAM: U3BUDAIX
+    V301: U3BUSSJ
+    V306: U3BUSSJ
+    V307: U3BUSSJ
+    V309: U3BUSSJ
+    V3E1: U3BUSSJ
+    X301: U3BUDAIX
+    X303: U3BUDAIX
+    X304: U3BUDAIX
+    X305: U3BUDAIX
+    X306: U3BUDAIX
+    X307: U3BUDAIX
+    X308: U3BUDAIX
+    X311: U3BUDAIX
+    X313: U3BUDAIX
+    X314: U3BUDAIX
+    X316: U3BUDAIX
+    X319: U3BUDAIX
+    X320: U3BUDAIX
+    X323: U3BUDAIX
+    X328: U3BUDAIX
+    Y307: U3BUIAE
+    Z3012: U3BUSSJ
+    Z301: U3BUSSJ
+    Z308: U3BUSSJ
+    Z309: U3BUSSJ
+    Z313: U3BUSSJ
+    Z315: U3BUSSJ
+    Z321: U3BUSSJ
+    Z324: U3BUSSJ
+    Z325: U3BUSSJ
+    Z326: U3BUSSJ
+    Z399: U3BUSSJ
+POLETHEM:
+    A2: Droit
+    A301: Droit
+    A302: Droit
+    A303: Droit
+    A304: Droit
+    A305: Droit
+    A307: Droit
+    A308: Droit
+    A309: Sciences
+    A310: Droit
+    A311: Droit
+    A312: Droit
+    A313: Droit
+    A314: Droit
+    A316: Droit
+    A317: Droit
+    A319: Droit
+    A321: Droit
+    A322: Droit
+    A323: Droit
+    A324: Droit
+    A325: Sciences
+    D2: Droit
+    D301: Droit
+    D302: Droit
+    D303: Droit
+    D304: Droit
+    D305: Droit
+    D306: Droit
+    D307: Droit
+    D308: Droit
+    D309: Droit
+    D310: Droit
+    D399: Droit
+    D3E1: Droit
+    D3E2: Droit
+    D3SN: Droit
+    E2: Economie
+    E301: Economie
+    E302: Economie
+    E303: Economie
+    E304: Economie
+    E305: Economie
+    E306: Economie
+    E307: Economie
+    E308: Economie
+    E309: Economie
+    E315: Economie
+    E3E1: Economie
+    E3SN: Economie
+    F2: Lettres
+    F301: Lettres
+    F302: Lettres
+    F303: Lettres
+    F306: Lettres
+    F307: Lettres
+    F3E1: Lettres
+    G2: Droit
+    G301: Droit
+    G302: Droit
+    G303: Droit
+    G306: Droit
+    G307: Droit
+    G3E1: Droit
+    N2: Sciences
+    N301: Sciences
+    N302: Sciences
+    N303: Sciences
+    N304: Sciences
+    N306: Sciences
+    N307: Sciences
+    N308: Sciences
+    N309: Sciences
+    N310: Sciences
+    N315: Sciences
+    N3E1: Sciences
+    N3E2: Sciences
+    N3E3: Sciences
+    N3E4: Sciences
+    N3E5: Sciences
+    N3E6: Sciences
+    N3E7: Sciences
+    N3E8: Sciences
+    R2: Droit
+    R3E1: Droit
+    S2: Sciences
+    S301: Sciences
+    S302: Sciences
+    S303: Sciences
+    S304: Sciences
+    S305: Sciences
+    S306: Sciences
+    S307: Sciences
+    S308: Sciences
+    S309: Sciences
+    S310: Sciences
+    S315: Sciences
+    S399: Sciences
+    S3E1: Sciences
+    S3E2: Sciences
+    S3E3: Sciences
+    S3E4: Sciences
+    T2: Economie
+    T301: Economie
+    T302: Economie
+    T303: Economie
+    T305: Economie
+    T309: Economie
+    T310: Economie
+    T3E1: Economie
+    UPCAM: Droit
+    V301: Sciences
+    V306: Sciences
+    V307: Sciences
+    V309: Sciences
+    V3E1: Sciences
+    X301: Droit
+    X303: Droit
+    X304: Droit
+    X305: Droit
+    X306: Droit
+    X307: Droit
+    X308: Droit
+    X311: Droit
+    X313: Droit
+    X314: Droit
+    X316: Droit
+    X319: Droit
+    X320: Droit
+    X323: Droit
+    X328: Droit
+    Y307: Economie
+    Z3012: Sciences
+    Z301: Sciences
+    Z308: Sciences
+    Z309: Sciences
+    Z313: Sciences
+    Z315: Sciences
+    Z321: Sciences
+    Z324: Sciences
+    Z325: Sciences
+    Z326: Sciences
+    Z399: Sciences
+COMPOSANTE:
+    A2: U3SERVCENT
+    A301: U3SERVCENT
+    A302: U3SERVCENT
+    A303: U3SERVCENT
+    A304: U3SERVCENT
+    A305: U3SERVCENT
+    A307: U3SERVCENT
+    A308: U3SERVCENT
+    A309: U3SERVCENT
+    A310: U3SERVCENT
+    A311: U3SERVCENT
+    A312: U3SERVCENT
+    A313: U3SERVCENT
+    A314: U3SERVCENT
+    A316: U3SERVCENT
+    A317: U3SERVCENT
+    A319: U3SERVCENT
+    A321: U3SERVCENT
+    A322: U3SERVCENT
+    A323: U3SERVCENT
+    A324: U3FDSPMRS
+    A325: U3SERVCENT
+    D2: U3FDSPAIX
+    D301: U3FDSPAIX
+    D302: U3FDSPAIX
+    D302: U3FDSPMRS
+    D303: U3FDSPAIX
+    D304: U3FDSPAIX
+    D305: U3FDSPAIX
+    D306: U3FDSPAIX
+    D307: U3FDSPAIX
+    D308: U3FDSPAIX
+    D309: U3FDSPAIX
+    D310: U3FDSPAIX
+    D399: U3FDSPAIX
+    D3E1: U3FDSPAIX
+    D3E1: U3FDSPMRS
+    D3E2: U3IAR
+    D3SN: U3FDSPAIX
+    E2: U3FEAAIX
+    E301: U3FEAAIX
+    E302: U3FEAAIX
+    E302: U3FEAMRS
+    E303: U3FEAAIX
+    E304: U3FEAAIX
+    E305: U3FEAAIX
+    E306: U3FEAAIX
+    E306: U3FEAFORB
+    E307: U3FEAAIX
+    E308: U3FEAAIX
+    E309: U3FEAAIX
+    E315: U3FEAFORB
+    E3E1: U3FEAAIX
+    E3SN: U3FEAAIX
+    F2: U3IEFEE
+    F301: U3IEFEE
+    F302: U3IEFEE
+    F303: U3IEFEE
+    F306: U3IEFEE
+    F307: U3IEFEE
+    F3E1: U3IEFEE
+    G2: U3IMPGTAIX
+    G301: U3IMPGTAIX
+    G302: U3IMPGTAIX
+    G303: U3IMPGTAIX
+    G306: U3IMPGTAIX
+    G307: U3IMPGTAIX
+    G3E1: U3IMPGTAIX
+    N2: U3IUTMRS
+    N301: U3IUTMRS
+    N302: U3IUTMRS
+    N303: U3IUTMRS
+    N304: U3IUTMRS
+    N306: U3IUTMRS
+    N307: U3IUTMRS
+    N308: U3IUTMRS
+    N309: U3IUTMRS
+    N310: U3IUTMRS
+    N315: U3IUTMRS
+    N315: U3IUTSAL
+    N3E1: U3IUTMRS
+    N3E2: U3IUTMRS
+    N3E3: U3IUTMRS
+    N3E4: U3IUTMRS
+    N3E5: U3IUTMRS
+    N3E6: U3IUTMRS
+    N3E7: U3IUTMRS
+    N3E8: U3IUTMRS
+    N3E8: U3IUTSAL
+    R2: U3IAR
+    R3E1: U3IAR
+    S2: U3FSTMRS
+    S301: U3FSTAIX
+    S301: U3FSTMRS
+    S302: U3FSTAIX
+    S302: U3FSTMRS
+    S303: U3FSTMRS
+    S304: U3FSTMRS
+    S305: U3FSTMRS
+    S306: U3FSTAIX
+    S306: U3FSTMRS
+    S307: U3FSTMRS
+    S308: U3FSTMRS
+    S309: U3FSTMRS
+    S310: U3FSTMRS
+    S315: U3FSTMRS
+    S399: U3FSTMRS
+    S3E1: U3FSTMRS
+    S3E2: U3FSTMRS
+    S3E3: U3FSTMRS
+    S3E4: U3FSTMRS
+    T2: U3IAE
+    T301: U3IAE
+    T302: U3IAE
+    T303: U3IAE
+    T305: U3IAE
+    T309: U3IAE
+    T310: U3IAE
+    T3E1: U3IAE
+    UPCAM: U3SERVCENT
+    V301: U3FSTMRS
+    V306: U3FSTMRS
+    V307: U3FSTMRS
+    V309: U3FSTMRS
+    V3E1: U3FSTMRS
+    X301: U3FDSPAIX
+    X303: U3FDSPAIX
+    X304: U3FDSPAIX
+    X305: U3FDSPAIX
+    X306: U3FDSPAIX
+    X307: U3FDSPAIX
+    X308: U3FDSPAIX
+    X311: U3FDSPAIX
+    X313: U3FDSPAIX
+    X314: U3FDSPAIX
+    X316: U3FDSPAIX
+    X319: U3FDSPAIX
+    X320: U3FDSPAIX
+    X323: U3FDSPAIX
+    X328: U3FDSPAIX
+    Y307: U3IAE
+    Z3012: U3FSTMRS
+    Z301: U3FSTMRS
+    Z308: U3FSTMRS
+    Z309: U3FSTMRS
+    Z313: U3FSTMRS
+    Z315: U3FSTMRS
+    Z321: U3FSTMRS
+    Z324: U3FSTMRS
+    Z325: U3FSTMRS
+    Z326: U3FSTMRS
+    Z399: U3FSTMRS
+--- 
+  - firstname,surname,dateofbirth
+--- 
+--- |
+$$targetdata{'city'}||=" "; 
+#$debug && warn "targetdata postprocessed :",@$targetdata{qw(categorycode city)}; 
+$$targetdata{'ETABLISSEM'}='U3';
+
+# cas spéciaux branchcode
+if ( $$targetdata{'branchcode'} eq 'A304' ) {
+    $$targetdata{'branchcode'} = $$targetdata{'LOCAL_AG_COD'} eq '310' ? 'U3BUSSJ' : 'U3BUDAIX';
+} elsif ( $$targetdata{'branchcode'} eq 'A307' ) {
+    if ( $$targetdata{'LOCAL_AG_COD'} eq '310' ) {
+        $$targetdata{'branchcode'} = 'U3BUSSJ';
+    } elsif ( $$targetdata{'LOCAL_AG_COD'} eq '347' ) {
+        $$targetdata{'branchcode'} = 'U3BUCAN';
+    } else {
+        $$targetdata{'branchcode'} = 'U3BUDAIX';
+    }
+} elsif ( $$targetdata{'branchcode'} eq 'A309' ) {
+    $$targetdata{'branchcode'} = $$targetdata{'LOCAL_AG_COD'} eq '294' ? 'U3BUDAIX' : 'U3BUSSJ';
+} elsif ( $$targetdata{'branchcode'} eq 'D302' ) {
+    $$targetdata{'branchcode'} = $$targetdata{'LOCAL_AG_COD'} eq '347' ? 'U3BUCAN' : 'U3BUDAIX';
+} elsif ( $$targetdata{'branchcode'} eq 'D3E1' ) {
+    $$targetdata{'branchcode'} = $$targetdata{'LOCAL_AG_COD'} eq '347' ? 'U3BUCAN' : 'U3BUDAIX';
+} elsif ( $$targetdata{'branchcode'} eq 'E302' ) {
+    $$targetdata{'branchcode'} = $$targetdata{'LOCAL_AG_COD'} eq '347' ? 'U3BUCAN' : 'U3BUDAIX';
+} elsif ( $$targetdata{'branchcode'} eq 'A310' ) {
+    my %hash = (
+        '294' => 'U3BUDAIX',
+        '299' => 'U3BUIEFEE',
+        '301' => 'U3BUMTP',
+        '310' => 'U3BUSSJ',
+        '322' => 'U3BUIAE',
+        '347' => 'U3BUCAN',
+    );
+    $$targetdata{'branchcode'} = $hash{$$targetdata{'LOCAL_AG_COD'}} || 'U3BUDAIX';
+} elsif ( $$targetdata{'branchcode'} eq 'A322' or $$targetdata{'branchcode'} eq 'A323' ) {
+    $$targetdata{'branchcode'} = $$targetdata{'LOCAL_AG_COD'} eq '310' ? 'U3BUSSJ' : 'U3BUDAIX';
+}
+
+# cas spéciaux polethem
+if ($$targetdata{'AFF_3_COD'} eq 'A304' or
+    $$targetdata{'AFF_3_COD'} eq 'A307' or
+    $$targetdata{'AFF_3_COD'} eq 'A322' or
+    $$targetdata{'AFF_3_COD'} eq 'A323' ) {
+    if ( $$targetdata{'LOCAL_AG_COD'} eq '310' ) {
+        $$targetdata{'POLETHEM'} = 'Science';
+    }
+} elsif ( $$targetdata{'AFF_3_COD'} eq 'A309' ) {
+    if ( $$targetdata{'LOCAL_AG_COD'} eq '294' ) {
+        $$targetdata{'POLETHEM'} = 'Droit';
+    }
+} elsif ( $$targetdata{'AFF_3_COD'} eq 'A310' ) {
+    my %hash = (
+        '299' => 'Lettres',
+        '301' => 'Sciences',
+        '310' => 'Sciences',
+        '322' => 'Economie',
+    );  
+    $$targetdata{'POLETHEM'} = $hash{$$targetdata{'LOCAL_AG_COD'}};
+}
+
+$$targetdata{'branchcode'} ||= "U3INC";
+$$targetdata{'categorycode'} = "P";
+#$$targetdata{'cardnumber'} = 'U3'.$$targetdata{'cardnumber'};
+---
