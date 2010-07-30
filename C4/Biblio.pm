@@ -3538,13 +3538,13 @@ sub BatchModField {
 
     if ( $action eq "add" ) {
         for my $rfield ($record->field($field)){
-            $rfield->add_subfields( $subfield => $repval );
+            $rfield->insert_fields_ordered( $subfield => $repval );
         }
         return 1;
     }elsif($action eq "addfield"){
         my $new_field = MARC::Field->new($field,'','', 
                                          $subfield => $repval);
-        $record->append_fields($new_field);
+        $record->insert_fields_ordered($new_field);
         return 1;
     } else {
         my $done=0;
