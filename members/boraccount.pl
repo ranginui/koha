@@ -48,6 +48,11 @@ my ($template, $loggedinuser, $cookie)
 my $borrowernumber=$input->param('borrowernumber');
 my $action = $input->param('action') || '';
 
+# The index of the first record to display
+my $first_record = $input->param('first') || 0;
+# The number of records to show
+my $count_record = $input->param('count') || 20;
+
 #get borrower details
 my $data=GetMember('borrowernumber' => $borrowernumber);
 
@@ -63,14 +68,36 @@ if ( $data->{'category_type'} eq 'C') {
 }
 
 #get account details
-my ($total,$accts,undef)=GetMemberAccountRecords($borrowernumber);
+my ($total,$accts,$num_records)=GetMemberAccountRecords($borrowernumber);
 my $totalcredit;
 if($total <= 0){
         $totalcredit = 1;
 }
 
+# Validate the actual boundaries we need, if they're outside a useful range,
+# just reset them to something we understand.
+$first_record = 0  if ($first_record < 0 || $first_record >= @$accts);
+$count_record = 20 if ($count_record < 0);
+my $last_record = $first_record+$count_record-1;
+$last_record = @$accts - 1 if ($last_record >= @$accts);
+
+# Take an array slice
+my @accts = @$accts[$first_record .. $last_record];
+
+my ($show_back_link, $back_first_record) = (0, undef);
+if ($first_record > 0) {
+    $show_back_link = 1;
+    $back_first_record = $first_record-$count_record;
+    $back_first_record = 0 if ($back_first_record < 0);
+}
+my ($show_forward_link, $forward_first_record) = (0, undef);
+if (@$accts > $first_record+$count_record) {
+    $show_forward_link = 1;
+    $forward_first_record = $first_record+$count_record;
+}
+
 my $reverse_col = 0; # Flag whether we need to show the reverse column
-foreach my $accountline ( @{$accts}) {
+foreach my $accountline (@accts) {
     $accountline->{amount} += 0.00;
     if ($accountline->{amount} <= 0 ) {
         $accountline->{amountcredit} = 1;
@@ -105,7 +132,7 @@ $template->param(
     cardnumber          => $data->{'cardnumber'},
     categorycode        => $data->{'categorycode'},
     category_type       => $data->{'category_type'},
-    categoryname		 => $data->{'description'},
+    categoryname	=> $data->{'description'},
     address             => $data->{'address'},
     address2            => $data->{'address2'},
     city                => $data->{'city'},
@@ -114,11 +141,19 @@ $template->param(
     phone               => $data->{'phone'},
     email               => $data->{'email'},
     branchcode          => $data->{'branchcode'},
-	branchname			=> GetBranchName($data->{'branchcode'}),
+    branchname		=> GetBranchName($data->{'branchcode'}),
     total               => sprintf("%.2f",$total),
     totalcredit         => $totalcredit,
     is_child            => ($data->{'category_type'} eq 'C'),
     reverse_col         => $reverse_col,
-    accounts            => $accts );
+    accounts            => [ @accts ],
+    account_count       => $num_records,
+    show_back_link      => $show_back_link,
+    show_forward_link   => $show_forward_link,
+    back_first_record   => $back_first_record,
+    forward_first_record=> $forward_first_record,
+    current_start       => ($first_record+1),
+    current_last        => ($last_record+1),
+);
 
 output_html_with_http_headers $input, $cookie, $template->output;

@@ -205,6 +205,10 @@ my $marcseriesarray  = GetMarcSeries  ($record,$marcflavour);
 my $marcurlsarray    = GetMarcUrls    ($record,$marcflavour);
 my $subtitle         = GetRecordValue('subtitle', $record, GetFrameworkCode($biblionumber));
 
+# Support newlines in the notes content
+$_->{marcnote} =~ s{\n}{<br />}g foreach (@$marcnotesarray);
+
+
     $template->param(
                      MARCNOTES               => $marcnotesarray,
                      MARCSUBJCTS             => $marcsubjctsarray,
