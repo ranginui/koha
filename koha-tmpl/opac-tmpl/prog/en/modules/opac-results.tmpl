@@ -221,6 +221,7 @@ $(document).ready(function(){
         <!-- /TMPL_IF -->
         <!-- /TMPL_IF -->
     <!-- /TMPL_IF -->
+    <!-- TMPL_IF NAME="OpenLibrary" -->KOHA.OpenLibrary.GetCoverFromIsbn();<!-- /TMPL_IF -->
     <!-- TMPL_IF NAME="GoogleJackets" -->KOHA.Google.GetCoverFromIsbn();<!-- /TMPL_IF -->
 });
 //]]>
@@ -512,6 +513,8 @@ $(document).ready(function(){
                 <img src="https://secure.syndetics.com/index.aspx?isbn=<!-- TMPL_VAR NAME="normalized_isbn" -->/SC.GIF&amp;client=<!-- TMPL_VAR NAME="SyndeticsClientCode" -->&amp;type=xw10&amp;upc=<!-- TMPL_VAR NAME="normalized_upc" -->&amp;oclc=<!-- TMPL_VAR NAME="normalized_oclc" -->" alt="" class="thumbnail" />
                 <!--TMPL_ELSE -->
                 <img src="http://www.syndetics.com/index.aspx?isbn=<!-- TMPL_VAR NAME="normalized_isbn" -->/SC.GIF&amp;client=<!-- TMPL_VAR NAME="SyndeticsClientCode" -->&amp;type=xw10&amp;upc=<!-- TMPL_VAR NAME="normalized_upc" -->&amp;oclc=<!-- TMPL_VAR NAME="normalized_oclc" -->" alt="" class="thumbnail" /><!-- /TMPL_IF --><!-- /TMPL_IF --><!-- /TMPL_IF -->
+
+                <!-- TMPL_IF NAME="OpenLibrary" --><!-- TMPL_IF NAME="normalized_isbn" --><div style="block" title="<!-- TMPL_VAR NAME="biblionumber" ESCAPE="URL" -->" class="<!-- TMPL_VAR name="normalized_isbn" -->" id="openlibrary-thumbnail<!--TMPL_VAR NAME="__counter__"-->"></div><!-- TMPL_ELSE --><span class="no-image">No cover image available</span><!-- /TMPL_IF --><!-- /TMPL_IF -->
 
                 <!-- TMPL_IF NAME="GoogleJackets" --><!-- TMPL_IF NAME="normalized_isbn" --><div style="block" title="<!-- TMPL_VAR NAME="biblionumber" ESCAPE="URL" -->" class="<!-- TMPL_VAR name="normalized_isbn" -->" id="gbs-thumbnail<!--TMPL_VAR NAME="__counter__"-->"></div><!-- TMPL_ELSE --><span class="no-image">No cover image available</span><!-- /TMPL_IF --><!-- /TMPL_IF -->
                 </a>

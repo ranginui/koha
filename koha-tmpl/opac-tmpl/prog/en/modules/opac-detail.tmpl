@@ -21,8 +21,14 @@
     dateFormat: 'uk',<!-- /TMPL_IF -->
             widgets : ['zebra'],
             sortList: [[0,0]]
-        });<!-- TMPL_IF NAME="GoogleJackets" -->
-        KOHA.Google.GetCoverFromIsbn();<!-- /TMPL_IF --><!-- TMPL_IF NAME="TagsEnabled" -->
+        });
+	<!-- TMPL_IF NAME="GoogleJackets" -->
+        KOHA.Google.GetCoverFromIsbn();
+	<!-- /TMPL_IF -->
+	<!-- TMPL_IF NAME="OpenLibrary" -->
+        KOHA.OpenLibrary.GetCoverFromIsbn();
+	<!-- /TMPL_IF -->
+	<!-- TMPL_IF NAME="TagsEnabled" -->
         $(".tagbutton").click(KOHA.Tags.add_tag_button);<!-- /TMPL_IF -->
 		<!-- TMPL_IF NAME="opacbookbag" -->$("a.print").parent().after("<li><a class=\"addtocart\" href=\"#\" onclick=\"addRecord('"+$("input[name=bib]").val()+"'); return false;\">"+_("Add to Your Cart")+"<\/a><\/li>");
 <!-- /TMPL_IF -->});
@@ -80,6 +86,8 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
     <!-- TMPL_ELSE --><span class="no-image">No cover image available</span><!-- /TMPL_IF --><!-- /TMPL_IF --><!-- /TMPL_IF -->
 
     <!-- TMPL_IF NAME="GoogleJackets" --><div style="block" title="<!-- TMPL_VAR NAME="biblionumber" ESCAPE="URL" -->" class="<!-- TMPL_VAR NAME="normalized_isbn" -->" id="gbs-thumbnail-preview"></div><!-- /TMPL_IF -->
+    <!-- TMPL_IF NAME="OpenLibrary" --><div style="block" title="<!-- TMPL_VAR NAME="biblionumber" ESCAPE="URL" -->" class="<!-- TMPL_VAR NAME="normalized_isbn" -->" id="openlibrary-thumbnail-preview"></div><!-- /TMPL_IF -->
+    
     <!-- TMPL_IF NAME="BakerTaylorEnabled" --><!-- TMPL_IF NAME="normalized_isbn" --><!-- TMPL_IF NAME="OPACURLOpenInNewWindow" --><a href="https://<!-- TMPL_VAR NAME="BakerTaylorBookstoreURL" ESCAPE="HTML" --><!-- TMPL_VAR NAME="normalized_isbn" -->" target="_blank"><img alt="See Baker &amp; Taylor" src="<!-- TMPL_VAR NAME="BakerTaylorImageURL" ESCAPE="HTML" --><!-- TMPL_VAR NAME="normalized_isbn" -->" /></a><!-- TMPL_ELSE --><a href="https://<!-- TMPL_VAR NAME="BakerTaylorBookstoreURL" ESCAPE="HTML" --><!-- TMPL_VAR NAME="normalized_isbn" -->"><img alt="See Baker &amp; Taylor" src="<!-- TMPL_VAR NAME="BakerTaylorImageURL" ESCAPE="HTML" --><!-- TMPL_VAR NAME="normalized_isbn" -->" /></a><!-- /TMPL_IF --><!-- /TMPL_IF --><!-- /TMPL_IF -->
     </div>
 

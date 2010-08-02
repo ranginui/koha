@@ -69,7 +69,17 @@
 	var NO_GOOGLE_JACKET = _("No cover image available");
 	//]]>
 </script>
-<!-- /TMPL_IF --><!-- TMPL_IF NAME="BakerTaylorEnabled" --><script type="text/javascript" language="javascript" src="<!-- TMPL_VAR NAME="themelang" -->/js/bakertaylorimages.js"></script>
+<!-- /TMPL_IF -->
+<!-- TMPL_IF NAME="OpenLibrary" -->
+<script type="text/javascript" language="javascript" src="<!-- TMPL_VAR NAME="themelang" -->/js/openlibrary.js"></script>
+<script type="text/javascript" language="javascript">
+	//<![CDATA[
+	var NO_OL_JACKET = _("No cover image available");
+	//]]>
+</script>
+<!-- /TMPL_IF -->
+
+<!-- TMPL_IF NAME="BakerTaylorEnabled" --><script type="text/javascript" language="javascript" src="<!-- TMPL_VAR NAME="themelang" -->/js/bakertaylorimages.js"></script>
 <script type="text/javascript" language="javascript">
 	//<![CDATA[
 	var NO_BAKERTAYLOR_IMAGE = _("No cover image available");
