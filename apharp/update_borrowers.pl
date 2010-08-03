@@ -22,11 +22,14 @@ use warnings;
 
 use Apharp;
 use Getopt::Long;
+use POSIX qw/ceil/;
 
 my $new;   # option variable with default value (false)
 GetOptions ('new' => \$new);
 
+print "Récupération de la liste des lecteurs ...\n";
 my $borrowers = getBorrowers($new);
+print "Nombre de lecteurs trouvé : " . scalar(@$borrowers) . "\n";
 
 if ($borrowers) {
     foreach (@$borrowers) {
@@ -50,17 +53,26 @@ if ($borrowers) {
 	}
     }
 
-    foreach my $category (@borrowers_category) {
-	foreach (@$borrowers) {
-	    if ($_->{"categorycode"} eq $category->{"borrower_type"} && $_->{"ETABLISSEM"} eq $category->{"univ"}) {
-		push @{ $category->{"borrowers"} }, $_->{"APPLIGEST"};
-	    }
-	}    
+    my $elemperpage = 1000;
+    my $npages = ceil(scalar(@$borrowers) / $elemperpage );
+
+    my $min = 0;
+    my $max = $elemperpage;
+    for ( my $i=1; $i<=$npages; $i++) {
+	foreach my $category (@borrowers_category) {
+	    foreach (@$borrowers[$min..$max-1]) {
+		if ($_->{"categorycode"} eq $category->{"borrower_type"} && $_->{"ETABLISSEM"} eq $category->{"univ"}) {
+		    push @{ $category->{"borrowers"} }, $_->{"APPLIGEST"};
+		}
+	    }    
+	}
+	$min = $max;
+	$max += $elemperpage;
+
+	my $data = get_borrowers_attr(\@borrowers_category);
+	data_to_koha($data, $new);
     }
 
-    my $data = get_borrowers_attr(\@borrowers_category);
-
-    data_to_koha($data, $new);
 } else { print "no borrowers to update in database ..."; }
 
 
