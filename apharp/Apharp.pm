@@ -40,10 +40,9 @@ sub getBorrowers {
                   AND ba2.borrowernumber = ba3.borrowernumber
                   AND ba1.borrowernumber = borrowers.borrowernumber
                   AND ba1.code = 'APPLIGEST'
-                  AND ba3.code = 'ETABLISSEM'
-                  AND ba2.code = 'TIMESTAMP'";
+                  AND ba3.code = 'ETABLISSEM'";
 
-    $query .= " AND ba2.attribute IS NULL" if $new;
+    $query .= " AND ba2.code = 'TIMESTAMP' AND ba2.attribute IS NULL" if $new;
     my $sth = $dbh->prepare($query);
     $sth->execute();
     my $result = $sth->fetchall_arrayref({});
