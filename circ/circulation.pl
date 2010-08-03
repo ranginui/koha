@@ -737,6 +737,9 @@ $address .= $roadttype_hashref->{ $borrower->{'streettype'} } . ' ' if ( $roadtt
 $address .= $borrower->{'address'};
 
 $duedatespec = "" if not( $stickyduedate or scalar $confirm_required );
+
+my @categories = C4::Category->all;
+
 $template->param(
     issued_itemtypes_count_loop => \@issued_itemtypes_count_loop,
     lib_messages_loop           => $lib_messages_loop,
@@ -780,6 +783,7 @@ $template->param(
     is_child                    => ( $borrower->{'category_type'} eq 'C' ),
     circview                    => 1,
     soundon                     => C4::Context->preference("SoundOn"),
+    categoryloop				=> \@categories,
 );
 
 $template->param( newexpiry => format_date($newexpiry) ) if ( defined $newexpiry );
