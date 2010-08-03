@@ -43,6 +43,7 @@ sub getBorrowers {
                   AND ba3.code = 'ETABLISSEM'";
 
     $query .= " AND ba2.code = 'TIMESTAMP' AND ba2.attribute IS NULL" if $new;
+    $query .= " GROUP BY APPLIGEST, ETABLISSEM";
     my $sth = $dbh->prepare($query);
     $sth->execute();
     my $result = $sth->fetchall_arrayref({});
