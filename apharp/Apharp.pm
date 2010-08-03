@@ -147,7 +147,7 @@ sub data_to_koha {
     my $success_update = 0;
     my @errors_update;
 
-    warn "UPDATING BORROWERS : start update...";
+    print "UPDATING BORROWERS : start update...";
     foreach my $fromdata (@$data) {
         
         #load the yaml Config file
@@ -190,27 +190,26 @@ sub data_to_koha {
         #Save to koha db
         my $success = ModMember(%$targetdata);
         unless ($success) {
-            warn "UPDATING BORROWERS : Can't update borrower n° " . $targetdata->{'borrowernumber'};
+            print "UPDATING BORROWERS : Can't update borrower n° " . $targetdata->{'borrowernumber'};
             push @errors_update, "The updating of the borrowers (APPLIGEST: $appligest) failed" ;
         } else {
             C4::Members::Attributes::SetBorrowerAttributes( $targetdata->{'borrowernumber'}, $patron_attributes );
-            warn "UPDATING BORROWERS : Borrower n° " . $targetdata->{'borrowernumber'} . " updated successfully ";
+            print "UPDATING BORROWERS : Borrower n° " . $targetdata->{'borrowernumber'} . " updated successfully ";
             $success_update++;
         }
         
     }
     if (@errors_update) {
-    print "errors : " . Data::Dumper::Dumper{@errors_update};
         my %mail = (
             smtp    => 'smtp.nerim.net',
             To      => 'alex.arnaud@biblibre.com',
             From    => 'alex.arnaud@biblibre.com',
             Subject => 'Borrowers update in koha',
             Message =>  join("\n", @errors_update));
-        sendmail(%mail) or warn "mail not sent" . $Mail::Sendmail::error; 
+        sendmail(%mail) or print "mail not sent" . $Mail::Sendmail::error; 
     }
     
-    warn "UPDATING BORROWERS : End update. Success : " . $success_update . ", Failure(s) : " . scalar(@errors_update);
+    print "UPDATING BORROWERS : End update. Success : " . $success_update . ", Failure(s) : " . scalar(@errors_update);
 }
 
 sub filterhash {
@@ -221,17 +220,14 @@ sub filterhash {
 }
 
 sub mapvalues {
-print "sub mapvalue\n";
     my ( $valuemapping, $transformedkey, $value) = @_;
     if ( my $v = $valuemapping->{$transformedkey} ) { 
     my $rv;
         ref $v eq "HASH" and $rv = $v->{$value} and return $rv;
 #         warn "no key in transformation for $value";
         # eventuellement
-print "return value\n";
         return $value;
     } else {
-print "return value2\n";
 #         warn "no transformation key for $value";
         return $value;
     }   
@@ -293,14 +289,11 @@ sub card_is_invalid {
 
 sub transform_data {
     my ($fromdata, $configfile) = @_;
-print "fromdata : ".  Data::Dumper::Dumper($fromdata) . "\n";
-print "configfile : " .  Data::Dumper::Dumper($configfile) . "\n";
+    #print "fromdata : ".  Data::Dumper::Dumper($fromdata) . "\n";
     my $targetdata;    
 
     #load the yaml Config file
     my ($map,$valuesmapping,$matchingpoint,$preprocess,$postprocess)= YAML::LoadFile($configfile) or die "unable to load $configfile ";
-print "postprocess : " . $postprocess;
-print "valuemapping : " . Data::Dumper::Dumper($valuesmapping) . "\n";
         
     eval $preprocess if ($preprocess);
     die $@ if $@;
@@ -311,7 +304,6 @@ print "valuemapping : " . Data::Dumper::Dumper($valuesmapping) . "\n";
         foreach my $transformedkey (@mapkeys){
             $transformedkey||=$key;
             my $value=$$fromdata{$key};
-print $transformedkey . "\n";
             #$$targetdata{$transformedkey} = mapvalues( $valuesmapping, $transformedkey, $value) unless ($$targetdata{$transformedkey}); 
 	    $$targetdata{$transformedkey} = mapvalues( $valuesmapping, $transformedkey, $value);
 	    #PBM avec le statut sur u3_pers.yaml, donc traitement particulier sans le unless puisque $$targetdata{STATUT} existe déja avec la mauvaise valeur
@@ -320,8 +312,6 @@ print $transformedkey . "\n";
         }
     eval $postprocess if ($postprocess);
     die $@ if $@;
-warn Data::Dumper::Dumper($@);
-print "Targetdata en sortie : " . Data::Dumper::Dumper($targetdata) . "\n";
     return $targetdata;
 }
 
@@ -443,7 +433,6 @@ sub category_for {
 	my $file = "config/u3_branch_by_step";
 	open my $fh,$file or die "$file : $!";
 	my $category_map = { map { chomp; my ($key,$value) = split /;/,$_; ( $key => $value ); } <$fh> };
-	warn $category_map;
 
 	if ( my $v = $category_map->{$step} ) { $v }
 	else { "L" }
