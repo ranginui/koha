@@ -473,31 +473,26 @@ my $todaysissues = '';
 my $previssues   = '';
 my @todaysissues;
 my @previousissues;
-my @borrowers_with_issues;
+my @relissues;
+my @relprevissues;
+my $displayrelissues;
 ## ADDED BY JF: new itemtype issuingrules counter stuff
 my $issued_itemtypes_count;
 my @issued_itemtypes_count_loop;
 my $totalprice = 0;
 
-if ($borrower) {
 
-    # Getting borrower relatives
-    my @borrowernumbers = GetMemberRelatives($borrower->{'borrowernumber'});
-    push @borrowernumbers, $borrower->{'borrowernumber'};
+sub build_issue_data {
+    my $issueslist = shift;
+    my $relatives = shift;
 
-    # get each issue of the borrower & separate them in todayissues & previous issues
-    my ($issueslist) = GetPendingIssues(@borrowernumbers);
-
-    # split in 2 arrays for today & previous
+  # split in 2 arrays for today & previous
     foreach my $it (@$issueslist) {
         my $itemtypeinfo = getitemtypeinfo( ( C4::Context->preference('item-level_itypes') ) ? $it->{'itype'} : $it->{'itemtype'} );
 
 	# Getting borrower details
 	my $memberdetails = GetMemberDetails($it->{'borrowernumber'});
 	$it->{'borrowername'} = $memberdetails->{'firstname'} . " " . $memberdetails->{'surname'};
-
-	# Adding this borrower to the list of borrowers with issue
-	push @borrowers_with_issues, $it->{'borrowernumber'};
 
         # set itemtype per item-level_itype syspref - FIXME this is an ugly hack
         $it->{'itemtype'} = ( C4::Context->preference('item-level_itypes') ) ? $it->{'itype'} : $it->{'itemtype'};
@@ -539,16 +534,31 @@ if ($borrower) {
 
         # ADDED BY JF: NEW ITEMTYPE COUNT DISPLAY
         $issued_itemtypes_count->{ $it->{'itemtype'} }++;
-        if ( $todaysdate eq $it->{'checkoutdate'} or $todaysdate eq $it->{'lastreneweddate'} ) {
-            push @todaysissues, $it;
-        } else {
-            push @previousissues, $it;
-        }
+	if ( $todaysdate eq $it->{'checkoutdate'} or $todaysdate eq $it->{'lastreneweddate'} ) {
+	    (!$relatives) ? push @todaysissues, $it : push @relissues, $it;
+	} else {
+	    (!$relatives) ? push @previousissues, $it : push @relprevissues, $it;
+	}
+
     }
 
-    # If we have more than one borrower, we display their names
-    @borrowers_with_issues = uniq @borrowers_with_issues;
-    $template->param('multiple_borrowers' => 1) if (@borrowers_with_issues > 1 || (@borrowers_with_issues == 1 && @borrowers_with_issues[0] != $borrower->{'borrowernumber'}));
+}
+
+if ($borrower) {
+
+    # Getting borrower relatives
+    my @relborrowernumbers = GetMemberRelatives($borrower->{'borrowernumber'});
+    warn Data::Dumper::Dumper(@relborrowernumbers);
+    #push @borrowernumbers, $borrower->{'borrowernumber'};
+
+    # get each issue of the borrower & separate them in todayissues & previous issues
+    my ($issueslist) = GetPendingIssues($borrower->{'borrowernumber'});
+    my ($relissueslist) = GetPendingIssues(@relborrowernumbers);
+
+    build_issue_data($issueslist, 0);
+    build_issue_data($relissueslist, 1);
+  
+    $displayrelissues = scalar($relissueslist);
 
     if ( C4::Context->preference("todaysIssuesDefaultSortOrder") eq 'asc' ) {
         @todaysissues = sort { $a->{'timestamp'} cmp $b->{'timestamp'} } @todaysissues;
@@ -777,6 +787,9 @@ $template->param(
     totaldue                    => sprintf( '%.2f', $total ),
     todayissues                 => \@todaysissues,
     previssues                  => \@previousissues,
+    relissues			=> \@relissues,
+    relprevissues		=> \@relprevissues,
+    displayrelissues		=> $displayrelissues,
     inprocess                   => $inprocess,
     memberofinstution           => $member_of_institution,
     CGIorganisations            => $CGIorganisations,

@@ -616,14 +616,14 @@ sub GetMemberRelatives {
 
     # Getting sibling guarantees
     if ($guarantor) {
-    warn "guarantor $guarantor";
         $query = "SELECT borrowernumber FROM borrowers WHERE guarantorid=?";
         $sth = $dbh->prepare($query);
         $sth->execute($guarantor);
         while ($data = $sth->fetchrow_arrayref()) {
-           push @glist, $data->[0];
+           push @glist, $data->[0] if ($data->[0] != $borrowernumber);
         }
     }
+
     return @glist;
 
 }

@@ -227,10 +227,10 @@ $template->param( lib2 => $lib2 ) if ($lib2);
 # current issues
 #
 my @borrowernumbers = GetMemberRelatives($borrowernumber);
-my @borrowernumbers;
-push @borrowernumbers, $borrowernumber;
-my $issue       = GetPendingIssues(@borrowernumbers);
+my $issue       = GetPendingIssues($borrowernumber);
+my $relissue    = GetPendingIssues(@borrowernumbers);
 my $issuecount  = scalar(@$issue);
+my $relissuecount  = scalar(@$relissue);
 my $roaddetails = &GetRoadTypeDetails( $data->{'streettype'} );
 my $today       = POSIX::strftime( "%Y-%m-%d", localtime );       # iso format
 my @issuedata;
@@ -238,21 +238,21 @@ my @borrowers_with_issues;
 my $overdues_exist = 0;
 my $totalprice     = 0;
 
-my @issue_data = build_issue_data($issue, $issuecount);
+my @issuedata = build_issue_data($issue, $issuecount);
+my @relissuedata = build_issue_data($relissue, $relissuecount);
+#warn Data::Dumper::Dumper(@issuedata);
 
 sub build_issue_data {
-    my @issues = shift;
+    my $issue = shift;
     my $issuecount = shift;
 
+    my $localissue;
 
 for ( my $i = 0 ; $i < $issuecount ; $i++ ) {
 
     # Getting borrower details
     my $memberdetails = GetMemberDetails($issue->[$i]{'borrowernumber'});
     $issue->[$i]{'borrowername'} = $memberdetails->{'firstname'} . " " . $memberdetails->{'surname'};
-
-    # Adding this borrower to the list of borrowers with issue
-    push @borrowers_with_issues, $issue->[$i]{'borrowernumber'};
 
     my $datedue    = $issue->[$i]{'date_due'};
     my $issuedate  = $issue->[$i]{'issuedate'};
@@ -337,15 +337,11 @@ for ( my $i = 0 ; $i < $issuecount ; $i++ ) {
     if ( $row{'renew_failed'} ) {
         $row{ 'norenew_reason_' . $renew_failed{ $issue->[$i]->{'itemnumber'} }->{message} } = 1;
     }
-    push( @issuedata, \%row );
+    push( @$localissue, \%row );
 }
-    return @issuedata;
+    return $localissue;
 
 }
-
-# If we have more than one borrower, we display their names
-@borrowers_with_issues = uniq @borrowers_with_issues;
-$template->param('multiple_borrowers' => 1) if (@borrowers_with_issues > 1 || (@borrowers_with_issues == 1 && @borrowers_with_issues[0] != $borrowernumber));
 
 
 #BUILDS the LOOP for reserves when returning books with reserves
@@ -492,8 +488,10 @@ $template->param(
     totalprice                => sprintf( "%.2f", $totalprice ),
     totaldue                  => sprintf( "%.2f", $total ),
     totaldue_raw              => $total,
-    issueloop                 => \@issuedata,
+    issueloop                 => @issuedata,
+    relissueloop              => @relissuedata,
     issuecount                => $issuecount,
+    relissuecount             => $relissuecount,
     overdues_exist            => $overdues_exist,
     error                     => $error,
     $error                    => 1,
