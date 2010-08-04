@@ -61,7 +61,8 @@ sub getMemberByAppligest {
 			AND ba1.code = 'APPLIGEST'
 			AND ba3.code = 'ETABLISSEM'
 			AND ba1.attribute = ?
-			AND ba3.attribute = ? };
+			AND ba3.attribute = ? 
+			GROUP BY borrowernumber };
     my $sth = $dbh->prepare($query);
     $sth->execute($appligest, $site);
     my $result = $sth->fetchrow_array;
