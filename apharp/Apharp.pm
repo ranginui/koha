@@ -60,7 +60,6 @@ sub getMemberByAppligest {
 			AND ba1.borrowernumber = borrowers.borrowernumber
 			AND ba1.code = 'APPLIGEST'
 			AND ba3.code = 'ETABLISSEM'
-			AND ba2.code = 'TIMESTAMP'
 			AND ba1.attribute = ?
 			AND ba3.attribute = ? };
     my $sth = $dbh->prepare($query);
@@ -112,11 +111,13 @@ sub get_borrowers_attr {
     my $ua = LWP::UserAgent->new;
     foreach my $category (@$borrowers_category) {
         if ($category->{"borrowers"}) {
+	    print "Récupération des données " . ($category->{'borrower_type'} eq 'pers' ? 'des personnels' : 'des étudiants') . " depuis " . $category->{'univ'} . "\n";
             my $req = HTTP::Request->new(POST => "http://webserv.univ-aix-marseille.fr/koha-ws/lecteurs/$category->{'univ'}/$category->{'borrower_type'}/list.csv");
             $req->content_type('application/x-www-form-urlencoded');
             $req->content("secret=sheldon&idList=" . join(",", @{ $category->{"borrowers"} }));
             my $res = $ua->request($req);
             my $parsed_data = parse_data($res->content, $category->{'univ'}, $category->{'borrower_type'});
+	    print scalar(@$parsed_data) . " trouvé(s)\n";
             push @data, $_ foreach @$parsed_data; 
         }       
     }
@@ -146,9 +147,9 @@ sub parse_data {
 sub data_to_koha {
     my ($data, $new) = @_;
     my $success_update = 0;
-    my @errors_update;
+    my @errors_update = ();
 
-    print "UPDATING BORROWERS : start update...";
+    print "UPDATING BORROWERS : start update...\n";
     foreach my $fromdata (@$data) {
         
         #load the yaml Config file
@@ -191,11 +192,11 @@ sub data_to_koha {
         #Save to koha db
         my $success = ModMember(%$targetdata);
         unless ($success) {
-            print "UPDATING BORROWERS : Can't update borrower n° " . $targetdata->{'borrowernumber'};
+            print "UPDATING BORROWERS : Can't update borrower n° " . $targetdata->{'borrowernumber'} . "\n";
             push @errors_update, "The updating of the borrowers (APPLIGEST: $appligest) failed" ;
         } else {
             C4::Members::Attributes::SetBorrowerAttributes( $targetdata->{'borrowernumber'}, $patron_attributes );
-            print "UPDATING BORROWERS : Borrower n° " . $targetdata->{'borrowernumber'} . " updated successfully ";
+            print "UPDATING BORROWERS : Borrower n° " . $targetdata->{'borrowernumber'} . " updated successfully\n";
             $success_update++;
         }
         
@@ -210,7 +211,7 @@ sub data_to_koha {
         sendmail(%mail) or print "mail not sent" . $Mail::Sendmail::error; 
     }
     
-    print "UPDATING BORROWERS : End update. Success : " . $success_update . ", Failure(s) : " . scalar(@errors_update);
+    print "UPDATING BORROWERS : End update. Success : " . $success_update . ", Failure(s) : " . scalar(@errors_update) . "\n";
 }
 
 sub filterhash {
