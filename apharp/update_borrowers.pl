@@ -43,15 +43,6 @@ if ($borrowers) {
     #builds an array for each branch with staff and one for each branch with students
     my @borrower_types = ("pers", "etud");
     my @univ = ("U1", "U2", "U3");
-    my @borrowers_category;
-
-    foreach my $type (@borrower_types){
-	foreach (@univ) {
-	    push @borrowers_category, { borrower_type => $type,
-                                    univ          => $_,
-	    };
-	}
-    }
 
     my $elemperpage = 1000;
     my $npages = ceil(scalar(@$borrowers) / $elemperpage );
@@ -59,6 +50,17 @@ if ($borrowers) {
     my $min = 0;
     my $max = $elemperpage;
     for ( my $i=1; $i<=$npages; $i++) {
+
+	my @borrowers_category;
+
+	foreach my $type (@borrower_types){
+	    foreach (@univ) {
+		push @borrowers_category, { borrower_type => $type,
+					    univ          => $_,
+		};
+	    }
+	}
+
 	foreach my $category (@borrowers_category) {
 	    foreach (@$borrowers[$min..$max-1]) {
 		if ($_->{"categorycode"} eq $category->{"borrower_type"} && $_->{"ETABLISSEM"} eq $category->{"univ"}) {
