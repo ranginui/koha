@@ -547,6 +547,12 @@ for my $branch ( sort { $branches->{$a}->{branchname} cmp $branches->{$b}->{bran
     $default = C4::Context->userenv->{'branch'} if ( C4::Context->userenv && C4::Context->userenv->{'branch'} );
 }
 
+if ($category_type eq 'A' || $category_type eq 'P') {
+    $template->param(
+	addtoorganization => 1
+		    );
+}
+
 # --------------------------------------------------------------------------------------------------------
 #in modify mod :default value from $CGIbranch comes from borrowers table
 #in add mod: default value come from branches table (ip correspendence)
@@ -638,7 +644,7 @@ if ( C4::Context->preference('EnhancedMessagingPreferences') ) {
     $template->param( SMSnumber => defined $data{'smsalertnumber'} ? $data{'smsalertnumber'} : $data{'mobile'} );
 }
 
-$template->param( "showguarantor" => ( $category_type =~ /A|I|S|X/ ) ? 0 : 1 );    # associate with step to know where you are
+$template->param( "showguarantor" => ( $category_type =~ /I|S|X/ ) ? 0 : 1 );    # associate with step to know where you are
 $debug and warn "memberentry step: $step";
 $template->param(%data);
 $template->param( "step_$step" => 1 )      if $step;                               # associate with step to know where u are
