@@ -2365,13 +2365,13 @@ sub enabled_opac_search_views {
 }
 
 sub AddSearchHistory {
-    my ( $borrowernumber, $session, $query_desc, $query_cgi, $total ) = @_;
+    my ( $borrowernumber, $session, $query_desc, $query_cgi, $limit_desc, $limit_cgi, $total ) = @_;
     my $dbh = C4::Context->dbh;
 
     # Add the request the user just made
-    my $sql = "INSERT INTO search_history(userid, sessionid, query_desc, query_cgi, total, time) VALUES(?, ?, ?, ?, ?, NOW())";
+    my $sql = "INSERT INTO search_history(userid, sessionid, query_desc, query_cgi, limit_desc, limit_cgi, total, time) VALUES(?, ?, ?, ?, ?, ?, ?, NOW())";
     my $sth = $dbh->prepare($sql);
-    $sth->execute( $borrowernumber, $session, $query_desc, $query_cgi, $total );
+    $sth->execute( $borrowernumber, $session, $query_desc, $query_cgi, $limit_desc, $limit_cgi, $total );
     return $dbh->last_insert_id( undef, 'search_history', undef, undef, undef );
 }
 

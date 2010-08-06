@@ -500,6 +500,8 @@ for ( my $i = 0 ; $i <= @servers ; $i++ ) {
                     push @recentSearches,
                       { "query_desc" => $query_desc || "unknown",
                         "query_cgi"  => $query_cgi  || "unknown",
+                        "limit_desc" => $limit_desc,
+                        "limit_cgi"  => $limit_cgi,
                         "time"       => time(),
                         "total"      => $total
                       };
@@ -525,7 +527,7 @@ for ( my $i = 0 ; $i <= @servers ; $i++ ) {
 
                 # To the session (the user is logged in)
                 if ( not defined $params->{'offset'} or $params->{'offset'} eq '' ) {
-                    AddSearchHistory( $borrowernumber, $cgi->cookie("CGISESSID"), $query_desc, $query_cgi, $total );
+                    AddSearchHistory( $borrowernumber, $cgi->cookie("CGISESSID"), $query_desc, $query_cgi, $limit_desc, $limit_cgi, $total );
                     $template->param( ShowOpacRecentSearchLink => 1 );
                 }
             }

@@ -4477,6 +4477,16 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
 	SetVersion ($DBversion);
 }
 
+$DBversion = "3.02.00.029";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+	$dbh->do(q{
+	ALTER TABLE `search_history` ADD `limit_desc` VARCHAR( 255 ) NULL DEFAULT NULL AFTER `query_cgi` ,
+	ADD `limit_cgi` VARCHAR( 255 ) NULL DEFAULT NULL AFTER `limit_desc` 
+    });
+	print "Upgrade to $DBversion done\n";
+	SetVersion ($DBversion);
+}
+
 
 =item DropAllForeignKeys($table)
 

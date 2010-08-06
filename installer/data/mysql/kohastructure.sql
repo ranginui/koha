@@ -1608,6 +1608,8 @@ CREATE TABLE IF NOT EXISTS `search_history` (
   `sessionid` varchar(32) NOT NULL,
   `query_desc` varchar(255) NOT NULL,
   `query_cgi` varchar(255) NOT NULL,
+  `limit_desc` varchar(255) DEFAULT NULL,
+  `limit_cgi` varchar(255) DEFAULT NULL,
   `total` int(11) NOT NULL,
   `time` timestamp NOT NULL default CURRENT_TIMESTAMP,
   KEY `userid` (`userid`),
