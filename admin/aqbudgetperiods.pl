@@ -118,6 +118,7 @@ if ( $op eq 'add_form' ) {
         my $editnum = new Number::Format(
             'int_curr_symbol'   => '',
             'thousands_sep'     => '',
+            'mon_thousands_point' => '',
             'mon_decimal_point' => '.'
         );
 
