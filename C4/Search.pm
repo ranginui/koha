@@ -1657,7 +1657,7 @@ sub searchResults {
         push( @newresults, $oldbiblio )
           if (
             not C4::Context->preference('hidelostitems')
-            or ( ( $items_count > $itemlost_count && $items_count > 0 )
+            or ( ( $items_count > $itemlost_count || $items_count == 0 )
                 && C4::Context->preference('hidelostitems') )
           );
     }
