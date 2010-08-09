@@ -209,14 +209,16 @@ if ( ( $op eq 'insert' ) and !$nodouble ) {
 
 #recover all data from guarantor address phone ,fax...
 if (    defined($guarantorid)
-    and ( $category_type eq 'C' || $category_type eq 'P' )
+    and ( $category_type eq 'C' || $category_type eq 'P' || $category_type eq 'A' )
     and $guarantorid ne ''
     and $guarantorid ne '0' ) {
+
     if ( my $guarantordata = GetMember( borrowernumber => $guarantorid ) ) {
         $guarantorinfo = $guarantordata->{'surname'} . " , " . $guarantordata->{'firstname'};
         if (   !defined( $data{'contactname'} )
             or $data{'contactname'} eq ''
             or $data{'contactname'} ne $guarantordata->{'surname'} ) {
+	    $data{'contactname'} = $guarantordata->{'surname'};
             $newdata{'contactfirstname'} = $guarantordata->{'firstname'};
             $newdata{'contactname'}      = $guarantordata->{'surname'};
             $newdata{'contacttitle'}     = $guarantordata->{'title'};
@@ -229,7 +231,6 @@ if (    defined($guarantorid)
         }
     }
 }
-
 ###############test to take the right zipcode, country and city name ##############
 if ( !defined($guarantorid) or $guarantorid eq '' or $guarantorid eq '0' ) {
 
