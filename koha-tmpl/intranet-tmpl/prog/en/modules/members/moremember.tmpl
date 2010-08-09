@@ -238,11 +238,10 @@ if (nodename =="barcodes[]"){
         <!-- TMPL_IF NAME="guaranteeloop" -->
             <li><span class="label">Guarantees:</span><ul><!-- TMPL_LOOP NAME="guaranteeloop" --><li><a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->"><!-- TMPL_VAR NAME="name" -->  </a></li><!-- /tmpl_loop --></ul></li>
         <!-- /TMPL_IF -->
-    <!-- TMPL_ELSE -->
+    <!-- /TMPL_IF -->
         <!-- TMPL_IF name="guarantorborrowernumber" -->
             <li><span class="label">Guarantor:</span><a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=<!-- TMPL_VAR NAME="guarantorborrowernumber" -->"><!-- TMPL_VAR NAME="guarantorsurname" -->, <!-- TMPL_VAR NAME="guarantorfirstname" --></a></li>
         <!-- /TMPL_IF -->
-    <!-- /TMPL_IF  -->
 </ol>
 </div>
       <div class="action">
