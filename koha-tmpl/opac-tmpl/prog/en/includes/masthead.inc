@@ -69,8 +69,8 @@
 		<!-- TMPL_ELSE -->
         <option value="callnum">Call Number</option>
 		<!-- /TMPL_IF --></select>
-<!-- TMPL_IF NAME="ms_value" -->
-        <input type="text" id = "transl1" name="q" value="<!-- TMPL_VAR ESCAPE="HTML" NAME="ms_value" -->" class="left" style="width: 35%; font-size: 111%;"/><div id="translControl"></div>
+<!-- TMPL_IF NAME="query" -->
+        <input type="text" id = "transl1" name="q" value="<!-- TMPL_VAR ESCAPE="HTML" NAME="query" -->" class="left" style="width: 35%; font-size: 111%;"/><div id="translControl"></div>
 <!-- TMPL_ELSE -->
         <input type="text" id = "transl1" name="q" class="left" style="width: 35%; font-size: 111%;"/><div id="translControl"></div>
 <!-- /TMPL_IF -->

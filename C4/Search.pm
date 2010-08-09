@@ -21,6 +21,7 @@ use strict;
 require Exporter;
 use C4::Context;
 use C4::Biblio;    # GetMarcFromKohaField, GetBiblioData
+use C4::AuthoritiesMarc;
 use C4::Koha;      # getFacets
 use Lingua::Stem;
 use C4::Search::PazPar2;
@@ -34,6 +35,9 @@ use C4::Debug;
 use C4::Items;
 use YAML;
 use URI::Escape;
+use Data::SearchEngine::Query;
+use Data::SearchEngine::Item;
+use Data::SearchEngine::Solr;
 
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $DEBUG);
 
@@ -70,6 +74,12 @@ This module provides searching functions for Koha's bibliographic databases
   &AddSearchHistory
   &GetDistinctValues
   &BiblioAddAuthorities
+  &GetIndexes
+  &GetMappings
+  &IndexRecord
+  &DeleteRecordIndex
+  &GetRessourceTypes
+  &GetFacetedIndexes
 );
 
 #FIXME: i had to add BiblioAddAuthorities here because in Biblios.pm it caused circular dependencies (C4::Search uses C4::Biblio, and BiblioAddAuthorities uses SimpleSearch from C4::Search)
@@ -147,132 +157,6 @@ sub FindDuplicate {
         }
     }
     return @results;
-}
-
-=head2 SimpleSearch
-
-( $error, $results, $total_hits ) = SimpleSearch( $query, $offset, $max_results, [@servers] );
-
-This function provides a simple search API on the bibliographic catalog
-
-=over 2
-
-=item C<input arg:>
-
-    * $query can be a simple keyword or a complete CCL query
-    * @servers is optional. Defaults to biblioserver as found in koha-conf.xml
-    * $offset - If present, represents the number of records at the beggining to omit. Defaults to 0
-    * $max_results - if present, determines the maximum number of records to fetch. undef is All. defaults to undef.
-
-
-=item C<Output:>
-
-    * $error is a empty unless an error is detected
-    * \@results is an array of records.
-    * $total_hits is the number of hits that would have been returned with no limit
-
-=item C<usage in the script:>
-
-=back
-
-my ( $error, $marcresults, $total_hits ) = SimpleSearch($query);
-
-if (defined $error) {
-    $template->param(query_error => $error);
-    warn "error: ".$error;
-    output_html_with_http_headers $input, $cookie, $template->output;
-    exit;
-}
-
-my $hits = scalar @$marcresults;
-my @results;
-
-for my $i (0..$hits) {
-    my %resultsloop;
-    my $marcrecord = MARC::File::USMARC::decode($marcresults->[$i]);
-    my $biblio = TransformMarcToKoha(C4::Context->dbh,$marcrecord,'');
-
-    #build the hash for the template.
-    $resultsloop{title}           = $biblio->{'title'};
-    $resultsloop{subtitle}        = $biblio->{'subtitle'};
-    $resultsloop{biblionumber}    = $biblio->{'biblionumber'};
-    $resultsloop{author}          = $biblio->{'author'};
-    $resultsloop{publishercode}   = $biblio->{'publishercode'};
-    $resultsloop{publicationyear} = $biblio->{'publicationyear'};
-
-    push @results, \%resultsloop;
-}
-
-$template->param(result=>\@results);
-
-=cut
-
-sub SimpleSearch {
-    my ( $query, $offset, $max_results, $servers ) = @_;
-
-    if ( C4::Context->preference('NoZebra') ) {
-        my $result = NZorder( NZanalyse($query) )->{'biblioserver'};
-        my $search_result = ( $result->{hits} && $result->{hits} > 0 ? $result->{'RECORDS'} : [] );
-        return ( undef, $search_result, scalar( $result->{hits} ) );
-    } else {
-
-        # FIXME hardcoded value. See catalog/search.pl & opac-search.pl too.
-        my @servers = defined($servers) ? @$servers : ("biblioserver");
-        my @results;
-        my @zoom_queries;
-        my @tmpresults;
-        my @zconns;
-        my $total_hits;
-        return ( "No query entered", undef, undef ) unless $query;
-
-        # Initialize & Search Zebra
-        for ( my $i = 0 ; $i < @servers ; $i++ ) {
-            eval {
-                $zconns[$i] = C4::Context->Zconn( $servers[$i], 1 );
-                $zoom_queries[$i] = new ZOOM::Query::CCL2RPN( $query, $zconns[$i] );
-                $tmpresults[$i] = $zconns[$i]->search( $zoom_queries[$i] );
-
-                # error handling
-                my $error = $zconns[$i]->errmsg() . " (" . $zconns[$i]->errcode() . ") " . $zconns[$i]->addinfo() . " " . $zconns[$i]->diagset();
-
-                return ( $error, undef, undef ) if $zconns[$i]->errcode();
-            };
-            if ($@) {
-
-                # caught a ZOOM::Exception
-                my $error = $@->message() . " (" . $@->code() . ") " . $@->addinfo() . " " . $@->diagset();
-                warn $error;
-                return ( $error, undef, undef );
-            }
-        }
-        while ( ( my $i = ZOOM::event( \@zconns ) ) != 0 ) {
-            my $event = $zconns[ $i - 1 ]->last_event();
-            if ( $event == ZOOM::Event::ZEND ) {
-
-                my $first_record = defined($offset) ? $offset + 1 : 1;
-                my $hits = $tmpresults[ $i - 1 ]->size();
-                $total_hits += $hits;
-                my $last_record = $hits;
-                if ( defined $max_results && $offset + $max_results < $hits ) {
-                    $last_record = $offset + $max_results;
-                }
-
-                for my $j ( $first_record .. $last_record ) {
-                    my $record = $tmpresults[ $i - 1 ]->record( $j - 1 )->raw();    # 0 indexed
-                    push @results, $record;
-                }
-            }
-        }
-
-        foreach my $result (@tmpresults) {
-            $result->destroy();
-        }
-        foreach my $zoom_query (@zoom_queries) {
-            $zoom_query->destroy();
-        }
-
-        return ( undef, \@results, $total_hits );
-    }
 }
 
 =head2 getRecords
@@ -2616,6 +2500,239 @@ sub GetDistinctValues {
         return \@elements;
     }
 }
+
+sub GetRessourceTypes {
+    my $dbh = C4::Context->dbh;
+    my $sth = $dbh->prepare("SELECT DISTINCT(ressource_type) FROM indexes ORDER BY ressource_type");
+    $sth->execute();
+    return $sth->fetchall_arrayref({});
+}
+
+sub GetIndexes {
+    my $dbh = C4::Context->dbh;
+    my $sth = $dbh->prepare("SELECT * FROM indexes WHERE ressource_type = ? ORDER BY code");
+    $sth->execute(shift);
+    return $sth->fetchall_arrayref({});
+}
+
+sub GetSortableIndexes {
+    my $dbh = C4::Context->dbh;
+    my $sth = $dbh->prepare("SELECT * FROM indexes WHERE sortable = 1 AND ressource_type = ? ORDER BY code");
+    $sth->execute(shift);
+    return $sth->fetchall_arrayref({});
+}
+
+sub GetFacetedIndexes {
+    my $dbh = C4::Context->dbh;
+    my $sth = $dbh->prepare("SELECT code FROM indexes WHERE faceted = 1 AND ressource_type = ? ORDER BY code");
+    $sth->execute(shift);
+
+    my @indexes;
+
+    while ( my $row = $sth->fetchrow_hashref() ) {
+       push @indexes, "sfield_" . $row->{code};
+    }
+    return \@indexes;
+}
+
+sub SetIndexes {
+    my ($ressource_type, $indexes) = @_;
+    my $dbh = C4::Context->dbh;
+    my $sth = $dbh->prepare("DELETE FROM indexes WHERE ressource_type = ?");
+    $sth->execute($ressource_type);
+    my $query  = "INSERT INTO indexes (`code`,`label`,`faceted`,`ressource_type`,`mandatory`,`sortable`,`plugin`) VALUES ";
+    my $i = 0;
+    for ( @$indexes ) {
+        $i++;
+        $query .= "('".$_->{'code'}."','".$_->{'label'}."',".$_->{'faceted'}.",'".$ressource_type."',".$_->{'mandatory'}.",".$_->{'sortable'}.",'".$_->{'plugin'}."')";
+        $query .= "," unless $i eq scalar(@$indexes);
+    }
+    my $sth2 = $dbh->prepare($query);
+    $sth2->execute();
+}
+
+sub SetMappings {
+    my ($ressource_type, $indexes) = @_;
+    my $dbh = C4::Context->dbh;
+    my $sth = $dbh->prepare("DELETE FROM indexmappings WHERE ressource_type = ?");
+    $sth->execute($ressource_type);
+    my $query  = "INSERT INTO indexmappings (`field`,`subfield`,`index`,`ressource_type`) VALUES ";
+    my $i = 0;
+    for ( @$indexes ) {
+        $i++;
+        $query .= "('".$_->{'field'}."','".$_->{'subfield'}."','".$_->{'index'}."','".$ressource_type."')";
+        $query .= "," unless $i eq scalar(@$indexes);
+    }
+    my $sth2 = $dbh->prepare($query);
+    $sth2->execute();
+}
+
+sub GetMappings {
+    my $dbh = C4::Context->dbh;
+    my $sth = $dbh->prepare("SELECT indexmappings.*, indexes.plugin FROM indexmappings LEFT JOIN indexes ON (indexmappings.index=indexes.code AND indexmappings.ressource_type=indexes.ressource_type) WHERE indexmappings.ressource_type = ? ORDER BY field, subfield");
+    $sth->execute(shift);
+    return $sth->fetchall_arrayref({});
+}
+
+sub GetIndexLabelFromCode {
+    my $dbh = C4::Context->dbh;
+    my $sth = $dbh->prepare("SELECT label FROM indexes WHERE code = ?");
+    $sth->execute(shift);
+    my $result = $sth->fetchrow_hashref;
+    return $result->{'label'};
+}
+
+sub GetSubfieldsForIndex {
+    my $index = shift;
+    my $dbh = C4::Context->dbh;
+    my $sth = $dbh->prepare("SELECT field, subfield FROM indexmappings WHERE index=? ORDER BY field, subfield");
+    $sth->execute($index);
+    return $sth->fetchrow_hashref;
+}
+
+sub GetSolrRessource {
+
+    my $solr_url = C4::Context->preference("SolrAPI");
+    return Data::SearchEngine::Solr->new(
+          url => $solr_url,
+          options => {autocommit => 1, }
+       );
+}
+
+sub IndexRecord {
+    my $recordtype = shift;
+    my $recordnum  = shift;
+
+    my $indexes = GetMappings($recordtype);
+    my $solr    = GetSolrRessource();
+
+    my @recordids;
+    if ( $recordnum =~ m/(\d+)-(\d+)/g ){
+       @recordids = $1 .. $2;
+    } else {
+       @recordids = @$recordnum;
+    }
+
+    my @recordpush;
+    foreach ( @recordids ) {
+       my $record;
+       my $frameworkcode;
+       my $recordid = "${recordtype}_${_}";
+
+       if($recordtype eq "authority") {
+           $record = GetAuthority($_);
+       } elsif ($recordtype eq "biblio") {
+           $record = GetMarcBiblio($_);
+           $frameworkcode = GetFrameworkCode($_)
+       }
+
+       next unless ( $record );
+
+       my $solrrecord = Data::SearchEngine::Item->new( 
+                           'id'         => $recordid, 
+                           'score'      => 1,
+                        );
+
+       $solrrecord->set_value( 'recordtype', $recordtype );
+       $solrrecord->set_value( 'recordid'  , $_);
+       warn $_;
+
+       foreach my $index ( @$indexes ) {
+
+          my @values;
+          my $oldval = $solrrecord->get_value( "field_" . $index->{index} ) || ();
+          @values = @$oldval if $oldval;
+
+          if( $index->{plugin} ) {
+             my $plugin = $index->{plugin};
+             $plugin = LoadSearchPlugin( $plugin ) if $plugin;
+             @values = &$plugin( $record );
+          } else {
+             foreach my $field( $record->field( $index->{field} ) ) {
+                foreach my $subfield ( $field->subfield( $index->{subfield} ) ) {
+                    push @values, $subfield;
+                }
+             }
+          }
+
+          $solrrecord->set_value( "field_" . $index->{index}, \@values);
+       }
+
+       push @recordpush, $solrrecord;
+
+       if ( scalar(@recordpush) == 1000 ) {
+          $solr->add( \@recordpush );
+          @recordpush = ();
+       }
+    }
+    $solr->add( \@recordpush );
+}
+
+sub DeleteRecordIndex {
+   my ($recordtype, $id) = @_;
+
+   my $solr    = GetSolrRessource();
+
+   $solr->remove ( "${recordtype}_${id}" );
+}
+
+sub LoadSearchPlugin {
+    my $plugin = shift;
+    if ( grep( /^$plugin$/, GetSearchPlugins()) ) {
+	eval "require $plugin";
+
+        return do {
+              no strict 'refs';
+              my $symbol = $plugin. "::ComputeValue";
+              \&{"$symbol"};
+           };
+
+    }
+}
+
+sub GetSearchPlugins {
+   use Module::List;
+   my $plugins = Module::List::list_modules("C4::Search::Plugins::", { list_modules => 1});
+   return keys %$plugins;
+}
+
+=head2 SimpleSearch
+
+
+=cut
+
+sub SimpleSearch {
+    my ( $query, $filters, $page, $max_results, $sort) = @_;
+
+    my $solr    = GetSolrRessource();
+
+    $solr->options->{'facet'} = 'true';
+    $solr->options->{'facet.mincount'} = 1;
+    $solr->options->{'facet.limit'} = 10;
+    $solr->options->{'facet.field'} = GetFacetedIndexes($filters->{recordtype});
+    $solr->options->{'sort'} = ( $sort =~ m/^score/ ) ? $sort : "sfield_$sort" || 'score desc';
+
+    my @filterlist;
+    for ( keys %$filters ) {
+        my $index = ( m/^recordtype$/ ) ? $_ : "sfield_${_}" ; 
+        push @filterlist, "${index}:" . $filters->{$_};
+    }
+
+    $solr->options->{'fq'} = \@filterlist;
+
+    my $solr_query = 
+          Data::SearchEngine::Query->new(
+             page => $page,
+             query => $query,
+          );
+
+    my $result = eval {$solr->search($solr_query);};
+    if ( $@ ) {
+       warn $@;
+    }
+    return $result;
+}
+
 
 END { }    # module clean-up code here (global destructor)
 

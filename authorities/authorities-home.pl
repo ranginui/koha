@@ -30,6 +30,7 @@ use C4::AuthoritiesMarc;
 use C4::Acquisition;
 use C4::Koha;    # XXX subfield_is_koha_internal_p
 use C4::Biblio;
+use C4::Search;
 
 my $query = new CGI;
 my $op    = $query->param('op');
@@ -56,18 +57,15 @@ foreach my $thisauthtype (
 }
 
 if ( $op eq "do_search" ) {
-    my @marclist  = $query->param('marclist');
-    my @and_or    = $query->param('and_or');
-    my @excluding = $query->param('excluding');
-    my @operator  = $query->param('operator');
-    my $orderby   = $query->param('orderby');
-    my @value     = $query->param('value');
+    my $orderby      = $query->param('orderby');
+    my $value        = $query->param('value');
+    my $authtypecode = $query->param('authtypecode');
+    my $page         = $query->param('page') || 1;
 
-    my $startfrom      = $query->param('startfrom')      || 1;
-    my $resultsperpage = $query->param('resultsperpage') || 20;
+    my $filters = { recordtype => 'authority' };
+    $filters->{authtype} = $authtypecode if $authtypecode;
 
-    my ( $results, $total ) =
-      SearchAuthorities( \@marclist, \@and_or, \@excluding, \@operator, \@value, ( $startfrom - 1 ) * $resultsperpage, $resultsperpage, $authtypecode, $orderby );
+    my $results = SimpleSearch($value, $filters, $page, 20, $orderby);
 
     #     use Data::Dumper; warn Data::Dumper::Dumper(@$results);
     ( $template, $loggedinuser, $cookie ) = get_template_and_user(
@@ -80,63 +78,21 @@ if ( $op eq "do_search" ) {
         }
     );
 
-    my @field_data = ();
+    my @resultrecords;
+    for ( @{$results->{items}} ) {
+        my $authrecord = GetAuthority($_->{values}->{recordid});
+        
+        my $authority  = {
+           authid  => $_->{values}->{recordid},
+           summary => BuildSummary($authrecord, $_->{values}->{recordid}),
+        };
 
-    # we must get parameters once again. Because if there is a mainentry, it
-    # has been replaced by something else during the search, thus the links
-    # next/previous would not work anymore
-    my @marclist_ini = $query->param('marclist');
-    for ( my $i = 0 ; $i <= $#marclist ; $i++ ) {
-        if ( $value[$i] ) {
-            push @field_data, { term => "marclist", val => $marclist_ini[$i] };
-            if ( !defined $and_or[$i] ) {
-                $and_or[$i] = q{};
-            }
-            push @field_data, { term => "and_or", val => $and_or[$i] };
-            if ( !defined $excluding[$i] ) {
-                $excluding[$i] = q{};
-            }
-            push @field_data, { term => "excluding", val => $excluding[$i] };
-            push @field_data, { term => "operator",  val => $operator[$i] };
-            push @field_data, { term => "value",     val => $value[$i] };
-        }
+        push @resultrecords, $authority;
     }
 
-    # construction of the url of each page
-    my $base_url =
-        'authorities-home.pl?' 
-      . join( '&amp;', map { $_->{term} . '=' . $_->{val} } @field_data ) . '&amp;'
-      . join(
-        '&amp;',
-        map { $_->{term} . '=' . $_->{val} } (
-            { term => 'resultsperpage', val => $resultsperpage },
-            { term => 'type',           val => 'intranet' },
-            { term => 'op',             val => 'do_search' },
-            { term => 'authtypecode',   val => $authtypecode },
-            { term => 'orderby',        val => $orderby },
-        )
-      );
-
-    my $from = ( $startfrom - 1 ) * $resultsperpage + 1;
-    my $to;
-    if ( !defined $total ) {
-        $total = 0;
-    }
-
-    if ( $total < $startfrom * $resultsperpage ) {
-        $to = $total;
-    } else {
-        $to = $startfrom * $resultsperpage;
-    }
-
-    $template->param( result => $results ) if $results;
-
+    $template->param( result => \@resultrecords ) if \@resultrecords;
     $template->param(
-        pagination_bar => pagination_bar( $base_url, int( $total / $resultsperpage ) + 1, $startfrom, 'startfrom' ),
-        total          => $total,
-        from           => $from,
-        to             => $to,
-        isEDITORS => $authtypecode eq 'EDITORS',
+       total => 1,
     );
 
 } elsif ( $op eq "delete" ) {
