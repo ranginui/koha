@@ -24,9 +24,12 @@
             $(form.contactname)
                 .val(surname)
                 .before('<span>' + surname + '</span>').get(0).type = 'hidden';
-            $(form.contactfirstname)
-                .val(firstname)
-                .before('<span>' + firstname + '</span>').get(0).type = 'hidden';
+
+	    if (form.contactfirstname) {
+		$(form.contactfirstname)
+		    .val(firstname)
+		    .before('<span>' + firstname + '</span>').get(0).type = 'hidden';
+	    }
 
             form.streetnumber.value = streetnumber;
             form.address.value = address;
