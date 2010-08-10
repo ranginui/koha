@@ -283,6 +283,7 @@ $template->param(
    previous_page => $pager->{prev_page},
    next_page     => $pager->{next_page},
    PAGE_NUMBERS  => [ map { { page => $_, filters => \@tplfilters, current => $_ == $page } } @{$pager->{numbers_of_set}} ],
+   current_page  => $page,
 );
 
 # populate results with records
