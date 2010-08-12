@@ -24,6 +24,7 @@ use C4::Output;
 use C4::Auth;
 use CGI;
 use C4::Context;
+use C4::MarcFramework;
 
 sub string_search {
     my ( $searchstring, $frameworkcode ) = @_;
@@ -45,14 +46,6 @@ sub string_search {
     $sth->finish;
     $dbh->disconnect;
     return ( $cnt, \@results );
-}
-
-sub marc_subfield_structure_exists {
-    my ( $tagfield, $tagsubfield, $frameworkcode ) = @_;
-    my $dbh  = C4::Context->dbh;
-    my $sql  = "select tagfield from marc_subfield_structure where tagfield = ? and tagsubfield = ? and frameworkcode = ?";
-    my $rows = $dbh->selectall_arrayref( $sql, {}, $tagfield, $tagsubfield, $frameworkcode );
-    return @$rows > 0;
 }
 
 my $input         = new CGI;
@@ -415,7 +408,7 @@ if ( $op eq 'add_form' ) {
 
         if ($liblibrarian) {
             unless ( C4::Context->config('demo') eq 1 ) {
-                if ( marc_subfield_structure_exists( $tagfield, $tagsubfield, $frameworkcode ) ) {
+                if ( C4::MarcFramework::SubfieldStructureExists( $tagfield, $tagsubfield, $frameworkcode ) ) {
                     $sth_update->execute( $tagfield, $tagsubfield, $liblibrarian, $libopac, $repeatable, $mandatory, $kohafield, $tab, $seealso, $authorised_value, $authtypecode,
                         $value_builder, $hidden, $isurl, $frameworkcode, $link, $defaultvalue, ( $tagfield, $tagsubfield, $frameworkcode, ),
                     );
@@ -438,12 +431,7 @@ if ( $op eq 'add_form' ) {
 ################## DELETE_CONFIRM ##################################
     # called by default form, used to confirm deletion of data in DB
 } elsif ( $op eq 'delete_confirm' ) {
-    my $dbh = C4::Context->dbh;
-    my $sth = $dbh->prepare( "select * from marc_subfield_structure where tagfield=? and tagsubfield=? and frameworkcode=?" );
-
-    $sth->execute( $tagfield, $tagsubfield, $frameworkcode );
-    my $data = $sth->fetchrow_hashref;
-    $sth->finish;
+    my $data = C4::MarcFramework::GetSubfieldStructure( $tagfield, $tagsubfield, $frameworkcode );
     $template->param(
         liblibrarian  => $data->{'liblibrarian'},
         tagsubfield   => $data->{'tagsubfield'},

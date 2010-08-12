@@ -25,6 +25,7 @@ use C4::Koha;
 use C4::Context;
 use C4::Output;
 use C4::Context;
+use C4::MarcFramework;
 
 # retrieve parameters
 my $input                 = new CGI;
@@ -67,15 +68,12 @@ foreach my $thisframeworkcode ( keys %$frameworks ) {
 }
 
 # check that framework is defined in marc_tag_structure
-my $sth = $dbh->prepare("select count(*) from marc_tag_structure where frameworkcode=?");
-$sth->execute($frameworkcode);
-my ($frameworkexist) = $sth->fetchrow;
-unless ($frameworkexist) {
+unless ( C4::MarcFramework::TagStructureExists($frameworkcode) ) {
 
     # if frameworkcode does not exists, then OP must be changed to "create framework" if we are not on the way to create it
     # (op = itemtyp_create_confirm)
     if ( $op eq "framework_create_confirm" ) {
-        duplicate_framework( $frameworkcode, $existingframeworkcode );
+        C4::MarcFramework::DuplicateFramework( $frameworkcode, $existingframeworkcode );
         $op = "";    # unset $op to go back to framework list
     } else {
         $op = "framework_create";
@@ -94,12 +92,8 @@ $template->param(
 if ( $op eq 'add_form' ) {
 
     #---- if primkey exists, it's a modify action, so read values to modify...
-    my $data;
-    if ($searchfield) {
-        $sth = $dbh->prepare("select tagfield,liblibrarian,libopac,repeatable,mandatory,authorised_value from marc_tag_structure where tagfield=? and frameworkcode=?");
-        $sth->execute( $searchfield, $frameworkcode );
-        $data = $sth->fetchrow_hashref;
-    }
+    my $data = C4::MarcFramework::GetTagStructure( $searchfield, $frameworkcode ) if $searchfield;
+
     my $sth = $dbh->prepare("select distinct category from authorised_values");
     $sth->execute;
     my @authorised_values;
@@ -157,11 +151,9 @@ if ( $op eq 'add_form' ) {
     my $authorised_value = $input->param('authorised_value');
     unless ( C4::Context->config('demo') == 1 ) {
         if ( $input->param('modif') ) {
-            $sth = $dbh->prepare( "UPDATE marc_tag_structure SET liblibrarian=? ,libopac=? ,repeatable=? ,mandatory=? ,authorised_value=? WHERE frameworkcode=? AND tagfield=?" );
-            $sth->execute( $liblibrarian, $libopac, $repeatable, $mandatory, $authorised_value, $frameworkcode, $tagfield );
+            C4::MarcFramework::ModTagStructure( $liblibrarian, $libopac, $repeatable, $mandatory, $authorised_value, $frameworkcode, $tagfield );
         } else {
-            $sth = $dbh->prepare( "INSERT INTO marc_tag_structure (tagfield,liblibrarian,libopac,repeatable,mandatory,authorised_value,frameworkcode) values (?,?,?,?,?,?,?)" );
-            $sth->execute( $tagfield, $liblibrarian, $libopac, $repeatable, $mandatory, $authorised_value, $frameworkcode );
+            C4::MarcFramework::AddTagStructure( $tagfield, $liblibrarian, $libopac, $repeatable, $mandatory, $authorised_value, $frameworkcode );
         }
     }
     print $input->redirect("/cgi-bin/koha/admin/marctagstructure.pl?searchfield=$tagfield&frameworkcode=$frameworkcode");
@@ -171,9 +163,7 @@ if ( $op eq 'add_form' ) {
 ################## DELETE_CONFIRM ##################################
     # called by default form, used to confirm deletion of data in DB
 } elsif ( $op eq 'delete_confirm' ) {
-    $sth = $dbh->prepare("select tagfield,liblibrarian,libopac,repeatable,mandatory,authorised_value from marc_tag_structure where tagfield=? and frameworkcode=?");
-    $sth->execute( $searchfield, $frameworkcode );
-    my $data = $sth->fetchrow_hashref;
+    my $data = C4::MarcFramework::GetTagStructure( $searchfield, $frameworkcode );
     $template->param(
         liblibrarian  => $data->{'liblibrarian'},
         searchfield   => $searchfield,
@@ -185,10 +175,8 @@ if ( $op eq 'add_form' ) {
     # called by delete_confirm, used to effectively confirm deletion of data in DB
 } elsif ( $op eq 'delete_confirmed' ) {
     unless ( C4::Context->config('demo') == 1 ) {
-        my $sth1 = $dbh->prepare("DELETE FROM marc_tag_structure      WHERE tagfield=? AND frameworkcode=?");
-        my $sth2 = $dbh->prepare("DELETE FROM marc_subfield_structure WHERE tagfield=? AND frameworkcode=?");
-        $sth1->execute( $searchfield, $frameworkcode );
-        $sth2->execute( $searchfield, $frameworkcode );
+        C4::MarcFramework::DelTagStructure( $searchfield, $frameworkcode );
+        C4::MarcFramework::DelSubfieldStructure( $searchfield, $frameworkcode );
     }
     $template->param(
         searchfield   => $searchfield,
@@ -199,24 +187,9 @@ if ( $op eq 'add_form' ) {
 ################## ITEMTYPE_CREATE ##################################
     # called automatically if an unexisting  frameworkis selected
 } elsif ( $op eq 'framework_create' ) {
-    $sth = $dbh->prepare(
-"select count(*),marc_tag_structure.frameworkcode,frameworktext from marc_tag_structure,biblio_framework where biblio_framework.frameworkcode=marc_tag_structure.frameworkcode group by marc_tag_structure.frameworkcode"
-    );
-    $sth->execute;
-    my @existingframeworkloop;
-    while ( my ( $tot, $thisframeworkcode, $frameworktext ) = $sth->fetchrow ) {
-        if ( $tot > 0 ) {
-            push @existingframeworkloop,
-              { value         => $thisframeworkcode,
-                frameworktext => $frameworktext,
-              };
-        }
-    }
     $template->param(
-        existingframeworkloop => \@existingframeworkloop,
+        existingframeworkloop => C4::MarcFramework::GetExistingFrameworks,
         frameworkcode         => $frameworkcode,
-
-        # 					FRtext => $frameworkinfo->{frameworktext},
     );
 ################## DEFAULT ##################################
 } else {    # DEFAULT
@@ -294,7 +267,7 @@ if ( $op eq 'add_form' ) {
     } else {
 
         #here, normal old style : display every tags
-        my ( $count, $results ) = StringSearch( $searchfield, $frameworkcode );
+        my ( $count, $results ) = C4::MarcFramework::SearchTag( $searchfield, $frameworkcode );
         $cnt = $count;
         my @loop_data = ();
         for ( my $i = $offset ; $i < $count ; $i++ ) {
@@ -328,53 +301,4 @@ if ( $op eq 'add_form' ) {
 }    #---- END $OP eq DEFAULT
 
 output_html_with_http_headers $input, $cookie, $template->output;
-
-#
-# the sub used for searches
-#
-sub StringSearch {
-    my ( $searchstring, $frameworkcode ) = @_;
-    my $sth = C4::Context->dbh->prepare( "
-    SELECT tagfield,liblibrarian,libopac,repeatable,mandatory,authorised_value
-     FROM  marc_tag_structure
-     WHERE (tagfield >= ? and frameworkcode=?)
-    ORDER BY tagfield
-    " );
-    $sth->execute( $searchstring, $frameworkcode );
-    my $results = $sth->fetchall_arrayref( {} );
-    return ( scalar(@$results), $results );
-}
-
-#
-# the sub used to duplicate a framework from an existing one in MARC parameters tables.
-#
-sub duplicate_framework {
-    my ( $newframeworkcode, $oldframeworkcode ) = @_;
-    my $sth = $dbh->prepare("select tagfield,liblibrarian,libopac,repeatable,mandatory,authorised_value from marc_tag_structure where frameworkcode=?");
-    $sth->execute($oldframeworkcode);
-    my $sth_insert =
-      $dbh->prepare("insert into marc_tag_structure (tagfield, liblibrarian, libopac, repeatable, mandatory, authorised_value, frameworkcode) values (?,?,?,?,?,?,?)");
-    while ( my ( $tagfield, $liblibrarian, $libopac, $repeatable, $mandatory, $authorised_value ) = $sth->fetchrow ) {
-        $sth_insert->execute( $tagfield, $liblibrarian, $libopac, $repeatable, $mandatory, $authorised_value, $newframeworkcode );
-    }
-
-    $sth = $dbh->prepare(
-"select frameworkcode,tagfield,tagsubfield,liblibrarian,libopac,repeatable,mandatory,kohafield,tab,authorised_value,authtypecode,value_builder,seealso,hidden from marc_subfield_structure where frameworkcode=?"
-    );
-    $sth->execute($oldframeworkcode);
-    $sth_insert = $dbh->prepare(
-"insert into marc_subfield_structure (frameworkcode,tagfield,tagsubfield,liblibrarian,libopac,repeatable,mandatory,kohafield,tab,authorised_value,authtypecode,value_builder,seealso,hidden) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
-    );
-    while (
-        my ($frameworkcode, $tagfield, $tagsubfield,      $liblibrarian,       $libopac,       $repeatable, $mandatory,
-            $kohafield,     $tab,      $authorised_value, $thesaurus_category, $value_builder, $seealso,    $hidden
-        )
-        = $sth->fetchrow
-      ) {
-        $sth_insert->execute(
-            $newframeworkcode, $tagfield, $tagsubfield,      $liblibrarian,       $libopac,       $repeatable, $mandatory,
-            $kohafield,        $tab,      $authorised_value, $thesaurus_category, $value_builder, $seealso,    $hidden
-        );
-    }
-}
 
