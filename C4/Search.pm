@@ -38,6 +38,7 @@ use URI::Escape;
 use Data::SearchEngine::Query;
 use Data::SearchEngine::Item;
 use Data::SearchEngine::Solr;
+use C4::MarcFramework;
 
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $DEBUG);
 
@@ -2623,7 +2624,7 @@ sub IndexRecord {
            $record = GetAuthority($_);
        } elsif ($recordtype eq "biblio") {
            $record = GetMarcBiblio($_);
-           $frameworkcode = GetFrameworkCode($_)
+           $frameworkcode = GetFrameworkCode($_);
        }
 
        next unless ( $record );
@@ -2650,6 +2651,20 @@ sub IndexRecord {
           } else {
              foreach my $field( $record->field( $index->{field} ) ) {
                 foreach my $subfield ( $field->subfield( $index->{subfield} ) ) {
+
+                    # authorised values and branches management
+                    if ($recordtype eq "biblio") {
+                        my $structure = C4::MarcFramework::GetSubfieldStructure($index->{field},$index->{subfield},$frameworkcode);
+                        if ( $structure->{'authorised_value'} eq 'branches' ) {
+                            $subfield = GetBranchName($subfield);
+                        } elsif ( $structure->{'authorised_value'} ne '' ) {
+                            my $authorisedvalues = GetAuthorisedValues($structure->{'authorised_value'},undef,undef);
+                            for ( @$authorisedvalues ) {
+                                $subfield = $_->{lib} if $_->{authorised_value} eq $subfield;
+                            }
+                        }
+                    }
+
                     push @values, $subfield;
                 }
              }
@@ -2723,6 +2738,7 @@ sub SimpleSearch {
     my $solr_query = 
           Data::SearchEngine::Query->new(
              page => $page,
+             count => $max_results,
              query => $query,
           );
 
