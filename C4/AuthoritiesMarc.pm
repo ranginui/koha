@@ -110,20 +110,16 @@ counts Usage of Authid in bibliorecords.
 =cut
 
 sub CountUsage {
-    my ($authid) = @_;
-    if ( C4::Context->preference('NoZebra') ) {
+    my $authid = shift;
+    
+    my $filters = {
+        recordtype => "biblio",
+        authid     => $authid,
+    };
 
-        # Read the index Koha-Auth-Number for this authid and count the lines
-        my $result = C4::Search::NZanalyse("an=$authid");
-        my @tab = split /;/, $result;
-        return scalar @tab;
-    } else {
-        ### ZOOM search here
-        my $query;
-        $query = "an=" . $authid;
-        my ( $err, $res, $result ) = C4::Search::SimpleSearch( $query, 0, 10 );
-        return ($result);
-    }
+    my $results = C4::Search::SimpleSearch( "*:*", $filters, 1, 1, "score asc");
+
+    return $results->{query}->{count};
 }
 
 =head2 CountUsageChildren 

@@ -28,19 +28,17 @@ use C4::Context;
 use C4::AuthoritiesMarc;
 use C4::Acquisition;
 use C4::Koha;    # XXX subfield_is_koha_internal_p
+use C4::Search;
+use Data::Pagination;
 
 my $query        = new CGI;
-my $op           = $query->param('op');
 my $authtypecode = $query->param('authtypecode');
 my $index        = $query->param('index');
 my $tagid        = $query->param('tagid');
 my $resultstring = $query->param('result');
 my $dbh          = C4::Context->dbh;
 
-my $startfrom = $query->param('startfrom');
-$startfrom = 0 if ( !defined $startfrom );
 my ( $template, $loggedinuser, $cookie );
-my $resultsperpage;
 
 my $authtypes = getauthtypes;
 my @authtypesloop;
@@ -54,66 +52,20 @@ foreach my $thisauthtype ( keys %$authtypes ) {
     push @authtypesloop, \%row;
 }
 
-$op ||= q{};
-if ( $op eq "do_search" ) {
-    my @marclist  = $query->param('marclist');
-    my @and_or    = $query->param('and_or');
-    my @excluding = $query->param('excluding');
-    my @operator  = $query->param('operator');
-    my @value     = ( $query->param('value_mainstr') || undef, $query->param('value_main') || undef, $query->param('value_any') || undef );
-    my $orderby   = $query->param('orderby');
+if ( $query->param('value_mainstr') ) {
+    my $searchquery = $query->param('value_mainstr');
+    my $authtype    = $query->param('authtypecode');
+    my $orderby     = $query->param('orderby');
+    my $page        = $query->param('page') || 1;
+    my $resultsperpage = 20;
+    
+    my $filters = {
+        recordtype => 'authority',
+        authtype   => $authtype,
+    };
 
-    $resultsperpage = $query->param('resultsperpage');
-    $resultsperpage = 20 if ( !defined $resultsperpage );
-
-    my ( $results, $total ) = SearchAuthorities( \@marclist, \@and_or, \@excluding, \@operator, \@value, $startfrom * $resultsperpage, $resultsperpage, $authtypecode, $orderby );
-
-    # multi page display gestion
-    my $displaynext = 0;
-    my $displayprev = $startfrom;
-    if ( ( $total - ( ( $startfrom + 1 ) * ($resultsperpage) ) ) > 0 ) {
-        $displaynext = 1;
-    }
-
-    my @field_data = ();
-
-    my @marclist_ini = $query->param('marclist');    # get marclist again, as the previous one has been modified by catalogsearch (mainentry replaced by field name
-    for ( my $i = 0 ; $i <= $#marclist ; $i++ ) {
-        push @field_data, { term => "marclist",  val => $marclist_ini[$i] };
-        push @field_data, { term => "and_or",    val => $and_or[$i] };
-        push @field_data, { term => "excluding", val => $excluding[$i] };
-        push @field_data, { term => "operator",  val => $operator[$i] };
-    }
-
-    push @field_data, { term => "value_mainstr", val => $query->param('value_mainstr') || "" };
-    push @field_data, { term => "value_main",    val => $query->param('value_main')    || "" };
-    push @field_data, { term => "value_any",     val => $query->param('value_any')     || "" };
-
-    my @numbers = ();
-
-    if ( $total > $resultsperpage ) {
-        for ( my $i = 1 ; $i < $total / $resultsperpage + 1 ; $i++ ) {
-            if ( $i < 16 ) {
-                my $highlight = 0;
-                ( $startfrom == ( $i - 1 ) ) && ( $highlight = 1 );
-                push @numbers,
-                  { number     => $i,
-                    highlight  => $highlight,
-                    searchdata => \@field_data,
-                    startfrom  => ( $i - 1 )
-                  };
-            }
-        }
-    }
-
-    my $from = $startfrom * $resultsperpage + 1;
-    my $to;
-
-    if ( $total < ( ( $startfrom + 1 ) * $resultsperpage ) ) {
-        $to = $total;
-    } else {
-        $to = ( ( $startfrom + 1 ) * $resultsperpage );
-    }
+    my $results = SimpleSearch( $searchquery, $filters, $page, $resultsperpage, $orderby );
+    
     ( $template, $loggedinuser, $cookie ) = get_template_and_user(
         {   template_name   => "authorities/searchresultlist-auth.tmpl",
             query           => $query,
@@ -123,24 +75,40 @@ if ( $op eq "do_search" ) {
         }
     );
 
-    $template->param( result => $results ) if $results;
+    my @resultdatas;
+    for (@{$results->{items}}) {
+        my $record = GetAuthority($_->{values}->{recordid});
+        push @resultdatas, {
+            authid  => $_->{values}->{recordid},
+            summary => BuildSummary($record, $_->{values}->{recordid}, $_->{values}->{sfield_authtype}),
+            used    => CountUsage($_->{values}->{recordid}),
+        };
+    }
+
+    my $pager = Data::Pagination->new(
+                   $results->{pager}->{total_entries},
+                   $resultsperpage,
+                   20,
+                   $page,
+                );    
+
     $template->param(
+        previous_page => $pager->{prev_page},
+        next_page     => $pager->{next_page},
+        PAGE_NUMBERS  => [ map { { page => $_, current => $_ == $page } } @{$pager->{numbers_of_set}} ],
+        current_page  => $page,
+        from          => $pager->{start_of_slice},
+        to            => $pager->{end_of_slice},
+        total         => $pager->{total_entries},
+    );
+
+    
+    $template->param( result => \@resultdatas ) if $results;
+    $template->param(
+        value_mainstr  => $searchquery,
         orderby        => $orderby,
-        startfrom      => $startfrom,
-        displaynext    => $displaynext,
-        displayprev    => $displayprev,
         resultsperpage => $resultsperpage,
-        startfromnext  => $startfrom + 1,
-        startfromprev  => $startfrom - 1,
-        searchdata     => \@field_data,
-        total          => $total,
-        from           => $from,
-        to             => $to,
-        numbers        => \@numbers,
         authtypecode   => $authtypecode,
-        value_mainstr  => $query->param('value_mainstr') || "",
-        value_main     => $query->param('value_main') || "",
-        value_any      => $query->param('value_any') || "",
     );
 } else {
     ( $template, $loggedinuser, $cookie ) = get_template_and_user(

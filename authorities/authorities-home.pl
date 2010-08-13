@@ -31,6 +31,7 @@ use C4::Acquisition;
 use C4::Koha;    # XXX subfield_is_koha_internal_p
 use C4::Biblio;
 use C4::Search;
+use Data::Pagination;
 
 my $query = new CGI;
 my $op    = $query->param('op');
@@ -61,13 +62,20 @@ if ( $op eq "do_search" ) {
     my $value        = $query->param('value');
     my $authtypecode = $query->param('authtypecode');
     my $page         = $query->param('page') || 1;
+    my $count        = 20;
 
     my $filters = { recordtype => 'authority' };
     $filters->{authtype} = $authtypecode if $authtypecode;
 
-    my $results = SimpleSearch($value, $filters, $page, 20, $orderby);
+    my $results = SimpleSearch($value, $filters, $page, $count, $orderby);
 
-    #     use Data::Dumper; warn Data::Dumper::Dumper(@$results);
+    my $pager = Data::Pagination->new(
+               $results->{pager}->{total_entries},
+               $count,
+               20,
+               $page,
+            );
+
     ( $template, $loggedinuser, $cookie ) = get_template_and_user(
         {   template_name   => "authorities/searchresultlist.tmpl",
             query           => $query,
@@ -78,22 +86,35 @@ if ( $op eq "do_search" ) {
         }
     );
 
+    $template->param(
+       previous_page => $pager->{prev_page},
+       next_page     => $pager->{next_page},
+       PAGE_NUMBERS  => [ map { { page => $_, current => $_ == $page } } @{$pager->{numbers_of_set}} ],
+       current_page  => $page,
+       from          => $pager->{start_of_slice},
+       to            => $pager->{end_of_slice},
+       total         => $pager->{total_entries},
+    );
+
+    $template->param(
+       value   => $value,
+       orderby => $orderby,
+    );
+
     my @resultrecords;
     for ( @{$results->{items}} ) {
         my $authrecord = GetAuthority($_->{values}->{recordid});
-        
+
         my $authority  = {
            authid  => $_->{values}->{recordid},
            summary => BuildSummary($authrecord, $_->{values}->{recordid}),
+           used    => CountUsage( $_->{values}->{recordid} ),
         };
 
         push @resultrecords, $authority;
     }
 
     $template->param( result => \@resultrecords ) if \@resultrecords;
-    $template->param(
-       total => 1,
-    );
 
 } elsif ( $op eq "delete" ) {
 

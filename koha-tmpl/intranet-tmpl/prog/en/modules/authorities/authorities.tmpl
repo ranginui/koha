@@ -491,16 +491,6 @@ function unHideSubfield(index,labelindex) { // FIXME :: is it used ?
     label = document.getElementById(labelindex);
     label.style.display='none'; 
 }
-
-function addauthority() {
-    X = document.forms[0].authtype.value;
-    window.location="/cgi-bin/koha/authorities/authorities.pl?authtypecode="+X;
-}
-function searchauthority() {
-    X = document.forms[0].authtype2.value;
-    Y = document.forms[0].value.value;
-    window.location="/cgi-bin/koha/authorities/authorities-home.pl?op=do_search&type=intranet&authtypecode="+X+"&value="+Y+"&marclist=&and_or=and&excluding=&operator=contains";
-}
 //]]>
 </script>
 <link type="text/css" rel="stylesheet" href="<!-- TMPL_VAR NAME="themelang" -->/css/addbiblio.css" />
