@@ -18,15 +18,17 @@
 
 set -e
 
-
 listopts=""
-if [ "$1" = --enabled ]
-then
-    listopts="--enabled"
+while [ ! -z "$1" ]
+do
+    case "$1" in
+        --email) listopts="$listopts --email";;
+      --enabled) listopts="$listopts --enabled";;
+              *) break;;
+    esac
     shift
-fi
-
-
+done
+            
 for name in $(koha-list $listopts)
 do
     sudo -u "$name-koha" \
