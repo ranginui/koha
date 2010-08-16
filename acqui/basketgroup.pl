@@ -298,9 +298,8 @@ if ( $op eq "add" ) {
 
         # determine default billing and delivery places depending on librarian homebranch and existing basketgroup data
         my $borrower = GetMember( ( 'borrowernumber' => $loggedinuser ) );
-        $billingplace  = $billingplace  || $borrower->{'branchcode'};
-        $deliveryplace = $deliveryplace || $borrower->{'branchcode'};
-
+        $billingplace  = $billingplace  || C4::Context->userenv->{"branch"};
+        $deliveryplace = $deliveryplace || C4::Context->userenv->{"branch"};
         my $branches = GetBranches;
 
         # Build the combobox to select the billing place
