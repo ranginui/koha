@@ -18,19 +18,19 @@
 
 set -e
 
-if [ "$#" = 1 ]
+if [ "$#" = 0 ]
 then
     echo "Enables email for a koha instance." 1>&2
     echo "Usage: $0 instancename..." 1>&2
     exit 1
 fi
-
+libdir=/var/lib/koha
 for name in "$@"
 do
-    if [ -d `dirname $name` ]
+    if [ ! -d $libdir/$name ]
     then 
         echo "$0: no koha instance \"$name\"" 1>&2
         continue
     fi
-    touch /var/lib/koha/$name/email.enabled
+    touch $libdir/$name/email.enabled
 done
