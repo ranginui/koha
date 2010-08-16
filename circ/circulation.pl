@@ -548,7 +548,6 @@ if ($borrower) {
 
     # Getting borrower relatives
     my @relborrowernumbers = GetMemberRelatives($borrower->{'borrowernumber'});
-    warn Data::Dumper::Dumper(@relborrowernumbers);
     #push @borrowernumbers, $borrower->{'borrowernumber'};
 
     # get each issue of the borrower & separate them in todayissues & previous issues
