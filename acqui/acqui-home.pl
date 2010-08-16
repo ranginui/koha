@@ -51,7 +51,7 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
 );
 
 my $user = GetMember( 'borrowernumber' => $loggedinuser );
-my $branchname = GetBranchName( $user->{branchcode} );
+my $branchname = GetBranchName( $user->{"branchcode"} );
 
 my $num_formatter;
 
@@ -73,7 +73,7 @@ if ( $cur_format eq 'FR' ) {
     );
 }
 
-my $budget_arr = GetBudgetHierarchy( '', $user->{branchcode}, $template->{param_map}->{'USER_INFO'}[0]->{'borrowernumber'} );
+my $budget_arr = GetBudgetHierarchy( '', C4::Context->userenv->{"branch"}, $template->{param_map}->{'USER_INFO'}[0]->{'borrowernumber'} );
 
 my $total      = 0;
 my $totspent   = 0;
