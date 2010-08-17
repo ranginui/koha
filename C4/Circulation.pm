@@ -1985,7 +1985,13 @@ sub AddRenewal {
           ( C4::Context->preference('RenewalPeriodBase') eq 'date_due' )
           ? C4::Dates->new( $issuedata->{date_due}, 'iso' )
           : C4::Dates->new();
-        $datedue = CalcDateDue( $datedue, $loanlength->{renewalperiod}, $issuedata->{'branchcode'}, $borrower );
+
+        my $itype = ( C4::Context->preference('item-level_itypes') ) ? $biblio->{'itype'} : $biblio->{'itemtype'};
+        my $controlbranch = _GetCircControlBranch( $item, $borrower );
+        my $renewalperiod = $loanlength->{renewalperiod} || GetLoanLength( $borrower->{'categorycode'}, $itype, $controlbranch );
+
+        $datedue = CalcDateDue( $datedue, $renewalperiod, $issuedata->{'branchcode'}, $borrower );
+
     }
 
     # Update the issues record to have the new due date, and a new count
