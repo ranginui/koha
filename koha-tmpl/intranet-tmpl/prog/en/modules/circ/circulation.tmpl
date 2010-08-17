@@ -22,13 +22,25 @@ $.tablesorter.addParser({
 	 $(document).ready(function() {
  		$('#patronlists > ul').tabs();
 		$.tablesorter.defaults.widgets = ['zebra'];
+
 		$("#issuest").tablesorter({<!-- TMPL_IF NAME="dateformat_metric" -->
 		dateFormat: 'uk',<!-- /TMPL_IF -->
 		headers: { 1: { sorter: 'articles' },5: { sorter: false },6:{sorter:false},7:{sorter:false},8:{sorter:false}}
 		});
+		$("#relissuest").tablesorter({<!-- TMPL_IF NAME="dateformat_metric" -->
+		dateFormat: 'uk',<!-- /TMPL_IF -->
+		headers: { 1: { sorter: 'articles' },5: { sorter: false },6:{sorter:false},7:{sorter:false},8:{sorter:false}}
+		});
+
+		//FIXME: Sorting does not work when there are previous checkouts only
+		// (It works fine when there are only checkouts of the day, or both previous and today checkouts)
 		$("#issuest").bind("sortEnd",function() {
-        	$("#previous").parents("tr").remove();  // 'previous checkouts' header chokes table sorter
-	    });
+		    $("#previous").parents("tr").remove();  // 'previous checkouts' header chokes table sorter
+		});
+		$("#relissuest").bind("sortEnd",function() {
+		    $("#relprevious").parents("tr").remove();  // 'previous checkouts' header chokes table sorter
+		});
+
 		$("#holdst").tablesorter({<!-- TMPL_IF NAME="dateformat_metric" -->
 		dateFormat: 'uk',<!-- /TMPL_IF -->
 			sortList: [[0,0]],
@@ -833,7 +845,7 @@ No patron matched <span class="ex"><!-- TMPL_VAR name="message" --></span>
     <!-- /TMPL_LOOP --> <!-- /loop todayissues -->
     <!-- /if todayissues --><!-- /TMPL_IF -->
 <!-- TMPL_IF NAME="relprevissues" -->
-<tr><th class="{sorter: false}" colspan="10"><a name="previous" id="previous"></a>Previous checkouts</th></tr>
+<tr><th class="{sorter: false}" colspan="10"><a name="relprevious" id="relprevious"></a>Previous checkouts</th></tr>
     <!-- TMPL_LOOP NAME="relprevissues" -->
     <!-- TMPL_IF NAME="__odd__" -->
         <tr>
