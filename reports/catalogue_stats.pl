@@ -367,8 +367,10 @@ sub calculate {
     my $sth2 = $dbh->prepare($strsth2);
     if ( (@colfilter) and ( $colfilter[1] ) ) {
         $sth2->execute( $barcodefilter, $colfilter[0], $colfilter[1] );
-    } elsif ( $colfilter[0] ) {
-        $sth2->execute( $barcodefilter, $colfilter[0] );
+    } elsif ( $barcodefilter && $colfilter[0] ) {
+        $sth2->execute( $barcodefilter , $colfilter[0] );
+    } elsif ( $colfilter[0]) { 
+	$sth2->execute( $colfilter[0] );
     } elsif ($barcodefilter) {
         $sth2->execute($barcodefilter);
     } else {
@@ -464,9 +466,9 @@ sub calculate {
         @$filters[12] =~ s/\*/%/g;
         $strcalc .= " AND items.ccode  LIKE '" . @$filters[12] . "'";
     }
-    if ( @$filters[13] ) {
-        @$filters[13] =~ s/\*/%/g;
-        $strcalc .= " AND TO_DAYS(now()) - TO_DAYS(items.dateaccessioned) > (" . @$filters[13] . " * 365)";
+    if ( @$filters[15] ) {
+        @$filters[15] =~ s/\*/%/g;
+        $strcalc .= " AND TO_DAYS(now()) - TO_DAYS(items.dateaccessioned) > (" . @$filters[15] . " * 365)";
     }
     $strcalc .= " group by $linefield, $colfield order by $linefield,$colfield";
     $debug and warn "SQL: $strcalc";
