@@ -66,7 +66,7 @@ if ($help) {
     usage(0);
 }
 
-if (!($sessions || $zebraqueue_days)){
+if (!($sessions || $zebraqueue_days || $mail)){
     print "You did not specify any cleanup work for the script to do.\n\n";
     usage(1);
 }
@@ -113,12 +113,12 @@ if ($zebraqueue_days){
 if ($mail) {
     if ($verbose) {
         $sth = $dbh->prepare("SELECT COUNT(*) FROM message_queue");
-        $sth->execute() or die $dhb->errstr;
+        $sth->execute() or die $dbh->errstr;
         my @count_arr = $sth->fetchrow_array;
         print "Deleting $count_arr[0] entries from the mail queue.\n";
     }
     $sth = $dbh->prepare("TRUNCATE message_queue");
     $sth->execute() or $dbh->errstr;
-    print "Done with purging the mail queue.\n";
+    print "Done with purging the mail queue.\n" if ($verbose);
 }
 exit(0);
