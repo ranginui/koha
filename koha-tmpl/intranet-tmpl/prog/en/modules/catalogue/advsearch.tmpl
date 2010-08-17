@@ -67,7 +67,7 @@
                 </select>
             <!-- /TMPL_IF --> 
 			<!-- /TMPL_IF -->
-			<!-- TMPL_INCLUDE NAME="search_indexes.inc" -->
+			 <!-- TMPL_IF NAME="AdvancedSearchContent" --><!--TMPL_VAR Name="AdvancedSearchContent"--><!-- TMPL_ELSE --><!-- TMPL_INCLUDE NAME="search_indexes.inc" --><!-- /TMPL_IF -->
 			<input type="text" size="30" name="q" title="Enter search terms" value="" />
             <!-- TMPL_IF NAME="expanded_options" -->
                 <!-- TMPL_IF NAME="add_field" -->

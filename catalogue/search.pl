@@ -324,6 +324,10 @@ if ( $template_type eq 'advsearch' ) {
         $template->param( expanded_options => $cgi->param('expanded_options') );
     }
 
+    if ( C4::Context->preference("AdvancedSearchContent") ne '' ) {
+	$template->param( AdvancedSearchContent => C4::Context->preference("AdvancedSearchContent") ); 
+    }
+
     $template->param( virtualshelves => C4::Context->preference("virtualshelves") );
 
     output_html_with_http_headers $cgi, $cookie, $template->output;
