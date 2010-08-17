@@ -38,15 +38,18 @@ Usage: $0 [--enabled] [--email] [-h]
 Options:
     --enabled       only show instances that are enabled
     --email         only show instances that have email enabled
+    --noemail       only show instances that do not have email enabled
     -h              this help
 
-The filtering option can be combined, and you probably want to do this.
+The filtering options can be combined, and you probably want to do this
+(except --email and --noemail, that's just silly.)
 eoh
 }
 
 enabled=no
 email=no
-args=$(getopt -l enabled,email -o h -n $0 -- "$@")
+noemail=no
+args=$(getopt -l enabled,email,noemail -o h -n $0 -- "$@")
 set -- $args
 while [ ! -z "$1" ]
 do
@@ -54,6 +57,7 @@ do
          -h) help; exit;;
     --email) email=yes;;
   --enabled) enabled=yes;;
+  --noemail) noemail=yes;;
           *) break;;
     esac
     shift
@@ -65,5 +69,6 @@ while read name
 do
     [ "$enabled" = yes ] && ! is_enabled "$name" && continue
     [ "$email" = yes ] && [ ! -e /var/lib/koha/$name/email.enabled ] && continue
+    [ "$noemail" = yes ] && [ -e /var/lib/koha/$name/email.enabled ] && continue
     echo "$name"
 done

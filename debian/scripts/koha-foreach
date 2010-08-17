@@ -23,6 +23,7 @@ while [ ! -z "$1" ]
 do
     case "$1" in
         --email) listopts="$listopts --email";;
+      --noemail) listopts="$listopts --noemail";;
       --enabled) listopts="$listopts --enabled";;
               *) break;;
     esac
