@@ -4487,6 +4487,14 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
 	SetVersion ($DBversion);
 }
 
+$DBversion = "3.02.00.030";
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+    $dbh->do("INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES  
+		('OpacAdvancedSearchContent','','Use HTML tabs to create your own advanced search menu in OPAC','70|10','Textarea'),
+		('AdvancedSearchContent','','Use HTML tabs to create your own advanced search menu','70|10','Textarea')");
+    print "Upgrade to $DBversion done (adding OpacAdvancedSearchContent and AdvancedSearchContent systempref, in 'Searching' tab)\n";
+    SetVersion($DBversion);
+}
 
 =item DropAllForeignKeys($table)
 

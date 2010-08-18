@@ -246,6 +246,10 @@ if ( $template_type && $template_type eq 'advsearch' ) {
         $template->param( expanded_options => C4::Context->preference("expandedSearchOption") );
     }
 
+    if ( C4::Context->preference("OpacAdvancedSearchContent") ne '' ) {
+        $template->param( OpacAdvancedSearchContent => C4::Context->preference("OpacAdvancedSearchContent") );
+    }
+
     # but let the user override it
     if ( defined $cgi->param('expanded_options') ) {
         if ( ( $cgi->param('expanded_options') == 0 ) || ( $cgi->param('expanded_options') == 1 ) ) {

@@ -225,21 +225,23 @@ $tabsysprefs{opaclanguagesdisplay} = "I18N/L10N";
 $tabsysprefs{language}             = "I18N/L10N";
 
 # Searching
-$tabsysprefs{defaultSortField}        = "Searching";
-$tabsysprefs{defaultSortOrder}        = "Searching";
-$tabsysprefs{numSearchResults}        = "Searching";
-$tabsysprefs{OPACdefaultSortField}    = "Searching";
-$tabsysprefs{OPACdefaultSortOrder}    = "Searching";
-$tabsysprefs{OPACItemsResultsDisplay} = "Searching";
-$tabsysprefs{OPACnumSearchResults}    = "Searching";
-$tabsysprefs{QueryFuzzy}              = "Searching";
-$tabsysprefs{QueryStemming}           = "Searching";
-$tabsysprefs{QueryWeightFields}       = "Searching";
-$tabsysprefs{expandedSearchOption}    = "Searching";
-$tabsysprefs{sortbynonfiling}         = "Searching";
-$tabsysprefs{QueryAutoTruncate}       = "Searching";
-$tabsysprefs{QueryRemoveStopwords}    = "Searching";
-$tabsysprefs{AdvancedSearchTypes}     = "Searching";
+$tabsysprefs{defaultSortField}            = "Searching";
+$tabsysprefs{defaultSortOrder}            = "Searching";
+$tabsysprefs{numSearchResults}            = "Searching";
+$tabsysprefs{OPACdefaultSortField}        = "Searching";
+$tabsysprefs{OPACdefaultSortOrder}        = "Searching";
+$tabsysprefs{OPACItemsResultsDisplay}     = "Searching";
+$tabsysprefs{OPACnumSearchResults}        = "Searching";
+$tabsysprefs{QueryFuzzy}                  = "Searching";
+$tabsysprefs{QueryStemming}               = "Searching";
+$tabsysprefs{QueryWeightFields}           = "Searching";
+$tabsysprefs{expandedSearchOption}        = "Searching";
+$tabsysprefs{sortbynonfiling}             = "Searching";
+$tabsysprefs{QueryAutoTruncate}           = "Searching";
+$tabsysprefs{QueryRemoveStopwords}        = "Searching";
+$tabsysprefs{AdvancedSearchTypes}         = "Searching";
+$tabsysprefs{AdvancedSearchContent}   	  = "Searching";
+$tabsysprefs{OpacAdvancedSearchContent}   = "Searching";
 
 # EnhancedContent
 $tabsysprefs{AmazonEnabled}          = "EnhancedContent";
