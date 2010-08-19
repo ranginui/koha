@@ -151,7 +151,7 @@ sub XSLTParse4Display {
     my $parser = XML::LibXML->new();
 
     # don't die when you find &, >, etc
-    $parser->recover_silently(0);
+    $parser->recover_silently(1);
     my $source = $parser->parse_string($xmlrecord);
     unless ( $stylesheet->{$xslfilename} ) {
         my $xslt = XML::LibXSLT->new();
