@@ -701,6 +701,7 @@ function unHideSubfield(index,labelindex) { // FIXME :: is it used ?
 		<ul class="toolbar">
 			<li id="savebutton"><input id="addbiblio" type="button" value="Save" onclick="return Check(event);" /></li>
 			<li id="z3950searchc"><input type="button" id="z3950search" value="Z39.50 Search" onclick="PopupZ3950(); return false;" /></li>
+			<!--TMPL_IF NAME="CAN_user_editcatalogue_edit_catalogue"-->
 			<li id="changeframework"><label for="Frameworks">Change framework: </label>
 			<select name="Frameworks" id="Frameworks" onchange="Changefwk(this);">
 			                <option value="">Default</option>                
@@ -709,6 +710,7 @@ function unHideSubfield(index,labelindex) { // FIXME :: is it used ?
 					             <!-- TMPL_VAR NAME="frameworktext" -->                                      
                                  </option>                          
 					        <!-- /TMPL_LOOP -->
+			<!--/TMPL_IF-->
 			</select> 
 <input type="hidden" name="op" value="addbiblio" /></li>
 		</ul>
