@@ -27,6 +27,7 @@ use C4::Suggestions;
 use C4::Biblio;
 use C4::Debug;
 use C4::SQLHelper qw(InsertInTable);
+use C4::Items;
 
 use Time::localtime;
 use HTML::Entities;
@@ -1339,6 +1340,10 @@ sub DelOrder {
     my $sth = $dbh->prepare($query);
     $sth->execute( $bibnum, $ordernumber );
     $sth->finish;
+
+    my @itemnumbers = GetItemnumbersFromOrder( $ordernumber );
+    C4::Items::DelItem( $dbh, $bibnum, $_ ) for @itemnumbers;
+    DelBiblio( $dbh, $bibnum ) if C4::Items::GetItemsCount( $bibnum ) == 0;
 }
 
 =head2 FUNCTIONS ABOUT PARCELS
