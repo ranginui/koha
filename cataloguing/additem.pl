@@ -547,7 +547,7 @@ foreach my $tag (sort keys %{$tagslib}) {
             or subfield_is_textarea($tag,$subfield)
           ) {
         # oversize field (textarea)
-        $subfield_data{marc_value} = qq{<textarea $attributes_no_value cols="65">$value</textarea>\n};
+        $subfield_data{marc_value} = qq{<textarea $attributes_no_value cols="65" rows="8">$value</textarea>\n};
     } else {
         # it's a standard field
          $subfield_data{marc_value} = "<input $attributes />";
