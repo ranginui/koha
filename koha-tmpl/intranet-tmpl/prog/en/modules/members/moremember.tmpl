@@ -224,8 +224,8 @@ if (nodename =="barcodes[]"){
     <!-- /TMPL_IF -->   	
 	<!-- TMPL_IF NAME="fax" --><li><span class="label">Fax: </span><!-- TMPL_VAR NAME="fax" --></li><!-- /TMPL_IF -->
     <!-- TMPL_UNLESS NAME="I"-->
-        <!-- TMPL_IF Name="email"    --><li><span class="label">Email (home):</span><a href="mailto:<!-- TMPL_VAR NAME="email" -->"><!-- TMPL_VAR NAME="email" --></a></li><!-- /TMPL_IF -->
-        <!-- TMPL_IF Name="emailpro" --><li><span class="label">Email (work): </span><a href="mailto:<!-- TMPL_VAR NAME="emailpro" -->"><!-- TMPL_VAR NAME="emailpro" --></a></li><!--/TMPL_IF-->
+        <!-- TMPL_IF Name="email"    --><li><span class="label">Primary Email:</span><a href="mailto:<!-- TMPL_VAR NAME="email" -->"><!-- TMPL_VAR NAME="email" --></a></li><!-- /TMPL_IF -->
+        <!-- TMPL_IF Name="emailpro" --><li><span class="label">Secondary Email: </span><a href="mailto:<!-- TMPL_VAR NAME="emailpro" -->"><!-- TMPL_VAR NAME="emailpro" --></a></li><!--/TMPL_IF-->
     <!-- /TMPL_UNLESS -->
     <li><span class="label">Initials: </span><!-- TMPL_VAR NAME="initials" --></li>
     <li><span class="label">Date of birth:</span><!-- TMPL_VAR NAME="dateofbirth" --></li>
