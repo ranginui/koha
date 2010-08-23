@@ -112,6 +112,7 @@ foreach my $borrower ( @$results[ $from .. $to - 1 ] ) {
     my ( $od, $issue, $fines ) = GetMemberIssuesAndFines( $$borrower{'borrowernumber'} );
 
     $$borrower{'dateexpiry'} = C4::Dates->new( $$borrower{'dateexpiry'}, 'iso' )->output('syspref');
+    $$borrower{'address'}=getFullBorrowerAddress($$borrower{'borrowernumber'});
 
     my %row = (
         count => $index++,

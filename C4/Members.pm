@@ -89,6 +89,7 @@ BEGIN {
       &GetMessages
       &GetMessagesCount
       &SetMemberInfosInTemplate
+      &getFullBorrowerAddress
     );
 
     #Modify data
@@ -1697,6 +1698,18 @@ sub SetMemberInfosInTemplate {
 
     my $attributes = GetBorrowerAttributes($borrowernumber);
     $template->param( extendedattributes => $attributes, );
+}
+
+sub getFullBorrowerAddress {
+    my ( $borrowernumber ) = @_;
+    my $borrower = GetMemberDetails( $borrowernumber, 0 );
+    # Computes full borrower address
+    my ( undef, $roadttype_hashref ) = &GetRoadTypes();
+    my $address1="";
+    if(($borrower->{'streetnumber'}) ne ''){$address1=$address1.$borrower->{'streetnumber'}.' ';}
+    if(($roadttype_hashref->{ $borrower->{'streettype'} }) ne ""){$address1=$address1.$roadttype_hashref->{ $borrower->{'streettype'} }.' ';}
+    $address1=$address1.$borrower->{'address'};
+    return $address1;
 }
 
 =head2 ExtendMemberSubscriptionTo (OUEST-PROVENCE)
