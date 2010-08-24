@@ -279,6 +279,7 @@ sub select_all_records {
 sub select_all_authorities {
     my $strsth=qq{SELECT authid from auth_header};
     $strsth.=qq{ WHERE $where } if ($where);
+    $strsth.=qq{ LIMIT $min } if ($min && !$ofset);
     $strsth.=qq{ LIMIT $min,$ofset } if ($min && $ofset);
     my $sth = $dbh->prepare($strsth);
     $sth->execute();
@@ -288,7 +289,7 @@ sub select_all_authorities {
 sub select_all_biblios {
     my $strsth = qq{ SELECT biblionumber FROM biblioitems };
     $strsth.=qq{ WHERE $where } if ($where);
-    $strsth.=qq{ LIMIT $min } if ($min);
+    $strsth.=qq{ LIMIT $min } if ($min && !$ofset);
     $strsth.=qq{ LIMIT $min,$ofset } if ($ofset);
     my $sth = $dbh->prepare($strsth);
     $sth->execute();
