@@ -173,10 +173,6 @@ if ( $dat->{'serial'} ) {
             # And there are subscriptions, we display them
             if ($subscriptionsnumber) {
                 $defaulttab = 'subscriptions';
-            } else {
-
-                # Else, we try next option
-                next;
             }
         }
 
