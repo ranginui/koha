@@ -30,10 +30,15 @@ use YAML;
 
 my $query = new CGI;
 my $cardnumber = $query->param('findborrower');
+
+# Recherche par nom
+if ( $cardnumber && substr($cardnumber, 0, 4) ne '0000' ){
+	print $query->redirect( "/cgi-bin/koha/circ/circulation.pl?findborrower=$cardnumber" );
+}
+
 $cardnumber = 0 . $cardnumber if length($cardnumber) == 15;
 $cardnumber = 00 . $cardnumber if length($cardnumber) == 14;
 $cardnumber =~ s/00000000([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})/00000000$4$3$2$1/i;
-warn "iciiiiiiiiiiiiiiiiiiiiiii\n";
 
 #IF $cardnumber
 ################
