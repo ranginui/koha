@@ -601,7 +601,7 @@ END_SQL
             print @output_chunks;
         }
         my $content = join(";", qw(title name surname address1 address2 zipcode city email itemcount itemsinfo due_date issue_date)) . "\n";
-        $content .= join( "\n", @output_chunks );
+        $content .= join( "\n", map { m/(.+)/ } @output_chunks );
 
         my $attachment = {
             filename => defined $csvfilename ? 'attachment.csv' : 'attachment.txt',
