@@ -35,6 +35,7 @@ use C4::Debug;
 use YAML;
 use Switch;
 use MARC::File::XML;
+use List::MoreUtils qw /any/;
 
 my $input           = new CGI;
 my $dbh             = C4::Context->dbh;
@@ -360,7 +361,6 @@ if ( $op eq "show" ) {
                     }
                     $value = "";
                 } elsif ( $tagslib->{$tag}->{$subfield}->{authorised_value} eq "itemtypes" ) {
-                    push @authorised_values, "" unless ( $tagslib->{$tag}->{$subfield}->{mandatory} );
                     my $sth = $dbh->prepare("select itemtype,description from itemtypes order by description");
                     $sth->execute;
                     while ( my ( $itemtype, $description ) = $sth->fetchrow_array ) {
@@ -370,7 +370,6 @@ if ( $op eq "show" ) {
 
                     #---- class_sources
                 } elsif ( $tagslib->{$tag}->{$subfield}->{authorised_value} eq "cn_source" ) {
-                    push @authorised_values, "" unless ( $tagslib->{$tag}->{$subfield}->{mandatory} );
 
                     my $class_sources  = GetClassSources();
                     my $default_source = C4::Context->preference("DefaultClassificationSource");
@@ -387,13 +386,16 @@ if ( $op eq "show" ) {
 
                     #---- "true" authorised value
                 } else {
-                    push @authorised_values, "" unless ( $tagslib->{$tag}->{$subfield}->{mandatory} );
                     $authorised_values_sth->execute( $tagslib->{$tag}->{$subfield}->{authorised_value} );
                     while ( my ( $value, $lib ) = $authorised_values_sth->fetchrow_array ) {
                         push @authorised_values, $value;
                         $authorised_lib{$value} = $lib;
                     }
                 }
+
+		# Adding an empty choice at the beginning of every select field (if it is not already there)
+		unshift @authorised_values, "" unless any { "" eq $_ } @authorised_values;
+
                 $subfield_data{marc_value} = CGI::scrolling_list(    # FIXME: factor out scrolling_list
                     -name     => "field_value",
                     -values   => \@authorised_values,
