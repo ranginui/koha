@@ -799,8 +799,7 @@ sub _send_message_by_email ($;$$$) {
             );
             return;
         }
-        my $which_address = C4::Context->preference('AutoEmailPrimaryAddress');
-        $to_address = $member->{ $value_for->{$which_address} };
+	$to_address = GetFirstValidEmailAddress($message->{'borrowernumber'});
 
 	unless ($to_address) {
 	    $to_address = C4::Context->preference('KohaAdminEmailAddress');
