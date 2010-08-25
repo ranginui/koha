@@ -27,7 +27,7 @@ function check() {
     if (document.form.checkitem){
         for (i=0;i<document.form.checkitem.length;i++){
             if (document.form.checkitem[i].checked == true) {
-                if (hold_type=="" or hold_type=="single"){
+                if (hold_type=="" || hold_type=="single"){
                     hold_type=document.form.hold_type[i].value;
                 }
 				count_reserv++ ;
@@ -52,11 +52,11 @@ function check() {
     if (count_reserv == "0"){
 		msg += (_("- Please select an item to place a hold") + "\n");
     }
-    if (count_reserv >= "2" and not hold_type =="multiple"){
+    if (count_reserv >= "2" && hold_type != "multiple"){
 		msg += (_("- You may only place a hold on one item at a time") + "\n");
     }
 
-    if (alreadyreserved > "0" and not hold_type=="multiple"){
+    if (alreadyreserved > "0" && hold_type != "multiple"){
 		msg += (_("- This patron had already placed a hold on this item") + "\n" + _("Please cancel the previous hold first") + "\n");
     }
 
