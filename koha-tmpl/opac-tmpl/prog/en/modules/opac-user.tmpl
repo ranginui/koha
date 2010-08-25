@@ -1,7 +1,7 @@
 <!-- TMPL_INCLUDE NAME="doc-head-open.inc" -->
 <!-- TMPL_IF NAME="LibraryNameTitle" --><!-- TMPL_VAR NAME="LibraryNameTitle" --><!-- TMPL_ELSE -->Koha Online<!-- /TMPL_IF --> Catalog &rsaquo; Library Home for
 <!-- TMPL_LOOP name="BORROWER_INFO" -->
-    <!-- TMPL_VAR name="firstname" --> <!-- TMPL_VAR name="surname" -->
+    <!-- TMPL_VAR name="showname" --> <!-- TMPL_VAR name="surname" -->
 <!-- /TMPL_LOOP -->
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
 <script type="text/javascript" src="<!-- TMPL_VAR name="themelang" -->/lib/jquery/plugins/jquery.tablesorter.min.js"></script>
@@ -93,7 +93,7 @@ $.tablesorter.addParser({
 	       </div>
 	<!-- /TMPL_IF -->
     <!-- TMPL_LOOP NAME="BORROWER_INFO" -->
-        <h2>Hello, <!-- TMPL_VAR NAME="firstname" --> <!-- TMPL_VAR NAME="surname" --> <span class="hint">(<a href="/cgi-bin/koha/opac-main.pl?logout.x=1">Click here</a> if you're not <!-- TMPL_VAR NAME="title" --> <!-- TMPL_VAR NAME="firstname" --> <!-- TMPL_VAR NAME="surname" -->)</span></h2>
+        <h2>Hello, <!-- TMPL_VAR NAME="showname" --> <!-- TMPL_VAR NAME="surname" --> <span class="hint">(<a href="/cgi-bin/koha/opac-main.pl?logout.x=1">Click here</a> if you're not <!-- TMPL_VAR NAME="title" --> <!-- TMPL_VAR NAME="showname" --> <!-- TMPL_VAR NAME="surname" -->)</span></h2>
         
 		<!-- TMPL_IF NAME="patronupdate" --><div class="dialog message"><h3>Thank you!</h3><p>Your corrections have been submitted to the library, and a staff member will update your record as soon as possible.</p></div><!-- /TMPL_IF -->
 		

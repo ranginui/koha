@@ -367,6 +367,11 @@ sub GetMemberDetails {
     $sth->execute( $borrower->{'categorycode'} );
     my $enrolment = $sth->fetchrow;
     $borrower->{'enrolmentperiod'} = $enrolment;
+    # For the purposes of making templates easier, we'll define a
+    # 'showname' which is the alternate form the user's first name if 
+    # 'other name' is defined.
+    $borrower->{'showname'} = $borrower->{'othernames'} || $borrower->{'firstname'};
+
     return ($borrower);    #, $flags, $accessflagshash);
 }
 
