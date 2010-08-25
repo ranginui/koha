@@ -52,7 +52,6 @@ my $patron = $input->Vars;
 foreach ( keys %$patron ) {
     delete $$patron{$_} unless ( $$patron{$_} );
 }
-
 my @categories = C4::Category->all;
 my $branches = ( defined $$patron{branchcode} ? GetBranchesLoop( $$patron{branchcode} ) : GetBranchesLoop() );
 
@@ -93,7 +92,12 @@ my $to   = $from + $resultsperpage;
 #($results)=Search(\@searchpatron,{surname=>1,firstname=>1},[$from,$to],undef,["firstname","surname","email","othernames"]  ) if (@searchpatron);
 my $search_scope = ( $quicksearch ? "field_start_with" : "start_with" );
 ($results) = Search( \@searchpatron, \@orderby, undef, undef, [ "firstname", "surname", "othernames", "cardnumber", "userid" ], $search_scope ) if (@searchpatron);
+
 if ($results) {
+	for my $field ('categorycode','branchcode'){
+		next unless ($patron->{$field});
+		@$results = grep { $_->{$field} eq $patron->{$field} } @$results; 
+	}
     $count = scalar(@$results);
 }
 
