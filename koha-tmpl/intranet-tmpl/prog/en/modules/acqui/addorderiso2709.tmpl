@@ -38,6 +38,7 @@
                </div>
                <div>
                    <form action="<!--TMPL_VAR name="scriptname" -->" method="post" name="import_biblios">
+                     <input type="hidden" name="basketno" value="<!-- TMPL_VAR NAME="basketno" -->" />
                      <table>
                      <tr>
                          <th>#</th>
@@ -57,7 +58,6 @@
                          </tr>
                          <!-- TMPL_IF name="match_biblionumber" -->
                            <tr>
-                             <td />
                              <td class="highlight" colspan="3">Matches biblio <!-- TMPL_VAR name="match_biblionumber" --> (score = <!-- TMPL_VAR name="match_score" -->): <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR name="match_biblionumber" -->"><!-- TMPL_VAR name="match_citation" --></a></td>
                            </tr>
                          <!-- /TMPL_IF -->
