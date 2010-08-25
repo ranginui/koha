@@ -295,7 +295,7 @@ if ($noreport) {
             my @displayvalues = map { $_->[1] } @{ $pattrs->{ $pattr_filter->{code} } };    # grab second value from each subarray
             push @patron_attr_value_loop, { value => join( ', ', sort { lc $a cmp lc $b } @displayvalues ) };
         }
-
+        $data->{email}=C4::Members::GetFirstValidEmailAddress($data->{borrowernumber});
         push @overduedata,
           { duedate                => format_date( $data->{date_due} ),
             borrowernumber         => $data->{borrowernumber},
