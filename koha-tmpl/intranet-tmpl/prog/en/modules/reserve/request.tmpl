@@ -404,21 +404,22 @@ function checkMultiHold() {
             <!-- TMPL_ELSIF NAME="override" -->
                 <input type="hidden" name="hold_type" value="single" />
             <!-- /TMPL_IF -->
-            <!-- TMPL_IF NAME="canholdmultiple" -->
-                <input type="checkbox" name="checkitem" value="<!-- TMPL_VAR NAME="itemnumber" -->" />
-		<!-- TMPL_IF NAME="available" -->
-		    <input type="radio" name="checkitem" value="<!-- TMPL_VAR NAME="itemnumber" -->" />
-		<!-- TMPL_ELSIF NAME="override" -->
-		    <input type="radio" name="checkitem" class="needsoverride" value="<!-- TMPL_VAR NAME="itemnumber" -->" />
-		    <img src="/intranet-tmpl/<!-- TMPL_VAR NAME="theme" -->/img/famfamfam/silk/error.png" alt="Requires override of hold policy" />
-		<!-- TMPL_ELSE -->
-		    <input disabled="disabled" type="radio" name="checkitem" value="<!-- TMPL_VAR NAME="itemnumber" -->" />
-		    <img src="/intranet-tmpl/<!-- TMPL_VAR NAME="theme" -->/img/famfamfam/silk/cross.png" alt="Cannot be put on hold" />
-		<!-- /TMPL_IF -->
+	    <!-- TMPL_IF NAME="cannothold" -->
+		<input disabled="disabled" type="radio" name="checkitem" value="<!-- TMPL_VAR NAME="itemnumber" -->" />                            
+		<img src="/intranet-tmpl/<!-- TMPL_VAR NAME="theme" -->/img/famfamfam/silk/cross.png" alt="Cannot be put on hold" />               
 	    <!-- TMPL_ELSE -->
-		<input disabled="disabled" type="radio" name="checkitem" value="<!-- TMPL_VAR NAME="itemnumber" -->" />
-		<img src="/intranet-tmpl/<!-- TMPL_VAR NAME="theme" -->/img/famfamfam/silk/cross.png" alt="Cannot be put on hold" />
-	    <!-- /TMPL_IF -->
+		<!-- TMPL_IF NAME="canholdmultiple" -->
+		    <input type="checkbox" name="checkitem" value="<!-- TMPL_VAR NAME="itemnumber" -->" />
+		<!-- TMPL_ELSIF NAME="available" -->                                                                                                   
+		    <input type="radio" name="checkitem" value="<!-- TMPL_VAR NAME="itemnumber" -->" />                                                
+		<!-- TMPL_ELSIF NAME="override" -->                                                                                                    
+		    <input type="radio" name="checkitem" class="needsoverride" value="<!-- TMPL_VAR NAME="itemnumber" -->" />                          
+		    <img src="/intranet-tmpl/<!-- TMPL_VAR NAME="theme" -->/img/famfamfam/silk/error.png" alt="Requires override of hold policy" />    
+		<!-- TMPL_ELSE -->                                                                                                                     
+		    <input disabled="disabled" type="radio" name="checkitem" value="<!-- TMPL_VAR NAME="itemnumber" -->" />                            
+		    <img src="/intranet-tmpl/<!-- TMPL_VAR NAME="theme" -->/img/famfamfam/silk/cross.png" alt="Cannot be put on hold" />               
+		<!-- /TMPL_IF -->       
+            <!-- /TMPL_IF -->       
             </td>
             <!-- TMPL_IF NAME="item-level_itypes" -->
                 <td>

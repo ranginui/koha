@@ -429,6 +429,7 @@ foreach my $biblionumber (@biblionumbers) {
               $item->{override} = 0;
             }
             $item->{canholdmultiple}=CanHoldMultipleItems($item->{itype}) && $item->{available};
+	    $item->{cannothold}=!CanHoldMultipleItems($item->{itype});
             
             push @{ $biblioitem->{itemloop} }, $item;
         }
