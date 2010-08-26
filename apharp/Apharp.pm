@@ -30,7 +30,8 @@ our @EXPORT = qw(
     &delete_useless_fields
     &card_is_invalid
     &insert_borrower
-    &category_for );
+    &category_for 
+    &appendtolog );
 
 sub getBorrowers {
     my $new = shift;
@@ -268,8 +269,6 @@ sub card_exist{
 sub card_is_invalid {
     my $carddata = shift;
     my @missinglist;
-    #my $output = "log/koha_updateborrowers_log";
-    #my $logage = IO::File->new(">$output") or die "impossible d ouvrir $output : $!";
 
     my $enddate = $carddata->{ENDDATE};
     my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
@@ -356,9 +355,7 @@ sub insert_borrower {
     #AddMember: cardnumber, surname, firstname, branchcode, categorycode
     #Attributes: COMPOSANTE (=> branchcode), APPLIGEST, ETABLISSEM, CODEETAPE(=> categorycode)
     my $carddata = shift;
-    my $output = "log/koha_updateborrowers_log";
     my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
-    #my $log = IO::File->new(">$output") or die "impossible d ouvrir $output : $!";
 
     my %borrower;
 
@@ -390,7 +387,7 @@ sub insert_borrower {
 }
 
 sub category_for {
-    my ($step, $etablis) = @_;
+    my ($step, $etablis, $cardnumber) = @_;
 
     if ($etablis eq "U1") { # for U1
 	my $file = "config/u1_branch_by_step";
@@ -400,6 +397,7 @@ sub category_for {
 	foreach (keys %$category_map) {
 	    return $category_map->{$_} if $step =~ /^$_/i;
 	}
+	appendtolog("WARN: categorycode par defaut pour la carte n° $cardnumber", "apharp-error-log");
 	return "L";
 #        if ( $step ~~ do { my $str = join '|', qw/
 #            0DA 2L1 2L2 2L3 2LP 3L1 3L2 3L3 3LP 4DI 4DU 4JIGB1 4L1 4L2 4L3 4LB 4LP 5IGC1 5IGC1
@@ -440,7 +438,10 @@ sub category_for {
 	elsif ( $step ~~ do { my $str = join '|', qw/.1.* .2.* .3.*/; qr/^($str)/i } ) { "L"; }
 	elsif ( $step ~~ do { my $str = join '|', qw/.4.* .5.*/; qr/^($str)/i } ) { "M"; }        
 	elsif ( $step ~~ do { my $str = join '|', qw/.8.* .\D.*/; qr/^($str)/i } ) { "D"; }
-	else { "L" }
+	else { 
+	    appendtolog("WARN: categorycode par defaut pour la carte n° $cardnumber", "apharp-error-log");
+	    return "L"; 
+	}
     }
     elsif ($etablis eq "U3") {
 	my $file = "config/u3_branch_by_step";
@@ -448,11 +449,26 @@ sub category_for {
 	my $category_map = { map { chomp; my ($key,$value) = split /;/,$_; ( $key => $value ); } <$fh> };
 
 	if ( my $v = $category_map->{$step} ) { $v }
-	else { "L" }
+	else { 
+	    appendtolog("WARN: categorycode par defaut pour la carte n° $cardnumber", "apharp-error-log");
+	    return "L"; 
+	}
     }
         
 }
 
+sub appendtolog {
+    my ( $message, $logfile ) = @_;
+
+    my $dt   = DateTime->now;
+    my $date = $dt->ymd;
+    my $time = $dt->hms;
+    my $wanted = "$date $time";
+
+    open(WSLOG, ">>log/$logfile") or die "impossible d'ouvrir $logfile : $!";
+    print WSLOG "[$wanted]: " . $message ." \n";
+    close WSLOG;
+}
 
 =head
 wget http://search.cpan.org/CPAN/authors/id/G/GA/GAAS/libwww-perl-5.834.tar.gz

@@ -122,8 +122,6 @@ sub get_card_data {
     my $doc = get "http://139.124.135.90:8080/axis2/services/SquirelWebServices/getBiblibData?pupi=$cardnumber&year=$schooltyear";
     my $xmlsimple = XML::Simple->new();
     my $data = $xmlsimple->XMLin($doc);
-    #my $output = "log/koha_updateborrowers_log";
-    #my $log = IO::File->new(">$output") or die "d ouvrir $output : $!";
 
     my ($step, $category, $etablissement, $composante, $appligest);
 
@@ -135,7 +133,7 @@ sub get_card_data {
         my $steplevel = { "L" => 1, "M" => 2, "D" => 3 };
  
         foreach (@{ $data->{'ns:return'}->{'ax21:registrations'} }) {
-            my $tmpcategory = category_for($_->{'ax21:step'}, $_->{'ax21:establishment'} ) || 0;
+            my $tmpcategory = category_for($_->{'ax21:step'}, $_->{'ax21:establishment'}, $cardnumber) || 0;
             if ($steplevel->{$tmpcategory} >= $rightlevel) {
                 $rightlevel = $steplevel->{$tmpcategory};
                 $step = $_->{'ax21:step'} || '';
@@ -151,7 +149,7 @@ sub get_card_data {
         my $attr = $data->{'ns:return'}->{'ax21:registrations'};
         $step = $attr->{'ax21:step'} || '';
         $etablissement = $attr->{'ax21:establishment'} || '';
-        $category = $data->{'ns:return'}->{'ax21:profilWording'} eq "Etudiant" ? category_for($step, $etablissement ) : "P";
+        $category = $data->{'ns:return'}->{'ax21:profilWording'} eq "Etudiant" ? category_for($step, $etablissement, $cardnumber ) : "P";
         $composante = $attr->{'ax21:component'} || '';
         $appligest = $attr->{'ax21:externalRef'} || '';
     }
@@ -163,6 +161,7 @@ sub get_card_data {
 	my @map = YAML::LoadFile($configfile) or die "unable to load $configfile ";
 	$branchcode = $map[1]->{branchcode}->{ $composante } || '';
 	$branchcode = '' if $branchcode !~ m/^$etablissement/;
+	appendtolog("WARN: branchcode par defaut pour la carte n° $cardnumber", "apharp-error-log") unless $branchcode;
     }
 
     $borrower = { 'firstname'       => $data->{'ns:return'}->{'ax21:firstname'} || '',
