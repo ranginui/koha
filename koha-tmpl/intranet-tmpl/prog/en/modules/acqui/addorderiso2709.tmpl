@@ -8,6 +8,7 @@
 </title>
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
 <script type="text/javascript" src="<!-- TMPL_VAR name="themelang" -->/lib/jquery/plugins/jquery.tablesorter.min.js"></script>
+<script type="text/javascript" src="<!-- TMPL_VAR NAME='themelang' -->/js/acq.js"></script>
 <script type="text/JavaScript">
 //<![CDATA[
     $(document).ready(function() {
@@ -55,6 +56,7 @@
                              </td>
                              <td><!-- TMPL_VAR name="overlay_status"--></td>
                              <td><a href="/cgi-bin/koha/acqui/neworderempty.pl?booksellerid=<!--TMPL_VAR name="booksellerid" -->&amp;basketno=<!-- TMPL_VAR name="basketno" -->&amp;booksellerid=<!-- TMPL_VAR name="booksellerid" -->&amp;breedingid=<!-- TMPL_VAR name="import_record_id" -->&amp;import_batch_id=<!-- TMPL_VAR name="import_batch_id" -->">Add order</a></td>
+                             <td><input type="text" name="price" value="<!-- TMPL_VAR NAME="price" -->" /><td />
                          </tr>
                          <!-- TMPL_IF name="match_biblionumber" -->
                            <tr>
@@ -63,7 +65,8 @@
                          <!-- /TMPL_IF -->
                        <!-- /TMPL_LOOP -->
                      </table>
-                     <input type="button" value="Save" onclick="this.form.submit()" />
+                     <input type="button" value="Save" onclick="this.form.submit()" /><input type="button" value="Select all" onclick="javascript:document.location.href='/cgi-bin/koha/acqui/neworderempty.pl?booksellerid=<!--TMPL_VAR name="booksellerid" -->&amp;basketno=<!-- TMPL_VAR name="basketno" -->&amp;booksellerid=<!-- TMPL_VAR name="booksellerid" -->&amp;breedingid=<!-- TMPL_VAR name="import_record_id" -->&amp;import_batch_id=<!-- TMPL_VAR name="import_batch_id" -->'" />
+                   
                    </form>
                </div>
               <!-- TMPL_IF name="pages" -->
@@ -108,6 +111,124 @@
            </div>
        </div>
    </div>
+</div>
+
+<div class="yui-t2">
+<h2>Import All</h2>
+<form action="/cgi-bin/koha/acqui/addorder.pl" method="post" id="Aform">
+
+<!-- TMPL_UNLESS name="existing" -->
+        <input type="hidden" name="existing" value="no" />
+        <!-- /TMPL_UNLESS -->
+        <input type="hidden" name="ordernumber" value="<!-- TMPL_VAR NAME="ordernumber" -->" />
+        <input type="hidden" name="basketno" value="<!-- TMPL_VAR NAME="basketno" -->" />
+        <input type="hidden" name="booksellerid" value="<!-- TMPL_VAR NAME="booksellerid" -->" />
+        <input type="hidden" name="biblionumber" value="<!-- TMPL_VAR NAME="biblionumber" -->" />
+        <input type="hidden" name="biblioitemnumber" value="<!-- TMPL_VAR NAME="biblioitemnumber" -->" />
+        <input type="hidden" name="discount" value="<!-- TMPL_VAR NAME="discount" -->" />
+        <input type="hidden" name="listinc" value="<!-- TMPL_VAR NAME="listincgst" -->" />
+        <input type="hidden" name="currency" value="<!-- TMPL_VAR NAME="currency" -->" />
+        <input type="hidden" name="applygst" value="<!-- TMPL_VAR NAME="gstreg" -->" />
+        <input type="hidden" name="invoiceincgst" value="<!-- TMPL_VAR NAME="invoiceincgst" -->" />
+        <input type="hidden" name="gstrate" value="<!-- TMPL_VAR NAME="gstrate" -->" />
+        <input type="hidden" name="suggestionid" value="<!-- TMPL_VAR NAME="suggestionid" -->" />
+        <input type="hidden" name="import_batch_id" value="<!-- TMPL_VAR name="import_batch_id" -->" />
+
+        <!-- TMPL_LOOP NAME="loop_currencies" -->
+            <input type="hidden" name="<!-- TMPL_VAR NAME="currency" -->" value="<!-- TMPL_VAR NAME="rate" -->" />
+        <!-- /TMPL_LOOP -->
+
+    <!-- TMPL_IF name="items" -->
+    <fieldset class="rows">
+        <legend>Item</legend>
+        <!-- TMPL_IF name="NoACQframework" -->
+            <div class="dialog message">No ACQ framework, using default. You should create a framework with code ACQ, the items framework would be used</div>
+        <!-- /TMPL_IF -->
+
+        <!-- TMPL_LOOP NAME="items" -->
+        <div id="outeritemblock">
+        <div id="itemblock">
+            <ol><!-- TMPL_LOOP NAME="iteminformation" --><li>
+                <div class="subfield_line" style="<!-- TMPL_VAR NAME='hidden' -->;" id="subfield<!-- TMPL_VAR NAME='serialid' --><!-- TMPL_VAR NAME='countitems' --><!-- TMPL_VAR NAME='subfield' --><!-- TMPL_VAR name="random" -->">
+
+                    <label><!-- TMPL_VAR NAME="subfield" --> - <!-- TMPL_IF name="mandatory" --><b><!-- /TMPL_IF --><!-- TMPL_VAR NAME="marc_lib" --><!-- TMPL_IF name="mandatory" --> *</b><!-- /TMPL_IF --></label>
+                    <!-- TMPL_VAR NAME="marc_value" -->
+                    <input type="hidden" name="itemid" value="1" />
+                    <input type="hidden" name="kohafield" value="<!-- TMPL_VAR NAME="kohafield" -->" />
+                    <input type="hidden" name="tag" value="<!-- TMPL_VAR NAME="tag" -->" />
+                    <input type="hidden" name="subfield" value="<!-- TMPL_VAR NAME="subfield" -->" />
+                    <input type="hidden" name="mandatory" value="<!-- TMPL_VAR NAME="mandatory" -->" />
+                    <!-- TMPL_IF NAME="ITEM_SUBFIELDS_ARE_NOT_REPEATABLE" -->
+                        <span class="buttonPlus" onclick="CloneSubfield('subfield<!-- TMPL_VAR NAME='serialid' --><!-- TMPL_VAR NAME='countitems' --><!-- TMPL_VAR NAME='subfield' --><!-- TMPL_VAR name="random" -->')">+</span>
+                    <!-- /TMPL_IF -->
+
+                </div></li>
+            <!-- /TMPL_LOOP-->
+            </ol>
+            <a style="cursor: pointer; color: grey; font-size: 180%;" onclick="cloneItemBlock('itemblock<!-- TMPL_VAR name="itemBlockIndex" -->')">+</a>
+            <a style="display:none; cursor: pointer; color: grey; font-size: 180%;" onclick="deleteItemBlock('itemblock<!-- TMPL_VAR name="itemBlockIndex" -->')">-</a>
+        </div><!-- /iteminformation -->
+        </div>
+
+        <!--/TMPL_LOOP--> <!-- /items -->
+    </fieldset>
+    <!-- /TMPL_IF --> <!-- items -->
+    <fieldset class="rows">
+        <legend>Accounting Details</legend>
+        <ol>
+            <li>
+                <!-- origquantityrec only here for javascript compatibility (additem.js needs it, useless here, usefull when receiveing an order -->
+                <input id="origquantityrec" readonly="readonly" type="hidden" name="origquantityrec" value="1" />
+            </li>
+            <li>
+                <!-- TMPL_IF name="close" -->
+            <span class="label">Budget: </span>
+                    <input type="hidden" size="20" name="budget_id" id="budget_id" value="<!-- TMPL_VAR NAME="budget_id" -->" /><!-- TMPL_VAR NAME="Budget_name" -->
+                <!-- TMPL_ELSE -->
+                <label for="budget_id">Budget: </label>
+                <select id="budget_id" onchange="fetchSortDropbox(this.form)" size="1" name="budget_id">
+                <!-- TMPL_LOOP NAME="budget_loop" -->
+                    <!-- TMPL_IF NAME="b_sel" -->
+                        <option value="<!-- TMPL_VAR NAME='b_id' -->" selected="selected"><!-- TMPL_VAR NAME="b_txt" --></option>
+                    <!-- TMPL_ELSE -->
+                        <option value="<!-- TMPL_VAR NAME='b_id' -->"><!-- TMPL_VAR NAME="b_txt" --></option>
+                    <!-- /TMPL_IF -->
+                <!-- /TMPL_LOOP -->
+                </select>
+                <!--/TMPL_IF-->
+            </li>
+            <li>
+                <label for="notes">Notes: </label>
+                <textarea id="notes" cols="30" rows="3" name="notes"></textarea>
+            </li>
+            <li><div class="hint">The 2 following fields are available for your own usage. They can be useful for statistical purposes</div>
+                <label for="sort1">Planning value1: </label>
+
+                <!-- TMPL_IF Name="CGIsort1" -->
+                    <!-- TMPL_VAR Name="CGIsort1" -->
+                <!-- TMPL_ELSE -->
+
+                    <input type="text" id="sort1" size="20" name="sort1" value="<!-- TMPL_VAR NAME="sort1" -->" />
+                <!--/TMPL_IF -->
+            </li>
+            <li>
+                <label for="sort2">Planning value2: </label>
+
+                <!-- TMPL_IF Name="CGIsort2" -->
+                    <!-- TMPL_VAR Name="CGIsort2" -->
+                <!-- TMPL_ELSE -->
+                    <input type="text" id="sort2" size="20" name="sort2" value="<!-- TMPL_VAR NAME="sort2" -->" />
+                <!--/TMPL_IF -->
+            </li>
+            <li>
+                
+            </li>
+</ol>
+    </fieldset>
+    <fieldset class="action">
+        <input type="submit" value="Save" /> <!-- TMPL_IF name="suggestionid" --><a class="cancel" href="/cgi-bin/koha/acqui/newordersuggestion.pl?booksellerid=<!-- TMPL_VAR NAME="booksellerid" -->&amp;basketno=<!-- TMPL_VAR NAME="basketno" -->">Cancel</a><!-- TMPL_ELSE --><a class="cancel" href="/cgi-bin/koha/acqui/basket.pl?basketno=<!-- TMPL_VAR NAME="basketno" -->">Cancel</a><!-- /TMPL_IF -->
+    </fieldset>
+</form>
 </div>
 </body>
 </html>

@@ -3615,6 +3615,34 @@ sub BatchModField {
     return -2;
 }
 
+=head3 GetMarcPrice
+
+return the prices in accordance with the Marc format.
+=cut
+
+sub GetMarcPrice {
+    my ( $record, $marcflavour ) = @_;
+    my @listtags;
+    my $subfield;
+    
+    if ( $marcflavour eq "MARC21" ) {
+        @listtags = ('345', '010');
+        $subfield="c";
+    } elsif ( $marcflavour eq "UNIMARC" ) {    # assume unimarc if not marc21
+        @listtags = ('345', '010');
+        $subfield="d";
+    } else {
+        return;
+    }
+    
+    for my $field ( $record->field(@listtags) ) {
+        for my $subfield_value  ($field->subfields($subfield)){
+            #check value
+            return $subfield_value if ($subfield_value);
+        }
+    }
+}
+
 1;
 
 __END__
