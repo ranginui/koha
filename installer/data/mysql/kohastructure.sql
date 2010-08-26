@@ -2718,6 +2718,7 @@ CREATE TABLE `aqorders` (
   `currency` varchar(3) default NULL,
   `listprice` decimal(28,6) default NULL,
   `totalamount` decimal(28,6) default NULL,
+  `discount` float(6,4) default 0,
   `datereceived` date default NULL,
   `booksellerinvoicenumber` mediumtext,
   `freight` decimal(28,6) default NULL,

@@ -689,6 +689,11 @@ function calcNeworderTotal(){
     if (f.GST) {
         f.GST.value=GST;
     }
+
+    // In case the discount changed, we should update the message
+    var discount_2dp = discount.toFixed(2);
+    $('#discount_value').html(discount_2dp);
+
     return true;
 }
 

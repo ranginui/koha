@@ -225,7 +225,6 @@ $(document).ready(function()
         <input type="hidden" name="booksellerid" value="[% booksellerid %]" />
         <input type="hidden" name="biblionumber" value="[% biblionumber %]" />
         <input type="hidden" name="biblioitemnumber" value="[% biblioitemnumber %]" />
-        <input type="hidden" name="discount" value="[% discount %]" />
         <input type="hidden" name="listinc" value="[% listincgst %]" />
 <!--        <input type="hidden" name="currency" value="[% currency %]" />-->
         <input type="hidden" name="applygst" value="[% gstreg %]" />
@@ -456,13 +455,22 @@ $(document).ready(function()
             </li>
             <li>
                 [% IF ( close ) %]
+                    <span class="label">Discount: </span>
+                    <input type="hidden" size="20" name="discount" value="[% discount %]" />[% discount %]"
+                [% ELSE %]
+                    <label for="discount">Discount: </label>
+                    <input type="text" size="20" name="discount" value="[% discount %]" onchange="calcNeworderTotal()"/>
+                [% END %]
+            </li>
+            <li>
+                [% IF ( close ) %]
             <label for="ecost">Budgeted cost: </label>
                     <input type="text" size="20" name="ecost" id="ecost" value="[% ecost %]" readonly="readonly"  />
                 [% ELSE %]
                 <label for="ecost">Budgeted cost: </label>
                     <input type="text" size="20" name="ecost" id="ecost" value="[% ecost %]" />
                 [% END %]
-                [% IF ( discount_2dp ) %]  (adjusted for [% discount_2dp %]% discount)  [% END %]
+                [% IF ( discount_2dp ) %]  (adjusted for <span id="discount_value">[% discount_2dp %]</span>% discount)  [% END %]
 
             </li>
             [% IF ( GST ) %]
