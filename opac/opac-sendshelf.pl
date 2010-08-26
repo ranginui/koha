@@ -107,6 +107,7 @@ if ( $email ) {
         shelfname      => $shelf[1],
         firstname      => $user->{firstname},
         surname        => $user->{surname},
+        showname       => $user->{showname},
     );
 
     # Getting template result

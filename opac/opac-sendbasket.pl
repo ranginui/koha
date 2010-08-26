@@ -110,6 +110,7 @@ if ( $email_add ) {
         comment        => $comment,
         firstname      => $user->{firstname},
         surname        => $user->{surname},
+        showname       => $user->{showname},
     );
 
     # Getting template result
