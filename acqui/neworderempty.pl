@@ -347,6 +347,7 @@ $template->param(
     quantity         => $data->{'quantity'},
     quantityrec      => $data->{'quantity'},
     rrp              => $data->{'rrp'},
+    discount         => $data->{'discount'},
     listprice        => sprintf("%.2f", $data->{'listprice'}||$listprice),
     total            => sprintf("%.2f", ($data->{'ecost'}||0)*($data->{'quantity'}||0) ),
     ecost            => $data->{'ecost'},

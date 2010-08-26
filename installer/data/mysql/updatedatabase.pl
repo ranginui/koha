@@ -3701,6 +3701,14 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     SetVersion ($DBversion);
 }
 
+$DBversion = "3.01.00.146";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do('ALTER TABLE aqorders ADD COLUMN discount FLOAT(6,4) DEFAULT NULL;');
+    print "Upgrade to $DBversion done (Add 'discount' column on aqorders)\n";
+    SetVersion ($DBversion);
+}
+
+
 =item DropAllForeignKeys($table)
 
   Drop all foreign keys of the table $table
