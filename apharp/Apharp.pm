@@ -21,6 +21,7 @@ our @EXPORT = qw(
     &get_borrowers_attr
     &getMemberByAppligest 
     &resetTimestamp
+    &updateCategorycode
     &updateCard
     &data_to_koha 
     &card_exist 
@@ -95,6 +96,15 @@ sub resetTimestamp {
     my $sth = $dbh->prepare($query);
     my $res = $sth->execute($borrowernumber);
 
+}
+
+sub updateCategorycode {
+    my ( $categorycode, $cardnumber ) = @_;
+
+    my $dbh = C4::Context->dbh;
+    my $query = "UPDATE borrowers SET categorycode=? WHERE cardnumber=?";
+    my $sth = $dbh->prepare($query);
+    my $res = $sth->execute($categorycode, $cardnumber);
 }
 
 sub updateCard {
@@ -442,6 +452,7 @@ sub category_for {
     }
         
 }
+
 
 =head
 wget http://search.cpan.org/CPAN/authors/id/G/GA/GAAS/libwww-perl-5.834.tar.gz

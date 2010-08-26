@@ -76,6 +76,7 @@ if ($cardnumber) {
     unless ($invalid) {
         if (card_exist($cardnumber)) {
 	    resetTimestamp($cardnumber, 'cardnumber');
+	    updateCategorycode($carddata->{categorycode}, $cardnumber) if $carddata->{categorycode} ne '';
             print $query->redirect("/cgi-bin/koha/circ/circulation.pl?findborrower=$cardnumber");
         }
         elsif (my $borrowernumber = getMemberByAppligest($carddata->{'APPLIGEST'}, $carddata->{'ETABLISSEM'})) {
