@@ -1,4 +1,4 @@
-<!-- TMPL_INCLUDE name="doc-head-open.inc" --><!-- TMPL_IF NAME="LibraryNameTitle" --><!-- TMPL_VAR NAME="LibraryNameTitle" --><!-- TMPL_ELSE -->Koha Online<!-- /TMPL_IF --> Catalog &rsaquo;  Personal Details for <!-- TMPL_VAR name="firstname" --> <!-- TMPL_VAR name="surname" -->
+<!-- TMPL_INCLUDE name="doc-head-open.inc" --><!-- TMPL_IF NAME="LibraryNameTitle" --><!-- TMPL_VAR NAME="LibraryNameTitle" --><!-- TMPL_ELSE -->Koha Online<!-- /TMPL_IF --> Catalog &rsaquo;  Personal Details for <!-- TMPL_VAR name="showname" --> <!-- TMPL_VAR name="surname" -->
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
 </head>
 <body>
@@ -9,10 +9,13 @@
 	<div id="yui-main">
 	<div class="yui-b"><div class="yui-g">
 
-<h3><a href="/cgi-bin/koha/opac-user.pl"><!-- TMPL_VAR NAME="firstname" --> <!-- TMPL_VAR NAME="surname" -->'s account</a> <img src="<!-- TMPL_VAR NAME="themelang" -->../../images/caret.gif" width="16" height="16" alt="&gt;" border="0" /> Personal Details</h3>
+<h3><a href="/cgi-bin/koha/opac-user.pl"><!-- TMPL_VAR NAME="showname" --> <!-- TMPL_VAR NAME="surname" -->'s account</a> <img src="<!-- TMPL_VAR NAME="themelang" -->../../images/caret.gif" width="16" height="16" alt="&gt;" border="0" /> Personal Details</h3>
 
 <table>
 <tr><th scope="row">Name:</th><td> <!-- TMPL_VAR NAME="firstname" --> <!-- TMPL_VAR NAME="surname" --></td></tr>
+<!-- TMPL_IF name="othernames" -->
+<tr><th scope="row">Other Name:</th><td> <!-- TMPL_VAR NAME="othernames" --> </td></tr>
+<!-- /TMPL_IF -->
 <tr><th scope="row">
 Card Number:</th><td><!-- TMPL_VAR NAME="cardnumber" --></td></tr>
 </table>

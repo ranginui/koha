@@ -1,4 +1,4 @@
-<!-- TMPL_INCLUDE NAME="doc-head-open.inc" --><!-- TMPL_VAR NAME="LibraryNameTitle" DEFAULT="Koha Online" --> Catalog &rsaquo;  Placing hold <!-- TMPL_VAR NAME="title" escape="html" --> for <!-- TMPL_LOOP NAME="USER_INFO" --><!-- TMPL_VAR NAME="firstname" --> <!-- TMPL_VAR NAME="surname" --><!-- /TMPL_LOOP -->
+<!-- TMPL_INCLUDE NAME="doc-head-open.inc" --><!-- TMPL_VAR NAME="LibraryNameTitle" DEFAULT="Koha Online" --> Catalog &rsaquo;  Placing hold <!-- TMPL_VAR NAME="title" escape="html" --> for <!-- TMPL_LOOP NAME="USER_INFO" --><!-- TMPL_VAR NAME="showname" --> <!-- TMPL_VAR NAME="surname" --><!-- /TMPL_LOOP -->
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
 <!-- TMPL_INCLUDE NAME="calendar.inc" -->
 <script type="text/javascript">
@@ -220,7 +220,7 @@
           <!-- TMPL_UNLESS NAME="message" -->
               <h3>Confirm holds for:
                 <!-- TMPL_LOOP NAME="USER_INFO" -->
-                  <!-- TMPL_VAR NAME="firstname" --> <!-- TMPL_VAR NAME="surname" --> (<!-- TMPL_VAR NAME="cardnumber" -->)
+                  <!-- TMPL_VAR NAME="showname" --> <!-- TMPL_VAR NAME="surname" --> (<!-- TMPL_VAR NAME="cardnumber" -->)
                 <!-- /TMPL_LOOP -->
               </h3>
 
