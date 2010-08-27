@@ -56,6 +56,7 @@ CREATE TABLE `auth_subfield_structure` (
   `linkid` tinyint(1) NOT NULL default 0,
   `kohafield` varchar(45) NULL default '',
   `frameworkcode` varchar(10) NOT NULL default '',
+  CONSTRAINT `auth_subfield_structure_ibfk_1` FOREIGN KEY (`authtypecode`, `tagfield`) REFERENCES `auth_tag_structure` (`authtypecode`, `tagfield`) ON DELETE CASCADE,
   PRIMARY KEY  (`authtypecode`,`tagfield`,`tagsubfield`),
   KEY `tab` (`authtypecode`,`tab`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
