@@ -373,7 +373,8 @@ sub AddItemBatchFromMarc {
 
 =head2 ModItemFromMarc
 
-  ModItemFromMarc($item_marc, $biblionumber, $itemnumber);
+  ModItemFromMarc($item_marc, $biblionumber, $itemnumber, 
+        $update_last_seen);
 
 This function updates an item record based on a supplied
 C<MARC::Record> object containing an embedded item field.
@@ -428,6 +429,7 @@ sub ModItemFromMarc {
     my $item_marc = shift;
     my $biblionumber = shift;
     my $itemnumber = shift;
+    my $update_last_seen = shift;
 
     my $dbh = C4::Context->dbh;
     my $frameworkcode = GetFrameworkCode( $biblionumber );
@@ -438,6 +440,10 @@ sub ModItemFromMarc {
     my $item = &TransformMarcToKoha( $dbh, $localitemmarc, $frameworkcode, 'items');
     foreach my $item_field (keys %default_values_for_mod_from_marc) {
         $item->{$item_field} = $default_values_for_mod_from_marc{$item_field} unless exists $item->{$item_field};
+    }
+    if ($update_last_seen) {
+        my $today = C4::Dates->new();
+        $item->{'datelastseen'} = $today->output("iso");
     }
     my $unlinked_item_subfields = _get_unlinked_item_subfields($localitemmarc, $frameworkcode);
    
