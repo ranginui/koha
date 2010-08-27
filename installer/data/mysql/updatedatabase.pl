@@ -3701,6 +3701,13 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     SetVersion ($DBversion);
 }
 
+$DBversion = "3.01.00.146";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES ('UpdateLastSeenBatch','0','Whether to update datelastseen when doing batch modifications','','YesNo')");
+    print "Upgrade to $DBversion done (Add UpdateLastSeenBatch system preference)\n";
+    SetVersion($DBversion);
+}
+
 =item DropAllForeignKeys($table)
 
   Drop all foreign keys of the table $table

@@ -130,4 +130,10 @@ Cataloging:
                   simplified: a summary
                   full: a full list
             - of the serial issues.
-
+    Batch Operations:
+        -
+            - pref: UpdateLastSeenBatch
+              choices:
+                  yes: Update
+                  no: "Don't update"
+            - the <code>datalastseen</code> field on items when performing batch modifications.
