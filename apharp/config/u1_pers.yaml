@@ -1,0 +1,314 @@
+NOM: surname
+PRENOM: firstname
+NOM_USAGE: othernames
+ADRESSE_ANNEE: address
+ADRESSE_ANNEE2: address2
+VILLE_ANNEE: city
+CP_ANNEE: zipcode
+EMAIL_ANNEE: email
+TEL_ANNEE: phone
+MOBILE_ANNEE: mobile
+EMAIL_PERSO: emailpro
+ADRESSE_FIXE: B_address
+VILLE_FIXE: B_city
+CP_FIXE: B_zipcode
+TEL_FIXE: B_phone
+DATE_NAISS: dateofbirth
+STATUT: [categorycode,STATUT]
+COMPOSANTE: [COMPOSANTE,branchcode]
+CODE_ETAPE: CODEETAPE
+NUM_INE: INE
+NUM_APPLI_GEST: [APPLIGEST]
+IDENT_LDAP: LDAP
+LOCAL_AG_COD: LOCAL_AG_COD
+--- 
+categorycode:
+    NON ENSEIGNANT: P
+    ENSEIGNANT: P
+    CHERCHEUR: P
+STATUT:
+    NON ENSEIGNANT: PERS
+    ENSEIGNANT: EC
+    CHERCHEUR: EC
+branchcode:
+    6260: U1BULA
+    9981: U1BULA
+    9982: U1BULA
+    9983: U1BULA
+    10959: U1BULA
+    10960: U1BULA
+    10961: U1BULA
+    10962: U1BULA
+    10963: U1BULA
+    9984: U1BULA
+    10006: U1BUSC
+    9996: U1BULA
+    5464: U1BULA
+    9978: U1BULA
+    9980: U1BULA
+    6413: U1BULA
+    9976: U1BULA
+    9977: U1BULA
+    9979: U1BULA
+    10964: U1BULA
+    6132: U1BULA
+    6092: U1BULA
+    9987: U1BULA
+    9988: U1BULA
+    9989: U1BULA
+    9985: U1BULA
+    9986: U1BULA
+    10954: U1BULA
+    10955: U1BULA
+    10956: U1BULA
+    10957: U1BULA
+    10958: U1BULA
+    6102: U1BULA
+    6103: U1BULA
+    9990: U1BULA
+    9991: U1BULA
+    10011: U1BUCG
+    3638: U1BUCG
+    4044: U1BULA
+    6261: U1BULA
+    10952: U1BULA
+    10953: U1BULA
+    9994: U1BULA
+    9995: U1BULA
+    9993: U1BUFMAIX
+    2991: U1BUSC
+    18762: U1BUCG
+    3644: U1BUCG
+    2600: U1BUCG
+    2599: U1BUCG
+    2601: U1BUCG
+    2602: U1BUCG
+    13422: U1BUSC
+    14: U1BUSC
+    13: U1BUFMDIG
+    18764: U1BUFMDIG
+    3634: U1BUSC
+    3633: U1BAUB
+    2660: U1OBS
+    6400: 6400
+    6121: U1BUSC
+    10015: U1BUCG
+    3631: U1BULA
+    3628: U1BULA
+    2537: U1BULA
+    9955: U1BULA
+    9957: U1BULA
+    4587: U1BULA
+    5581: U1BULA
+    9962: U1BULA
+    9964: U1BULA
+    9966: U1BULA
+    9953: U1BULA
+    9970: U1BULA
+    9972: U1BULA
+    9951: U1BULA
+    9973: U1BULA
+    9969: U1BULA
+    18774: U1BULA
+    18773: U1BUSC
+    9952: U1BUSC
+    9954: U1BUSC
+    9959: U1BUSC
+    9960: U1BUSC
+    9961: U1BUSC
+    9963: U1BUSC
+    9965: U1BUSC
+    9967: U1BUSC
+    2519: U1BUSC
+    10: U1BUSC
+    5580: U1BUSC
+    10007: U1BUSC
+    10012: U1BUSC
+    10004: U1BUSC
+    10001: U1BUSC
+    10003: U1BUSC
+    10005: U1BUSC
+    9975: U1BUSC
+    9999: U1BUSC
+    10009: U1BUSC
+    10010: U1BUSC
+    10013: U1BUSC
+    10660: U1BUSC
+    16624: U1BUSC
+    3630: U1BUSC
+    10008: 10008
+    10014: U1CRFCB
+COMPOSANTE:
+    6260: U1AOS
+    9981: U1AOS
+    9982: U1AOS
+    9983: U1AOS
+    10959: U1AOS
+    10960: U1AOS
+    10961: U1AOS
+    10962: U1AOS
+    10963: U1AOS
+    9984: U1AOS
+    10006: U1CFC
+    9996: U1CFMI
+    5464: U1CIV
+    9978: U1CIV
+    9980: U1CIV
+    6413: U1CIV
+    9976: U1CIV
+    9977: U1CIV
+    9979: U1CIV
+    10964: U1CIV
+    6132: U1GEO
+    6092: U1LACS
+    9987: U1LACS
+    9988: U1LACS
+    9989: U1LACS
+    9985: U1LACS
+    9986: U1LACS
+    10954: U1LACS
+    10955: U1LACS
+    10956: U1LACS
+    10957: U1LACS
+    10958: U1LACS
+    6102: U1LAG
+    6103: U1LAG
+    9990: U1LAG
+    9991: U1LAG
+    10011: U1MIM 
+    3638: U1MIM 
+    4044: U1MSH
+    6261: U1PSY
+    10952: U1PSY
+    10953: U1PSY
+    9994: U1PSY
+    9995: U1PSY
+    9993: U1SCE
+    2991: U1SM
+    18762: U1SVT
+    3644: U1SVT
+    2600: U1EPU
+    2599: U1EPU
+    2601: U1EPU
+    2602: U1EPU
+    13422: U1IUTAR
+    14: U1IUTAR
+    13: U1IUTDI
+    18764: U1IUTDI
+    3634: U1DEN
+    3633: U1SAT
+    2660: U1OBS
+    6400: 6400
+    6121: U1GBM
+    10015: U1IMT
+    3631: U1SRIA
+    3628: U1SRIA
+    2537: U1SCA
+    9955: U1SCA
+    9957: U1SCA
+    4587: U1SCA
+    5581: U1SCA
+    9962: U1SCA
+    9964: U1SCA
+    9966: U1SCA
+    9953: U1SCA
+    9970: U1SCA
+    9972: U1SCA
+    9951: U1SCA
+    9973: U1SCA
+    9969: U1SCA
+    18774: U1SCA
+    18773: U1SCM
+    9952: U1SCM
+    9954: U1SCM
+    9959: U1SCM
+    9960: U1SCM
+    9961: U1SCM
+    9963: U1SCM
+    9965: U1SCM
+    9967: U1SCM
+    2519: U1SCM
+    10: U1SCM
+    5580: U1SCM
+    10007: U1SCM
+    10012: U1SCM
+    10004: U1SCM
+    10001: U1SCM
+    10003: U1SCM
+    10005: U1SCM
+    9975: U1SCM
+    9999: U1SCM
+    10009: U1SCM
+    10010: U1SCM
+    10013: U1SCM
+    10660: U1SCM
+    16624: U1SCM
+    3630: U1SRIM
+    10008: 10008
+    10014: U1SCD
+--- 
+  - firstname,surname,dateofbirth
+--- 
+--- |
+$$targetdata{'city'}||=" ";
+$$targetdata{'branchcode'}||="U1INC";
+$$targetdata{'categorycode'}||="INC";
+$$targetdata{'ETABLISSEM'}='U1';
+$$targetdata{'address'}||=" ";
+#$$targetdata{'cardnumber'}='U1'.$$targetdata{'cardnumber'};
+
+# on retraite les composantes 6400 et 10008
+if ($$targetdata{'COMPOSANTE'} eq '6400') {
+	if ($$targetdata{'LOCAL_AG_COD'} eq '174') {
+		$$targetdata{branchcode} = 'U1BUFMAIX';
+		$$targetdata{COMPOSANTE} = 'U1IUFMA';
+	} elsif ($$targetdata{'LOCAL_AG_COD'} eq '173') {
+                $$targetdata{branchcode} = 'U1BUFMAIX';
+                $$targetdata{COMPOSANTE} = 'U1IUFMA';
+        } elsif ($$targetdata{'LOCAL_AG_COD'} eq '172') {
+                $$targetdata{branchcode} = 'U1BUFMMRS';
+                $$targetdata{COMPOSANTE} = 'U1IUFMM';
+        } elsif ($$targetdata{'LOCAL_AG_COD'} eq '128') {
+                $$targetdata{branchcode} = 'U1BUFMAVI';
+                $$targetdata{COMPOSANTE} = 'U1IUFMAVI';
+        } elsif ($$targetdata{'LOCAL_AG_COD'} eq '205') {
+                $$targetdata{branchcode} = 'U1BUCG';
+                $$targetdata{COMPOSANTE} = 'U1IUFMCG';
+        } elsif ($$targetdata{'LOCAL_AG_COD'} eq '136') {
+                $$targetdata{branchcode} = 'U1BUFMDIG';
+                $$targetdata{COMPOSANTE} = 'U1IUFMDI';
+        }
+}
+if ($$targetdata{'COMPOSANTE'} eq '10008') {
+        if ($$targetdata{'LOCAL_AG_COD'} eq '146') {
+                $$targetdata{branchcode} = 'U1BUSC';
+                $$targetdata{COMPOSANTE} = 'U1SCD';
+        } elsif ($$targetdata{'LOCAL_AG_COD'} eq '162') {
+                $$targetdata{branchcode} = 'U1BUCG';
+                $$targetdata{COMPOSANTE} = 'U1SCD';
+        } elsif ($$targetdata{'LOCAL_AG_COD'} eq '174') {
+                $$targetdata{branchcode} = 'U1BUFMAIX';
+                $$targetdata{COMPOSANTE} = 'U1SCD';
+        } elsif ($$targetdata{'LOCAL_AG_COD'} eq '173') {
+                $$targetdata{branchcode} = 'U1BUFMAIX';
+                $$targetdata{COMPOSANTE} = 'U1SCD';
+        } elsif ($$targetdata{'LOCAL_AG_COD'} eq '172') {
+                $$targetdata{branchcode} = 'U1BUFMMRD';
+                $$targetdata{COMPOSANTE} = 'U1SCD';
+        } elsif ($$targetdata{'LOCAL_AG_COD'} eq '128') {
+                $$targetdata{branchcode} = 'U1BUFMAVI';
+                $$targetdata{COMPOSANTE} = 'U1SCD';
+        } elsif ($$targetdata{'LOCAL_AG_COD'} eq '143') {
+                $$targetdata{branchcode} = 'U1BULA';
+                $$targetdata{COMPOSANTE} = 'U1SCD';
+        } elsif ($$targetdata{'LOCAL_AG_COD'} eq '205') {
+                $$targetdata{branchcode} = 'U1BUCG';
+                $$targetdata{COMPOSANTE} = 'U1SCD';
+        } elsif ($$targetdata{'LOCAL_AG_COD'} eq '136') {
+                $$targetdata{branchcode} = 'U1BUFMDIG';
+                $$targetdata{COMPOSANTE} = 'U1SCD';
+        }
+}
+
+#$debug && warn "targetdata postprocessed :",join(",",@$targetdata{qw(categorycode city)}); 
+---

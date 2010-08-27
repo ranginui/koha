@@ -1,0 +1,279 @@
+#NUM_CARTE_PUCE
+NOM: surname
+PRENOM: firstname
+#CIVILITE: title
+NOM_USAGE: othernames
+ADRESSE_ANNEE: address
+ADRESSE_ANNEE2: address2
+VILLE_ANNEE: city
+CP_ANNEE: zipcode
+EMAIL_ANNEE: email
+TEL_ANNEE: phone
+MOBILE_ANNEE: mobile
+EMAIL_PERSO: emailpro
+ADRESSE_FIXE: B_address
+VILLE_FIXE: B_city
+CP_FIXE: B_zipcode
+TEL_FIXE: B_phone
+DATE_NAISS: dateofbirth
+CATEGORYCODE: categorycode
+COMPOSANTE: [branchcode,COMPOSANTE,POLETHEM]
+#FILIERE
+CODE_ETAPE: CODEETAPE
+NUM_INE: INE
+NUM_APPLI_GEST: [APPLIGEST]
+IDENT_LDAP: LDAP
+--- 
+categorycode:
+    1: L
+    2: M
+    3: D
+    4: M
+    5: M
+    6: M
+    7: M
+    NON ENSEIGNANT: PRO
+    ENSEIGNANT: P
+    CHERCHEUR: P
+branchcode:
+    MED: U2TIMONMED
+    PHA: U2PHARMA
+    GRA: U2TIMONMED
+    ODO: U2TIMONMED
+    SEC: U2AIXECO
+    ECM: U2MRSECO
+    ECG: U2GAP
+    STM: U2LUMINY
+    STG: U2GAP
+    SCE: U2LUMINY
+    ESI: U2LUMINY
+    OSU: U2LUMINY
+    IM2: U2LUMINY
+    IUT: U2IUT
+    IUG: U2GAP
+    IUL: U2IUTHSE
+    IUM: U2LUMINY
+    JOU: U2PHARMA
+    40: U3BUSSJ
+    C0: U3BAISPEC
+    D0: U3BUDAIX
+    D1: U3BUCAN
+    D2: U3BAARL
+    D3: U3BUMTP
+    E0: U3BAFEA
+    E1: U3BUCAN
+    E2: U3BAARL
+    E6: U3BUDAIX
+    F0: U3BUIEFEE
+    G0: U3BUIEFEE
+    G1: U3BUCAN
+    M0: U3BUDAIX
+    P0: U3BAIEP
+    S1: U3BUSSJ
+    S2: U3BUMTP
+    S3: U3BAARL
+    T0: U3BUIAE
+POLETHEM:
+    GRA: Santé
+    AOS: Lettres
+    CFC: Sciences
+    CFM: Lettres
+    CH: Lettres
+    ETS: Sciences
+    GBM: Sciences
+    GEO: Lettres
+    IMG: Sciences
+    LAC: Lettres
+    LAG: Lettres
+    MIM: Sciences
+    MSH: Lettres
+    PSY: Lettres
+    SCE: Sciences
+    SM: Sciences
+    STI: Sciences
+    UNI: Lettres
+    ICF: Sciences
+    SVT: Sciences
+    AFC: Lettres
+    ARL: Lettres
+    GSI: Sciences
+    GDM: Sciences
+    EPU: Sciences
+    IUT: Sciences
+    IAR: Sciences
+    IDI: Sciences
+    MAC: Lettres
+    AM1: Sciences
+    ARC: Lettres
+    SRI: Sciences
+    DEN: Sciences
+    SAT: Sciences
+    AC1: Lettres
+    PLU: Lettres
+    MI1: Sciences
+    LPS: Lettres
+    L12: Lettres
+    LG1: Lettres
+    CH1: Lettres
+    GE1: Lettres
+    AO1: Lettres
+    CH2: Lettres
+    MI2: Sciences
+    MI3: Sciences
+    MI4: Sciences
+    SM1: Sciences
+    SM2: Sciences
+    SV1: Sciences
+    EP1: Sciences
+    IUF: Lettres
+    IU1: Lettres
+    IU2: Lettres
+    IU3: Lettres
+    IU4: Lettres
+    IU5: Lettres
+    MED: Santé
+    PHA: Santé
+    ODO: Santé
+    SEC: Economie
+    ECM: Economie
+    ECG: Economie
+    STM: Sciences
+    STG: Sciences
+    ESI: Sciences
+    OSU: Sciences
+    IM2: Sciences
+    IUT: IUT
+    IUG: Economie
+    IUL: Sciences
+    IUM: Sciences
+    JOU: Economie
+    40: Sciences
+    41: Sciences
+    C0: Droit
+    D0: Droit
+    D1: Droit
+    D2: Droit
+    D3: Droit
+    E0: Economie
+    E1: Economie
+    E2: Economie
+    E6: Economie
+    F0: Lettres
+    G0: Economie
+    G1: Economie
+    M0: Lettres
+    P0: Droit
+    S1: Sciences
+    S2: Sciences
+    S3: Sciences
+    S4: Sciences
+    T0: Economie
+COMPOSANTE:
+    GRA: U2GRA
+    MED: U2MED
+    PHA: U2PHA
+    ODO: U2ODO
+    SEC: U2SEC
+    ECM: U2ECM
+    ECG: U2ECG
+    STM: U2STM
+    STG: U2STG
+    SCE: U2SCE
+    ESI: U2ESI
+    OSU: U2OSU
+    IM2: U2IM2
+    IUT: U2IUT
+    IUG: U2IUG
+    IUL: U2IUL
+    IUM: U2IUM
+    JOU: U2JOU
+    40:  U3IUTMRS
+    C0:  U3ISPEC
+    D0:  U3FDSPAIX
+    D1:  U3FDSPMRS
+    D2:  U3FDSPARL
+    D3:  U3FDSPMTP
+    E0:  U3FEAAIX
+    E1:  U3FEAMRS
+    E2:  U3FEAARL
+    E6:  U3FEAFORB
+    F0:  U3IEFEE
+    G0:  U3IMPGTAIX
+    G1:  U3IMPGTMRS
+    M0:  U3MFC
+    P0:  U3IEP
+    S1:  U3FSTMRS
+    S2:  U3FSTAIX
+    S3:  U3FSTARL
+    T0:  U3IAE
+--- 
+  - firstname,surname,dateofbirth
+--- |
+$$fromdata{'ETABLISSEM'}='U2';
+# on traite le STATUT koha, qui n'a rien à voir avec le STATUT csv
+if (substr($$fromdata{CODE_ETAPE},1,1) eq '1') {
+    $$fromdata{STATUT} = 'L1';
+} elsif (substr($$fromdata{CODE_ETAPE},1,1) eq '2') {
+    $$fromdata{STATUT} = 'L2';
+} elsif (substr($$fromdata{CODE_ETAPE},1,1) eq '3') {
+    $$fromdata{STATUT} = 'L3';
+} elsif (substr($$fromdata{CODE_ETAPE},1,1) eq '4') {
+    $$fromdata{STATUT} = 'M1';
+} elsif (substr($$fromdata{CODE_ETAPE},1,1) eq '5') {
+    $$fromdata{STATUT} = 'M2';
+} elsif (substr($$fromdata{CODE_ETAPE},1,1) eq '8') {
+    $$fromdata{STATUT} = 'D';
+} elsif ($$fromdata{CODE_ETAPE} ~~ [qw /ADOMEP ADOMAP ADOMMA ACAOP1 ACAOT1 ADUTI1 ADUBC1 ADUBJ1 BDUCG DDTCS1 DDTGL1 DDTGP1 DDTHS1 DDTIC1 DDTIN1 DDTRT1 DDTTC1 DTGEA1 DTGEG1 EDUPP1 EPHAR1 GDOCP2 VDESF1/ ]) {
+    $$fromdata{STATUT} = 'L1';
+} elsif ($$fromdata{CODE_ETAPE} ~~ [qw /ADOME2 ACAOP2 ACAOT2 CDUSS DDTCS2 DDTGI2 DDTGL2 DDTGP2 DDTHS2 DDTIML DDTRT2 DDTTC2 DT9GFC DT9GL2 DT9HS2 DT9IML DT9TC2 DTGAPM DTGASF DTASR DTGFI2 DTGGFI DTGRH DUMEA EPHAR2 GDOCD1 VDESF2/ ]) {
+    $$fromdata{STATUT} = 'L2';
+} elsif ($$fromdata{CODE_ETAPE} ~~ [qw /ADOME3 ADORU2 ACAOP3 ACAOT3 BPBANK BPIMEX CPSIL DP9ACE PD9ATC DP9CDB DPMDB DP9MDE DP9MDL DP9MGC DP9MLO DP9MPA DP9OGA DP9PII DP9RET DP9SBP DPATC DPATU DPCACE DPCDB DPCMR DPCOGA DPHMT DPMEDB DPMEDE DPMEDL DPMGOC DPMGOM DPMLO DPMSPA DPPIC DPPII DPPIS DPRET DPRSN DPSBP DPSBP EPICP EPHAR3 FPGDOL FPGDOM GDOCD2 JPIAA KPPMC VDESF3/ ]) {
+    $$fromdata{STATUT} = 'L3';
+} elsif ($$fromdata{CODE_ETAPE} ~~ [qw /ADOME4 ADORU3 ACAOP4 BDUAFI BDUCHP BDURME BDUSCG BDUSCX BERASM CDUCSI CDUOM1 CDUOM4 DDUGOC DDUGOL EDUMD2 EDUMDO EPHAR4 GDOCD3 JIBM1 JIGB1 JIMA1 VDESF4/ ]) {
+    $$fromdata{STATUT} = 'M1';
+} elsif ($$fromdata{CODE_ETAPE} ~~ [qw /ADOME5 ADORU4 EPHUE2 JIBM2 JIBM3 JIGB2 JIGB3 JIIN3 JIIRM1 JIIRM2 JIMA2 JIMA3 JIRM3/ ]) {
+    $$fromdata{STATUT} = 'M2';
+} else {
+    $$fromdata{STATUT} = 'D';
+}
+--- |
+$$targetdata{'categorycode'}||=($$targetdata{'STATUT'}?Staff_category($targetdata):Student_category($targetdata));
+$$targetdata{'city'}||=" ";
+$$targetdata{'address'}||=" ";
+
+#$$targetdata{branchcode}=($$targetdata{CODEETAPE}=~/DDTIML|DDTIC1|DPMEDE|DPMEDB|DPMEDL|DT9IML|DP9MDE|DP9MDL|DP9MDB/?"U2IUTMDL":"U2AIXECO") if ($$targetdata{'branchcode'} eq "IUT");
+
+# on traite l'IUT
+if ($$targetdata{COMPOSANTE} eq 'U2IUT') {
+    if ($$targetdata{CODEETAPE} ~~ [qw/ DDTIML DDTIC1 DPMEDE DPMEDB DPMEDL DT9IML DP9MDE DP9MDL DP9MDB /]) {
+        $$targetdata{branchcode}='U2IUTMDL';
+    } else {
+        $$targetdata{branchcode}='U2AIXECO';
+    }
+}
+if ($$targetdata{POLETHEM} eq 'IUT') {
+    if ($$targetdata{CODEETAPE} ~~ [qw/ DDTIML DDTIC1 DPMEDE DPMEDB DPMEDL DT9IML DP9MDE DP9MDL DP9MDB /]) {
+        $$targetdata{POLETHEM} = 'Lettres';
+    } else {
+        $$targetdata{POLETHEM} = 'Economie';
+    }
+}
+
+$$targetdata{'branchcode'}||="U2INC";
+$$targetdata{'categorycode'}||="INC";
+#$$targetdata{'cardnumber'}='U2'.$$targetdata{'cardnumber'};
+#$debug && warn "targetdata postprocessed :",@$targetdata{qw(categorycode city)}; 
+ 
+sub Student_category{ 
+    my ($borrower)=@_; 
+    my $year=substr($$borrower{categorycode},1,1); 
+    return 'L' if $year>0 and $year<=3;  
+    return 'M' if $year>3 and $year<=4;  
+    return 'D' if $year>=5; 
+    return 'EXE' ; 
+} 
+sub Staff_category{ 
+    my ($borrower)=@_; 
+    return  (uc($$borrower{STATUT}) eq "NON ENSEIGNANT"?"PRO":"P") ; 
+}
+---

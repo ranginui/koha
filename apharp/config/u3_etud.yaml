@@ -1,0 +1,372 @@
+#NUM_CARTE_PUCE
+NOM: surname
+PRENOM: firstname
+#CIVILITE: title
+NOM_USAGE: othernames
+ADRESSE_ANNEE: address
+ADRESSE_ANNEE2: address2
+VILLE_ANNEE: city
+CP_ANNEE: zipcode
+EMAIL_ANNEE: email
+TEL_ANNEE: phone
+MOBILE_ANNEE: mobile
+EMAIL_PERSO: emailpro
+ADRESSE_FIXE: B_address
+VILLE_FIXE: B_city
+CP_FIXE: B_zipcode
+TEL_FIXE: B_phone
+DATE_NAISS: dateofbirth
+CATEGORYCODE: categorycode
+COMPOSANTE: [branchcode,COMPOSANTE,POLETHEM]
+#FILIERE
+CODE_ETAPE: CODEETAPE
+NUM_INE: INE
+NUM_APPLI_GEST: [APPLIGEST]
+IDENT_LDAP: LDAP
+--- 
+categorycode:
+        1: L
+        3: D
+        2: M
+        4: L
+        5: M
+        6: L
+        7: M
+#        NON ENSEIGNANT: PRO
+#        ENSEIGNANT: P
+#        CHERCHEUR: P
+        L0: L
+        0: L
+        A: L
+branchcode:
+    AOS: U1BULA
+    CFM: U1BULA
+    CH: U1BULA
+    GEO: U1BULA
+    LAC: U1BULA
+    LAG: U1BULA
+    MSH: U1BULA
+    PSY: U1BULA
+    UNI: U1BULA
+    AFC: U1BULA
+    MI1: U1BULA
+    CH2: U1BULA
+    IU1: U1BULA
+    ARL: U1BULA
+    IAR: U1BULA
+    ARC: U1BULA
+    IMG: U1BULA
+    MAC: U1BULA
+    SAT: U1BULA
+    IU4: U1IUFMAVI
+    IDI: U1BUSC
+    IU3: U1IUFMDI
+    SCE: U1BULA
+    IU2: U1IUFMMA
+    CFC: U1BUSC
+    ETS: U1BUSC
+    SM:  U1BUSC
+    ICF: U1BUSC
+    SVT: U1BUSC
+    GDM: U1BUSC
+    IUT: U1BUSC
+    AM1: U1BUSC
+    SRI: U1BUSC
+    DEN: U1BUSC
+    AC1: U1BUSC
+    LG1: U1BUSC
+    CH1: U1BUSC
+    GE1: U1BUSC
+    AO1: U1BUSC
+    MI2: U1BUSC
+    MI3: U1BUSC
+    SM2: U1BUSC
+    EP1: U1BUSC
+    IUF: U1IUFMMA
+    GBM: U1BUSC
+    SV1: U1BUSC
+    MIM: U1BUCG
+    STI: U1BUCG
+    GSI: U1BUCG
+    EPU: U1BUCG
+    SM1: U1BUCG
+    IU5: U1BUCG
+    MI4: U1BUCG
+    PLU: U1BULA
+    LPS: U1BULA
+    L12: U1BULA
+    MED: U2TIMONMED
+    PHA: U2PHARMA
+    ODO: U2TIMONMED
+    SEC: U2AIXECO
+    ECM: U2MRSECO
+    ECG: U2GAP
+    STM: U2LUMINY
+    STG: U2GAP
+    SCE: U2LUMINY
+    ESI: U2LUMINY
+    OSU: U2LUMINY
+    IM2: U2LUMINY
+    IUT: IUT 
+    IUT: IUT
+    IUG: U2GAP
+    IUL: U2IUTSHE
+    IUM: U2LUMINY
+    JOU: U2PHARMA
+    40: U3BUSSJ
+    41: U3BUSSJ
+    C0: U3BAISPEC
+    D0: U3BUDAIX
+    D1: U3BUCAN
+    D2: U3BAARL
+    D3: U3BUMTP
+    E0: U3BUDAIX
+    E1: U3BUCAN
+    E2: U3BAARL
+    E6: U3BUDAIX
+    F0: U3BUIEFEE
+    G0: U3BUIEFEE
+    G1: U3BUCAN
+    M0: U3BUDAIX
+    P0: U3BAIEP
+    R0: U3BUDAIX
+    S1: U3BUSSJ
+    S2: U3BUMTP
+    S3: U3BAARL
+    S4: U3BUSSJ
+    T0: U3BUIAE
+POLETHEM:
+    AOS: Lettres
+    CFC: Sciences
+    CFM: Lettres
+    CH: Lettres
+    ETS: Sciences
+    GBM: Sciences
+    GEO: Lettres
+    IMG: Sciences
+    LAC: Lettres
+    LAG: Lettres
+    MIM: Sciences
+    MSH: Lettres
+    PSY: Lettres
+    SCE: Lettres
+    SM: Sciences
+    STI: Sciences
+    UNI: Lettres
+    ICF: Sciences
+    SVT: Sciences
+    AFC: Lettres
+    ARL: Lettres
+    GSI: Sciences
+    GDM: Sciences
+    EPU: Sciences
+    IUT: Sciences
+    IAR: Sciences
+    IDI: Sciences
+    MAC: Lettres
+    AM1: Sciences
+    ARC: Lettres
+    SRI: Sciences
+    DEN: Sciences
+    SAT: Sciences
+    AC1: Lettres
+    PLU: Lettres
+    MI1: Sciences
+    LPS: Lettres
+    L12: Lettres
+    LG1: Lettres
+    CH1: Lettres
+    GE1: Lettres
+    AO1: Lettres
+    CH2: Lettres
+    MI2: Sciences
+    MI3: Sciences
+    MI4: Sciences
+    SM1: Sciences
+    SM2: Sciences
+    SV1: Sciences
+    EP1: Sciences
+    IUF: Lettres
+    IU1: Lettres
+    IU2: Lettres
+    IU3: Lettres
+    IU4: Lettres
+    IU5: Lettres
+    MED: Santé
+    PHA: Santé
+    ODO: Santé
+    SEC: Economie
+    ECM: Economie
+    ECG: Economie
+    STM: Sciences
+    STG: Sciences
+    SCE: Sciences
+    ESI: Sciences
+    OSU: Sciences
+    IM2: Sciences
+    IUT: IUT
+    IUT: IUT
+    IUG: Economie
+    IUL: Sciences
+    IUM: Sciences
+    JOU: Economie
+    40: Sciences
+    41: Sciences
+    C0: Droit
+    D0: Droit
+    D1: Droit
+    D2: Droit
+    D3: Droit
+    E0: Economie
+    E1: Economie
+    E2: Economie
+    E6: Economie
+    F0: Lettres
+    G0: Economie
+    G1: Economie
+    M0: Lettres
+    P0: Droit
+    R0: Droit
+    S1: Sciences
+    S2: Sciences
+    S3: Sciences
+    S4: Sciences
+    T0: Economie
+COMPOSANTE:
+    AOS: U1AOS
+    CFC: U1CFC
+    CFM: U1CFMI
+    CH: U1CIV
+    ETS: U1IUPEN
+    GBM: U1GBM
+    GEO: U1GEO
+    IMG: U1IMG
+    LAC: U1LACS
+    LAG: U1LAG
+    MIM: U1MIM
+    MSH: U1MSH
+    PSY: U1PSY
+    SCE: U1SCE
+    SM: U1SM
+    STI: U1STI
+    UNI: U1SRIA
+    ICF: U1ICF
+    SVT: U1SVT
+    AFC: U1AFC
+    ARL: U1LACSAR
+    GSI: U1GSI
+    GDM: U1GDM
+    EPU: U1EPU
+    IUT: U1IUTM
+    IAR: U1IUTAR
+    IDI: U1IUTDI
+    MAC: U1MAC
+    AM1: U1
+    ARC: U1CIVAR
+    SRI: U1SRIM
+    DEN: U1DEN
+    SAT: U1SAT
+    AC1: U1LACM
+    PLU: U1PLU
+    MI1: U1MIMA
+    LPS: U1LPS
+    L12: U1L12
+    LG1: U1LAGM
+    CH1: U1CIVM
+    GE1: U1GEOM
+    AO1: U1AOSM
+    CH2: U1CIVJ
+    MI2: U1MIMSC
+    MI3: U1MIMSJ
+    MI4: U1MIMSA
+    SM1: U1SMCG
+    SM2: U1SVTSC
+    SV1: U1SVTLU
+    EP1: U1EPUSJ
+    IUF: U1IUFM
+    IU1: U1IUFMA
+    IU2: U1IUFMM
+    IU3: U1IUFMDI
+    IU4: U1IUFMAVI
+    IU5: U1IUFMCG
+    MED: U2MED
+    PHA: U2PHA
+    ODO: U2ODO
+    SEC: U2SEC
+    ECM: U2ECM
+    ECG: U2ECG
+    STM: U2STM
+    STG: U2STG
+    SCE: U2SCE
+    ESI: U2ESI
+    OSU: U2OSU
+    IM2: U2IM2
+    IUT: U2IUT
+    IUG: U2IUG
+    IUL: U2IUL
+    IUM: U2IUM
+    JOU: U2JOU
+    40:  U3IUTMRS
+    C0:  U3ISPEC
+    D0:  U3FDSPAIX
+    D1:  U3FDSPMRS
+    D2:  U3FDSPARL
+    D3:  U3FDSPMTP
+    E0:  U3FEAAIX
+    E1:  U3FEAMRS
+    E2:  U3FEAARL
+    E6:  U3FEAFORB
+    F0:  U3IEFEE
+    G0:  U3IMPGTAIX
+    G1:  U3IMPGTMRS
+    M0:  U3MFC
+    P0:  U3IEP
+    R0:  U3IAR
+    S1:  U3FSTMRS
+    S2:  U3FSTAIX
+    S3:  U3FSTARL
+    S4:  U3FSTDIG
+    T0:  U3IAE
+STATUT:
+    L0: L1
+    I1: L1
+    I2: L2
+    L1: L1
+    L2: L2
+    L3: L3
+    LP: L3
+    M1: M1
+    M2: M2
+    M2R: M2
+    M2P: M2
+    M2I: M2
+    NA: L1
+    D: D
+    HDR: D
+--- 
+  - firstname,surname,dateofbirth
+--- |
+$$fromdata{'ETABLISSEM'}='U3';
+
+--- |
+$$targetdata{'categorycode'}||=($$targetdata{'STATUT'}?Staff_category($targetdata):Student_category($targetdata)); 
+$$targetdata{'city'}||=" "; 
+$$targetdata{'categorycode'} = $$targetdata{'categorycode'}.'IEP' if $$targetdata{'branchcode'} eq 'U3BAIEP';
+
+$$targetdata{'branchcode'}||="U3INC";
+$$targetdata{'categorycode'}||="INC";
+#$$targetdata{'cardnumber'}='U3'.$$targetdata{'cardnumber'};
+
+sub Student_category{ 
+    my ($borrower)=@_; 
+    my $year=substr($$borrower{categorycode},1,1); 
+    return 'L' if $year>0 and $year<=3;  
+    return 'M' if $year>3 and $year<=4;  
+    return 'D' if $year>=5; 
+    return 'EXE' ; 
+} 
+sub Staff_category{ 
+    my ($borrower)=@_; 
+    return  (uc($$borrower{STATUT}) eq "NON ENSEIGNANT"?"PRO":"P") ; 
+}
+---
