@@ -557,7 +557,9 @@ sub GetMember {
     #FIXME interface to this routine now allows generation of a result set
     #so whole array should be returned but bowhere in the current code expects this
     if (@{$data} ) {
-        return $data->[0];
+        my $user = $data->[0];
+        $user->{showname} = $user->{othernames} || $user->{firstname};
+        return $user;
     }
 
     return;
