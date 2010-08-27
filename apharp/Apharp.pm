@@ -14,6 +14,7 @@ use YAML;
 use C4::Members;
 use Mail::Sendmail;
 use POSIX;
+use DateTime;
 
 our @ISA = qw(Exporter);
 our @EXPORT = qw(
