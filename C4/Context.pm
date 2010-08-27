@@ -942,9 +942,9 @@ C<C4::Context-E<gt>userenv> twice, you will get the same hash without real DB ac
 sub userenv {
     my $var = $context->{"activeuser"};
     return $context->{"userenv"}->{$var} if ( defined $var and defined $context->{"userenv"}->{$var} );
-
+	
     # insecure=1 management
-    if ( $context->{"dbh"} && $context->preference('insecure') ) {
+    if ( $context->{"dbh"} && $context->preference('insecure') eq 'yes' ) {
         my %insecure;
         $insecure{flags}        = '16382';
         $insecure{branchname}   = 'Insecure';

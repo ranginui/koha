@@ -40,6 +40,7 @@ use C4::Branch;    # GetBranches
 
 my $input = new CGI;
 
+#warn Data::Dumper::Dumper $input;
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
     {   template_name   => "members/pay.tmpl",
         query           => $input,
@@ -81,7 +82,14 @@ for ( my $i = 0 ; $i < @names ; $i++ ) {
         makepayment( $borrowernumber, $accountno, $amount, $user, $branch );
         $check = 2;
     }
+     if ( $temp eq 'no'||$temp eq 'yes'||$temp eq 'wo') {
+        my $borrowernumber = $input->param( $names[ $i + 5 ] );
+        my $accountno      = $input->param( $names[ $i + 6 ] );
+        my $note     = $input->param( $names[ $i + 10 ] );
+        updatenote( $borrowernumber, $accountno, $note );
+     }
 }
+
 my $total = $input->param('total') || '';
 if ( $check == 0 ) {
     if ( $total ne '' ) {
@@ -110,6 +118,7 @@ if ( $check == 0 ) {
                 $line{borrowernumber}    = $borrowernumber;
                 $line{accountno}         = $accts->[$i]{'accountno'};
                 $line{description}       = $accts->[$i]{'description'};
+                $line{note}              = $accts->[$i]{'note'};
                 $line{title}             = $accts->[$i]{'title'};
                 $line{notify_id}         = $accts->[$i]{'notify_id'};
                 $line{notify_level}      = $accts->[$i]{'notify_level'};

@@ -50,9 +50,9 @@ sub startup_create_detailed_borrower : Test( startup => 2 ) {
     $description = 'Test account';
     $type        = 'M';
     $amount      = 5.00;
-    $user        = '';
+    $note        = '';
 
-    my $acct_added = C4::Accounts::manualinvoice( $borrowernumber, undef, $description, $type, $amount, $user );
+    my $acct_added = C4::Accounts::manualinvoice( $borrowernumber, undef, $description, $type, $amount, $note );
 
     ok( $acct_added == 0, 'added account for borrower' );
 
