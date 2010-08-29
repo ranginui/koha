@@ -329,9 +329,6 @@ $template->param(
     budget_id    => $budget_id,
     budget_name  => $budget_name
 ) if ($close);
-use Data::Dumper;
-print STDERR "Data: ".Dumper($data);
-print STDERR "Bookseller: ".Dumper($bookseller);
 
 $template->param(
     existing         => $biblionumber,
