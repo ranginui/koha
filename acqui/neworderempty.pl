@@ -306,6 +306,9 @@ $template->param(
     budget_id    => $budget_id,
     budget_name  => $budget_name
 ) if ($close);
+use Data::Dumper;
+print STDERR "Data: ".Dumper($data);
+print STDERR "Bookseller: ".Dumper($bookseller);
 
 $template->param(
     existing         => $biblionumber,
@@ -329,7 +332,8 @@ $template->param(
     authorisedbyname => $borrower->{'firstname'} . " " . $borrower->{'surname'},
     biblioitemnumber => $data->{'biblioitemnumber'},
     discount_2dp     => sprintf( "%.2f",  $bookseller->{'discount'}) ,   # for display
-    discount         => $bookseller->{'discount'},
+    discount         => defined($data->{'discount'}) ? 
+                            $data->{'discount'} : $bookseller->{'discount'},
     listincgst       => $bookseller->{'listincgst'},
     invoiceincgst    => $bookseller->{'invoiceincgst'},
     name             => $bookseller->{'name'},
@@ -347,7 +351,6 @@ $template->param(
     quantity         => $data->{'quantity'},
     quantityrec      => $data->{'quantity'},
     rrp              => $data->{'rrp'},
-    discount         => $data->{'discount'},
     listprice        => sprintf("%.2f", $data->{'listprice'}||$listprice),
     total            => sprintf("%.2f", ($data->{'ecost'}||0)*($data->{'quantity'}||0) ),
     ecost            => $data->{'ecost'},
