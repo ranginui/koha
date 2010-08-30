@@ -132,6 +132,7 @@ if ($op eq "action") {
 
 	# For each item
 	my $i = 1; 
+        my $update_last_seen = C4::Context->preference('UpdateLastSeenBatch');
 	foreach my $itemnumber(@itemnumbers){
 
 		$job->progress($i) if $runinbackground;
@@ -151,7 +152,7 @@ if ($op eq "action") {
 			my $localitem = TransformMarcToKoha( $dbh, $marcitem, "", 'items' );
 			my $localmarcitem=Item2Marc($itemdata);
 			UpdateMarcWith($marcitem,$localmarcitem);
-			eval{my ($oldbiblionumber,$oldbibnum,$oldbibitemnum) = ModItemFromMarc($localmarcitem,$itemdata->{biblionumber},$itemnumber)};
+			eval{my ($oldbiblionumber,$oldbibnum,$oldbibitemnum) = ModItemFromMarc($localmarcitem,$itemdata->{biblionumber},$itemnumber,$update_last_seen)};
 		    }
 		}
 		$i++;
