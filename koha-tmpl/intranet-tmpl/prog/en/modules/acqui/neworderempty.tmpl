@@ -125,7 +125,6 @@ ff.submit();
         <input type="hidden" name="booksellerid" value="<!-- TMPL_VAR NAME="booksellerid" -->" />
         <input type="hidden" name="biblionumber" value="<!-- TMPL_VAR NAME="biblionumber" -->" />
         <input type="hidden" name="biblioitemnumber" value="<!-- TMPL_VAR NAME="biblioitemnumber" -->" />
-        <input type="hidden" name="discount" value="<!-- TMPL_VAR NAME="discount" -->" />
         <input type="hidden" name="listinc" value="<!-- TMPL_VAR NAME="listincgst" -->" />
         <input type="hidden" name="currency" value="<!-- TMPL_VAR NAME="currency" -->" />
         <input type="hidden" name="applygst" value="<!-- TMPL_VAR NAME="gstreg" -->" />
@@ -292,15 +291,27 @@ ff.submit();
                     <input type="text" size="20" name="rrp" id="rrp" value="<!-- TMPL_VAR NAME="rrp" -->" /> (adjusted for <!-- TMPL_VAR NAME="cur_active" -->)
                 <!--/TMPL_IF-->
             </li>
+            
+
+
             <li>
-                <!-- TMPL_IF name="close" -->
+                <!-- TMPL_IF NAME="close" -->
+                    <span class="label">Discount: </span>
+                    <input type="hidden" size="20" name="discount" value="<!-- TMPL_VAR NAME="discount" -->" /><!-- TMPL_VAR NAME="discount" -->"
+                <!-- TMPL_ELSE -->
+                    <label for="discount">Discount: </label>
+                    <input type="text" size="20" name="discount" value="<!-- TMPL_VAR NAME="discount" -->" onchange="calcNeworderTotal()"/>
+                <!-- /TMPL_IF -->
+            </li>
+            <li>
+            <!-- TMPL_IF name="close" -->
             <label for="ecost">Budgeted cost: </label>
                     <input type="text" size="20" name="ecost" id="ecost" value="<!-- TMPL_VAR NAME="ecost" -->" readonly="readonly"  />
                 <!-- TMPL_ELSE -->
                 <label for="ecost">Budgeted cost: </label>
                     <input type="text" size="20" name="ecost" id="ecost" value="<!-- TMPL_VAR NAME="ecost" -->" />
                 <!--/TMPL_IF-->
-                <!-- TMPL_IF name="discount_2dp" -->  (adjusted for <!-- TMPL_VAR name="discount_2dp" -->% discount)  <!--/TMPL_IF-->
+                <!-- TMPL_IF name="discount_2dp" -->  (adjusted for <span id="discount_value"><!-- TMPL_VAR name="discount_2dp" --></span>% discount)  <!--/TMPL_IF-->
 
             </li>
             <!-- TMPL_IF NAME="GST"-->

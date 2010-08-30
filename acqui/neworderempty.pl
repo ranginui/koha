@@ -329,7 +329,8 @@ $template->param(
     authorisedbyname => $borrower->{'firstname'} . " " . $borrower->{'surname'},
     biblioitemnumber => $data->{'biblioitemnumber'},
     discount_2dp     => sprintf( "%.2f",  $bookseller->{'discount'}) ,   # for display
-    discount         => $bookseller->{'discount'},
+    discount         => defined($data->{'discount'}) ? 
+                            $data->{'discount'} : $bookseller->{'discount'},
     listincgst       => $bookseller->{'listincgst'},
     invoiceincgst    => $bookseller->{'invoiceincgst'},
     name             => $bookseller->{'name'},
