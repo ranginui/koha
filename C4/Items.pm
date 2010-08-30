@@ -1011,7 +1011,7 @@ sub GetLostItems {
 
 =over 4
 
-$itemlist = GetItemsForInventory($minlocation, $maxlocation, $location, $itemtype $datelastseen, $branch, $offset, $size, $statushash);
+$itemlist = GetItemsForInventory($minlocation, $maxlocation, $location, $itemtype, $ignoreissued, $datelastseen, $branchcode, $offset, $size, $statushash);
 
 =back
 
