@@ -120,8 +120,7 @@ if ( $op eq 'add_form' ) {
             'thousands_sep'     => '',
             'mon_decimal_point' => '.'
         );
-
-        $$budgetperiod_hash{budget_period_total} = $editnum->format_price( $$budgetperiod_hash{'budget_period_total'} );
+        $$budgetperiod_hash{budget_period_total} = $$budgetperiod_hash{'budget_period_total'};
         $template->param( %$budgetperiod_hash );
     }    # IF-MOD
     $template->param( DHTMLcalendar_dateformat => C4::Dates->DHTMLcalendar(), );
@@ -131,7 +130,7 @@ elsif ( $op eq 'add_validate' ) {
 ## add or modify a budget period (confirmation)
 
     ## update budget period data
-    if ( $budget_period_id ne '' ) {
+     if ( $budget_period_id ne '' ) {
         $$budget_period_hashref{$_} ||= 0 for qw(budget_period_active budget_period_locked);
         my $status = ModBudgetPeriod($budget_period_hashref);
     } else {    # ELSE ITS AN ADD
