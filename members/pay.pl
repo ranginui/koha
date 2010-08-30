@@ -86,7 +86,7 @@ for ( my $i = 0 ; $i < @names ; $i++ ) {
         my $borrowernumber = $input->param( $names[ $i + 5 ] );
         my $accountno      = $input->param( $names[ $i + 6 ] );
         my $note     = $input->param( $names[ $i + 10 ] );
-        updatenote( $borrowernumber, $accountno, $note );
+        ModNote( $borrowernumber, $accountno, $note );
      }
 }
 
