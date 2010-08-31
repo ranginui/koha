@@ -98,6 +98,12 @@ sub resetTimestamp {
     my $sth = $dbh->prepare($query);
     my $res = $sth->execute($borrowernumber);
 
+    if ( $res == 0 ) {
+	my $query = "INSERT INTO borrower_attributes (borrowernumber, code, attribute) VALUES ($borrowernumber, 'TIMESTAMP', NULL)";
+	my $sth = $dbh->prepare($query);
+	my $res = $sth->execute();
+    }
+
 }
 
 sub updateCategorycode {
