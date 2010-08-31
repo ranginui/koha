@@ -239,7 +239,7 @@ sub default_form {
     my @loop_data = ();
 
     # builds value list
-    for ( my $i = $offset ; $i < ( $offset + $pagesize < $count ? $offset + $pagesize : $count ) ; $i++ ) {
+    for ( my $i = $offset ; $i < $count ; $i++ ) {
         my %row_data;    # get a fresh hash for the row data
         $row_data{category}         = $results->[$i]{'category'};
         $row_data{authorised_value} = $results->[$i]{'authorised_value'};
@@ -262,13 +262,6 @@ sub default_form {
         $template->param(
             isprevpage  => $offset,
             prevpage    => $prevpage,
-            searchfield => $searchfield,
-        );
-    }
-    if ( $offset + $pagesize < $count ) {
-        my $nextpage = $offset + $pagesize;
-        $template->param(
-            nextpage    => $nextpage,
             searchfield => $searchfield,
         );
     }
