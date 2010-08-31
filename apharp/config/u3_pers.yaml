@@ -1,6 +1,6 @@
-NOM: surname
+NOM: othernames
 PRENOM: firstname
-NOM_USAGE: othernames
+NOM_USAGE: surname
 ADRESSE_ANNEE: address
 ADRESSE_ANNEE2: address2
 VILLE_ANNEE: city
@@ -34,6 +34,7 @@ branchcode:
     A303: U3BUDAIX
     A305: U3BUDAIX
     A308: U3BUDAIX
+    A310: A310
     A311: U3BUDAIX
     A312: U3BUDAIX
     A313: U3BUDAIX
@@ -44,9 +45,12 @@ branchcode:
     A321: U3BUDAIX
     A324: U3BUCAN
     A325: U3BUSSJ
+    A326: U3BUDAIX
+    A329: U3BUDAIX
+    A328: U3BUDAIX
+    A399: U3BUDAIX
     D2: U3BUDAIX
     D301: U3BUDAIX
-    D302: U3BUCAN
     D302: U3BUDAIX
     D303: U3BUDAIX
     D304: U3BUDAIX
@@ -56,6 +60,28 @@ branchcode:
     D308: U3BUDAIX
     D309: U3BUDAIX
     D310: U3BUDAIX
+    D311: U3BUDAIX
+    D312: U3BUDAIX
+    D313: U3BUDAIX
+    D314: U3BUDAIX
+    D316: U3BUDAIX
+    D317: U3BUDAIX
+    D318: U3BUDAIX
+    D319: U3BUDAIX
+    D320: U3BUDAIX
+    D321: U3BUDAIX
+    D322: U3BUDAIX
+    D323: U3BUDAIX
+    D325: U3BUDAIX
+    D327: U3BUDAIX
+    D328: U3BUDAIX
+    D330: U3BUDAIX
+    D332: U3BUDAIX
+    D333: U3BUDAIX
+    D335: U3BUDAIX
+    D337: U3BUDAIX
+    D338: U3BUDAIX
+    D339: U3BUDAIX
     D399: U3BUDAIX
     D3E2: U3BUDAIX
     D3SN: U3BUDAIX
@@ -69,7 +95,17 @@ branchcode:
     E307: U3BUDAIX
     E308: U3BUDAIX
     E309: U3BUDAIX
+    E310: U3BUDAIX
+    E311: U3BUDAIX
+    E312: U3BUDAIX
+    E313: U3BUDAIX
     E315: U3BUDAIX
+    E316: U3BUDAIX
+    E317: U3BUDAIX
+    E320: U3BUDAIX
+    E321: U3BUDAIX
+    E322: U3BUCAN
+    E399: U3BUDAIX
     E3E1: U3BUDAIX
     E3SN: U3BUDAIX
     F2: U3BUIEFEE
@@ -78,11 +114,14 @@ branchcode:
     F303: U3BUIEFEE
     F306: U3BUIEFEE
     F307: U3BUIEFEE
+    F309: U3BUIEFEE
+    F310: U3BUIEFEE
     F3E1: U3BUIEFEE
     G2: U3BUIEFEE
     G301: U3BUIEFEE
     G302: U3BUIEFEE
     G303: U3BUIEFEE
+    G304: U3BUIEFEE
     G306: U3BUIEFEE
     G307: U3BUIEFEE
     G3E1: U3BUIEFEE
@@ -96,7 +135,16 @@ branchcode:
     N308: U3BUSSJ
     N309: U3BUSSJ
     N310: U3BUSSJ
+    N311: U3BUSSJ
     N315: U3BUSSJ
+    N320: U3BUSSJ
+    N321: U3BUSSJ
+    N322: U3BUSSJ
+    N323: U3BUSSJ
+    N324: U3BUSSJ
+    N325: U3BUSSJ
+    N326: U3BUSSJ
+    N399: U3BUSSJ
     N3E1: U3BUSSJ
     N3E2: U3BUSSJ
     N3E3: U3BUSSJ
@@ -121,17 +169,30 @@ branchcode:
     S308: U3BUSSJ
     S309: U3BUSSJ
     S310: U3BUSSJ
+    S311: U3BUSSJ
+    S312: U3BUSSJ
+    S313: U3BUSSJ
+    S314: U3BUSSJ
     S315: U3BUSSJ
+    S316: U3BUSSJ
+    S317: U3BUSSJ
+    S318: U3BUSSJ
+    S319: U3BUSSJ
+    S320: U3BUSSJ
     S399: U3BUSSJ
     S3E1: U3BUSSJ
     S3E2: U3BUSSJ
     S3E3: U3BUSSJ
     S3E4: U3BUSSJ
+    S3SN: U3BUSSJ
     T2: U3BUIAE
     T301: U3BUIAE
     T302: U3BUIAE
     T303: U3BUIAE
     T305: U3BUIAE
+    T306: U3BUIAE
+    T307: U3BUIAE
+    T308: U3BUIAE
     T309: U3BUIAE
     T310: U3BUIAE
     T3E1: U3BUIAE
@@ -140,33 +201,56 @@ branchcode:
     V306: U3BUSSJ
     V307: U3BUSSJ
     V309: U3BUSSJ
+    V399: U3BUSSJ
+    V3SN: U3BUSSJ
     V3E1: U3BUSSJ
     X301: U3BUDAIX
+    X302: U3BUDAIX
     X303: U3BUDAIX
     X304: U3BUDAIX
     X305: U3BUDAIX
     X306: U3BUDAIX
     X307: U3BUDAIX
     X308: U3BUDAIX
+    X309: U3BUDAIX
+    X310: U3BUDAIX
     X311: U3BUDAIX
     X313: U3BUDAIX
     X314: U3BUDAIX
+    X315: U3BUDAIX
     X316: U3BUDAIX
+    X318: U3BUDAIX
     X319: U3BUDAIX
     X320: U3BUDAIX
     X323: U3BUDAIX
+    X324: U3BUDAIX
     X328: U3BUDAIX
+    X329: U3BUDAIX
+    X399: U3BUDAIX
+    Y2: U3BUDAIX
+    Y302: U3BUDAIX
     Y307: U3BUIAE
-    Z3012: U3BUSSJ
+    Y399: U3BUDAIX
+    Z2: U3BUSSJ
     Z301: U3BUSSJ
+    Z302: U3BUSSJ
+    Z306: U3BUSSJ
+    Z307: U3BUSSJ
     Z308: U3BUSSJ
     Z309: U3BUSSJ
+    Z311: U3BUSSJ
+    Z312: U3BUSSJ
     Z313: U3BUSSJ
     Z315: U3BUSSJ
+    Z317: U3BUSSJ
     Z321: U3BUSSJ
+    Z322: U3BUSSJ
+    Z323: U3BUSSJ
     Z324: U3BUSSJ
     Z325: U3BUSSJ
     Z326: U3BUSSJ
+    Z328: U3BUSSJ
+    Z329: U3BUSSJ
     Z399: U3BUSSJ
 POLETHEM:
     A2: Droit
@@ -178,7 +262,7 @@ POLETHEM:
     A307: Droit
     A308: Droit
     A309: Sciences
-    A310: Droit
+    A310: A310
     A311: Droit
     A312: Droit
     A313: Droit
@@ -191,6 +275,9 @@ POLETHEM:
     A323: Droit
     A324: Droit
     A325: Sciences
+    A326: Droit
+    A328: Droit
+    A399: Droit
     D2: Droit
     D301: Droit
     D302: Droit
@@ -202,6 +289,28 @@ POLETHEM:
     D308: Droit
     D309: Droit
     D310: Droit
+    D311: Droit
+    D312: Droit
+    D313: Droit
+    D314: Droit
+    D316: Droit
+    D317: Droit
+    D318: Droit
+    D319: Droit
+    D320: Droit
+    D321: Droit
+    D322: Droit
+    D323: Droit
+    D325: Droit
+    D327: Droit
+    D328: Droit
+    D330: Droit
+    D332: Droit
+    D333: Droit
+    D335: Droit
+    D337: Droit
+    D338: Droit
+    D339: Droit
     D399: Droit
     D3E1: Droit
     D3E2: Droit
@@ -216,7 +325,19 @@ POLETHEM:
     E307: Economie
     E308: Economie
     E309: Economie
+    E310: Economie
+    E311: Economie
+    E312: Economie
+    E313: Economie
     E315: Economie
+    E316: Economie
+    E317: Economie
+    E318: Economie
+    E319: Economie
+    E320: Economie
+    E321: Economie
+    E322: Economie
+    E399: Economie
     E3E1: Economie
     E3SN: Economie
     F2: Lettres
@@ -225,11 +346,14 @@ POLETHEM:
     F303: Lettres
     F306: Lettres
     F307: Lettres
+    F309: Lettres
+    F310: Lettres
     F3E1: Lettres
     G2: Droit
     G301: Droit
     G302: Droit
     G303: Droit
+    G304: Droit
     G306: Droit
     G307: Droit
     G3E1: Droit
@@ -243,7 +367,16 @@ POLETHEM:
     N308: Sciences
     N309: Sciences
     N310: Sciences
+    N311: Sciences
     N315: Sciences
+    N320: Sciences
+    N321: Sciences
+    N322: Sciences
+    N323: Sciences
+    N324: Sciences
+    N325: Sciences
+    N326: Sciences
+    N399: Sciences
     N3E1: Sciences
     N3E2: Sciences
     N3E3: Sciences
@@ -265,17 +398,30 @@ POLETHEM:
     S308: Sciences
     S309: Sciences
     S310: Sciences
+    S311: Sciences
+    S312: Sciences
+    S313: Sciences
+    S314: Sciences
     S315: Sciences
+    S316: Sciences
+    S317: Sciences
+    S318: Sciences
+    S319: Sciences
+    S320: Sciences
     S399: Sciences
     S3E1: Sciences
     S3E2: Sciences
     S3E3: Sciences
     S3E4: Sciences
+    S3SN: Sciences
     T2: Economie
     T301: Economie
     T302: Economie
     T303: Economie
     T305: Economie
+    T306: Economie
+    T307: Economie
+    T308: Economie
     T309: Economie
     T310: Economie
     T3E1: Economie
@@ -284,33 +430,57 @@ POLETHEM:
     V306: Sciences
     V307: Sciences
     V309: Sciences
+    V399: Sciences
     V3E1: Sciences
+    V3SN: Sciences
     X301: Droit
+    X302: Droit
     X303: Droit
     X304: Droit
     X305: Droit
     X306: Droit
     X307: Droit
     X308: Droit
+    X309: Droit
+    X310: Droit
     X311: Droit
     X313: Droit
     X314: Droit
+    X315: Droit
     X316: Droit
+    X318: Droit
     X319: Droit
     X320: Droit
     X323: Droit
+    X324: Droit
     X328: Droit
+    X329: Droit
+    X399: Droit
+    Y2: Economie
+    Y302: Economie
+    Y303: Economie
     Y307: Economie
-    Z3012: Sciences
+    Y399: Economie
+    Z2: Sciences
     Z301: Sciences
+    Z302: Sciences
+    Z306: Sciences
+    Z307: Sciences
     Z308: Sciences
     Z309: Sciences
+    Z311: Sciences
+    Z312: Sciences
     Z313: Sciences
     Z315: Sciences
+    Z317: Sciences
     Z321: Sciences
+    Z322: Sciences
+    Z323: Sciences
     Z324: Sciences
     Z325: Sciences
     Z326: Sciences
+    Z328: Sciences
+    Z329: Sciences
     Z399: Sciences
 COMPOSANTE:
     A2: U3SERVCENT
@@ -335,6 +505,9 @@ COMPOSANTE:
     A323: U3SERVCENT
     A324: U3FDSPMRS
     A325: U3SERVCENT
+    A326: U3SERVCENT
+    A328: U3SERVCENT
+    A399: U3SERVCENT
     D2: U3FDSPAIX
     D301: U3FDSPAIX
     D302: U3FDSPAIX
@@ -347,6 +520,28 @@ COMPOSANTE:
     D308: U3FDSPAIX
     D309: U3FDSPAIX
     D310: U3FDSPAIX
+    D311: U3FDSPAIX
+    D312: U3FDSPAIX
+    D313: U3FDSPAIX
+    D314: U3FDSPAIX
+    D316: U3FDSPAIX
+    D317: U3FDSPAIX
+    D318: U3FDSPAIX
+    D319: U3FDSPAIX
+    D320: U3FDSPAIX
+    D321: U3FDSPAIX
+    D322: U3FDSPAIX
+    D323: U3FDSPAIX
+    D325: U3FDSPAIX
+    D327: U3FDSPAIX
+    D328: U3FDSPAIX
+    D330: U3FDSPAIX
+    D332: U3FDSPAIX
+    D333: U3FDSPAIX
+    D335: U3FDSPAIX
+    D337: U3FDSPAIX
+    D338: U3FDSPAIX
+    D339: U3FDSPAIX
     D399: U3FDSPAIX
     D3E1: U3FDSPAIX
     D3E1: U3FDSPMRS
@@ -364,7 +559,19 @@ COMPOSANTE:
     E307: U3FEAAIX
     E308: U3FEAAIX
     E309: U3FEAAIX
+    E310: U3FEAAIX
+    E311: U3FEAAIX
+    E312: U3FEAFORB
+    E313: U3FEAAIX
     E315: U3FEAFORB
+    E316: U3FEAFORB
+    E317: U3FEAFORB
+    E318: U3FEAFORB
+    E319: U3FEAAIX
+    E320: U3FEAAIX
+    E321: U3FEAAIX
+    E322: U3FEAMRS
+    E399: U3FEAAIX
     E3E1: U3FEAAIX
     E3SN: U3FEAAIX
     F2: U3IEFEE
@@ -373,11 +580,14 @@ COMPOSANTE:
     F303: U3IEFEE
     F306: U3IEFEE
     F307: U3IEFEE
+    F309: U3IEFEE
+    F310: U3IEFEE
     F3E1: U3IEFEE
     G2: U3IMPGTAIX
     G301: U3IMPGTAIX
     G302: U3IMPGTAIX
     G303: U3IMPGTAIX
+    G304: U3IMPGTAIX
     G306: U3IMPGTAIX
     G307: U3IMPGTAIX
     G3E1: U3IMPGTAIX
@@ -391,8 +601,17 @@ COMPOSANTE:
     N308: U3IUTMRS
     N309: U3IUTMRS
     N310: U3IUTMRS
+    N311: U3IUTMRS
     N315: U3IUTMRS
     N315: U3IUTSAL
+    N320: U3IUTMRS
+    N321: U3IUTMRS
+    N322: U3IUTMRS
+    N323: U3IUTMRS
+    N324: U3IUTMRS
+    N325: U3IUTMRS
+    N326: U3IUTMRS
+    N399: U3IUTMRS
     N3E1: U3IUTMRS
     N3E2: U3IUTMRS
     N3E3: U3IUTMRS
@@ -418,17 +637,30 @@ COMPOSANTE:
     S308: U3FSTMRS
     S309: U3FSTMRS
     S310: U3FSTMRS
+    S311: U3FSTMRS
+    S312: U3FSTMRS
+    S313: U3FSTMRS
+    S314: U3FSTMRS
     S315: U3FSTMRS
+    S316: U3FSTMRS
+    S317: U3FSTMRS
+    S318: U3FSTMRS
+    S319: U3FSTMRS
+    S320: U3FSTMRS
     S399: U3FSTMRS
     S3E1: U3FSTMRS
     S3E2: U3FSTMRS
     S3E3: U3FSTMRS
     S3E4: U3FSTMRS
+    S3SN: U3FSTMRS
     T2: U3IAE
     T301: U3IAE
     T302: U3IAE
     T303: U3IAE
     T305: U3IAE
+    T306: U3IAE
+    T307: U3IAE
+    T308: U3IAE
     T309: U3IAE
     T310: U3IAE
     T3E1: U3IAE
@@ -438,32 +670,56 @@ COMPOSANTE:
     V307: U3FSTMRS
     V309: U3FSTMRS
     V3E1: U3FSTMRS
+    V399: U3FSTMRS
+    V3SN: U3FSTMRS
     X301: U3FDSPAIX
+    X302: U3FDSPAIX
     X303: U3FDSPAIX
     X304: U3FDSPAIX
     X305: U3FDSPAIX
     X306: U3FDSPAIX
     X307: U3FDSPAIX
     X308: U3FDSPAIX
+    X309: U3FDSPAIX
+    X310: U3FDSPAIX
     X311: U3FDSPAIX
     X313: U3FDSPAIX
     X314: U3FDSPAIX
+    X315: U3FDSPAIX
     X316: U3FDSPAIX
+    X318: U3FDSPAIX
     X319: U3FDSPAIX
     X320: U3FDSPAIX
     X323: U3FDSPAIX
+    X324: U3FDSPAIX
     X328: U3FDSPAIX
+    X329: U3FDSPAIX
+    X399: U3FDSPAIX
+    Y2: U3FEAAIX
+    Y302: U3FEAAIX
+    Y303: U3FEAAIX
     Y307: U3IAE
-    Z3012: U3FSTMRS
+    Y399: U3FEAAIX
+    Z2: U3FSTMRS
     Z301: U3FSTMRS
+    Z302: U3FSTMRS
+    Z306: U3FSTMRS
+    Z307: U3FSTMRS
     Z308: U3FSTMRS
     Z309: U3FSTMRS
+    Z311: U3FSTMRS
+    Z312: U3FSTMRS
     Z313: U3FSTMRS
     Z315: U3FSTMRS
+    Z317: U3FSTMRS
     Z321: U3FSTMRS
+    Z322: U3FSTMRS
+    Z323: U3FSTMRS
     Z324: U3FSTMRS
     Z325: U3FSTMRS
     Z326: U3FSTMRS
+    Z328: U3FSTMRS
+    Z329: U3FSTMRS
     Z399: U3FSTMRS
 --- 
   - firstname,surname,dateofbirth
@@ -512,7 +768,7 @@ if ($$targetdata{'AFF_3_COD'} eq 'A304' or
     $$targetdata{'AFF_3_COD'} eq 'A322' or
     $$targetdata{'AFF_3_COD'} eq 'A323' ) {
     if ( $$targetdata{'LOCAL_AG_COD'} eq '310' ) {
-        $$targetdata{'POLETHEM'} = 'Science';
+        $$targetdata{'POLETHEM'} = 'Sciences';
     }
 } elsif ( $$targetdata{'AFF_3_COD'} eq 'A309' ) {
     if ( $$targetdata{'LOCAL_AG_COD'} eq '294' ) {
@@ -520,10 +776,12 @@ if ($$targetdata{'AFF_3_COD'} eq 'A304' or
     }
 } elsif ( $$targetdata{'AFF_3_COD'} eq 'A310' ) {
     my %hash = (
+        '294' => 'Droit',
         '299' => 'Lettres',
         '301' => 'Sciences',
         '310' => 'Sciences',
         '322' => 'Economie',
+        '347' => 'Droit',
     );  
     $$targetdata{'POLETHEM'} = $hash{$$targetdata{'LOCAL_AG_COD'}};
 }
@@ -531,4 +789,22 @@ if ($$targetdata{'AFF_3_COD'} eq 'A304' or
 $$targetdata{'branchcode'} ||= "U3INC";
 $$targetdata{'categorycode'} = "P";
 #$$targetdata{'cardnumber'} = 'U3'.$$targetdata{'cardnumber'};
+
+$$targetdata{othernames} = '' if $$targetdata{surname} eq $$targetdata{othernames}; # 3832
 ---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,6 +1,6 @@
-NOM: surname
+NOM: othernames
 PRENOM: firstname
-NOM_USAGE: othernames
+NOM_USAGE: surname
 ADRESSE_ANNEE: address
 ADRESSE_ANNEE2: address2
 VILLE_ANNEE: city
@@ -27,7 +27,7 @@ categorycode:
     Non Enseignant: P
 STATUT:
     Enseignant: EC
-    Non Enseignant: PERS
+    Non Enseignant: P
 branchcode:
     U2CISCA: U2TIMONMED
     U2DIVER: U2TIMONMED
@@ -173,5 +173,12 @@ $$targetdata{'branchcode'}   ||= "U2INC";
 $$targetdata{'categorycode'} ||= "INC";
 #$$targetdata{'cardnumber'}     ='U2'.$$targetdata{'cardnumber'};
 
+#$$targetdata{'dateexpiry'}='2010-11-03';
+
+$$targetdata{othernames} = '' if $$targetdata{surname} eq $$targetdata{othernames}; # 3832
+
 #$debug && warn "targetdata postprocessed :",@$targetdata{qw(categorycode city)};
 ---
+
+
+

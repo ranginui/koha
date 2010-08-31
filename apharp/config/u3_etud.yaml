@@ -1,8 +1,7 @@
-#NUM_CARTE_PUCE
-NOM: surname
+NOM: othernames
 PRENOM: firstname
 #CIVILITE: title
-NOM_USAGE: othernames
+NOM_USAGE: surname
 ADRESSE_ANNEE: address
 ADRESSE_ANNEE2: address2
 VILLE_ANNEE: city
@@ -357,6 +356,13 @@ $$targetdata{'branchcode'}||="U3INC";
 $$targetdata{'categorycode'}||="INC";
 #$$targetdata{'cardnumber'}='U3'.$$targetdata{'cardnumber'};
 
+$$targetdata{'surname'}||=$$targetdata{'othernames'}; # NOM_USAGE est vide pour les non maries, voir MT4118
+$$targetdata{othernames} = '' if $$targetdata{surname} eq $$targetdata{othernames}; # 3832
+
+#$$targetdata{'dateexpiry'}='2010-11-03';
+
+#$debug && warn "targetdata postprocessed :",@$targetdata{qw(categorycode city)};
+
 sub Student_category{ 
     my ($borrower)=@_; 
     my $year=substr($$borrower{categorycode},1,1); 
@@ -370,3 +376,6 @@ sub Staff_category{
     return  (uc($$borrower{STATUT}) eq "NON ENSEIGNANT"?"PRO":"P") ; 
 }
 ---
+
+
+

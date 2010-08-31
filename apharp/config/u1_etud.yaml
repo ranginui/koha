@@ -1,8 +1,6 @@
-#NUM_CARTE_PUCE
-NOM: surname
+NOM: othernames
 PRENOM: firstname
-#CIVILITE: title
-NOM_USAGE: othernames
+NOM_USAGE: surname
 ADRESSE_ANNEE: address
 ADRESSE_ANNEE2: address2
 VILLE_ANNEE: city
@@ -18,7 +16,6 @@ TEL_FIXE: B_phone
 DATE_NAISS: dateofbirth
 STATUT: [categorycode,STATUT]
 COMPOSANTE: [branchcode,COMPOSANTE,POLETHEM]
-#FILIERE
 CODE_ETAPE: CODEETAPE
 NUM_INE: INE
 NUM_APPLI_GEST: [APPLIGEST]
@@ -361,4 +358,11 @@ while (my ($k, $v) = each(%ce2s)) { if ($$targetdata{'CODEETAPE'} =~ /^$k/) {$$t
 $$targetdata{categorycode}=substr($$targetdata{'STATUT'},0,1);
 $$targetdata{'categorycode'}||="INC";
 #$debug && warn "targetdata postprocessed :",join(",",@$targetdata{qw(categorycode city)}); 
+
+#$$targetdata{'dateexpiry'}='2010-11-03';
+
+$$targetdata{othernames} = '' if $$targetdata{surname} eq $$targetdata{othernames}; # 3832
+
+#$debug && warn "targetdata postprocessed :",join(",",@$targetdata{qw(categorycode city)});
 ---
+
