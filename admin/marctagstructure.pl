@@ -39,7 +39,6 @@ $searchfield =~ s/\,//g;
 my $offset = $input->param('offset') || 0;
 my $op     = $input->param('op')     || '';
 my $dspchoice = $input->param('select_display');
-my $pagesize  = 20;
 
 my $script_name = "/cgi-bin/koha/admin/marctagstructure.pl";
 
@@ -254,7 +253,7 @@ if ( $op eq 'add_form' ) {
         my @loop_data = ();
         my $j         = 1;
         my $i         = $offset;
-        while ( $i < ( $offset + $pagesize < $cnt ? $offset + $pagesize : $cnt ) ) {
+        while ( $i < $cnt ) {
             my %row_data;    # get a fresh hash for the row data
             $row_data{tagfield}         = $results[$i]->{'mts_tagfield'};
             $row_data{liblibrarian}     = $results[$i]->{'mts_liblibrarian'};
@@ -267,7 +266,7 @@ if ( $op eq 'add_form' ) {
             $j                          = $i;
             my @internal_loop = ();
 
-            while ( ( $results[$i]->{'tagfield'} == $results[$j]->{'tagfield'} ) and ( $j < ( $offset + $pagesize < $cnt ? $offset + $pagesize : $cnt ) ) ) {
+            while ( ( $results[$i]->{'tagfield'} == $results[$j]->{'tagfield'} ) and ( $j < $cnt ) ) {
                 my %subfield_data;
                 $subfield_data{tagsubfield}      = $results[$j]->{'tagsubfield'};
                 $subfield_data{liblibrarian}     = $results[$j]->{'liblibrarian'};
@@ -298,7 +297,7 @@ if ( $op eq 'add_form' ) {
         my ( $count, $results ) = StringSearch( $searchfield, $frameworkcode );
         $cnt = $count;
         my @loop_data = ();
-        for ( my $i = $offset ; $i < ( $offset + $pagesize < $count ? $offset + $pagesize : $count ) ; $i++ ) {
+        for ( my $i = $offset ; $i < $count ; $i++ ) {
             my %row_data;    # get a fresh hash for the row data
             $row_data{tagfield}         = $results->[$i]{'tagfield'};
             $row_data{liblibrarian}     = $results->[$i]{'liblibrarian'};
@@ -314,16 +313,13 @@ if ( $op eq 'add_form' ) {
     }
     if ( $offset > 0 ) {
         $template->param(
-            isprevpage    => $offset,
-            prevpage      => $offset - $pagesize,
             searchfield   => $searchfield,
             script_name   => $script_name,
             frameworkcode => $frameworkcode,
         );
     }
-    if ( $offset + $pagesize < $cnt ) {
+    if ( $offset < $cnt ) {
         $template->param(
-            nextpage      => $offset + $pagesize,
             searchfield   => $searchfield,
             script_name   => $script_name,
             frameworkcode => $frameworkcode,
