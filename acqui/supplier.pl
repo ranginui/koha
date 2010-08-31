@@ -109,9 +109,9 @@ if ( $op eq 'display' ) {
         invoiceprice  => $supplier->{'invoiceprice'},
         listprice     => $supplier->{'listprice'},
         GST           => $tax_rate,
-        default_tax   => $seller_gstrate,
+        default_tax   => defined($seller_gstrate),
         basketcount   => $supplier->{'basketcount'},
-        contracts     => $contracts
+        contracts     => $contracts,
     );
 } elsif ( $op eq 'delete' ) {
     DelBookseller($id);
@@ -127,6 +127,8 @@ if ( $op eq 'display' ) {
             invoiceprice => ( $_->{currency} eq $supplier->{invoiceprice} ),
           };
     }
+
+    my $default_gst_rate = (C4::Context->preference('gist') * 100) || '0.0';
 
     my $gstrate = defined $supplier->{gstrate} ? $supplier->{gstrate} * 100 : '';
     $template->param(
@@ -158,6 +160,7 @@ if ( $op eq 'display' ) {
         loop_currency => $loop_currency,
         GST           => $tax_rate,
         enter         => 1,
+        default_gst_rate => $default_gst_rate,
     );
 }
 

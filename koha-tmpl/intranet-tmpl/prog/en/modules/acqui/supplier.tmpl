@@ -135,8 +135,8 @@ if (f.company.value == "") {
             </ol>
             <ol>
             <li><label for="discount">Discount</label>
-                <input type="text" size="6" id="discount" name="discount" value="<!-- TMPL_VAR NAME="discount" -->" /> %</li>
-            <li><label for="gstrate">Tax rate</label><input type="text" name="gstrate" id="gstrate" size="5" value="<!-- TMPL_VAR name="gstrate" -->"/>%</li>
+                <input type="text" size="6" id="discount" name="discount" value="<!-- TMPL_VAR NAME="discount" -->" />%</li>
+            <li><label for="gstrate">Tax rate</label><input type="text" name="gstrate" id="gstrate" size="6" value="<!-- TMPL_VAR name="gstrate" -->"/>% (leave blank for default tax of <!-- TMPL_VAR name="default_gst_rate" -->%)</li>
             <li><label for="notes">Notes</label>
                 <textarea cols="40" rows="4" id="notes" name="notes" ><!-- TMPL_VAR NAME="notes" --></textarea></li></ol>			
         </fieldset>
@@ -192,8 +192,8 @@ if (f.company.value == "") {
                     <!-- TMPL_IF name= "invoiceincgst" -->Yes<!--TMPL_ELSE-->No<!-- /TMPL_IF --></p><!-- /TMPL_IF -->
             <p><strong>Discount: </strong>
                 <!-- TMPL_VAR NAME="discount" --> %</p>
-            <!-- TMPL_IF NAME="GST" --><p><strong>Tax rate: </strong>
-                <!-- TMPL_VAR name="GST" -->%<!-- TMPL_UNLESS name="default_tax" --> (default)<!-- /TMPL_UNLESS --></p><!-- /TMPL_IF -->
+            <p><strong>Tax rate: </strong>
+                <!-- TMPL_VAR name="GST" -->%<!-- TMPL_UNLESS name="default_tax" --> (default)<!-- /TMPL_UNLESS --></p>
             <!-- TMPL_IF NAME="notes" --><p><strong>Notes: </strong>
                 <!-- TMPL_VAR NAME="notes" --></p><!-- /TMPL_IF -->
         </div>
