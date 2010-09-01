@@ -23,6 +23,7 @@ $(document).ready(function() {
 		dateFormat: 'uk',<!-- /TMPL_IF -->
 		headers: { 1: { sorter: 'articles' }}
 	}); 
+	$("#table_additionalattributes").tablesorter({sortList: [[1,0]]});
 	$("#relissuest").tablesorter({<!-- TMPL_IF NAME="dateformat_metric" -->
 		dateFormat: 'uk',<!-- /TMPL_IF -->
 		headers: { 1: { sorter: 'articles' }}
@@ -349,14 +350,16 @@ $(document).ready(function() {
 <!-- TMPL_UNLESS NAME="no_patron_attribute_types" -->
 <div id="patron-extended-attributes">
 <h3>Additional attributes and identifiers</h3>
-<table>
-    <tr>
+<table id="table_additionalattributes">
+    <thead>
         <th>Type</th>
+        <th>Description</th>
         <th>Value</th>
-    </tr>
+    </thead>
     <!-- TMPL_LOOP NAME="patron_attributes" -->
     <tr>
-        <td><!-- TMPL_VAR NAME="code" --> (<!-- TMPL_VAR NAME="description" -->)</td>
+        <td><!-- TMPL_VAR NAME="code" --></td>
+        <td><!-- TMPL_VAR NAME="description" --></td>
         <td><!-- TMPL_VAR NAME="value" -->
             <!-- TMPL_IF NAME="value_description" -->
                 (<!-- TMPL_VAR NAME="value_description" -->)
