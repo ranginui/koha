@@ -71,7 +71,7 @@ if(C4::Context->preference('AdvancedSearchTypes') eq 'ccode'){
                     FROM biblio
                     LEFT JOIN items USING (biblionumber)
                     LEFT JOIN biblioitems USING (biblionumber)
-                    LEFT JOIN authorised_values ON items.ccode = authorised_values.authorised_value
+                    LEFT JOIN authorised_values ON biblioitems.itemtype = authorised_values.authorised_value
                     WHERE 1
                     $whereclause
                     AND authorised_values.category = 'ccode' 
