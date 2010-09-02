@@ -34,13 +34,15 @@ my $dbh            = C4::Context->dbh;
 my ( $template, $loggedinuser, $cookie, $hemisphere );
 my $subscriptionid = $query->param('subscriptionid');
 my $subs           = GetSubscription($subscriptionid);
-
+# Permission needed if it is a deletion (del) : delete_subscription
+# Permission needed otherwise : *
+my $permission = ($op eq "del") ? "delete_subscription" : "*";
 ( $template, $loggedinuser, $cookie ) = get_template_and_user(
     {   template_name   => "serials/subscription-detail.tmpl",
         query           => $query,
         type            => "intranet",
         authnotrequired => 0,
-        flagsrequired   => { serials => 1 },
+        flagsrequired   => { serials => $permission },
         debug           => 1,
     }
 );

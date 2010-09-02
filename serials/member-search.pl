@@ -51,7 +51,7 @@ my ( $template, $loggedinuser, $cookie );
         query           => $cgi,
         type            => "intranet",
         authnotrequired => 0,
-        flagsrequired   => { borrowers => 1 },
+        flagsrequired   => { borrowers => 1, serials => 'routing' },
     }
 );
 
