@@ -181,12 +181,6 @@ sub data_to_koha {
         #Add a timestamp attribute in borrower_attributes table. It is used to know if the member must be updated (TIMESTAMP = NULL)
         push @$patron_attributes, {code => "TIMESTAMP", value => C4::Dates->new()->output('iso')};       
 
-        #Only for the new members
-        if ($new) {
-            $$targetdata{dateenrolled} ||= C4::Dates->new()->output('iso');
-            $$targetdata{dateexpiry} ||= calcExpiryDate($$targetdata{categorycode},$$targetdata{dateenrolled}) if ($$targetdata{categorycode});
-        }
-
         #Get the borrower number
         my ($appligest, $site);
         foreach (@$patron_attributes) {
