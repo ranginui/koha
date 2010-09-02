@@ -113,7 +113,7 @@ sub get_card_data {
 
     my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
     my $schooltyear = 1900 + $year;
-    $schooltyear-- if $mon < 9;
+    $schooltyear-- if $mon < 8;
     
     #Suppression des 8 zéros au debut de la chaine pour compatibilité avec le webservice.
     $cardnumber =~ s/^0{8}//;
