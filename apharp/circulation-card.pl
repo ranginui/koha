@@ -34,6 +34,7 @@ my $cardnumber = $query->param('findborrower');
 # Recherche par nom
 if ( $cardnumber && substr($cardnumber, 0, 4) ne '0000' ){
 	print $query->redirect( "/cgi-bin/koha/circ/circulation.pl?findborrower=$cardnumber" );
+	exit;
 }
 
 $cardnumber = 0 . $cardnumber if length($cardnumber) == 15;
@@ -78,15 +79,18 @@ if ($cardnumber) {
 	    resetTimestamp($cardnumber, 'cardnumber');
 	    updateCategorycode($carddata->{categorycode}, $cardnumber) if $carddata->{categorycode} ne '';
             print $query->redirect("/cgi-bin/koha/circ/circulation.pl?findborrower=$cardnumber");
+	    exit;
         }
         elsif (my $borrowernumber = getMemberByAppligest($carddata->{'APPLIGEST'}, $carddata->{'ETABLISSEM'})) {
 	    resetTimestamp($borrowernumber, 'borrowernumber');
 	    updateCard($borrowernumber, $cardnumber);
             print $query->redirect("/cgi-bin/koha/circ/circulation.pl?borrowernumber=$borrowernumber");
+	    exit;
         }
         else {
             if (insert_borrower($carddata)) {
 		    print $query->redirect("/cgi-bin/koha/circ/circulation.pl?findborrower=$cardnumber");
+		    exit;
 	    }else {
 		$template->param( {error => "Cannot add borrowers to koha"} );
 	    }
