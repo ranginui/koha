@@ -95,6 +95,9 @@ if ($cardnumber) {
 		$template->param( {error => "Cannot add borrowers to koha"} );
 	    }
         }
+    } elsif ( ($invalid ne 'carte inactive' || $invalid ne 'carte périmée') && card_exist($cardnumber) ) {
+	print $query->redirect("/cgi-bin/koha/circ/circulation.pl?findborrower=$cardnumber");
+	exit;
     } else {
         $template->param({ cardnumber      => $cardnumber,
                            invalid         => $invalid,
