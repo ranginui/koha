@@ -102,7 +102,7 @@ if ($ok) {
             query           => $query,
             type            => "intranet",
             authnotrequired => 0,
-            flagsrequired   => { serials => 1 },
+            flagsrequired   => { serials => 'routing' },
             debug           => 1,
         }
     );
@@ -113,7 +113,7 @@ if ($ok) {
             query           => $query,
             type            => "intranet",
             authnotrequired => 0,
-            flagsrequired   => { serials => 1 },
+            flagsrequired   => { serials => 'routing' },
             debug           => 1,
         }
     );

@@ -81,8 +81,7 @@ if ( $op eq "do_search" && $query ) {
             query           => $input,
             type            => "intranet",
             authnotrequired => 0,
-            flagsrequired   => { serials => 1 },
-            flagsrequired   => { catalogue => 1 },
+            flagsrequired => {catalogue => 1, serials => '*'},
             debug           => 1,
         }
     );
@@ -217,7 +216,7 @@ else {
             query           => $input,
             type            => "intranet",
             authnotrequired => 0,
-            flagsrequired   => { catalogue => 1, serials => 1 },
+            flagsrequired => {catalogue => 1, serials => '*'},
             debug           => 1,
         }
     );

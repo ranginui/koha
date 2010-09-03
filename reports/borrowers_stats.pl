@@ -255,7 +255,14 @@ sub calculate {
     if ($linefilter) {
         $strsth .= " AND $linefield LIKE ? ";
     }
-    $strsth .= " AND $status='1' " if ($status);
+    if($status eq "debarred")
+    {
+    	$strsth .= " AND $status>=Now() " if ($status);
+    }
+    else
+    {
+    	$strsth .= " AND $status='1' " if ($status);
+    }
     $strsth .= " order by $linefield";
 
     push @loopfilter, { sql => 1, crit => "Query", filter => $strsth };
@@ -289,7 +296,14 @@ sub calculate {
         $colfilter =~ s/\*/%/g;
         $strsth2 .= " AND $colfield LIKE ? ";
     }
-    $strsth2 .= " AND $status='1' " if ($status);
+    if($status eq "debarred")
+    {
+    	$strsth2 .= " AND $status>=Now() " if ($status);
+    }
+    else
+    {
+    	$strsth2 .= " AND $status='1' " if ($status);
+    }
     $strsth2 .= " order by $colfield";
     push @loopfilter, { sql => 1, crit => "Query", filter => $strsth2 };
     my $sth2 = $dbh->prepare($strsth2);
@@ -345,7 +359,14 @@ sub calculate {
     $strcalc .= " AND sort2 like '" . @$filters[7] . "'" if ( @$filters[7] );
     $strcalc .= " AND borrowernumber in (select distinct(borrowernumber) from old_issues where issuedate > '" . $newperioddate . "')"     if ( $activity eq 'active' );
     $strcalc .= " AND borrowernumber not in (select distinct(borrowernumber) from old_issues where issuedate > '" . $newperioddate . "')" if ( $activity eq 'nonactive' );
-    $strcalc .= " AND $status='1' "                                                                                                       if ($status);
+    if($status eq "debarred")
+    {
+    	$strcalc .= " AND $status>=Now() " if ($status);
+    }
+    else
+    {
+    	$strcalc .= " AND $status='1' " if ($status);
+    }
     $strcalc .= " group by $linefield, $colfield";
     push @loopfilter, { sql => 1, crit => "Query", filter => $strcalc };
     my $dbcalc = $dbh->prepare($strcalc);
