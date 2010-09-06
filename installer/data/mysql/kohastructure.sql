@@ -2572,6 +2572,21 @@ CREATE TABLE `fieldmapping` (
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Table structure for table `pending_offline_operations`
+--
+
+DROP TABLE IF EXISTS `pending_offline_operations`;
+CREATE TABLE `pending_offline_operations` (
+  `operationid` INT(11) NOT NULL AUTO_INCREMENT,
+  `userid` VARCHAR(30) NOT NULL,
+  `branchcode` VARCHAR(10) NOT NULL,
+  `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `action` VARCHAR(10) NOT NULL,
+  `barcode` VARCHAR(20) NOT NULL,
+  `cardnumber` VARCHAR(16) NULL,
+  PRIMARY KEY (`operationid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

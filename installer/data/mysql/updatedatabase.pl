@@ -4147,27 +4147,6 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     SetVersion($DBversion);
 }
 
-$DBversion = "3.01.00.136";
-if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
-    $dbh->do(
-        qq{
-	CREATE TABLE IF NOT EXISTS pending_offline_operations (
-	    operationid INT(11) NOT NULL AUTO_INCREMENT,
-	    userid VARCHAR(30) NOT NULL,
-	    branchcode VARCHAR(10) NOT NULL,
-	    timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	    action VARCHAR(10) NOT NULL,
-	    barcode VARCHAR(20) NOT NULL,
-	    cardnumber VARCHAR(16) NULL,
-	    PRIMARY KEY (operationid)
-	);
-	}
-    );
-
-    print "Upgrade to $DBversion done (adding one table : pending_offline_operations)\n";
-    SetVersion($DBversion);
-}
-
 $DBversion = "3.01.00.137";
 if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     my $borrowers = $dbh->selectcol_arrayref( "SELECT borrowernumber from borrowers where debarred <>0;", { Columns => [1] } );
@@ -4510,6 +4489,27 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 	(15, 'routing', 'Routing');
 	");
     print "Upgrade to $DBversion done (adding more permissions)\n";
+    SetVersion($DBversion);
+}
+
+$DBversion = "3.02.00.034";
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+    $dbh->do(
+        qq{
+	CREATE TABLE IF NOT EXISTS pending_offline_operations (
+	    operationid INT(11) NOT NULL AUTO_INCREMENT,
+	    userid VARCHAR(30) NOT NULL,
+	    branchcode VARCHAR(10) NOT NULL,
+	    timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	    action VARCHAR(10) NOT NULL,
+	    barcode VARCHAR(20) NOT NULL,
+	    cardnumber VARCHAR(16) NULL,
+	    PRIMARY KEY (operationid)
+	);
+	}
+    );
+
+    print "Upgrade to $DBversion done (adding one table : pending_offline_operations)\n";
     SetVersion($DBversion);
 }
 
