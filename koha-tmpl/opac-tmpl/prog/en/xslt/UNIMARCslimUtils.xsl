@@ -31,7 +31,7 @@
         </xsl:if>
         <xsl:if test="marc:subfield[@code='d']">
           <xsl:if test="marc:subfield[@code='a' or @code='c']">, </xsl:if>        
-          <xsl:value-of select="marc:subfield[@code='d']"/>
+          <xsl:value-of select="marc:subfield[@code='d']"/>&#xA0;
         </xsl:if>
         <xsl:value-of select="marc:subfield[@code='e']"/>
         <xsl:if test="marc:subfield[@code='g']">
