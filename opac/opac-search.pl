@@ -295,9 +295,12 @@ while ( my ($index,$facet) = each %{$res->facets} ) {
     if ( @$facet > 1 ) {
         my @values;
         my $code = substr($index, 7);
+
         for ( my $i = 0 ; $i < scalar(@$facet) ; $i++ ) {
             my $value = $facet->[$i++];
             my $count = $facet->[$i];
+            utf8::encode($value);
+            
             push @values, {
                 'value'   => $value,
                 'count'   => $count,
@@ -321,7 +324,7 @@ $template->param(
     'SEARCH_RESULTS' => \@results,
     'facets_loop'    => \@facets,
     'query'          => $params->{'q'},
-    'searchdesc'     => $query_desc || $limit_desc,
+    'searchdesc'     => $params->{'q'} || @tplfilters,
     'availability'   => $filters{'availability'},
 );
 

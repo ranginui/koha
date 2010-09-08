@@ -2657,6 +2657,9 @@ sub IndexRecord {
                         my $structure = C4::MarcFramework::GetSubfieldStructure($index->{field},$index->{subfield},$frameworkcode);
                         if ( $structure->{'authorised_value'} eq 'branches' ) {
                             $subfield = GetBranchName($subfield);
+                        } elsif ( $structure->{'authorised_value'} eq 'itemtypes' ) {
+                            my $itemtype = getitemtypeinfo($subfield);
+                            $subfield = $itemtype->{'description'};
                         } elsif ( $structure->{'authorised_value'} ne '' ) {
                             my $authorisedvalues = GetAuthorisedValues($structure->{'authorised_value'},undef,undef);
                             for ( @$authorisedvalues ) {
