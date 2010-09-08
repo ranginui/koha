@@ -3705,10 +3705,11 @@ $DBversion = "3.01.00.146";
 if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     $dbh->do('ALTER TABLE aqorders ADD COLUMN discount FLOAT(6,4) DEFAULT NULL;');
     print "Upgrade to $DBversion done (Add 'discount' column on aqorders)\n";
-    SetVersion ($DBversion);
     $dbh->do("INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES ('UpdateLastSeenBatch','0','Whether to update datelastseen when doing batch modifications','','YesNo')");
     print "Upgrade to $DBversion done (Add UpdateLastSeenBatch system preference)\n";
-    SetVersion($DBversion);
+    $dbh->do("UPDATE aqbooksellers SET gstrate=NULL WHERE gstrate=0.0");
+    print "Upgrade to $DBversion done (Add index on guarantorid)\n";
+    SetVersion ($DBversion);
 }
 
 =item DropAllForeignKeys($table)
