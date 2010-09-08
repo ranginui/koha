@@ -1,0 +1,2 @@
+It is advisable to go through the command line to upgrade DB from 3.0.x to 3.2 :
+installer/data/mysql/updatedatabase.pl

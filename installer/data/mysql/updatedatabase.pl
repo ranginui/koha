@@ -52,8 +52,9 @@ $| = 1;                 # flushes output
     Deal with virtualshelves
 
 =cut
-
+my $compare_version=C4::Context->preference("Version");
 my $DBversion = "3.00.00.001";
+
 if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 
     # update virtualshelves table to
@@ -2271,9 +2272,9 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 }
 
 $DBversion = '3.01.00.001';
-if ( C4::Context->preference('Version') < TransformToNum($DBversion) ) {
+if ( C4::Context->preference('Version') < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.04.001") ) {
     $dbh->do( "
-        CREATE TABLE hold_fill_targets (
+        CREATE TABLE IF NOT EXISTS hold_fill_targets (
             `borrowernumber` int(11) NOT NULL,
             `biblionumber` int(11) NOT NULL,
             `itemnumber` int(11) NOT NULL,
@@ -2301,7 +2302,7 @@ if ( C4::Context->preference('Version') < TransformToNum($DBversion) ) {
 }
 
 $DBversion = '3.01.00.002';
-if ( C4::Context->preference('Version') < TransformToNum($DBversion) ) {
+if ( C4::Context->preference('Version') < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.01.001") ) {
 
     # use statistics where available
     $dbh->do( "
@@ -2338,7 +2339,7 @@ if ( C4::Context->preference('Version') < TransformToNum($DBversion) ) {
 }
 
 $DBversion = "3.01.00.003";
-if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.01.002") ) {
     $dbh->do(
 "INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES('AllowRenewalLimitOverride', '0', 'if ON, allows renewal limits to be overridden on the circulation screen',NULL,'YesNo')"
     );
@@ -2347,7 +2348,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 }
 
 $DBversion = '3.01.00.004';
-if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.04.004") ) {
     $dbh->do(
 "INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('OPACDisplayRequestPriority','0','Show patrons the priority level on holds in the OPAC','','YesNo')"
     );
@@ -2356,7 +2357,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 }
 
 $DBversion = '3.01.00.005';
-if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.02.001") ) {
     $dbh->do( "
         INSERT INTO `letter` (module, code, name, title, content)
         VALUES('reserves', 'HOLD', 'Hold Available for Pickup', 'Hold Available for Pickup at <<branches.branchname>>', 'Dear <<borrowers.firstname>> <<borrowers.surname>>,\r\n\r\nYou have a hold available for pickup as of <<reserves.waitingdate>>:\r\n\r\nTitle: <<biblio.title>>\r\nAuthor: <<biblio.author>>\r\nCopy: <<items.copynumber>>\r\nLocation: <<branches.branchname>>\r\n<<branches.branchaddress1>>\r\n<<branches.branchaddress2>>\r\n<<branches.branchaddress3>>')
@@ -2369,14 +2370,14 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 }
 
 $DBversion = '3.01.00.006';
-if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.02.002") ) {
     $dbh->do("ALTER TABLE `biblioitems` ADD KEY issn (issn)");
     print "Upgrade to $DBversion done (add index on biblioitems.issn)\n";
     SetVersion($DBversion);
 }
 
 $DBversion = "3.01.00.007";
-if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.02.003")) {
     $dbh->do("UPDATE `systempreferences` SET options='70|10' WHERE variable='intranetmainUserblock'");
     $dbh->do("UPDATE `systempreferences` SET options='70|10' WHERE variable='intranetuserjs'");
     $dbh->do("UPDATE `systempreferences` SET options='70|10' WHERE variable='opacheader'");
@@ -2406,7 +2407,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 }
 
 $DBversion = '3.01.00.008';
-if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.04.008") ) {
 
     $dbh->do(
         "CREATE TABLE branch_transfer_limits (
@@ -2427,7 +2428,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 }
 
 $DBversion = "3.01.00.009";
-if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.02.004") ) {
     $dbh->do("ALTER TABLE permissions MODIFY `code` varchar(64) DEFAULT NULL");
     $dbh->do("ALTER TABLE user_permissions MODIFY `code` varchar(64) DEFAULT NULL");
     $dbh->do("INSERT INTO permissions (module_bit, code, description) VALUES ( 1, 'circulate_remaining_permissions', 'Remaining circulation permissions')");
@@ -2436,7 +2437,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 }
 
 $DBversion = '3.01.00.010';
-if ( C4::Context->preference('Version') < TransformToNum($DBversion) ) {
+if ( C4::Context->preference('Version') < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.02.005") ) {
     $dbh->do("ALTER TABLE `borrower_attributes` MODIFY COLUMN `attribute` VARCHAR(64) DEFAULT NULL");
     $dbh->do("ALTER TABLE `borrower_attributes` MODIFY COLUMN `password` VARCHAR(64) DEFAULT NULL");
     print "Upgrade to $DBversion done (bug 2687: increase length of borrower attribute fields)\n";
@@ -2444,7 +2445,7 @@ if ( C4::Context->preference('Version') < TransformToNum($DBversion) ) {
 }
 
 $DBversion = '3.01.00.011';
-if ( C4::Context->preference('Version') < TransformToNum($DBversion) ) {
+if ( C4::Context->preference('Version') < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.02.006") ) {
 
     # Yes, the old value was ^M terminated.
     my $bad_value =
@@ -2464,7 +2465,7 @@ END_SQL
 }
 
 $DBversion = "3.01.00.012";
-if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.05.001") ) {
     $dbh->do(
 "INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES('AllowHoldPolicyOverride', '0', 'Allow staff to override hold policies when placing holds',NULL,'YesNo')"
     );
@@ -2480,7 +2481,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8
     " );
     $dbh->do( "
-        CREATE TABLE `default_branch_item_rules` (
+        CREATE TABLE IF NOT EXISTS `default_branch_item_rules` (
           `itemtype` varchar(10) NOT NULL,
           `holdallowed` tinyint(1) default NULL,
           PRIMARY KEY  (`itemtype`),
@@ -2528,7 +2529,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
         ('circulation','CHECKOUT','Item Checkout','Checkouts','The following items have been checked out:\r\n----\r\n<<biblio.title>>\r\n----\r\nThank you for visiting <<branches.branchname>>.');
     }
     );
-
+    $dbh->do(q{SET FOREIGN_KEY_CHECKS = 0;});
     $dbh->do(q{INSERT INTO message_attributes (message_attribute_id, message_name, takes_days) VALUES (5, 'Item Check-in', 0);});
     $dbh->do(q{INSERT INTO message_attributes (message_attribute_id, message_name, takes_days) VALUES (6, 'Item Checkout', 0);});
 
@@ -2544,6 +2545,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     $dbh->do(
         q{INSERT INTO message_transports (message_attribute_id, message_transport_type, is_digest, letter_module, letter_code) VALUES (6, 'sms',   0, 'circulation', 'CHECKOUT');}
     );
+    $dbh->do(q{SET FOREIGN_KEY_CHECKS = 1;});
 
     print "Upgrade to $DBversion done (data for Email Checkout Slips project)\n";
     SetVersion($DBversion);
@@ -2551,6 +2553,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 
 $DBversion = "3.01.00.014";
 if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+	$dbh->do("CREATE TABLE IF NOT EXISTS `branch_transfer_limits` (`limitId` int(8) NOT NULL AUTO_INCREMENT, `toBranch` varchar(10) NOT NULL, `fromBranch` varchar(10) NOT NULL, `itemtype` varchar(10) DEFAULT NULL, PRIMARY KEY (`limitId`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
     $dbh->do("ALTER TABLE `branch_transfer_limits` CHANGE `itemtype` `itemtype` VARCHAR( 4 ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL");
     $dbh->do("ALTER TABLE `branch_transfer_limits` ADD `ccode` VARCHAR( 10 ) NULL ;");
     $dbh->do(
@@ -2565,7 +2568,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 }
 
 $DBversion = '3.01.00.015';
-if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+if ( C4::Context->preference("Version") < TransformToNum($DBversion)) {
     $dbh->do(
 "INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('SyndeticsClientCode', '0', 'Client Code for using Syndetics Solutions content','','free')"
     );
@@ -2602,11 +2605,11 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     );
 
     $dbh->do(
-"INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('OPACAmazonCoverImages', '0', 'Display cover images on OPAC from Amazon Web Services','','YesNo')"
+"INSERT IGNORE INTO systempreferences (variable,value,explanation,options,type) VALUES ('OPACAmazonCoverImages', '0', 'Display cover images on OPAC from Amazon Web Services','','YesNo')"
     );
 
     $dbh->do(
-"INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('AmazonCoverImages', '0', 'Display Cover Images in Staff Client from Amazon Web Services','','YesNo')"
+"INSERT IGNORE INTO systempreferences (variable,value,explanation,options,type) VALUES ('AmazonCoverImages', '0', 'Display Cover Images in Staff Client from Amazon Web Services','','YesNo')"
     );
 
     $dbh->do("UPDATE systempreferences SET variable='AmazonEnabled' WHERE variable = 'AmazonContent'");
@@ -2648,7 +2651,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 }
 
 $DBversion = "3.01.00.018";
-if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.02.008") ) {
     $dbh->do("ALTER TABLE deletedborrowers ADD `smsalertnumber` varchar(50) default NULL");
     print "Upgrade to $DBversion done (added deletedborrowers.smsalertnumber, missed in 3.00.00.091)\n";
     SetVersion($DBversion);
@@ -2695,7 +2698,7 @@ if ( C4::Context->preference('Version') < TransformToNum($DBversion) ) {
 }
 
 $DBversion = '3.01.00.023';
-if ( C4::Context->preference('Version') < TransformToNum($DBversion) ) {
+if ( C4::Context->preference('Version') < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.02.009") ) {
     $dbh->do("ALTER TABLE biblioitems        MODIFY COLUMN isbn VARCHAR(30) DEFAULT NULL");
     $dbh->do("ALTER TABLE deletedbiblioitems MODIFY COLUMN isbn VARCHAR(30) DEFAULT NULL");
     $dbh->do("ALTER TABLE import_biblios     MODIFY COLUMN isbn VARCHAR(30) DEFAULT NULL");
@@ -2712,7 +2715,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 }
 
 $DBversion = '3.01.00.025';
-if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.04.012") ) {
     $dbh->do(
 "INSERT INTO `systempreferences` ( `variable` , `value` , `options` , `explanation` , `type` ) VALUES ( 'ceilingDueDate', '', '', 'If set, date due will not be past this date.  Enter date according to the dateformat System Preference', 'free')"
     );
@@ -2732,14 +2735,14 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 }
 
 $DBversion = '3.01.00.027';
-if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.02.010") ) {
     $dbh->do("ALTER TABLE zebraqueue CHANGE `biblio_auth_number` `biblio_auth_number` bigint(20) unsigned NOT NULL default 0");
     print "Upgrade to $DBversion done (Increased size of zebraqueue biblio_auth_number to address bug 3148.)\n";
     SetVersion($DBversion);
 }
 
 $DBversion = '3.01.00.028';
-if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.02.011") ) {
     my $enable_reviews = C4::Context->preference('AmazonEnabled') ? '1' : '0';
     $dbh->do(
 "INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('AmazonReviews', '$enable_reviews', 'Display Amazon reviews on staff interface','','YesNo')"
@@ -2749,7 +2752,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 }
 
 $DBversion = '3.01.00.029';
-if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.02.012") ) {
     $dbh->do(
         q( UPDATE language_rfc4646_to_iso639
                 SET iso639_2_code = 'spa'
@@ -2761,7 +2764,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 }
 
 $DBversion = "3.01.00.030";
-if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.01.005") ) {
     $dbh->do(
 "INSERT INTO `systempreferences` ( `variable` , `value` , `options` , `explanation` , `type` ) VALUES ( 'AllowNotForLoanOverride', '0', '', 'If ON, Koha will allow the librarian to loan a not for loan item.', 'YesNo')"
     );
@@ -2782,7 +2785,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 }
 
 $DBversion = "3.01.00.032";
-if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.01.007") ) {
     $dbh->do(<<ENDOFRENEWAL);
 INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES('RenewalPeriodBase', 'now', 'Set whether the renewal date should be counted from the date_due or from the moment the Patron asks for renewal ','date_due|now','Choice');
 ENDOFRENEWAL
@@ -2822,7 +2825,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 }
 
 $DBversion = '3.01.00.036';
-if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.04.018") ) {
     $dbh->do(
         "UPDATE systempreferences SET explanation = 'Choose the default detail view in the staff interface; choose between normal, labeled_marc, marc or isbd'
               WHERE variable = 'IntranetBiblioDefaultView'
@@ -2890,7 +2893,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 }
 
 $DBversion = '3.01.00.041';
-if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.04.013") ) {
     $dbh->do(
 "INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('AWSPrivateKey','','See:  http://aws.amazon.com.  Note that this is required after 2009/08/15 in order to retrieve any enhanced content other than book covers from Amazon.','','free')"
     );
@@ -3117,7 +3120,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 }
 
 $DBversion = "3.01.00.063";
-if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.04.016") ) {
     $dbh->do( "
         CREATE TABLE `fieldmapping` (
           `id` int(11) NOT NULL auto_increment,
@@ -3126,8 +3129,8 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
           `fieldcode` char(3) NOT NULL,
           `subfieldcode` char(1) NOT NULL,
           PRIMARY KEY  (`id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-             " );
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+    print "Upgrade to $DBversion done (Bug 2576 : Add OPACFinesTab syspref)" ;
     SetVersion($DBversion);
 }
 
@@ -3176,8 +3179,12 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 }
 
 $DBversion = "3.01.00.068";
-if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
-    $dbh->do("ALTER TABLE issuingrules ADD COLUMN `finedays` int(11) default NULL AFTER `fine` ");
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.06.009") ) {
+    my $count_column=count_column_from_table("finedays","issuingrules");
+    if($count_column==0)
+    {
+		$dbh->do("ALTER TABLE issuingrules ADD COLUMN `finedays` int(11) default NULL AFTER `fine` ");
+    }
     print "Upgrade done (Adding finedays in issuingrules table)\n";
     SetVersion($DBversion);
 }
@@ -3356,10 +3363,12 @@ ADDPERIODS
     my $maxbudgetid = $dbh->selectcol_arrayref(<<IDsBUDGET);
 SELECT MAX(aqbudgetid) from aqbudget
 IDsBUDGET
-
-    $dbh->do(<<BUDGETAUTOINCREMENT);
-ALTER TABLE aqbudget AUTO_INCREMENT=$$maxbudgetid[0]
+	if(defined($$maxbudgetid[0]))
+	{
+	    $dbh->do(<<BUDGETAUTOINCREMENT);
+	ALTER TABLE aqbudget AUTO_INCREMENT=$$maxbudgetid[0]
 BUDGETAUTOINCREMENT
+	}
     
     $dbh->do(<<BUDGETNAME);
 ALTER TABLE aqbudget RENAME `aqbudgets`
@@ -3910,12 +3919,12 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     my $value = C4::Context->preference("XSLTResultsDisplay");
     $dbh->do(
         "INSERT INTO systempreferences (variable,value,type)
-         VALUES('OPACXSLTResultsDisplay',$value,'YesNo')"
+         VALUES('OPACXSLTResultsDisplay','$value','YesNo')"
     );
     $value = C4::Context->preference("XSLTDetailsDisplay");
     $dbh->do(
         "INSERT INTO systempreferences (variable,value,type)
-         VALUES('OPACXSLTDetailsDisplay',$value,'YesNo')"
+         VALUES('OPACXSLTDetailsDisplay','$value','YesNo')"
     );
     print
 "Upgrade done (added two new syspref: OPACXSLTResultsDisplay and OPACXSLTDetailDisplay). You may have to go in Admin > System preference to tweak XSLT related syspref both in OPAC and Search tabs.\n     ";
@@ -3955,7 +3964,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 }
 
 $DBversion = '3.01.00.117';
-if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.05.003") ) {
     $dbh->do("UPDATE language_rfc4646_to_iso639 SET iso639_2_code = 'por' WHERE rfc4646_subtag='pt' ");
     print "Upgrade to $DBversion done (corrected ISO 639-2 language code for Portuguese)\n";
     SetVersion($DBversion);
@@ -4038,7 +4047,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 }
 
 $DBversion = '3.01.00.124';
-if ( C4::Context->preference('Version') < TransformToNum($DBversion) ) {
+if ( C4::Context->preference('Version') < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.03.001") ) {
     $dbh->do( "
         INSERT INTO `letter` (module, code, name, title, content)         VALUES('reserves', 'HOLDPLACED', 'Hold Placed on Item', 'Hold Placed on Item','A hold has been placed on the following item : <<title>> (<<biblionumber>>) by the user <<firstname>> <<surname>> (<<cardnumber>>).');
     " );
@@ -4133,17 +4142,38 @@ if ( C4::Context->preference('Version') < TransformToNum($DBversion) ) {
 }
 
 $DBversion = '3.01.00.134';
-if ( C4::Context->preference('Version') < TransformToNum($DBversion) ) {
+if ( C4::Context->preference('Version') < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.06.007") ) {
     $dbh->do("INSERT INTO `permissions` (`module_bit` , `code` , `description`) VALUES ('9', 'edit_items', 'Edit items');");
     print "Upgrade to $DBversion done (Added 'Edit Items' permission)\n";
     SetVersion($DBversion);
 }
 
 $DBversion = "3.01.00.135";
-if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.05.002") ) {
     $dbh->do("UPDATE systempreferences SET options = 'Calendar|Days|Datedue' WHERE variable = 'useDaysMode'");
 
     print "Upgrade to $DBversion done (upgrade useDaysMode syspref)\n";
+    SetVersion($DBversion);
+}
+
+$DBversion = "3.01.00.136";
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+    $dbh->do(
+        qq{
+	CREATE TABLE IF NOT EXISTS pending_offline_operations (
+	    operationid INT(11) NOT NULL AUTO_INCREMENT,
+	    userid VARCHAR(30) NOT NULL,
+	    branchcode VARCHAR(10) NOT NULL,
+	    timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	    action VARCHAR(10) NOT NULL,
+	    barcode VARCHAR(20) NOT NULL,
+	    cardnumber VARCHAR(16) NULL,
+	    PRIMARY KEY (operationid)
+	);
+	}
+    );
+
+    print "Upgrade to $DBversion done (adding one table : pending_offline_operations)\n";
     SetVersion($DBversion);
 }
 
@@ -4151,7 +4181,7 @@ $DBversion = "3.01.00.137";
 if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     my $borrowers = $dbh->selectcol_arrayref( "SELECT borrowernumber from borrowers where debarred <>0;", { Columns => [1] } );
     $dbh->do("ALTER TABLE borrowers MODIFY debarred DATE DEFAULT NULL;");
-    $dbh->do( "UPDATE borrowers set debarred='9999-12-31' where borrowernumber IN (" . join( ",", @$borrowers ) . ");" ) if ($borrowers);
+    $dbh->do( "UPDATE borrowers set debarred='9999-12-31' where borrowernumber IN (" . join( ",", @$borrowers ) . ");" ) if ($borrowers and scalar(@$borrowers)>0);
     $dbh->do("ALTER TABLE borrowers ADD COLUMN debarredcomment VARCHAR(255) DEFAULT NULL AFTER debarred;");
     print "Upgrade done (Change borrowers.debarred into Date )\n";
 
@@ -4167,17 +4197,29 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     SetVersion($DBversion);
 }
 
-$DBversion = "3.02.00.003";
-if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
-    $dbh->do("INSERT INTO systempreferences SET variable='IndependentBranchPatron',value=0");
+#$DBversion = "3.02.00.003";
+#if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+#    $dbh->do("INSERT INTO systempreferences SET variable='IndependentBranchPatron',value=0");
+#
+#    print "Upgrade to $DBversion done (IndependentBranchPatron syspref added)\n";
+#    SetVersion($DBversion);
+#}
 
-    print "Upgrade to $DBversion done (IndependentBranchPatron syspref added)\n";
-    SetVersion($DBversion);
+$DBversion = "3.02.00.003";
+if (C4::Context->preference("Version") < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.06.004")) {
+    $dbh->do("INSERT INTO systempreferences  (variable,value,explanation,options,type) VALUES('IndependentBranchPatron','0','If ON, librarian patron search can only be done on patron of same library as librarian',NULL,'YesNo');");
+    print "Upgrade to $DBversion done (Add IndependentBranchPatron system preference to be able to limit patron search to librarian's Library)\n";
+    SetVersion ($DBversion);
 }
+
 
 $DBversion = '3.02.00.004';
 if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+	my $count_column=count_column_from_table("enrolmentperioddate","categories");
+    if($count_column==0)
+    {
     $dbh->do('ALTER TABLE `categories` ADD COLUMN `enrolmentperioddate` DATE NULL DEFAULT NULL AFTER `enrolmentperiod`');
+    }
     print "Upgrade done (Add enrolment period date support)\n";
     SetVersion($DBversion);
 }
@@ -4234,7 +4276,11 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 
 $DBversion = '3.02.00.009';
 if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+	my $count_column=count_column_from_table("enrolmentperioddate","categories");
+    if($count_column==0)
+    {
     $dbh->do('ALTER TABLE `categories` ADD COLUMN `enrolmentperioddate` DATE NULL DEFAULT NULL AFTER `enrolmentperiod`');
+    }
     print "Upgrade done (Add enrolment period date support)\n";
     SetVersion($DBversion);
 }
@@ -4272,7 +4318,11 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 
 $DBversion = '3.02.00.011';
 if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
-    $dbh->do('ALTER TABLE issuingrules ADD COLUMN `renewalperiod` SMALLINT(6) NULL default NULL AFTER `renewalsallowed`;');
+	my $count_column=count_column_from_table("renewalperiod","issuingrules");
+    if($count_column==0)
+    {
+    	$dbh->do('ALTER TABLE issuingrules ADD COLUMN `renewalperiod` SMALLINT(6) NULL default NULL AFTER `renewalsallowed`;');
+    }
     print "Upgrade done (Add renewalperiod)\n";
     SetVersion($DBversion);
 }
@@ -4294,7 +4344,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 }
 
 $DBversion = '3.02.00.013';
-if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.06.005") ) {
     $dbh->do(
 qq{INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('OPACviewISBD','1','Allow display of ISBD view of bibiographic records in OPAC','','YesNo');}
     );
@@ -4390,7 +4440,7 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
       DELETE FROM `systempreferences` WHERE variable='XSLTResultsDisplay';
 });
     $dbh->do(q{
-      INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('OPACXSLTResultsDisplay','','','Enable XSL stylesheet control over results page display on OPAC exemple : ../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl','Free');
+      INSERT IGNORE INTO `systempreferences` (variable,value,options,explanation,type) VALUES('OPACXSLTResultsDisplay','','','Enable XSL stylesheet control over results page display on OPAC exemple : ../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl','Free');
 });
     print "Upgrade to $DBversion done. — Delete XSLTDetailsDisplay and XSLTResultsDisplay system preferences, and add OPACXSLTResultsDisplay\n";
     SetVersion ($DBversion);
@@ -4398,15 +4448,30 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
 
 $DBversion = '3.02.00.023';
 if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    my $count_column1=count_column_from_table("itemstocknumberidx","items");
+    if($count_column1>0)
+    {
     $dbh->do(q{
 	ALTER TABLE items 
-		DROP KEY `itemstocknumberidx`,
+		DROP KEY `itemstocknumberidx`;
+    });
+    }
+    my $count_column2=count_column_from_table("itemsstocknumberidx","items");
+    if($count_column2>0)
+    {
+    $dbh->do(q{
+	ALTER TABLE items 
 		DROP KEY `itemsstocknumberidx`;
     });
+    }
+    my $count_column3=count_column_from_table("delitemstocknumberidx","deleteditems");
+    if($count_column3>0)
+    {
     $dbh->do(q{
 	ALTER TABLE deleteditems 
 		DROP KEY `delitemstocknumberidx`;
     });
+    }
     print "Upgrade to $DBversion done. — Add permission to batch modifications on records\n";
     SetVersion ($DBversion);
 }
@@ -4424,7 +4489,7 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
 }
 
 $DBversion = "3.02.00.025";
-if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+if (C4::Context->preference("Version") < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.06.011")) {
     $dbh->do("ALTER TABLE borrowers ADD KEY `guarantorid` (guarantorid);");
     print "Upgrade to $DBversion done (Add index on guarantorid)\n";
     SetVersion ($DBversion);
@@ -4476,7 +4541,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 }
 
 $DBversion = "3.02.00.033";
-if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.04.017") ) {
     $dbh->do("
 	INSERT INTO `permissions` (`module_bit`, `code`, `description`) VALUES
 	(15, 'check_expiration', 'Check the expiration of a serial'),
@@ -4511,6 +4576,145 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 
     print "Upgrade to $DBversion done (adding one table : pending_offline_operations)\n";
     SetVersion($DBversion);
+}
+
+$DBversion = "3.02.00.035";
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+	my $count_column=count_column_from_table("statisticvalue","items");
+    if($count_column==0)
+    {
+    	$dbh->do("ALTER TABLE `items` ADD `statisticvalue` varchar(80) DEFAULT NULL");
+    }
+    print "Upgrade to $DBversion done (adding statisticvalue in 'items' tab)\n";
+    SetVersion($DBversion);
+}
+
+$DBversion = "3.02.00.036";
+if (C4::Context->preference("Version") < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.01.003")) {
+	my $search=$dbh->selectall_arrayref("select * from systempreferences where variable='dontmerge'");
+	if (@$search){
+		my $search=$dbh->selectall_arrayref("select * from systempreferences where variable='MergeAuthoritiesOnUpdate'");
+		if (@$search){
+    		$dbh->do("DELETE FROM systempreferences set variable='dontmerge'");
+		}
+		else {
+    		$dbh->do("UPDATE systempreferences set variable='MergeAuthoritiesOnUpdate' ,value=1-value*1 WHERE variable='dontmerge'");
+		}
+	}
+	else {
+    	$dbh->do("INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES('MergeAuthoritiesOnUpdate', '1', 'if ON, Updating authorities will automatically updates biblios',NULL,'YesNo')");
+	}
+    print "Upgrade to $DBversion done (add new syspref MergeAuthoritiesOnUpdate)\n";
+    SetVersion ($DBversion);
+}
+
+$DBversion = "3.02.00.037";
+if (C4::Context->preference("Version") < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.01.004")) {
+  if (lc(C4::Context->preference('marcflavour')) eq "unimarc"){
+    $dbh->do("INSERT IGNORE INTO `marc_tag_structure` (`tagfield`, `liblibrarian`, `libopac`, `repeatable`, `mandatory`, `authorised_value`, `frameworkcode`) VALUES ('099', 'Informations locales', '', 0, 0, '', '');");
+    $dbh->do("INSERT IGNORE INTO `marc_tag_structure` (`frameworkcode`,`tagfield`, `liblibrarian`, `libopac`, `repeatable`, `mandatory`, `authorised_value`) SELECT DISTINCT(frameworkcode),'099', 'Informations locales', '', 0, 0, '' from biblio_framework");
+    $dbh->do(<<ENDOFSQL);
+INSERT IGNORE INTO marc_subfield_structure (`tagfield`, `tagsubfield`, `liblibrarian`, `libopac`, `repeatable`, `mandatory`, `kohafield`, `tab`, `authorised_value`, `authtypecode`, `value_builder`, `isurl`, `hidden`, `seealso`, `link`, `defaultvalue`,frameworkcode )
+VALUES ('099', 'c', 'date creation notice (koha)', '', 0, 0, 'biblio.datecreated', -1, '', '', '', NULL, 0, '', '', NULL, ''),
+('099', 'd', 'date modification notice (koha)', '', 0, 0, 'biblio.timestamp', -1, '', '', '', NULL, 0, '', '', NULL, ''),
+('995', '2', 'Perdu', '', 0, 0, 'items.itemlost', 10, '', '', '', NULL, 1, '', NULL, NULL, '');
+ENDOFSQL
+    $dbh->do(<<ENDOFSQL1);
+INSERT IGNORE INTO marc_subfield_structure (`frameworkcode`,`tagfield`, `tagsubfield`, `liblibrarian`, `libopac`, `repeatable`, `mandatory`, `kohafield`, `tab`, `authorised_value`, `authtypecode`, `value_builder`, `isurl`, `hidden`, seealso, link, defaultvalue )
+SELECT DISTINCT(frameworkcode), '099', 'c', 'date creation notice (koha)', '', 0, 0, 'biblio.datecreated', -1, '', '', '', NULL, 0, '', '', NULL from biblio_framework;
+ENDOFSQL1
+    $dbh->do(<<ENDOFSQL2);
+INSERT IGNORE INTO marc_subfield_structure (`frameworkcode`,`tagfield`, `tagsubfield`, `liblibrarian`, `libopac`, `repeatable`, `mandatory`, `kohafield`, `tab`, `authorised_value`, `authtypecode`, `value_builder`, `isurl`, `hidden`, seealso, link, defaultvalue )
+SELECT DISTINCT(frameworkcode), '099', 'd', 'date modification notice (koha)', '', 0, 0, 'biblio.timestamp', -1, '', '', '', NULL, 0, '', '', NULL from biblio_framework;
+ENDOFSQL2
+    $dbh->do(<<ENDOFSQL3);
+INSERT IGNORE INTO marc_subfield_structure (`frameworkcode`,`tagfield`, `tagsubfield`, `liblibrarian`, `libopac`, `repeatable`, `mandatory`, `kohafield`, `tab`, `authorised_value`, `authtypecode`, `value_builder`, `isurl`, `hidden`, seealso, link, defaultvalue )
+SELECT DISTINCT(frameworkcode), '995', '2', 'Perdu', '', 0, 0, 'items.itemlost', 10, '', '', '', NULL, 1, '', NULL, NULL from biblio_framework;
+ENDOFSQL3
+      print "Upgrade to $DBversion done (updates MARC framework structure)\n";
+    }
+    SetVersion ($DBversion);
+}
+
+
+$DBversion = "3.02.00.038";
+if (C4::Context->preference("Version") < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.04.019")) {
+    my $authdisplayhierarchy = C4::Context->preference('AuthDisplayHierarchy');
+    if ($authdisplayhierarchy < 1){
+       $dbh->do("INSERT IGNORE INTO systempreferences (variable,value,explanation,options,type)VALUES('AuthDisplayHierarchy','0','To display authorities in a hierarchy way. Put ON only if you have a thesaurus. Default is OFF','','YesNo')");
+    };
+    print "Upgrade to $DBversion done (new AuthDisplayHierarchy, )\n";
+    SetVersion ($DBversion);
+}  
+
+$DBversion = "3.02.00.039";
+if (C4::Context->preference("Version") < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.04.020")) {
+    if (lc(C4::Context->preference('marcflavour')) eq "unimarc"){
+        $dbh->do(<<OPACISBD);
+INSERT IGNORE INTO systempreferences (variable,explanation,options,type,value)
+VALUES('OPACISBD','OPAC ISBD View','90|20', 'Textarea',
+'#200|<h2>Titre : |{200a}{. 200c}{ : 200e}{200d}{. 200h}{. 200i}|</h2>\r\n#500|<label class="ipt">Autres titres : </label>|{500a}{. 500i}{. 500h}{. 500m}{. 500q}{. 500k}<br/>|\r\n#517|<label class="ipt"> </label>|{517a}{ : 517e}{. 517h}{, 517i}<br/>|\r\n#541|<label class="ipt"> </label>|{541a}{ : 541e}<br/>|\r\n#200||<label class="ipt">Auteurs : </label><br/>|\r\n#700||<a href="opac-search.pl?op=do_search&marclist=7009&operator==&type=intranet&value={7009}"> <img border="0" src="/opac-tmpl/css/en/images/filefind.png" height="15" title="Chercher sur l''auteur"></a>{700c}{ 700b}{ 700a}{ 700d}{ (700f)}{. 7004}<br/>|\r\n#701||<a href="opac-search.pl?op=do_search&marclist=7009&operator==&type=intranet&value={7019}"> <img border="0" src="/opac-tmpl/css/en/images/filefind.png" height="15" title="Chercher sur l''auteur"></a>{701c}{ 701b}{ 701a}{ 701d}{ (701f)}{. 7014}<br/>|\r\n#702||<a href="opac-search.pl?op=do_search&marclist=7009&operator==&type=intranet&value={7029}"> <img border="0" src="/opac-tmpl/css/en/images/filefind.png" height="15" title="Chercher sur l''auteur"></a>{702c}{ 702b}{ 702a}{ 702d}{ (702f)}{. 7024}<br/>|\r\n#710||<a href="opac-search.pl?op=do_search&marclist=7109&operator==&type=intranet&value={7109}"> <img border="0" src="/opac-tmpl/css/en/images/filefind.png" height="15" title="Chercher sur l''auteur"></a>{710a}{ (710c)}{. 710b}{ : 710d}{ ; 710f}{ ; 710e}<br/>|\r\n#711||<a href="opac-search.pl?op=do_search&marclist=7109&operator==&type=intranet&value={7119}"> <img border="0" src="/opac-tmpl/css/en/images/filefind.png" height="15" title="Chercher sur l''auteur"></a>{711a}{ (711c)}{. 711b}{ : 711d}{ ; 711f}{ ; 711e}<br/>|\r\n#712||<a href="opac-search.pl?op=do_search&marclist=7109&operator==&type=intranet&value={7129}"> <img border="0" src="/opac-tmpl/css/en/images/filefind.png" height="15" title="Chercher sur l''auteur"></a>{712a}{ (712c)}{. 712b}{ : 712d}{ ; 712f}{ ; 712e}<br/>|\r\n#210|<label class="ipt">Lieu d''édition : </label>|{ 210a}<br/>|\r\n#210|<label class="ipt">Editeur : </label>|{ 210c}<br/>|\r\n#210|<label class="ipt">Date d''édition : </label>|{ 210d}<br/>|\r\n#215|<label class="ipt">Description : </label>|{215a}{ : 215c}{ ; 215d}{ + 215e}|<br/>\r\n#225|<label class="ipt">Collection :</label>|<a href="opac-search.pl?op=do_search&marclist=225a&operator==&type=intranet&value={225a}"> <img border="0" src="/opac-tmpl/css/en/images/filefind.png" height="15" title="Chercher sur {225a}"></a>{ (225a}{ = 225d}{ : 225e}{. 225h}{. 225i}{ / 225f}{, 225x}{ ; 225v}|)<br/>\r\n#200||<label class="ipt">Sujets : </label><br/>|\r\n#600||<a href="opac-search.pl?op=do_search&marclist=6009&operator==&type=intranet&value={6009}"><img border="0" src="/opac-tmpl/css/en/images/filefind.png" height="15" title="Search on {6009}"></a>{ 600c}{ 600b}{ 600a}{ 600d}{ (600f)} {-- 600x }{-- 600z }{-- 600y}<br />|\r\n#604||<a href="opac-search.pl?op=do_search&marclist=6049&operator==&type=intranet&value={6049}"><img border="0" src="/opac-tmpl/css/en/images/filefind.png" height="15" title="Search on {6049}"></a>{ 604a}{. 604t}<br />|\r\n#601||<a href="opac-search.pl?op=do_search&marclist=6019&operator==&type=intranet&value={6019}"><img border="0" src="/opac-tmpl/css/en/images/filefind.png" height="15" title="Search on {6019}"></a>{ 601a}{ (601c)}{. 601b}{ : 601d} { ; 601f}{ ; 601e}{ -- 601x }{-- 601z }{-- 601y}<br />|\r\n#605||<a href="opac-search.pl?op=do_search&marclist=6059&operator==&type=intranet&value={6059}"><img border="0" src="/opac-tmpl/css/en/images/filefind.png" height="15" title="Search on {6059}"></a>{ 605a}{. 605i}{. 605h}{. 605k}{. 605m}{. 605q} {-- 605x }{-- 605z }{-- 605y }{-- 605l}<br />|\r\n#606||<a href="opac-search.pl?op=do_search&marclist=6069&operator==&type=intranet&value={6069}"><img border="0" src="/opac-tmpl/css/en/images/filefind.png" height="15" title="Search on {6069}">xx</a>{ 606a}{-- 606x }{-- 606z }{606y }<br />|\r\n#607||<a href="opac-search.pl?op=do_search&marclist=6079&operator==&type=intranet&value={6079}"><img border="0" src="/opac-tmpl/css/en/images/filefind.png" height="15" title="Search on {6079}"></a>{ 607a}{-- 607x}{-- 607z}{-- 607y}<br />|\r\n#010|<label class="ipt">ISBN : </label>|{010a}|<br/>\r\n#011|<label class="ipt">ISSN : </label>|{011a}|<br/>\r\n#200||<label class="ipt">Notes : </label>|<br/>\r\n#300||{300a}|<br/>\r\n#320||{320a}|<br/>\r\n#327||{327a}|<br/>\r\n#328||{328a}|<br/>\r\n#200||<br/><h2>Exemplaires</h2>|\r\n#200|<table>|<th>Localisation</th><th>Cote</th>|\r\n#995||<tr><td>{995e}&nbsp;&nbsp;</td><td> {995k}</td></tr>|\r\n#200|||</table>')
+OPACISBD
+    }else{
+        $dbh->do(<<OPACISBDEN);
+INSERT IGNORE INTO `systempreferences` (variable,value,explanation,options,type) 
+VALUES('OPACISBD','#100||{ 100a }{ 100b }{ 100c }{ 100d }{ 110a }{ 110b }{ 110c }{ 110d }{ 110e }{ 110f }{ 110g }{ 130a }{ 130d }{ 130f }{ 130g }{ 130h }{ 130k }{ 130l }{ 130m }{ 130n }{ 130o }{ 130p }{ 130r }{ 130s }{ 130t }|<br/><br/>\r\n#245||{ 245a }{ 245b }{245f }{ 245g }{ 245k }{ 245n }{ 245p }{ 245s }{ 245h }|\r\n#246||{ : 246i }{ 246a }{ 246b }{ 246f }{ 246g }{ 246n }{ 246p }{ 246h }|\r\n#242||{ = 242a }{ 242b }{ 242n }{ 242p }{ 242h }|\r\n#245||{ 245c }|\r\n#242||{ = 242c }|\r\n#250| - |{ 250a }{ 250b }|\r\n#254|, |{ 254a }|\r\n#255|, |{ 255a }{ 255b }{ 255c }{ 255d }{ 255e }{ 255f }{ 255g }|\r\n#256|, |{ 256a }|\r\n#257|, |{ 257a }|\r\n#258|, |{ 258a }{ 258b }|\r\n#260| - |{ 260a }{ 260b }{ 260c }|\r\n#300| - |{ 300a }{ 300b }{ 300c }{ 300d }{ 300e }{ 300f }{ 300g }|\r\n#306| - |{ 306a }|\r\n#307| - |{ 307a }{ 307b }|\r\n#310| - |{ 310a }{ 310b }|\r\n#321| - |{ 321a }{ 321b }|\r\n#340| - |{ 3403 }{ 340a }{ 340b }{ 340c }{ 340d }{ 340e }{ 340f }{ 340h }{ 340i }|\r\n#342| - |{ 342a }{ 342b }{ 342c }{ 342d }{ 342e }{ 342f }{ 342g }{ 342h }{ 342i }{ 342j }{ 342k }{ 342l }{ 342m }{ 342n }{ 342o }{ 342p }{ 342q }{ 342r }{ 342s }{ 342t }{ 342u }{ 342v }{ 342w }|\r\n#343| - |{ 343a }{ 343b }{ 343c }{ 343d }{ 343e }{ 343f }{ 343g }{ 343h }{ 343i }|\r\n#351| - |{ 3513 }{ 351a }{ 351b }{ 351c }|\r\n#352| - |{ 352a }{ 352b }{ 352c }{ 352d }{ 352e }{ 352f }{ 352g }{ 352i }{ 352q }|\r\n#362| - |{ 362a }{ 351z }|\r\n#440| - |{ 440a }{ 440n }{ 440p }{ 440v }{ 440x }|.\r\n#490| - |{ 490a }{ 490v }{ 490x }|.\r\n#800| - |{ 800a }{ 800b }{ 800c }{ 800d }{ 800e }{ 800f }{ 800g }{ 800h }{ 800j }{ 800k }{ 800l }{ 800m }{ 800n }{ 800o }{ 800p }{ 800q }{ 800r }{ 800s }{ 800t }{ 800u }{ 800v }|.\r\n#810| - |{ 810a }{ 810b }{ 810c }{ 810d }{ 810e }{ 810f }{ 810g }{ 810h }{ 810k }{ 810l }{ 810m }{ 810n }{ 810o }{ 810p }{ 810r }{ 810s }{ 810t }{ 810u }{ 810v }|.\r\n#811| - |{ 811a }{ 811c }{ 811d }{ 811e }{ 811f }{ 811g }{ 811h }{ 811k }{ 811l }{ 811n }{ 811p }{ 811q }{ 811s }{ 811t }{ 811u }{ 811v }|.\r\n#830| - |{ 830a }{ 830d }{ 830f }{ 830g }{ 830h }{ 830k }{ 830l }{ 830m }{ 830n }{ 830o }{ 830p }{ 830r }{ 830s }{ 830t }{ 830v }|.\r\n#500|<br/><br/>|{ 5003 }{ 500a }|\r\n#501|<br/><br/>|{ 501a }|\r\n#502|<br/><br/>|{ 502a }|\r\n#504|<br/><br/>|{ 504a }|\r\n#505|<br/><br/>|{ 505a }{ 505t }{ 505r }{ 505g }{ 505u }|\r\n#506|<br/><br/>|{ 5063 }{ 506a }{ 506b }{ 506c }{ 506d }{ 506u }|\r\n#507|<br/><br/>|{ 507a }{ 507b }|\r\n#508|<br/><br/>|{ 508a }{ 508a }|\r\n#510|<br/><br/>|{ 5103 }{ 510a }{ 510x }{ 510c }{ 510b }|\r\n#511|<br/><br/>|{ 511a }|\r\n#513|<br/><br/>|{ 513a }{513b }|\r\n#514|<br/><br/>|{ 514z }{ 514a }{ 514b }{ 514c }{ 514d }{ 514e }{ 514f }{ 514g }{ 514h }{ 514i }{ 514j }{ 514k }{ 514m }{ 514u }|\r\n#515|<br/><br/>|{ 515a }|\r\n#516|<br/><br/>|{ 516a }|\r\n#518|<br/><br/>|{ 5183 }{ 518a }|\r\n#520|<br/><br/>|{ 5203 }{ 520a }{ 520b }{ 520u }|\r\n#521|<br/><br/>|{ 5213 }{ 521a }{ 521b }|\r\n#522|<br/><br/>|{ 522a }|\r\n#524|<br/><br/>|{ 524a }|\r\n#525|<br/><br/>|{ 525a }|\r\n#526|<br/><br/>|{\\n510i }{\\n510a }{ 510b }{ 510c }{ 510d }{\\n510x }|\r\n#530|<br/><br/>|{\\n5063 }{\\n506a }{ 506b }{ 506c }{ 506d }{\\n506u }|\r\n#533|<br/><br/>|{\\n5333 }{\\n533a }{\\n533b }{\\n533c }{\\n533d }{\\n533e }{\\n533f }{\\n533m }{\\n533n }|\r\n#534|<br/><br/>|{\\n533p }{\\n533a }{\\n533b }{\\n533c }{\\n533d }{\\n533e }{\\n533f }{\\n533m }{\\n533n }{\\n533t }{\\n533x }{\\n533z }|\r\n#535|<br/><br/>|{\\n5353 }{\\n535a }{\\n535b }{\\n535c }{\\n535d }|\r\n#538|<br/><br/>|{\\n5383 }{\\n538a }{\\n538i }{\\n538u }|\r\n#540|<br/><br/>|{\\n5403 }{\\n540a }{ 540b }{ 540c }{ 540d }{\\n520u }|\r\n#544|<br/><br/>|{\\n5443 }{\\n544a }{\\n544b }{\\n544c }{\\n544d }{\\n544e }{\\n544n }|\r\n#545|<br/><br/>|{\\n545a }{ 545b }{\\n545u }|\r\n#546|<br/><br/>|{\\n5463 }{\\n546a }{ 546b }|\r\n#547|<br/><br/>|{\\n547a }|\r\n#550|<br/><br/>|{ 550a }|\r\n#552|<br/><br/>|{ 552z }{ 552a }{ 552b }{ 552c }{ 552d }{ 552e }{ 552f }{ 552g }{ 552h }{ 552i }{ 552j }{ 552k }{ 552l }{ 552m }{ 552n }{ 562o }{ 552p }{ 552u }|\r\n#555|<br/><br/>|{ 5553 }{ 555a }{ 555b }{ 555c }{ 555d }{ 555u }|\r\n#556|<br/><br/>|{ 556a }{ 506z }|\r\n#563|<br/><br/>|{ 5633 }{ 563a }{ 563u }|\r\n#565|<br/><br/>|{ 5653 }{ 565a }{ 565b }{ 565c }{ 565d }{ 565e }|\r\n#567|<br/><br/>|{ 567a }|\r\n#580|<br/><br/>|{ 580a }|\r\n#581|<br/><br/>|{ 5633 }{ 581a }{ 581z }|\r\n#584|<br/><br/>|{ 5843 }{ 584a }{ 584b }|\r\n#585|<br/><br/>|{ 5853 }{ 585a }|\r\n#586|<br/><br/>|{ 5863 }{ 586a }|\r\n#020|<br/><br/><label>ISBN: </label>|{ 020a }{ 020c }|\r\n#022|<br/><br/><label>ISSN: </label>|{ 022a }|\r\n#222| = |{ 222a }{ 222b }|\r\n#210| = |{ 210a }{ 210b }|\r\n#024|<br/><br/><label>Standard No.: </label>|{ 024a }{ 024c }{ 024d }{ 0242 }|\r\n#027|<br/><br/><label>Standard Tech. Report. No.: </label>|{ 027a }|\r\n#028|<br/><br/><label>Publisher. No.: </label>|{ 028a }{ 028b }|\r\n#013|<br/><br/><label>Patent No.: </label>|{ 013a }{ 013b }{ 013c }{ 013d }{ 013e }{ 013f }|\r\n#030|<br/><br/><label>CODEN: </label>|{ 030a }|\r\n#037|<br/><br/><label>Source: </label>|{ 037a }{ 037b }{ 037c }{ 037f }{ 037g }{ 037n }|\r\n#010|<br/><br/><label>LCCN: </label>|{ 010a }|\r\n#015|<br/><br/><label>Nat. Bib. No.: </label>|{ 015a }{ 0152 }|\r\n#016|<br/><br/><label>Nat. Bib. Agency Control No.: </label>|{ 016a }{ 0162 }|\r\n#600|<br/><br/><label>Subjects--Personal Names: </label>|{\\n6003 }{\\n600a}{ 600b }{ 600c }{ 600d }{ 600e }{ 600f }{ 600g }{ 600h }{--600k}{ 600l }{ 600m }{ 600n }{ 600o }{--600p}{ 600r }{ 600s }{ 600t }{ 600u }{--600x}{--600z}{--600y}{--600v}|\r\n#610|<br/><br/><label>Subjects--Corporate Names: </label>|{\\n6103 }{\\n610a}{ 610b }{ 610c }{ 610d }{ 610e }{ 610f }{ 610g }{ 610h }{--610k}{ 610l }{ 610m }{ 610n }{ 610o }{--610p}{ 610r }{ 610s }{ 610t }{ 610u }{--610x}{--610z}{--610y}{--610v}|\r\n#611|<br/><br/><label>Subjects--Meeting Names: </label>|{\\n6113 }{\\n611a}{ 611b }{ 611c }{ 611d }{ 611e }{ 611f }{ 611g }{ 611h }{--611k}{ 611l }{ 611m }{ 611n }{ 611o }{--611p}{ 611r }{ 611s }{ 611t }{ 611u }{--611x}{--611z}{--611y}{--611v}|\r\n#630|<br/><br/><label>Subjects--Uniform Titles: </label>|{\\n630a}{ 630b }{ 630c }{ 630d }{ 630e }{ 630f }{ 630g }{ 630h }{--630k }{ 630l }{ 630m }{ 630n }{ 630o }{--630p}{ 630r }{ 630s }{ 630t }{--630x}{--630z}{--630y}{--630v}|\r\n#648|<br/><br/><label>Subjects--Chronological Terms: </label>|{\\n6483 }{\\n648a }{--648x}{--648z}{--648y}{--648v}|\r\n#650|<br/><br/><label>Subjects--Topical Terms: </label>|{\\n6503 }{\\n650a}{ 650b }{ 650c }{ 650d }{ 650e }{--650x}{--650z}{--650y}{--650v}|\r\n#651|<br/><br/><label>Subjects--Geographic Terms: </label>|{\\n6513 }{\\n651a}{ 651b }{ 651c }{ 651d }{ 651e }{--651x}{--651z}{--651y}{--651v}|\r\n#653|<br/><br/><label>Subjects--Index Terms: </label>|{ 653a }|\r\n#654|<br/><br/><label>Subjects--Facted Index Terms: </label>|{\\n6543 }{\\n654a}{--654b}{--654x}{--654z}{--654y}{--654v}|\r\n#655|<br/><br/><label>Index Terms--Genre/Form: </label>|{\\n6553 }{\\n655a}{--655b}{--655x }{--655z}{--655y}{--655v}|\r\n#656|<br/><br/><label>Index Terms--Occupation: </label>|{\\n6563 }{\\n656a}{--656k}{--656x}{--656z}{--656y}{--656v}|\r\n#657|<br/><br/><label>Index Terms--Function: </label>|{\\n6573 }{\\n657a}{--657x}{--657z}{--657y}{--657v}|\r\n#658|<br/><br/><label>Index Terms--Curriculum Objective: </label>|{\\n658a}{--658b}{--658c}{--658d}{--658v}|\r\n#050|<br/><br/><label>LC Class. No.: </label>|{ 050a }{ / 050b }|\r\n#082|<br/><br/><label>Dewey Class. No.: </label>|{ 082a }{ / 082b }|\r\n#080|<br/><br/><label>Universal Decimal Class. No.: </label>|{ 080a }{ 080x }{ / 080b }|\r\n#070|<br/><br/><label>National Agricultural Library Call No.: </label>|{ 070a }{ / 070b }|\r\n#060|<br/><br/><label>National Library of Medicine Call No.: </label>|{ 060a }{ / 060b }|\r\n#074|<br/><br/><label>GPO Item No.: </label>|{ 074a }|\r\n#086|<br/><br/><label>Gov. Doc. Class. No.: </label>|{ 086a }|\r\n#088|<br/><br/><label>Report. No.: </label>|{ 088a }|','ISBD','70|10','Textarea');
+OPACISBDEN
+    }
+    print "Upgrade to $DBversion done (new OPACISBD syspref, )\n";
+    SetVersion ($DBversion);
+}
+
+$DBversion = "3.02.00.040";
+if (C4::Context->preference("Version") < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.06.001")) {
+    my $value = $dbh->selectrow_array("SELECT value FROM systempreferences WHERE variable = 'HomeOrHoldingBranch'");
+    $dbh->do("INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('HomeOrHoldingBranchReturn','$value','Used by Circulation to determine which branch of an item to check checking-in items','holdingbranch|homebranch','Choice');");
+    print "Upgrade to $DBversion done (Add HomeOrHoldingBranchReturn system preference)\n";
+    SetVersion ($DBversion);
+}
+
+$DBversion = "3.02.00.041";
+if (C4::Context->preference("Version") < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.06.002")) {
+    $dbh->do("ALTER TABLE issues CHANGE COLUMN `itemnumber` `itemnumber` int(11) UNIQUE DEFAULT NULL;");
+    $dbh->do("ALTER TABLE serialitems ADD CONSTRAINT `serialitems_sfk_2` FOREIGN KEY (`itemnumber`) REFERENCES `items` (`itemnumber`) ON DELETE CASCADE ON UPDATE CASCADE;");
+    print "Upgrade to $DBversion done (Improve serialitems table security)\n";
+    SetVersion ($DBversion);
+}
+
+$DBversion = "3.02.00.042";
+if (C4::Context->preference("Version") < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.06.003")) {
+    $dbh->do("UPDATE systempreferences set value='../koha-tmpl/opac-tmpl/prog/en/xslt/".C4::Context->preference('marcflavour')."slim2OPACDetail.xsl',type='Free' where variable='XSLTDetailsDisplay' AND value=1;");
+    $dbh->do("UPDATE systempreferences set value='../koha-tmpl/opac-tmpl/prog/en/xslt/".C4::Context->preference('marcflavour')."slim2OPACResults.xsl',type='Free' where variable='XSLTResultsDisplay' AND value=1;");
+    $dbh->do("UPDATE systempreferences set value='',type='Free' where variable='XSLTDetailsDisplay' AND value=0;");
+    $dbh->do("UPDATE systempreferences set value='',type='Free' where variable='XSLTResultsDisplay' AND value=0;");
+    print "Upgrade to $DBversion done (Improve XSLT)\n";
+    SetVersion ($DBversion);
+}
+
+$DBversion = '3.02.00.043';
+if (C4::Context->preference('Version') < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.06.006")){
+    $dbh->do("
+        INSERT INTO `letter` (module, code, name, title, content)         VALUES('reserves', 'STAFFHOLDPLACED', 'Hold Placed on Item (from staff)', 'Hold Placed on Item (from staff)','A hold has been placed on the following item from the intranet : <<title>> (<<biblionumber>>) for the user <<firstname>> <<surname>> (<<cardnumber>>).');
+    ");
+    print "Upgrade to $DBversion done (Added notice for hold from staff)\n";
+    SetVersion ($DBversion);
+}
+
+$DBversion = '3.02.00.044';
+if (C4::Context->preference('Version') < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.06.008")){
+    $dbh->do("INSERT INTO `user_permissions` (borrowernumber,`module_bit` , `code` ) (SELECT borrowernumber, '9', 'edit_items' FROM borrowers WHERE (flags<<9 && 00000001));");
+    print "Upgrade to $DBversion done (updating permissions for catalogers)\n";
+    SetVersion ($DBversion);
+}
+
+$DBversion = "3.02.00.045";
+if (C4::Context->preference("Version") < TransformToNum($DBversion) and $compare_version <= TransformToNum("3.00.06.010")) {
+    $dbh->do("INSERT systempreferences (value, variable) select value, 'XSLTDetailFilename' from systempreferences where variable='XSLTDetailsDisplay';");
+    $dbh->do("INSERT systempreferences (value, variable) select value, 'XSLTResultsFilename' from systempreferences where variable='XSLTResultsDisplay' ;");
+    $dbh->do("UPDATE systempreferences set value=(LENGTH(value)>0),type='YesNo' where variable='XSLTDetailsDisplay';");
+    $dbh->do("UPDATE systempreferences set value=(LENGTH(value)>0),type='YesNo' where variable='XSLTResultsDisplay';");
+    print "Upgrade to $DBversion done (Improvements to XSLT Support)\n";
+    SetVersion ($DBversion);
 }
 
 =item DropAllForeignKeys($table)
@@ -4578,5 +4782,17 @@ sub SetVersion {
         $finish->execute($kohaversion);
     }
 }
+
+sub count_column_from_table{
+	my $column=shift;
+	my $tablename=shift;
+	my $sthdb = $dbh->prepare("SELECT DATABASE()");
+	$sthdb->execute;
+	my ($actualdb) = $sthdb->fetchrow;
+	my $sthcolumn = $dbh->prepare("SELECT COUNT(*) FROM information_schema.COLUMNS WHERE COLUMN_NAME='$column' AND TABLE_NAME='$tablename' AND TABLE_SCHEMA='$actualdb'");
+	$sthcolumn->execute();
+	my ($resultcolumn) = $sthcolumn->fetchrow;
+	return $resultcolumn || 0;
+	}
 exit;
 
