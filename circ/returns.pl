@@ -150,12 +150,6 @@ if ( $query->param('resbarcode') ) {
 # i.e., whether to apply waiting status
     ModReserveAffect( $item, $borrowernumber, $diffBranchSend, $reservenumber );
 
-    # Setting the right status if an hold has been confirmed
-    my $dbh = C4::Context->dbh;
-    my $query = "UPDATE reserves SET found='W', waitingdate=NOW() WHERE itemnumber=? AND found IS NULL";
-    my $sth_set = $dbh->prepare($query);
-    $sth_set->execute($item);
-
 #   check if we have other reserves for this document, if we have a return send the message of transfer
     my ( $reservemessages, $nextreservinfo ) = GetOtherReserves($item);
 
