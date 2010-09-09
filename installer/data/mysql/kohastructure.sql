@@ -1001,6 +1001,7 @@ CREATE TABLE `items` (
   `enumchron` varchar(80) default NULL,
   `copynumber` varchar(32) default NULL,
   `stocknumber` varchar(32) default NULL,
+  `statisticvalue` varchar(80) DEFAULT NULL,
   PRIMARY KEY  (`itemnumber`),
   UNIQUE KEY `itembarcodeidx` (`barcode`),
   KEY `itembinoidx` (`biblioitemnumber`),
