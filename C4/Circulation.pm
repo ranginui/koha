@@ -663,7 +663,7 @@ sub CanBookBeIssued {
         my $branch = _GetCircControlBranch( $item, $borrower );
         my $itype = ( C4::Context->preference('item-level_itypes') ) ? $item->{'itype'} : $biblioitem->{'itemtype'};
         my $loanlength = GetLoanLength( $borrower->{'categorycode'}, $itype, $branch );
-        unless ($loanlength) {
+        unless ($loanlength or C4::Context->preference("AllowNotForLoanOverride")) {
             $issuingimpossible{LOAN_LENGTH_UNDEFINED} = "$borrower->{'categorycode'}, $itype, $branch";
         }
         $duedate = CalcDateDue( C4::Dates->new( $issuedate, 'iso' ), $loanlength, $branch, $borrower );
