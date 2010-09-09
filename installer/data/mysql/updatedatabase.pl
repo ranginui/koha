@@ -3710,7 +3710,7 @@ $DBversion = "3.01.00.097";
 if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     $dbh->do(
         qq{
-	ALTER TABLE aqbasketgroups ADD billingplace VARCHAR(10) NOT NULL AFTER deliverycomment;
+	ALTER TABLE aqbasketgroups ADD billingplace VARCHAR(10) default NULL AFTER deliverycomment;
 	}
     );
 
