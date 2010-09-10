@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: nicomo-fr-FR-i-staff-t-prog-v-3000000\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-08-13 10:36+0200\n"
-"PO-Revision-Date: 2010-09-09 21:35+0200\n"
+"PO-Revision-Date: 2010-09-10 11:26+0200\n"
 "Last-Translator: \n"
 "Language-Team: Français <kde-i18n-doc@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -1268,7 +1268,7 @@ msgstr "&#1601;&#1575;&#1585;&#1587;&#1609; (Persan)"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2ATOM.xsl:69
 msgid "&#169;"
-msgstr ""
+msgstr "&#169;"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/about.tmpl:244
 msgid "&#20013;&#25991; (Chinese)"
@@ -2709,7 +2709,7 @@ msgstr ", annotatateur"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2OAIDC.xsl:56
 msgid ", auteur œuvre adapté"
-msgstr ""
+msgstr ", auteur œuvre adapté"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2OAIDC.xsl:69
 msgid ", autre"
@@ -2758,7 +2758,7 @@ msgstr ", concepteur"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2OAIDC.xsl:78
 msgid ", critique"
-msgstr ""
+msgstr ", critique"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2OAIDC.xsl:70
 msgid ", diffuseur"
@@ -2774,11 +2774,11 @@ msgstr ", directeur de la publication"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2OAIDC.xsl:81
 msgid ", directeur de thèse"
-msgstr ""
+msgstr ", directeur de thèse"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2OAIDC.xsl:62
 msgid ", donneur de grades"
-msgstr ""
+msgstr ", donneur de grades"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2OAIDC.xsl:65
 msgid ", fondateur"
@@ -2790,7 +2790,7 @@ msgstr ", illustrateur"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2OAIDC.xsl:68
 msgid ", organisateur congrès"
-msgstr ""
+msgstr ", organisateur congrès"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2OAIDC.xsl:67
 msgid ", parolier"
@@ -2839,7 +2839,7 @@ msgstr ", éditeur"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2OAIDC.xsl:63
 msgid ", éditeur scientifique"
-msgstr ""
+msgstr ", éditeur scientifique"
 
 #. %1$s: TMPL_VAR name=volume
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/results.tmpl:407
@@ -3192,7 +3192,7 @@ msgstr "...à"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slimUtils2.xsl:50
 msgid ".:,;/"
-msgstr ""
+msgstr ".:,;/"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2intranetDetail.xsl:160
 msgid ".png"
@@ -3205,7 +3205,7 @@ msgstr ".png"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslimUtils.xsl:185
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2intranetResults.xsl:53
 msgid "/"
-msgstr ""
+msgstr "/"
 
 #. For the first occurrence,
 #. %1$s: TMPL_VAR name=suggesteddate
@@ -3247,29 +3247,25 @@ msgstr "/cgi-bin/koha/catalogue/search.pl?q=an:"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2intranetDetail.xsl:117
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2intranetDetail.xsl:132
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2intranetDetail.xsl:146
-#, fuzzy
 msgid "/cgi-bin/koha/catalogue/search.pl?q=au:"
-msgstr "10; url=/cgi-bin/koha/mainpage.pl"
+msgstr "/cgi-bin/koha/catalogue/search.pl?q=au:"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslimUtils.xsl:227
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2intranetDetail.xsl:371
-#, fuzzy
 msgid "/cgi-bin/koha/catalogue/search.pl?q=su:"
-msgstr "10; url=/cgi-bin/koha/mainpage.pl"
+msgstr "/cgi-bin/koha/catalogue/search.pl?q=su:"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2OPACResults.xsl:29
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slimUtils.xsl:126
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2intranetResults.xsl:29
-#, fuzzy
 msgid "/cgi-bin/koha/opac-detail.pl?biblionumber="
-msgstr "10; url=/cgi-bin/koha/mainpage.pl"
+msgstr "/cgi-bin/koha/opac-detail.pl?biblionumber="
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:442
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:496
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slimUtils.xsl:138
-#, fuzzy
 msgid "/cgi-bin/koha/opac-search.pl?q="
-msgstr "10; url=/cgi-bin/koha/mainpage.pl"
+msgstr "/cgi-bin/koha/opac-search.pl?q="
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:56
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:78
@@ -3279,9 +3275,8 @@ msgstr "10; url=/cgi-bin/koha/mainpage.pl"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:186
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:355
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slimUtils.xsl:132
-#, fuzzy
 msgid "/cgi-bin/koha/opac-search.pl?q=an:"
-msgstr "10; url=/cgi-bin/koha/mainpage.pl"
+msgstr "/cgi-bin/koha/opac-search.pl?q=an:"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:60
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:81
@@ -3289,18 +3284,16 @@ msgstr "10; url=/cgi-bin/koha/mainpage.pl"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:126
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:153
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:189
-#, fuzzy
 msgid "/cgi-bin/koha/opac-search.pl?q=au:"
-msgstr "10; url=/cgi-bin/koha/mainpage.pl"
+msgstr "/cgi-bin/koha/opac-search.pl?q=au:"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:358
-#, fuzzy
 msgid "/cgi-bin/koha/opac-search.pl?q=su:"
-msgstr "10; url=/cgi-bin/koha/mainpage.pl"
+msgstr "/cgi-bin/koha/opac-search.pl?q=su:"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2intranetDetail.xsl:160
 msgid "/opac-tmpl/prog/famfamfam/"
-msgstr ""
+msgstr "/opac-tmpl/prog/famfamfam/"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_leader.tmpl:197
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_leader.tmpl:199
@@ -3389,19 +3382,19 @@ msgstr "0xx"
 msgid ""
 "006 Fixed-length data elements--Additional material characteristics--General "
 "information"
-msgstr ""
+msgstr "006 champs codés - caractéristiques matérielles additionnelles"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/marc21_field_007.tmpl:6
 msgid "007 Physical description fixed field--General information"
-msgstr ""
+msgstr "007 Description physique, champ codés -- information générale"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/marc21_field_008_authorities.tmpl:6
 msgid "008 Fixed-length data elements"
-msgstr ""
+msgstr "008 Elements de donnée de taille fixe"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/marc21_field_008.tmpl:6
 msgid "008 Fixed-length data elements--General information"
-msgstr ""
+msgstr "008 champs codés -- "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_100.tmpl:430
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_100.tmpl:432
