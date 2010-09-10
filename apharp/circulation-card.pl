@@ -96,6 +96,7 @@ if ($cardnumber) {
 	    }
         }
     } elsif ( ($invalid ne 'carte inactive' || $invalid ne 'carte périmée') && card_exist($cardnumber) ) {
+	resetTimestamp($cardnumber, 'cardnumber');
 	print $query->redirect("/cgi-bin/koha/circ/circulation.pl?findborrower=$cardnumber");
 	exit;
     } else {
