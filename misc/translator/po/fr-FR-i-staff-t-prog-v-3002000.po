@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: nicomo-fr-FR-i-staff-t-prog-v-3000000\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-08-13 10:36+0200\n"
-"PO-Revision-Date: 2010-09-09 20:29+0200\n"
+"PO-Revision-Date: 2010-09-09 21:35+0200\n"
 "Last-Translator: \n"
 "Language-Team: Français <kde-i18n-doc@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -6752,8 +6752,8 @@ msgid ""
 "Patron to pick up."
 msgstr ""
 "Une réservation en suspens est une réservation qui a été posée par un "
-"lecteur et qui n'a pas été &quot;satisfaite&quot; .Satisfaite signifie ici "
-"que le document est maintenant prêt à être récupéré par le lecteur."
+"adhérent et qui n'a pas été &quot;satisfaite&quot; .Satisfaite signifie ici "
+"que le document est maintenant prêt à être récupéré par l'adhérent."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/patroncards/manage.tmpl:19
 msgid "A batch is a collection of patrons for whom you want to generate cards."
@@ -7483,7 +7483,7 @@ msgstr "Ajouter une annonce"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/basket.tmpl:290
 msgid "Add Order To Basket"
-msgstr "Ajouter une commande au panier"
+msgstr "Ajouter une ligne au panier"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/patron-attr-types.tmpl:14
 msgid "Add Patron Attribute"
@@ -8709,7 +8709,7 @@ msgid ""
 "my staff client"
 msgstr ""
 "Toute personne avec la permission superbibliothécaire peut modifier/"
-"supprimer les listes publiques des lecteurs.La modification est limitée à la "
+"supprimer les listes publiques des adhérents.La modification est limitée à la "
 "modification du titre ou l'ordre de tri. J'ai le paramètre 'virtualshelves' "
 "désactivé, pourquoi puis-je quand-même voir le menu 'Listes' en interface "
 "professionnelle"
@@ -8802,7 +8802,7 @@ msgstr "Êtes vous sûr de vouloir fermer le panier %s ?"
 #. SCRIPT
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/basket.tmpl:27
 msgid "Are you sure you want to close this basket?"
-msgstr "Êtes vous sûr de vouloir fermer cette liste ?"
+msgstr "Êtes vous sûr de vouloir fermer ce panier ?"
 
 #. SCRIPT
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/basket.tmpl:37
@@ -10731,7 +10731,7 @@ msgstr ""
 #
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/basket.tmpl:97
 msgid "Can not close basket"
-msgstr "Fermer ce panier"
+msgstr "panier non fermable"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reserve/request.tmpl:458
 msgid "Can't be cancelled when item is in transit"
@@ -11328,7 +11328,7 @@ msgstr "Changer le bordereau"
 #. INPUT type=submit
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/neworderempty.tmpl:107
 msgid "Change basketgroup"
-msgstr "Changer le groupe de paniers"
+msgstr "Changer de bordereau"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/addbiblio.tmpl:704
 msgid "Change framework:"
@@ -15254,7 +15254,7 @@ msgid ""
 "reading history)"
 msgstr ""
 "Supprimer des adhérents anciens/rendre anonyme l' historique de prêt "
-"(supression de  l'historique de lectures des lecteurs)"
+"(supression de  l'historique de lectures des adhérents)"
 
 #. INPUT type=submit
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/patron-attr-types.tmpl:172
@@ -16042,7 +16042,7 @@ msgid ""
 msgstr ""
 "ERREUR&nbsp;: L'utilisateur \"root\" dans votre fichier KOHA_CONF (par "
 "défaut kohaadmin) n'est PAS un modérateur autorisé. Ces actions sont "
-"affectées à un lecteur, le modérateur doit donc exister dans votre table des "
+"affectées à un adhérent, le modérateur doit donc exister dans votre table des "
 "adhérents. Merci de vous connecter sous un différent utilisateur."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/moveitem.tmpl:13
@@ -16337,7 +16337,7 @@ msgstr "Modifier le panier '%s'"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/basket.tmpl:94
 msgid "Edit basket header information"
-msgstr "Modifier les informations du panier"
+msgstr "Modifier l'en-tête du panier"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/serials/subscription-add.tmpl:988
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/addbooks.tmpl:101
@@ -20533,7 +20533,7 @@ msgstr ""
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/acqui/booksellers.tmpl:23
 msgid "If you are done adding to that order, click the 'Close this basket' link"
 msgstr ""
-"Si vous avez fini d'ajouter des lignes à cette commandes, cliquez sur "
+"Si vous avez fini d'ajouter des lignes, cliquez sur "
 "\"Fermer le panier\""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/printers.tmpl:5
@@ -25511,11 +25511,11 @@ msgstr "Mobile&nbsp;:"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/tools-home.tmpl:20
 msgid "Moderate patron comments"
-msgstr "Modérer les commentaires des lecteurs"
+msgstr "Modérer les commentaires des adhérents"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/tools-home.tmpl:50
 msgid "Moderate patron tags"
-msgstr "Modérer les tags des lecteurs"
+msgstr "Modérer les tags des adhérents"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/circ-menu.inc:96
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/members-menu.inc:9
@@ -26485,18 +26485,18 @@ msgstr "Nouveau modèle"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/member-password.tmpl:42
 msgid "New Username:"
-msgstr "Nouveau nom d'utilisateur&nbsp;:"
+msgstr "Nouveau login&nbsp;:"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/acquisitions-toolbar.inc:52
 msgid "New Vendor"
-msgstr "Ajouter Fournisseur"
+msgstr "Ajouter fournisseur"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/z3950servers.tmpl:3
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/z3950servers.tmpl:75
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/z3950servers.tmpl:93
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/z3950servers.tmpl:286
 msgid "New Z39.50 Server"
-msgstr "Ajouter Serveur Z39.50"
+msgstr "Ajouter serveur Z39.50"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/authtypes.tmpl:4
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/authtypes.tmpl:79
@@ -26506,7 +26506,7 @@ msgstr "Ajouter type d'autorité"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/authorised_values.tmpl:26
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/authorised_values.tmpl:40
 msgid "New authorized value"
-msgstr "Nouvelle Valeur autorisée"
+msgstr "Nouvelle valeur autorisée"
 
 #. SCRIPT
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/acquisitions-toolbar.inc:42
@@ -37320,7 +37320,7 @@ msgid ""
 msgstr ""
 "Le prix de remplacement est le coût total auquel vous reviendrait le "
 "remplacement du document si vous aviez à l'acheter au détail.C'est le "
-"montant qu'un lecteur devra acquitter si le document est perdu ou détérioré "
+"montant qu'un adhérent devra acquitter si le document est perdu ou détérioré "
 "sans possibilité de réparation."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/guided_reports_start.tmpl:552
@@ -38091,7 +38091,7 @@ msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/memberentrygen.tmpl:875
 msgid "This message appears on this patron's user page in the OPAC"
-msgstr "Ce message apparaît dans le compte lecteur à l'OPAC"
+msgstr "Ce message apparaît dans le compte adhérent à l'OPAC"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/memberentrygen.tmpl:886
 msgid "This message displays when checking out to this patron"
@@ -39141,7 +39141,7 @@ msgstr ""
 #, c-format
 msgid "To notify patrons of new serial issues, you must <a1>define a notice</a>."
 msgstr ""
-"Pour avertir les lecteurs de la parution des nouveaux numéros de "
+"Pour avertir les adhérents de la parution des nouveaux numéros de "
 "périodiques, vous devez <a1>rédiger un message</a>."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/acqui/booksellers.tmpl:13
@@ -40152,7 +40152,7 @@ msgstr "Annuler l'import de notices dans le catalogue"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/basketgroup.tmpl:193
 msgid "Ungrouped Baskets"
-msgstr "Paniers non groupés"
+msgstr "Paniers sans bordereau"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/basket/basket.tmpl:230
 msgid "Unified title"
@@ -40810,7 +40810,7 @@ msgstr "Fournisseur"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/parcels.tmpl:88
 msgid "Vendor Invoice"
-msgstr "Facture n°."
+msgstr "Ref fournisseur"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/acquisitions-search.inc:19
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/acquisitions-history-search.inc:20
@@ -42483,7 +42483,7 @@ msgstr "Vous serez emmené à un écran de confirmation."
 msgid ""
 "You will be presented with a list of orders with baskets that have been "
 "closed for 30+ days"
-msgstr ""
+msgstr "Une liste de lignes de commande  ayant été fermées depuis plus de 30 jours sera affichée"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/item_circulation_alerts.tmpl:12
 msgid ""
@@ -43560,30 +43560,26 @@ msgstr "morphographies"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:2196
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:2423
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:1828
-#, fuzzy
 msgid "adfhklor"
-msgstr "flore"
+msgstr "adfhklor"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2intranetDetail.xsl:334
-#, fuzzy
 msgid "adfklmor"
-msgstr "flore"
+msgstr "adfklmor"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1194
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:948
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:1021
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:758
-#, fuzzy
 msgid "adolescent"
-msgstr "Adolescent"
+msgstr "adolescent"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1197
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:951
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:1024
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:761
-#, fuzzy
 msgid "adult"
-msgstr "Adulte"
+msgstr "adulte"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_125b.tmpl:92
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_125b.tmpl:94
@@ -43591,9 +43587,8 @@ msgid "advertising texts"
 msgstr "textes publicitaires"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2SRWDC.xsl:177
-#, fuzzy
 msgid "ae"
-msgstr "Date"
+msgstr "ae"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_116.tmpl:1509
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_116.tmpl:1511
@@ -43611,7 +43606,7 @@ msgstr "aérien"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:174
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:181
 msgid "af"
-msgstr ""
+msgstr "af"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_116.tmpl:1515
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_116.tmpl:1517
@@ -43620,16 +43615,15 @@ msgstr "af- carte de voeux"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:76
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:116
-#, fuzzy
 msgid "afghk"
-msgstr "flore"
+msgstr "afghk"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:86
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:125
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:81
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:120
 msgid "afgk"
-msgstr ""
+msgstr "afgk"
 
 #. %1$s: TMPL_VAR name=TransfersMaxDaysWarning
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/transferstoreceive.tmpl:41
@@ -43650,16 +43644,15 @@ msgstr "encore)"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:932
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:1003
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:741
-#, fuzzy
 msgid "agrt"
-msgstr "Catégorie"
+msgstr "agrt"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:218
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:209
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:219
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:123
 msgid "ah"
-msgstr ""
+msgstr "ah"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_116.tmpl:1527
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_116.tmpl:1529
@@ -43848,7 +43841,7 @@ msgstr "Approuvé"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:2151
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:2354
 msgid "aq"
-msgstr ""
+msgstr "aq"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1716
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1899
@@ -43859,7 +43852,7 @@ msgstr ""
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:1089
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:1267
 msgid "aqdc"
-msgstr ""
+msgstr "aqdc"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_140.tmpl:697
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_140.tmpl:699
@@ -43873,9 +43866,8 @@ msgid "aquatint"
 msgstr "aquatinte"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/circ/branchoverdues.tmpl:7
-#, fuzzy
 msgid "are still checked out,"
-msgstr "Pas en Prêt"
+msgstr "sont encore en prêt,"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:27
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:29
@@ -43896,17 +43888,15 @@ msgstr "arme"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:517
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:548
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:447
-#, fuzzy
 msgid "art original"
-msgstr "original"
+msgstr "art original"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:534
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:523
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:554
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:453
-#, fuzzy
 msgid "art reproduction"
-msgstr "n'est pas une reproduction"
+msgstr "reproduction d'art"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_117.tmpl:195
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_117.tmpl:197
@@ -43997,19 +43987,17 @@ msgid "attached to patrons, that can be used for stats purposes"
 msgstr "associée aux adhérents, qui peut être utilisée pour les statistiques"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/error-messages.inc:77
-#, fuzzy
 msgid "attempting a delete operation"
-msgstr "Pour les opérations : "
+msgstr "tentative de suppression"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/error-messages.inc:75
-#, fuzzy
 msgid "attempting a save operation"
-msgstr "animation"
+msgstr "tentative de récupération"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2intranetDetail.xsl:101
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2intranetDetail.xsl:469
 msgid "au"
-msgstr ""
+msgstr "au"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_116.tmpl:1557
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_116.tmpl:1559
@@ -44033,9 +44021,8 @@ msgid "aud:e Adult"
 msgstr "aud:e Adulte"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/reports/guided_reports.tmpl:61
-#, fuzzy
 msgid "authorised_value"
-msgstr "Valeur autorisée"
+msgstr "authorised_value"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/subtypes_unimarc.inc:56
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_140.tmpl:1521
@@ -44056,9 +44043,8 @@ msgstr "autobiographie"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:1312
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:958
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:971
-#, fuzzy
 msgid "av"
-msgstr "Enregistrer"
+msgstr "av"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/facets.inc:6
 msgid "available"
@@ -44271,9 +44257,8 @@ msgstr "b- état/province"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:2004
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:1600
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:1746
-#, fuzzy
 msgid "ba"
-msgstr "Tuba"
+msgstr "ba"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_100.tmpl:595
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_100.tmpl:597
@@ -44333,14 +44318,12 @@ msgstr "nathymétrie - sonar"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2intranetDetail.xsl:618
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:2263
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:2499
-#, fuzzy
 msgid "bc"
-msgstr "Etiquette"
+msgstr "bc"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2intranetDetail.xsl:225
-#, fuzzy
 msgid "bcg"
-msgstr "Etiquette"
+msgstr "bcg"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/serials/subscription-add.tmpl:1077
 msgid "be associated with a bibliographic record."
@@ -44551,9 +44534,8 @@ msgstr "relié avec un ou plusieurs autres"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:814
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:878
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:686
-#, fuzzy
 msgid "braille"
-msgstr "Braille"
+msgstr "braille"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/serials/serials-collection.tmpl:193
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/lateorders.tmpl:69
@@ -44898,7 +44880,7 @@ msgstr "camaieu"
 msgid ""
 "can be omitted if not applicable. If it contains an authorised value "
 "category, or"
-msgstr ""
+msgstr "peut être ignoré si non applicable. Si contien une catégorie de valeur autorisée ou"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/reserves_stats.tmpl:344
 msgid "cancellation date"
@@ -44910,15 +44892,13 @@ msgstr "annulé"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:77
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:79
-#, fuzzy
 msgid "canon"
-msgstr "crayon"
+msgstr "canon"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:102
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:104
-#, fuzzy
 msgid "cantata"
-msgstr "toile"
+msgstr "cantate"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/subtypes_unimarc.inc:186
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_116.tmpl:101
@@ -44928,9 +44908,8 @@ msgstr "toile"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:112
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:114
-#, fuzzy
 msgid "canzona"
-msgstr "annuel"
+msgstr "chanson"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_141.tmpl:48
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_141.tmpl:50
@@ -44959,9 +44938,8 @@ msgstr "carton/planche d'illustrations"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:92
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:94
-#, fuzzy
 msgid "carol"
-msgstr "charbon"
+msgstr "carol"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2SRWDC.xsl:62
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2DC.xsl:48
@@ -44972,9 +44950,8 @@ msgstr "charbon"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:304
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:204
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2RDFDC.xsl:43
-#, fuzzy
 msgid "cartographic"
-msgstr "orthographique"
+msgstr "cartographie"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/subtypes_unimarc.inc:107
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_110.tmpl:314
@@ -45032,19 +45009,18 @@ msgstr "categorycode"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:2140
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:1622
 msgid "cdn"
-msgstr ""
+msgstr "cdn"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:2609
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:2159
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:2384
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:1793
 msgid "cdnp"
-msgstr ""
+msgstr "cdnp"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:952
-#, fuzzy
 msgid "celestial globe"
-msgstr "terrestre"
+msgstr "globe céleste"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_117.tmpl:266
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_117.tmpl:268
@@ -45067,7 +45043,7 @@ msgstr "craie"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:97
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:99
 msgid "chance composition / aleatoric music"
-msgstr ""
+msgstr "chanson / musique aléatoire"
 
 #. INPUT type=submit name=changelocation
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/branchoverdues.tmpl:27
@@ -45077,17 +45053,17 @@ msgstr "Changer la localisation"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:87
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:89
 msgid "chanson, polyphonic"
-msgstr ""
+msgstr "chanson, polyphonique"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:57
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:59
 msgid "chant, christian"
-msgstr ""
+msgstr "chant, chrétien"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:52
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:54
 msgid "chant, non christian"
-msgstr ""
+msgstr "chant, non chrétien"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/catalogue_stats.tmpl:98
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/catalogue_stats.tmpl:120
@@ -45099,9 +45075,8 @@ msgstr "Caractères"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:547
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:578
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:477
-#, fuzzy
 msgid "chart"
-msgstr "cartes marines"
+msgstr "carte"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/subtypes_unimarc.inc:69
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_140.tmpl:72
@@ -45146,7 +45121,6 @@ msgid "children (9-14)"
 msgstr "enfants (9-14)"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:924
-#, fuzzy
 msgid "chip cartridge"
 msgstr "fim fixe en cartouche"
 
@@ -45172,15 +45146,13 @@ msgstr "choisir le type de document dans la liste déroulante."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:72
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:74
-#, fuzzy
 msgid "choral"
-msgstr "charbon"
+msgstr "choral"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:62
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:64
-#, fuzzy
 msgid "choral-prelude"
-msgstr "charbon"
+msgstr "choral-prélude"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_124c.tmpl:58
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_124c.tmpl:60
@@ -45287,9 +45259,8 @@ msgstr "armoiries"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:625
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:635
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:2243
-#, fuzzy
 msgid "code"
-msgstr "Code"
+msgstr "code"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_117.tmpl:105
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_117.tmpl:107
@@ -45307,13 +45278,11 @@ msgstr "monnaie"
 msgid "collage"
 msgstr "collage"
 
-#
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2SRWDC.xsl:53
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2OAIDC.xsl:49
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2RSS2.xsl:42
-#, fuzzy
 msgid "collection"
-msgstr "Collection"
+msgstr "collection"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/authorised_values.tmpl:39
 msgid "collection code (appears when editing at item)"
@@ -45371,9 +45340,8 @@ msgstr "comedie"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:446
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:475
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:374
-#, fuzzy
 msgid "comic strip"
-msgstr "c- bande dessinée"
+msgstr "bande dessinée"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/z3950/searchresult.tmpl:24
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/addbooks.tmpl:132
@@ -45420,9 +45388,8 @@ msgid "computer graphics"
 msgstr "image par ordinateur"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:927
-#, fuzzy
 msgid "computer optical disc cartridge"
-msgstr "cartouche microforme"
+msgstr "disque optique informatique"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_135a.tmpl:28
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_135a.tmpl:30
@@ -45431,15 +45398,13 @@ msgstr "programmes informatiques"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:82
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:84
-#, fuzzy
 msgid "concerto"
-msgstr "contours"
+msgstr "concerto"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:67
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:69
-#, fuzzy
 msgid "concerto grosso"
-msgstr "contours"
+msgstr "concerto grosso"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_125a.tmpl:37
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_125a.tmpl:39
@@ -45496,9 +45461,8 @@ msgstr "considéré comme en retard"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:1972
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:2173
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:1652
-#, fuzzy
 msgid "constituent"
-msgstr "Contenu"
+msgstr "constituent"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/authtypes.tmpl:17
 msgid ""
@@ -45542,9 +45506,8 @@ msgstr "contient des informations biographiques"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:733
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:786
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:626
-#, fuzzy
 msgid "continuing"
-msgstr "Continuo"
+msgstr "continue"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_120.tmpl:88
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_120.tmpl:90
@@ -45598,9 +45561,8 @@ msgstr "décompte"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:107
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:109
-#, fuzzy
 msgid "country music"
-msgstr "c- musique annotée"
+msgstr "musique country"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_116.tmpl:405
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_116.tmpl:407
@@ -45632,18 +45594,15 @@ msgstr "Créer une notice d'exemplaire lorsque vous réceptionnez un bulletin"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:134
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:143
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:151
-#, fuzzy
 msgid "creator"
-msgstr "Laboratoire"
+msgstr "créateur"
 
-#
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:2524
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:2082
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:2297
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:1699
-#, fuzzy
 msgid "csh"
-msgstr "Emplacements"
+msgstr "csh"
 
 #. SPAN
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/basket/basket.tmpl:152
@@ -45658,6 +45617,14 @@ msgid ""
 "\"publisher\" ESCAPE=\"url\" -->&amp;rft.edition=<!-- TMPL_VAR NAME=\"edition"
 "\" -->&amp;rft.series=<!-- TMPL_VAR NAME=\"series\" -->&amp;rft.genre="
 msgstr ""
+"ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Abook&amp;"
+"rft.au=<!-- TMPL_VAR NAME=\"author\" -->&amp;rft.btitle=<!-- TMPL_VAR NAME="
+"\"title\" ESCAPE=\"url\" -->&amp;rft.date=<!-- TMPL_VAR NAME="
+"\"publicationyear\" -->&amp;rft.tpages=<!-- TMPL_VAR NAME=\"size\" -->&amp;"
+"rft.isbn=<!-- TMPL_VAR NAME=\"isbn\" ESCAPE=\"url\" -->&amp;rft.aucorp=&amp;"
+"rft.place=<!-- TMPL_VAR NAME=\"place\" -->&amp;rft.pub=<!-- TMPL_VAR NAME="
+"\"publisher\" ESCAPE=\"url\" -->&amp;rft.edition=<!-- TMPL_VAR NAME=\"edition"
+"\" -->&amp;rft.series=<!-- TMPL_VAR NAME=\"series\" -->&amp;rft.genre="
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/catalogue/search.tmpl:48
 msgid "ctype:a Abstracts/summaries"
@@ -45842,7 +45809,7 @@ msgstr "d&eacute;selectionner tout"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2intranetDetail.xsl:95
 msgid "d'un livret,"
-msgstr ""
+msgstr "d'un livret,"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/marc21_field_008_authorities.tmpl:194
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/marc21_field_008_authorities.tmpl:196
@@ -45853,7 +45820,6 @@ msgstr "d- vedette compatible AACR2"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/marc21_field_008.tmpl:520
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/marc21_field_006.tmpl:421
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/marc21_field_006.tmpl:422
-#, fuzzy
 msgid "d- Contains biographical information"
 msgstr "d -contient des informations biographiques"
 
@@ -45999,9 +45965,8 @@ msgstr "endommagé"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:117
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:119
-#, fuzzy
 msgid "danse form"
-msgstr "Prévu le"
+msgstr "danse"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_124c.tmpl:63
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_124c.tmpl:65
@@ -46016,9 +45981,8 @@ msgstr "dasymétrique"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:442
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:239
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:341
-#, fuzzy
 msgid "database"
-msgstr "Base de données"
+msgstr "base de données"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_122.tmpl:22
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_122.tmpl:24
@@ -46046,19 +46010,19 @@ msgstr "dc- Japonais - Kana"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2intranetDetail.xsl:90
 msgid "de l'œuvre originale,"
-msgstr ""
+msgstr "de l'œuvre originale,"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2intranetDetail.xsl:93
 msgid "de la page de titre,"
-msgstr ""
+msgstr "de la page de titre,"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2intranetDetail.xsl:92
 msgid "de la table des matières,"
-msgstr ""
+msgstr "de la table des matières,"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2intranetDetail.xsl:89
 msgid "de la trad. intermédiaire,"
-msgstr ""
+msgstr "de la trad. intermédiaire,"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/borrowers_stats.tmpl:91
 msgid "debarred"
@@ -46101,7 +46065,7 @@ msgstr "des règles de retard par défaut"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:1086
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:822
 msgid "defg"
-msgstr ""
+msgstr "defg"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/patron-attr-types.tmpl:11
 msgid ""
@@ -46132,11 +46096,11 @@ msgstr "suppression"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2intranetDetail.xsl:97
 msgid "des sous-titres,"
-msgstr ""
+msgstr "des sous-titres,"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2intranetDetail.xsl:96
 msgid "des textes d'accompagnement,"
-msgstr ""
+msgstr "des textes d'accompagnement,"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/overdue.tmpl:223
 msgid "desc"
@@ -46193,7 +46157,7 @@ msgstr "littérature de dévotion "
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:1034
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:1219
 msgid "dg"
-msgstr ""
+msgstr "dg"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1682
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1872
@@ -46204,7 +46168,7 @@ msgstr ""
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:1054
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:1239
 msgid "dgn"
-msgstr ""
+msgstr "dgn"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:972
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_124b.tmpl:23
@@ -46261,7 +46225,6 @@ msgid "digital (compact disc)"
 msgstr "digital (compact disc)"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:815
-#, fuzzy
 msgid "digitized microfilm"
 msgstr "microfilm"
 
@@ -46282,9 +46245,8 @@ msgstr "dimaxion"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:526
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:557
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:456
-#, fuzzy
 msgid "diorama"
-msgstr "dioramas"
+msgstr "diorama"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_117.tmpl:171
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_117.tmpl:173
@@ -46293,9 +46255,8 @@ msgstr "dioramas"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_700-4.tmpl:22
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_700-4.tmpl:24
-#, fuzzy
 msgid "dir. de publication"
-msgstr "Code"
+msgstr "dir. de publication"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/subtypes_unimarc.inc:94
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:395
@@ -46382,11 +46343,11 @@ msgstr "afficher plus de restrictions"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slimUtils.xsl:107
 msgid "display:block;"
-msgstr ""
+msgstr "display:block;"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slimUtils.xsl:103
 msgid "display:block; text-align:right; float:right; width:50%; padding-left:20px"
-msgstr ""
+msgstr "display:block; text-align:right; float:right; width:50%; padding-left:20px"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/subtypes_unimarc.inc:100
 msgid "dissertation or thesis"
@@ -46395,7 +46356,7 @@ msgstr "dissertation ou thèse"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:122
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:124
 msgid "divertimento"
-msgstr ""
+msgstr "divertissement"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/serials/subscription-add.tmpl:995
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/serials/subscription-add.tmpl:998
@@ -46410,9 +46371,8 @@ msgstr "n'a pas assez d'autorisations sur la base de données"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:1625
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:1776
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:1358
-#, fuzzy
 msgid "doi"
-msgstr "huile"
+msgstr "doi"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_117.tmpl:153
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_117.tmpl:155
@@ -46456,11 +46416,11 @@ msgstr "pointe sèche"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2intranetDetail.xsl:91
 msgid "du résumé,"
-msgstr ""
+msgstr "du résumé,"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2intranetDetail.xsl:94
 msgid "du titre propre,"
-msgstr ""
+msgstr "du titre propre,"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_115b.tmpl:32
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_115b.tmpl:34
@@ -46588,7 +46548,7 @@ msgstr "chaque livraison contient son propre index - volant"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:955
 msgid "earth moon globe"
-msgstr ""
+msgstr "globe terrestre ou lunaire"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_124e.tmpl:23
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_124e.tmpl:25
@@ -46729,9 +46689,8 @@ msgstr "érotica"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:510
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:368
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:409
-#, fuzzy
 msgid "essay"
-msgstr "essais"
+msgstr "essai"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_140.tmpl:1420
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_140.tmpl:1422
@@ -46940,9 +46899,8 @@ msgstr "famfamfam.com"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:137
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:139
-#, fuzzy
 msgid "fantasia"
-msgstr "atlas"
+msgstr "fantasia"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_117.tmpl:39
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_117.tmpl:41
@@ -46967,9 +46925,8 @@ msgstr "stylo feutre"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:431
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:458
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:357
-#, fuzzy
 msgid "festschrift"
-msgstr "1- Mélanges"
+msgstr "festschrift"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:552
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:559
@@ -46982,9 +46939,8 @@ msgstr "1- Mélanges"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:1994
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:1477
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:1484
-#, fuzzy
 msgid "fghkdlmor"
-msgstr "flore"
+msgstr "fghkdlmor"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:2184
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:2191
@@ -46992,14 +46948,12 @@ msgstr "flore"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:1758
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:1765
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:1811
-#, fuzzy
 msgid "fgkdlmor"
-msgstr "flore"
+msgstr "fgkdlmor"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2intranetDetail.xsl:89
-#, fuzzy
 msgid "fgknps"
-msgstr "morphographies"
+msgstr "fgknps"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/catalogue/search.tmpl:25
 msgid "fic:0 Non fiction"
@@ -47062,9 +47016,8 @@ msgstr "film fixe en rouleau"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:381
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:406
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:305
-#, fuzzy
 msgid "filmography"
-msgstr "Biographie"
+msgstr "filmographie"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1064
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_115a.tmpl:410
@@ -47076,7 +47029,6 @@ msgstr "film fixe en bande"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:529
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:560
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:459
-#, fuzzy
 msgid "filmstrip"
 msgstr "film fixe en bande"
 
@@ -47087,7 +47039,6 @@ msgid "filmstrip cartridge"
 msgstr "film fixe en cartouche"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1070
-#, fuzzy
 msgid "filmstrip roll"
 msgstr "film fixe en rouleau"
 
@@ -47106,9 +47057,8 @@ msgstr "première generation (Master)"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:550
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:581
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:480
-#, fuzzy
 msgid "flash card"
-msgstr "ai- carte éclair (flash card)"
+msgstr "carte flash"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_117.tmpl:45
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_117.tmpl:47
@@ -47122,15 +47072,13 @@ msgstr "carte par courbes de niveau"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:132
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:134
-#, fuzzy
 msgid "folk music"
-msgstr "Musique"
+msgstr "musique folk"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:497
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:486
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:516
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:415
-#, fuzzy
 msgid "folktale"
 msgstr "conte populaire"
 
@@ -47143,9 +47091,8 @@ msgstr "conte populaire"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:419
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:445
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:344
-#, fuzzy
 msgid "font"
-msgstr "Police&nbsp;:"
+msgstr "police"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/results.tmpl:225
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/results.tmpl:251
@@ -47284,9 +47231,8 @@ msgstr "frontispice"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:127
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:129
-#, fuzzy
 msgid "fugue"
-msgstr "Orgue"
+msgstr "fugue"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/marc21_leader_computerfile.tmpl:204
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/marc21_leader.tmpl:198
@@ -47394,9 +47340,8 @@ msgstr "ga- Grec"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:422
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:448
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:347
-#, fuzzy
 msgid "game"
-msgstr "Nom"
+msgstr "jeu"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_117.tmpl:141
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_117.tmpl:143
@@ -47427,9 +47372,8 @@ msgstr "tableaux généalogiques"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:954
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:1027
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:764
-#, fuzzy
 msgid "general"
-msgstr "Général"
+msgstr "général"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/subtypes_unimarc.inc:189
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_115a.tmpl:1085
@@ -47463,7 +47407,7 @@ msgstr "globe"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:1091
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:1269
 msgid "gn"
-msgstr ""
+msgstr "gn"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_120.tmpl:395
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_120.tmpl:397
@@ -47502,9 +47446,8 @@ msgstr "bon"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:142
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:144
-#, fuzzy
 msgid "gospel music"
-msgstr "g - Musique"
+msgstr "musique gospel"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_116.tmpl:369
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_116.tmpl:371
@@ -47519,9 +47462,8 @@ msgstr "gouache"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:538
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:569
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:468
-#, fuzzy
 msgid "graphic"
-msgstr "graphite"
+msgstr "graphique"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_125a.tmpl:42
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_125a.tmpl:44
@@ -47612,9 +47554,8 @@ msgstr "ha- Hebreu"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_120.tmpl:256
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_120.tmpl:332
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_120.tmpl:334
-#, fuzzy
 msgid "hachures"
-msgstr "Lots"
+msgstr "hachures"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_140.tmpl:1475
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_140.tmpl:1477
@@ -47648,9 +47589,8 @@ msgstr "manuscrit"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:354
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:379
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:278
-#, fuzzy
 msgid "handbook"
-msgstr "Livres de poche"
+msgstr "livre de poche"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_115b.tmpl:257
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_115b.tmpl:259
@@ -47706,9 +47646,8 @@ msgstr "n'ont pas reçu de notice, et"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:2024
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:1625
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:1777
-#, fuzzy
 msgid "hdl"
-msgstr "sup"
+msgstr "hdl"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_116.tmpl:930
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_116.tmpl:932
@@ -47814,9 +47753,8 @@ msgstr ""
 "et timeout."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/preferences.tmpl:21
-#, fuzzy
 msgid "holds all preferences related to managing serial subscriptions."
-msgstr "contient les préférences liées à la gestion des notices d'autorité."
+msgstr "contient les préférences liées aux périodiques."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/preferences.tmpl:20
 msgid ""
@@ -47831,13 +47769,10 @@ msgid "holds preference related to handling authority records."
 msgstr "contient les préférences liées à la gestion des notices d'autorité."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/preferences.tmpl:8
-#, fuzzy
 msgid ""
 "holds preferences related to acquisitions such as handling patron "
 "suggestions and local taxes."
-msgstr ""
-"contient les préférences liées aux acquisitions et aux périodiques telles "
-"que la gestion des suggestions adhérents ou la TVA."
+msgstr "les préférences relatives aux acquisitions, tels que les suggestions d'achat est les taux de TVA"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/preferences.tmpl:15
 msgid ""
@@ -47905,7 +47840,7 @@ msgstr "Site de rattachement (homebranch) déterminé"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2OAIDC.xsl:171
 msgid "http://opac.mylibrary.org/bib/"
-msgstr ""
+msgstr "http://opac.mylibrary.org/bib/"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/installer/step2.tmpl:27
 msgid "http://www.postgresql.org/docs/8.2/interactive/sql-createrole.html"
@@ -47919,7 +47854,6 @@ msgstr "http://www.postgresql.org/docs/8.2/interactive/sql-createrole.html"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:522
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:380
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:421
-#, fuzzy
 msgid "humor, satire"
 msgstr "humour, satire"
 
@@ -47932,7 +47866,7 @@ msgstr "humour, satire"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:147
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:149
 msgid "hymn"
-msgstr ""
+msgstr "hymne"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_120.tmpl:93
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_120.tmpl:95
@@ -48063,7 +47997,7 @@ msgstr "ia- Thai"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2intranetDetail.xsl:321
 msgid "iabhfgnp"
-msgstr ""
+msgstr "iabhfgnp"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/memberentrygen.tmpl:197
 msgid "identity"
@@ -48223,7 +48157,7 @@ msgstr "en transit"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/preferences.tmpl:23
 msgid "includes preferences related to services like OAI-PMH."
-msgstr ""
+msgstr "les préférences relative aux services tel que OAI-PMH"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_141.tmpl:306
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_141.tmpl:308
@@ -48301,21 +48235,21 @@ msgid ""
 "inner counter : 3 (you must take into account the three first months of the "
 "year, otherwise volume value will increase after 12 received issues from "
 "april 2009, e.g. in april 2010 instead of january 2010)"
-msgstr ""
+msgstr "compteur interne : 3 (vous devez prendre en compte les 3 permiers moir de l'année, sinon le numéro d'année changement après 12 fascicules reçus à partir de avril 2009, soit en avril au lieu de janvier 2010)"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/serials/subscription-add.tmpl:130
 msgid ""
 "inner counter : 3 (you must take into account the three first months of the "
 "year, otherwise year will change after 12 received issues from april 2009, e."
 "g. in april instead of january 2010)"
-msgstr ""
+msgstr "compteur interne : 3 (vous devez prendre en compte les 3 permiers moir de l'année, sinon le numéro d'année changement après 12 fascicules reçus à partir de avril 2009, soit en avril au lieu de janvier 2010)"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/serials/subscription-add.tmpl:100
 msgid ""
 "inner counter : number of issues that Koha must take into account to "
 "calculate when value changes. If you begin with first issue of the year "
 "write nothing or 0"
-msgstr ""
+msgstr "compteur interne : le nombre de fascicules que Koha doit prendre en compte pour calculer quand changer la valeur. Si vous débutez avec le premier fascicule de l'année, entrez 0 ou rien"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/acqui/orderreceive.tmpl:19
 msgid "input fieldset"
@@ -48384,9 +48318,8 @@ msgstr "parties instrumentales"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:152
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:154
-#, fuzzy
 msgid "intermezzo"
-msgstr "Nom de l'imprimante"
+msgstr "intermezzo"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_125b.tmpl:87
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_125b.tmpl:89
@@ -48433,14 +48366,12 @@ msgid "is exactly"
 msgstr "est exactement"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1935
-#, fuzzy
 msgid "isbn"
-msgstr "Amende"
+msgstr "isbn"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1955
-#, fuzzy
 msgid "ismn"
-msgstr "Amende"
+msgstr "ismn"
 
 #. For the first occurrence,
 #. SCRIPT
@@ -48461,7 +48392,7 @@ msgstr "iso3166"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:649
 msgid "iso639-2b"
-msgstr ""
+msgstr "iso639-2b"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_124c.tmpl:68
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_124c.tmpl:70
@@ -48469,22 +48400,19 @@ msgid "isopleth"
 msgstr "isoplète"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1945
-#, fuzzy
 msgid "isrc"
-msgstr "disque"
+msgstr "isrc"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1975
-#, fuzzy
 msgid "issn"
-msgstr "Manquant"
+msgstr "issn"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1993
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:1596
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:1736
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:1333
-#, fuzzy
 msgid "issue number"
-msgstr "Numéro de parution"
+msgstr "Numéro de fascicule"
 
 #. SCRIPT
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/serials/subscription-add.tmpl:949
@@ -48559,9 +48487,8 @@ msgid "items. <a1>Show all items</a>"
 msgstr "documents <a1>Voir tous les exemplaires</a>"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/reports/guided_reports.tmpl:61
-#, fuzzy
 msgid "itemtype"
-msgstr "Type de document"
+msgstr "type de document"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/checkmarc.tmpl:67
 msgid "itemtype NOT mapped"
@@ -48639,7 +48566,7 @@ msgstr "ja- Devanagari"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:157
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:159
 msgid "jazz"
-msgstr ""
+msgstr "jazz"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_117.tmpl:117
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_117.tmpl:119
@@ -48655,15 +48582,14 @@ msgstr "jeu de patience (puzzle)"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2intranetDetail.xsl:228
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslimUtils.xsl:234
 msgid "jpxyz"
-msgstr ""
+msgstr "jpxyz"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1203
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:957
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:1030
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:767
-#, fuzzy
 msgid "juvenile"
-msgstr "Jeunesse"
+msgstr "jeunesse"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_140.tmpl:1445
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_140.tmpl:1447
@@ -48744,9 +48670,8 @@ msgstr "ka - Coréen"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:520
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:551
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:450
-#, fuzzy
 msgid "kit"
-msgstr "Kit"
+msgstr "kit"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/installer/step2.tmpl:39
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/installer/step2.tmpl:40
@@ -48762,17 +48687,17 @@ msgstr "koha.mrc"
 #. ABBR
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:224
 msgid "koha:biblionumber:{marc:datafield[@tag=090]/marc:subfield[@code='a']}"
-msgstr ""
+msgstr "koha:biblionumber:{marc:datafield[@tag=090]/marc:subfield[@code='a']}"
 
 #. ABBR
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2intranetDetail.xsl:135
 msgid "koha:biblionumber:{marc:datafield[@tag=999]/marc:subfield[@code='9']}"
-msgstr ""
+msgstr "koha:biblionumber:{marc:datafield[@tag=999]/marc:subfield[@code='9']}"
 
 #. ABBR
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2intranetDetail.xsl:284
 msgid "koha:biblionumber:{marc:datafield[@tag=999]/marc:subfield[@code='c']}"
-msgstr ""
+msgstr "koha:biblionumber:{marc:datafield[@tag=999]/marc:subfield[@code='c']}"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_leader.tmpl:121
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_leader.tmpl:123
@@ -48960,9 +48885,8 @@ msgstr "lavis"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:396
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:421
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:320
-#, fuzzy
 msgid "law report or digest"
-msgstr "Rapports de lois et recueils"
+msgstr "rapports de lois et recueils"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_110.tmpl:284
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_110.tmpl:286
@@ -48977,25 +48901,21 @@ msgstr "lois et décrets"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1983
 msgid "lccn"
-msgstr ""
+msgstr "lccn"
 
-#
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:2519
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:2082
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:2292
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:1696
-#, fuzzy
 msgid "lcsh"
-msgstr "Emplacements"
+msgstr "lcsh"
 
-#
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:2520
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:2082
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:2293
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:1697
-#, fuzzy
 msgid "lcshac"
-msgstr "Emplacements"
+msgstr "lcshac"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_141.tmpl:28
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_141.tmpl:30
@@ -49019,9 +48939,8 @@ msgstr "leçons, discours"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:563
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:281
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:462
-#, fuzzy
 msgid "legal article"
-msgstr "Articles juridiques"
+msgstr "articles juridiques"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_110.tmpl:290
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_110.tmpl:292
@@ -49032,9 +48951,8 @@ msgstr "Articles juridiques"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:393
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:418
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:317
-#, fuzzy
 msgid "legal case and case notes"
-msgstr "Cas de droit et notes de cas"
+msgstr "cas de droit et notes de cas"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_110.tmpl:296
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_110.tmpl:298
@@ -49057,14 +48975,12 @@ msgstr "oeuvre juridique"
 msgid "legend"
 msgstr "légende"
 
-#
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:377
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:366
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:391
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:290
-#, fuzzy
 msgid "legislation"
-msgstr "Législation"
+msgstr "législation"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_121b.tmpl:134
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_121b.tmpl:136
@@ -49075,9 +48991,8 @@ msgstr "moins d'1 cm"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:455
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:484
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:383
-#, fuzzy
 msgid "letter"
-msgstr "lettres"
+msgstr "lettre"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/subtypes_unimarc.inc:43
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_140.tmpl:1430
@@ -49126,9 +49041,8 @@ msgstr "libretto ou texte"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:162
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:164
-#, fuzzy
 msgid "lied"
-msgstr "comme"
+msgstr "lied"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/catalogue_stats.tmpl:193
 msgid "like"
@@ -49217,9 +49131,8 @@ msgstr "hôte local"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:319
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:343
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:242
-#, fuzzy
 msgid "loose-leaf"
-msgstr "Fournisseur"
+msgstr "feuille morte"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/borrowers_stats.tmpl:91
 msgid "lost"
@@ -49333,9 +49246,8 @@ msgstr "machines"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:172
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:174
-#, fuzzy
 msgid "madrigal"
-msgstr "aérien"
+msgstr "madrigal"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_115b.tmpl:203
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_115b.tmpl:205
@@ -49359,7 +49271,7 @@ msgstr "bande audio magnétique sur bobine"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:930
 msgid "magnetic disc"
-msgstr ""
+msgstr "disque magnétique"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_115a.tmpl:153
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_115a.tmpl:155
@@ -49378,7 +49290,7 @@ msgstr "stockage sur support magnétique - non informatique"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:933
 msgid "magneto-optical disc"
-msgstr ""
+msgstr "disque magnéto-optique"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_117.tmpl:254
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_117.tmpl:256
@@ -49470,9 +49382,8 @@ msgstr "marc"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:603
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:590
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:626
-#, fuzzy
 msgid "marccountry"
-msgstr "Compte"
+msgstr "pays marc"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1365
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:2475
@@ -49480,21 +49391,18 @@ msgstr "Compte"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:2040
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:1099
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:2244
-#, fuzzy
 msgid "marcgac"
-msgstr "marc"
+msgstr "marcgac"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:182
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:184
-#, fuzzy
 msgid "march"
-msgstr "marc"
+msgstr "marche"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:187
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:189
-#, fuzzy
 msgid "mass"
-msgstr "Cartes"
+msgstr "masse"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_126b.tmpl:23
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_126b.tmpl:25
@@ -49515,9 +49423,8 @@ msgstr "bande maîtresse"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:1596
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:1737
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:1334
-#, fuzzy
 msgid "matrix number"
-msgstr "Numéro de carte&nbsp;:"
+msgstr "Numéro matriciel"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_140.tmpl:1440
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_140.tmpl:1442
@@ -49526,9 +49433,8 @@ msgstr "maxime, aphorisme, proverbe, anecdote"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:207
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:209
-#, fuzzy
 msgid "mazurka"
-msgstr "monaural"
+msgstr "mazurka"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_100.tmpl:677
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_100.tmpl:679
@@ -49581,9 +49487,8 @@ msgstr "fusion"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:2082
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:2294
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:1698
-#, fuzzy
 msgid "mesh"
-msgstr "Accueil"
+msgstr "mesh"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/subtypes_unimarc.inc:200
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_115a.tmpl:1099
@@ -49655,12 +49560,10 @@ msgstr "cassette microfiche"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:826
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:890
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:695
-#, fuzzy
 msgid "microfilm"
 msgstr "microfilm"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1003
-#, fuzzy
 msgid "microfilm cartridge"
 msgstr "cartouche microforme"
 
@@ -49697,7 +49600,6 @@ msgid "microgroove/fine"
 msgstr "microsillon/fin"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1012
-#, fuzzy
 msgid "microopaque"
 msgstr "micro opaque"
 
@@ -49716,7 +49618,6 @@ msgstr "micro-impression"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:553
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:584
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:483
-#, fuzzy
 msgid "microscope slide"
 msgstr "diapositives microscopes"
 
@@ -49749,9 +49650,8 @@ msgstr "miniature"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:177
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:179
-#, fuzzy
 msgid "minuet"
-msgstr "miniature"
+msgstr "menuet"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/authorities/authorities.tmpl:5
 msgid "misc/migration_tools/bulkauthimport.pl"
@@ -49834,9 +49734,8 @@ msgstr "générations diverses"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:312
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:211
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2RDFDC.xsl:50
-#, fuzzy
 msgid "mixed material"
-msgstr "p - matériaux composites"
+msgstr "matériaux composites"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_130.tmpl:84
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_130.tmpl:86
@@ -49900,9 +49799,8 @@ msgstr "monochrome"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:732
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:785
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:625
-#, fuzzy
 msgid "monographic"
-msgstr "m- monographie"
+msgstr "monographie"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_110.tmpl:28
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_110.tmpl:30
@@ -49928,15 +49826,13 @@ msgid "monthly"
 msgstr "mensuel"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1116
-#, fuzzy
 msgid "moon"
-msgstr "mois"
+msgstr "lune"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:192
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:194
-#, fuzzy
 msgid "motet"
-msgstr "Contenu"
+msgstr "motet"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_126b.tmpl:43
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_126b.tmpl:45
@@ -49962,15 +49858,13 @@ msgstr "film"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:309
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:208
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2RDFDC.xsl:47
-#, fuzzy
 msgid "moving image"
-msgstr "Image de télédétection"
+msgstr "image animée"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:197
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:199
-#, fuzzy
 msgid "moving picture music"
-msgstr "film"
+msgstr "image animée musicale"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_120.tmpl:22
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_120.tmpl:24
@@ -50005,7 +49899,6 @@ msgstr "formats multiples"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:202
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:204
-#, fuzzy
 msgid "multiple forms"
 msgstr "formats multiples"
 
@@ -50065,22 +49958,20 @@ msgstr "Musique"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:1596
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:1738
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:1335
-#, fuzzy
 msgid "music plate"
-msgstr "Musique"
+msgstr "disque musical"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1996
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:1596
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:1739
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:1336
-#, fuzzy
 msgid "music publisher"
-msgstr "éditeur"
+msgstr "éditeur de musique"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:167
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:169
 msgid "musical revue and comedy"
-msgstr ""
+msgstr "revue musicale et comédie"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/serials/subscription-add.tmpl:1077
 msgid "must"
@@ -50174,9 +50065,8 @@ msgstr "n/a"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:2082
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:2296
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:1700
-#, fuzzy
 msgid "nal"
-msgstr "Annuel"
+msgstr "nal"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/members-search.tmpl:91
 msgid "name: '"
@@ -50326,9 +50216,8 @@ msgstr "pas de page-titre"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:212
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:214
-#, fuzzy
 msgid "nocturne"
-msgstr "Image"
+msgstr "nocturne"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_105.tmpl:23
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_105.tmpl:25
@@ -50635,10 +50524,8 @@ msgstr "ne s'applique pas (pas en couleur)"
 msgid "not applicable, not a score"
 msgstr "non applicable, pas une partition"
 
-#
 #. ACRONYM
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/parcels.tmpl:49
-#, fuzzy
 msgid "not available"
 msgstr "Indisponible"
 
@@ -50680,7 +50567,6 @@ msgstr "non projeté"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:305
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:205
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2RDFDC.xsl:44
-#, fuzzy
 msgid "notated music"
 msgstr "musique annotée"
 
@@ -50703,19 +50589,16 @@ msgid "novella"
 msgstr "novella"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/serials/subscription-add.tmpl:106
-#, fuzzy
 msgid "numbering for {X}"
-msgstr "Formule de numérotation&nbsp;: "
+msgstr "Formule de numérotation pour {X}"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/serials/subscription-add.tmpl:115
-#, fuzzy
 msgid "numbering for {Y}"
-msgstr "Formule de numérotation&nbsp;: "
+msgstr "Formule de numérotation pour {Y}"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/serials/subscription-add.tmpl:124
-#, fuzzy
 msgid "numbering for {Z}"
-msgstr "Formule de numérotation&nbsp;: "
+msgstr "Formule de numérotation pour {Z}"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_135a.tmpl:23
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_135a.tmpl:25
@@ -50726,9 +50609,8 @@ msgstr "numerique"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:413
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:439
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:338
-#, fuzzy
 msgid "numeric data"
-msgstr "table numérique"
+msgstr "donnée numérique"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/subtypes_unimarc.inc:102
 msgid "numeric table"
@@ -50855,7 +50737,6 @@ msgid "on <i>%s</i>"
 msgstr "le <i>%s</i>"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/marc_subfields_structure.tmpl:51
-#, fuzzy
 msgid ""
 "on a field like author (200f in UNIMARC), put 200f here, you will be able to "
 "see all biblios with the same author."
@@ -50864,15 +50745,13 @@ msgstr ""
 "toutes les notices avec cet auteur"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/marc_subfields_structure.tmpl:52
-#, fuzzy
 msgid ""
 "on a field that is a link (4xx) to reach another biblio. For example, put "
 "011a in 464$x, will find the serials that are with this issn."
 msgstr ""
 "Sur un champ de lien (4xx), pour \"sauter\" sur d'une notice à une autre. "
 "Par exemple, mettez 011a dans le 464$x. Vous trouverez le périodique avec "
-"cet ISSN. Avec le plugin 4xx, vous disposez d'un outil performant pour gérer "
-"les liens entre notices."
+"cet ISSN."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/results.tmpl:489
 msgid "on loan:"
@@ -50889,21 +50768,19 @@ msgid "once every"
 msgstr "Toutes les"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/serials/subscription-add.tmpl:118
-#, fuzzy
 msgid "once every : 1"
-msgstr "Toutes les"
+msgstr "tous les : 1"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/serials/subscription-add.tmpl:109
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/serials/subscription-add.tmpl:127
-#, fuzzy
 msgid "once every : 12"
-msgstr "Toutes les"
+msgstr "un tous les : 12"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/serials/subscription-add.tmpl:98
 msgid ""
 "once every : every x received issues (ex : 12 for a volume number that "
 "increases every 12 issues ; 1 for number increasing for each issue)"
-msgstr ""
+msgstr "Tous les : chaque X fascicule reçu (par exemple 12 pour un numéro de volume qui s'incrémente tous les 12 bulletins : 1 pour un numéro qui s'incrémente à chaque bulletin)"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_120.tmpl:17
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_120.tmpl:19
@@ -50926,9 +50803,8 @@ msgstr "uniquement ce type&nbsp;: <b>%s %s</b>"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:217
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:219
-#, fuzzy
 msgid "opera"
-msgstr "cuivre"
+msgstr "opéra"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_115a.tmpl:172
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_115a.tmpl:174
@@ -50937,7 +50813,7 @@ msgstr "piste son optique et magnétique sur le film"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:936
 msgid "optical disc"
-msgstr ""
+msgstr "disque optique"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_115a.tmpl:146
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_115a.tmpl:148
@@ -50957,9 +50833,8 @@ msgstr "ou"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:222
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:224
-#, fuzzy
 msgid "oratorio"
-msgstr "Laboratoire"
+msgstr "oratorio"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_140.tmpl:1495
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_140.tmpl:1497
@@ -51015,9 +50890,8 @@ msgstr "orthographique"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2OAIDC.xsl:167
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2RSS2.xsl:170
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2RDFDC.xsl:169
-#, fuzzy
 msgid "ot"
-msgstr "sauf"
+msgstr "ot"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/subtypes_unimarc.inc:108
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_124b.tmpl:68
@@ -51207,9 +51081,8 @@ msgid "other film type"
 msgstr "autre type de film"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_115a.tmpl:396
-#, fuzzy
 msgid "other film type/option>"
-msgstr "autre type de film"
+msgstr "Autre film type/option>"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1073
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_115a.tmpl:416
@@ -51219,9 +51092,8 @@ msgstr "autre type de bobine de film"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:362
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:364
-#, fuzzy
 msgid "other form"
-msgstr "autre ton"
+msgstr "Autre forme"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_106.tmpl:78
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_106.tmpl:80
@@ -51340,12 +51212,10 @@ msgstr "chutes"
 msgid "overdue actions for %s"
 msgstr " procédures de retard pour %s"
 
-#
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:227
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:229
-#, fuzzy
 msgid "overture"
-msgstr "Retard"
+msgstr "Ouverture"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/marc21_leader.tmpl:107
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/marc21_leader.tmpl:109
@@ -51470,20 +51340,18 @@ msgstr "parties absentes"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:262
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:264
-#, fuzzy
 msgid "partsong"
-msgstr "Baryton"
+msgstr "partsong"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:257
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:259
 msgid "passacaglia"
-msgstr ""
+msgstr "passacaglia"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:242
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:244
-#, fuzzy
 msgid "passion music"
-msgstr "En retard depuis"
+msgstr "musique passion"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_124g.tmpl:63
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_124g.tmpl:65
@@ -51517,9 +51385,8 @@ msgstr "adhérents seront supprimés."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:267
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:269
-#, fuzzy
 msgid "pavan"
-msgstr "plan"
+msgstr "pavan"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_116.tmpl:304
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_116.tmpl:306
@@ -51557,14 +51424,13 @@ msgstr "permissions"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:267
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:285
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:185
-#, fuzzy
 msgid "personal"
-msgstr "périodique"
+msgstr "personnel"
 
 #. INPUT type=submit name=phony_submit
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/additem.tmpl:253
 msgid "phony_submit"
-msgstr ""
+msgstr "phony_submit"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_121a.tmpl:214
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_121a.tmpl:216
@@ -51604,7 +51470,6 @@ msgid "photolithography"
 msgstr "photolithographie"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1041
-#, fuzzy
 msgid "photomechanical print"
 msgstr "reproduction photomécanique"
 
@@ -51666,7 +51531,7 @@ msgstr "plan"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:958
 msgid "planetary or lunar globe"
-msgstr ""
+msgstr "globe planétaire ou lunaire"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_124c.tmpl:28
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_124c.tmpl:30
@@ -51751,7 +51616,6 @@ msgstr ""
 "d'extension est une aide considérable pour le catalogueur!"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/marc_subfields_structure.tmpl:48
-#, fuzzy
 msgid ""
 "plugin : means the value is calculated or managed by a plugin. Plugins can "
 "do almost anything. For example, in UNIMARC there are plugins for every 1xx "
@@ -51806,9 +51670,8 @@ msgstr "oeuvre politique"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:247
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:249
-#, fuzzy
 msgid "polonaise"
-msgstr "polarisé"
+msgstr "polonaise"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_120.tmpl:493
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_120.tmpl:495
@@ -51835,12 +51698,10 @@ msgstr "polyhédrique"
 msgid "poor"
 msgstr "pauvre"
 
-#
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:252
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:254
-#, fuzzy
 msgid "popular music"
-msgstr "plastique"
+msgstr "musique populaire"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_116.tmpl:135
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_116.tmpl:137
@@ -51913,7 +51774,7 @@ msgstr "postface"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2OPACResults.xsl:104
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2intranetResults.xsl:104
 msgid "pour le prêt:"
-msgstr ""
+msgstr "pour le prêt :"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/subtypes_unimarc.inc:11
 msgid "pre-primary (0-5)"
@@ -51940,22 +51801,20 @@ msgstr "pierre précieuses"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:232
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:234
 msgid "prelude and fugue"
-msgstr ""
+msgstr "prélude et fugue"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1206
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:960
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:1033
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:770
-#, fuzzy
 msgid "preschool"
 msgstr "Préscolaire"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:915
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:895
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:961
-#, fuzzy
 msgid "preservation"
-msgstr "Génération"
+msgstr "préservation"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/addbooks.tmpl:39
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/addbooks.tmpl:133
@@ -52018,17 +51877,15 @@ msgstr "profil"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:237
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:239
-#, fuzzy
 msgid "programme music"
-msgstr "Textes programmés"
+msgstr "musique programmée"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:389
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:378
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:403
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:302
-#, fuzzy
 msgid "programmed text"
-msgstr "Textes programmés"
+msgstr "Texte programmé"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/subtypes_unimarc.inc:97
 msgid "programmed text books"
@@ -52062,7 +51919,7 @@ msgstr "polyconique de la carte du monde"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_700-4.tmpl:34
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_700-4.tmpl:36
 msgid "préface, notes"
-msgstr ""
+msgstr "préface, notes"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_125a.tmpl:67
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_125a.tmpl:69
@@ -52072,9 +51929,8 @@ msgstr "pseudo-partition"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:2230
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:1804
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:1987
-#, fuzzy
 msgid "pst"
-msgstr "pastel"
+msgstr "pst"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/edit-layout.tmpl:230
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/edit-layout.tmpl:282
@@ -52234,12 +52090,10 @@ msgstr "r- notice lien requise"
 msgid "r- Reprint/original date"
 msgstr "r- Réimpression, date originale"
 
-#
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:282
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:284
-#, fuzzy
 msgid "ragtime"
-msgstr "Traités"
+msgstr "ragtime"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_124c.tmpl:113
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_124c.tmpl:115
@@ -52254,9 +52108,8 @@ msgstr "plutôt que"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:559
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:590
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:489
-#, fuzzy
 msgid "realia"
-msgstr "répliques"
+msgstr "realia"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/authorised_values.tmpl:86
 msgid "reasons why a title is not for loan"
@@ -52330,7 +52183,7 @@ msgstr "ouvrage de référence"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:858
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:666
 msgid "reformatted digital"
-msgstr ""
+msgstr "Numérique reformaté"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_110.tmpl:174
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_110.tmpl:176
@@ -52347,9 +52200,8 @@ msgstr "Impression normale"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:512
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:501
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:531
-#, fuzzy
 msgid "rehearsal"
-msgstr "répétitions"
+msgstr "rehearsal"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_125b.tmpl:82
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_125b.tmpl:84
@@ -52357,9 +52209,8 @@ msgid "rehearsals"
 msgstr "répétitions"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:430
-#, fuzzy
 msgid "rehersal"
-msgstr "répétitions"
+msgstr "rehersal"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tags/review.tmpl:214
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tags/review.tmpl:311
@@ -52367,9 +52218,8 @@ msgid "rejected"
 msgstr "rejeté"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:1653
-#, fuzzy
 msgid "related"
-msgstr "Créer"
+msgstr "relatif à"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_140.tmpl:732
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_140.tmpl:734
@@ -52387,9 +52237,8 @@ msgid "remaining"
 msgstr "restant"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:939
-#, fuzzy
 msgid "remote"
-msgstr "Contenu"
+msgstr "distant"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:310
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:299
@@ -52404,7 +52253,6 @@ msgstr "Image de télédétection"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:984
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1082
-#, fuzzy
 msgid "remote-sensing image"
 msgstr "Image de télédétection"
 
@@ -52426,9 +52274,8 @@ msgstr "les champs répétables sont gérés."
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:918
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:898
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:964
-#, fuzzy
 msgid "replacement"
-msgstr "Coût de remplacement"
+msgstr "remplacement"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_117.tmpl:177
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_117.tmpl:179
@@ -52456,7 +52303,7 @@ msgstr "représentationnel"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:297
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:299
 msgid "requiem mass"
-msgstr ""
+msgstr "Réquiem"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_116.tmpl:985
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_116.tmpl:987
@@ -52498,17 +52345,15 @@ msgstr "restoré, imitation"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2intranetDetail.xsl:264
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2intranetDetail.xsl:310
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2intranetDetail.xsl:335
-#, fuzzy
 msgid "results_summary"
-msgstr "Abrégé des n° parus"
+msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:386
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:375
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:400
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:299
-#, fuzzy
 msgid "review"
-msgstr "Prévisualisation"
+msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_110.tmpl:272
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_110.tmpl:274
@@ -52517,12 +52362,12 @@ msgstr "commentaires"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:646
 msgid "rfc3066"
-msgstr ""
+msgstr "rfc3066"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:292
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:294
 msgid "rhapsody"
-msgstr ""
+msgstr "rhapsodie"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_140.tmpl:1574
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_140.tmpl:1576
@@ -52533,15 +52378,13 @@ msgstr "papier de riz"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:287
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:289
-#, fuzzy
 msgid "ricercare"
 msgstr "papier de riz"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:272
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:274
-#, fuzzy
 msgid "rock music"
-msgstr "Musique"
+msgstr "Musique rock"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1088
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_126a.tmpl:48
@@ -52556,14 +52399,13 @@ msgstr "romance"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:277
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:279
-#, fuzzy
 msgid "rondo"
-msgstr "rebond"
+msgstr "rondo"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslimUtils.xsl:162
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slimUtils.xsl:104
 msgid "rtl"
-msgstr ""
+msgstr "rtl"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_140.tmpl:42
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_140.tmpl:44
@@ -52586,7 +52428,7 @@ msgstr "rushes"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:2298
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:1701
 msgid "rvm"
-msgstr ""
+msgstr "rvm"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_leader.tmpl:172
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_leader.tmpl:174
@@ -52798,9 +52640,8 @@ msgid "sculptures"
 msgstr "sculptures"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2intranetDetail.xsl:173
-#, fuzzy
 msgid "se"
-msgstr "Utilisé"
+msgstr "se"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:987
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_124b.tmpl:53
@@ -52890,7 +52731,6 @@ msgstr "serialseq %s"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:322
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:346
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:245
-#, fuzzy
 msgid "series"
 msgstr "Collections"
 
@@ -52959,9 +52799,8 @@ msgid "should be updated."
 msgstr "devrait être mis à jour"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1965
-#, fuzzy
 msgid "sici"
-msgstr "Musique"
+msgstr "sici"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_116.tmpl:1033
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_116.tmpl:1035
@@ -52992,9 +52831,8 @@ msgstr "depuis le dernier transfert"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:307
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:309
-#, fuzzy
 msgid "sinfonia"
-msgstr "sinusoïdale"
+msgstr "symphonie"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_121a.tmpl:302
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_121a.tmpl:304
@@ -53040,9 +52878,8 @@ msgstr "peaux"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:562
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:593
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:492
-#, fuzzy
 msgid "slide"
-msgstr "comme"
+msgstr "diapositive"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_115a.tmpl:428
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_115a.tmpl:430
@@ -53069,46 +52906,38 @@ msgstr "coutumes sociales"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:311
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:210
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2RDFDC.xsl:49
-#, fuzzy
 msgid "software, multimedia"
-msgstr "multimedia"
+msgstr "logiciel, multimedia"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_125a.tmpl:72
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_125a.tmpl:74
 msgid "solo part"
 msgstr "partie solo"
 
-#
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:312
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:314
-#, fuzzy
 msgid "sonata"
-msgstr "Contact "
+msgstr "sonate"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:302
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:304
-#, fuzzy
 msgid "song"
-msgstr "le"
+msgstr "chanson"
 
-#
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:518
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:507
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:537
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:436
-#, fuzzy
 msgid "sound"
-msgstr "sons"
+msgstr "son"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1091
-#, fuzzy
 msgid "sound cartridge"
-msgstr "fim fixe en cartouche"
+msgstr "cartouche audio"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1094
-#, fuzzy
 msgid "sound cassette"
-msgstr "Bande VHS / Videocassette"
+msgstr "cassette audio"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1097
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_115a.tmpl:165
@@ -53127,37 +52956,32 @@ msgstr "son sur support"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2RSS2.xsl:58
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:206
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2RDFDC.xsl:45
-#, fuzzy
 msgid "sound recording"
 msgstr "enregistrement sonore"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:298
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:287
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:307
-#, fuzzy
 msgid "sound recording-musical"
 msgstr "enregistrement sonore"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:297
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:286
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:306
-#, fuzzy
 msgid "sound recording-nonmusical"
-msgstr "enregistrement sonore"
+msgstr "enregistrement non musical"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/subtypes_unimarc.inc:78
 msgid "sound recordings"
 msgstr "enregistrement sonore"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1100
-#, fuzzy
 msgid "sound-tape reel"
 msgstr "bande (sur bobine)"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1103
-#, fuzzy
 msgid "sound-track film"
-msgstr "piste sonore séparée"
+msgstr "piste sonore"
 
 #
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_125b.tmpl:52
@@ -53203,9 +53027,8 @@ msgstr "modèle spatial sur surface à deux dimensions"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:963
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:1036
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:773
-#, fuzzy
 msgid "specialized"
-msgstr "Spécialisé"
+msgstr "spécialisé"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_117.tmpl:33
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_117.tmpl:35
@@ -53220,9 +53043,8 @@ msgstr "specimens (biologique, etc.)"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:540
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:392
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:439
-#, fuzzy
 msgid "speech"
-msgstr "s- discours"
+msgstr "discours"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/subtypes_unimarc.inc:46
 msgid "speeches, oratory"
@@ -53246,9 +53068,8 @@ msgstr "points cotés"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:322
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:324
-#, fuzzy
 msgid "square dance"
-msgstr "quart de piste"
+msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/members/member-flags.tmpl:106
 msgid "staffaccess"
@@ -53340,9 +53161,8 @@ msgstr "stereophonique"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:308
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:207
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2RDFDC.xsl:46
-#, fuzzy
 msgid "still image"
-msgstr "Image"
+msgstr "image fixe"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_115a.tmpl:587
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_115a.tmpl:589
@@ -53381,7 +53201,7 @@ msgstr "trousse pédagogique"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:327
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:329
 msgid "study, exercise"
-msgstr ""
+msgstr "exercice, étude"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/marc_subfields_structure.tmpl:193
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/auth_subfields_structure.tmpl:175
@@ -53418,9 +53238,8 @@ msgstr "Suggestion"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:332
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:334
-#, fuzzy
 msgid "suite"
-msgstr "Site Web"
+msgstr "suite"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:2921
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:2988
@@ -53434,7 +53253,7 @@ msgstr ""
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:2440
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:2498
 msgid "sung or spoken text"
-msgstr ""
+msgstr "Chanson ou texte dit"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/about.tmpl:250
 msgid "suomi, suomen kieli (Finnish)"
@@ -53448,21 +53267,18 @@ msgstr "superlibrarian"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:372
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:397
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:296
-#, fuzzy
 msgid "survey of literature"
-msgstr "littérature jeunesse"
+msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:317
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:319
-#, fuzzy
 msgid "symphonic poem"
-msgstr "Tympanon"
+msgstr "Poème symphonique"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:337
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:339
-#, fuzzy
 msgid "symphony"
-msgstr "Tympanon"
+msgstr "Symphonie"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/subtypes_unimarc.inc:197
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_141.tmpl:43
@@ -53533,14 +53349,12 @@ msgstr "tablature"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:2991
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:2440
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:2498
-#, fuzzy
 msgid "table of contents"
-msgstr "7-10 Nature du contenu"
+msgstr "Table des matières"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1119
-#, fuzzy
 msgid "tactile, with no writing system"
-msgstr "c- ajusté avec système de grille"
+msgstr "tactile, sans système d'écriture"
 
 #. SCRIPT
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/addbiblio.tmpl:581
@@ -53570,14 +53384,12 @@ msgid "tape (open reel)"
 msgstr "bande (sur bobine)"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:942
-#, fuzzy
 msgid "tape cartridge"
 msgstr "bande (cartouche)"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:945
-#, fuzzy
 msgid "tape cassette"
-msgstr "cassette"
+msgstr "cassette audio"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_126b.tmpl:33
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_126b.tmpl:35
@@ -53585,7 +53397,6 @@ msgid "tape duplication master"
 msgstr "bande reproduite à partir du \"master\""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:948
-#, fuzzy
 msgid "tape reel"
 msgstr "bande (sur bobine)"
 
@@ -53662,9 +53473,8 @@ msgid "terrestrial"
 msgstr "terrestre"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:961
-#, fuzzy
 msgid "terrestrial globe"
-msgstr "terrestre"
+msgstr "globe terrestre"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_126b.tmpl:53
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_126b.tmpl:55
@@ -53704,9 +53514,8 @@ msgstr "texte sur le document cartographique lui-même"
 
 #. META http-equiv=Content-Type
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARC_compact.xsl:12
-#, fuzzy
 msgid "text/html"
-msgstr "textile"
+msgstr "text/html"
 
 #. META http-equiv=Content-Type
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/doc-head-close-receipt.inc:1
@@ -53813,9 +53622,8 @@ msgstr "texte (y compris fait main)"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:1032
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:1182
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:1217
-#, fuzzy
 msgid "tfklmorsv"
-msgstr "morphographies"
+msgstr "tfklmorsv"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1704
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1887
@@ -53826,7 +53634,7 @@ msgstr "morphographies"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:1079
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:1257
 msgid "tfklsv"
-msgstr ""
+msgstr "tfklsv"
 
 #. %1$s: TMPL_VAR name=borrowerfirstname
 #. %2$s: TMPL_VAR name=borrowersurname
@@ -53963,9 +53771,8 @@ msgid "this record has no items attached."
 msgstr "cette notice n'a pas d'exemplaire rattaché."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/preferences.tmpl:13
-#, fuzzy
 msgid "this tab contains preferences related to modules that create objects."
-msgstr "contient les préférences liées à la gestion des notices d'autorité."
+msgstr "Cet onglet contient des préférences en relation avec les modules qui crééent des objets."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/preferences.tmpl:16
 msgid ""
@@ -53984,9 +53791,8 @@ msgstr ""
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:310
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:209
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2RDFDC.xsl:48
-#, fuzzy
 msgid "three dimensional object"
-msgstr "trois fois par mois"
+msgstr "Objet tri-dimensionnel"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_115b.tmpl:468
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_115b.tmpl:470
@@ -54082,12 +53888,10 @@ msgstr "pour la réservation"
 msgid "to show the item link on the search results page"
 msgstr "pour afficher le lien exemplaire sur la page des résultats"
 
-#
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:342
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:344
-#, fuzzy
 msgid "toccata"
-msgstr "Contact "
+msgstr "toccata"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/stats.tmpl:21
 msgid "today"
@@ -54106,9 +53910,8 @@ msgstr "outils et équipements"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:571
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:602
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:501
-#, fuzzy
 msgid "toy"
-msgstr "jouets"
+msgstr "jouet"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_117.tmpl:147
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_117.tmpl:149
@@ -54122,9 +53925,8 @@ msgstr "papier claque"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_700-4.tmpl:40
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_700-4.tmpl:42
-#, fuzzy
 msgid "traducteur"
-msgstr "Structure MARC"
+msgstr "traducteur"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_121a.tmpl:260
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_121a.tmpl:262
@@ -54136,14 +53938,12 @@ msgstr "impression transfert ligne à ligne"
 msgid "transfers to receive at your library"
 msgstr "Transferts en cours vers votre site"
 
-#
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:2926
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:2993
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:2440
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:2498
-#, fuzzy
 msgid "translation"
-msgstr "Traduction"
+msgstr "traduction"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/subtypes_unimarc.inc:79
 msgid "transparencies"
@@ -54202,9 +54002,8 @@ msgstr "Traités"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:399
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:424
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:323
-#, fuzzy
 msgid "treaty"
-msgstr "Traités"
+msgstr "Traité"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_110.tmpl:125
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_110.tmpl:127
@@ -54216,17 +54015,14 @@ msgstr "triennal (tous les 3 ans)"
 msgid "trims"
 msgstr "coupes"
 
-#
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:347
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:349
-#, fuzzy
 msgid "triosonata"
-msgstr "Contact "
+msgstr "sonate en trio"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/preferences.tmpl:17
-#, fuzzy
 msgid "turn on/off logging functionality in your system."
-msgstr ": active ou désactive l'authentification pour votre système."
+msgstr "active ou désactive le suivi des actions pour votre système."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_126a.tmpl:381
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_126a.tmpl:383
@@ -54500,13 +54296,12 @@ msgstr "Charger"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:1625
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:1778
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:1359
-#, fuzzy
 msgid "uri"
-msgstr "Burin"
+msgstr "uri"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2ATOM.xsl:22
 msgid "urn:tcn:"
-msgstr ""
+msgstr "urn:tcn:"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/installer/step2.tmpl:26
 msgid "user"
@@ -54549,9 +54344,8 @@ msgstr "variable manquante"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:352
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128a.tmpl:354
-#, fuzzy
 msgid "variation"
-msgstr "animation"
+msgstr "variation"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_130.tmpl:192
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_130.tmpl:194
@@ -54624,9 +54418,8 @@ msgid "very high (61x - 90x)"
 msgstr "très haut (61x - 90x)"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/marc_subfields_structure.tmpl:16
-#, fuzzy
 msgid "very important"
-msgstr "pointe d'argent"
+msgstr "très important"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_130.tmpl:246
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_130.tmpl:248
@@ -54672,9 +54465,8 @@ msgstr "enregistrement vidéo"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:1596
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3.xsl:1740
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS.xsl:1337
-#, fuzzy
 msgid "videorecording identifier"
-msgstr "enregistrement vidéo"
+msgstr "identifiant enregistrement vidéo"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:1145
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_115a.tmpl:886
