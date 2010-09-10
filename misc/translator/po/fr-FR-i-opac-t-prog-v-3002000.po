@@ -1,7 +1,4 @@
 # translation of nicomo-fr-FR-i-opac-t-prog-v-3000000.po to Français
-# POULAIN <paul@koha-fr.org>, 2006, 2007.
-# paul POULAIN <paul@koha-fr.org>, 2007, 2008.
-# Nicolas Morin <nicolas.morin@biblibre.com>, 2008, 2009, 2010.
 # translation of fr-FR-i-opac-t-prog-v-3000000.po to
 # translation of fr-FR-i-opac-t-prog-v-30000.po to
 # translation of prog_opac_fr.po to
@@ -12,20 +9,24 @@
 # Penbwrdd yn Gymraeg.
 # Copyright (C) 2003, 2006, 2007, 2008 Free Software Foundation, Inc.
 # Copyright (C) 2008, 2009, 2010 BibLibre, SARL
-# 
-# 
+#
+#
+# POULAIN <paul@koha-fr.org>, 2006, 2007.
+# paul POULAIN <paul@koha-fr.org>, 2007, 2008.
+# Nicolas Morin <nicolas.morin@biblibre.com>, 2008, 2009, 2010.
 msgid ""
 msgstr ""
 "Project-Id-Version: nicomo-fr-FR-i-opac-t-prog-v-3000000\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-08-13 10:36+0200\n"
-"PO-Revision-Date: 2010-08-18 13:18+0200\n"
-"Last-Translator: nicomo <nicolas.morin@biblibre.com>\n"
-"Language-Team: French\n"
+"PO-Revision-Date: 2010-09-10 15:53+0200\n"
+"Last-Translator: \n"
+"Language-Team: Français <kde-i18n-doc@kde.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);"
+"X-Generator: Lokalize 1.0\n"
 
 #. SCRIPT
 #: ../../koha-tmpl/opac-tmpl/prog/en/includes/doc-head-close.inc:62
@@ -34,7 +35,7 @@ msgstr "document(s) ajouté(s) à mon panier"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:509
 msgid "\" alt=\"\" class=\"thumbnail\" />"
-msgstr ""
+msgstr "\" alt=\"\" class=\"thumbnail\" />"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:415
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:430
@@ -264,7 +265,7 @@ msgstr "%s/cgi-bin/koha/opac-search.pl?%s%s&amp;format=rss2"
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:577
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:864
 msgid "&amp;type=xw10\" alt=\"\" />"
-msgstr ""
+msgstr "&amp;type=xw10\" alt=\"\" />"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:838
 msgid "&amp;type=xw10\" alt=\"\" class=\"thumbnail\" />"
@@ -2807,7 +2808,7 @@ msgstr "Discographies"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACResults.xsl:71
 msgid "Disponibilité:"
-msgstr ""
+msgstr "Disponibilité:"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-messaging.tmpl:39
 msgid "Do not notify"
@@ -3118,7 +3119,7 @@ msgstr "Prolonge le prêt sur le compte d'un adhérent."
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslimUtils.xsl:73
 msgid "Fait partie de :"
-msgstr ""
+msgstr "Fait partie de :"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-userdetails.tmpl:30
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-userupdate.tmpl:39
@@ -3224,9 +3225,8 @@ msgid "Full history"
 msgstr "Historique complet"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:839
-#, fuzzy
 msgid "General;"
-msgstr "Adulte, général"
+msgstr "General;"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/ilsdi.tmpl:301
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/ilsdi.tmpl:702
@@ -3588,7 +3588,7 @@ msgstr "En transit de %s vers %s, le %s"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:505
 msgid "In:"
-msgstr ""
+msgstr "Dans :"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:472
 msgid "Incomplete contents:"
@@ -3712,9 +3712,8 @@ msgid "Juvenile"
 msgstr "Jeunesse"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:842
-#, fuzzy
 msgid "Juvenile;"
-msgstr "Jeunesse"
+msgstr "jeunesse ;"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:62
 msgid "Keyword"
@@ -4071,17 +4070,17 @@ msgstr "MODS (XML)"
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:38
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:41
 msgid "MP"
-msgstr ""
+msgstr "MP"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:40
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:43
 msgid "MU"
-msgstr ""
+msgstr "MU"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:36
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:39
 msgid "MX"
-msgstr ""
+msgstr "MX"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-userdetails.tmpl:22
 msgid "Mailing Address:"
@@ -4202,9 +4201,8 @@ msgstr "Les plus populaires"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:57
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:528
-#, fuzzy
 msgid "Music"
-msgstr "musique"
+msgstr "Musique"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:165
 msgid "Musical recording"
@@ -4503,7 +4501,7 @@ msgstr "Note"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:297
 msgid "Note sur la provenance:"
-msgstr ""
+msgstr "Note sur la provenance:"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-tags_subject.tmpl:27
 msgid ""
@@ -4666,14 +4664,12 @@ msgstr "Autre nom:"
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:332
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:337
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:879
-#, fuzzy
 msgid "Other Title:"
-msgstr "Nom de famille&nbsp;:"
+msgstr "Autre titre :"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:885
-#, fuzzy
 msgid "Other title:"
-msgstr "Nom de famille&nbsp;:"
+msgstr "Autre titre :"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/ilsdi.tmpl:704
 msgid "OutputIntermediateFormat"
@@ -4694,7 +4690,7 @@ msgstr "Retards"
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:41
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:44
 msgid "PR"
-msgstr ""
+msgstr "PR"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/ilsdi.tmpl:18
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/ilsdi.tmpl:100
@@ -4717,7 +4713,7 @@ msgstr "Contenu partiel :"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACResults.xsl:101
 msgid "Pas de copie disponible"
-msgstr ""
+msgstr "Pas de copie disponible"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-auth.tmpl:71
 msgid "Password"
@@ -4947,9 +4943,8 @@ msgid "Primary (5-8)"
 msgstr "Primaire (5-8)"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:827
-#, fuzzy
 msgid "Primary;"
-msgstr "Primaire (5-8)"
+msgstr "Primaire ;"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/includes/subtypes_unimarc.inc:18
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:918
@@ -5272,11 +5267,11 @@ msgstr "Commentaires de Syndetics"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:281
 msgid "Résumé:"
-msgstr ""
+msgstr "Résumé :"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:32
 msgid "SE"
-msgstr ""
+msgstr "SE"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-messaging.tmpl:39
 msgid "SMS"
@@ -5345,15 +5340,13 @@ msgstr ""
 "les code-barres manuellement."
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:535
-#, fuzzy
 msgid "Scope and content:"
-msgstr "Contenus incomplets :"
+msgstr "Contenu et portée :"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:59
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:526
-#, fuzzy
 msgid "Score"
-msgstr "Désolé"
+msgstr "Score"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:30
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:128
@@ -5698,7 +5691,7 @@ msgstr "Trier cette liste par&nbsp;:"
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:58
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:527
 msgid "Sound"
-msgstr ""
+msgstr "Son"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:845
 msgid "Specialized;"
@@ -5864,16 +5857,15 @@ msgstr "Suggestion rejetée"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:353
 msgid "Sujets:"
-msgstr ""
+msgstr "Sujet :"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:141
 msgid "Summary"
 msgstr "Abrégé"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:538
-#, fuzzy
 msgid "Summary:"
-msgstr "Abrégé"
+msgstr "Résumé :"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:471
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:608
@@ -5964,9 +5956,8 @@ msgid "Thank you!"
 msgstr "Merci !"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/maintenance.tmpl:24
-#, fuzzy
 msgid "The"
-msgstr "Mémoires"
+msgstr "Le"
 
 #. %1$s: TMPL_VAR name=opacdisplaycount
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:709
@@ -6027,7 +6018,7 @@ msgstr "Liste envoyée à&nbsp;: %s"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:104
 msgid "The selected suggestions have been deleted."
-msgstr ""
+msgstr "Les suggestions sélectionnées ont été supprimées."
 
 #. %1$s: TMPl_VAR name=histenddate
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-serial-issues.tmpl:86
@@ -6269,7 +6260,7 @@ msgstr "Somme due"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslimUtils.xsl:80
 msgid "Traduit de :"
-msgstr ""
+msgstr "Traduit de :"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:207
 msgid "Treaties"
@@ -6395,7 +6386,7 @@ msgstr "Vidéocassette /VHS"
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:39
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:42
 msgid "VM"
-msgstr ""
+msgstr "VM"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/includes/subtypes_unimarc.inc:109
 msgid "Video Types"
@@ -6776,47 +6767,47 @@ msgstr "une liste&nbsp;:"
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:877
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:888
 msgid "ab"
-msgstr ""
+msgstr "ab"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:105
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:436
 msgid "abc"
-msgstr ""
+msgstr "abc"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:367
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslimUtils.xsl:247
 msgid "abcdjpvxyz"
-msgstr ""
+msgstr "abcdjpvxyz"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:398
 msgid "abcdvxyz"
-msgstr ""
+msgstr "abcdvxyz"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:284
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:296
 msgid "abceg"
-msgstr ""
+msgstr "abceg"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:234
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:856
 msgid "abcg"
-msgstr ""
+msgstr "abcg"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:542
 msgid "abcu"
-msgstr ""
+msgstr "abcu"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:389
 msgid "abh"
-msgstr ""
+msgstr "abh"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:69
 msgid "abhfgknps"
-msgstr ""
+msgstr "abhfgknps"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:330
 msgid "abhfgnp"
-msgstr ""
+msgstr "abhfgnp"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/includes/subtypes_unimarc.inc:88
 msgid "abstract"
@@ -6839,7 +6830,7 @@ msgstr "acdeq"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:355
 msgid "adfklmor"
-msgstr ""
+msgstr "adfklmor"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:233
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:301
@@ -6874,13 +6865,13 @@ msgstr "tout"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:227
 msgid "aperture card"
-msgstr ""
+msgstr "Carte d'accès"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:510
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:652
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:1037
 msgid "aq"
-msgstr ""
+msgstr "aq"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-alert-subscribe.tmpl:15
 msgid "arrive ?"
@@ -6888,12 +6879,11 @@ msgstr "Arrivé ?"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:759
 msgid "art original"
-msgstr ""
+msgstr "art original"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:765
-#, fuzzy
 msgid "art reproduction"
-msgstr "reproduction photomécanique"
+msgstr "reproduction d'art"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:441
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:495
@@ -6919,7 +6909,7 @@ msgstr "atlas"
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:106
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:490
 msgid "au"
-msgstr ""
+msgstr "au"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/includes/subtypes_unimarc.inc:53
 msgid "autobiography"
@@ -6928,9 +6918,8 @@ msgstr "autobiographie"
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:191
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:205
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:219
-#, fuzzy
 msgid "av"
-msgstr "Enregistrer"
+msgstr "av"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/includes/opac-facets.inc:6
 msgid "available"
@@ -6944,22 +6933,22 @@ msgstr "en ligne"
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:688
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:1074
 msgid "bc"
-msgstr ""
+msgstr "bc"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:246
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:867
 msgid "bcg"
-msgstr ""
+msgstr "bcg"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/ilsdi.tmpl:25
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/ilsdi.tmpl:32
 msgid "bib"
-msgstr ""
+msgstr "bib"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/ilsdi.tmpl:611
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/ilsdi.tmpl:642
 msgid "bib_id"
-msgstr ""
+msgstr "bib_id"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/includes/subtypes_unimarc.inc:85
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:571
@@ -6976,9 +6965,8 @@ msgstr "Biographie"
 #. IMG
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:517
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:521
-#, fuzzy
 msgid "book"
-msgstr "Livres de poche"
+msgstr "livre"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/ilsdi.tmpl:370
 msgid "borrowernumber"
@@ -6987,9 +6975,8 @@ msgstr "borrowernumber"
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:80
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:338
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:350
-#, fuzzy
 msgid "braille"
-msgstr "Braille"
+msgstr "braille"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/includes/subtypes_unimarc.inc:184
 msgid "bristol board"
@@ -6998,7 +6985,7 @@ msgstr "fiche bristol"
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:114
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:443
 msgid "by"
-msgstr ""
+msgstr "par"
 
 #. For the first occurrence,
 #. %1$s: TMPL_VAR name=author
@@ -7045,12 +7032,12 @@ msgstr "catalogue"
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:673
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:1058
 msgid "cdn"
-msgstr ""
+msgstr "cdn"
 
 #. IMG
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:185
 msgid "celestial globe"
-msgstr ""
+msgstr "Globe céleste"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/includes/usermenu.inc:13
 msgid "change my password"
@@ -7059,9 +7046,8 @@ msgstr "Modifier mon mot de passe"
 #. IMG
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:257
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:789
-#, fuzzy
 msgid "chart"
-msgstr "graphiques"
+msgstr "graphique"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/includes/subtypes_unimarc.inc:66
 msgid "charts"
@@ -7073,7 +7059,7 @@ msgstr "enfants (9-14)"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:156
 msgid "chip cartridge"
-msgstr ""
+msgstr "Cartouche"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/includes/subtypes_unimarc.inc:71
 msgid "coats of arms"
@@ -7089,9 +7075,8 @@ msgid "collective biography"
 msgstr "biographie collective"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:341
-#, fuzzy
 msgid "combination"
-msgstr "illuminations"
+msgstr "combinaison"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:688
 msgid "comic strip"
@@ -7100,17 +7085,17 @@ msgstr "bande dessinée"
 #. IMG
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:523
 msgid "computer file"
-msgstr ""
+msgstr "Fichier informatique"
 
 #. IMG
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:159
 msgid "computer optical disc cartridge"
-msgstr ""
+msgstr "disque optique"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:634
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:716
 msgid "conference publication"
-msgstr ""
+msgstr "Publication de conférence"
 
 #
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-authorities-home.tmpl:30
@@ -7144,15 +7129,14 @@ msgstr ""
 "\" -->&amp;rft.series=<!-- TMPL_VAR NAME=\"series\" -->&amp;rft.genre="
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:314
-#, fuzzy
 msgid "cylinder"
-msgstr "index"
+msgstr "cylindre"
 
 #. IMG
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:543
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:647
 msgid "database"
-msgstr ""
+msgstr "base de données"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/ilsdi.tmpl:618
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/ilsdi.tmpl:649
@@ -7182,9 +7166,8 @@ msgid "desired_due_date"
 msgstr "desired_due_date"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:205
-#, fuzzy
 msgid "diagram"
-msgstr "drame"
+msgstr "diagramme"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/includes/subtypes_unimarc.inc:89
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:578
@@ -7193,7 +7176,7 @@ msgstr "dictionnaire"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:62
 msgid "digitized microfilm"
-msgstr ""
+msgstr "microfilm"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:65
 msgid "digitized other analog"
