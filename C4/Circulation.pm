@@ -947,7 +947,7 @@ sub AddIssue {
 
                 # This book is currently on loan, but not to the person
                 # who wants to borrow it now. mark it returned before issuing to the new borrower
-                AddReturn( $item->{'barcode'}, C4::Context->userenv->{'branch'} );
+                AddReturn( $item->{'barcode'}, C4::Context->userenv->{'branch'}, undef, undef, 1 );
             }
 
             # See if the item is on reserve.
