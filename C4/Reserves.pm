@@ -567,6 +567,7 @@ sub GetMaxPickupDate {
     my $inputdate      = shift;
     my $borrowernumber = shift;
     my $item           = shift;
+    return unless $inputdate;
     my @date           = split( /-/, $inputdate );
     my $delay          = GetMaxPickupDelay( $borrowernumber, $item->{'itemnumber'} );
     (@date) = Add_Delta_Days( @date[ 0 .. 2 ], $delay );
