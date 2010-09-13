@@ -354,7 +354,18 @@ if ($barcode) {
     # FIXME If the issue is confirmed, we launch another time GetMemberIssuesAndFines, now display the issue count after issue
     my ( $od, $issue, $fines ) = GetMemberIssuesAndFines($borrowernumber);
     $template->param( issuecount => $issue );
+
+    # Is there a circulation note?
+    my $itemnumber = GetItemnumberFromBarcode($barcode);
+    my $biblionumber = GetBiblionumberFromItemnumber($itemnumber);
+    my $record = GetMarcBiblio($biblionumber);
+    my $frameworkcode = GetFrameworkCode($biblionumber);
+    my $circnotefield = GetRecordValue('circnote', $record, $frameworkcode);
+    if (defined @$circnotefield[0]) {
+	$template->param(circnote => @$circnotefield[0]->{'subfield'});
+    }
 }
+
 
 # Setting the right status if an hold has been confirmed
 #This should never be used in fact

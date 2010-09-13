@@ -202,10 +202,15 @@ function refocus(calendar) {
 
 <!-- TMPL_INCLUDE NAME="reserves_waiting.inc" -->
 
+<!-- TMPL_IF name="circnote" -->
+    <div id="circnote" class="dialog alert">
+	<h3>Circulation note:</h2>
+	<!-- TMPL_VAR name="circnote" -->
+    </div>
+<!-- /TMPL_IF -->
 <!-- TMPL_IF NAME="newexpiry" --><div class="dialog message">Patron's account has been renewed until <!-- TMPL_VAR NAME="newexpiry" --></div><!-- /TMPL_IF -->
 <!-- TMPL_IF NAME="NEEDSCONFIRMATION" -->
 <div class="yui-g">
-
 <div id="circ_needsconfirmation" class="dialog alert">
 <h3>Please Confirm Checkout</h3>
 

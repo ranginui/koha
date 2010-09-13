@@ -55,6 +55,14 @@ function Dopop(link) {
 	<div id="yui-main">
 
 <div class="yui-g">
+
+<!-- TMPL_IF name="circnote" -->
+    <div id="circnote" class="dialog alert">
+        <h3>Circulation note:</h2>
+        <!-- TMPL_VAR name="circnote" -->
+    </div>
+<!-- /TMPL_IF -->
+
 <!-- TMPL_IF NAME="wrongbranch" -->
 <div class="dialog alert"><h3>Cannot Check In</h3><p>This item must be checked in at its home library: <!-- TMPL_VAR Name="rightbranch" -->. <strong>NOT CHECKED IN</strong></p>
 	     <form method="post" action="returns.pl" class="confirm">

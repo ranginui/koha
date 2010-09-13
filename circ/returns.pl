@@ -284,6 +284,19 @@ if ( $barcode and not $query->param('cancel') ) {
 }
 $template->param( inputloop => \@inputloop );
 
+
+# Is there a circulation note?
+my $itemnumber = GetItemnumberFromBarcode($barcode);
+my $biblionumber = GetBiblionumberFromItemnumber($itemnumber);
+my $record = GetMarcBiblio($biblionumber);
+my $frameworkcode = GetFrameworkCode($biblionumber);
+my $circnotefield = GetRecordValue('circnote', $record, $frameworkcode);
+warn Data::Dumper::Dumper($circnotefield);
+if (defined @$circnotefield[0]) {
+   $template->param(circnote => @$circnotefield[0]->{'subfield'});
+}
+
+
 my $found    = 0;
 my $waiting  = 0;
 my $reserved = 0;
