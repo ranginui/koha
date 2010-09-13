@@ -49,11 +49,23 @@
 <h4>Cas Login</h4>
 
 <!-- TMPL_IF NAME="invalidCasLogin" -->
-<!-- This is what is displayed if cas login has failed -->
-<p>Sorry, the CAS login failed.</p>
+    <!-- This is what is displayed if cas login has failed -->
+    <p>Sorry, the CAS login failed.</p>
 <!-- /TMPL_IF -->
 
-<p>If you have a <acronym title="Central Authentication Service">CAS</acronym> account, please <a href="<!-- TMPL_VAR NAME="casServerUrl" -->">click here to login</a>.<p>
+<p>If you have a <acronym title="Central Authentication Service">CAS</acronym> account, 
+<!-- TMPL_IF name="casServerUrl" -->
+    please <a href="<!-- TMPL_VAR NAME="casServerUrl" -->">click here to login</a>.<p>
+<!-- /TMPL_IF -->
+
+<!-- TMPL_IF name="casServersLoop" -->
+please choose against which one you would like to authenticate: </p>
+<ul>
+    <!-- TMPL_LOOP name="casServersLoop" -->
+	<li><a href="<!-- TMPL_VAR name="value" -->"><!-- TMPL_VAR name="name" --></a></li>
+    <!-- /TMPL_LOOP -->
+<!-- /TMPL_IF -->
+</ul>
 
 <h4>Local Login</h4>
 <p>If you do not have a CAS account, but a local account, you can still log in : </p>

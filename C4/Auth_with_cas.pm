@@ -39,16 +39,27 @@ BEGIN {
 my $context = C4::Context->new() or die 'C4::Context->new failed';
 my $defaultcasserver;
 my $casservers;
+my $yamlauthfile = "../C4/Auth_cas_servers.yaml";
 
 
 # If there's a configuration for multiple cas servers, then we get it
-if (-e qq($FindBin::Bin/../C4/Auth_cas_servers.yaml)) {
-    ($defaultcasserver, $casservers) = YAML::LoadFile(qq($FindBin::Bin/../C4/Auth_cas_servers.yaml));
+if (multipleAuth()) {
+    ($defaultcasserver, $casservers) = YAML::LoadFile(qq($FindBin::Bin/$yamlauthfile));
     $defaultcasserver = $defaultcasserver->{'default'};
 } else {
 # Else, we fall back to casServerUrl syspref
     $defaultcasserver = 'default';
     $casservers = { 'default' => C4::Context->preference('casServerUrl') };
+}
+
+# Is there a configuration file for multiple cas servers?
+sub multipleAuth {
+    return (-e qq($FindBin::Bin/$yamlauthfile));
+}
+
+# Returns configured CAS servers' list if multiple authentication is enabled
+sub getMultipleAuth {
+   return $casservers; 
 }
 
 # Logout from CAS
@@ -70,7 +81,6 @@ sub login_cas {
     my $casparam = $query->param('cas');
     # FIXME: This should be more generic and handle whatever parameters there might be
     $uri .= "?cas=" . $casparam if (defined $casparam);
-    warn $defaultcasserver;
     $casparam = $defaultcasserver if (not defined $casparam);
     my $cas = Authen::CAS::Client->new($casservers->{$casparam});
     print $query->redirect( $cas->login_url($uri));
@@ -79,13 +89,13 @@ sub login_cas {
 # Returns CAS login URL with callback to the requesting URL
 sub login_cas_url {
 
-    my ($query) = @_;
+    my ($query, $key) = @_;
     my $uri = $ENV{'SCRIPT_URI'};
     my $casparam = $query->param('cas');
     # FIXME: This should be more generic and handle whatever parameters there might be
     $uri .= "?cas=" . $casparam if (defined $casparam);
     $casparam = $defaultcasserver if (not defined $casparam);
-    warn $defaultcasserver;
+    $casparam = $key if (defined $key);
     my $cas = Authen::CAS::Client->new($casservers->{$casparam});
     return $cas->login_url($uri);
 }
