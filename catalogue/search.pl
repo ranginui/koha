@@ -454,6 +454,17 @@ my ( $error, $query, $simple_query, $query_cgi, $query_desc, $limit, $limit_cgi,
 
 my @results;
 
+if ($indexes[0] eq "bc" ||$operands[0]=~/^\s*bc[=: ]/){
+    my $bc=$operands[0];
+    $bc=~s/bc[=:]//;
+    my $itemnumber=C4::Items::GetItemnumberFromBarcode($bc);
+    if ($itemnumber){
+        my $item=C4::Items::GetItem($itemnumber);
+        print $cgi->redirect(qq#/cgi-bin/koha/cataloguing/additem.pl?op=edititem&biblionumber=$item->{biblionumber}&itemnumber=$item->{itemnumber}#);
+        exit 1;
+    }
+}
+
 ## I. BUILD THE QUERY
 my $lang = C4::Output::getlanguagecookie($cgi);
 ( $error, $query, $simple_query, $query_cgi, $query_desc, $limit, $limit_cgi, $limit_desc, $stopwords_removed, $query_type ) =
