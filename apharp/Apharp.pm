@@ -170,6 +170,14 @@ sub data_to_koha {
 
     print "UPDATING BORROWERS : start update...\n";
     foreach my $fromdata (@$data) {
+
+	if ( $fromdata->{NUM_CARTE_PUCE} && $fromdata->{NUM_CARTE_PUCE} eq '?') {
+	    my $number = getMemberByAppligest( $fromdata->{NUM_APPLI_GEST}, $fromdata->{SITE} );
+	    push @errors_update, "UPDATING BORROWERS : Can't update borrower n° " . $number . ". No data in apogee/harpege (Appligest:"
+		. $fromdata->{NUM_APPLI_GEST} . ", ws:" . $fromdata->{SITE} . "/" . $fromdata->{TYPE} . "\n";
+	    print $errors_update[-1];
+	    next;
+	}
         
         #load the yaml Config file
         my $configfile = "config/" . lc($fromdata->{"SITE"}) . "_" . $fromdata->{'TYPE'} . ".yaml";

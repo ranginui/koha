@@ -63,6 +63,7 @@ if ($borrowers) {
 
 	foreach my $category (@borrowers_category) {
 	    foreach (@$borrowers[$min..$max-1]) {
+		$_->{"categorycode"} ||= '';
 		if ($_->{"categorycode"} eq $category->{"borrower_type"} && $_->{"ETABLISSEM"} eq $category->{"univ"}) {
 		    push @{ $category->{"borrowers"} }, $_->{"APPLIGEST"};
 		}
