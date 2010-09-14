@@ -1076,6 +1076,7 @@ The MARC record contains both biblio & item data.
 sub GetMarcBiblio {
     my $biblionumber = shift;
     my $deletedtable = shift;
+    my $allitems = shift;
     my $dbh          = C4::Context->dbh;
     my $strsth       = qq{SELECT marcxml FROM biblioitems WHERE biblionumber=?};
     $strsth .= qq{UNION SELECT marcxml FROM deletedbiblioitems WHERE biblionumber=?} if $deletedtable;
@@ -1093,6 +1094,19 @@ sub GetMarcBiblio {
         if ($@) { warn " problem with :$biblionumber : $@ \n$marcxml"; }
 
         #      $record = MARC::Record::new_from_usmarc( $marc) if $marc;
+        my $displayitems;
+        if ($allitems){
+            $displayitems=undef;
+        }
+        else {
+            $displayitems=C4::Context->preference('MaxItemsDisplay')||30;
+        }
+
+        my @itemsinfos=C4::Items::GetItemsInfo($biblionumber,'intra',$displayitems);
+        my ($itemtag,$itemsubf)=GetMarcFromKohaField("items.itemnumber",GetFrameworkCode($biblionumber));
+        for my $iteminfo (@itemsinfos) {
+            $record->insert_fields_ordered(C4::Items::Item2Marc($iteminfo,$biblionumber)->field($itemtag));
+        }
         return $record;
     } else {
         return undef;

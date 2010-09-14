@@ -1217,7 +1217,7 @@ sub GetItemsByBiblioitemnumber {
 
 =over 4
 
-@results = GetItemsInfo($biblionumber, $type);
+@results = GetItemsInfo($biblionumber, $type, $count);
 
 =back
 
