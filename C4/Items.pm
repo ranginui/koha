@@ -1264,9 +1264,8 @@ If this is set, it is set to C<One Order>.
 =cut
 
 sub GetItemsInfo {
-    my ( $biblionumber, $type ) = @_;
-    my $dbh = C4::Context->dbh;
-
+    my ( $biblionumber, $type , $count) = @_;
+    my $dbh   = C4::Context->dbh;
     # note biblioitems.* must be avoided to prevent large marc and marcxml fields from killing performance.
     my $query = "
     SELECT items.*,
@@ -1291,8 +1290,9 @@ sub GetItemsInfo {
      LEFT JOIN biblio      ON      biblio.biblionumber     = items.biblionumber
      LEFT JOIN biblioitems ON biblioitems.biblioitemnumber = items.biblioitemnumber
      LEFT JOIN itemtypes   ON   itemtypes.itemtype         = "
-      . ( C4::Context->preference('item-level_itypes') ? 'items.itype' : 'biblioitems.itemtype' );
-    $query .= " WHERE items.biblionumber = ? ORDER BY branches.branchname,items.dateaccessioned desc";
+     . (C4::Context->preference('item-level_itypes') ? 'items.itype' : 'biblioitems.itemtype');
+    $query .= " WHERE items.biblionumber = ? ORDER BY items.dateaccessioned,branches.branchname desc" ;
+    $query .= " LIMIT $count " if ($count);
     my $sth = $dbh->prepare($query);
     $sth->execute($biblionumber);
     my $i = 0;
