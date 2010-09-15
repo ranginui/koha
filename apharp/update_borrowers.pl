@@ -23,6 +23,7 @@ use warnings;
 use Apharp;
 use Getopt::Long;
 use POSIX qw/ceil/;
+use Mail::Sendmail;
 
 my $new;   # option variable with default value (false)
 GetOptions ('new' => \$new);
@@ -49,6 +50,9 @@ if ($borrowers) {
 
     my $min = 0;
     my $max = $elemperpage;
+    my @errors_update;
+    my $success_update = 0;
+
     for ( my $i=1; $i<=$npages; $i++) {
 
 	my @borrowers_category;
@@ -73,8 +77,26 @@ if ($borrowers) {
 	$max += $elemperpage;
 
 	my $data = get_borrowers_attr(\@borrowers_category);
-	data_to_koha($data, $new);
+	my $result = data_to_koha($data, $new);
+
+	$success_update += $result->{success};
+	foreach ( @{ $result->{errors} } ) {
+	    push @errors_update, $_;
+	}
     }
+
+    my $message = "End update:\nSuccess: $success_update\nFailure(s): " . scalar(@errors_update) . "\n";
+    $message .= join("\n", @errors_update) if @errors_update;
+
+    my %mail = (
+	smtp    => 'smtp.nerim.net',
+	To      => 'alex.arnaud@biblibre.com',
+	From    => 'alex.arnaud@biblibre.com',
+	Subject => 'Borrowers update result',
+	Message =>  $message );
+    sendmail(%mail) or print "mail not sent" . $Mail::Sendmail::error; 
+
+    print "UPDATING BORROWERS : End update. Success : " . $success_update . ", Failure(s) : " . scalar(@errors_update) . "\n";
 
 } else { print "no borrowers to update in database ..."; }
 

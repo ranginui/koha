@@ -12,7 +12,6 @@ use Text::CSV;
 use LWP::UserAgent;
 use YAML;
 use C4::Members;
-use Mail::Sendmail;
 use POSIX;
 use DateTime;
 
@@ -174,7 +173,7 @@ sub data_to_koha {
 	if ( $fromdata->{NUM_CARTE_PUCE} && $fromdata->{NUM_CARTE_PUCE} eq '?') {
 	    my $number = getMemberByAppligest( $fromdata->{NUM_APPLI_GEST}, $fromdata->{SITE} );
 	    push @errors_update, "UPDATING BORROWERS : Can't update borrower n° " . $number . ". No data in apogee/harpege (Appligest:"
-		. $fromdata->{NUM_APPLI_GEST} . ", ws:" . $fromdata->{SITE} . "/" . $fromdata->{TYPE} . "\n";
+		. $fromdata->{NUM_APPLI_GEST} . ", ws:" . $fromdata->{SITE} . "/" . $fromdata->{TYPE} . ")\n";
 	    print $errors_update[-1];
 	    next;
 	}
@@ -216,7 +215,7 @@ sub data_to_koha {
         my $success = ModMember(%$targetdata);
         unless ($success) {
             print "UPDATING BORROWERS : Can't update borrower n° " . $targetdata->{'borrowernumber'} . "\n";
-            push @errors_update, "The updating of the borrowers (APPLIGEST: $appligest) failed" ;
+            push @errors_update, "The updating of the borrowers (APPLIGEST: $appligest, SITE:" . $fromdata->{SITE} . ") ModMember failed" ;
         } else {
             C4::Members::Attributes::SetBorrowerAttributes( $targetdata->{'borrowernumber'}, $patron_attributes );
             print "UPDATING BORROWERS : Borrower n° " . $targetdata->{'borrowernumber'} . " updated successfully\n";
@@ -224,17 +223,9 @@ sub data_to_koha {
         }
         
     }
-    if (@errors_update) {
-        my %mail = (
-            smtp    => 'smtp.nerim.net',
-            To      => 'alex.arnaud@biblibre.com',
-            From    => 'alex.arnaud@biblibre.com',
-            Subject => 'Borrowers update in koha',
-            Message =>  join("\n", @errors_update));
-        sendmail(%mail) or print "mail not sent" . $Mail::Sendmail::error; 
-    }
-    
-    print "UPDATING BORROWERS : End update. Success : " . $success_update . ", Failure(s) : " . scalar(@errors_update) . "\n";
+
+    my $result = { errors => \@errors_update, success => $success_update };
+    return $result;
 }
 
 sub filterhash {
@@ -318,6 +309,7 @@ sub transform_data {
     #load the yaml Config file
     my ($map,$valuesmapping,$matchingpoint,$preprocess,$postprocess)= YAML::LoadFile($configfile) or die "unable to load $configfile ";
         
+    no warnings 'redefine';
     eval $preprocess if ($preprocess);
     die $@ if $@;
 
