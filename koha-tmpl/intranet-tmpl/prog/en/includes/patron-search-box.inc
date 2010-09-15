@@ -43,8 +43,8 @@ YAHOO.util.Event.onContentReady("header_search", function() {
 //]]>
 </script><!-- /TMPL_IF -->
 	<div id="circ_search" class="residentsearch" style="display:none;">
-	<p class="tip">Enter patron card number or partial name:</p>
-    <form action="/cgi-bin/koha/circ/circulation.pl" method="post">
+	<p class="tip">Scan patron card number or partial name:</p>
+    <form action="/cgi-bin/koha/apharp/circulation-card.pl" method="post">
     <!-- TMPL_IF NAME="CircAutocompl" -->
     <div class="autocomplete">
             <div id="borrowerautocomplete" class="autocomplete">
