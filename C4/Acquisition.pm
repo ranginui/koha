@@ -1343,7 +1343,7 @@ sub DelOrder {
 
     my @itemnumbers = GetItemnumbersFromOrder( $ordernumber );
     C4::Items::DelItem( $dbh, $bibnum, $_ ) for @itemnumbers;
-    DelBiblio( $dbh, $bibnum ) if C4::Items::GetItemsCount( $bibnum ) == 0;
+    DelBiblio(($bibnum)) if C4::Items::GetItemsCount( $bibnum ) == 0;
 }
 
 =head2 FUNCTIONS ABOUT PARCELS

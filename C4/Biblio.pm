@@ -383,7 +383,7 @@ sub ModBiblioframework {
 
 =over
 
-my $error = &DelBiblio($dbh,$biblionumber);
+my $error = &DelBiblio(($biblionumber));
 Exported function (core API) for deleting a biblio in koha.
 Deletes biblio record from Zebra and Koha tables (biblio,biblioitems,items)
 Also backs it up to deleted* tables
