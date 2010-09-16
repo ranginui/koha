@@ -460,6 +460,7 @@ END_SQL
             $verbose and warn $borrower_sql . "\n $branchcode | " . $overdue_rules->{'categorycode'} . "\n ($mindays, $maxdays)\nreturns " . $sth->rows . " rows";
 
             while ( my ( $itemcount, $borrowernumber, $firstname, $lastname, $address1, $address2, $city, $postcode, $country, $email, $longest_issue ) = $sth->fetchrow ) {
+                $email=C4::Members::GetFirstValidEmailAddress($borrowernumber);
                 $verbose and warn "borrower $firstname, $lastname ($borrowernumber) has $itemcount items triggering level $i.";
 
                 my $letter = C4::Letters::getletter( 'circulation', $overdue_rules->{"letter$i"} );
