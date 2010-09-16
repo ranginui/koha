@@ -3563,8 +3563,7 @@ sub BatchModField {
                     if ($subf->[0] eq $subfield){
                         $subf->[1]=NormalizeString($subf->[1]);
                         if ( $action eq "mod" ) {
-                            if ( $nocond ne "true" && $subf->[1] =~ s/$condition/$repval/
-                                ) {
+                            if ( $nocond ne "true" && $subf->[1] =~ s/$condition/$repval/) {
                                 $done=1;
                             } 
                             if ($nocond eq "true"){
@@ -3577,8 +3576,8 @@ sub BatchModField {
                                 next;
                             }
                         }
-                        push @subfields_to_add,@$subf;
                     }
+                    push @subfields_to_add,@$subf;
                 }
                 if ($done){
                     if (@subfields_to_add){
