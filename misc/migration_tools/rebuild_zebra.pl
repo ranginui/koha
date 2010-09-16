@@ -170,7 +170,7 @@ if ($keep_export) {
 # If they don't, then zebra is likely to spit the dummy. This returns true
 # if the directories had to be created, false otherwise.
 sub check_zebra_dirs {
-	my ($base) = shift . '/';
+	my ($base) = shift() . '/';
 	my $needed_repairing = 0;
 	my @dirs = ( '', 'key', 'register', 'shadow' );
 	foreach my $dir (@dirs) {
