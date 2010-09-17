@@ -39,8 +39,9 @@ then
 fi
 for i in $1/*.html
 do
-    xhtml2pdf $optpisa  $i
+    xhtml2pdf --encoding utf-8 $optpisa  $i
 done
-lp $optprinter  $1/*.pdf
-tar cvfz $directory`date "+%Y%m%d"`.tar.gz  $directory
-rm -rf $directory
+
+#lp $optprinter  $1/*.pdf
+#tar cvfz $directory`date "+%Y%m%d"`.tar.gz  $directory
+#rm -rf $directory
