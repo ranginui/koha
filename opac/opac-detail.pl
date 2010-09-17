@@ -83,7 +83,7 @@ if ( C4::Context->preference("OPACXSLTDetailsDisplay") ) {
 $template->param( 'OPACShowCheckoutName' => C4::Context->preference("OPACShowCheckoutName") );
 
 # change back when ive fixed request.pl
-my @all_items = &GetItemsInfo( $biblionumber, 'opac' );
+my @all_items = &GetItemsInfo( $biblionumber, 'opac', 30 );
 my @items;
 @items = @all_items unless C4::Context->preference('hidelostitems');
 
@@ -203,7 +203,8 @@ if ( $dat->{'serial'} ) {
 
 }
 
-$dat->{'count'} = scalar(@items);
+$dat->{'displaycount'} = scalar(@items);
+$dat->{'count'} = GetItemsCount($biblionumber);
 
 # If there is a lot of items, and the user has not decided
 # to view them all yet, we first warn him
@@ -334,6 +335,7 @@ $template->param(
     authorised_value_images => $biblio_authorised_value_images,
     subtitle                => $subtitle,
     bouncemarcauthorsarray  => \@reboundmarcauthorsarray,
+    itemscount  => GetItemsCount($biblionumber),
 );
 
 foreach ( keys %{$dat} ) {

@@ -4629,6 +4629,15 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     SetVersion($DBversion);
 }
 
+$DBversion = "3.02.00.031";
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+$dbh->do("
+	INSERT IGNORE INTO `systempreferences` (variable,value,explanation,options,type) VALUES('SpecifyDueDate',1,'Define whether to display \"Specify Due Date\" form in Circulation','','YesNo');
+	");
+    print "Upgrade to $DBversion done\n";
+    SetVersion($DBversion);
+}
+
 $DBversion = "3.02.00.033";
 if ( C4::Context->preference("Version") < TransformToNum($DBversion)) {
 	if($compare_version < TransformToNum("3.00.04.017"))
@@ -4838,6 +4847,7 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
 	}
     SetVersion ($DBversion);
 }
+
 
 =item DropAllForeignKeys($table)
 

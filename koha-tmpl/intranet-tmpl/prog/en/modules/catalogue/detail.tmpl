@@ -175,7 +175,7 @@ function verify_images() {
 <div id="bibliodetails" class="toptabs">
 
 <ul>   
-<li><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->#holdings">Holdings</a></li>
+<li><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->#holdings"> <!-- TMPL_VAR NAME="count" --> Holdings <!-- TMPL_IF Name="allitems"-->(<!-- TMPL_VAR NAME="itemsdisplayed" --> displayed)<!-- /TMPL_IF --></a><!-- TMPL_IF Name="allitems"--><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->&amp;allitems=1#holdings">Show all</a><!-- /TMPL_IF --></li>
 <li><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->#description">Descriptions</a></li>
 <!-- TMPL_IF name="subscriptionsnumber" --><li><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->#subscriptions">Subscriptions</a></li><!-- /TMPL_IF -->
 <!-- TMPL_IF NAME="FRBRizeEditions" --><!-- TMPL_IF NAME="XISBNS" --><li><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->#editions">Editions</a></li><!-- /TMPL_IF --><!-- /TMPL_IF -->

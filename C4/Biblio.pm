@@ -321,25 +321,25 @@ sub ModBiblio {
     foreach my $field ( $record->field($itemtag) ) {
         $record->delete_field($field);
     }
-
-    # parse each item, and, for an unknown reason, re-encode each subfield
-    # if you don't do that, the record will have encoding mixed
-    # and the biblio will be re-encoded.
-    # strange, I (Paul P.) searched more than 1 day to understand what happends
-    # but could only solve the problem this way...
-    my @fields = $oldRecord->field($itemtag);
-    foreach my $fielditem (@fields) {
-        my $field;
-        foreach ( $fielditem->subfields() ) {
-            if ($field) {
-                $field->add_subfields( Encode::encode( 'utf-8', $_->[0] ) => Encode::encode( 'utf-8', $_->[1] ) );
-            } else {
-                $field = MARC::Field->new( "$itemtag", '', '', Encode::encode( 'utf-8', $_->[0] ) => Encode::encode( 'utf-8', $_->[1] ) );
-            }
-        }
-        $record->append_fields($field);
-    }
-
+#
+#    # parse each item, and, for an unknown reason, re-encode each subfield
+#    # if you don't do that, the record will have encoding mixed
+#    # and the biblio will be re-encoded.
+#    # strange, I (Paul P.) searched more than 1 day to understand what happends
+#    # but could only solve the problem this way...
+#    my @fields = $oldRecord->field($itemtag);
+#    foreach my $fielditem (@fields) {
+#        my $field;
+#        foreach ( $fielditem->subfields() ) {
+#            if ($field) {
+#                $field->add_subfields( Encode::encode( 'utf-8', $_->[0] ) => Encode::encode( 'utf-8', $_->[1] ) );
+#            } else {
+#                $field = MARC::Field->new( "$itemtag", '', '', Encode::encode( 'utf-8', $_->[0] ) => Encode::encode( 'utf-8', $_->[1] ) );
+#            }
+#        }
+#        $record->append_fields($field);
+#    }
+#
     # update biblionumber and biblioitemnumber in MARC
     # FIXME - this is assuming a 1 to 1 relationship between
     # biblios and biblioitems
@@ -1076,6 +1076,7 @@ The MARC record contains both biblio & item data.
 sub GetMarcBiblio {
     my $biblionumber = shift;
     my $deletedtable = shift;
+    my $allitems = shift;
     my $dbh          = C4::Context->dbh;
     my $strsth       = qq{SELECT marcxml FROM biblioitems WHERE biblionumber=?};
     $strsth .= qq{UNION SELECT marcxml FROM deletedbiblioitems WHERE biblionumber=?} if $deletedtable;
@@ -1093,6 +1094,19 @@ sub GetMarcBiblio {
         if ($@) { warn " problem with :$biblionumber : $@ \n$marcxml"; }
 
         #      $record = MARC::Record::new_from_usmarc( $marc) if $marc;
+        my $displayitems;
+        if ($allitems){
+            $displayitems=undef;
+        }
+        else {
+            $displayitems=C4::Context->preference('MaxItemsDisplay')||30;
+        }
+
+        my @itemsinfos=C4::Items::GetItemsInfo($biblionumber,'intra',$displayitems);
+        my ($itemtag,$itemsubf)=GetMarcFromKohaField("items.itemnumber",GetFrameworkCode($biblionumber));
+        for my $iteminfo (@itemsinfos) {
+            $record->insert_fields_ordered(C4::Items::Item2Marc($iteminfo,$biblionumber)->field($itemtag));
+        }
         return $record;
     } else {
         return undef;

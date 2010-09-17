@@ -279,12 +279,12 @@ sub AddItem {
     $item->{'itemnumber'} = $itemnumber;
 
     # create MARC tag representing item and add to bib
-    my $new_item_marc = _marc_from_item_hash( $item, $frameworkcode, $unlinked_item_subfields );
-    _add_item_field_to_biblio( $new_item_marc, $item->{'biblionumber'}, $frameworkcode );
-
-    logaction( "CATALOGUING", "ADD", $itemnumber, "item" ) if C4::Context->preference("CataloguingLog");
-
-    return ( $item->{biblionumber}, $item->{biblioitemnumber}, $itemnumber );
+    my $new_item_marc = _marc_from_item_hash($item, $frameworkcode, $unlinked_item_subfields);
+    #_add_item_field_to_biblio($new_item_marc, $item->{'biblionumber'}, $frameworkcode );
+   
+    logaction("CATALOGUING", "ADD", $itemnumber, "item") if C4::Context->preference("CataloguingLog");
+    
+    return ($item->{biblionumber}, $item->{biblioitemnumber}, $itemnumber);
 }
 
 =head2 AddItemBatchFromMarc
@@ -540,12 +540,12 @@ sub ModItem {
     unless ( defined $unlinked_item_subfields ) {
         $unlinked_item_subfields = _parse_unlinked_item_subfields_from_xml( $whole_item->{'more_subfields_xml'} );
     }
-    my $new_item_marc = _marc_from_item_hash( $whole_item, $frameworkcode, $unlinked_item_subfields )
-      or die "FAILED _marc_from_item_hash($whole_item, $frameworkcode)";
-
-    _replace_item_field_in_biblio( $new_item_marc, $biblionumber, $itemnumber, $frameworkcode );
-    ( $new_item_marc eq '0' ) and die "$new_item_marc is '0', not hashref";    # logaction line would crash anyway
-    logaction( "CATALOGUING", "MODIFY", $itemnumber, $new_item_marc->as_formatted ) if C4::Context->preference("CataloguingLog");
+    my $new_item_marc = _marc_from_item_hash($whole_item, $frameworkcode, $unlinked_item_subfields) 
+        or die "FAILED _marc_from_item_hash($whole_item, $frameworkcode)";
+    
+    #_replace_item_field_in_biblio($new_item_marc, $biblionumber, $itemnumber, $frameworkcode);
+	($new_item_marc       eq '0') and die "$new_item_marc is '0', not hashref";  # logaction line would crash anyway
+    logaction("CATALOGUING", "MODIFY", $itemnumber, $new_item_marc->as_formatted) if C4::Context->preference("CataloguingLog");
 }
 
 =head2 ModItemTransfer
@@ -1217,7 +1217,7 @@ sub GetItemsByBiblioitemnumber {
 
 =over 4
 
-@results = GetItemsInfo($biblionumber, $type);
+@results = GetItemsInfo($biblionumber, $type, $count);
 
 =back
 
@@ -1264,9 +1264,8 @@ If this is set, it is set to C<One Order>.
 =cut
 
 sub GetItemsInfo {
-    my ( $biblionumber, $type ) = @_;
-    my $dbh = C4::Context->dbh;
-
+    my ( $biblionumber, $type , $count) = @_;
+    my $dbh   = C4::Context->dbh;
     # note biblioitems.* must be avoided to prevent large marc and marcxml fields from killing performance.
     my $query = "
     SELECT items.*,
@@ -1291,8 +1290,9 @@ sub GetItemsInfo {
      LEFT JOIN biblio      ON      biblio.biblionumber     = items.biblionumber
      LEFT JOIN biblioitems ON biblioitems.biblioitemnumber = items.biblioitemnumber
      LEFT JOIN itemtypes   ON   itemtypes.itemtype         = "
-      . ( C4::Context->preference('item-level_itypes') ? 'items.itype' : 'biblioitems.itemtype' );
-    $query .= " WHERE items.biblionumber = ? ORDER BY branches.branchname,items.dateaccessioned desc";
+     . (C4::Context->preference('item-level_itypes') ? 'items.itype' : 'biblioitems.itemtype');
+    $query .= " WHERE items.biblionumber = ? ORDER BY items.dateaccessioned,branches.branchname desc" ;
+    $query .= " LIMIT $count " if ($count);
     my $sth = $dbh->prepare($query);
     $sth->execute($biblionumber);
     my $i = 0;
