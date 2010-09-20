@@ -1313,7 +1313,7 @@ Format results in a form suitable for passing to the template
 # IMO this subroutine is pretty messy still -- it's responsible for
 # building the HTML output for the template
 sub searchResults {
-    my ( $searchdesc, $hits, $results_per_page, $offset, $scan, @marcresults ) = @_;
+    my ( $searchdesc, $hits, $results_per_page, $offset, $scan, $interface,@marcresults ) = @_;
     my $dbh = C4::Context->dbh;
     my @newresults;
 
@@ -1389,11 +1389,12 @@ sub searchResults {
 
 
         my $oldbiblio = TransformMarcToKoha( $dbh, $marcrecord, $fw );
+        $oldbiblio->{biblionumber} = $biblionumber;
         $oldbiblio->{subtitle} = GetRecordValue( 'subtitle', $marcrecord, $fw );
         $oldbiblio->{result_number} = $i + 1;
 
         # add imageurl to itemtype if there is one
-        $oldbiblio->{imageurl} = getitemtypeimagelocation( 'opac', $itemtypes{ $oldbiblio->{itemtype} }->{imageurl} );
+        $oldbiblio->{imageurl} = getitemtypeimagelocation( $interface, $itemtypes{ $oldbiblio->{itemtype} }->{imageurl} );
 
         $oldbiblio->{'authorised_value_images'} = C4::Items::get_authorised_value_images( C4::Biblio::get_biblio_authorised_values( $oldbiblio->{'biblionumber'}, $marcrecord ) );
         $oldbiblio->{normalized_upc} = GetNormalizedUPC( $marcrecord, $marcflavour );
@@ -1522,7 +1523,7 @@ sub searchResults {
                 $onloan_items->{$key}->{branchname}     = $item->{branchname};
                 $onloan_items->{$key}->{location}       = $shelflocations->{ $item->{location} };
                 $onloan_items->{$key}->{itemcallnumber} = $item->{itemcallnumber};
-                $onloan_items->{$key}->{imageurl}       = getitemtypeimagelocation( 'opac', $itemtypes{ $item->{itype} }->{imageurl} );
+                $onloan_items->{$key}->{imageurl}       = getitemtypeimagelocation( $interface, $itemtypes{ $item->{itype} }->{imageurl} );
 
                 # if something's checked out and lost, mark it as 'long overdue'
                 if ( $item->{itemlost} ) {
@@ -1597,7 +1598,7 @@ sub searchResults {
                       if $notforloan_authorised_value;
                     $other_items->{$key}->{count}++ if $item->{$hbranch};
                     $other_items->{$key}->{location} = $shelflocations->{ $item->{location} };
-                    $other_items->{$key}->{imageurl} = getitemtypeimagelocation( 'opac', $itemtypes{ $item->{itype} }->{imageurl} );
+                    $other_items->{$key}->{imageurl} = getitemtypeimagelocation( $interface, $itemtypes{ $item->{itype} }->{imageurl} );
                 }
 
                 # item is available
@@ -1609,7 +1610,7 @@ sub searchResults {
                         $available_items->{$prefix}->{$_} = $item->{$_};
                     }
                     $available_items->{$prefix}->{location} = $shelflocations->{ $item->{location} };
-                    $available_items->{$prefix}->{imageurl} = getitemtypeimagelocation( 'opac', $itemtypes{ $item->{itype} }->{imageurl} );
+                    $available_items->{$prefix}->{imageurl} = getitemtypeimagelocation( $interface, $itemtypes{ $item->{itype} }->{imageurl} );
                 }
             }
         }    # notforloan, item level and biblioitem level
@@ -1629,16 +1630,14 @@ sub searchResults {
 
         # XSLT processing of some stuff
         use C4::Charset;
+        warn $marcrecord->as_formatted;
         SetUTF8Flag($marcrecord);
         $debug && warn $marcrecord->as_formatted;
 
-        if ( C4::Context->preference("OPACXSLTResultsDisplay") && !$scan ) {
-            $oldbiblio->{OPACXSLTResultsRecord} = XSLTParse4Display( $oldbiblio->{biblionumber}, $marcrecord, C4::Context->preference("OPACXSLTResultsDisplay") );
+        $interface=($interface eq 'opac'?'OPAC':'Intranet');
+        if ( C4::Context->preference($interface."XSLTResultsDisplay") && !$scan ) {
+            $oldbiblio->{$interface."XSLTResultsRecord"} = XSLTParse4Display( $biblionumber, $marcrecord, C4::Context->preference($interface."XSLTResultsDisplay") );
         }
-        if ( C4::Context->preference("IntranetXSLTResultsDisplay") && !$scan ) {
-            $oldbiblio->{IntranetXSLTResultsRecord} = XSLTParse4Display( $oldbiblio->{biblionumber}, $marcrecord, C4::Context->preference("IntranetXSLTResultsDisplay") );
-        }
-
         # last check for norequest : if itemtype is notforloan, it can't be reserved either, whatever the items
         $can_place_holds = 0
           if $itemtypes{ $oldbiblio->{itemtype} }->{notforloan};
@@ -1664,9 +1663,13 @@ sub searchResults {
 
         push( @newresults, $oldbiblio )
           if (
-            not C4::Context->preference('hidelostitems')
-            or ( ( $items_count > $itemlost_count || $items_count == 0 )
-                && C4::Context->preference('hidelostitems') )
+                (lc($interface) ne "opac") or (
+                #interface eq opac
+                    not C4::Context->preference('hidelostitems')
+                    or ( C4::Context->preference('hidelostitems') 
+                        and ( $items_count > $itemlost_count || $items_count == 0 )
+                        )
+                )
           );
     }
     return @newresults;

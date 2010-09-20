@@ -78,7 +78,7 @@ sub transformMARCXML4XSLT {
 
     # FIXME: wish there was a better way to handle exceptions
     eval { @fields = $record->fields(); };
-    if ($@) { warn "PROBLEM WITH RECORD"; return;}
+    if ($@) { warn "$record PROBLEM WITH RECORD"; return;}
     my $av = getAuthorisedValues4MARCSubfields($frameworkcode);
     foreach my $tag ( keys %$av ) {
         foreach my $field ( $record->field($tag) ) {
@@ -134,7 +134,10 @@ sub XSLTParse4Display {
     my ( $biblionumber, $orig_record, $xslfilename ) = @_;
 
     # grab the XML, run it through our stylesheet, push it out to the browser
+    warn "bibnumber : ",$biblionumber;
+    
     my $record = transformMARCXML4XSLT( $biblionumber, $orig_record );
+    warn "record : ",$record->as_formatted;
 
     #return $record->as_formatted();
     my $itemsxml  = buildKohaItemsNamespace($biblionumber);
