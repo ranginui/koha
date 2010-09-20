@@ -498,10 +498,12 @@ sub parseletter {
     if ( $table eq 'reserves' && $values->{'waitingdate'} ) {
         my @waitingdate = split /-/, $values->{'waitingdate'};
 
-        $values->{'expirationdate'} =
-          C4::Dates->new( sprintf( '%04d-%02d-%02d', Add_Delta_Days( @waitingdate, C4::Context->preference('ReservesMaxPickUpDelay') ) ), 'iso' )->output();
+        $values->{'expirationdate'} = Add_Delta_Days( @waitingdate, C4::Context->preference('ReservesMaxPickUpDelay') );
     }
-
+    for my $datefield (grep {$_ =~/date/} keys %$values){
+        # Format all date field in order to display date according to system 
+        $values->{$datefield}=C4::Dates->new($values->{$datefield})->output();
+    }
     # and get all fields from the table
     my $columns = C4::Context->dbh->prepare("SHOW COLUMNS FROM $table");
     $columns->execute;
