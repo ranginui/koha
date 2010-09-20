@@ -1242,7 +1242,7 @@ sub ModReserveFill {
     # now fix the priority on the others (if the priority wasn't
     # already sorted!)....
     unless ( $priority == 0 ) {
-        _FixPriority( $priority, $biblionumber );
+        _FixPriority( $priority, $biblionumber,undef,undef, $res->{reservenumber} );
     }
 }
 
@@ -1562,15 +1562,15 @@ sub AlterPriority {
 
         my $priority = $reserve->{'priority'};
         $priority = $where eq 'up' ? $priority - 1 : $priority + 1;
-        _FixPriority( $biblionumber, $borrowernumber, $priority )
+        _FixPriority( $biblionumber, $borrowernumber, $priority ,undef,$reserve->{reservenumber})
 
     } elsif ( $where eq 'top' ) {
 
-        _FixPriority( $biblionumber, $borrowernumber, '1' )
+        _FixPriority( $biblionumber, $borrowernumber, '1',undef,$reserve->{reservenumber} )
 
     } elsif ( $where eq 'bottom' ) {
 
-        _FixPriority( $biblionumber, $borrowernumber, '999999' )
+        _FixPriority( $biblionumber, $borrowernumber, '999999',undef,$reserve->{reservenumber} )
 
     }
 }
