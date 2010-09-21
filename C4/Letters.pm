@@ -502,7 +502,7 @@ sub parseletter {
     }
     for my $datefield (grep {$_ =~/date/} keys %$values){
         # Format all date field in order to display date according to system 
-        $values->{$datefield}=C4::Dates->new($values->{$datefield})->output();
+        $values->{$datefield}=C4::Dates->new($values->{$datefield},'iso')->output();
     }
     # and get all fields from the table
     my $columns = C4::Context->dbh->prepare("SHOW COLUMNS FROM $table");
