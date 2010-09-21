@@ -1670,7 +1670,7 @@ sub _GetCircControlBranch {
     my $circcontrol = C4::Context->preference('CircControl');
     my $branch;
 
-    if ( $circcontrol eq 'PickupLibrary' ) {
+    if ($circcontrol eq 'PickupLibrary' && C4::Context->userenv->{'branch'}) {
         $branch = C4::Context->userenv->{'branch'};
     } elsif ( $circcontrol eq 'PatronLibrary' ) {
         $branch = $borrower->{branchcode};
