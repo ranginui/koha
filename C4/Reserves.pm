@@ -1197,16 +1197,17 @@ sub ModReserveFill {
     my $biblionumber   = $res->{'biblionumber'};
     my $borrowernumber = $res->{'borrowernumber'};
     my $resdate        = $res->{'reservedate'};
+    my $resnumber      = $res->{'reservenumber'};
 
     # get the priority on this record....
     my $priority;
     my $query = "SELECT priority
                  FROM   reserves
-                 WHERE  biblionumber   = ?
-                  AND   borrowernumber = ?
+                 WHERE  borrowernumber   = ?
+                  AND   reservenumber  = ?
                   AND   reservedate    = ?";
     my $sth = $dbh->prepare($query);
-    $sth->execute( $biblionumber, $borrowernumber, $resdate );
+    $sth->execute( $resnumber, $borrowernumber, $resdate );
     ($priority) = $sth->fetchrow_array;
     $sth->finish;
 
@@ -1214,30 +1215,30 @@ sub ModReserveFill {
     $query = "UPDATE reserves
                   SET    found            = 'F',
                          priority         = 0
-                 WHERE  biblionumber     = ?
+                 WHERE  reservenumber     = ?
                     AND reservedate      = ?
                     AND borrowernumber   = ?
                 ";
     $sth = $dbh->prepare($query);
-    $sth->execute( $biblionumber, $resdate, $borrowernumber );
+    $sth->execute( $resnumber, $resdate, $borrowernumber );
     $sth->finish;
 
     # move to old_reserves
     $query = "INSERT INTO old_reserves
                  SELECT * FROM reserves
-                 WHERE  biblionumber     = ?
+                 WHERE  reservenumber    = ?
                     AND reservedate      = ?
                     AND borrowernumber   = ?
                 ";
     $sth = $dbh->prepare($query);
-    $sth->execute( $biblionumber, $resdate, $borrowernumber );
+    $sth->execute( $resnumber, $resdate, $borrowernumber );
     $query = "DELETE FROM reserves
-                 WHERE  biblionumber     = ?
+                 WHERE  reservenumber    = ?
                     AND reservedate      = ?
                     AND borrowernumber   = ?
                 ";
     $sth = $dbh->prepare($query);
-    $sth->execute( $biblionumber, $resdate, $borrowernumber );
+    $sth->execute( $resnumber, $resdate, $borrowernumber );
 
     # now fix the priority on the others (if the priority wasn't
     # already sorted!)....
