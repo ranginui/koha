@@ -486,8 +486,6 @@ END_SQL
                 if ($htmlfilename) {
                     $titles = "<table id='itemscontent$borrowernumber'>";
                     $titles .= "<thead><tr><th>" . join( "</th><th>", @$columns_def_hashref{@item_content_fields} );
-                    warn @item_content_fields;
-                    warn map { "$columns_def_hashref->{$_};" } @item_content_fields;
                     $titles .= "</th></tr></thead><tbody>";
                 }
                 my @items = ();
@@ -523,7 +521,7 @@ END_SQL
                         }
                     }
                 );
-                $letter->{'content-type'}="text/".($html?"html":"plain");
+                $letter->{'content-type'}="text/".($htmlfilename?"html":"plain");
 
                 if ($exceededPrintNoticesMaxLines) {
                     $letter->{'content'} .= "List too long for form; please check your account online for a complete list of your overdue items.";
