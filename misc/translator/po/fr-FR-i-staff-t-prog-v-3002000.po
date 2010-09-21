@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: nicomo-fr-FR-i-staff-t-prog-v-3000000\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-08-13 10:36+0200\n"
-"PO-Revision-Date: 2010-09-10 15:47+0200\n"
+"PO-Revision-Date: 2010-09-20 14:04+0200\n"
 "Last-Translator: \n"
 "Language-Team: Français <kde-i18n-doc@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -1461,7 +1461,7 @@ msgstr "&nbsp;&nbsp;&nbsp;&nbsp; Nom de congrès (expression)"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/search_indexes.inc:5
 msgid "&nbsp;&nbsp;&nbsp;&nbsp; Corporate Name"
-msgstr "&nbsp;&nbsp;&nbsp;&nbsp; Nom de marque"
+msgstr "&nbsp;&nbsp;&nbsp;&nbsp; Auteur collectivité"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/search_indexes.inc:7
 msgid "&nbsp;&nbsp;&nbsp;&nbsp; Corporate Name as Phrase"
