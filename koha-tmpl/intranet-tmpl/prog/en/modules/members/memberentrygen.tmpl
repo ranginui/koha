@@ -1,6 +1,6 @@
 <!-- TMPL_INCLUDE NAME="doc-head-open.inc" -->
 <title>Koha &rsaquo; Patrons &rsaquo; 
-<!-- TMPL_IF NAME="opadd" -->	Add<!-- TMPL_ELSE --> Modify<!--/TMPL_IF--> <!--TMPL_IF Name="categoryname"--> <!--TMPL_VAR Name="categoryname"--> patron<!-- TMPL_ELSE --><!--TMPL_IF Name="I"--> Organization patron<!--/TMPL_IF --><!--TMPL_IF Name="A"--> Adult patron<!--/TMPL_IF --><!--TMPL_IF Name="C"--> Child patron<!--/TMPL_IF --><!--TMPL_IF Name="P"--> Professional patron<!--/TMPL_IF --><!--TMPL_IF Name="S"--> Staff patron<!--/TMPL_IF --><!--/TMPL_IF --><!--TMPL_UNLESS Name="opadd"--> <!-- TMPL_VAR NAME="surname" -->, <!-- TMPL_VAR name="firstname" --><!--/TMPL_UNLESS--></title>
+<!-- TMPL_IF NAME="opadd" -->	Add<!-- TMPL_ELSIF NAME="opduplicate" -->Duplicate<!-- TMPL_ELSE --> Modify<!--/TMPL_IF--> <!--TMPL_IF Name="categoryname"--> <!--TMPL_VAR Name="categoryname"--> patron<!-- TMPL_ELSE --><!--TMPL_IF Name="I"--> Organization patron<!--/TMPL_IF --><!--TMPL_IF Name="A"--> Adult patron<!--/TMPL_IF --><!--TMPL_IF Name="C"--> Child patron<!--/TMPL_IF --><!--TMPL_IF Name="P"--> Professional patron<!--/TMPL_IF --><!--TMPL_IF Name="S"--> Staff patron<!--/TMPL_IF --><!--/TMPL_IF --><!--TMPL_UNLESS Name="opadd"--> <!-- TMPL_VAR NAME="surname" -->, <!-- TMPL_VAR name="firstname" --><!--/TMPL_UNLESS--></title>
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
 <script type="text/javascript" src="<!-- TMPL_VAR NAME='themelang' -->/js/members.js"></script>
 <!-- TMPL_INCLUDE NAME="calendar.inc" -->
@@ -96,9 +96,9 @@
 		Add<!--TMPL_IF Name="categoryname"--> <!--TMPL_VAR Name="categoryname"--> patron<!-- TMPL_ELSE --><!--TMPL_IF Name="I"--> Organization patron<!--/TMPL_IF --><!--TMPL_IF Name="A"--> Adult patron<!--/TMPL_IF --><!--TMPL_IF Name="C"--> Child patron<!--/TMPL_IF --><!--TMPL_IF Name="P"--> Professional patron<!--/TMPL_IF --><!--TMPL_IF Name="S"--> Staff patron<!--/TMPL_IF --><!--/TMPL_IF -->
 <!-- TMPL_VAR NAME="surname" --> <!-- TMPL_VAR name="firstname" -->
 <!-- TMPL_ELSE --> 
-<a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->"><!-- TMPL_VAR name="firstname" --> <!-- TMPL_VAR NAME="surname" --></a> &rsaquo; <strong>Modify<!--TMPL_IF Name="categoryname"--> <!--TMPL_VAR Name="categoryname"--> patron<!-- TMPL_ELSE --><!--TMPL_IF Name="I"--> Organization patron<!--/TMPL_IF --><!--TMPL_IF Name="A"--> Adult patron<!--/TMPL_IF --><!--TMPL_IF Name="C"--> Child patron<!--/TMPL_IF --><!--TMPL_IF Name="P"--> Professional patron<!--/TMPL_IF --><!--TMPL_IF Name="S"--> Staff patron<!--/TMPL_IF --><!--/TMPL_IF -->
+<a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->"><!-- TMPL_VAR name="firstname" --> <!-- TMPL_VAR NAME="surname" --></a> &rsaquo; <strong><!-- TMPL_IF NAME="opduplicate" -->Duplicate<!-- TMPL_ELSE -->Modify<!--/TMPL_IF --><!--TMPL_IF Name="categoryname"--> <!--TMPL_VAR Name="categoryname"--> patron<!-- TMPL_ELSE --><!--TMPL_IF Name="I"--> Organization patron<!--/TMPL_IF --><!--TMPL_IF Name="A"--> Adult patron<!--/TMPL_IF --><!--TMPL_IF Name="C"--> Child patron<!--/TMPL_IF --><!--TMPL_IF Name="P"--> Professional patron<!--/TMPL_IF --><!--TMPL_IF Name="S"--> Staff patron<!--/TMPL_IF --><!--/TMPL_IF -->
 </strong><!-- /TMPL_IF --></div>
-
+<!-- TMPL_IF NAME="opduplicate" -->tast<!-- /TMPL_IF -->
 <!-- TMPL_IF NAME="opadd" --><div id="doc" class="yui-t7"><!-- TMPL_ELSE --><div id="doc3" class="yui-t2"><!-- /TMPL_IF -->
    
    <div id="bd">
@@ -112,7 +112,7 @@
 	</h1>
 	<!-- TMPL_ELSE -->
 	<h1>
-		Modify<!--TMPL_IF Name="categoryname"--> <!--TMPL_VAR Name="categoryname"--> patron<!-- TMPL_ELSE --><!--TMPL_IF Name="I"--> Organization patron<!--/TMPL_IF --><!--TMPL_IF Name="A"--> Adult patron<!--/TMPL_IF --><!--TMPL_IF Name="C"--> Child patron<!--/TMPL_IF --><!--TMPL_IF Name="P"--> Professional patron<!--/TMPL_IF --><!--TMPL_IF Name="S"--> Staff patron<!--/TMPL_IF --><!--/TMPL_IF -->
+		<!-- TMPL_IF NAME="opduplicate" -->Duplicate<!-- TMPL_ELSE -->Modify<!--/TMPL_IF --><!--TMPL_IF Name="categoryname"--> <!--TMPL_VAR Name="categoryname"--> patron<!-- TMPL_ELSE --><!--TMPL_IF Name="I"--> Organization patron<!--/TMPL_IF --><!--TMPL_IF Name="A"--> Adult patron<!--/TMPL_IF --><!--TMPL_IF Name="C"--> Child patron<!--/TMPL_IF --><!--TMPL_IF Name="P"--> Professional patron<!--/TMPL_IF --><!--TMPL_IF Name="S"--> Staff patron<!--/TMPL_IF --><!--/TMPL_IF -->
 <!-- TMPL_VAR name="firstname" --> <!-- TMPL_VAR NAME="surname" --> 
 	</h1>
 	<!-- /TMPL_IF -->
@@ -187,10 +187,10 @@
 <input type="hidden" name="select_roadtype" value="<!-- TMPL_VAR NAME="select_roadtype" -->" />
 <input type="hidden" name="destination" value="<!-- TMPL_VAR NAME="destination" -->" />
 <input type="hidden" name="check_member" value="<!-- TMPL_VAR NAME="check_member" -->" />
-<input type="hidden" name="borrowernumber" value="<!-- TMPL_VAR NAME="borrowernumber" -->" />
-<input type="hidden" name="nodouble"  value="<!-- TMPL_VAR NAME="nodouble" -->" />
+<input type="hidden" name="borrowernumber" value="<!-- TMPL_IF NAME="opduplicate" --><!-- TMPL_ELSE --><!-- TMPL_VAR NAME="borrowernumber" --><!-- /TMPL_IF -->" />
+<input type="hidden" name="nodouble"  value="<!-- TMPL_IF NAME="opduplicate" --><!-- TMPL_ELSE --><!-- TMPL_VAR NAME="nodouble" --><!-- /TMPL_IF -->" />
 <!--TMPL_IF Name="step"--><input type="hidden" name="step"  value="<!-- TMPL_VAR NAME="step" -->" /><!--/TMPL_IF-->
-<!-- TMPL_IF NAME="opadd" --><input type="hidden" name="op" value="insert" /><!-- TMPL_ELSE --><input type="hidden" name="op" value="save" /><!-- /TMPL_IF -->
+<!-- TMPL_IF NAME="opadd" --><input type="hidden" name="op" value="insert" /><!-- TMPL_ELSIF NAME="opduplicate" --><input type="hidden" name="op" value="insert" /><!-- TMPL_ELSE --><input type="hidden" name="op" value="save" /><!-- /TMPL_IF -->
 
 <!--TMPL_IF Name="step_1"-->
 	<fieldset class="rows" id="memberentry_identity">
@@ -218,9 +218,9 @@
 		<!-- /TMPL_IF-->
 		Surname: </label>
 		<!-- TMPL_IF NAME="uppercasesurnames" -->
-		<input style="text-transform:uppercase;" type="text" id="surname" name="surname" size="20"  value="<!-- TMPL_VAR NAME="surname" -->" />
+		<input style="text-transform:uppercase;" type="text" id="surname" name="surname" size="20"  value="<!-- TMPL_VAR NAME="surname" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> />
 		<!-- TMPL_ELSE -->
-		<input type="text" id="surname" name="surname" size="20"  value="<!-- TMPL_VAR NAME="surname" -->" />
+		<input type="text" id="surname" name="surname" size="20"  value="<!-- TMPL_VAR NAME="surname" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> />
 		<!-- /TMPL_IF -->
 		<!-- TMPL_IF NAME="mandatorysurname" --><span class="required">Required</span><!-- /TMPL_IF -->
 		</li>
@@ -232,7 +232,7 @@
                 <label for="firstname">
                 <!-- /TMPL_IF-->
                 First name: </label>
-                <input type="text" id="firstname" name="firstname" size="20"  value="<!-- TMPL_VAR NAME="firstname" -->" />
+                <input type="text" id="firstname" name="firstname" size="20"  value="<!-- TMPL_IF NAME="opduplicate" --><!--TMPL_ELSE--><!-- TMPL_VAR NAME="firstname" --><!-- /TMPL_IF -->" />
                 <!-- TMPL_IF NAME="mandatoryfirstname" --><span class="required">Required</span><!-- /TMPL_IF -->
             </li>
             <li>
@@ -244,9 +244,9 @@
                 Date of birth: </label>
 				
 	<!-- TMPL_IF NAME="metric" -->			
-                <input type="text" id="dateofbirth" name="dateofbirth" size="20" onchange="CheckDate(document.form.dateofbirth);" value="<!-- TMPL_VAR NAME="dateofbirth" -->" />
+                <input type="text" id="dateofbirth" name="dateofbirth" size="20" onchange="CheckDate(document.form.dateofbirth);" value="<!-- TMPL_IF NAME="opduplicate" --><!--TMPL_ELSE--><!-- TMPL_VAR NAME="dateofbirth" --><!-- /TMPL_IF -->" />
 <!-- TMPL_ELSE -->
-                <input type="text" id="dateofbirth" name="dateofbirth" size="20" value="<!-- TMPL_VAR NAME="dateofbirth" -->" />
+                <input type="text" id="dateofbirth" name="dateofbirth" size="20" value="<!-- TMPL_IF NAME="opduplicate" --><!--TMPL_ELSE--><!-- TMPL_VAR NAME="dateofbirth" --><!-- /TMPL_IF -->" />
 <!-- /TMPL_IF -->
 
                 <img src="<!-- TMPL_VAR Name="themelang" -->/lib/calendar/cal.gif" id="dateofbirth_button" alt="Show Calendar" />
@@ -270,7 +270,7 @@
                     <label for="initials">
                 <!-- /TMPL_IF-->
                 Initials: </label>
-                <input type="text" id="initials" name="initials" size="20"  value="<!-- TMPL_VAR NAME="initials" -->" />	
+                <input type="text" id="initials" name="initials" size="20"  value="<!-- TMPL_VAR NAME="initials" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> />	
                 <!-- TMPL_IF NAME="mandatoryinitials" --><span class="required">Required</span><!-- /TMPL_IF -->
             </li>
         <!-- /TMPL_UNLESS -->
@@ -281,7 +281,7 @@
 			<label for="othernames">
 			<!-- /TMPL_IF-->
 			Other name: </label>
-			<input type="text" id="othernames" name="othernames" size="20"  value="<!-- TMPL_VAR NAME="othernames" -->" />
+			<input type="text" id="othernames" name="othernames" size="20"  value="<!-- TMPL_VAR NAME="othernames" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> />
 <!-- TMPL_IF NAME="mandatoryothernames" --><span class="required">Required</span><!-- /TMPL_IF -->
 		<!-- TMPL_IF NAME="I" --><input type="hidden" name="sex" value="N" /><!-- /TMPL_IF -->
 		</li>
@@ -326,7 +326,7 @@
 	            <span><!-- TMPL_VAR NAME="contactname" --></span>
 	            <input name="contactname" id="contactname" type="hidden" size="20" value="<!-- TMPL_VAR NAME="contactname" -->" />
 	            <!-- TMPL_ELSE -->
-	            <input name="contactname" id="contactname" type="text" size="20" value="<!-- TMPL_VAR NAME="contactname" -->" />
+	            <input name="contactname" id="contactname" type="text" size="20" value="<!-- TMPL_VAR NAME="contactname" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> />
 	            <!-- /TMPL_IF -->
 	        </li>
 <!-- TMPL_ELSE -->
@@ -344,7 +344,7 @@
      <span><!-- TMPL_VAR NAME="contactname" --></span>
      <input name="contactname" id="contactname" type="hidden" size="20" value="<!-- TMPL_VAR NAME="contactname" -->" />
      <!-- TMPL_ELSE -->
-     <input name="contactname" id="contactname" type="text" size="20" value="<!-- TMPL_VAR NAME="contactname" -->" />
+     <input name="contactname" id="contactname" type="text" size="20" value="<!-- TMPL_VAR NAME="contactname" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> />
      <!-- /TMPL_IF -->
  </li>
  <li>
@@ -353,7 +353,7 @@
      <span><!-- TMPL_VAR NAME="contactfirstname" --></span>
      <input name="contactfirstname" id="contactfirstname" type="hidden" size="20" value="<!-- TMPL_VAR NAME="contactfirstname" -->" />
      <!-- TMPL_ELSE -->
-     <input name="contactfirstname" id="contactfirstname" type="text" size="20" value="<!-- TMPL_VAR NAME="contactfirstname" -->" />
+     <input name="contactfirstname" id="contactfirstname" type="text" size="20" value="<!-- TMPL_VAR NAME="contactfirstname" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> />
      <!-- /TMPL_IF -->
  </li>
  <!-- TMPL_IF name="relshiploop" -->
@@ -394,7 +394,7 @@
       <label for="streetnumber">
       <!-- /TMPL_IF-->
       Street number: </label>
-      <input type="text" id="streetnumber" name="streetnumber" size="5" value="<!-- TMPL_VAR NAME="streetnumber" -->" />
+      <input type="text" id="streetnumber" name="streetnumber" size="5" value="<!-- TMPL_VAR NAME="streetnumber" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> />
 <!-- TMPL_IF NAME="mandatorystreetnumber" --><span class="required">Required</span><!-- /TMPL_IF -->
     </li>
     <!-- TMPL_IF NAME="road_cgipopup" -->
@@ -416,7 +416,7 @@
       <label for="address">
       <!--/TMPL_IF-->
       Address: </label>
-      <input type="text" id="address" name="address" size="35" value="<!-- TMPL_VAR NAME="address" -->" />
+      <input type="text" id="address" name="address" size="35" value="<!-- TMPL_VAR NAME="address" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> />
 	  <!-- TMPL_IF NAME="mandatoryaddress" --><span class="required">Required</span><!-- /TMPL_IF -->
     </li>
     <li>
@@ -426,7 +426,7 @@
       <label for="address2">
       <!-- /TMPL_IF-->
       Address 2: </label>
-      <input type="text" id="address2" name="address2" size="35" value="<!-- TMPL_VAR NAME="address2" -->" />
+      <input type="text" id="address2" name="address2" size="35" value="<!-- TMPL_VAR NAME="address2" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> />
 	  <!-- TMPL_IF NAME="mandatoryaddress2" --><span class="required">Required</span><!-- /TMPL_IF -->
     </li>  
     <li>
@@ -437,7 +437,7 @@
       <!-- /TMPL_IF-->
       City, State: </label>
         
-        <input type="text" id="city" name="city" size="20" value="<!-- TMPL_VAR NAME="city" -->" />
+        <input type="text" id="city" name="city" size="20" value="<!-- TMPL_VAR NAME="city" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> />
         <!-- TMPL_IF NAME="city_cgipopup" -->or <strong>choose</strong>
         <select id="select_city" name="select_city">
         <!-- TMPL_LOOP NAME="city_loop" -->
@@ -460,7 +460,7 @@
         <label for="zipcode">
       <!-- /TMPL_IF-->
       Zip/Postal code: </label>
-      <input type="text" name="zipcode" id="zipcode" size="10" value="<!-- TMPL_VAR NAME="zipcode" -->" />
+      <input type="text" name="zipcode" id="zipcode" size="10" value="<!-- TMPL_VAR NAME="zipcode" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> />
 	  <!-- TMPL_IF NAME="mandatoryzipcode" --><span class="required">Required</span><!-- /TMPL_IF -->
     </li>
     
@@ -471,7 +471,7 @@
         <label for="country">
       <!-- /TMPL_IF-->
       Country: </label>
-      <input type="text" name="country" id="country" size="20" value="<!-- TMPL_VAR NAME="country" -->" />
+      <input type="text" name="country" id="country" size="20" value="<!-- TMPL_VAR NAME="country" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> />
 	  <!-- TMPL_IF NAME="mandatorycountry" --><span class="required">Required</span><!-- /TMPL_IF -->
     </li>    
   
@@ -486,7 +486,7 @@
       <label for="phone">
       <!-- /TMPL_IF-->
       Phone (home): </label>
-      <input type="text" id="phone" name="phone" value="<!-- TMPL_VAR NAME="phone" -->" />
+      <input type="text" id="phone" name="phone" value="<!-- TMPL_VAR NAME="phone" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> />
 	  <!-- TMPL_IF NAME="mandatoryphone" --><span class="required">Required</span><!-- /TMPL_IF --><div class="hint">Shows on transit slips</div>
 
     </li>
@@ -497,7 +497,7 @@
       <label for="phonepro">
       <!-- /TMPL_IF-->
       Phone (work): </label>
-      <input type="text" id="phonepro" name="phonepro" value="<!-- TMPL_VAR NAME="phonepro" -->" />
+      <input type="text" id="phonepro" name="phonepro" value="<!-- TMPL_VAR NAME="phonepro" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> />
 	  <!-- TMPL_IF NAME="mandatoryphonepro" --><span class="required">Required</span><!-- /TMPL_IF -->
     </li>
     <li>
@@ -507,7 +507,7 @@
       <label for="mobile">
       <!-- /TMPL_IF-->
       Phone (cell): </label>
-      <input type="text" id="mobile" name="mobile" value="<!-- TMPL_VAR NAME="mobile" -->" />
+      <input type="text" id="mobile" name="mobile" value="<!-- TMPL_VAR NAME="mobile" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> />
 	  <!-- TMPL_IF NAME="mandatorymobile" --><span class="required">Required</span><!-- /TMPL_IF -->
     </li>
     <li>
@@ -517,7 +517,7 @@
       <label for="email">
       <!-- /TMPL_IF-->
       Primary Email: </label>
-      <input type="text" id="email" name="email" size="45" value="<!-- TMPL_VAR NAME="email" -->" />  
+      <input type="text" id="email" name="email" size="45" value="<!-- TMPL_VAR NAME="email" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> />  
 	  <!-- TMPL_IF NAME="mandatoryemail" --><span class="required">Required</span><!-- /TMPL_IF --><div class="hint">Shows on transit slips</div>
 
     </li>
@@ -528,7 +528,7 @@
       <label for="emailpro">
       <!-- /TMPL_IF-->
       Secondary Email: </label>
-      <input type="text" id="emailpro" name="emailpro" size="45" value="<!-- TMPL_VAR NAME="emailpro" -->" />
+      <input type="text" id="emailpro" name="emailpro" size="45" value="<!-- TMPL_VAR NAME="emailpro" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> />
 	  <!-- TMPL_IF NAME="mandatoryemailpro" --><span class="required">Required</span><!-- /TMPL_IF -->
     </li>
     <li>
@@ -538,7 +538,7 @@
       <label for="fax">
       <!-- /TMPL_IF-->
       Fax: </label>
-      <input type="text" id="fax" name="fax" value="<!-- TMPL_VAR NAME="fax" -->" />
+      <input type="text" id="fax" name="fax" value="<!-- TMPL_VAR NAME="fax" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> />
 	  <!-- TMPL_IF NAME="mandatoryfax" --><span class="required">Required</span><!-- /TMPL_IF -->
     </li>
 	</ol>
@@ -558,7 +558,7 @@
 					<label for="B_address">
 				<!-- /TMPL_IF-->
 				Address: </label>
-				<input type="text" id="B_address" name="B_address" size="40" value="<!-- TMPL_VAR NAME="B_address" -->" />
+				<input type="text" id="B_address" name="B_address" size="40" value="<!-- TMPL_VAR NAME="B_address" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> />
 	  <!-- TMPL_IF NAME="mandatoryB_address" --><span class="required">Required</span><!-- /TMPL_IF -->
 			</li>
 			<li>
@@ -568,7 +568,7 @@
 					<label for="B_address2">
 				<!-- /TMPL_IF-->
 				Address 2: </label>
-				<input type="text" id="B_address2" name="B_address2" size="40" value="<!-- TMPL_VAR NAME="B_address2" -->" />
+				<input type="text" id="B_address2" name="B_address2" size="40" value="<!-- TMPL_VAR NAME="B_address2" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> />
 	  <!-- TMPL_IF NAME="mandatoryB_address2" --><span class="required">Required</span><!-- /TMPL_IF -->
 			</li>			
 			<li>
@@ -578,7 +578,7 @@
 					<label for="B_city">
 				<!-- /TMPL_IF-->
 				City, State: </label>
-				<input type="text" id="B_city" name="B_city" size="20" value="<!-- TMPL_VAR NAME="B_city" -->" />
+				<input type="text" id="B_city" name="B_city" size="20" value="<!-- TMPL_VAR NAME="B_city" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> />
 	  <!-- TMPL_IF NAME="mandatoryB_city" --><span class="required">Required</span><!-- /TMPL_IF -->
 			</li>
 			<li>
@@ -588,7 +588,7 @@
 					<label for="B_zipcode">
 				<!-- /TMPL_IF-->
 				Zip/Postal code: </label>
-				<input type="text" id="B_zipcode" name="B_zipcode" maxlength="10" size="10" value="<!-- TMPL_VAR NAME="B_zipcode" -->" />
+				<input type="text" id="B_zipcode" name="B_zipcode" maxlength="10" size="10" value="<!-- TMPL_VAR NAME="B_zipcode" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> />
 	  <!-- TMPL_IF NAME="mandatoryB_zipcode" --><span class="required">Required</span><!-- /TMPL_IF -->
 			</li>
 			<li>
@@ -598,7 +598,7 @@
 					<label for="B_country">
 				<!-- /TMPL_IF-->
 				Country: </label>
-				<input type="text" id="B_country" name="B_country" size="20" value="<!-- TMPL_VAR NAME="B_country" -->" />
+				<input type="text" id="B_country" name="B_country" size="20" value="<!-- TMPL_VAR NAME="B_country" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> />
 	  <!-- TMPL_IF NAME="mandatoryB_country" --><span class="required">Required</span><!-- /TMPL_IF -->
 			</li>
             <li>
@@ -608,7 +608,7 @@
                 <label for="B_phone">
                 <!-- /TMPL_IF-->
                 Phone: </label>  
-                <input type="text" id="B_phone" name="B_phone" value="<!-- TMPL_VAR NAME="B_phone" -->" />
+                <input type="text" id="B_phone" name="B_phone" value="<!-- TMPL_VAR NAME="B_phone" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> />
                 <!-- TMPL_IF NAME="mandatoryB_phone" --><span class="required">Required</span><!-- /TMPL_IF -->
             </li>
 			<li> 
@@ -618,7 +618,7 @@
           <label for="B_email">
         <!-- /TMPL_IF-->
         Email: </label>
-        <input type="text" id="B_email" name="B_email" size="45" value="<!-- TMPL_VAR NAME="B_email" -->" />
+        <input type="text" id="B_email" name="B_email" size="45" value="<!-- TMPL_VAR NAME="B_email" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> />
 		<!-- TMPL_IF NAME="mandatoryB_email" --><span class="required">Required</span><!-- /TMPL_IF --> </li>
             <li>
                 <!-- TMPL_IF NAME="mandatorycontactnote" -->
@@ -643,7 +643,7 @@
 				<label for="altcontactsurname">
 				<!-- /TMPL_IF -->
 				Surname:</label>
-				<input type="text" name="altcontactsurname" id="altcontactsurname" value="<!-- TMPL_VAR NAME="altcontactsurname" -->" />
+				<input type="text" name="altcontactsurname" id="altcontactsurname" value="<!-- TMPL_VAR NAME="altcontactsurname" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> />
 				<!-- TMPL_IF NAME="mandatoryaltcontactsurname" --><span class="required">Required</span><!-- /TMPL_IF -->
 			</li>
 			<li>
@@ -653,7 +653,7 @@
 				<label for="altcontactfirstname">
 				<!-- /TMPL_IF -->
 				First name:</label>
-				<input type="text" name="altcontactfirstname" id="altcontactfirstname" value="<!-- TMPL_VAR NAME="altcontactfirstname" -->" />
+				<input type="text" name="altcontactfirstname" id="altcontactfirstname" value="<!-- TMPL_VAR NAME="altcontactfirstname" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> />
 				<!-- TMPL_IF NAME="mandatoryaltcontactfirstname" --><span class="required">Required</span><!-- /TMPL_IF -->
 			</li>
 			<li>
@@ -663,7 +663,7 @@
 				<label for="altcontactaddress1">
 				<!-- /TMPL_IF -->
 				Address:</label>
-				<input type="text" name="altcontactaddress1" id="altcontactaddress1" value="<!-- TMPL_VAR NAME="altcontactaddress1" -->" size="40" />
+				<input type="text" name="altcontactaddress1" id="altcontactaddress1" value="<!-- TMPL_VAR NAME="altcontactaddress1" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> size="40" />
 				<!-- TMPL_IF NAME="mandatoryaltcontactaddress1" --><span class="required">Required</span><!-- /TMPL_IF -->
 			</li>
 			<li>
@@ -673,7 +673,7 @@
 				<label for="altcontactaddress2">
 				<!-- /TMPL_IF -->
 				Address 2:</label>
-				<input type="text" name="altcontactaddress2" id="altcontactaddress2" value="<!-- TMPL_VAR NAME="altcontactaddress2" -->" size="40" />
+				<input type="text" name="altcontactaddress2" id="altcontactaddress2" value="<!-- TMPL_VAR NAME="altcontactaddress2" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> size="40" />
 				<!-- TMPL_IF NAME="mandatoryaltcontactaddress2" --><span class="required">Required</span><!-- /TMPL_IF -->
 			</li>
 			<li>
@@ -683,7 +683,7 @@
 				<label for="altcontactaddress3">
 				<!-- /TMPL_IF -->
 				City, State:</label>
-				<input type="text" name="altcontactaddress3" id="altcontactaddress3" value="<!-- TMPL_VAR NAME="altcontactaddress3" -->" size="40" />
+				<input type="text" name="altcontactaddress3" id="altcontactaddress3" value="<!-- TMPL_VAR NAME="altcontactaddress3" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> size="40" />
 				<!-- TMPL_IF NAME="mandatoryaltcontactaddress3" --><span class="required">Required</span><!-- /TMPL_IF -->
 			</li>
 			<li>
@@ -693,7 +693,7 @@
 				<label for="altcontactzipcode">
 				<!-- /TMPL_IF -->
 				Zip/Postal code:</label>
-				<input type="text" name="altcontactzipcode" id="altcontactzipcode" value="<!-- TMPL_VAR NAME="altcontactzipcode" -->" size="5" />
+				<input type="text" name="altcontactzipcode" id="altcontactzipcode" value="<!-- TMPL_VAR NAME="altcontactzipcode" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> size="5" />
 				<!-- TMPL_IF NAME="mandatoryaltcontactzipcode" --><span class="required">Required</span><!-- /TMPL_IF -->
 			</li>
 			<li>
@@ -703,7 +703,7 @@
 				<label for="altcontactcountry">
 				<!-- /TMPL_IF -->
 				Country:</label>
-				<input type="text" name="altcontactcountry" id="altcontactcountry" value="<!-- TMPL_VAR NAME="altcontactcountry" -->" size="20" />
+				<input type="text" name="altcontactcountry" id="altcontactcountry" value="<!-- TMPL_VAR NAME="altcontactcountry" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> size="20" />
 				<!-- TMPL_IF NAME="mandatoryaltcontactcountry" --><span class="required">Required</span><!-- /TMPL_IF -->
 			</li>			
 			<li>
@@ -713,7 +713,7 @@
 				<label for="altcontactphone">
 				<!-- /TMPL_IF -->
 				Phone:</label>
-				<input type="text" name="altcontactphone" id="altcontactphone" value="<!-- TMPL_VAR NAME="altcontactphone" -->" />
+				<input type="text" name="altcontactphone" id="altcontactphone" value="<!-- TMPL_VAR NAME="altcontactphone" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> />
 				<!-- TMPL_IF NAME="mandatoryaltcontactphone" --><span class="required">Required</span><!-- /TMPL_IF -->
 			</li>
             </ol>
@@ -750,7 +750,7 @@
       <label for="cardnumber">
     <!-- /TMPL_IF--> 
     Card number: </label>
-    <input type="text" id="cardnumber" name="cardnumber" size="20" value="<!-- TMPL_VAR NAME="cardnumber" -->" />
+    <input type="text" id="cardnumber" name="cardnumber" size="20" value="<!-- TMPL_IF NAME="opduplicate" --><!--TMPL_ELSE--><!-- TMPL_VAR NAME="cardnumber" --><!-- /TMPL_IF -->" />
 	  <!-- TMPL_IF NAME="mandatorycardnumber" --><span class="required">Required</span><!-- /TMPL_IF --></li>
     <li>
       <!-- TMPL_IF NAME="mandatorybranchcode" -->
@@ -812,7 +812,7 @@
     <!--TMPL_IF NAME="CGIsort2" --> 
       <!-- TMPL_VAR NAME="CGIsort2" -->
     <!--TMPL_ELSE-->
-      <input  type="text" id="sort2" name="sort2" size="20"  value="<!-- TMPL_VAR NAME="sort2" -->" />
+      <input  type="text" id="sort2" name="sort2" size="20"  value="<!-- TMPL_VAR NAME="sort2" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> />
 	  <!-- TMPL_IF NAME="mandatorysort2" --><span class="required">Required</span><!-- /TMPL_IF -->
     <!-- /TMPL_IF --> 
     </li>
@@ -899,9 +899,9 @@
 			OPAC Login: </label>
 
 <!-- TMPL_IF NAME="NoUpdateLogin" -->
-<input type="text" id="userid" name="userid" size="20" disabled="disabled" value="<!-- TMPL_VAR NAME="userid" -->" />
+<input type="text" id="userid" name="userid" size="20" disabled="disabled" value="<!-- TMPL_IF NAME="opduplicate" --><!--TMPL_ELSE--><!-- TMPL_VAR NAME="userid" --><!-- /TMPL_IF -->" />
 <!-- TMPL_ELSE -->
-<input type="text" id="userid" name="userid" size="20" value="<!-- TMPL_VAR NAME="userid" -->" />
+<input type="text" id="userid" name="userid" size="20" value="<!-- TMPL_IF NAME="opduplicate" --><!--TMPL_ELSE--><!-- TMPL_VAR NAME="userid" --><!-- /TMPL_IF -->" />
 <!-- /TMPL_IF -->
 
 	  <!-- TMPL_IF NAME="mandatoryuserid" --><span class="required">Required</span><!-- /TMPL_IF -->
@@ -915,16 +915,16 @@
 			Password: </label>
 			<!--TMPL_IF NAME="opadd"-->
 			<!-- TMPL_IF NAME="NoUpdateLogin" -->
-				<input type="text" id="password" name="password" size="20"  disabled="disabled" value="<!-- TMPL_VAR NAME="password" -->" />
+				<input type="text" id="password" name="password" size="20"  disabled="disabled" value="<!-- TMPL_IF NAME="opduplicate" --><!--TMPL_ELSE--><!-- TMPL_VAR NAME="password" --><!-- /TMPL_IF -->" />
 <!-- TMPL_ELSE -->
-				<input type="text" id="password" name="password" size="20" value="<!-- TMPL_VAR NAME="password" -->" />
+				<input type="text" id="password" name="password" size="20" value="<!-- TMPL_IF NAME="opduplicate" --><!--TMPL_ELSE--><!-- TMPL_VAR NAME="password" --><!-- /TMPL_IF -->" />
 <!-- /TMPL_IF -->
 			<!--TMPL_ELSE-->
 			<!--TMPL_IF NAME="password"-->
 				<!-- TMPL_IF NAME="NoUpdateLogin" -->
 					<input type="text" id="password" name="password" size="20"  disabled="disabled" value="****" />
 				<!-- TMPL_ELSE -->
-					<input type="text" id="password" name="password" size="20" value="****" />
+					<input type="text" id="password" name="password" size="20" value="<!-- TMPL_IF NAME="opduplicate" --><!--TMPL_ELSE-->****<!-- /TMPL_IF -->" />
 				<!-- /TMPL_IF -->
 			<!--TMPL_ELSE-->
 				<!-- TMPL_IF NAME="NoUpdateLogin" -->
@@ -986,7 +986,7 @@
 				
 				<br />
 				<label for="datedebarred" class="radio">until:</label> 
-				<input type="text" name="datedebarred" id="debarred" class="debarred" value="<!-- TMPL_VAR NAME="datedebarred" -->" />
+				<input type="text" name="datedebarred" id="debarred" class="debarred" value="<!-- TMPL_VAR NAME="datedebarred" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> />
 				<img src="<!-- TMPL_VAR Name="themelang" -->/lib/calendar/cal.gif" id="debarred_button" alt="Show Calendar" />
 		         <script language="JavaScript" type="text/javascript">
 		            Calendar.setup(
@@ -999,7 +999,7 @@
 		        </script>
 		        <br />
 		        <label for="debarredcomment" class="radio">comment:</label>
-		        <input type="text" id="debarredcomment" name="debarredcomment" value="<!-- TMPL_VAR NAME="debarredcomment" -->" class="debarred" size="150"/>
+		        <input type="text" id="debarredcomment" name="debarredcomment" value="<!-- TMPL_VAR NAME="debarredcomment" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> class="debarred" size="150"/>
 		        
 				 
 	        </li>
@@ -1041,7 +1041,7 @@
                     </select>
                 <!-- TMPL_ELSE -->
                     <input type="text" maxlength="64" value="<!-- TMPL_VAR NAME="value" -->"
-                           id="<!-- TMPL_VAR NAME="form_id" -->" name="<!-- TMPL_VAR NAME="form_id" -->" />
+                           id="<!-- TMPL_VAR NAME="form_id" -->" name="<!-- TMPL_VAR NAME="form_id" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> />
                 <!-- /TMPL_IF -->
                 <!-- TMPL_IF NAME="password_allowed" -->
                     (Password: <input type="password" maxlength="64" value="<!-- TMPL_VAR NAME="password" -->"
@@ -1113,7 +1113,7 @@
     <!-- TMPL_INCLUDE NAME="messaging-preference-form.inc" -->
     <!-- TMPL_IF NAME="SMSSendDriver" -->
         <p><label for="SMSnumber">SMS number:</label> 
-          <input type="text" id="SMSnumber" name="SMSnumber" value="<!-- TMPL_VAR NAME="SMSnumber"  -->" />
+          <input type="text" id="SMSnumber" name="SMSnumber" value="<!-- TMPL_VAR NAME="SMSnumber"  -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> />
         </p>
     <!-- /TMPL_IF -->
   </fieldset>
