@@ -35,7 +35,9 @@ our @EXPORT = qw(
     &make_message );
 
 sub getBorrowers {
-    my $new = shift;
+    my $opt = shift;
+    my $new = $opt->{'new'};
+    my $in = join(", ",@{ $opt->{list} }) if $opt->{list};
     my $dbh = C4::Context->dbh;
     my $query = " SELECT ba1.attribute AS APPLIGEST, ba3.attribute AS ETABLISSEM, borrowers.categorycode
                   FROM borrower_attributes AS ba1, borrower_attributes AS ba2, borrower_attributes AS ba3, borrowers
@@ -46,6 +48,7 @@ sub getBorrowers {
                   AND ba3.code = 'ETABLISSEM'";
 
     $query .= " AND ba2.code = 'TIMESTAMP' AND ba2.attribute IS NULL" if $new;
+    $query .= " AND ba1.attribute IN ($in)" if $in;
     $query .= " GROUP BY APPLIGEST, ETABLISSEM";
     my $sth = $dbh->prepare($query);
     $sth->execute();
@@ -492,22 +495,24 @@ sub make_message {
 
     my $message = "End update: total success: $success_update, total failure(s): " . scalar(@$errors_update) . "\n";
 
-    $message .= "_____________________________________________________________________\nError(s) by sites:\n\n";
-    foreach my $site ( keys %$errors_by_sites ) {
-        $message .= "    Branch $site:\n";
-        foreach ( keys %{ $errors_by_sites->{$site} } ) {
-            $message .= $_ eq "pers" ? "        Personnel(s): " : "        Etudiant(s): ";
-            $message .= $errors_by_sites->{$site}->{$_} . "\n";
-        }
+    if ( @$errors_update ) {
+	$message .= "_____________________________________________________________________\nError(s) by sites:\n\n";
+	foreach my $site ( keys %$errors_by_sites ) {
+	    $message .= "    Branch $site:\n";
+	    foreach ( keys %{ $errors_by_sites->{$site} } ) {
+		$message .= $_ eq "pers" ? "        Personnel(s): " : "        Etudiant(s): ";
+		$message .= $errors_by_sites->{$site}->{$_} . "\n";
+	    }
+	}
+
+	$message .= "_____________________________________________________________________\nError(s) by types:\n\n";
+	$message .= "    No data in apogee/harpege: " . $errors_by_types->{nodata} . "\n";
+	$message .= "    Can't get borrowernumber from koha: " . $errors_by_types->{nonumber} . "\n";
+	$message .= "    Can't save borrower in koha: " . $errors_by_types->{nosave} . "\n";
+
+	$message .= "_____________________________________________________________________\nDetails:\n\n";
+	$message .= join("", @$errors_update) if $errors_update;
     }
-
-    $message .= "_____________________________________________________________________\nError(s) by types:\n\n";
-    $message .= "    No data in apogee/harpege: " . $errors_by_types->{nodata} . "\n";
-    $message .= "    Can't get borrowernumber from koha: " . $errors_by_types->{nonumber} . "\n";
-    $message .= "    Can't save borrower in koha: " . $errors_by_types->{nosave} . "\n";
-
-    $message .= "_____________________________________________________________________\nDetails:\n\n";
-    $message .= join("", @$errors_update) if $errors_update;
 
     return $message;
 }

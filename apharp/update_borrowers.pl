@@ -26,13 +26,18 @@ use POSIX qw/ceil/;
 use Mail::Sendmail;
 
 my $new;   # option variable with default value (false)
-GetOptions ('new' => \$new);
+my @list;
+GetOptions ('new' => \$new, 
+            'list=s' => \@list );
+@list = split(/,/,join(',',@list));
+die "Can't use 'new' and 'list' options" if $new && @list;
 
-print "Récupération de la liste des lecteurs ...\n";
-my $borrowers = getBorrowers($new);
-print "Nombre de lecteurs trouvé : " . scalar(@$borrowers) . "\n";
+print "Retrieving the list of borrowers ...\n";
+my $opt = { 'new' => $new, 'list' => \@list };
+my $borrowers = getBorrowers($opt);
+print "Number of borrowers found : " . scalar(@$borrowers) . "\n";
 
-if ($borrowers) {
+if (@$borrowers) {
     foreach (@$borrowers) {
 	if ($_->{'categorycode'} eq "P") {
 	    $_->{'categorycode'} = "pers";
@@ -112,4 +117,4 @@ if ($borrowers) {
 
     print "UPDATING BORROWERS : End update. Success : " . $success_update . ", Failure(s) : " . scalar(@errors_update) . "\n";
 
-} else { print "no borrowers to update in database ..."; }
+} else { print "no borrowers to update ...\n"; }
