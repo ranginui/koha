@@ -239,7 +239,12 @@ function verify_images() {
                         (<!-- TMPL_VAR NAME="notforloanvalue" -->)
                     <!-- /TMPL_IF -->
                 <!-- /TMPL_IF -->
-
+                <!-- TMPL_IF Name="not_same_branch" -->
+                    branch of item is not yours  
+                    <!-- TMPL_IF Name="notforloanvalue" -->
+                        (<!-- TMPL_VAR NAME="notforloanvalue" -->)
+                    <!-- /TMPL_IF -->
+                <!-- /TMPL_IF -->
                             
                 <!-- TMPL_IF NAME="reservedate"-->
                     <!-- TMPL_IF NAME="waitingdate" -->

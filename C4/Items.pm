@@ -30,6 +30,7 @@ use C4::Branch;
 require C4::Reserves;
 use C4::Charset;
 
+
 use vars qw($VERSION @ISA @EXPORT);
 
 BEGIN {
@@ -616,11 +617,14 @@ sub DelItemCheck {
     my $sth=$dbh->prepare("select * from issues i where i.itemnumber=?");
     $sth->execute($itemnumber);
 
+    my $item = GetItem($itemnumber);
     my $onloan=$sth->fetchrow;
-
     $sth->finish();
     if ($onloan){
-        $error = "book_on_loan" 
+        $error = "book_on_loan";
+    }
+    elsif (C4::Context->preference("IndependantBranches") and (C4::Context->userenv->{branch} ne $item->{C4::Context->preference("HomeOrHoldingBranch")||'homebranch'})){
+        $error = "not_same_branch";
     }else{
         # check it doesnt have a waiting reserve
         $sth=$dbh->prepare("SELECT * FROM reserves WHERE found = 'W' AND itemnumber = ?");
@@ -629,9 +633,10 @@ sub DelItemCheck {
         $sth->finish();
         if ($reserve){
             $error = "book_reserved";
-        }else{
-            DelItem($dbh, $biblionumber, $itemnumber);
-            return 1;
+        }
+     else{
+         DelItem($dbh, $biblionumber, $itemnumber);
+         return 1;
         }
     }
     return $error;
