@@ -161,8 +161,8 @@ h4.collapse a { font-size : 80%; text-decoration: none; } fieldset.brief ol { di
                 <!-- TMPL_IF NAME="selected" --><option value="<!-- TMPL_VAR name="budget_id" -->" selected="selected"><!-- TMPL_VAR name="budget_name" --></option><!-- TMPL_ELSE --><option value="<!-- TMPL_VAR name="budget_id" -->"><!-- TMPL_VAR name="budget_name" --></option><!-- /TMPL_IF --><!-- /TMPL_LOOP -->
             </select>
 		</li></ol>
-    </fieldset>
-    <fieldset class="action"><input type="hidden" name="op" value="<!--TMPL_VAR Name="op"-->" /><!--TMPL_IF Name="suggestionid"--><input type="submit" value="Save" /> <a class="cancel" href="suggestion.pl?suggestionid=<!--TMPL_VAR Name="suggestionid"-->">Cancel</a><!--TMPL_ELSE--><input type="submit" value="Submit Your Suggestion" /> <a class="cancel" href="suggestion.pl">Cancel</a><!--/TMPL_IF-->
+    </fieldset><input type="hidden" id="returnsuggested" name="returnsuggested" value="<!--TMPL_IF Name="returnsuggestedby"--><!--TMPL_VAR Name="returnsuggestedby"--><!-- TMPL_ELSE -->noone<!--/TMPL_IF-->"/>
+    <fieldset class="action"><input type="hidden" name="op" value="<!--TMPL_VAR Name="op"-->" /><!--TMPL_IF Name="suggestionid"--><input type="submit" value="Save" /> <a class="cancel" href="<!--TMPL_IF Name="returnsuggestedby"-->/cgi-bin/koha/members/moremember.pl?borrowernumber=<!--TMPL_VAR Name="returnsuggestedby"-->#suggestions<!-- TMPL_ELSE -->suggestion.pl?suggestionid=<!--TMPL_VAR Name="suggestionid"--><!--/TMPL_IF-->">Cancel</a><!--TMPL_ELSE--><input type="submit" value="Submit Your Suggestion" /> <a class="cancel" href="suggestion.pl">Cancel</a><!--/TMPL_IF-->
     </fieldset>
     </form>
 <!-- /TMPL_IF -->
