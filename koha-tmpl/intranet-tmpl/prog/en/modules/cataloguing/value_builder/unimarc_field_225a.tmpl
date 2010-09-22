@@ -63,6 +63,17 @@ YAHOO.util.Event.onContentReady("header_search", function() {
             var doc   = opener.document; 
             var field = doc.getElementById("<!-- TMPL_VAR NAME='index'-->");
             field.value =  document.f_pop.findvalue.value;
+
+	    // Also complete 410$t
+            var inputs = doc.getElementsByTagName('input');
+            
+            for(var i=0 , len=inputs.length ; i < len ; i++ ){
+                if(inputs[i].id.match(/^tag_410_subfield_t_.*/)){
+                    inputs[i].value = document.f_pop.findvalue.value;
+                }
+
+	    }
+ 
             window.close();
             return false;
         }
