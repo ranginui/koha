@@ -206,7 +206,7 @@ sub data_to_koha {
         #Get borrowernumber of the current member
         my $borrowernumber;
         unless ( $borrowernumber = getMemberByAppligest($appligest, $site) ) {
-            push @errors_update, "Can't get borrowernumber for borrower $appligest";
+            push @errors_update, "Can't get borrowernumber for borrower $appligest\n";
 	    $errors_by_sites->{ $fromdata->{SITE} }->{ $fromdata->{TYPE} }++;
 	    $errors_by_types->{nonumber}++;
             next;
@@ -223,7 +223,7 @@ sub data_to_koha {
         my $success = ModMember(%$targetdata);
         unless ($success) {
             print "Can't update borrower n° " . $targetdata->{'borrowernumber'} . "\n";
-            push @errors_update, "The updating of the borrowers (APPLIGEST: $appligest, SITE:" . $fromdata->{SITE} . ") ModMember failed" ;
+            push @errors_update, "The updating of the borrowers (APPLIGEST: $appligest, SITE:" . $fromdata->{SITE} . ") ModMember failed\n" ;
 	    $errors_by_sites->{ $fromdata->{SITE} }->{ $fromdata->{TYPE} }++;
 	    $errors_by_types->{nosave}++;
         } else {
