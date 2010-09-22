@@ -52,6 +52,8 @@ if ($borrowers) {
     my $max = $elemperpage;
     my @errors_update;
     my $success_update = 0;
+    my $errors_by_sites = { U1 => { pers => 0, etud => 0 }, U2 => { pers => 0, etud => 0 }, U3 => { pers => 0, etud => 0 } };
+    my $errors_by_types = { nodata => 0, nonumber => 0, nosave => 0 };
 
     for ( my $i=1; $i<=$npages; $i++) {
 
@@ -83,23 +85,31 @@ if ($borrowers) {
 	foreach ( @{ $result->{errors} } ) {
 	    push @errors_update, $_;
 	}
-    }
 
-    my $message = "End update:\nSuccess: $success_update\nFailure(s): " . scalar(@errors_update) . "\n";
-    $message .= join("\n", @errors_update) if @errors_update;
+	foreach my $site ( keys %{ $result->{bysites} } ) {
+	    foreach ( keys %{ $result->{bysites}->{$site} } ) {
+		$errors_by_sites->{$site}->{$_} += $result->{bysites}->{$site}->{$_};
+	    } 
+	}
+
+	foreach my $errortype ( keys %{ $result->{bytypes} } ) {
+	    $errors_by_types->{$errortype} += $result->{bytypes}->{$errortype};
+	}
+    }
+    my $message = make_message( { errors => \@errors_update,
+			       success => $success_update,
+			       bysites => $errors_by_sites,
+			       bytypes => $errors_by_types});
+    print $message;
 
     my %mail = (
-	smtp    => 'smtp.nerim.net',
-	To      => 'alex.arnaud@biblibre.com',
-	From    => 'alex.arnaud@biblibre.com',
-	Subject => 'Borrowers update result',
-	Message =>  $message );
-    sendmail(%mail) or print "mail not sent" . $Mail::Sendmail::error; 
+        smtp    => 'smtp.nerim.net',
+        To      => 'alex.arnaud@biblibre.com',
+        From    => 'alex.arnaud@biblibre.com',
+        Subject => 'Borrowers update result',
+        Message =>  $message );
+    sendmail(%mail) or print $Mail::Sendmail::error; 
 
     print "UPDATING BORROWERS : End update. Success : " . $success_update . ", Failure(s) : " . scalar(@errors_update) . "\n";
 
 } else { print "no borrowers to update in database ..."; }
-
-
-
-

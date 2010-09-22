@@ -31,7 +31,8 @@ our @EXPORT = qw(
     &card_is_invalid
     &insert_borrower
     &category_for 
-    &appendtolog );
+    &appendtolog 
+    &make_message );
 
 sub getBorrowers {
     my $new = shift;
@@ -166,14 +167,18 @@ sub data_to_koha {
     my ($data, $new) = @_;
     my $success_update = 0;
     my @errors_update = ();
+    my $errors_by_sites = { U1 => { pers => 0, etud => 0 }, U2 => { pers => 0, etud => 0 }, U3 => { pers => 0, etud => 0 } };
+    my $errors_by_types = { nodata => 0, nonumber => 0, nosave => 0 };
 
     print "UPDATING BORROWERS : start update...\n";
     foreach my $fromdata (@$data) {
 
 	if ( $fromdata->{NUM_CARTE_PUCE} && $fromdata->{NUM_CARTE_PUCE} eq '?') {
 	    my $number = getMemberByAppligest( $fromdata->{NUM_APPLI_GEST}, $fromdata->{SITE} );
-	    push @errors_update, "UPDATING BORROWERS : Can't update borrower n° " . $number . ". No data in apogee/harpege (Appligest:"
+	    push @errors_update, "Can't update borrower n° " . $number . ". No data in apogee/harpege (Appligest:"
 		. $fromdata->{NUM_APPLI_GEST} . ", ws:" . $fromdata->{SITE} . "/" . $fromdata->{TYPE} . ")\n";
+	    $errors_by_sites->{ $fromdata->{SITE} }->{ $fromdata->{TYPE} }++;
+	    $errors_by_types->{nodata}++;
 	    print $errors_update[-1];
 	    next;
 	}
@@ -199,6 +204,8 @@ sub data_to_koha {
         my $borrowernumber;
         unless ( $borrowernumber = getMemberByAppligest($appligest, $site) ) {
             push @errors_update, "Can't get borrowernumber for borrower $appligest";
+	    $errors_by_sites->{ $fromdata->{SITE} }->{ $fromdata->{TYPE} }++;
+	    $errors_by_types->{nonumber}++;
             next;
         }
         $targetdata->{ 'borrowernumber' } = $borrowernumber;
@@ -212,17 +219,22 @@ sub data_to_koha {
         #Save to koha db
         my $success = ModMember(%$targetdata);
         unless ($success) {
-            print "UPDATING BORROWERS : Can't update borrower n° " . $targetdata->{'borrowernumber'} . "\n";
+            print "Can't update borrower n° " . $targetdata->{'borrowernumber'} . "\n";
             push @errors_update, "The updating of the borrowers (APPLIGEST: $appligest, SITE:" . $fromdata->{SITE} . ") ModMember failed" ;
+	    $errors_by_sites->{ $fromdata->{SITE} }->{ $fromdata->{TYPE} }++;
+	    $errors_by_types->{nosave}++;
         } else {
             C4::Members::Attributes::SetBorrowerAttributes( $targetdata->{'borrowernumber'}, $patron_attributes );
-            print "UPDATING BORROWERS : Borrower n° " . $targetdata->{'borrowernumber'} . " updated successfully\n";
+            print "Borrower n° " . $targetdata->{'borrowernumber'} . " updated successfully\n";
             $success_update++;
         }
         
     }
 
-    my $result = { errors => \@errors_update, success => $success_update };
+    my $result = { errors => \@errors_update, 
+		   success => $success_update, 
+		   bysites => $errors_by_sites,
+		   bytypes => $errors_by_types };
     return $result;
 }
 
@@ -469,6 +481,35 @@ sub appendtolog {
     open(WSLOG, ">>log/$logfile") or die "impossible d'ouvrir $logfile : $!";
     print WSLOG "[$wanted]: " . $message ." \n";
     close WSLOG;
+}
+
+sub make_message {
+    my $result = shift;
+    my $success_update = $result->{success};
+    my $errors_update = $result->{errors};
+    my $errors_by_sites = $result->{bysites};
+    my $errors_by_types = $result->{bytypes};
+
+    my $message = "End update: total success: $success_update, total failure(s): " . scalar(@$errors_update) . "\n";
+
+    $message .= "_____________________________________________________________________\nError(s) by sites:\n\n";
+    foreach my $site ( keys %$errors_by_sites ) {
+        $message .= "    Branch $site:\n";
+        foreach ( keys %{ $errors_by_sites->{$site} } ) {
+            $message .= $_ eq "pers" ? "        Personnel(s): " : "        Etudiant(s): ";
+            $message .= $errors_by_sites->{$site}->{$_} . "\n";
+        }
+    }
+
+    $message .= "_____________________________________________________________________\nError(s) by types:\n\n";
+    $message .= "    No data in apogee/harpege: " . $errors_by_types->{nodata} . "\n";
+    $message .= "    Can't get borrowernumber from koha: " . $errors_by_types->{nonumber} . "\n";
+    $message .= "    Can't save borrower in koha: " . $errors_by_types->{nosave} . "\n";
+
+    $message .= "_____________________________________________________________________\nDetails:\n\n";
+    $message .= join("", @$errors_update) if $errors_update;
+
+    return $message;
 }
 
 =head
