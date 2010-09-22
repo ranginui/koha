@@ -45,10 +45,10 @@ if ( $auth_status ne "ok" ) {
 my $dbh = C4::Context->dbh;
 my $sql = qq(SELECT distinct collectiontitle 
              FROM biblioitems 
-             WHERE collectiontitle LIKE ?);
+             WHERE collectiontitle LIKE ? OR collectiontitle LIKE ? or collectiontitle LIKE ?);
 $sql .= qq( ORDER BY collectiontitle);
 my $sth = $dbh->prepare($sql);
-$sth->execute("$query%");
+$sth->execute("$query%", "% $query", "%-$query");
 
 while ( my $rec = $sth->fetchrow_hashref ) {
     print $rec->{collectiontitle} . "\n";
