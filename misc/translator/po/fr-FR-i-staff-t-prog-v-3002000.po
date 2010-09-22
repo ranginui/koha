@@ -8,13 +8,14 @@
 # paul POULAIN <paul@koha-fr.org>, 2007, 2008.
 # Nicolas Morin <nicolas.morin@biblibre.com>, 2008, 2010.
 # Laurence Lefaucheur <laurence.lefaucheur@biblibre.com>, 2010.
+# Paul Poulain <paul.poulain@biblibre.com>, 2010.
 msgid ""
 msgstr ""
 "Project-Id-Version: nicomo-fr-FR-i-staff-t-prog-v-3000000\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-08-13 10:36+0200\n"
-"PO-Revision-Date: 2010-09-20 14:04+0200\n"
-"Last-Translator: \n"
+"PO-Revision-Date: 2010-09-21 22:09+0200\n"
+"Last-Translator: Paul Poulain <paul.poulain@biblibre.com>\n"
 "Language-Team: Français <kde-i18n-doc@kde.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -5807,7 +5808,7 @@ msgid ""
 "<a1>Home</a> &rsaquo; <a2>Tools</a> &rsaquo; <a3>Rotating Collections</a> "
 "&rsaquo; Add/Remove Items"
 msgstr ""
-"<a1> Accueil </a> &rsaquo;<a2>Outils</a> &rsaquo; <a3>Rotation des "
+"<a1>Accueil </a> &rsaquo;<a2>Outils</a> &rsaquo; <a3>Rotation des "
 "collections</a> &rsaquo; Ajout/Suppression d'exemplaires"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/editCollections.tmpl:9
@@ -5816,7 +5817,7 @@ msgid ""
 "<a1>Home</a> &rsaquo; <a2>Tools</a> &rsaquo; <a3>Rotating Collections</a> "
 "&rsaquo; Edit Collections"
 msgstr ""
-"<a1> Accueil </a> &rsaquo;<a2>Outils</a> &rsaquo; <a3>Rotation des "
+"<a1>Accueil </a> &rsaquo;<a2>Outils</a> &rsaquo; <a3>Rotation des "
 "collections</a> &rsaquo; Modifier les collections"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/transferCollection.tmpl:9
@@ -5825,7 +5826,7 @@ msgid ""
 "<a1>Home</a> &rsaquo; <a2>Tools</a> &rsaquo; <a3>Rotating Collections</a> "
 "&rsaquo; Transfer Collection"
 msgstr ""
-"<a1> Accueil </a> &rsaquo;<a2>Outils</a> &rsaquo; <a3>Rotation des "
+"<a1>Accueil </a> &rsaquo;<a2>Outils</a> &rsaquo; <a3>Rotation des "
 "collections</a> &rsaquo; Transfert de collection"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/csv-profiles.tmpl:20
@@ -13171,7 +13172,7 @@ msgstr "Colin Campbell"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:566
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/basket/basket.tmpl:196
 msgid "Collection"
-msgstr "Collection"
+msgstr "Support"
 
 #. %1$s: TMPL_VAR name=updatedTitle
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/editCollections.tmpl:39
@@ -13189,7 +13190,7 @@ msgstr "Mise à jour réussie de la Collection '%s'"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:109
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:296
 msgid "Collection Title:"
-msgstr "Titre de la Collection:"
+msgstr "Titre de série :"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/transferCollection.tmpl:16
 msgid "Collection Transfered Successfully"
@@ -13200,7 +13201,7 @@ msgstr "La Collection a été transférée avec succès"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/moredetail.tmpl:51
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/detailprint.tmpl:21
 msgid "Collection:"
-msgstr "Collection&nbsp;: "
+msgstr "Support&nbsp;: "
 
 #
 #. For the first occurrence,
@@ -13209,7 +13210,7 @@ msgstr "Collection&nbsp;: "
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/basket/sendbasket.tmpl:24
 #, c-format
 msgid "Collection: %s"
-msgstr "Collection: %s"
+msgstr "Support&nbsp;: %s"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2intranetDetail.xsl:75
 msgid "Collectivité co-auteur"
@@ -31619,7 +31620,7 @@ msgstr "Enlever les doublons"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/addItems.tmpl:48
 msgid "Remove Item from Collection"
-msgstr "Enlever des exemplaires de la Collection"
+msgstr "Enlever des exemplaires de la collection"
 
 #. For the first occurrence,
 #. SCRIPT
@@ -32104,7 +32105,7 @@ msgstr "Retour au détail de l'adhérent"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/editCollections.tmpl:120
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/addItems.tmpl:83
 msgid "Return to Rotating Collections Home"
-msgstr "Retour au module Rotation des collections"
+msgstr "Retour au module rotation des collections"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/batchMod-del.tmpl:173
 msgid "Return to batch item deletion"
@@ -33642,7 +33643,7 @@ msgstr "Numérotation périodique"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/facets.inc:17
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/results.tmpl:289
 msgid "Series"
-msgstr "Collections"
+msgstr "Collection"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/results.tmpl:292
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/labels/search.tmpl:58
@@ -33657,7 +33658,7 @@ msgstr "Titre de collection"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/neworderempty.tmpl:187
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/neworderempty.tmpl:190
 msgid "Series:"
-msgstr "Collections&nbsp;:"
+msgstr "Collection&nbsp;:"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/z3950_search.tmpl:105
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/z3950_search.tmpl:126
@@ -37528,11 +37529,11 @@ msgstr "Il n'y a pas de %s actuellement disponible."
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/editCollections.tmpl:65
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/rotatingCollections.tmpl:37
 msgid "There are no Collections currently defined."
-msgstr "Pas de Collection définie."
+msgstr "Pas de collection définie."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/addItems.tmpl:77
 msgid "There are no Items in this Collection."
-msgstr "Il n'y a pas d'exemplaires dans cette Collection."
+msgstr "Il n'y a pas d'exemplaires dans cette collection."
 
 #. For the first occurrence,
 #. %1$s: TMPL_VAR name=batch_id
@@ -39597,7 +39598,7 @@ msgstr "Transfert"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/rotatingCollections.tmpl:24
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/rotatingCollections.tmpl:32
 msgid "Transfer Collection"
-msgstr "Transférer la Collection"
+msgstr "Transférer la collection"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/returns.tmpl:184
 msgid "Transfer Now?"
@@ -41248,9 +41249,8 @@ msgid "Web Services"
 msgstr "Web Services"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/preferences.tmpl:23
-#, fuzzy
 msgid "Web Services:"
-msgstr "Collections&nbsp;:"
+msgstr "web-services&nbsp;:"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/supplier.tmpl:156
 msgid "Web site:"
