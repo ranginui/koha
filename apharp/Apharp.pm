@@ -209,8 +209,6 @@ sub data_to_koha {
 	    $targetdata->{ 'branchcode' } = $fromdata->{"SITE"} . 'INC';
 	}
 
-	$targetdata->{ 'userid' } =~ s/^($fromdata->{'SITE'}\.)//i if $targetdata->{ 'userid' };
-
         #Save to koha db
         my $success = ModMember(%$targetdata);
         unless ($success) {
