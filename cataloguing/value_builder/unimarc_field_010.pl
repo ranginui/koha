@@ -63,6 +63,7 @@ sub plugin_javascript {
         }
 
         function Clic$field_number() {
+	    Blur$field_number();
             return 1;
         }
     </script>
@@ -90,7 +91,6 @@ sub plugin {
     my $sth = $dbh->prepare('SELECT publishercode FROM biblioitems WHERE isbn LIKE ? OR isbn LIKE ? LIMIT 1');
 
     $isbn =~ s/-//g;
-    warn $isbn;
     if ( length($isbn) == 13 ) {
         $isbn = substr( $isbn, 3, length($isbn) - 3 );
     }
@@ -136,8 +136,8 @@ sub plugin {
         }
 
         $sth->execute( $seg2, "978$seg2" );
-    }
 
+    }
     if ( ( my $publishercode ) = $sth->fetchrow ) {
         $template->param( return => $publishercode );
     }
