@@ -48,7 +48,11 @@ use C4::Koha;
 use C4::Letters;
 use C4::Biblio;
 use C4::Items;
-use C4::Reserves;
+use C4::Suggestions;
+use C4::Budgets;
+use C4::Search;
+use C4::Dates qw(format_date);
+use C4::Debug;
 use C4::Branch;    # GetBranchName
 use C4::Form::MessagingPreferences;
 use C4::Overdues qw/CheckBorrowerDebarred/;
@@ -428,6 +432,68 @@ if ($borrowernumber) {
         countreserv => scalar @reservloop,
     );
 }
+
+#######################################
+# SUGGESTIONS
+# manage borrowers suggestions
+sub GetCriteriumDesc {
+    my ( $criteriumvalue, $displayby ) = @_;
+    return ( $criteriumvalue eq 'ASKED' ? "Pending" : ucfirst( lc($criteriumvalue) ) ) if ( $displayby =~ /status/i );
+    return ( GetBranchName($criteriumvalue) )  if ( $displayby =~ /branchcode/ );
+    return ( GetSupportName($criteriumvalue) ) if ( $displayby =~ /itemtype/ );
+    if ( $displayby =~ /managedby/ || $displayby =~ /acceptedby/ || $displayby =~ /suggestedby/) {
+        my $borr = C4::Members::GetMember( borrowernumber => $criteriumvalue );
+        return "" unless $borr;
+        return $$borr{firstname} . ", " . $$borr{surname};
+    }
+    if ( $displayby =~ /budgetid/) {
+        my $budget = GetBudget($criteriumvalue);
+        return "" unless $budget;
+        return $$budget{budget_name};
+    }
+}
+    my $suggestion_ref={"suggestedby"=>$borrowernumber};
+    my $displayby = "STATUS";
+    my $criteria_list = GetDistinctValues( "suggestions." . $displayby );
+    my @allsuggestions;
+    my $countsuggestions=0;
+    my $reasonsloop = GetAuthorisedValues("SUGGEST");
+    foreach my $criteriumvalue ( map { $$_{'value'} } @$criteria_list ) {
+        my $definedvalue = defined $$suggestion_ref{$displayby} && $$suggestion_ref{$displayby} ne "";
+
+        next if ( $definedvalue && $$suggestion_ref{$displayby} ne $criteriumvalue );
+        $$suggestion_ref{$displayby} = $criteriumvalue;
+
+        #        warn $$suggestion_ref{$displayby}."=$criteriumvalue; $displayby";
+        #warn "===========================================";
+        #warn Data::Dumper::Dumper($suggestion_ref);
+        my $suggestions = &SearchSuggestion($suggestion_ref);
+        foreach my $suggestion (@$suggestions) {
+            $suggestion->{budget_name} = GetBudget( $suggestion->{budgetid} )->{budget_name} if $suggestion->{budgetid};
+            foreach my $date qw(suggesteddate manageddate accepteddate) {
+                if ( $suggestion->{$date} ne "0000-00-00" && $suggestion->{$date} ne "" ) {
+                    $suggestion->{$date} = format_date( $suggestion->{$date} );
+                } else {
+                    $suggestion->{$date} = "";
+                }
+            }
+            $countsuggestions++;
+        }
+push @allsuggestions,
+          { "suggestiontype" => $criteriumvalue || "suggest",
+            "suggestiontypelabel" => GetCriteriumDesc( $criteriumvalue, $displayby ) || "",
+            "suggestionscount"    => scalar(@$suggestions),
+            'suggestions_loop'    => $suggestions,
+            'reasonsloop'         => $reasonsloop,
+          };
+        delete $$suggestion_ref{$displayby} unless $definedvalue;
+    }
+        if($countsuggestions>0)
+        {
+        	$template->param("boolsuggestions" => 1);
+        }
+$template->param("suggestions" => \@allsuggestions, "countsuggestions"=>$countsuggestions);
+# SUGGESTIONS : end
 
 # current alert subscriptions
 my $alerts = getalert($borrowernumber);

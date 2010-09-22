@@ -105,7 +105,65 @@ if (nodename =="barcodes[]"){
 
 //]]>
 </script>
+<!-- TMPL_IF name="boolsuggestions" -->
+<script type="text/JavaScript">
+/**
+*  displayOther.
+*  This function display the select or an textaera to write a reason.
+*/
+function displayOther(id,show,hide){
+	$("#"+hide+id).hide();
+	$("#"+show+id).show();
+}
+$(document).ready(function() {
 
+    $('#suggestiontabs > ul').tabs({
+        select: function(ui) {
+            $("#loadingtab").show();
+        },
+        show: function(ui) {
+            $("#loadingtab").hide();
+        }
+        });
+    $.tablesorter.defaults.widgets = ['zebra'];
+
+
+// functions for allsuggestionforthisborrower interactions
+    $("#CheckAll").click(function(){
+		$("#allsuggestionforthisborrowert").checkCheckboxes();
+    });
+    $("#UncheckAll").click(function(){
+		$("#allsuggestionforthisborrowert").unCheckCheckboxes();
+	});
+	$("#other_reasonallsuggestionforthisborrower").hide();
+    $("input[name*=other_reasonallsuggestionforthisborrower]").focus(function(){ $(this).val(""); });
+    $("#reasonallsuggestionforthisborrower").change(function(){
+	    if($(this).val() == "other"){
+			$(this).hide();
+			$("#other_reasonallsuggestionforthisborrower").show();
+    }
+    });
+	$("#allsuggestionforthisborrowerdelete").change(function(){
+		if(this.checked){
+			$("form[name='fallsuggestionforthisborrower'] input[name=op]").attr("value","delete");
+		} else {
+			$("form[name='fallsuggestionforthisborrower'] input[name=op]").attr("value","change");
+		}
+	});
+
+
+    $("a[href*=back]").click(function(){
+    var sid = $(this).attr("href").replace(/#back/,"");
+	    $("#reason"+sid).show().find("option[value='']").attr("selected","selected");
+		$("#other_reason"+sid).hide();
+    });
+	$("h4.collapse a").click(function(){
+		$(this).parent().parent().find("ol").toggle();
+    });
+});
+// ]]>
+</script>
+<!-- /TMPL_IF -->
 </head>
 <body>
 <!-- TMPL_INCLUDE NAME="header.inc" -->
@@ -403,9 +461,95 @@ if (nodename =="barcodes[]"){
             <a href="/cgi-bin/koha/members/moremember.pl#onhold"><!--TMPL_VAR NAME="countreserv"--> Hold(s)</a>
     <!-- TMPL_ELSE -->
             <a href="/cgi-bin/koha/members/moremember.pl#onhold">0 Holds</a>
-    <!-- /TMPL_IF --></li>
+    <!-- /TMPL_IF --></li><!-- patron suggestions -->
+    <li><a href="/cgi-bin/koha/members/moremember.pl#suggestions"><!-- TMPL_VAR NAME="countsuggestions"--> purchase suggestion(s)</a></li>
 	</ul>
-	
+<!-- ###################### suggestions start ######################-->
+<div id="suggestions"><!-- TMPL_IF name="boolsuggestions" -->
+<form name="fallsuggestionforthisborrower" method="post" action="/cgi-bin/koha/suggestion/suggestion.pl#allsuggestionforthisborrower">
+<p><a id="CheckAll" href="javascript:;">Check All</a> | <a id="UncheckAll" href="javascript:;"">Uncheck All</a></p>
+    <table id="allsuggestionforthisborrowert">
+        <thead>
+            <tr><th>&nbsp;</th>
+            <th>Suggestion</th>
+            <th>Note</th>
+            <th>Suggested by /on</th>
+            <th>Managed by /on</th>
+            <th>Library</th>
+            <th>Budget</th>
+            <th>Status</th></tr>
+    </thead>
+        <tbody>
+        <!--TMPL_LOOP Name="suggestions"--><!-- TMPL_LOOP NAME="suggestions_loop" -->
+            <!-- TMPL_IF name="even" --><tr class="highlight"><!-- TMPL_ELSE --><tr><!-- /TMPL_IF -->
+                <td>
+                    <input type="checkbox" name="edit_field" value="<!--TMPL_VAR name="suggestionid" -->" />
+                </td>
+                <td>
+                    <a href="/cgi-bin/koha/suggestion/suggestion.pl?suggestionid=<!-- TMPL_VAR NAME="suggestionid" -->&amp;op=edit&amp;returnsuggestedby=<!-- TMPL_VAR name="suggestedby" -->" title="suggestion" >
+                        <!-- TMPL_VAR NAME="title" ESCAPE="html" --><!-- TMPL_IF NAME="author" -->, by <!-- TMPL_VAR NAME="author" --><!-- /TMPL_IF -->
+                    </a>
+                    <br />
+                    <!-- TMPL_IF name="copyrightdate" -->&copy; <!-- TMPL_VAR name="copyrightdate" --> <!-- /TMPL_IF -->
+                        <!-- TMPL_IF name="volumedesc" -->; Volume:<i><!-- TMPL_VAR name="volumedesc" --></i> <!-- /TMPL_IF -->
+                        <!-- TMPL_IF name="isbn" -->; ISBN:<i><!-- TMPL_VAR name="isbn" --></i> <!-- /TMPL_IF --><!-- TMPL_IF name="publishercode" -->; Published by <!-- TMPL_VAR name="publishercode" --> <!-- /TMPL_IF --><!-- TMPL_IF name="publicationyear" --> in <i><!-- TMPL_VAR name="publicationyear" --></i> <!-- /TMPL_IF --><!-- TMPL_IF name="place" --> in <i><!-- TMPL_VAR name="place" --></i> <!-- /TMPL_IF --><!-- TMPL_IF name="collectiontitle" -->;<!-- TMPL_VAR name="collectiontitle" --> <!-- /TMPL_IF --><!-- TMPL_IF name="itemtype" -->;<!-- TMPL_VAR name="itemtype" --> <!-- /TMPL_IF --><br /><!-- TMPL_IF name="note" --><!-- TMPL VAR NAME="note" --><!-- /TMPL_IF -->
+                </td>
+                <td>
+                    <!-- TMPL_VAR name="note" -->
+                </td>
+                <td>
+                    <!--TMPL_IF Name="emailsuggestedby"--><a href="mailto:<!-- TMPL_VAR name="emailsuggestedby" -->"><!--/TMPL_IF--><!-- TMPL_VAR name="surnamesuggestedby" --><!-- TMPL_IF name="firstnamesuggestedby" -->, <!-- TMPL_VAR name="firstnamesuggestedby" --><!-- /TMPL_IF --> <!--TMPL_IF Name="emailsuggestedby"--></a><!--/TMPL_IF-->
+                    <!--TMPL_IF Name="suggesteddate"--> / <!-- TMPL_VAR name="suggesteddate" --><!--/TMPL_IF-->
+                </td>
+                <td>
+                    <!--TMPL_IF Name="emailmanagedby"--><a href="mailto:<!-- TMPL_VAR name="emailmanagedby" -->"><!--/TMPL_IF--><!-- TMPL_VAR name="surnamemanagedby" --><!-- TMPL_IF name="firstnamemanagedby" -->, <!-- TMPL_VAR name="firstnamemanagedby" --><!-- /TMPL_IF --> <!--TMPL_IF Name="emailmanagedby"--></a><!--/TMPL_IF-->
+                    <!--TMPL_IF Name="manageddate"-->, <!-- TMPL_VAR name="manageddate" --><!--/TMPL_IF-->
+                </td>
+                <td>
+                    <!-- TMPL_VAR name="branchcode" -->
+                </td>
+                <td>
+                    <!-- TMPL_VAR name="budget_name" -->
+                </td>
+                <td>
+                    <!-- TMPL_IF name="ASKED" -->Requested<!-- /TMPL_IF --> <!-- TMPL_IF name="ACCEPTED" -->Accepted<!-- /TMPL_IF --> <!-- TMPL_IF name="ORDERED" -->Ordered<!-- /TMPL_IF --> <!-- TMPL_IF name="REJECTED" -->Rejected<!-- /TMPL_IF --> <!-- TMPL_IF name="CHECKED" -->Checked<!-- /TMPL_IF --> <!-- TMPL_IF name="reason" --><br />(<!-- TMPL_VAR name="reason" -->)<!-- /TMPL_IF -->
+                </td>
+        </tr>
+        <!-- /TMPL_LOOP --><!-- /TMPL_LOOP -->
+        </tbody>
+        </table>
+
+
+<div id="select-reasonallsuggestionforthisborrower">
+        <div id="statusallsuggestionforthisborrower">
+	<label for="STATUSallsuggestionforthisborrower">Mark selected as: </label><select name="STATUS" id="STATUSallsuggestionforthisborrower">
+	<option value=""> -- Choose a status --</option>
+	<option value="ACCEPTED">Accepted</option>
+	<option value="CHECKED">Checked</option>
+	<option value="REJECTED">Rejected</option>
+	</select>
+    <label for="reasonallsuggestionforthisborrower">with this reason:</label>                 <select id="reasonallsuggestionforthisborrower" name="reasonallsuggestionforthisborrower">
+                    <option value=""> -- Choose a reason -- </option>
+                        <!--TMPL_LOOP Name="reasonsloop"-->
+                        <option value="<!--TMPL_VAR Name="lib" -->"><!--TMPL_VAR Name="lib" --></option>
+                        <!--/TMPL_LOOP-->
+                    <option value="other">Others...</option>
+                    </select>   <span id="other_reasonallsuggestionforthisborrower">
+            <input type="text" size="31" id="select-other_reasonallsuggestionforthisborrower" name="other_reasonallsuggestionforthisborrower" value="please note your reason here" /> <a href="#backallsuggestionforthisborrower">Cancel</a>
+        </span> <strong style="padding: 0 1em;">OR:</strong> <label for="allsuggestionforthisborrowerdelete">Delete selected</label> <input type="checkbox" name="op" id="allsuggestionforthisborrowerdelete" />
+        </div>
+        </div>
+
+<input type="hidden" name="returnsuggested" id="returnsuggested" value="<!-- TMPL_VAR NAME="borrowernumber" -->" />
+    <input type="hidden" name="tabcode" value="allsuggestionforthisborrower" />
+    <input type="hidden" name="op" value="change" />
+</fieldset>
+        <fieldset class="action">
+    <input type="submit" value="Submit" /></fieldset>
+</form>
+<!-- TMPL_ELSE -->Patron has no suggestions.<!-- /TMPL_IF -->
+</div>
+<!-- ###################### suggestions end ######################-->
 <div id="finesandcharges">
     <!-- TMPL_IF NAME="totaldue_raw" -->
         <p>Total due: <!-- TMPL_VAR NAME="totaldue" --></p>
