@@ -439,11 +439,28 @@ if ( $op eq "additem" ) {
 
     #-------------------------------------------------------------------------------
     my @biblioitems = &GetBiblioItemByBiblioNumber($biblionumber);
+    my $errortest=0;
+    my $itemfail;
     foreach my $biblioitem (@biblioitems) {
         my $items = &GetItemsByBiblioitemnumber( $biblioitem->{biblioitemnumber} );
 
         foreach my $item (@$items) {
-            &DelItem( $dbh, $biblionumber, $item->{itemnumber} );
+            $error =&DelItem( $dbh, $biblionumber, $item->{itemnumber} );
+            $itemfail =$item;
+        if($error == 1){
+            next
+            }
+        else {
+            push @errors,$error;
+            $errortest++
+            }
+        }
+        if($errortest > 0){
+            $nextop="additem";
+        } 
+        else {
+            print $input->redirect("/cgi-bin/koha/catalogue/moredetail.pl?biblionumber=$biblionumber");
+            exit;
         }
     }
 
