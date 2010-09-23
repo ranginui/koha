@@ -48,7 +48,7 @@ my $sql = qq(SELECT distinct collectiontitle
              WHERE collectiontitle LIKE ? OR collectiontitle LIKE ? or collectiontitle LIKE ?);
 $sql .= qq( ORDER BY collectiontitle);
 my $sth = $dbh->prepare($sql);
-$sth->execute("$query%", "% $query", "%-$query");
+$sth->execute("$query%", "% $query%", "%-$query%");
 
 while ( my $rec = $sth->fetchrow_hashref ) {
     print $rec->{collectiontitle} . "\n";
