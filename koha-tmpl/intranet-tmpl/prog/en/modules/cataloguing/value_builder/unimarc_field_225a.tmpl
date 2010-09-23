@@ -30,6 +30,7 @@ YAHOO.util.Event.onContentReady("header_search", function() {
         //     ["Record Delimiter",
         //     "Field Delimiter"]
         this.oACDS = new YAHOO.widget.DS_XHR("/cgi-bin/koha/cataloguing/ysearch.pl", ["\n", "\t"]);
+	this.oACDS.scriptQueryAppend = "table=biblioitems&field=collectiontitle";
         this.oACDS.responseType = YAHOO.widget.DS_XHR.TYPE_FLAT;
         this.oACDS.maxCacheEntries = 60;
         this.oACDS.queryMatchSubset = true;

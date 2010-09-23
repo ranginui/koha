@@ -33,6 +33,11 @@ use C4::Auth qw/check_cookie_auth/;
 
 my $input = new CGI;
 my $query = $input->param('query');
+my $table = $input->param('table');
+my $field = $input->param('field');
+
+# Prevent from disclosing data
+die() unless ($table eq "biblioitems"); 
 
 binmode STDOUT, ":utf8";
 print $input->header( -type => 'text/plain', -charset => 'UTF-8' );
@@ -43,10 +48,10 @@ if ( $auth_status ne "ok" ) {
 }
 
 my $dbh = C4::Context->dbh;
-my $sql = qq(SELECT distinct collectiontitle 
-             FROM biblioitems 
-             WHERE collectiontitle LIKE ? OR collectiontitle LIKE ? or collectiontitle LIKE ?);
-$sql .= qq( ORDER BY collectiontitle);
+my $sql = qq(SELECT distinct $field 
+             FROM $table 
+             WHERE $field LIKE ? OR $field LIKE ? or $field LIKE ?);
+$sql .= qq( ORDER BY $field);
 my $sth = $dbh->prepare($sql);
 $sth->execute("$query%", "% $query%", "%-$query%");
 
