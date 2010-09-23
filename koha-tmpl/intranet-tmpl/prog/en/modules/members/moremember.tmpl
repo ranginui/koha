@@ -512,7 +512,7 @@ $(document).ready(function() {
                     <!-- TMPL_VAR name="budget_name" -->
                 </td>
                 <td>
-                    <!-- TMPL_IF name="ASKED" -->Requested<!-- /TMPL_IF --> <!-- TMPL_IF name="ACCEPTED" -->Accepted<!-- /TMPL_IF --> <!-- TMPL_IF name="ORDERED" -->Ordered<!-- /TMPL_IF --> <!-- TMPL_IF name="REJECTED" -->Rejected<!-- /TMPL_IF --> <!-- TMPL_IF name="CHECKED" -->Checked<!-- /TMPL_IF --> <!-- TMPL_IF name="reason" --><br />(<!-- TMPL_VAR name="reason" -->)<!-- /TMPL_IF -->
+                    <!-- TMPL_IF name="ASKED" -->Asked<!-- /TMPL_IF --> <!-- TMPL_IF name="ACCEPTED" -->Accepted<!-- /TMPL_IF --> <!-- TMPL_IF name="ORDERED" -->Ordered<!-- /TMPL_IF --> <!-- TMPL_IF name="REJECTED" -->Rejected<!-- /TMPL_IF --> <!-- TMPL_IF name="CHECKED" -->Checked<!-- /TMPL_IF --> <!-- TMPL_IF name="reason" --><br />(<!-- TMPL_VAR name="reason" -->)<!-- /TMPL_IF -->
                 </td>
         </tr>
         <!-- /TMPL_LOOP --><!-- /TMPL_LOOP -->
@@ -524,6 +524,7 @@ $(document).ready(function() {
         <div id="statusallsuggestionforthisborrower">
 	<label for="STATUSallsuggestionforthisborrower">Mark selected as: </label><select name="STATUS" id="STATUSallsuggestionforthisborrower">
 	<option value=""> -- Choose a status --</option>
+	<option value="ASKED">Asked</option>
 	<option value="ACCEPTED">Accepted</option>
 	<option value="CHECKED">Checked</option>
 	<option value="REJECTED">Rejected</option>
