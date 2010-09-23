@@ -25,6 +25,8 @@ use C4::Output;
 use C4::Bookseller;
 use C4::Context;
 use C4::Letters;
+use C4::Branch;    # GetBranches GetBranchesLoop
+
 my $input = CGI->new;
 
 my $serialid     = $input->param('serialid');
@@ -73,6 +75,9 @@ if ($supplierid) {
     @supplierinfo = GetBookSeller($supplierid);
 }
 
+my $branchloop = GetBranchesLoop();
+unshift @$branchloop, {value=> 'all',name=>''};
+
 my $preview = 0;
 if ( $op && $op eq 'preview' ) {
     $preview = 1;
@@ -96,6 +101,7 @@ $template->param(
     supplierid               => $supplierid,
     claimletter              => $claimletter,
     supplierloop             => \@supplierinfo,
+    branchloop               => $branchloop,
     dateformat               => C4::Context->preference("dateformat"),
     DHTMLcalendar_dateformat => C4::Dates->DHTMLcalendar(),
 );
