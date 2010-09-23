@@ -37,13 +37,23 @@ my $opt = { 'new' => $new, 'list' => \@list };
 my $borrowers = getBorrowers($opt);
 print "Number of borrowers found : " . scalar(@$borrowers) . "\n";
 
+my @errors_update;
+my $success_update = 0;
+my $errors_by_sites = { U1 => { pers => 0, etud => 0 }, U2 => { pers => 0, etud => 0 }, U3 => { pers => 0, etud => 0 } };
+my $errors_by_types = { nodata => 0, nonumber => 0, nosave => 0, appligest => 0 };
+
 if (@$borrowers) {
     foreach (@$borrowers) {
 	if ($_->{'categorycode'} eq "P") {
 	    $_->{'categorycode'} = "pers";
-	    next;
+	} else {
+	    $_->{'categorycode'} = "etud";
 	}
-	$_->{'categorycode'} = "etud";
+	if ($_->{APPLIGEST} !~ /^\d*$/) {
+            push @errors_update, "Invalid APPLIGEST number: " . $_->{APPLIGEST} . " from " . $_->{ETABLISSEM} . "/" . $_->{'categorycode'} ."\n";
+            $errors_by_sites->{ $_->{ETABLISSEM} }->{ $_->{'categorycode'} }++;
+            $errors_by_types->{appligest}++;
+        }
     }
 
     #builds an array for each branch with staff and one for each branch with students
@@ -55,10 +65,6 @@ if (@$borrowers) {
 
     my $min = 0;
     my $max = $elemperpage;
-    my @errors_update;
-    my $success_update = 0;
-    my $errors_by_sites = { U1 => { pers => 0, etud => 0 }, U2 => { pers => 0, etud => 0 }, U3 => { pers => 0, etud => 0 } };
-    my $errors_by_types = { nodata => 0, nonumber => 0, nosave => 0 };
 
     for ( my $i=1; $i<=$npages; $i++) {
 

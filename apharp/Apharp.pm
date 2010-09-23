@@ -509,6 +509,7 @@ sub make_message {
 	$message .= "    No data in apogee/harpege: " . $errors_by_types->{nodata} . "\n";
 	$message .= "    Can't get borrowernumber from koha: " . $errors_by_types->{nonumber} . "\n";
 	$message .= "    Can't save borrower in koha: " . $errors_by_types->{nosave} . "\n";
+	$message .= "    Invalid APPLIGEST number: " . $errors_by_types->{appligest} . "\n";
 
 	$message .= "_____________________________________________________________________\nDetails:\n\n";
 	$message .= join("", @$errors_update) if $errors_update;
