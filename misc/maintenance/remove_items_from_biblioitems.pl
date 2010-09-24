@@ -21,19 +21,12 @@ if ( not $result or $want_help ) {
 
 my $dbh=C4::Context->dbh;
 my $querysth=qq{SELECT biblionumber from biblioitems };
-$querysth.=" WHERE $wherestring " if ($wherestring);
+$querysth.=" WHERE $wherestring ";
 my $query=$dbh->prepare($querysth);
 
 $query->execute;
 while (my $biblionumber=$query->fetchrow){
-    my $record=GetMarcBiblio($biblionumber);
-    
-    if ($record){
-        ModBiblio($record,$biblionumber,GetFrameworkCode($biblionumber)) ;
-    }
-    else {
-        print "error in $biblionumber : can't parse biblio";
-    }
+    ModBiblio(GetMarcBiblio($biblionumber),$biblionumber,GetFrameworkCode($biblionumber));
 }
 sub print_usage {
     print <<_USAGE_;
