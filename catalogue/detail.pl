@@ -99,7 +99,7 @@ my $itemtypes = GetItemTypes();
 my $dbh       = C4::Context->dbh;
 
 # change back when ive fixed request.pl
-my @items = &GetItemsInfo( $biblionumber, 'intra',30 );
+my @items = &GetItemsInfo( $biblionumber, 'intra' );
 my $dat = &GetBiblioData($biblionumber);
 
 #coping with subscriptions
