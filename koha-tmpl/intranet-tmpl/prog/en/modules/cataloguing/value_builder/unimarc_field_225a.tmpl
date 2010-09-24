@@ -40,7 +40,7 @@ YAHOO.util.Event.onContentReady("header_search", function() {
         var myContainer = document.getElementById('yvaluecontainer');
         this.oAutoComp = new YAHOO.widget.AutoComplete(myInput,myContainer,this.oACDS);
         //this.oAutoComp.delimChar = ";";
-        //this.oAutoComp.queryDelay = 1;
+        this.oAutoComp.queryDelay = 1;
         this.oAutoComp.formatResult = this.fnCustomFormatter;
 }
 });    
