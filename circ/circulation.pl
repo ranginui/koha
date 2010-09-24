@@ -155,9 +155,9 @@ if ( C4::Context->preference('globalDueDate') && ( C4::Context->preference('glob
 my $duedatespec_allow = C4::Context->preference('SpecifyDueDate');
 if ($duedatespec_allow) {
     if ($duedatespec) {
-        if ( $duedatespec =~ C4::Dates->regexp('syspref') ) {
+        if ( 1 ) {
             my $tempdate = C4::Dates->new($duedatespec);
-            if ( $tempdate and $tempdate->output('iso') gt C4::Dates->new()->output('iso') ) {
+            if ( 1 ) {
 
                 # i.e., it has to be later than today/now
                 $datedue = $tempdate;

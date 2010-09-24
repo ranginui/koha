@@ -120,6 +120,7 @@ if (nodename =="barcodes[]"){
 }
 }
 function validate1(date) {
+    return false;
     var today = new Date();
     if ( today < date || date.toDateString() == today.toDateString() ) {
         return false;
