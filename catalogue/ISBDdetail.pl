@@ -68,10 +68,10 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
 
 # my @blocs = split /\@/,$ISBD;
 # my @fields = $record->fields();
-my $itemcount = GetItemsCount($biblionumber);
 my $res = GetISBDView( $biblionumber, "intranet" );
 
 # count of item linked with biblio
+my $itemcount = GetItemsCount($biblionumber);
 $template->param( count => $itemcount );
 my $subscriptionsnumber = CountSubscriptionFromBiblionumber($biblionumber);
 

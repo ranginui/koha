@@ -99,11 +99,7 @@ my $itemtypes = GetItemTypes();
 my $dbh       = C4::Context->dbh;
 
 # change back when ive fixed request.pl
-my $itemcount = GetItemsCount($biblionumber);
-my $maxitems_display=C4::Context->preference('MaxItemsDisplay')||30;
-my $displayitems=($itemcount>$maxitems_display ? $maxitems_display:$itemcount);
-$displayitems=undef if ($query->param('allitems'));
-my @items=GetItemsInfo($biblionumber,'intra',$displayitems);
+my @items = &GetItemsInfo( $biblionumber, 'intra',30 );
 my $dat = &GetBiblioData($biblionumber);
 
 #coping with subscriptions
@@ -131,9 +127,7 @@ foreach my $subscription (@subscriptions) {
 if ( defined $dat->{'itemtype'} ) {
     $dat->{imageurl} = getitemtypeimagelocation( 'intranet', $itemtypes->{ $dat->{itemtype} }{imageurl} );
 }
-$dat->{'count'} = $itemcount;
-$dat->{'itemsdisplayed'} = @items;
-$dat->{'allitems'} = $itemcount>@items;
+$dat->{'count'} = scalar @items;
 my $shelflocations = GetKohaAuthorisedValues( 'items.location', $fw );
 my $collections    = GetKohaAuthorisedValues( 'items.ccode',    $fw );
 my ( @itemloop, %itemfields );
