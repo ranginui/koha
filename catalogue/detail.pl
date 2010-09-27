@@ -65,6 +65,8 @@ if ( C4::Context->preference("IntranetXSLTDetailsDisplay") ) {
 }
 
 $template->param( 'SpineLabelShowPrintOnBibDetails' => C4::Context->preference("SpineLabelShowPrintOnBibDetails") );
+$template->param( ocoins => GetCOinSBiblio($biblionumber) );
+
 
 # some useful variables for enhanced content;
 # in each case, we're grabbing the first value we find in

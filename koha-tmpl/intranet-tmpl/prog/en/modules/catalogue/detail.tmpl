@@ -117,7 +117,13 @@ function verify_images() {
        
 <!-- TMPL_IF NAME="AmazonEnabled" --><!-- TMPL_IF NAME="AmazonCoverImages" --><div class="yui-u" id="bookcoverimg">
 <a href="http://www.amazon<!-- TMPL_VAR NAME="AmazonTld" -->/gp/reader/<!-- TMPL_VAR NAME="normalized_isbn" -->/ref=sib_dp_pt/002-7879865-0184864#reader-link"><img border="0" src="http://images.amazon.com/images/P/<!-- TMPL_VAR NAME="normalized_isbn" -->.01.MZZZZZZZ.jpg" alt="" /></a></div><!-- /TMPL_IF --><!-- /TMPL_IF -->
-        
+
+    <!-- TMPL_IF NAME="ocoins" -->
+    <!-- COinS / OpenURL -->
+    <span class="Z3988" title="<!-- TMPL_VAR NAME="ocoins" -->"></span>
+    <!-- /TMPL_IF -->
+   
+ 
         <div class="yui-u" style="margin-top: 1em;">
         <ul>
         <!-- TMPL_IF name="normalized_isbn" -->

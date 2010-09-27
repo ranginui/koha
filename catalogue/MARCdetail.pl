@@ -72,6 +72,7 @@ my $tagslib = &GetMarcStructure( 1, $frameworkcode );
 my $record = GetMarcBiblio($biblionumber);
 my $biblio = GetBiblioData($biblionumber);
 
+
 # open template
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
     {   template_name   => "catalogue/MARCdetail.tmpl",
@@ -82,6 +83,8 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
         debug           => 1,
     }
 );
+
+$template->param( ocoins => GetCOinSBiblio($biblionumber) );
 
 #count of item linked
 my $itemcount = GetItemsCount($biblionumber);
