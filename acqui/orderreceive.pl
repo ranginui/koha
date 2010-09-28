@@ -76,12 +76,13 @@ my $dbh        = C4::Context->dbh;
 my $search       = $input->param('receive');
 my $invoice      = $input->param('invoice');
 my $freight      = $input->param('freight');
+my $doreceive    = $input->param('doreceive');
 my $biblionumber = $input->param('biblionumber');
 my $datereceived = C4::Dates->new($input->param('datereceived')||'','iso') || C4::Dates->new();
 my $catview      = $input->param('catview');
 my $gst          = $input->param('gst');
 
-my @results = SearchOrder( $search, $supplierid, $biblionumber);
+my @results = ($doreceive) ? SearchOrder( $search, '', $biblionumber) : SearchOrder( $search, $supplierid, $biblionumber);
 my $count   = scalar @results;
 my $order 	= GetOrder($search);
 
@@ -195,10 +196,11 @@ $template->param(
     datereceived     => $datereceived->output(),
     datereceived_iso => $datereceived->output('iso'),
     invoice          => $invoice,
-    name             => $bookseller->{'name'},
     freight          => $freight,
     gst              => $gst,
     previousurl      => $input->referer(),
 );
+
+$template->param( name => $bookseller->{'name'} ) if ($bookseller);
 
 output_html_with_http_headers $input, $cookie, $template->output;
