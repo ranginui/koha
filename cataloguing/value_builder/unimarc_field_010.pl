@@ -88,7 +88,7 @@ sub plugin {
 
     my $dbh = C4::Context->dbh;
     my $len = 0;
-    my $sth = $dbh->prepare('SELECT publishercode FROM biblioitems WHERE isbn LIKE ? OR isbn LIKE ? LIMIT 1');
+    my $sth = $dbh->prepare('SELECT publishercode FROM biblioitems WHERE REPLACE(isbn, "-", "") LIKE ? OR REPLACE(isbn, "-", "") LIKE ? LIMIT 1');
 
     $isbn =~ s/-//g;
     if ( length($isbn) == 13 ) {
@@ -134,7 +134,6 @@ sub plugin {
         while ( $len-- ) {
             $seg2 .= "_";
         }
-
         $sth->execute( $seg2, "978$seg2" );
 
     }
