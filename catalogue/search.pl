@@ -141,6 +141,7 @@ use strict;    # always use
 
 ## load Koha modules
 use C4::Context;
+use C4::Biblio;
 use C4::Output;
 use C4::Auth qw(:DEFAULT get_session);
 use C4::Search;
@@ -563,6 +564,12 @@ for ( my $i = 0 ; $i < @servers ; $i++ ) {
         }
 
         if ($hits) {
+
+	    # Coins
+	    foreach (@newresults) {
+		$_->{coins} = GetCOinSBiblio( $_->{'biblionumber'} );
+	    }
+
             $template->param( total => $hits );
             my $limit_cgi_not_availablity = $limit_cgi;
             $limit_cgi_not_availablity =~ s/&limit=available//g;
