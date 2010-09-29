@@ -2565,12 +2565,13 @@ sub GetDistinctValues {
         my $elements = $sth->fetchall_arrayref( {} );
         return $elements;
     } else {
+	$string = "=" . $string if ($fieldname);
         $string ||= qq("");
         my @servers = qw<biblioserver authorityserver>;
         my ( @zconns, @results );
         for ( my $i = 0 ; $i < @servers ; $i++ ) {
             $zconns[$i] = C4::Context->Zconn( $servers[$i], 1 );
-            $results[$i] = $zconns[$i]->scan( ZOOM::Query::CCL2RPN->new( qq"$fieldname $string", $zconns[$i] ) );
+            $results[$i] = $zconns[$i]->scan( ZOOM::Query::CCL2RPN->new( qq"$fieldname$string", $zconns[$i] ) );
         }
 
         # The big moment: asynchronously retrieve results from all servers
