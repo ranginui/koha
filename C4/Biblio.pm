@@ -1156,6 +1156,8 @@ sub GetCOinSBiblio {
     my $isbn      = '';
     my $issn      = '';
     my $publisher = '';
+    my $place     = '';
+    my $tpages    = '';
 
     if ( C4::Context->preference("marcflavour") eq "UNIMARC" ) {
         my $fmts6;
@@ -1202,20 +1204,66 @@ sub GetCOinSBiblio {
         $genre = ( $mtx eq 'dc' ) ? "&amp;rft.type=$genre" : "&amp;rft.genre=$genre";
 
         # Setting datas
-        $aulast  = $record->subfield( '700', 'a' ) || '';
+
+	# authors
+	$aulast  = $record->subfield( '700', 'a' ) || '';
         $aufirst = $record->subfield( '700', 'b' ) || '';
-        $oauthors = "&amp;rft.au=$aufirst $aulast";
+
+	foreach my $field (qw/700 701/) {
+	    my $author = '';
+	    $author = $record->subfield($field, 'a') || '';
+	    $author .= ", "  . $record->subfield($field, 'b')              if ($author and $record->subfield($field, 'b'));
+	    $author .= " - " . join(' - ', $record->subfield($field, '4')) if ($record->subfield($field, '4'));
+	    $author .= " ("  . $record->subfield($field, 'f') . ")"        if ($record->subfield($field, 'f'));
+	    
+	    $oauthors .= "&amp;rft.au=$author" if ($author);
+	}
+
+	foreach my $field (qw/710 711/) {
+	    my $author = '';
+	    $author = $record->subfield($field, 'a') || '';
+	    $author .= ", "  . $record->subfield($field, 'b')              if ($author and $record->subfield($field, 'b'));
+	    $author .= " - " . join(' - ', $record->subfield($field, '4')) if ($record->subfield($field, '4'));
+	    $author .= " ("  . $record->subfield($field, 'c') . ")"        if ($record->subfield($field, 'c'));
+	    
+	    $oauthors .= "&amp;rft.au=$author" if ($author);
+	}
+
 
         # others authors
         if ( $record->field('200') ) {
-            for my $au ( $record->field('200')->subfield('g') ) {
+            for my $au ( $record->field('200')->subfield('f') ) {
                 $oauthors .= "&amp;rft.au=$au";
             }
+	    for my $au ( $record->field('200')->subfield('g') ) {
+                $oauthors .= "&amp;rft.au=$au";
+            }
+
         }
+
+	# place
+	$place = join(" - ", $record->subfield('210', 'a'));
+	$place = "&amp;rtf.place=$place" if ($place);
+
+	# tpages
+	my $i = 0;
+	foreach my $field ($record->field('215')) {
+		$tpages .= " | " if ($i > 0);
+		$tpages .= join(" - ", $field->subfield('a')); 
+		$tpages .= join(" ; ", $field->subfield('d')); 
+		$tpages .= join(" + ", $field->subfield('e')); 
+		$i++;
+	}
+	$tpages = "&amp;rtf.tpages=$tpages" if ($tpages);
+
+	# title
+	my $btitle = join(' ; ', $record->subfield('200', 'a'));
+	$btitle .= " : " . join(' : ', $record->subfield('200', 'e')) if ($record->subfield('200', 'e'));
+
         $title =
           ( $mtx eq 'dc' )
           ? "&amp;rft.title=" . $record->subfield( '200', 'a' )
-          : "&amp;rft.title=" . $record->subfield( '200', 'a' ) . "&amp;rft.btitle=" . $record->subfield( '200', 'a' );
+          : "&amp;rft.title=" . $record->subfield( '200', 'a' ) . "&amp;rft.btitle=" . $btitle;
         $pubyear   = $record->subfield( '210', 'd' ) || '';
         $publisher = $record->subfield( '210', 'c' ) || '';
         $isbn      = $record->subfield( '010', 'a' ) || '';
@@ -1248,7 +1296,8 @@ sub GetCOinSBiblio {
 
     }
     my $coins_value =
-"ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3A$mtx$genre$title&amp;rft.isbn=$isbn&amp;rft.issn=$issn&amp;rft.aulast=$aulast&amp;rft.aufirst=$aufirst$oauthors&amp;rft.pub=$publisher&amp;rft.date=$pubyear";
+"ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3A$mtx$genre$title&amp;rft.isbn=$isbn&amp;rft.issn=$issn&amp;rft.aulast=$aulast&amp;rft.aufirst=$aufirst$oauthors&amp;rft.pub=$publisher&amp;rft.date=$pubyear$place$tpages";
+warn $coins_value;
     $coins_value =~ s/(\ |&[^a])/\+/g;
 
 #<!-- TMPL_VAR NAME="ocoins_format" -->&amp;rft.au=<!-- TMPL_VAR NAME="author" -->&amp;rft.btitle=<!-- TMPL_VAR NAME="title" -->&amp;rft.date=<!-- TMPL_VAR NAME="publicationyear" -->&amp;rft.pages=<!-- TMPL_VAR NAME="pages" -->&amp;rft.isbn=<!-- TMPL_VAR NAME=amazonisbn -->&amp;rft.aucorp=&amp;rft.place=<!-- TMPL_VAR NAME="place" -->&amp;rft.pub=<!-- TMPL_VAR NAME="publishercode" -->&amp;rft.edition=<!-- TMPL_VAR NAME="edition" -->&amp;rft.series=<!-- TMPL_VAR NAME="series" -->&amp;rft.genre="
