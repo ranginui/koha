@@ -274,7 +274,9 @@ if ( $op eq "add" ) {
         my $basketgroupid = $input->param('basketgroupid');
         my $billingplace;
         my $deliveryplace;
+        my $freedeliveryplace;
         if ($basketgroupid) {
+	
 
             # Get the selected baskets in the basketgroup to display them
             my $selecteds = GetBasketsByBasketgroup($basketgroupid);
@@ -288,17 +290,21 @@ if ( $op eq "add" ) {
 
             # Get general informations about the basket group to prefill the form
             my $basketgroup = GetBasketgroup($basketgroupid);
+	    warn Data::Dumper::Dumper($basketgroup);
             $template->param(
                 name            => $basketgroup->{name},
                 deliverycomment => $basketgroup->{deliverycomment},
+                freedeliveryplace => $basketgroup->{freedeliveryplace},
             );
             $billingplace  = $basketgroup->{billingplace};
             $deliveryplace = $basketgroup->{deliveryplace};
+            $freedeliveryplace = $basketgroup->{freedeliveryplace};
         }
 
         # determine default billing and delivery places depending on librarian homebranch and existing basketgroup data
         my $borrower = GetMember( ( 'borrowernumber' => $loggedinuser ) );
         $billingplace  = $billingplace  || C4::Context->userenv->{"branch"};
+        #$deliveryplace = $freedeliveryplace || $deliveryplace || C4::Context->userenv->{"branch"};
         $deliveryplace = $deliveryplace || C4::Context->userenv->{"branch"};
         my $branches = GetBranches;
 
@@ -414,26 +420,28 @@ if ( $op eq "add" ) {
 } elsif ( $op eq 'attachbasket' ) {
 
     # Getting parameters
-    my $basketgroup     = {};
-    my @baskets         = $input->param('basket');
-    my $basketgroupid   = $input->param('basketgroupid');
-    my $basketgroupname = $input->param('basketgroupname');
-    my $booksellerid    = $input->param('booksellerid');
-    my $billingplace    = $input->param('billingplace');
-    my $deliveryplace   = $input->param('deliveryplace');
-    my $deliverycomment = $input->param('deliverycomment');
-    my $close           = $input->param('close') ? 1 : 0;
+    my $basketgroup       = {};
+    my @baskets           = $input->param('basket');
+    my $basketgroupid     = $input->param('basketgroupid');
+    my $basketgroupname   = $input->param('basketgroupname');
+    my $booksellerid      = $input->param('booksellerid');
+    my $billingplace      = $input->param('billingplace');
+    my $deliveryplace     = $input->param('deliveryplace');
+    my $freedeliveryplace = $input->param('freedeliveryplace');
+    my $deliverycomment   = $input->param('deliverycomment');
+    my $close             = $input->param('close') ? 1 : 0;
 
     # If we got a basketgroupname, we create a basketgroup
     if ($basketgroupid) {
         $basketgroup = {
-            name            => $basketgroupname,
-            id              => $basketgroupid,
-            basketlist      => \@baskets,
-            billingplace    => $billingplace,
-            deliveryplace   => $deliveryplace,
-            deliverycomment => $deliverycomment,
-            closed          => $close,
+            name              => $basketgroupname,
+            id                => $basketgroupid,
+            basketlist        => \@baskets,
+            billingplace      => $billingplace,
+            deliveryplace     => $deliveryplace,
+            freedeliveryplace => $freedeliveryplace,
+            deliverycomment   => $deliverycomment,
+            closed            => $close,
         };
         ModBasketgroup($basketgroup);
         if ($close) {
@@ -441,12 +449,13 @@ if ( $op eq "add" ) {
         }
     } else {
         $basketgroup = {
-            name            => $basketgroupname,
-            booksellerid    => $booksellerid,
-            basketlist      => \@baskets,
-            deliveryplace   => $deliveryplace,
-            deliverycomment => $deliverycomment,
-            closed          => $close,
+            name              => $basketgroupname,
+            booksellerid      => $booksellerid,
+            basketlist        => \@baskets,
+            deliveryplace     => $deliveryplace,
+            freedeliveryplace => $freedeliveryplace,
+            deliverycomment   => $deliverycomment,
+            closed            => $close,
         };
         $basketgroupid = NewBasketgroup($basketgroup);
     }
