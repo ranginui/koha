@@ -84,7 +84,7 @@ $subs->{abouttoexpire}  = abouttoexpire($subs->{subscriptionid});
 
 $template->param($subs);
 $template->param(biblionumber_for_new_subscription => $subs->{bibnum});
-my @irregular_issues = split /,/, $subs->{irregularity};
+my @irregular_issues = split (/,/, $subs->{irregularity});
 
 if (! $subs->{numberpattern}) {
     $subs->{numberpattern} = q{};
