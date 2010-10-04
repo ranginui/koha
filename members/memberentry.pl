@@ -208,7 +208,10 @@ if ( ( $op eq 'insert' ) and !$nodouble ) {
 }
 
   #recover all data from guarantor address phone ,fax... 
-if ( $guarantorid and ( $category_type eq 'C' || $category_type eq 'P' )) {
+if ( $op eq 'add' and $guarantorid and
+     ( $category_type eq 'C' || $category_type eq 'P' ) and
+     $guarantorid ne ''  and
+     $guarantorid ne '0' ) {
     if (my $guarantordata=GetMember(borrowernumber => $guarantorid)) {
         $guarantorinfo=$guarantordata->{'surname'}." , ".$guarantordata->{'firstname'};
         $newdata{'contactfirstname'}= $guarantordata->{'firstname'};
