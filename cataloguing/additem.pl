@@ -445,7 +445,7 @@ if ( $op eq "additem" ) {
         my $items = &GetItemsByBiblioitemnumber( $biblioitem->{biblioitemnumber} );
 
         foreach my $item (@$items) {
-            $error =&DelItem( $dbh, $biblionumber, $item->{itemnumber} );
+            $error =&DelItemCheck( $dbh, $biblionumber, $item->{itemnumber} );
             $itemfail =$item;
         if($error == 1){
             next
