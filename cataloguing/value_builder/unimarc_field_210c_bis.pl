@@ -75,7 +75,7 @@ sub plugin_javascript {
         }
     
         function Clic$function_name(index) {
-            window.open(\"../cataloguing/plugin_launcher.pl?plugin_name=unimarc_field_210c_bis.pl&index=\"+index,\"unimarc210c\",'width=500,height=200,toolbar=false,scrollbars=no');
+            window.open(\"../cataloguing/plugin_launcher.pl?plugin_name=unimarc_field_210c_bis.pl&index=\"+index,\"unimarc210c\",'width=500,height=400,toolbar=false,scrollbars=no');
         }
     </script>
 ";
