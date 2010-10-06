@@ -199,6 +199,7 @@ sub build_csv {
         foreach my $issue ( @{$overdue->{overdues} }){
             $issues .= "$issue->{title} / $issue->{author} / $issue->{itemcallnumber} / $issue->{barcode} / ".$issue->{issuedate}. " - " . $issue->{date_due} . " \r\n";
         }
+        $overdue->{email}=C4::Members::GetFirstValidEmailAddress($overdue->{borrowernumber});
         push @lines, $csv->string() if $csv->combine(
             $overdue->{borrowernumber},
             $overdue->{title},
