@@ -1458,7 +1458,7 @@ sub merge {
             warn $counteditedbiblio if ( ( $counteditedbiblio % 10 ) and $ENV{DEBUG} );
         }
     }    #foreach $marc
-    DelAuthority($mergefrom);
+    DelAuthority($mergefrom) if ($mergefrom != $mergeto);
     return $counteditedbiblio;
 
     # now, find every other authority linked with this authority
