@@ -1433,13 +1433,13 @@ sub merge {
                 my $field_to=MARC::Field->new(($tag_to?$tag_to:$tag),$field->indicator(1),$field->indicator(2),"9"=>$mergeto);
 		# Adding numeric subfields from the biblio record
 		foreach my $subfield ($marcrecord->field($tag_to?$tag_to:$tag)->subfields()) {
-		    warn $subfield->[0] . " => " . $subfield->[1];
+		    $debug && warn $subfield->[0] . " => " . $subfield->[1];
                     $field_to->add_subfields($subfield->[0] =>$subfield->[1]) if ($subfield->[0] =~ /\d/ and $subfield->[0] ne "9");
 		}
 
 		# Removing numeric subfields from the authority record
 		foreach my $subfield (@record_to) {
-		     warn $subfield->[0] . " => " . $subfield->[1];
+		    $debug && warn $subfield->[0] . " => " . $subfield->[1];
                     $field_to->add_subfields($subfield->[0] =>$subfield->[1]) if ($subfield->[0] =~ /[a-z]/ and $subfield->[0] ne "9");
                 }
 
