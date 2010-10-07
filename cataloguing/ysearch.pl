@@ -56,5 +56,19 @@ my $sth = $dbh->prepare($sql);
 $sth->execute("$query%", "% $query%", "%-$query%");
 
 while ( my $rec = $sth->fetchrow_hashref ) {
-    print $rec->{$field} . "\n";
+    print nsb_clean($rec->{$field}) . "\n";
 }
+
+sub nsb_clean {
+    my $NSB = '\x88' ;        # NSB : begin Non Sorting Block
+    my $NSE = '\x89' ;        # NSE : Non Sorting Block end
+    # handles non sorting blocks
+    my ($string) = @_ ;
+    $_ = $string ;
+    s/$NSB//g ;
+    s/$NSE//g ;
+    $string = $_ ;
+
+    return($string) ;
+}
+
