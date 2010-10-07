@@ -1372,6 +1372,7 @@ sub merge {
     my @record_from;
     @record_from = $MARCfrom->field($auth_tag_to_report_from)->subfields() if $MARCfrom->field($auth_tag_to_report_from);
 
+
     my @reccache;
 
     # search all biblio tags using this authority.
@@ -1425,15 +1426,23 @@ sub merge {
         my $update;           
 	    $debug && warn "before merge",$marcrecord->as_formatted;
         foreach my $tagfield (@tags_using_authtype){
-#             warn "tagfield : $tagfield ";
             foreach my $field ($marcrecord->field($tagfield)){
                 my $auth_number=$field->subfield("9");
                 my $tag=$field->tag();          
                 if ($auth_number==$mergefrom) {
                 my $field_to=MARC::Field->new(($tag_to?$tag_to:$tag),$field->indicator(1),$field->indicator(2),"9"=>$mergeto);
-                foreach my $subfield (@record_to) {
-                    $field_to->add_subfields($subfield->[0] =>$subfield->[1]);
+		# Adding numeric subfields from the biblio record
+		foreach my $subfield ($marcrecord->field($tag_to?$tag_to:$tag)->subfields()) {
+		    warn $subfield->[0] . " => " . $subfield->[1];
+                    $field_to->add_subfields($subfield->[0] =>$subfield->[1]) if ($subfield->[0] =~ /\d/ and $subfield->[0] ne "9");
+		}
+
+		# Removing numeric subfields from the authority record
+		foreach my $subfield (@record_to) {
+		     warn $subfield->[0] . " => " . $subfield->[1];
+                    $field_to->add_subfields($subfield->[0] =>$subfield->[1]) if ($subfield->[0] =~ /[a-z]/ and $subfield->[0] ne "9");
                 }
+
                 $marcrecord->delete_field($field);
                 $marcrecord->insert_grouped_field($field_to);            
                 $update=1;
