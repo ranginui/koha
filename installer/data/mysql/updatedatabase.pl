@@ -1651,10 +1651,10 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 $DBversion = "3.00.00.074";
 if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     $dbh->do(
-        q(update itemtypes set imageurl = concat( 'npl/', imageurl )
+        q#update itemtypes set imageurl = concat( 'npl/', imageurl )
                   where imageurl not like 'http%'
                     and imageurl is not NULL
-                    and imageurl != '')
+                    and imageurl != ''#
     );
     print "Upgrade to $DBversion done (updating imagetype.imageurls to reflect new icon locations.)\n";
     SetVersion($DBversion);
