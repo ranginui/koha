@@ -4881,6 +4881,36 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     SetVersion($DBversion);
 }
 
+$DBversion = "3.02.00.050";
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+    $dbh->do("ALTER TABLE `accountlines` ADD `meansofpayment` text NULL default NULL");
+    print "Upgrade to $DBversion done (adding meansofpayment field in accountlines table)\n";
+    SetVersion($DBversion);
+}
+
+$DBversion = "3.02.00.051";
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+    $dbh->do("ALTER TABLE `accountlines` ADD `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST");
+    print "Upgrade to $DBversion done (adding id field in accountlines table)\n";
+    SetVersion($DBversion);
+}
+
+$DBversion = "3.02.00.052";
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+    $dbh->do("
+	INSERT IGNORE INTO `systempreferences` (variable,value,explanation,options,type) VALUES('MeansOfPayment','Cash','Define means of payment for borrowers payments','Undefined|Cash|Cheque|Bank card|Credit transfer|Direct debit','Choice');
+	");
+    print "Upgrade to $DBversion done (adding MeansOfPayment syspref)\n";
+    SetVersion($DBversion);
+}
+
+$DBversion = "3.02.00.053";
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+    $dbh->do("ALTER TABLE `accountlines` ADD COLUMN `time` TIME  DEFAULT NULL AFTER `date`");
+    print "Upgrade to $DBversion done (adding time field in accountlines table)\n";
+    SetVersion($DBversion);
+}
+
 =item DropAllForeignKeys($table)
 
   Drop all foreign keys of the table $table

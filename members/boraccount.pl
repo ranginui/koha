@@ -50,7 +50,7 @@ my $action = $input->param('action') || '';
 my $data = GetMember( 'borrowernumber' => $borrowernumber );
 
 if ( $action eq 'reverse' ) {
-    ReversePayment( $borrowernumber, $input->param('accountno') );
+    ReversePayment( $input->param('accountlineid') );
 }
 
 if ( $data->{'category_type'} eq 'C' ) {
@@ -87,6 +87,14 @@ foreach my $accountline ( @{$accts} ) {
     }
     if ( $accountline->{accounttype} ne 'F' && $accountline->{accounttype} ne 'FU' ) {
         $accountline->{printtitle} = 1;
+    }
+    
+    if ( $accountline->{accounttype} ne 'F' && $accountline->{accounttype} ne 'FU' ) {
+        $accountline->{printtitle} = 1;
+    }
+    if ( $accountline->{manager_id} ne '' ) {
+       my $datamanager = GetMember( 'borrowernumber' => $accountline->{manager_id} );
+    	$accountline->{manager_details}=$datamanager->{'firstname'}." ".$datamanager->{'surname'};
     }
 }
 

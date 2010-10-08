@@ -1,6 +1,37 @@
 <!-- TMPL_INCLUDE NAME="doc-head-open.inc" -->
 <title>Koha &rsaquo; Patrons &rsaquo; Pay Fines for  <!-- TMPL_VAR NAME="firstname" --> <!-- TMPL_VAR NAME="surname" --></title>
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
+<script type="text/javascript" src="<!-- TMPL_VAR name="themelang" -->/lib/jquery/plugins/jquery.numeric.js"></script>
+<script type="text/javascript">
+$(function(){$("input.numeric_only").numeric();});
+</script>
+<script type="text/javascript">
+function payfinechange(value,accountlineid)
+{
+	if(value=="pp")
+	{
+		document.getElementById("partpaymentamount"+accountlineid).readOnly=false;
+	}
+	else
+	{
+		document.getElementById("partpaymentamount"+accountlineid).readOnly=true;
+	}
+}
+
+function partpaymentchange(value,accountlineid,amountoutstanding)
+{
+	if(value>amountoutstanding)
+	{
+		document.getElementById("partpaymentamount"+accountlineid).value=amountoutstanding;
+	}
+	if(value<0)
+	{
+		value=0-value;
+		document.getElementById("partpaymentamount"+accountlineid).value=value;
+	}
+}
+</script>
+
 </head>
 <body>
 <!-- TMPL_INCLUDE NAME="header.inc" -->
@@ -31,8 +62,10 @@
 <table>
 <tr>
 	<th>Fines &amp; Charges</th>
+	<th>Means of payment</th>
 	<th>Description</th>
 	<th>Note</th>
+	<th>Part payment</th>
 	<th>Account Type</th>
 	<th>Notify id</th>
 	<th>Level</th>
@@ -43,12 +76,14 @@
 <!-- TMPL_LOOP name="allfile" -->
 	<!-- TMPL_LOOP name="loop_pay" -->
 <tr>
-	<td>
+	<td><input type="hidden" name="accountlineid<!-- TMPL_VAR name="i" -->" value="<!-- TMPL_VAR name="accountlineid" -->" />
+	
 	<!-- TMPL_IF NAME="net_balance" -->
-	<select name="payfine<!-- TMPL_VAR name="i" -->">
+	<select name="payfine<!-- TMPL_VAR name="i" -->" onChange="payfinechange(this.value,<!-- TMPL_VAR name="i" -->)">
 	<option value="no">Unpaid</option>
 	<option value="yes">Paid</option>
 	<option value="wo">Writeoff</option>
+	<option value="pp">Part payment</option>
 	</select>
 	<!-- /TMPL_IF -->
 	<input type="hidden" name="itemnumber<!-- TMPL_VAR name="i" -->" value="<!-- TMPL_VAR name="itemnumber" -->" />
@@ -61,6 +96,16 @@
 	<input type="hidden" name="notify_level<!-- TMPL_VAR name="i" -->" value="<!-- TMPL_VAR name="notify_level" -->" />
 	<input type="hidden" name="totals<!-- TMPL_VAR name="i" -->" value="<!-- TMPL_VAR name="totals" -->" />
 	</td>
+	<td>
+	<!-- TMPL_IF NAME="net_balance" -->
+	<select name="meansofpayment<!-- TMPL_VAR name="i" -->" id="meansofpayment<!-- TMPL_VAR name="i" -->">
+<!-- TMPL_LOOP NAME="meansofpaymentoptions" -->
+        <option value="<!-- TMPL_VAR NAME="option" -->"<!-- TMPL_VAR NAME="selected" -->>
+    <!-- TMPL_VAR NAME="option" --></option>
+<!-- /TMPL_LOOP -->
+</select><!-- TMPL_ELSE --><!-- TMPL_VAR NAME="meansofpayment" -->
+	<!-- /TMPL_IF -->
+	</td>
 	<td><!-- TMPL_VAR name="description" --> <!-- TMPL_VAR name="title" escape="html" --></td>
 	<td>
 	<!-- TMPL_IF NAME="net_balance" -->
@@ -68,6 +113,13 @@
 	<!-- /TMPL_IF -->
 	<!-- TMPL_VAR name="note" -->
 	<!-- TMPL_IF NAME="net_balance" -->" /><!-- /TMPL_IF -->
+	</td>
+	<td>
+	<!-- TMPL_IF NAME="net_balance" -->
+	<input type="text" class="numeric_only" readOnly="true" id="partpaymentamount<!-- TMPL_VAR name="i" -->" name="partpaymentamount<!-- TMPL_VAR name="i" -->" value="
+	<!-- /TMPL_IF -->
+	<!-- TMPL_VAR name="partpaymentamount" -->
+	<!-- TMPL_IF NAME="net_balance" -->" onKeyUp="partpaymentchange(this.value,<!-- TMPL_VAR name="i" -->,<!-- TMPL_VAR name="amountoutstanding" -->)" /><!-- /TMPL_IF -->
 	</td>
 	<td><!-- TMPL_VAR name="accounttype" --></td>
 	<td><!-- TMPL_VAR name="notify_id" --></td>
@@ -78,14 +130,13 @@
 <!-- /TMPL_LOOP  -->
 <!-- TMPL_IF  NAME="total"-->
 <tr>
-
-	<td colspan="7">Sub Total</td>
+	<td colspan="9">Sub Total <!-- TMPL_VAR name="notify" --></td>
 	<td><!-- TMPL_VAR name="total" --></td>
 </tr>
 <!--/TMPL_IF-->
 <!-- /TMPL_LOOP  -->
 <tr>
-	<td colspan="7">Total Due</td>
+	<td colspan="9">Total Due</td>
 	<td><!-- TMPL_VAR name="total" --></td>
 </tr>
 </table>
