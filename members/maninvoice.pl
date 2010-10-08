@@ -48,7 +48,8 @@ if ($add) {
     my $amount  = $input->param('amount');
     my $type    = $input->param('type');
     my $note    = $input->param('note');
-    my $error   = manualinvoice( $borrowernumber, $itemnum, $desc, $type, $amount, $note );
+    my $meansofpayment = $input->param('meansofpayment');
+    my $error   = manualinvoice( $borrowernumber, $itemnum, $desc, $type, $amount, $note, $meansofpayment );
 	    if ($error) {
 	        my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
 	            {   template_name   => "members/maninvoice.tmpl",
@@ -63,6 +64,7 @@ if ($add) {
 	            $template->param( 'ITEMNUMBER' => 1 );
 	        }
 	        $template->param( 'ERROR' => $error );
+	        $template->param( 'meansofpaymentoptions' => getMeansOfPaymentList() );
 	        output_html_with_http_headers $input, $cookie, $template->output;
 	    } else {
 	        print $input->redirect("/cgi-bin/koha/members/boraccount.pl?borrowernumber=$borrowernumber");
@@ -101,7 +103,7 @@ if ($add) {
     $template->param( adultborrower => 1 ) if ( $data->{'category_type'} eq 'A' );
     my ( $picture, $dberror ) = GetPatronImage( $data->{'cardnumber'} );
     $template->param( picture => 1 ) if $picture;
-
+	
     $template->param(
         borrowernumber => $borrowernumber,
         firstname      => $data->{'firstname'},
@@ -121,5 +123,8 @@ if ($add) {
         branchname     => GetBranchName( $data->{'branchcode'} ),
         is_child       => ( $data->{'category_type'} eq 'C' ),
     );
+    
+    
+    $template->param( 'meansofpaymentoptions' => getMeansOfPaymentList() );
     output_html_with_http_headers $input, $cookie, $template->output;
 }

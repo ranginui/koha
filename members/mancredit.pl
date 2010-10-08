@@ -47,10 +47,11 @@ if ($add) {
 	    my $itemnum = GetItemnumberFromBarcode($barcode) if $barcode;
 	    my $desc    = $input->param('desc');
 	    my $note    = $input->param('note');
+	    my $meansofpayment    = $input->param('meansofpayment');
 	    my $amount  = $input->param('amount') || 0;
 	    $amount = -$amount;
 	    my $type = $input->param('type');
-	    manualinvoice( $borrowernumber, $itemnum, $desc, $type, $amount, $note );
+	    manualinvoice( $borrowernumber, $itemnum, $desc, $type, $amount, $note, $meansofpayment );
 	    print $input->redirect("/cgi-bin/koha/members/boraccount.pl?borrowernumber=$borrowernumber");
 	}
 } else {
@@ -94,5 +95,6 @@ if ($add) {
         branchname     => GetBranchName( $data->{'branchcode'} ),
         is_child       => ( $data->{'category_type'} eq 'C' ),
     );
+    $template->param( 'meansofpaymentoptions' => getMeansOfPaymentList() );
     output_html_with_http_headers $input, $cookie, $template->output;
 }

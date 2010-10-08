@@ -1,6 +1,20 @@
 <!-- TMPL_INCLUDE NAME="doc-head-open.inc" -->
 <title>Koha &rsaquo; Borrowers &rsaquo; Create Manual Invoice</title>
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
+<script type="text/javascript" src="<!-- TMPL_VAR name="themelang" -->/lib/jquery/plugins/jquery.numeric.js"></script>
+<script type="text/javascript">
+$(function(){$("input.numeric_only").numeric();});
+</script>
+<script type="text/javascript">
+function amountchange(value)
+{
+	if(value<0)
+	{
+		value=0-value;
+		document.getElementById("amount").value=value;
+	}
+}
+</script>
 <script type="text/javascript">
 //<![CDATA[
 $(document).ready(function(){
@@ -68,7 +82,17 @@ type_fees['<!-- TMPL_VAR NAME="authorised_value" -->'] = "<!-- TMPL_VAR NAME="li
 	<li><label for="barcode">Barcode: </label><input type="text" name="barcode" id="barcode" /></li>
 	<li><label for="desc">Description: </label><input type="text" name="desc" id="desc" size="50" /></li>
 	<li><label for="note">Note: </label><input type="text" name="note" size="50" id="note" /></li>
-	<li><label for="amount">Amount: </label><input type="text" name="amount" id="amount" /> Example: 5.00</li>
+	<li><label for="meansofpayment">Means of payment: </label>
+	
+	
+	<select name="meansofpayment" id="meansofpayment">
+<!-- TMPL_LOOP NAME="meansofpaymentoptions" -->
+        <option value="<!-- TMPL_VAR NAME="option" -->"<!-- TMPL_VAR NAME="selected" -->>
+    <!-- TMPL_VAR NAME="option" --></option>
+<!-- /TMPL_LOOP -->
+</select>
+	</li>
+	<li><label for="amount">Amount: </label><input type="text" class="numeric_only" name="amount" id="amount" onKeyUp="amountchange(this.value)" /> Example: 5.00</li>
 	</ol></fieldset>
 <fieldset class="action"><input type="submit" name="add" value="Save" /> <a class="cancel" href="/cgi-bin/koha/members/boraccount.pl?borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->">Cancel</a></fieldset>
 </form>
