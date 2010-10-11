@@ -87,7 +87,11 @@ type_fees['<!-- TMPL_VAR NAME="authorised_value" -->'] = "<!-- TMPL_VAR NAME="li
 	
 	<select name="meansofpayment" id="meansofpayment">
 <!-- TMPL_LOOP NAME="meansofpaymentoptions" -->
-        <option value="<!-- TMPL_VAR NAME="option" -->"<!-- TMPL_VAR NAME="selected" -->>
+        		<!-- TMPL_IF Name="selected" -->
+        <option value="<!-- TMPL_VAR NAME="option" -->" selected="selected">
+        <!-- TMPL_ELSE -->
+        <option value="<!-- TMPL_VAR NAME="option" -->">
+        <!-- /TMPL_IF -->
     <!-- TMPL_VAR NAME="option" --></option>
 <!-- /TMPL_LOOP -->
 </select>
