@@ -62,11 +62,15 @@ while ( my $rec = $sth->fetchrow_hashref ) {
 sub nsb_clean {
     my $NSB = '\x88' ;        # NSB : begin Non Sorting Block
     my $NSE = '\x89' ;        # NSE : Non Sorting Block end
+    my $NSB2 = '\x98' ;        # NSB : begin Non Sorting Block
+    my $NSE2 = '\x9C' ;        # NSE : Non Sorting Block end
     # handles non sorting blocks
     my ($string) = @_ ;
     $_ = $string ;
     s/$NSB//g ;
     s/$NSE//g ;
+    s/$NSB2//g ;
+    s/$NSE2//g ;
     $string = $_ ;
 
     return($string) ;
