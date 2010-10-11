@@ -3498,7 +3498,6 @@ ALTER TABLE `aqbudgets`
    DROP enddate
 BUDGETDROPDATES
 
-    $dbh->do("DROP TABLE IF EXISTS `aqbudgets_planning` ");
     $dbh->do(
         "CREATE TABLE IF NOT EXISTS `aqbudgets_planning` (
                     `plan_id` int(11) NOT NULL auto_increment,
@@ -4898,7 +4897,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 $DBversion = "3.02.00.052";
 if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     $dbh->do("
-	INSERT IGNORE INTO `systempreferences` (variable,value,explanation,options,type) VALUES('MeansOfPayment','Cash','Define means of payment for borrowers payments','Undefined|Cash|Cheque|Bank card|Credit transfer|Direct debit','Choice');
+	INSERT IGNORE INTO `systempreferences` (variable,value,explanation,options,type) VALUES('MeansOfPayment','Undefined|Cash|Cheque|Bank card|Credit transfer|Direct debit','Define means of payment for borrowers payments','Undefined|Cash|Cheque|Bank card|Credit transfer|Direct debit','free');
 	");
     print "Upgrade to $DBversion done (adding MeansOfPayment syspref)\n";
     SetVersion($DBversion);
