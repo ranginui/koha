@@ -100,7 +100,11 @@ function partpaymentchange(value,accountlineid,amountoutstanding)
 	<!-- TMPL_IF NAME="net_balance" -->
 	<select name="meansofpayment<!-- TMPL_VAR name="i" -->" id="meansofpayment<!-- TMPL_VAR name="i" -->">
 <!-- TMPL_LOOP NAME="meansofpaymentoptions" -->
-        <option value="<!-- TMPL_VAR NAME="option" -->"<!-- TMPL_VAR NAME="selected" -->>
+		<!-- TMPL_IF Name="selected" -->
+        <option value="<!-- TMPL_VAR NAME="option" -->" selected="selected">
+        <!-- TMPL_ELSE -->
+        <option value="<!-- TMPL_VAR NAME="option" -->">
+        <!-- /TMPL_IF -->
     <!-- TMPL_VAR NAME="option" --></option>
 <!-- /TMPL_LOOP -->
 </select><!-- TMPL_ELSE --><!-- TMPL_VAR NAME="meansofpayment" -->
