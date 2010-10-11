@@ -264,7 +264,7 @@ sub GetOrders {
                 biblio.*,biblioitems.*,
                 aqorders.*,
                 aqbookfund.bookfundname,
-                biblio.title
+                aqorders.title
         FROM    aqorders
             LEFT JOIN aqorderbreakdown ON aqorders.ordernumber=aqorderbreakdown.ordernumber
             LEFT JOIN aqbookfund       ON aqbookfund.bookfundid=aqorderbreakdown.bookfundid

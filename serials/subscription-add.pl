@@ -169,9 +169,9 @@ if ($op eq 'addsubscription') {
     my $numberpattern = $query->param('numbering_pattern');
     my $sublength = $query->param('sublength');
     my $subtype = $query->param('subtype');
-    if ($subtype eq 'months'){
+    if ($subtype eq 'monthlength'){
         $monthlength = $sublength;
-    } elsif ($subtype eq 'weeks'){
+    } elsif ($subtype eq 'weeklength'){
         $weeklength = $sublength;
     } else {
         $numberlength = $sublength;
@@ -235,9 +235,9 @@ if ($op eq 'addsubscription') {
     my $sublength = $query->param('sublength');
     my $subtype = $query->param('subtype');
 
-    if($subtype eq 'months'){
+    if($subtype eq 'monthlength'){
         $monthlength = $sublength;
-    } elsif ($subtype eq 'weeks'){
+    } elsif ($subtype eq 'weeklength'){
         $weeklength = $sublength;
     } else {
         $numberlength = $sublength;

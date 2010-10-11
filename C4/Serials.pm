@@ -1013,7 +1013,6 @@ sub GetExpirationDate {
     my $enddate          = $subscription->{startdate};
     
     return if not $subscription->{startdate};
-    
 # we don't do the same test if the subscription is based on X numbers or on X weeks/months
     if (($subscription->{periodicity} % 16) >0){
       if ( $subscription->{numberlength} ) {
@@ -1027,7 +1026,8 @@ sub GetExpirationDate {
           my @date=split (/-/,$subscription->{startdate});
           my @enddate = Add_Delta_YM($date[0],$date[1],$date[2],0,$subscription->{monthlength});
           $enddate=sprintf("%04d-%02d-%02d",$enddate[0],$enddate[1],$enddate[2]);
-      } elsif ( $subscription->{weeklength} ){
+      } 
+      elsif ( $subscription->{weeklength} ){
           my @date=split (/-/,$subscription->{startdate});
           my @enddate = Add_Delta_Days($date[0],$date[1],$date[2],$subscription->{weeklength}*7);
           $enddate=sprintf("%04d-%02d-%02d",$enddate[0],$enddate[1],$enddate[2]);
@@ -2325,9 +2325,9 @@ sub abouttoexpire {
       $sth->execute($subscriptionid);
       my ($res) = $sth->fetchrow ;
 #        warn "date expiration : ".$expirationdate." date courante ".$res;
-      my @res=split /-/,$res;
+      my @res=split (/-/,$res);
       @res=Date::Calc::Today if ($res[0]*$res[1]==0);
-      my @endofsubscriptiondate=split/-/,$expirationdate;
+      my @endofsubscriptiondate=split(/-/,$expirationdate);
       my $x;
       if ( $per == 1 ) {$x=7;}
       if ( $per == 2 ) {$x=7; }
@@ -2417,7 +2417,7 @@ sub GetNextDate(@) {
     }
     #   1  week
     if ( $subscription->{periodicity} == 2 ) {
-        my ($wkno,$year) = eval {Week_of_Year( $year,$month, $day )};
+        my ($wkno,$yearweek) = eval {Week_of_Year( $year,$month, $day )};
         if ($@){warn "year month day : $year $month $day $subscription->{subscriptionid} : $@";}
         else {    
           for ( my $i = 0 ; $i < @irreg ; $i++ ) {
@@ -2432,7 +2432,7 @@ sub GetNextDate(@) {
     }
     #   1 / 2 weeks
     if ( $subscription->{periodicity} == 3 ) {        
-        my ($wkno,$year) = eval {Week_of_Year( $year,$month, $day )};
+        my ($wkno,$yearweek) = eval {Week_of_Year( $year,$month, $day )};
         if ($@){warn "year month day : $year $month $day $subscription->{subscriptionid} : $@";}
         else {    
           for ( my $i = 0 ; $i < @irreg ; $i++ ) {
@@ -2447,7 +2447,7 @@ sub GetNextDate(@) {
     }
     #   1 / 3 weeks
     if ( $subscription->{periodicity} == 4 ) {
-        my ($wkno,$year) = eval {Week_of_Year( $year,$month, $day )};
+        my ($wkno,$yearweek) = eval {Week_of_Year( $year,$month, $day )};
         if ($@){warn "année mois jour : $year $month $day $subscription->{subscriptionid} : $@";}
         else {    
           for ( my $i = 0 ; $i < @irreg ; $i++ ) {

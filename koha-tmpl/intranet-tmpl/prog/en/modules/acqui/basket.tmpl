@@ -85,8 +85,12 @@
                     <td><!-- TMPL_VAR NAME="ordernumber" -->
 							<!-- TMPL_IF NAME="order_received" --> (rcvd)<!-- /TMPL_IF --></td>
                         <td>
-                           	<p>
-                                <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR name="biblionumber" -->"><!-- TMPL_VAR NAME="title" escape="html" --></a></p>
+			    <!-- TMPL_IF NAME="biblionumber" -->
+                           	<p><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR name="biblionumber" -->"><!-- TMPL_VAR NAME="title" escape="html" --></a></p>
+			    <!-- TMPL_ELSE -->
+                           	<p><!-- TMPL_VAR NAME="title" escape="html" --></a></p>
+				<p class="dialog">Warning: this biblio record does not exist anymore.</p>
+			    <!-- /TMPL_IF -->
                                 <p><!-- TMPL_VAR NAME="author" -->
                                 <!-- TMPL_IF name="notes" --></p><p><!--TMPL_VAR name="notes" --><!-- /TMPL_IF -->
                             </p>
