@@ -69,7 +69,7 @@
 	<!-- FIXME: Shouldn't hardcode dollar signs, since Euro or Pound might be needed -->
   <!-- TMPL_LOOP NAME="accounts" -->
 
-   <!-- TMPL_IF NAME="__odd__" --><tr><!-- TMPL_ELSE --><tr class="highlight"><!-- /TMPL_IF -->
+   <!-- TMPL_IF NAME="__odd__" --><tr><!-- TMPL_ELSE --><tr><!-- /TMPL_IF -->
       <td><!-- TMPL_VAR NAME="date" --> <!-- TMPL_VAR NAME="time" --></td>
       <td><!-- TMPL_VAR NAME="accountno" --></td>
       <td><!-- TMPL_VAR NAME="meansofpayment" --></td>

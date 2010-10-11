@@ -656,7 +656,7 @@ sub getMeansOfPaymentList {
 	my @options;
 	my $booloption=0;
 	while ( my $data = $sth->fetchrow_hashref ) {
-	foreach my $option ( split( /\|/, $data->{'options'} ) ) {
+	foreach my $option ( split( /\|/, $data->{'value'} ) ) {
             my $selected = '';
             if($option eq $selectedoption)
             {
