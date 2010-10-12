@@ -963,7 +963,7 @@ my %ce2su3e = (
 	'F024' => 'L1',
 );
 
-while (my ($k, $v) = each(%ce2s)) { if ($$targetdata{'CODEETAPE'} =~ /^$k/) {$$targetdata{'STATUT'} = $v;} }
+while (my ($k, $v) = each(%ce2su3e)) { if ($$targetdata{'CODEETAPE'} =~ /^$k/) {$$targetdata{'STATUT'} = $v;} }
 $$targetdata{categorycode}=substr($$targetdata{'STATUT'},0,1);
 $$targetdata{'categorycode'}||="INC";
 
