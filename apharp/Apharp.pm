@@ -219,6 +219,10 @@ sub data_to_koha {
 	    $targetdata->{ 'branchcode' } = $fromdata->{"SITE"} . 'INC';
 	}
 
+	unless ( $targetdata->{userid} ) {
+	    delete( $targetdata->{userid} );
+	}
+
         #Save to koha db
         my $success = ModMember(%$targetdata);
         unless ($success) {
