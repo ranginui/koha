@@ -2273,6 +2273,7 @@ CREATE TABLE `accountlines` (
   `note` text NULL default NULL,
   `manager_id` int( 11 ) NULL,
   `meansofpayment` text NULL default NULL,
+  PRIMARY KEY (`id`),
   KEY `acctsborridx` (`borrowernumber`),
   KEY `timeidx` (`timestamp`),
   KEY `itemnumber` (`itemnumber`),
