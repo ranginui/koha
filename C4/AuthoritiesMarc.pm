@@ -1467,7 +1467,7 @@ sub merge {
                 my $field_to=MARC::Field->new(($tag_to?$tag_to:$tag),$field->indicator(1),$field->indicator(2),@newsubfields);
                 $marcrecord->delete_field($field);
                 $marcrecord->insert_fields_ordered($field_to);            
-		}
+                }
             }    #for each tag
         }    #foreach tagfield
         my ( $bibliotag, $bibliosubf ) = GetMarcFromKohaField( "biblio.biblionumber", "" );
