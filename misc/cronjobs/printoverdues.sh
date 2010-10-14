@@ -27,7 +27,8 @@ then
 fi
 if [[ -n $2 && -f $2 ]]
 then
-    set $optpisa "--css $2";
+  #  set $optpisa "--css $2";
+    optpisa="--css $2";
 fi
 if [[ -n $3 ]]
 then
