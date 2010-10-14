@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: nicomo-fr-FR-i-staff-t-prog-v-3000000\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-10-07 19:02+0200\n"
-"PO-Revision-Date: 2010-10-07 19:21+0200\n"
+"PO-Revision-Date: 2010-10-14 14:16+0200\n"
 "Last-Translator: Paul Poulain <paul.poulain@biblibre.com>\n"
 "Language-Team: Français <kde-i18n-doc@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -198,9 +198,9 @@ msgstr "#abonnement"
 #. %1$S: type=text name=aqbooksellerid
 #. %2$S: type=text name=aqbooksellername
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/serials/subscription-add.tmpl:982
-#, fuzzy, c-format
+#, c-format
 msgid "%S (%S) <a1>Search for a vendor</a>"
-msgstr "Recherche d'un fournisseur"
+msgstr "%S (%S) <a1>Recherche d'un fournisseur</a>"
 
 #. %1$S: type=text name=rrp
 #. %2$s: TMPL_VAR name=cur_active
@@ -735,9 +735,9 @@ msgstr "%s Réservations mises de coté&nbsp;:"
 
 #. %1$s: TMPL_VAR name=count
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/detail.tmpl:178
-#, fuzzy, c-format
+#, c-format
 msgid "%s Holdings"
-msgstr "Exemplaires"
+msgstr "%s réservations"
 
 #. %1$s: TMPL_VAR name=nnoverdue
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/overdue.tmpl:93
@@ -2193,9 +2193,9 @@ msgstr "(%s"
 
 #. %1$s: TMPL_VAR name=itemsdisplayed
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/detail.tmpl:178
-#, fuzzy, c-format
+#, c-format
 msgid "(%s displayed)"
-msgstr " exemplaires sont affichés."
+msgstr "(%s exemplaires affichés)"
 
 #. For the first occurrence,
 #. %1$s: TMPL_VAR name=lostcomment
@@ -2520,7 +2520,6 @@ msgid "(no phone number on file)"
 msgstr "(pas de numéro de téléphone)"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember-print.tmpl:15
-#, fuzzy
 msgid "(no primary email on file)"
 msgstr "(pas d'adresse email)"
 
@@ -13941,11 +13940,9 @@ msgstr "Contact "
 msgid "Contributing Companies"
 msgstr "Sociétés contributrices"
 
-#
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/z3950_search.tmpl:88
-#, fuzzy
 msgid "Control No.:"
-msgstr "Cote"
+msgstr "N° contrôle&nbsp;:"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/smart-rules.tmpl:53
 msgid "Control where patrons can place holds from using the 'Hold Policy' menu"
@@ -14030,9 +14027,8 @@ msgstr "ou"
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128c.tmpl:425
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128b.tmpl:428
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128b.tmpl:430
-#, fuzzy
 msgid "Cor anglais"
-msgstr "Erreur&nbsp;:"
+msgstr ""
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_120.tmpl:736
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_120.tmpl:738
@@ -14045,9 +14041,8 @@ msgstr "Cordoba, Argentine"
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128c.tmpl:30
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128b.tmpl:33
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128b.tmpl:35
-#, fuzzy
 msgid "Cornet a piston"
-msgstr "Créer une nouvelle liste"
+msgstr ""
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/about.tmpl:141
 msgid "Cory Jaeger"
@@ -14124,7 +14119,6 @@ msgid "Count total items"
 msgstr "Décompte du total des documents"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reports/reserves_stats.tmpl:525
-#, fuzzy
 msgid "Count unique biblios"
 msgstr "Décompte des documents uniques"
 
@@ -17781,9 +17775,8 @@ msgstr "Féminin"
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128c.tmpl:70
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128b.tmpl:73
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128b.tmpl:75
-#, fuzzy
 msgid "Femmes"
-msgstr "Féminin"
+msgstr ""
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_120.tmpl:741
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_120.tmpl:743
@@ -25935,9 +25928,8 @@ msgstr "Modifier ou supprimer un profil d'export CSV"
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/acqui/neworderempty.tmpl:2
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/acqui/neworderempty.tmpl:81
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/acqui/neworderempty.tmpl:91
-#, fuzzy
 msgid "Modify order line"
-msgstr "Modifier un mot "
+msgstr "Modifier ligne de commande"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/admin/patron-attr-types.tmpl:79
 msgid "Modify patron attribute type"
@@ -25952,9 +25944,8 @@ msgid "Modify record matching rule"
 msgstr "Modifier règle de concordance"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/tools/tools-home.tmpl:107
-#, fuzzy
 msgid "Modify records in a batch"
-msgstr "Modifier les exemplaires par lots"
+msgstr "Modifier les notices par lots"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/admin/roadtype.tmpl:66
 msgid "Modify road type"
@@ -27797,9 +27788,8 @@ msgstr ""
 "les excluez."
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2intranetDetail.xsl:222
-#, fuzzy
 msgid "Note de contenu:"
-msgstr "autres types de contenus"
+msgstr ""
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/serials/subscription-renew.tmpl:32
 msgid "Note for the librarian that will manage your renewal request:"
@@ -28907,9 +28897,8 @@ msgstr ""
 "adhérent' et 'date de naissance' permettent de limiter le rapport."
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/tools/batchedit.tmpl:135
-#, fuzzy
 msgid "Or enter records one by one"
-msgstr "Ou scanner les exemplaires un par un"
+msgstr "Ou scanner les notices une par une"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/tools/batchMod.tmpl:46
 msgid "Or scan items one by one"
@@ -29370,7 +29359,7 @@ msgstr "PTFS"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/about.tmpl:197
 msgid "PTFS Europe Ltd"
-msgstr ""
+msgstr "PTFS Europe Ltd"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/tools/manage-marc-import.tmpl:194
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/tools/manage-marc-import.tmpl:237
@@ -30227,7 +30216,7 @@ msgstr "Piccolo"
 #. INPUT type=submit name=pick
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/admin/item_circulation_alerts.tmpl:114
 msgid "Pick"
-msgstr ""
+msgstr "Choisir"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reports/guided_reports_start.tmpl:9
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reports/guided_reports_start.tmpl:59
@@ -30261,7 +30250,7 @@ msgstr "Image"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/about.tmpl:182
 msgid "Piotr Wejman"
-msgstr ""
+msgstr "Piotr Wejman"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/tools/csv-profiles.tmpl:66
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/tools/csv-profiles.tmpl:81
@@ -30740,9 +30729,8 @@ msgstr "Primaire (5-8)"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:224
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/memberentrygen.tmpl:519
-#, fuzzy
 msgid "Primary Email:"
-msgstr "Primaire"
+msgstr "Email principal&nbsp;:"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_121a.tmpl:29
 msgid "Primary cartographic image 1:"
@@ -31125,9 +31113,8 @@ msgstr "Note publique&nbsp;:"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:334
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2intranetDetail.xsl:285
-#, fuzzy
 msgid "Public:"
-msgstr "Publique"
+msgstr "Public&nbsp;:"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/labels/search.tmpl:32
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/labels/search.tmpl:33
@@ -31299,7 +31286,6 @@ msgstr "Quantité reçue"
 
 #. SCRIPT
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/acqui/neworderempty.tmpl:74
-#, fuzzy
 msgid "Quantity must be greater than '0'"
 msgstr "La quantité doit être supérieure à '0'"
 
@@ -31624,9 +31610,8 @@ msgid ""
 msgstr ""
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/tools/batchedit.tmpl:138
-#, fuzzy
 msgid "Records numbers list (one number per line):"
-msgstr "Liste de code-barres (un par ligne):"
+msgstr "Liste de numéros de notices (une par ligne):"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_130.tmpl:158
 msgid "Reduction ratio:"
@@ -32772,7 +32757,6 @@ msgstr ""
 "Scanner ou saisir le le code-barres du document que vous voulez ajouter"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/apharp/circulation-card.tmpl:25
-#, fuzzy
 msgid "Scan patron card :"
 msgstr "Entrer le n° de carte d'adhérent&nbsp;:"
 
@@ -33276,9 +33260,8 @@ msgstr "seconde réclamation"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:225
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/memberentrygen.tmpl:530
-#, fuzzy
 msgid "Secondary Email:"
-msgstr "support matériel secondaire"
+msgstr "Email secondaire&nbsp;:"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_116.tmpl:208
 msgid "Secondary support material"
@@ -33293,14 +33276,14 @@ msgid "Seconds:"
 msgstr "Secondes:"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/marc21_field_008.tmpl:127
-#, fuzzy, c-format
+#, c-format
 msgid "See <a1>MARC Code List for Countries</a>"
-msgstr "35-37 Langue voir <a1>la liste des codes MARC de langue</a>"
+msgstr "Langue voir <a1>la liste des codes MARC de langue</a>"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/marc21_field_008.tmpl:528
-#, fuzzy, c-format
+#, c-format
 msgid "See <a1>MARC Code List for Languages</a>"
-msgstr "35-37 Langue voir <a1>la liste des codes MARC de langue</a>"
+msgstr "Langue voir <a1>la liste des codes MARC de langue</a>"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/serials/serials-collection.tmpl:160
 msgid "See any subscription attached to this biblio"
@@ -33587,7 +33570,6 @@ msgid "Selecting Default Settings"
 msgstr "Sélectionnez les paramètres par défaut"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/about.tmpl:281
-#, fuzzy
 msgid "Selma Aslan"
 msgstr "Selma Aslan"
 
@@ -33684,16 +33666,16 @@ msgstr "Etat de collection"
 #. %1$s: TMPL_VAR name=bibliotitle
 #. %2$s: TMPL_VAR name=location
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/serials/serials-collection.tmpl:63
-#, fuzzy, c-format
+#, c-format
 msgid "Serial Collection information for <i>%s</i> (%s )"
-msgstr "Etat de collection pour <i>%s</i>"
+msgstr "Etat de collection pour <i>%s</i> (%s )"
 
 #. %1$s: TMPL_VAR name=bibliotitle
 #. %2$s: TMPL_VAR name=location
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/serials/serials-edit.tmpl:169
-#, fuzzy, c-format
+#, c-format
 msgid "Serial Edition <i>%s</i> ( %s )"
-msgstr "Bulletinage de <i>%s</i> "
+msgstr "Bulletinage de <i>%s</i> ( %s )"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/includes/subtypes_unimarc.inc:124
 msgid "Serial Type"
@@ -33767,9 +33749,8 @@ msgid "Serials Claims"
 msgstr "Réclamations de périodiques"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/reports/serials_stats.tmpl:3
-#, fuzzy
 msgid "Serials Statistics"
-msgstr "Statistiques sur le catalogue"
+msgstr "Statistiques sur les périodiques"
 
 #
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/serials/subscription-add.tmpl:1111
@@ -34093,9 +34074,8 @@ msgid "Show More"
 msgstr "Voir plus"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reports/guided_reports_start.tmpl:124
-#, fuzzy
 msgid "Show SQL"
-msgstr "Voir"
+msgstr "Voir SQL"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqplan.tmpl:131
 msgid "Show active funds only"
@@ -34106,9 +34086,8 @@ msgid "Show actual/estimated values:"
 msgstr "Montre les valeurs réelles/estimées :"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/detail.tmpl:178
-#, fuzzy
 msgid "Show all"
-msgstr "Voir"
+msgstr "Tout voir"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/maint/catmaintain.tmpl:109
 msgid "Show all Titles beginning with"
@@ -34721,24 +34700,20 @@ msgid "StaticHoldsQueueWeight"
 msgstr "StaticHoldsQueueWeight"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tmpl:329
-#, fuzzy
 msgid "Statistic 1 done on:"
-msgstr "Statistiques"
+msgstr "Statistique 1 faite sur&nbsp;:"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/acqui/neworderempty.tmpl:361
-#, fuzzy
 msgid "Statistic 1:"
-msgstr "Statistiques"
+msgstr "Statistique 1&nbsp;:"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tmpl:346
-#, fuzzy
 msgid "Statistic 2 done on:"
-msgstr "Statistiques"
+msgstr "Statistique 2 faite sur&nbsp;:"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/acqui/neworderempty.tmpl:371
-#, fuzzy
 msgid "Statistic 2:"
-msgstr "Statistiques"
+msgstr "Statistique 2&nbsp;:"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/admin/categorie.tmpl:150
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/admin/categorie.tmpl:278
@@ -35400,9 +35375,7 @@ msgstr "Etat de collection sommaire"
 msgid "Subscription(s)"
 msgstr "Abonnement(s)"
 
-#
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/detail.tmpl:180
-#, fuzzy
 msgid "Subscriptions"
 msgstr "Abonnement(s)"
 
@@ -36542,9 +36515,8 @@ msgstr "TVA (%s)"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/acqui/supplier.tmpl:103
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/acqui/supplier.tmpl:184
-#, fuzzy
 msgid "Tax Number Registered:"
-msgstr "TVA&nbsp;:"
+msgstr "N° TVA intracom&nbsp;:"
 
 #
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/acqui/supplier.tmpl:133
@@ -37969,11 +37941,9 @@ msgstr "Thèses"
 msgid "Third"
 msgstr "Troisième"
 
-#
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/tools/overduerules.tmpl:162
-#, fuzzy
 msgid "Third Letter"
-msgstr "i- lettres"
+msgstr "3eme courrier"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/branchoverdues.tmpl:84
 msgid "Third overdue"
@@ -41859,7 +41829,7 @@ msgstr "largeur ou dimensions"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/about.tmpl:166
 msgid "Will Stokes"
-msgstr ""
+msgstr "Will Stokes"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/tools/cleanborrowers.tmpl:18
 msgid ""
@@ -55459,7 +55429,7 @@ msgstr ""
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/admin/currency.tmpl:199
 msgid "✓"
-msgstr ""
+msgstr "✓"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/sms/sms-home.tmpl:1
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_700-4.tmpl:1
