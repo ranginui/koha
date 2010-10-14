@@ -78,7 +78,7 @@ sub transformMARCXML4XSLT {
 
     # FIXME: wish there was a better way to handle exceptions
     eval { @fields = $record->fields(); };
-    if ($@) { warn "PROBLEM WITH RECORD"; next; }
+    if ($@) { warn "PROBLEM WITH RECORD"; return;}
     my $av = getAuthorisedValues4MARCSubfields($frameworkcode);
     foreach my $tag ( keys %$av ) {
         foreach my $field ( $record->field($tag) ) {
