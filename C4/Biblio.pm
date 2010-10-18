@@ -3594,7 +3594,7 @@ sub BatchModField {
 
     if ( $action eq "add" ) {
         for my $rfield ($record->field($field)){
-            $rfield->insert_fields_ordered( $subfield => $repval );
+            $rfield->add_subfields( $subfield => $repval );
         }
         return 1;
     }elsif($action eq "addfield"){
