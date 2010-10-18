@@ -39,6 +39,7 @@ use C4::Serials;
 use C4::Members;
 use C4::VirtualShelves;
 use C4::XSLT;
+use List::MoreUtils qw/any none/;
 use 5.10.0;
 
 #use Switch;
@@ -85,15 +86,27 @@ $template->param( 'OPACShowCheckoutName' => C4::Context->preference("OPACShowChe
 # change back when ive fixed request.pl
 my @all_items = &GetItemsInfo( $biblionumber, 'opac' );
 my @items;
-@items = @all_items unless C4::Context->preference('hidelostitems');
 
-if ( C4::Context->preference('hidelostitems') ) {
+# Getting items to be hidden
+my @hiddenitems = GetHiddenItemnumbers(@all_items);
 
-    # Hide host items
+# Are there items to hide?
+my $hideitems = 1 if C4::Context->preference('hidelostitems') or scalar(@hiddenitems) > 0;
+
+# Hide items
+if ($hideitems) {
     for my $itm (@all_items) {
-        push @items, $itm unless $itm->{itemlost};
+	if  ( C4::Context->preference('hidelostitems') ) {
+	    push @items, $itm unless $itm->{itemlost} or any { $itm->{'itemnumber'} eq $_ } @hiddenitems;
+	} else {
+	    push @items, $itm unless any { $itm->{'itemnumber'} eq $_ } @hiddenitems;
+	}
     }
+} else {
+    # Or not
+    @items = @all_items;
 }
+
 my $dat = &GetBiblioData($biblionumber);
 
 my $itemtypes = GetItemTypes();
