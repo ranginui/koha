@@ -31,6 +31,7 @@ use C4::Branch;
 use C4::Charset;
 use C4::Reserves;    # CheckReserves
 use C4::Debug;
+use C4::Items;
 use YAML;
 use URI::Escape;
 
@@ -1495,6 +1496,11 @@ sub searchResults {
                 $item->{$code} = $field->subfield( $subfieldstosearch{$code} );
             }
 
+	    # Hidden items
+	    my @items = ($item);
+	    my (@hiddenitems) = GetHiddenItemnumbers(@items);
+	    $item->{'hideatopac'} = 1 if (@hiddenitems); 
+
             my $hbranch     = C4::Context->preference('HomeOrHoldingBranch') eq 'homebranch' ? 'homebranch'    : 'holdingbranch';
             my $otherbranch = C4::Context->preference('HomeOrHoldingBranch') eq 'homebranch' ? 'holdingbranch' : 'homebranch';
 
@@ -1570,6 +1576,7 @@ sub searchResults {
                     || $item->{itemlost}
                     || $item->{damaged}
                     || $item->{notforloan}
+                    || $item->{hideatopac}
                     || $reservestatus eq 'Waiting'
                     || ( $transfertwhen ne '' ) ) {
                     $wthdrawn_count++        if $item->{wthdrawn};
@@ -1581,7 +1588,7 @@ sub searchResults {
                     $other_count++;
 
                     my $key = $prefix . $item->{status};
-                    foreach (qw(wthdrawn itemlost damaged branchname itemcallnumber)) {
+                    foreach (qw(wthdrawn itemlost damaged branchname itemcallnumber hideatopac)) {
                         $other_items->{$key}->{$_} = $item->{$_};
                     }
                     $other_items->{$key}->{intransit} = ( $transfertwhen ne '' ) ? 1 : 0;
@@ -1598,7 +1605,7 @@ sub searchResults {
                     $can_place_holds = 1;
                     $available_count++;
                     $available_items->{$prefix}->{count}++ if $item->{$hbranch};
-                    foreach (qw(branchname itemcallnumber)) {
+                    foreach (qw(branchname itemcallnumber hideatopac)) {
                         $available_items->{$prefix}->{$_} = $item->{$_};
                     }
                     $available_items->{$prefix}->{location} = $shelflocations->{ $item->{location} };
@@ -1654,6 +1661,7 @@ sub searchResults {
         $oldbiblio->{onholdcount}          = $item_onhold_count;
         $oldbiblio->{orderedcount}         = $ordered_count;
         $oldbiblio->{isbn} =~ s/-//g;    # deleting - in isbn to enable amazon content
+
         push( @newresults, $oldbiblio )
           if (
             not C4::Context->preference('hidelostitems')
@@ -1661,7 +1669,6 @@ sub searchResults {
                 && C4::Context->preference('hidelostitems') )
           );
     }
-
     return @newresults;
 }
 
