@@ -303,7 +303,7 @@ RECORD: while () {
             if ( $authorities && $marcFlavour ) {
 
                 #Skip if authority in database is the same as the on in database
-                if ( $marcrecord->field('005')->data >= $record->field('005')->data ) {
+		if ( $marcrecord->field('005')->data >= $record->field('005')->data ) {
                     if ($yamlfile) {
                         $yamlhash->{$originalid}->{'authid'} = $id;
 
@@ -354,7 +354,9 @@ RECORD: while () {
     }
     if ($authorities) {
         use C4::AuthoritiesMarc;
-        my $authtypecode = GuessAuthTypeCode($record);
+        my $authtypecode = _GuessAuthTypeCode($record);
+	$debug && warn $record->as_formatted unless $authtypecode;
+	next unless $authtypecode;
         my $authid = ( $id ? $id : GuessAuthId($record) );
         if ( $authid && GetAuthority($authid) && $update ) {
             ## Authority has an id and is in database : Replace
@@ -546,11 +548,12 @@ sub printlog {
 
 
 sub get_heading_fields{
-    return $heading_fields if (%$heading_fields);
+    return $heading_fields if (defined $heading_fields);
     if ($authtypes){
         $heading_fields=YAML::LoadFile($authtypes);
          
         $heading_fields={C4::Context->preference('marcflavour')=>$heading_fields};
+	$debug && warn YAML::Dump($heading_fields);
     }
     unless ($heading_fields){ 
         $heading_fields=$dbh->selectall_hashref("SELECT auth_tag_to_report, authtypecode from auth_types",'auth_tag_to_report',{Slice=>{}});
