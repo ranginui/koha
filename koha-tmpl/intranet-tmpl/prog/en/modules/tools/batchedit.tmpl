@@ -78,7 +78,7 @@
         var field    = $('#fieldchoice').val();
         var subfield = $('#subfieldchoice').val();
         var action   = $('#actionchoice').val();
-        var nocond   = $('#nocond').attr('checked');
+        var nocond   = $('#nocond').attr('checked')||(! $('#condvalchoice').val().length);
 
         if( ! nocond ) {
             var condval  = $('#condvalchoice').val();
