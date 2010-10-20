@@ -1375,6 +1375,7 @@ sub searchResults {
     my $fw;
 
     # loop through all of the records we've retrieved
+    my $shown = $offset;
     for ( my $i = $offset ; $i <= $times - 1 ; $i++ ) {
         my $marcrecord = MARC::File::USMARC::decode( $marcresults[$i] );
 	    my $biblionumber;
@@ -1391,7 +1392,7 @@ sub searchResults {
         my $oldbiblio = TransformMarcToKoha( $dbh, $marcrecord, $fw );
         $oldbiblio->{biblionumber} = $biblionumber;
         $oldbiblio->{subtitle} = GetRecordValue( 'subtitle', $marcrecord, $fw );
-        $oldbiblio->{result_number} = $i + 1;
+	$oldbiblio->{result_number} = $i + 1;
 
         # add imageurl to itemtype if there is one
         $oldbiblio->{imageurl} = getitemtypeimagelocation( $interface, $itemtypes{ $oldbiblio->{itemtype} }->{imageurl} );
@@ -1630,11 +1631,12 @@ sub searchResults {
 
         # XSLT processing of some stuff
         use C4::Charset;
-        warn $marcrecord->as_formatted;
         SetUTF8Flag($marcrecord);
         $debug && warn $marcrecord->as_formatted;
 
-        $interface=($interface eq 'opac'?'OPAC':'Intranet');
+	# If it is opac, or OPAC, or OpAc or whatever, we use 'OPAC' so it works with the XSLT syspref
+	$interface =~ s/(opac)/\U$1/i;
+
         if ( C4::Context->preference($interface."XSLTResultsDisplay") && !$scan ) {
             $oldbiblio->{$interface."XSLTResultsRecord"} = XSLTParse4Display( $biblionumber, $marcrecord, C4::Context->preference($interface."XSLTResultsDisplay") );
         }
@@ -1661,17 +1663,24 @@ sub searchResults {
         $oldbiblio->{orderedcount}         = $ordered_count;
         $oldbiblio->{isbn} =~ s/-//g;    # deleting - in isbn to enable amazon content
 
-        push( @newresults, $oldbiblio )
-          if (
-                (lc($interface) ne "opac") or (
-                #interface eq opac
-                    not C4::Context->preference('hidelostitems')
-                    or ( C4::Context->preference('hidelostitems') 
-                        and ( $items_count > $itemlost_count || $items_count == 0 )
-                        )
-                )
-          );
+    my $display = 1;
+    if (lc($interface) eq "opac") {
+	if (C4::Context->preference('hidelostitems') or C4::Context->preference('hidenoitems')) {
+	    if (C4::Context->preference('hidelostitems') and $itemlost_count >= $items_count) {
+		$display = 0;
+	    }
+	    if (C4::Context->preference('hidenoitems') and $available_count == 0) {
+		$display = 0;
+	    }
+	}
+	if ($display == 1) {
+	    $oldbiblio->{result_number} = ++$shown;
+	    push( @newresults, $oldbiblio);
+	}
+    } else {
+        push( @newresults, $oldbiblio );
     }
+}
     return @newresults;
 }
 
