@@ -4911,6 +4911,15 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     SetVersion($DBversion);
 }
 
+$DBversion = "3.02.00.054";
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+    $dbh->do("
+	INSERT IGNORE INTO `systempreferences` (variable,value,explanation,options,type) VALUES('OpacHiddenItems','','This syspref allows to define custom rules for hiding specific items at opac. See docs/opac/OpacHiddenItems.txt for more informations.','','Textarea');
+	");
+    print "Upgrade to $DBversion done (Adding OpacHiddenItems syspref)\n";
+    SetVersion($DBversion);
+}
+
 =item DropAllForeignKeys($table)
 
   Drop all foreign keys of the table $table
