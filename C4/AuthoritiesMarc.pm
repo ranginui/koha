@@ -109,16 +109,13 @@ counts Usage of Authid in bibliorecords.
 =cut
 
 sub CountUsage {
-    my $authid = shift;
-    
-    my $filters = {
-        recordtype => "biblio",
-        authid     => $authid,
-    };
 
-    my $results = C4::Search::SimpleSearch( "*:*", $filters, 1, 1, "score asc");
+    my $results = C4::Search::SimpleSearch( "*:*", {
+        recordtype => 'biblio',
+        authid     => shift,
+    } );
 
-    return $results->{query}->{count};
+    return $results->pager->{total_entries};
 }
 
 =head2 CountUsageChildren 

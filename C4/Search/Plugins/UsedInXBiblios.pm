@@ -19,7 +19,7 @@ package C4::Search::Plugins::UsedInXBiblios;
 
 use strict;
 use warnings;
-use C4::Search;
+use C4::AuthoritiesMarc;
 use base 'Exporter';
 
 our @EXPORT = qw/
@@ -28,14 +28,7 @@ our @EXPORT = qw/
 our $VERSION = 3.0.1;
 
 sub ComputeValue {
-    my ( $record ) = @_;
-
-    my $results = SimpleSearch( '*:*', { 
-        recordtype => 'biblio', 
-        authid     => $record->field('001')->data, 
-    } );
-
-    return ( $results->pager->{total_entries} );
+    ( CountUsage( shift->field('001')->data ) );
 }
 
 1;
