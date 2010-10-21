@@ -514,7 +514,7 @@ sub GetBudgetHierarchy {
     if ($owner) {
         if ($branchcode) {
             push @where_strings,
-              qq{ (budget_owner_id = ? OR budget_branchcode = ? OR (budget_branchcode IS NULL or budget_branchcode="" AND (budget_owner_id IS NULL OR budget_owner_id="")))};
+            qq{ (budget_owner_id = ? OR budget_branchcode = ? OR ((budget_branchcode IS NULL or budget_branchcode="") AND (budget_owner_id IS NULL OR budget_owner_id="")))};
             push @bind_params, ( $owner, $branchcode );
         } else {
             push @where_strings, ' (budget_owner_id = ? OR budget_owner_id IS NULL or budget_owner_id ="") ';
