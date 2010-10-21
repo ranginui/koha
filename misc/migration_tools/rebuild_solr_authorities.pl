@@ -17,29 +17,21 @@ GetOptions(
 );
 
 if ( $reset ) {
-    my $sc = C4::Search::GetSolrRessource;
+    my $sc = C4::Search::GetSolrConnection;
     $sc->remove( 'recordtype:authority' );
 }
 
 my $dbh = C4::Context->dbh;
 $dbh->do('SET NAMES UTF8;');
-my $sth = $dbh->prepare("
-SELECT authid
-FROM auth_header
-ORDER BY authid
-LIMIT $number
+my $sth = $dbh->prepare("SELECT authid
+    FROM auth_header
+    ORDER BY authid
+    LIMIT $number
 ");
 
 $sth->execute();
 
-my $authorities = $sth->fetchall_arrayref;
-
-my @records;
-for (@$authorities){
-   push @records, @$_;
-}
-
-IndexRecord("authority", \@records );
+IndexRecord("authority", [ map { $_->[0] } @{ $sth->fetchall_arrayref } ] );
 
 $sth->finish;
 
