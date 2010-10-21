@@ -3,12 +3,13 @@
 use strict;
 use warnings;
 use C4::Context;
-use C4::Biblio;
 use C4::Search;
 use Data::Dumper;
 use Getopt::Long;
 
 $|=1; # flushes output
+
+my $recordtype = 'authority';
 
 my ( $reset, $number );
 GetOptions(
@@ -18,20 +19,19 @@ GetOptions(
 
 if ( $reset ) {
     my $sc = C4::Search::GetSolrConnection;
-    $sc->remove( 'recordtype:authority' );
+    $sc->remove( "recordtype:$recordtype" );
 }
 
 my $dbh = C4::Context->dbh;
-$dbh->do('SET NAMES UTF8;');
-my $sth = $dbh->prepare("SELECT authid
-    FROM auth_header
-    ORDER BY authid
-    LIMIT $number
-");
+   $dbh->do('SET NAMES UTF8;');
 
-$sth->execute();
+my $query  = "SELECT authid FROM auth_header ORDER BY authid";
+   $query .= " LIMIT $number" if $number;
 
-IndexRecord("authority", [ map { $_->[0] } @{ $sth->fetchall_arrayref } ] );
+my $sth = $dbh->prepare( $query );
+   $sth->execute();
+
+IndexRecord($recordtype, [ map { $_->[0] } @{ $sth->fetchall_arrayref } ] );
 
 $sth->finish;
 
