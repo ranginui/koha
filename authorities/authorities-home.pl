@@ -22,7 +22,6 @@ use warnings;
 
 use CGI;
 use C4::Auth;
-
 use C4::Context;
 use C4::Auth;
 use C4::Output;
@@ -33,26 +32,25 @@ use C4::Biblio;
 use C4::Search;
 use Data::Pagination;
 
-my $query = new CGI;
-my $op    = $query->param('op');
-$op ||= q{};
-my $authtypecode = $query->param('authtypecode');
-$authtypecode ||= q{};
-my $dbh = C4::Context->dbh;
+my $query        = new CGI;
+my $op           = $query->param('op') || ();
+my $authtypecode = $query->param('authtypecode') || ();
+my $dbh          = C4::Context->dbh;
+my $authid       = $query->param('authid');
 
-my $authid = $query->param('authid');
 my ( $template, $loggedinuser, $cookie );
 
 my $authtypes = getauthtypes;
 my @authtypesloop;
-foreach my $thisauthtype (
+
+for (
     sort { $authtypes->{$a}{'authtypetext'} cmp $authtypes->{$b}{'authtypetext'} }
     keys %$authtypes
-  ) {
+) {
     my %row = (
-        value        => $thisauthtype,
-        selected     => $thisauthtype eq $authtypecode,
-        authtypetext => $authtypes->{$thisauthtype}{'authtypetext'},
+        value        => $_,
+        selected     => $_ eq $authtypecode,
+        authtypetext => $authtypes->{$_}{'authtypetext'},
     );
     push @authtypesloop, \%row;
 }
@@ -70,44 +68,40 @@ if ( $op eq "do_search" ) {
     my $results = SimpleSearch($value, $filters, $page, $count, $orderby);
 
     my $pager = Data::Pagination->new(
-               $results->{pager}->{total_entries},
-               $count,
-               20,
-               $page,
-            );
-
-    ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-        {   template_name   => "authorities/searchresultlist.tmpl",
-            query           => $query,
-            type            => 'intranet',
-            authnotrequired => 0,
-            flagsrequired   => { catalogue => 1 },
-            debug           => 1,
-        }
+        $results->{pager}->{total_entries},
+        $count,
+        20,
+        $page,
     );
 
-    $template->param(
-       previous_page => $pager->{prev_page},
-       next_page     => $pager->{next_page},
-       PAGE_NUMBERS  => [ map { { page => $_, current => $_ == $page } } @{$pager->{numbers_of_set}} ],
-       current_page  => $page,
-       from          => $pager->{start_of_slice},
-       to            => $pager->{end_of_slice},
-       total         => $pager->{total_entries},
-    );
+    ( $template, $loggedinuser, $cookie ) = get_template_and_user( {
+        template_name   => "authorities/searchresultlist.tmpl",
+        query           => $query,
+        type            => 'intranet',
+        authnotrequired => 0,
+        flagsrequired   => { catalogue => 1 },
+        debug           => 1,
+    } );
 
     $template->param(
-       value   => $value,
-       orderby => $orderby,
+        previous_page => $pager->{prev_page},
+        next_page     => $pager->{next_page},
+        PAGE_NUMBERS  => [ map { { page => $_, current => $_ == $page } } @{$pager->{numbers_of_set}} ],
+        current_page  => $page,
+        from          => $pager->{start_of_slice},
+        to            => $pager->{end_of_slice},
+        total         => $pager->{total_entries},
+        value   => $value,
+        orderby => $orderby,
     );
 
     my @resultrecords;
     for ( @{$results->{items}} ) {
-        my $authrecord = GetAuthority($_->{values}->{recordid});
+        my $authrecord = GetAuthority( $_->{values}->{recordid} );
 
         my $authority  = {
            authid  => $_->{values}->{recordid},
-           summary => BuildSummary($authrecord, $_->{values}->{recordid}),
+           summary => BuildSummary( $authrecord, $_->{values}->{recordid} ),
            used    => CountUsage( $_->{values}->{recordid} ),
         };
 
@@ -118,34 +112,30 @@ if ( $op eq "do_search" ) {
 
 } elsif ( $op eq "delete" ) {
 
-    &DelAuthority( $authid, 1 );
+    DelAuthority( $authid, 1 );
 
-    ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-        {   template_name   => "authorities/authorities-home.tmpl",
-            query           => $query,
-            type            => 'intranet',
-            authnotrequired => 0,
-            flagsrequired   => { catalogue => 1 },
-            debug           => 1,
-        }
-    );
+    ( $template, $loggedinuser, $cookie ) = get_template_and_user( {
+        template_name   => "authorities/authorities-home.tmpl",
+        query           => $query,
+        type            => 'intranet',
+        authnotrequired => 0,
+        flagsrequired   => { catalogue => 1 },
+        debug           => 1,
+    } );
 
-    # 	$template->param("statements" => \@statements,
-    # 						"nbstatements" => $nbstatements);
 } else {
-    ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-        {   template_name   => "authorities/authorities-home.tmpl",
-            query           => $query,
-            type            => 'intranet',
-            authnotrequired => 0,
-            flagsrequired   => { catalogue => 1 },
-            debug           => 1,
-        }
-    );
 
+    ( $template, $loggedinuser, $cookie ) = get_template_and_user( {
+        template_name   => "authorities/authorities-home.tmpl",
+        query           => $query,
+        type            => 'intranet',
+        authnotrequired => 0,
+        flagsrequired   => { catalogue => 1 },
+        debug           => 1,
+    } );
 }
 
-$template->param( authtypesloop => \@authtypesloop, );
+$template->param( authtypesloop => \@authtypesloop );
 
 # Print the page
 output_html_with_http_headers $query, $cookie, $template->output;
