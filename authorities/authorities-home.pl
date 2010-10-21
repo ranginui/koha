@@ -108,7 +108,7 @@ if ( $op eq "do_search" ) {
         my $authority  = {
            authid  => $_->{values}->{recordid},
            summary => BuildSummary($authrecord, $_->{values}->{recordid}),
-           used    => CountUsage( $_->{values}->{recordid} ),
+           used    => $_->{values}->{field_usedinxbiblios},
         };
 
         push @resultrecords, $authority;
