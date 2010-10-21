@@ -2570,7 +2570,18 @@ sub SetMappings {
 
 sub GetMappings {
     my $dbh = C4::Context->dbh;
-    my $sth = $dbh->prepare("SELECT indexmappings.*, indexes.plugin FROM indexmappings LEFT JOIN indexes ON (indexmappings.index=indexes.code AND indexmappings.ressource_type=indexes.ressource_type) WHERE indexmappings.ressource_type = ? ORDER BY field, subfield");
+    my $sth = $dbh->prepare("SELECT indexmappings.*, indexes.plugin as plugin FROM indexmappings LEFT JOIN indexes ON (indexmappings.index=indexes.code AND indexmappings.ressource_type=indexes.ressource_type) WHERE indexmappings.ressource_type = ? ORDER BY field, subfield");
+    $sth->execute(shift);
+    return $sth->fetchall_arrayref({});
+}
+
+sub GetMappingsAndIndexes {
+    my $dbh = C4::Context->dbh;
+    my $sth = $dbh->prepare("SELECT indexmappings.field, indexmappings.subfield, indexes.plugin, indexes.code
+        FROM indexes LEFT OUTER JOIN indexmappings
+        ON ( indexmappings.index = indexes.code AND indexmappings.ressource_type = indexes.ressource_type)
+        WHERE indexes.ressource_type = ?
+        ORDER BY field, subfield");
     $sth->execute(shift);
     return $sth->fetchall_arrayref({});
 }
@@ -2604,84 +2615,83 @@ sub IndexRecord {
     my $recordtype = shift;
     my $recordnum  = shift;
 
-    my $indexes = GetMappings($recordtype);
-    my $solr    = GetSolrRessource();
+    my $mappings = GetMappingsAndIndexes($recordtype);
+    my $solr     = GetSolrRessource();
 
     my @recordids;
     if ( $recordnum =~ m/(\d+)-(\d+)/g ){
-       @recordids = $1 .. $2;
+        @recordids = $1 .. $2;
     } else {
-       @recordids = @$recordnum;
+        @recordids = @$recordnum;
     }
 
     my @recordpush;
     foreach ( @recordids ) {
-       my $record;
-       my $frameworkcode;
-       my $recordid = "${recordtype}_${_}";
+        my $record;
+        my $frameworkcode;
+        my $recordid = "${recordtype}_${_}";
 
-       if($recordtype eq "authority") {
-           $record = GetAuthority($_);
-       } elsif ($recordtype eq "biblio") {
-           $record = GetMarcBiblio($_);
-           $frameworkcode = GetFrameworkCode($_);
-       }
+        if($recordtype eq "authority") {
+            $record = GetAuthority($_);
+        } elsif ($recordtype eq "biblio") {
+            $record = GetMarcBiblio($_);
+            $frameworkcode = GetFrameworkCode($_);
+        }
 
-       next unless ( $record );
+        next unless ( $record );
 
-       my $solrrecord = Data::SearchEngine::Item->new( 
-                           'id'         => $recordid, 
-                           'score'      => 1,
-                        );
+        my $solrrecord = Data::SearchEngine::Item->new(
+            'id'    => $recordid,
+            'score' => 1,
+        );
 
-       $solrrecord->set_value( 'recordtype', $recordtype );
-       $solrrecord->set_value( 'recordid'  , $_);
-       warn $_;
+        $solrrecord->set_value( 'recordtype', $recordtype );
+        $solrrecord->set_value( 'recordid'  , $_);
+        warn $_;
 
-       foreach my $index ( @$indexes ) {
+        for my $mapping ( @$mappings ) {
 
-          my @values;
-          my $oldval = $solrrecord->get_value( "field_" . $index->{index} ) || ();
-          @values = @$oldval if $oldval;
+            my @values;
+            my $oldval = $solrrecord->get_value( "field_" . $mapping->{code} ) || ();
+            @values = @$oldval if $oldval;
 
-          if( $index->{plugin} ) {
-             my $plugin = $index->{plugin};
-             $plugin = LoadSearchPlugin( $plugin ) if $plugin;
-             @values = &$plugin( $record );
-          } else {
-             foreach my $field( $record->field( $index->{field} ) ) {
-                foreach my $subfield ( $field->subfield( $index->{subfield} ) ) {
+            if( $mapping->{plugin} ) {
+                my $plugin = $mapping->{plugin};
+                $plugin = LoadSearchPlugin( $plugin ) if $plugin;
+                @values = &$plugin( $record );
+            } else {
+                for my $field( $record->field( $mapping->{field} ) ) {
+                    for my $subfield ( $field->subfield( $mapping->{subfield} ) ) {
 
-                    # authorised values and branches management
-                    if ($recordtype eq "biblio") {
-                        my $structure = C4::MarcFramework::GetSubfieldStructure($index->{field},$index->{subfield},$frameworkcode);
-                        if ( $structure->{'authorised_value'} eq 'branches' ) {
-                            $subfield = GetBranchName($subfield);
-                        } elsif ( $structure->{'authorised_value'} eq 'itemtypes' ) {
-                            my $itemtype = getitemtypeinfo($subfield);
-                            $subfield = $itemtype->{'description'};
-                        } elsif ( $structure->{'authorised_value'} ne '' ) {
-                            my $authorisedvalues = GetAuthorisedValues($structure->{'authorised_value'},undef,undef);
-                            for ( @$authorisedvalues ) {
-                                $subfield = $_->{lib} if $_->{authorised_value} eq $subfield;
+                        # authorised values and branches management
+                        if ($recordtype eq "biblio") {
+                            my $structure = C4::MarcFramework::GetSubfieldStructure($mapping->{field},$mapping->{subfield},$frameworkcode);
+                            if ( $structure->{'authorised_value'} eq 'branches' ) {
+                                $subfield = GetBranchName($subfield);
+                            } elsif ( $structure->{'authorised_value'} eq 'itemtypes' ) {
+                                my $itemtype = getitemtypeinfo($subfield);
+                                $subfield = $itemtype->{'description'};
+                            } elsif ( $structure->{'authorised_value'} ne '' ) {
+                                my $authorisedvalues = GetAuthorisedValues($structure->{'authorised_value'},undef,undef);
+                                for ( @$authorisedvalues ) {
+                                    $subfield = $_->{lib} if $_->{authorised_value} eq $subfield;
+                                }
                             }
                         }
+
+                        push @values, $subfield;
                     }
-
-                    push @values, $subfield;
                 }
-             }
-          }
+            }
 
-          $solrrecord->set_value( "field_" . $index->{index}, \@values);
-       }
+            $solrrecord->set_value( "field_" . $mapping->{code}, \@values);
+        }
+        push @recordpush, $solrrecord;
 
-       push @recordpush, $solrrecord;
-
-       if ( scalar(@recordpush) == 1000 ) {
-          $solr->add( \@recordpush );
-          @recordpush = ();
-       }
+        if ( scalar(@recordpush) == 1000 ) {
+            $solr->add( \@recordpush );
+            @recordpush = ();
+        }
     }
     $solr->add( \@recordpush );
 }
@@ -2721,6 +2731,10 @@ sub GetSearchPlugins {
 
 sub SimpleSearch {
     my ( $query, $filters, $page, $max_results, $sort) = @_;
+
+    $page        ||= 1;
+    $max_results ||= 999999999;
+    $sort        ||= 'score desc';
 
     my $solr    = GetSolrRessource();
 
