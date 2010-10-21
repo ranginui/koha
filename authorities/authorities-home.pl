@@ -19,16 +19,12 @@
 
 use strict;
 use warnings;
-
 use CGI;
 use C4::Auth;
 use C4::Context;
-use C4::Auth;
 use C4::Output;
 use C4::AuthoritiesMarc;
-use C4::Acquisition;
-use C4::Koha;    # XXX subfield_is_koha_internal_p
-use C4::Biblio;
+use C4::Koha;
 use C4::Search;
 use Data::Pagination;
 
@@ -41,25 +37,17 @@ my $authid       = $query->param('authid');
 my ( $template, $loggedinuser, $cookie );
 
 my $authtypes = getauthtypes;
-my @authtypesloop;
-
-for (
-    sort { $authtypes->{$a}{'authtypetext'} cmp $authtypes->{$b}{'authtypetext'} }
-    keys %$authtypes
-) {
-    my %row = (
-        value        => $_,
-        selected     => $_ eq $authtypecode,
-        authtypetext => $authtypes->{$_}{'authtypetext'},
-    );
-    push @authtypesloop, \%row;
-}
+my @authtypesloop = map { {
+    value        => $_,
+    selected     => $_ eq $authtypecode,
+    authtypetext => $authtypes->{$_}{'authtypetext'},
+} } keys %$authtypes;
 
 if ( $op eq "do_search" ) {
-    my $orderby      = $query->param('orderby');
-    my $value        = $query->param('value');
+    my $orderby      = $query->param('orderby') || 'score desc';
+    my $value        = $query->param('value')   || '*:*';
+    my $page         = $query->param('page')    || 1;
     my $authtypecode = $query->param('authtypecode');
-    my $page         = $query->param('page') || 1;
     my $count        = 20;
 
     my $filters = { recordtype => 'authority' };
