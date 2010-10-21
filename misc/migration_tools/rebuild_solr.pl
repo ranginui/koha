@@ -1,82 +1,40 @@
 #!/usr/bin/perl
 
 use strict;
-
+use warnings;
 use C4::Context;
-use C4::Biblio;
 use C4::Search;
 use Data::Dumper;
-use Data::SearchEngine::Query;
-use Data::SearchEngine::Item;
-use Data::SearchEngine::Solr;
-
-my $solr_url = "http://descartes.biblibre.com:8180/solr/";
+use Getopt::Long;
 
 $|=1; # flushes output
 
-my $dbh = C4::Context->dbh;
-$dbh->do('SET NAMES UTF8;');
-my $sth = $dbh->prepare("SELECT
-  biblionumber,
-  author,
-  title,
-  biblio.notes,
-  abstract,
-  itemtype,
-  isbn,
-  issn,
-  collectiontitle,
-  collectionissn,
-  collectionvolume
-FROM biblio 
-  LEFT JOIN biblioitems USING (biblionumber) 
-GROUP BY biblionumber
-ORDER BY biblionumber 
-LIMIT 10
-");
-
-my $itemsth = $dbh->prepare("
-  SELECT * FROM items WHERE biblionumber = ?
-");
-
-$sth->execute();
-
-my $solr = Data::SearchEngine::Solr->new(
-  url => $solr_url,
-  options => {autocommit => 1, }
+my ( $reset, $number, $recordtype );
+GetOptions(
+    'r'   => \$reset,
+    'n:i' => \$number,
+    't:s' => \$recordtype,
 );
 
-my @indexloop = C4::Search::GetIndexes;
-
-while ( my $biblio = $sth->fetchrow_hashref ) {
-    my $record = Data::SearchEngine::Item->new( id => $biblio->{biblionumber}, score => 1);
-    my $allfields;
-    for ( qw/title author/ ){
-        $record->set_value( $_ , $biblio->{$_});
-        $allfields .= $biblio->{$_};
-    }
-    $record->set_value( 'allfields', $allfields);
-
-    $itemsth->execute($biblio->{biblionumber});
-    my @holdingbranches;
-    my @homebranches;
-    while ( my $item = $itemsth->fetchrow_hashref ) {
-      push @holdingbranches, $item->{holdingbranch};
-      push @homebranches, $item->{homebranch};
-    }
-    $record->set_value( 'holdingbranch',  \@holdingbranches );
-    $record->set_value( 'homebranch',  \@homebranches );
-    
-    for my $index ( @indexloop ) {
-        my { 'field' => $field, 'subfield' => $subfield } = GetSubfieldsForIndex($index);
-    }
-
-    if($solr->add( [ $record ] )){
-        print $biblio->{title}."\n";
-    }else{
-        print "!";
-    }
+if ( $reset ) {
+    my $sc = C4::Search::GetSolrConnection;
+    $sc->remove( "recordtype:$recordtype" );
 }
 
-$sth->finish;
+my $dbh = C4::Context->dbh;
+   $dbh->do('SET NAMES UTF8;');
 
+my $query;
+if ( $recordtype eq 'biblio' ) {
+  $query = "SELECT biblionumber FROM biblio ORDER BY biblionumber";
+} elsif ( $recordtype eq 'authority' ) {
+  $query = "SELECT authid FROM auth_header ORDER BY authid";
+}
+$query .= " LIMIT $number" if $number;
+
+my $sth = $dbh->prepare( $query );
+   $sth->execute();
+
+IndexRecord($recordtype, [ map { $_->[0] } @{ $sth->fetchall_arrayref } ] );
+
+$sth->finish;
