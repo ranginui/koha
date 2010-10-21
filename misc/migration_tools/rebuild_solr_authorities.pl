@@ -1,33 +1,36 @@
 #!/usr/bin/perl
 
 use strict;
-
+use warnings;
 use C4::Context;
 use C4::Biblio;
 use C4::Search;
 use Data::Dumper;
-use Data::SearchEngine::Query;
-use Data::SearchEngine::Item;
-use Data::SearchEngine::Solr;
-
-my $solr_url = C4::Context->preference("SolrAPI");
+use Getopt::Long;
 
 $|=1; # flushes output
 
+my ( $reset, $number );
+GetOptions(
+    'r'   => \$reset,
+    'n:i' => \$number,
+);
+
+if ( $reset ) {
+    my $sc = C4::Search::GetSolrRessource;
+    $sc->remove( 'recordtype:authority' );
+}
+
 my $dbh = C4::Context->dbh;
 $dbh->do('SET NAMES UTF8;');
-my $sth = $dbh->prepare("SELECT
-  authid
+my $sth = $dbh->prepare("
+SELECT authid
 FROM auth_header
 ORDER BY authid
+LIMIT $number
 ");
 
 $sth->execute();
-
-my $solr = Data::SearchEngine::Solr->new(
-      url => $solr_url,
-      options => {autocommit => 1, }
-   );
 
 my $authorities = $sth->fetchall_arrayref;
 
