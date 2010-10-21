@@ -2571,18 +2571,7 @@ sub SetMappings {
 
 sub GetMappings {
     my $dbh = C4::Context->dbh;
-    my $sth = $dbh->prepare("SELECT * FROM indexmappings WHERE indexmappings.ressource_type = ? ORDER BY field, subfield");
-    $sth->execute(shift);
-    return $sth->fetchall_arrayref({});
-}
-
-sub GetMappingsAndIndexes {
-    my $dbh = C4::Context->dbh;
-    my $sth = $dbh->prepare("SELECT indexmappings.field, indexmappings.subfield, indexes.plugin, indexes.code
-        FROM indexes LEFT OUTER JOIN indexmappings
-        ON ( indexmappings.index = indexes.code AND indexmappings.ressource_type = indexes.ressource_type)
-        WHERE indexes.ressource_type = ?
-        ORDER BY field, subfield");
+    my $sth = $dbh->prepare("SELECT * FROM indexmappings WHERE ressource_type = ? ORDER BY field, subfield");
     $sth->execute(shift);
     return $sth->fetchall_arrayref({});
 }
@@ -2598,7 +2587,7 @@ sub GetIndexLabelFromCode {
 sub GetSubfieldsForIndex {
     my $index = shift;
     my $dbh = C4::Context->dbh;
-    my $sth = $dbh->prepare("SELECT field, subfield FROM indexmappings WHERE index=? ORDER BY field, subfield");
+    my $sth = $dbh->prepare("SELECT field, subfield FROM indexmappings WHERE `index`=? ORDER BY field, subfield");
     $sth->execute($index);
     return $sth->fetchrow_hashref;
 }
@@ -2612,29 +2601,22 @@ sub GetSolrConnection {
 
 sub IndexRecord {
     my $recordtype = shift;
-    my $recordnum  = shift;
+    my $recordids  = shift;
 
-    my $mappings = GetMappingsAndIndexes($recordtype);
-    my $sc       = GetSolrConnection;
-
-    my @recordids;
-    if ( $recordnum =~ m/(\d+)-(\d+)/g ){
-        @recordids = $1 .. $2;
-    } else {
-        @recordids = @$recordnum;
-    }
+    my $indexes = GetIndexes( $recordtype );
+    my $sc      = GetSolrConnection;
 
     my @recordpush;
-    foreach ( @recordids ) {
+    for my $id ( @$recordids ) {
         my $record;
         my $frameworkcode;
-        my $recordid = "${recordtype}_${_}";
+        my $recordid = "${recordtype}_$id";
 
         if($recordtype eq "authority") {
-            $record = GetAuthority($_);
+            $record = GetAuthority( $id );
         } elsif ($recordtype eq "biblio") {
-            $record = GetMarcBiblio($_);
-            $frameworkcode = GetFrameworkCode($_);
+            $record = GetMarcBiblio( $id );
+            $frameworkcode = GetFrameworkCode( $id );
         }
 
         next unless ( $record );
@@ -2645,15 +2627,16 @@ sub IndexRecord {
         );
 
         $solrrecord->set_value( 'recordtype', $recordtype );
-        $solrrecord->set_value( 'recordid'  , $_);
-        warn $_;
+        $solrrecord->set_value( 'recordid'  , $id );
+        warn $id;
 
-        for my $mapping ( @$mappings ) {
+        for my $index ( @$indexes ) {
 
             my @values;
+            my $mapping = GetSubfieldsForIndex( $index->{code} );
 
-            if ( $mapping->{plugin} ) {
-                my $plugin = $mapping->{plugin};
+            if ( $index->{plugin} ) {
+                my $plugin = $index->{plugin};
                 $plugin = LoadSearchPlugin( $plugin ) if $plugin;
                 @values = &$plugin( $record );
             } else {
@@ -2681,7 +2664,7 @@ sub IndexRecord {
                 }
             }
 
-            $solrrecord->set_value( "field_" . $mapping->{code}, \@values);
+            $solrrecord->set_value( "field_" . $index->{code}, \@values);
         }
         push @recordpush, $solrrecord;
 
