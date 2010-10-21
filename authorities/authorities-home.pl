@@ -29,10 +29,9 @@ use C4::Search;
 use Data::Pagination;
 
 my $query        = new CGI;
-my $op           = $query->param('op') || ();
-my $authtypecode = $query->param('authtypecode') || ();
+my $op           = $query->param('op');
 my $dbh          = C4::Context->dbh;
-my $authid       = $query->param('authid');
+my $authtypecode = $query->param('authtypecode');
 
 my ( $template, $loggedinuser, $cookie );
 
@@ -47,7 +46,6 @@ if ( $op eq "do_search" ) {
     my $orderby      = $query->param('orderby') || 'score desc';
     my $value        = $query->param('value')   || '*:*';
     my $page         = $query->param('page')    || 1;
-    my $authtypecode = $query->param('authtypecode');
     my $count        = 20;
 
     my $filters = { recordtype => 'authority' };
@@ -79,8 +77,8 @@ if ( $op eq "do_search" ) {
         from          => $pager->{start_of_slice},
         to            => $pager->{end_of_slice},
         total         => $pager->{total_entries},
-        value   => $value,
-        orderby => $orderby,
+        value         => $value,
+        orderby       => $orderby,
     );
 
     my @resultrecords;
@@ -96,10 +94,11 @@ if ( $op eq "do_search" ) {
         push @resultrecords, $authority;
     }
 
-    $template->param( result => \@resultrecords ) if \@resultrecords;
+    $template->param( result => \@resultrecords );
 
 } elsif ( $op eq "delete" ) {
 
+    my $authid = $query->param('authid');
     DelAuthority( $authid, 1 );
 
     ( $template, $loggedinuser, $cookie ) = get_template_and_user( {
