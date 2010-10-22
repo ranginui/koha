@@ -54,6 +54,8 @@ BEGIN {
       &GetAuthorisedValueCategories
       &GetKohaAuthorisedValues
       &GetKohaAuthorisedValuesFromField
+      &GetAuthorisedValueByCode
+      &GetKohaImageurlFromAuthorisedValues
       &GetAuthValCode
       &GetNormalizedUPC
       &GetNormalizedISBN
@@ -1035,6 +1037,25 @@ sub displayServers {
     return \@primaryserverloop;
 }
 
+
+=head2 GetKohaImageurlFromAuthorisedValues
+
+$authhorised_value = GetKohaImageurlFromAuthorisedValues( $category, $authvalcode );
+
+Return the first url of the authorised value image represented by $lib.
+
+=cut
+
+sub GetKohaImageurlFromAuthorisedValues {
+    my ( $category, $lib ) = @_;
+    my $dbh = C4::Context->dbh;
+    my $sth = $dbh->prepare("SELECT imageurl FROM authorised_values WHERE category=? AND lib =?");
+    $sth->execute( $category, $lib );
+     while ( my $data = $sth->fetchrow_hashref ) {
+     	return $data->{'imageurl'};
+     }
+}
+
 =head2 GetAuthValCode
 
 $authvalcode = GetAuthValCode($kohafield,$frameworkcode);
@@ -1129,6 +1150,25 @@ sub GetAuthorisedValueCategories {
         push @results, $category;
     }
     return \@results;
+}
+
+=head2 GetAuthorisedValueByCode
+
+$authhorised_value = GetAuthorisedValueByCode( $category, $authvalcode );
+
+Return an hashref of the authorised value represented by $authvalcode.
+
+=cut
+
+sub GetAuthorisedValueByCode {
+	my ( $category, $authvalcode ) = @_;
+	
+    my $dbh = C4::Context->dbh;
+    my $sth = $dbh->prepare("SELECT lib FROM authorised_values WHERE category=? AND authorised_value =?");
+    $sth->execute( $category, $authvalcode );
+     while ( my $data = $sth->fetchrow_hashref ) {
+     	return $data->{'lib'};
+     }
 }
 
 =head2 GetKohaAuthorisedValues

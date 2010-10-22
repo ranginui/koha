@@ -135,10 +135,10 @@ sub XSLTParse4Display {
 
     # grab the XML, run it through our stylesheet, push it out to the browser
     warn "bibnumber : ",$biblionumber;
-    
     my $record = transformMARCXML4XSLT( $biblionumber, $orig_record );
     warn "record : ",$record->as_formatted;
-
+	my $itemsimageurl = GetKohaImageurlFromAuthorisedValues( "CCODE", $orig_record->field('099')->subfield("t")) || '';
+	my $logoxml = "<logo>" . $itemsimageurl . "</logo>\n";
     #return $record->as_formatted();
     my $itemsxml  = buildKohaItemsNamespace($biblionumber);
     my $xmlrecord = $record->as_xml( C4::Context->preference('marcflavour') );
@@ -147,7 +147,7 @@ sub XSLTParse4Display {
         $sysxml .= "<syspref name=\"$syspref\">" . C4::Context->preference($syspref) . "</syspref>\n";
     }
     $sysxml .= "</sysprefs>\n";
-    $xmlrecord =~ s/\<\/record\>/$itemsxml$sysxml\<\/record\>/;
+    $xmlrecord =~ s/\<\/record\>/$itemsxml$sysxml$logoxml\<\/record\>/;
     $xmlrecord =~ s/\& /\&amp\; /;
     $xmlrecord =~ s/\&amp\;amp\; /\&amp\; /;
 
@@ -224,8 +224,9 @@ sub buildKohaItemsNamespace {
         }
         my $homebranch = $branches->{ $item->{homebranch} }->{'branchname'};
         my $itemcallnumber = $item->{itemcallnumber} || '';
+        my $itemlocation = GetAuthorisedValueByCode( "LOC", $item->{location}) || '';
         $itemcallnumber =~ s/\&/\&amp\;/g;
-        $xml .= "<item><homebranch>$homebranch</homebranch>" . "<status>$status</status>" . "<itemcallnumber>" . $itemcallnumber . "</itemcallnumber>" . "</item>";
+        $xml .= "<item><homebranch>$homebranch</homebranch><itemlocation>$itemlocation</itemlocation>" . "<status>$status</status>" . "<itemcallnumber>" . $itemcallnumber . "</itemcallnumber>" . "</item>";
 
     }
     $xml = "<items xmlns=\"http://www.koha.org/items\">" . $xml . "</items>";
