@@ -36,7 +36,6 @@ my $filefh = $input->param('uploadfile');
 my $recordslist = $input->param('recordslist');
 my $bib_list = $input->param('bib_list'); 
 my @biblionumbers;
-my @biblionumbers = split('/', $input->param('bib_list'));
 
 if ($filefh) {
     while ( my $biblionumber = <$filefh> ) {
