@@ -215,7 +215,7 @@ $(document).ready(function() {
     <ul>
         <!-- TMPL_IF NAME="borrowernotes" --><li><!-- TMPL_VAR NAME="borrowernotes" --> </li><!-- /TMPL_IF -->
         <!-- TMPL_IF NAME="userdebarred" -->
-            <li>Patron is restricted<!-- TMPL_IF NAME="userdebarreddate" --> until <!-- TMPL_VAR NAME="userdebarreddate" --> <!-- TMPL_IF NAME="debarredcomment"-->(<!-- TMPL_VAR NAME="debarredcomment" -->)<!-- /TMPL_IF --> <!-- /TMPL_IF -->
+            <li>Patron is restricted<!-- TMPL_IF NAME="userdebarreddate" --> until <!-- TMPL_VAR NAME="userdebarreddate" --> <!-- TMPL_IF NAME="debarredcomment" -->(<!-- TMPL_VAR NAME="debarredcomment" -->)<!-- /TMPL_IF --> <!-- /TMPL_IF -->
             <form class="inline compact" action="/cgi-bin/koha/members/setstatus.pl" method="post">
                 <input type="hidden" name="borrowernumber" value="<!-- TMPL_VAR NAME="borrowernumber" -->" />
                 <input type="submit" value="Lift Debarment" />
@@ -258,7 +258,7 @@ $(document).ready(function() {
 
 <p class="address">
 	<!-- TMPL_VAR NAME="address" --><br />
-        <!-- TMPL_IF NAME="address2" --><!-- TMPL_VAR NAME="address2"--><br /><!-- /TMPL_IF -->
+        <!-- TMPL_IF NAME="address2" --><!-- TMPL_VAR NAME="address2" --><br /><!-- /TMPL_IF -->
     	<!-- TMPL_IF NAME="city" --><!-- TMPL_VAR NAME="city" --><!-- /TMPL_IF -->
     	<!-- TMPL_IF NAME="zipcode" --><!-- TMPL_VAR NAME="zipcode" --><br /><!-- /TMPL_IF -->
 	<!-- TMPL_IF NAME="country" --><!-- TMPL_VAR NAME="country" --><!-- /TMPL_IF --></p>
@@ -274,14 +274,14 @@ $(document).ready(function() {
             <!-- TMPL_IF NAME="phonepro" --><li><span class="label">Work: </span><!-- TMPL_VAR NAME="phonepro" --></li><!-- /TMPL_IF -->
         <!-- /TMPL_IF -->
 
-    <!-- TMPL_IF NAME="P"-->
+    <!-- TMPL_IF NAME="P" -->
         <!-- TMPL_IF NAME="phone"  --><li><span class="label">Professional phone: </span><!-- TMPL_VAR NAME="phone" --></li><!-- /TMPL_IF -->
         <!-- TMPL_IF NAME="mobile" --><li><span class="label">Professional mobile: </span><!-- TMPL_VAR NAME="mobile" --></li><!-- /TMPL_IF -->
     <!-- /TMPL_IF -->   	
 	<!-- TMPL_IF NAME="fax" --><li><span class="label">Fax: </span><!-- TMPL_VAR NAME="fax" --></li><!-- /TMPL_IF -->
-    <!-- TMPL_UNLESS NAME="I"-->
+    <!-- TMPL_UNLESS NAME="I" -->
         <!-- TMPL_IF Name="email"    --><li><span class="label">Primary Email:</span><a href="mailto:<!-- TMPL_VAR NAME="email" -->"><!-- TMPL_VAR NAME="email" --></a></li><!-- /TMPL_IF -->
-        <!-- TMPL_IF Name="emailpro" --><li><span class="label">Secondary Email: </span><a href="mailto:<!-- TMPL_VAR NAME="emailpro" -->"><!-- TMPL_VAR NAME="emailpro" --></a></li><!--/TMPL_IF-->
+        <!-- TMPL_IF Name="emailpro" --><li><span class="label">Secondary Email: </span><a href="mailto:<!-- TMPL_VAR NAME="emailpro" -->"><!-- TMPL_VAR NAME="emailpro" --></a></li><!-- /TMPL_IF -->
     <!-- /TMPL_UNLESS -->
     <li><span class="label">Initials: </span><!-- TMPL_VAR NAME="initials" --></li>
     <li><span class="label">Date of birth:</span><!-- TMPL_VAR NAME="dateofbirth" --></li>
@@ -423,7 +423,7 @@ $(document).ready(function() {
  
  <div id="patron-alternate-address">
     <h3>Alternate Address</h3>
-    <!-- TMPL_UNLESS NAME="I"--><!-- TMPL_UNLESS NAME="C"-->
+    <!-- TMPL_UNLESS NAME="I" --><!-- TMPL_UNLESS NAME="C" -->
     <div class="rows">  <ol><li><span class="label">Address: </span><!-- TMPL_VAR NAME="B_address" --></li>
       <li><span class="label">Address 2: </span><!-- TMPL_VAR NAME="B_address2" --></li>
       <li><span class="label">City, State: </span><!-- TMPL_VAR NAME="B_city" --></li>
@@ -458,14 +458,14 @@ $(document).ready(function() {
 
 <div id="finesholdsissues" class="toptabs">
 	<ul>
-		<li><a href="/cgi-bin/koha/members/moremember.pl#checkedout"><!-- TMPL_VAR NAME="issuecount"--> Checkout(s)</a></li>
+		<li><a href="/cgi-bin/koha/members/moremember.pl#checkedout"><!-- TMPL_VAR NAME="issuecount" --> Checkout(s)</a></li>
 		<li><a href="/cgi-bin/koha/members/moremember.pl#finesandcharges">Fines &amp; Charges</a></li>
-		<li><!-- TMPL_IF NAME="countreserv"-->
-            <a href="/cgi-bin/koha/members/moremember.pl#onhold"><!--TMPL_VAR NAME="countreserv"--> Hold(s)</a>
+		<li><!-- TMPL_IF NAME="countreserv" -->
+            <a href="/cgi-bin/koha/members/moremember.pl#onhold"><!-- TMPL_VAR NAME="countreserv" --> Hold(s)</a>
     <!-- TMPL_ELSE -->
             <a href="/cgi-bin/koha/members/moremember.pl#onhold">0 Holds</a>
     <!-- /TMPL_IF --></li><!-- patron suggestions -->
-    <li><a href="/cgi-bin/koha/members/moremember.pl#suggestions"><!-- TMPL_VAR NAME="countsuggestions"--> purchase suggestion(s)</a></li>
+    <li><a href="/cgi-bin/koha/members/moremember.pl#suggestions"><!-- TMPL_VAR NAME="countsuggestions" --> purchase suggestion(s)</a></li>
 	</ul>
 <!-- ###################### suggestions start ######################-->
 <div id="suggestions"><!-- TMPL_IF name="boolsuggestions" -->
@@ -483,10 +483,10 @@ $(document).ready(function() {
             <th>Status</th></tr>
     </thead>
         <tbody>
-        <!--TMPL_LOOP Name="suggestions"--><!-- TMPL_LOOP NAME="suggestions_loop" -->
+        <!-- TMPL_LOOP Name="suggestions" --><!-- TMPL_LOOP NAME="suggestions_loop" -->
             <!-- TMPL_IF name="even" --><tr class="highlight"><!-- TMPL_ELSE --><tr><!-- /TMPL_IF -->
                 <td>
-                    <input type="checkbox" name="edit_field" value="<!--TMPL_VAR name="suggestionid" -->" />
+                    <input type="checkbox" name="edit_field" value="<!-- TMPL_VAR name="suggestionid" -->" />
                 </td>
                 <td>
                     <a href="/cgi-bin/koha/suggestion/suggestion.pl?suggestionid=<!-- TMPL_VAR NAME="suggestionid" -->&amp;op=edit&amp;returnsuggestedby=<!-- TMPL_VAR name="suggestedby" -->" title="suggestion" >
@@ -501,12 +501,12 @@ $(document).ready(function() {
                     <!-- TMPL_VAR name="note" -->
                 </td>
                 <td>
-                    <!--TMPL_IF Name="emailsuggestedby"--><a href="mailto:<!-- TMPL_VAR name="emailsuggestedby" -->"><!--/TMPL_IF--><!-- TMPL_VAR name="surnamesuggestedby" --><!-- TMPL_IF name="firstnamesuggestedby" -->, <!-- TMPL_VAR name="firstnamesuggestedby" --><!-- /TMPL_IF --> <!--TMPL_IF Name="emailsuggestedby"--></a><!--/TMPL_IF-->
-                    <!--TMPL_IF Name="suggesteddate"--> / <!-- TMPL_VAR name="suggesteddate" --><!--/TMPL_IF-->
+                    <!-- TMPL_IF Name="emailsuggestedby" --><a href="mailto:<!-- TMPL_VAR name="emailsuggestedby" -->"><!-- /TMPL_IF --><!-- TMPL_VAR name="surnamesuggestedby" --><!-- TMPL_IF name="firstnamesuggestedby" -->, <!-- TMPL_VAR name="firstnamesuggestedby" --><!-- /TMPL_IF --> <!-- TMPL_IF Name="emailsuggestedby" --></a><!-- /TMPL_IF -->
+                    <!-- TMPL_IF Name="suggesteddate" --> / <!-- TMPL_VAR name="suggesteddate" --><!-- /TMPL_IF -->
                 </td>
                 <td>
-                    <!--TMPL_IF Name="emailmanagedby"--><a href="mailto:<!-- TMPL_VAR name="emailmanagedby" -->"><!--/TMPL_IF--><!-- TMPL_VAR name="surnamemanagedby" --><!-- TMPL_IF name="firstnamemanagedby" -->, <!-- TMPL_VAR name="firstnamemanagedby" --><!-- /TMPL_IF --> <!--TMPL_IF Name="emailmanagedby"--></a><!--/TMPL_IF-->
-                    <!--TMPL_IF Name="manageddate"-->, <!-- TMPL_VAR name="manageddate" --><!--/TMPL_IF-->
+                    <!-- TMPL_IF Name="emailmanagedby" --><a href="mailto:<!-- TMPL_VAR name="emailmanagedby" -->"><!-- /TMPL_IF --><!-- TMPL_VAR name="surnamemanagedby" --><!-- TMPL_IF name="firstnamemanagedby" -->, <!-- TMPL_VAR name="firstnamemanagedby" --><!-- /TMPL_IF --> <!-- TMPL_IF Name="emailmanagedby" --></a><!-- /TMPL_IF -->
+                    <!-- TMPL_IF Name="manageddate" -->, <!-- TMPL_VAR name="manageddate" --><!-- /TMPL_IF -->
                 </td>
                 <td>
                     <!-- TMPL_VAR name="branchcode" -->
@@ -534,9 +534,9 @@ $(document).ready(function() {
 	</select>
     <label for="reasonallsuggestionforthisborrower">with this reason:</label>                 <select id="reasonallsuggestionforthisborrower" name="reasonallsuggestionforthisborrower">
                     <option value=""> -- Choose a reason -- </option>
-                        <!--TMPL_LOOP Name="reasonsloop"-->
-                        <option value="<!--TMPL_VAR Name="lib" -->"><!--TMPL_VAR Name="lib" --></option>
-                        <!--/TMPL_LOOP-->
+                        <!-- TMPL_LOOP Name="reasonsloop" -->
+                        <option value="<!-- TMPL_VAR Name="lib" -->"><!-- TMPL_VAR Name="lib" --></option>
+                        <!-- /TMPL_LOOP -->
                     <option value="other">Others...</option>
                     </select>   <span id="other_reasonallsuggestionforthisborrower">
             <input type="text" size="31" id="select-other_reasonallsuggestionforthisborrower" name="other_reasonallsuggestionforthisborrower" value="please note your reason here" /> <a href="#backallsuggestionforthisborrower">Cancel</a>
@@ -647,9 +647,9 @@ $(document).ready(function() {
             <td class="problem">Renewal Failed</td>
       <!-- TMPL_ELSE -->
             <td style="text-align : center"><span style="padding: 0 1em;">
-            <!-- TMPL_IF Name="norenew_reason_too_many"--><span class="problem"><!-- /TMPL_IF -->
+            <!-- TMPL_IF Name="norenew_reason_too_many" --><span class="problem"><!-- /TMPL_IF -->
             <!-- TMPL_VAR NAME="renewals" -->/<!-- TMPL_VAR NAME="renewalsallowed" -->
-            <!-- TMPL_IF Name="norenew_reason_too_many"--></span><!-- /TMPL_IF -->
+            <!-- TMPL_IF Name="norenew_reason_too_many" --></span><!-- /TMPL_IF -->
                 </span>
             <!-- TMPL_IF name="norenew" -->
                 <!-- TMPL_IF NAME="can_confirm" --><span class="renewals-allowed" style="display: none">
@@ -685,9 +685,9 @@ $(document).ready(function() {
       <!-- /TMPL_IF -->
       <!-- TMPL_IF NAME="return_failed" -->
             <td class="problem">Checkin Failed</td>
-      <!--TMPL_ELSE-->
+      <!-- TMPL_ELSE -->
             <td style="text-align:center;"><input type="checkbox" name="barcodes[]"  value="<!-- TMPL_VAR NAME="barcode" -->" onclick="uncheck_sibling(this);" />
-                <!-- TMPL_IF Name="reserved"--><br/><a href="javascript:void(0);" onclick="window.open('/cgi-bin/koha/reserve/request.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->')">On Hold</a><!-- /TMPL_IF -->
+                <!-- TMPL_IF Name="reserved" --><br/><a href="javascript:void(0);" onclick="window.open('/cgi-bin/koha/reserve/request.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->')">On Hold</a><!-- /TMPL_IF -->
             </td>
       <!-- /TMPL_IF -->
         </tr>
