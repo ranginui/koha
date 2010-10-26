@@ -250,7 +250,7 @@ if ($@ || $error) {
     exit;
 }
 
-# build filters
+# Rebuild filters hash from GET data
 my @fil = $cgi->param('filters');
 my %filters;
 for ( @fil ) {
@@ -259,6 +259,7 @@ for ( @fil ) {
 }
 $filters{'recordtype'} = 'biblio';
 
+# This array is used to build facets GUI
 my @tplfilters;
 while ( my ($k, $v) = each %filters) {
     $v =~ s/"//g;
@@ -279,12 +280,20 @@ my $pager = Data::Pagination->new(
     $page,
 );
 
+# This array is used to build pagination links
+my @pager_params = map { {
+    ind => 'filters',
+    val => $_->{'ind'}.':"'.$_->{'val'}.'"'
+} } @tplfilters;
+push @pager_params, { ind => 'q', val => $cgi->param('q') };
+
+# Pager template params
 $template->param(
     previous_page => $pager->{'prev_page'},
     next_page     => $pager->{'next_page'},
     PAGE_NUMBERS  => [ map { { page => $_, current => $_ == $page } } @{ $pager->{'numbers_of_set'} } ],
     current_page  => $page,
-    pager_params  => [ map { { ind => 'filters', val => $_->{'ind'}.':"'.$_->{'val'}.'"' } } @tplfilters ],
+    pager_params  => \@pager_params,
 );
 
 # populate results with records
