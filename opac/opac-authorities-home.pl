@@ -54,7 +54,7 @@ if ( $op eq "do_search" ) {
     my $results = SimpleSearch($value, $filters, $page, $count, $orderby);
 
     my $pager = Data::Pagination->new(
-        $results->{pager}->{total_entries},
+        $results->{'pager'}->{'total_entries'},
         $count,
         20,
         $page,
@@ -69,29 +69,25 @@ if ( $op eq "do_search" ) {
     } );
 
     $template->param(
-        previous_page => $pager->{prev_page},
-        next_page     => $pager->{next_page},
-        PAGE_NUMBERS  => [ map { { page => $_, current => $_ == $page } } @{$pager->{numbers_of_set}} ],
+        previous_page => $pager->{'prev_page'},
+        next_page     => $pager->{'next_page'},
+        PAGE_NUMBERS  => [ map { { page => $_, current => $_ == $page } } @{ $pager->{'numbers_of_set'} } ],
+        pager_params  => [ { ind => 'op'   , val => $op    },
+                           { ind => 'value', val => $value } ],
         current_page  => $page,
-        from          => $pager->{start_of_slice},
-        to            => $pager->{end_of_slice},
-        total         => $pager->{total_entries},
+        total         => $pager->{'total_entries'},
         value         => $value,
         orderby       => $orderby,
     );
 
-    my @resultrecords;
-    for ( @{$results->{items}} ) {
-        my $authrecord = GetAuthority( $_->{values}->{recordid} );
-
-        my $authority  = {
-           authid  => $_->{values}->{recordid},
-           summary => BuildSummary( $authrecord, $_->{values}->{recordid} ),
-           used    => CountUsage( $_->{values}->{recordid} ),
-        };
-
-        push @resultrecords, $authority;
-    }
+    my @resultrecords = map {
+        my $authrecord = GetAuthority( $_->{'values'}->{'recordid'} );
+        {
+            authid  => $_->{'values'}->{'recordid'},
+            summary => BuildSummary( $authrecord, $_->{'values'}->{'recordid'} ),
+            used    => CountUsage( $_->{'values'}->{'recordid'} ),
+        }
+    } @{ $results->{'items'} };
 
     $template->param( result => \@resultrecords );
 
