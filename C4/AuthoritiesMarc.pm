@@ -28,6 +28,7 @@ use C4::Search;
 use C4::AuthoritiesMarc::MARC21;
 use C4::AuthoritiesMarc::UNIMARC;
 use C4::Charset;
+use List::MoreUtils qw/none/;
 use C4::Debug;
 
 use vars qw($VERSION @ISA @EXPORT);
@@ -1462,6 +1463,11 @@ sub merge {
 		    }
 			$debug && warn @$subfield;
           	    push @newsubfields,@$subfield;
+		}
+		#filter to subfields which are not in the subfield
+		# and not in 1245678
+		for my $subf (grep {my $subftag=$_->[0];$subftag !~m/[1245678]/ and none {$subftag eq $_}@newsubfields }@record_to){
+		   push @newsubfields,@$subf;
 		}
 		if ($update){
                 my $field_to=MARC::Field->new(($tag_to?$tag_to:$tag),$field->indicator(1),$field->indicator(2),@newsubfields);
