@@ -500,16 +500,17 @@ sub GetBudgetHierarchy {
     my @bind_params;
     my $dbh   = C4::Context->dbh;
     my $query = qq|
-                    SELECT aqbudgets.*
-                    FROM aqbudgets |;
-
+                    SELECT aqbudgets.*, aqbudgetperiods.budget_period_active
+                    FROM aqbudgets 
+                    JOIN aqbudgetperiods USING (budget_period_id)|;
+                        
     # show only period X if requested
     my @where_strings;
     if ($budget_period_id) {
         push @where_strings, " aqbudgets.budget_period_id = ?";
         push @bind_params,   $budget_period_id;
     }
-
+    
     # show only budgets owned by me, my branch or everyone
     if ($owner) {
         if ($branchcode) {
