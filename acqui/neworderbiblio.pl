@@ -108,7 +108,8 @@ $template->param(
     next_page     => $pager->{'next_page'},
     PAGE_NUMBERS  => [ map { { page => $_, current => $_ == $page } } @{ $pager->{'numbers_of_set'} } ],
     current_page  => $page,
-    pager_params  => [ { ind => 'basketno',     val => $basketno           },
+    pager_params  => [ { ind => 'q'           , val => $query              },
+                       { ind => 'basketno'    , val => $basketno           },
                        { ind => 'booksellerid', val => $bookseller->{'id'} }, ]
 );
 

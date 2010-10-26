@@ -285,7 +285,8 @@ my @pager_params = map { {
     ind => 'filters',
     val => $_->{'ind'}.':"'.$_->{'val'}.'"'
 } } @tplfilters;
-push @pager_params, { ind => 'q', val => $cgi->param('q') };
+push @pager_params, { ind => 'q'      , val => $cgi->param('q') };
+push @pager_params, { ind => 'sort_by', val => $sort_by };
 
 # Pager template params
 $template->param(
