@@ -273,17 +273,18 @@ $template->param('filters' => \@tplfilters );
 my $res = SimpleSearch( $cgi->param('q'), \%filters, $page, $count, $sort_by);
 
 my $pager = Data::Pagination->new(
-               $res->{pager}->{total_entries},
-               $count,
-               20,
-               $page,
-            );
+    $res->{'pager'}->{'total_entries'},
+    $count,
+    20,
+    $page,
+);
 
 $template->param(
-   previous_page => $pager->{prev_page},
-   next_page     => $pager->{next_page},
-   PAGE_NUMBERS  => [ map { { page => $_, filters => \@tplfilters, current => $_ == $page } } @{$pager->{numbers_of_set}} ],
-   current_page  => $page,
+    previous_page => $pager->{'prev_page'},
+    next_page     => $pager->{'next_page'},
+    PAGE_NUMBERS  => [ map { { page => $_, current => $_ == $page } } @{ $pager->{'numbers_of_set'} } ],
+    current_page  => $page,
+    pager_params  => [ map { { ind => 'filters', val => $_->{'ind'}.':"'.$_->{'val'}.'"' } } @tplfilters ],
 );
 
 # populate results with records
