@@ -1,0 +1,123 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>UNIMARC_Field cote builder</title>
+</head>
+<body>
+<form name="f_pop">
+<table>
+    <tr>
+        <td>cn_part1</td>
+        
+        <td>
+        <!-- TMPL_LOOP NAME="cn_part1" -->
+        <!-- /TMPL_LOOP -->
+        <select name="cn_part1">
+        <!-- TMPL_LOOP NAME="cn_part1" -->
+        <option value="<!-- TMPL_VAR NAME="authorised_value" -->"><!-- TMPL_VAR NAME="authorised_value" --></option>
+        <!-- /TMPL_LOOP -->
+        </select></td>
+    </tr>
+    <tr>
+        <td>cn_part2</td>
+        
+        <td>
+        <!-- TMPL_LOOP NAME="cn_part2" -->
+        <!-- /TMPL_LOOP -->
+        <select name="cn_part2">
+        <!-- TMPL_LOOP NAME="cn_part2" -->
+        <option value="<!-- TMPL_VAR NAME="authorised_value" -->"><!-- TMPL_VAR NAME="authorised_value" --></option>
+        <!-- /TMPL_LOOP -->
+        </select></td>
+    </tr>
+    <tr>
+        <td>cn_part3</td>
+        
+        <td>
+        <!-- TMPL_LOOP NAME="cn_part3" -->
+        <!-- /TMPL_LOOP -->
+        <select name="cn_part3">
+        <!-- TMPL_LOOP NAME="cn_part3" -->
+        <option value="<!-- TMPL_VAR NAME="authorised_value" -->"><!-- TMPL_VAR NAME="authorised_value" --></option>
+        <!-- /TMPL_LOOP -->
+        </select></td>
+    </tr>
+    <tr>
+        <td>cn_part4</td>
+        
+        <td>
+        <!-- TMPL_LOOP NAME="cn_part4" -->
+        <!-- /TMPL_LOOP -->
+        <select name="cn_part4">
+        <!-- TMPL_LOOP NAME="cn_part4" -->
+        <option value="<!-- TMPL_VAR NAME="authorised_value" -->"><!-- TMPL_VAR NAME="authorised_value" --></option>
+        <!-- /TMPL_LOOP -->
+        </select></td>
+    </tr>
+    <tr>
+        <td>Dewey</td>
+        <td><input type="text" id="dewey" name="dewey" value="" size="50" />
+        </td>
+    </tr>
+    <tr>
+        <td>Element_cote</td>
+        <td><input type="text" id="element_cote" name="element_cote" value="" size="50" />
+        </td>
+    </tr>
+    
+    <tr><td colspan="2"><input type="button" value="OK"  onclick="report();" /></td></tr>
+</table>
+</form>
+<script type="text/javascript" language="javascript">
+
+//     GetPublicationDate(); // running directly.
+// 
+//     /**
+//      *  GetPublicationDate.
+//      *  This function get the publication date if it's writen on 210d
+//      */
+//     function GetPublicationDate() {
+//         var PublicationDate = null;
+//         
+//         for (i=0 ; i<NbFields ; i++) {
+//             if (doc.f.tag[i].value == '210' && doc.f.subfield[i].value == 'd') {
+//                 if (doc.f.field_value[i].value != ""){
+//                     PublicationDate = doc.f.field_value[i].value;
+//                     document.getElementById('pubdate1').value = PublicationDate;
+//                 }
+//                 return;
+//             }
+//         }
+//     }
+//     
+//     /**
+//      *  SetPublicationDate.
+//      *  This function set the publication date here
+//      */
+//     function SetPublicationDate() {
+//         var PublicationDate = document.getElementById('pubdate1').value;
+//         if (PublicationDate == "    " || !PublicationDate){
+//             return ;
+//         }
+//         for (i=0 ; i<NbFields ; i++) {
+//             if (doc.f.tag[i].value == '210' && doc.f.subfield[i].value == 'd') {
+//                 doc.f.field_value[i].value = PublicationDate;
+//                 break;
+//             }
+//         }
+//     }
+    
+    function report() {
+        var doc   = opener.document;
+        var field = doc.getElementById("<!-- TMPL_VAR NAME='index'-->");
+        field.value= document.f_pop.cn_part1.value+document.f_pop.cn_part2.value+document.f_pop.cn_part3.value+document.f_pop.cn_part4.value+document.f_pop.dewey.value+document.f_pop.element_cote.value;
+//         SetPublicationDate();
+        self.close();
+        return false;
+    }
+</script>
+</body>
+</html>
