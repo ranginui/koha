@@ -69,6 +69,16 @@ $(document).ready(function()
             }
         });
         <!-- /TMPL_IF -->
+        
+        $('#showallbudgets').click(function() {
+            if ( $('#budget_id .b_inactive').is(":visible") )
+            {
+            $('#budget_id .b_inactive').hide();
+            }
+            else {
+            $('#budget_id .b_inactive').show();
+            }
+        });
     });
 //]]>
 </script>
@@ -278,11 +288,13 @@ $(document).ready(function()
                     <!-- TMPL_IF NAME="b_sel" -->
                         <option value="<!-- TMPL_VAR NAME='b_id' -->" selected="selected"><!-- TMPL_VAR NAME="b_txt" --></option>
                     <!-- TMPL_ELSE -->
-                        <option value="<!-- TMPL_VAR NAME='b_id' -->"><!-- TMPL_VAR NAME="b_txt" --></option>
+                        <!-- TMPL_IF NAME="b_active" --><option value="<!-- TMPL_VAR NAME='b_id' -->"><!-- TMPL_VAR NAME="b_txt" --></option>
+                        <!-- TMPL_ELSE --><option value="<!-- TMPL_VAR NAME='b_id' -->" class="b_inactive" style="display : none;"><!-- TMPL_VAR NAME="b_txt" --></option>    
+                        <!-- /TMPL_IF -->
                     <!-- /TMPL_IF -->
                 <!-- /TMPL_LOOP -->
                 </select>
-                <!--/TMPL_IF-->
+                <!--/TMPL_IF--> <span class="label">&nbsp;Show all :</span><input type="checkbox" id="showallbudgets" />
             </li>
             <li>
                 <!-- TMPL_IF name="close" -->
