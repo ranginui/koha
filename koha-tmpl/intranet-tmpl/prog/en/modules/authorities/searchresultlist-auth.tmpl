@@ -2,84 +2,53 @@
 <title>Koha &rsaquo; Cataloging Authority Plugin</title>
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
 <style type="text/css">
-#custom-doc { width:51.46em;*width:50.17em;min-width:675px; margin:auto; text-align:left; } 
+    #custom-doc { width:51.46em;*width:50.17em;min-width:675px; margin:auto; text-align:left; }
 </style>
 <script type="text/javascript">
-
-function jumpfull(page)
-{	
-    window.open(page,'','fullscreen,scrollbars');
-}
+    function jumpfull(page) {
+        window.open(page,'','fullscreen,scrollbars');
+    }
 </script>
 </head>
+
 <body>
 <div id="custom-doc" class="yui-t7">
-
-   <div id="bd">
-           <div id="yui-main">
-	           <div class="yui-b"><div class="yui-g">
-
-    	<h1>Authority search results</h1>
-    	<!-- TMPL_INCLUDE NAME="auth-finder-search.inc" -->
-    	<!-- TMPL_IF name="total" -->
-            <p><b>Results <!-- TMPL_VAR NAME="from" --> to <!-- TMPL_VAR NAME="to" --> of <!-- TMPL_VAR NAME="total" --></b></p>
-        <!-- TMPL_ELSE -->
-            </div><p>No results found</p>
-        <!-- /TMPL_IF -->
-        </div>
-        <!-- TMPL_IF NAME="result" --><div id="resultlist">
-            <table>
-                <tr>
-                    <th>Summary</th>
-                    <th>Used</th>
-                    <th>Get It!</th>
-                    <th>Other action</th>
-                </tr>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>
-                        <a href="javascript:jumpfull('blinddetail-biblio-search.pl?authid=0&amp;index=<!-- TMPL_VAR NAME="index" -->')" class="button">
-                            Clear
-                        </a>
-                    </td>
-                    <td>&nbsp;</td>
-                </tr>
-                <!-- TMPL_LOOP NAME="result" -->
-                    <tr>
-                        <td><!-- TMPL_VAR NAME="summary" --></td>
-                        <td><!-- TMPL_VAR NAME="used" --> times</td>
-                        <td>
-                            <a href="javascript:jumpfull('blinddetail-biblio-search.pl?authid=<!-- TMPL_VAR NAME="authid" -->&amp;index=<!-- TMPL_VAR NAME="index" -->')">choose</a>
-                        </td>
-                        <td><a href="authorities.pl?authid=<!-- TMPL_VAR NAME="authid" -->">Edit authority</a></td>
-                    </tr>
-                <!-- /TMPL_LOOP -->
-            </table>
-    
-        </div>
-        <div id="resultnumber">
-            <!-- TMPL_IF name="previous_page" -->
-                    <a href="auth_finder.pl?value_mainstr=<!-- TMPL_VAR NAME="value_mainstr" ESCAPE="URL" -->&amp;authtypecode=<!-- TMPL_VAR ESCAPE="URL" NAME="authtypecode" -->&amp;index=<!-- TMPL_VAR ESCAPE="URL" NAME="index" -->&amp;tagid=<!-- TMPL_VAR ESCAPE="URL" name="tagid" -->&amp;orderby=<!-- TMPL_VAR ESCAPE="URL" NAME="orderby" -->&amp;page=<!-- TMPL_VAR ESCAPE="URL" NAME="previous_page" -->">
-                        &lt;&lt;
-                    </a>
-                <!-- /TMPL_IF -->
-                <!-- TMPL_LOOP NAME="PAGE_NUMBERS" -->
-                    <!-- TMPL_IF name="current" -->
-                        <!-- TMPL_VAR NAME="page" -->
+    <div id="bd">
+        <div id="yui-main">
+            <div class="yui-b">
+                <div class="yui-g">
+                    <h1>Authority search results</h1>
+                    <!-- TMPL_INCLUDE NAME="auth-finder-search.inc" -->
+                    <!-- TMPL_IF name="total" -->
+                        <p><b><!-- TMPL_VAR NAME="total" --> results</b></p>
                     <!-- TMPL_ELSE -->
-                        <a href="auth_finder.pl?value_mainstr=<!-- TMPL_VAR NAME="value_mainstr" ESCAPE="URL" -->&amp;authtypecode=<!-- TMPL_VAR ESCAPE="URL" NAME="authtypecode" -->&amp;index=<!-- TMPL_VAR ESCAPE="URL" NAME="index" -->&amp;tagid=<!-- TMPL_VAR ESCAPE="URL" name="tagid" -->&amp;orderby=<!-- TMPL_VAR ESCAPE="URL" NAME="orderby" -->&amp;page=<!-- TMPL_VAR ESCAPE="URL" NAME="page" -->">
-                            <!-- TMPL_VAR NAME="page" --></a>
+                        <p>No results found</p>
                     <!-- /TMPL_IF -->
-                <!-- /TMPL_LOOP -->
-                <!-- TMPL_IF name="next_page" -->
-                    <a href="auth_finder.pl?value_mainstr=<!-- TMPL_VAR NAME="value_mainstr" ESCAPE="URL" -->&amp;authtypecode=<!-- TMPL_VAR ESCAPE="URL" NAME="authtypecode" -->&amp;index=<!-- TMPL_VAR ESCAPE="URL" NAME="index" -->&amp;tagid=<!-- TMPL_VAR ESCAPE="URL" name="tagid" -->&amp;orderby=<!-- TMPL_VAR ESCAPE="URL" NAME="orderby" -->&amp;page=<!-- TMPL_VAR ESCAPE="URL" NAME="next_page" -->">
-                        &gt;&gt;</a>
+                </div>
+                <!-- TMPL_IF NAME="result" -->
+                    <!-- TMPL_INCLUDE NAME="page-numbers.inc" -->
+                        <div id="resultlist">
+                        <table>
+                            <tr>
+                                <th>Summary</th>
+                                <th>Used</th>
+                                <th>Get It!</th>
+                                <th>Other action</th>
+                            </tr>
+                            <!-- TMPL_LOOP NAME="result" -->
+                                <tr>
+                                    <td><!-- TMPL_VAR NAME="summary" --></td>
+                                    <td><!-- TMPL_VAR NAME="used" --> times</td>
+                                    <td><a href="javascript:jumpfull('blinddetail-biblio-search.pl?authid=<!-- TMPL_VAR NAME="authid" -->&amp;index=<!-- TMPL_VAR NAME="index" -->')">choose</a></td>
+                                    <td><a href="authorities.pl?authid=<!-- TMPL_VAR NAME="authid" -->">Edit authority</a></td>
+                                </tr>
+                            <!-- /TMPL_LOOP -->
+                        </table>
+                    </div>
                 <!-- /TMPL_IF -->
-        </div><!-- /TMPL_IF -->
-</div>
-</div>
-</div>
-</div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <!-- TMPL_INCLUDE NAME="popup-bottom.inc" -->

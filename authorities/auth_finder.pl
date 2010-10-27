@@ -1,5 +1,4 @@
 #!/usr/bin/perl
-# WARNING: 4-character tab stops here
 
 # Copyright 2000-2002 Katipo Communications
 #
@@ -27,11 +26,12 @@ use C4::Auth;
 use C4::Context;
 use C4::AuthoritiesMarc;
 use C4::Acquisition;
-use C4::Koha;    # XXX subfield_is_koha_internal_p
+use C4::Koha;
 use C4::Search;
 use Data::Pagination;
 
 my $query        = new CGI;
+my $searchquery  = $query->param('value_mainstr') || '*:*';
 my $authtypecode = $query->param('authtypecode');
 my $index        = $query->param('index');
 my $tagid        = $query->param('tagid');
@@ -41,84 +41,76 @@ my $dbh          = C4::Context->dbh;
 my ( $template, $loggedinuser, $cookie );
 
 my $authtypes = getauthtypes;
-my @authtypesloop;
-foreach my $thisauthtype ( keys %$authtypes ) {
-    my %row = (
-        value        => $thisauthtype,
-        selected     => ( $thisauthtype eq $authtypecode ),
-        authtypetext => $authtypes->{$thisauthtype}{'authtypetext'},
-        index        => $index,
-    );
-    push @authtypesloop, \%row;
-}
+my @authtypesloop = map { {
+    value        => $_,
+    selected     => ( $_ eq $authtypecode ),
+    authtypetext => $authtypes->{$_}->{'authtypetext'},
+    index        => $index,
+} } keys %$authtypes;
 
-if ( $query->param('value_mainstr') ) {
-    my $searchquery = $query->param('value_mainstr');
-    my $authtype    = $query->param('authtypecode');
+if ( $searchquery ) {
     my $orderby     = $query->param('orderby');
     my $page        = $query->param('page') || 1;
-    my $resultsperpage = 20;
+    my $count       = 20;
     
     my $filters = {
         recordtype => 'authority',
-        authtype   => $authtype,
+        authtype   => $authtypecode,
     };
 
-    my $results = SimpleSearch( $searchquery, $filters, $page, $resultsperpage, $orderby );
+    my $results = SimpleSearch( $searchquery, $filters, $page, $count, $orderby );
     
-    ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-        {   template_name   => "authorities/searchresultlist-auth.tmpl",
-            query           => $query,
-            type            => 'intranet',
-            authnotrequired => 0,
-            flagsrequired   => { catalogue => 1 },
-        }
-    );
+    ( $template, $loggedinuser, $cookie ) = get_template_and_user( {
+        template_name   => "authorities/searchresultlist-auth.tmpl",
+        query           => $query,
+        type            => 'intranet',
+        authnotrequired => 0,
+        flagsrequired   => { catalogue => 1 },
+    } );
 
-    my @resultdatas;
-    for (@{$results->{items}}) {
-        my $record = GetAuthority($_->{values}->{recordid});
-        push @resultdatas, {
-            authid  => $_->{values}->{recordid},
-            summary => BuildSummary($record, $_->{values}->{recordid}, $_->{values}->{sfield_authtype}),
-            used    => CountUsage($_->{values}->{recordid}),
-        };
-    }
+    my @resultdatas = map {
+        my $record = GetAuthority( $_->{'values'}->{'recordid'} );
+        {
+            authid  => $_->{'values'}->{'recordid'},
+            summary => BuildSummary( $record, $_->{'values'}->{'recordid'}, $_->{'values'}->{'sfield_authtype'} ),
+            used    => CountUsage( $_->{'values'}->{'recordid'} ),
+        }
+    } @{ $results->{items} };
 
     my $pager = Data::Pagination->new(
-                   $results->{pager}->{total_entries},
-                   $resultsperpage,
-                   20,
-                   $page,
-                );    
-
-    $template->param(
-        previous_page => $pager->{prev_page},
-        next_page     => $pager->{next_page},
-        PAGE_NUMBERS  => [ map { { page => $_, current => $_ == $page } } @{$pager->{numbers_of_set}} ],
-        current_page  => $page,
-        from          => $pager->{start_of_slice},
-        to            => $pager->{end_of_slice},
-        total         => $pager->{total_entries},
+        $results->{'pager'}->{'total_entries'},
+        $count,
+        20,
+        $page,
     );
 
-    
-    $template->param( result => \@resultdatas ) if $results;
+    my $pager_params = [
+        { ind => 'index'        , val => $index        },
+        { ind => 'authtypecode' , val => $authtypecode },
+        { ind => 'value_mainstr', val => $searchquery  },
+        { ind => 'order_by'     , val => $orderby      },
+    ];
+
     $template->param(
+        previous_page  => $pager->{'prev_page'},
+        next_page      => $pager->{'next_page'},
+        PAGE_NUMBERS   => [ map { { page => $_, current => $_ == $page } } @{ $pager->{'numbers_of_set'} } ],
+        current_page   => $page,
+        total          => $pager->{'total_entries'},
+        pager_params   => $pager_params,
+        result         => \@resultdatas,
         value_mainstr  => $searchquery,
         orderby        => $orderby,
-        resultsperpage => $resultsperpage,
         authtypecode   => $authtypecode,
     );
 } else {
-    ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-        {   template_name   => "authorities/auth_finder.tmpl",
-            query           => $query,
-            type            => 'intranet',
-            authnotrequired => 0,
-            flagsrequired   => { catalogue => 1 },
-        }
-    );
+    ( $template, $loggedinuser, $cookie ) = get_template_and_user( {
+        template_name   => "authorities/auth_finder.tmpl",
+        query           => $query,
+        type            => 'intranet',
+        authnotrequired => 0,
+        flagsrequired   => { catalogue => 1 },
+    } );
 
     $template->param( resultstring => $resultstring, );
 }
@@ -131,14 +123,7 @@ $template->param(
     index         => $index,
     authtypesloop => \@authtypesloop,
     authtypecode  => $authtypecode,
-    value_mainstr => $query->param('value_mainstr') || "",
-    value_main    => $query->param('value_main')    || "",
-    value_any     => $query->param('value_any')     || "",
 );
 
 # Print the page
 output_html_with_http_headers $query, $cookie, $template->output;
-
-# Local Variables:
-# tab-width: 4
-# End:
