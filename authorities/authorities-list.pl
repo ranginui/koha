@@ -22,11 +22,10 @@ my $dataauthorities = $data_query->fetchall_arrayref( {} );
 
 foreach my $authority (@$dataauthorities) {
     my $marcauthority = GetAuthority( $authority->{'authid'} );
-    my $query;
-    $query = "an=" . $authority->{'authid'};
 
     # search for biblios mapped
-    my ( $err, $res, $used ) = C4::Search::SimpleSearch( $query, 0, 10 );
+    my $used = CountUsage( $authority->{'authid'} );
+
     if ( $marcauthority && $marcauthority->field( $authtypes{ $authority->{'authtypecode'} }->{'tag'} ) ) {
         print qq("), $marcauthority->field( $authtypes{ $authority->{'authtypecode'} }->{"tag"} )->as_string(), qq(";), qq($authority->{'authid'};"),
           $authtypes{ $authority->{'authtypecode'} }->{'lib'}, qq(";$used\n);
