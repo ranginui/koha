@@ -66,11 +66,9 @@ my $counter      = 0;
 my $totdeleted   = 0;
 my $totundeleted = 0;
 while ( my $data = $rqselect->fetchrow_hashref ) {
-    my $query;
-    $query = "an=" . $data->{'authid'};
 
     # search for biblios mapped
-    my ( $err, $res, $used ) = C4::Search::SimpleSearch( $query, 0, 10 );
+    my $used = CountUsage( $data->{'authid'} );
     print ".";
     print "$counter\n" unless $counter++ % 100;
 
