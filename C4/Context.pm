@@ -556,7 +556,7 @@ sub set_preference {
     my $type = $dbh->selectrow_array( "SELECT type FROM systempreferences WHERE variable = ?", {}, $var );
 
     $value = 0 if ( $type && $type eq 'YesNo' && $value eq '' );
-
+    clear_syspref_cache;
     my $sth = $dbh->prepare( "
       INSERT INTO systempreferences
         ( variable, value )
