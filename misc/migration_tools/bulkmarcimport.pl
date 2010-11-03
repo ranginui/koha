@@ -286,16 +286,21 @@ RECORD: while () {
     $originalid = GetRecordId( $record, $tagid, $subfieldid );
     if ($match) {
         require C4::Search;
-        my $query = build_query( $match, $record );
-        my $server = ( $authorities ? 'authorityserver' : 'biblioserver' );
-        $debug && warn $query;
-        my ( $error, $results, $totalhits ) = C4::Search::SimpleSearch( $query, 0, 3, [$server] );
-        die "unable to search the database for duplicates : $error" if ( defined $error );
-        $debug && warn "$query $server : $totalhits";
-        if ( $results && scalar(@$results) == 1 ) {
-            my $marcrecord = MARC::File::USMARC::decode( $results->[0] );
+
+        my $recordtype = $authorities ? 'authority' : 'biblio';
+        my $filters = { recordtype => $recordtype };
+        for my $matchingpoint (@$match) {
+            my ( $ind, $val ) = split /,/, $matchingpoint;
+            $filters->{$ind} = $val;
+        }
+
+        my $results = C4::Search::SimpleSearch( '*:*', $filters );
+        my $totalhits = $results->{'pager'}->{'total_entries'};
+        $debug && warn "$query $recordtype : $totalhits";
+        if ( $results && $totalhits == 1 ) {
+            $id = $results->{'items'}->{'values'}->{'recordid'};
+            my $marcrecord = $authorities ? GetAuthority( $id ) : GetMarcBiblio( $id );
             SetUTF8Flag($marcrecord);
-            $id = GetRecordId( $marcrecord, $tagid, $subfieldid );
             if ( $authorities && $marcFlavour ) {
 
                 #Skip if authority in database is the same as the on in database
@@ -313,7 +318,7 @@ RECORD: while () {
                     next;
                 }
             }
-        } elsif ( $results && scalar(@$results) > 1 ) {
+        } elsif ( $results && $totalhits > 1 ) {
             $debug && warn "more than one match for $query";
         } else {
             $debug && warn "nomatch for $query";
@@ -495,31 +500,6 @@ sub GetRecordId {
         }
     }
     return $id;
-}
-
-sub build_query {
-    my $match  = shift;
-    my $record = shift;
-    my @searchstrings;
-    foreach my $matchingpoint (@$match) {
-        my $string = build_simplequery( $matchingpoint, $record );
-        push @searchstrings, $string if ( length($string) > 0 );
-    }
-    return join( " and ", @searchstrings );
-}
-
-sub build_simplequery {
-    my $element = shift;
-    my $record  = shift;
-    my ( $index, $recorddata ) = split /,/, $element;
-    my ( $tag, $subfields ) = ( $1, $2 ) if ( $recorddata =~ /(\d{3})(.*)/ );
-    my @searchstrings;
-    foreach my $field ( $record->field($tag) ) {
-        if ( length( $field->as_string("$subfields") ) > 0 ) {
-            push @searchstrings, "$index,wrdl=\"" . $field->as_string("$subfields") . "\"";
-        }
-    }
-    return join( " and ", @searchstrings );
 }
 
 sub report_item_errors {
