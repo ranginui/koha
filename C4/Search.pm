@@ -96,67 +96,42 @@ This function attempts to find duplicate records using a hard-coded, fairly simp
 =cut
 
 sub FindDuplicate {
-    my ($record) = @_;
+    my $record = shift;
     my $dbh = C4::Context->dbh;
     my $result = TransformMarcToKoha( $dbh, $record, '' );
-    my $sth;
-    my $query;
-    my $search;
-    my $type;
-    my ( $biblionumber, $title );
+    my ( $query, $search, $type, $biblionumber, $title );
 
     # search duplicate on ISBN, easy and fast..
     # ... normalize first
     if ( $result->{isbn} ) {
-        $result->{isbn} =~ s/\(.*$//;
-        $result->{isbn} =~ s/\s+$//;
-        $query = "isbn=$result->{isbn}";
+        $query = "sfield_isbn:\"$result->{isbn}\"";
     } else {
-        $result->{title} =~ s /\\//g;
-        $result->{title} =~ s /\"//g;
-        $result->{title} =~ s /\(//g;
-        $result->{title} =~ s /\)//g;
-
-        # FIXME: instead of removing operators, could just do
-        # quotes around the value
-        $result->{title} =~ s/(and|or|not)//g;
-        $query = "ti,ext=$result->{title}";
-        $query .= " and itemtype=$result->{itemtype}"
+        $query  = "sfield_title:\"$result->{title}\"";
+        $query .= " and sfield_itemtype:\"$result->{itemtype}\""
           if ( $result->{itemtype} );
         if ( $result->{author} ) {
-            $result->{author} =~ s /\\//g;
-            $result->{author} =~ s /\"//g;
-            $result->{author} =~ s /\(//g;
-            $result->{author} =~ s /\)//g;
-
-            # remove valid operators
-            $result->{author} =~ s/(and|or|not)//g;
-            $query .= " and au,ext=$result->{author}";
+            $query .= " and sfield_author:\"$result->{author}\"";
         }
     }
 
     # If unimarc, then search duplicate on EAN
     if ( C4::Context->preference("marcflavour") eq "UNIMARC" ) {
-	my @fields = $record->field('073');
-	foreach my $field (@fields) {
-	    my $ean = $field->subfield('a');
-	    $query .= " or ean=$ean";
+        for ( $record->field('073') ) {
+            $query .= ' or sfield_ean="'.$_->subfield('a').'"';
 	}
     }
 
-    # FIXME: add error handling
-    my ( $error, $searchresults ) = SimpleSearch($query);    # FIXME :: hardcoded !
-    my @results;
-    foreach my $possible_duplicate_record (@$searchresults) {
-        my $marcrecord = MARC::Record->new_from_usmarc($possible_duplicate_record);
-        my $result = TransformMarcToKoha( $dbh, $marcrecord, '' );
+    my $res = SimpleSearch($query);
 
-        # FIXME :: why 2 $biblionumber ?
-        if ($result) {
-            push @results, $result->{'biblionumber'};
-            push @results, $result->{'title'};
-        }
+    my @results;
+    for ( @{ $res->items } ) {
+        my $result = GetBiblio( $_->{'values'}->{'recordid'} );
+	if ( $result ) {
+	    push @results, $result->{'biblionumber'};
+	    push @results, $result->{'title'};
+	}
     }
+
     return @results;
 }
 
@@ -2709,6 +2684,8 @@ sub GetSearchPlugins {
 sub SimpleSearch {
     my ( $q, $filters, $page, $max_results, $sort) = @_;
 
+    $q           ||= '*:*';
+    $filters     ||= {};
     $page        ||= 1;
     $max_results ||= 999999999;
     $sort        ||= 'score desc';
@@ -2719,15 +2696,12 @@ sub SimpleSearch {
     $sc->options->{'facet.mincount'} = 1;
     $sc->options->{'facet.limit'}    = 10;
     $sc->options->{'facet.field'}    = GetFacetedIndexes($filters->{recordtype});
-    $sc->options->{'sort'}           = $sort =~ m/^score/ ? $sort : "sfield_$sort" || 'score desc';
+    $sc->options->{'sort'}           = $sort =~ /^score/ ? $sort : "sfield_$sort";
 
-    my @filterlist;
-    for ( keys %$filters ) {
-        my $index = ( m/^recordtype$/ ) ? $_ : "sfield_$_" ;
-        push @filterlist, "$index:" . $filters->{$_};
-    }
-
-    $sc->options->{'fq'} = \@filterlist;
+    $sc->options->{'fq'} = [ map {
+        my $index = /^recordtype$/ ? $_ : "sfield_$_" ;
+        "$index:" . $filters->{$_};
+    } keys %$filters ];
 
     my $sq = Data::SearchEngine::Query->new(
         page  => $page,
