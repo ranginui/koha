@@ -900,6 +900,9 @@ if ($biblionumber) {
 #-------------------------------------------------------------------------------------
 if ( $op eq "addbiblio" ) {
 #-------------------------------------------------------------------------------------
+    $template->param(
+        biblionumberdata => $biblionumber,
+    );
     # getting html input
     my @params = $input->param();
     $record = TransformHtmlToMarc( \@params , $input );
@@ -969,6 +972,10 @@ elsif ( $op eq "delete" ) {
    #----------------------------------------------------------------------------
    # If we're in a duplication case, we have to set to "" the biblionumber
    # as we'll save the biblio as a new one.
+    $template->param(
+        biblionumberdata => $biblionumber,
+        op               => $op
+    );
     if ( $op eq "duplicate" ) {
         $biblionumber = "";
     }
