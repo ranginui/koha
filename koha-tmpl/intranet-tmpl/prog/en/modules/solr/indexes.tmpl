@@ -12,6 +12,7 @@
         $('.add').click(function() {
             var code     = $('#code').val();
             var label    = $('#label').val();
+            var type     = $('#type').val();
             var faceted  = $('#faceted').attr('checked') ? 'checked="checked"' : '';
             var sortable = $('#sortable').attr('checked') ? 'checked="checked"' : '';
             var plugin   = $('#plugin').val();
@@ -22,6 +23,15 @@
 		    line += '<td></td>';
                     line += '<td><input name="code" maxlength="15" type="text" value="'+code+'" /\></td>';
                     line += '<td><input name="label" maxlength="15" type="text" value="'+label+'" /\></td>';
+                    line += '<td>';
+                    line += '<select name="type">';
+		    line += '<option value="str">String</option>';
+		    line += '<option value="txt">Text</option>';
+		    line += '<option value="int">Integer</option>';
+		    line += '<option value="bool">Boolean</option>';
+		    line += '<option value="date">Date</option>';
+                    line += '</select>';
+                    line += '</td>';
                     line += '<td><input name="faceted" type="checkbox" '+faceted+' value="'+code+'" /\></td>';
                     line += '<td><input name="sortable" type="checkbox" '+sortable+' value="'+code+'" /\></td>';
                     line += '<td><select name="plugin">';
@@ -96,6 +106,7 @@
 				    <th></th>
                                     <th>Code</th>
                                     <th>Label</th>
+                                    <th>Type</th>
                                     <th>Faceted</th>
                                     <th>Sortable</th>
                                     <th>Plugin</th>
@@ -116,6 +127,15 @@
                                             <input name="mandatory" type="hidden" maxlength="1" value="<!-- TMPL_VAR NAME="mandatory" -->" />
                                         </td>
                                         <td><input name="label" type="text" maxlength="15" value="<!-- TMPL_VAR NAME="label" -->" /></td>
+					<td>
+					    <select name="type">
+					        <option <!-- TMPL_IF EXPR="type eq 'str'" -->selected="selected"<!-- /TMPL_IF --> value="str">String</option>
+					        <option <!-- TMPL_IF EXPR="type eq 'txt'" -->selected="selected"<!-- /TMPL_IF --> value="txt">Text</option>
+					        <option <!-- TMPL_IF EXPR="type eq 'int'" -->selected="selected"<!-- /TMPL_IF --> value="int">Integer</option>
+					        <option <!-- TMPL_IF EXPR="type eq 'bool'" -->selected="selected"<!-- /TMPL_IF --> value="bool">Boolean</option>
+					        <option <!-- TMPL_IF EXPR="type eq 'date'" -->selected="selected"<!-- /TMPL_IF --> value="date">Date</option>
+					    </select>
+					</td>
                                         <td><input name="faceted" type="checkbox" <!-- TMPL_IF NAME="faceted" -->checked="checked"<!-- /TMPL_IF --> value="<!-- TMPL_VAR NAME="code" -->" /></td>
                                         <td><input name="sortable" type="checkbox" <!-- TMPL_IF NAME="sortable" -->checked="checked"<!-- /TMPL_IF --> value="<!-- TMPL_VAR NAME="code" -->" /></td>
                                         <td>
@@ -137,6 +157,15 @@
 				    <td></td>
                                     <td><input id="code" type="text" maxlength="15" /></td>
                                     <td><input id="label" type="text" maxlength="15" /></td>
+                                    <td>
+			                <select id="type">
+					    <option value="str">String</option>
+					    <option value="txt">Text</option>
+					    <option value="int">Integer</option>
+					    <option value="bool">Boolean</option>
+					    <option value="date">Date</option>
+			                </select>
+				    </td>
                                     <td><input id="faceted" type="checkbox" /></td>
                                     <td><input id="sortable" type="checkbox" /></td>
                                     <td>

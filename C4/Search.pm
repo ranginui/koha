@@ -2639,7 +2639,7 @@ sub IndexRecord {
                 }
             }
 
-            $solrrecord->set_value( "field_" . $index->{code}, \@values);
+            $solrrecord->set_value( $index->{type} . "_" . $index->{code}, \@values);
         }
         push @recordpush, $solrrecord;
 
@@ -2696,12 +2696,9 @@ sub SimpleSearch {
     $sc->options->{'facet.mincount'} = 1;
     $sc->options->{'facet.limit'}    = 10;
     $sc->options->{'facet.field'}    = GetFacetedIndexes($filters->{recordtype});
-    $sc->options->{'sort'}           = $sort =~ /^score/ ? $sort : "sfield_$sort";
+    $sc->options->{'sort'}           = $sort;
 
-    $sc->options->{'fq'} = [ map {
-        my $index = /^recordtype$/ ? $_ : "sfield_$_" ;
-        "$index:" . $filters->{$_};
-    } keys %$filters ];
+    $sc->options->{'fq'} = [ map { "$_:".$filters->{$_} } keys %$filters ];
 
     my $sq = Data::SearchEngine::Query->new(
         page  => $page,

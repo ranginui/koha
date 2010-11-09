@@ -112,7 +112,7 @@ sub CountUsage {
 
     my $results = C4::Search::SimpleSearch( "*:*", {
         recordtype => 'biblio',
-        authid     => shift,
+        int_authid => shift,
     } );
 
     return $results->pager->{total_entries};
