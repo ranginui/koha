@@ -2,7 +2,6 @@
 <schema name="Koha Bibliographic Index" version="1.1">
   <types>
     <fieldtype name="string" class="solr.StrField" sortMissingLast="true" omitNorms="true"/>
-    <fieldtype name="boolean" class="solr.BoolField" sortMissingLast="true" omitNorms="true"/>
     <fieldtype name="integer" class="solr.IntField" omitNorms="true"/>
     <!--<fieldtype name="sint" class="solr.SortableIntField" sortMissingLast="true" omitNorms="true"/>-->
     <fieldtype name="date" class="solr.DateField" sortMissingLast="true" omitNorms="true"/>
@@ -59,7 +58,6 @@
    <dynamicField name="str_*"  type="string" indexed="true" stored="true" multiValued="true"/>
    <dynamicField name="txt_*"  type="text" indexed="true" stored="true" multiValued="true"/>
    <dynamicField name="int_*"  type="integer" indexed="true" stored="true" multiValued="true"/>
-   <dynamicField name="bool_*" type="boolean" indexed="true" stored="true" multiValued="true"/>
    <dynamicField name="date_*" type="date" indexed="true" stored="true" multiValued="true"/>
 
  </fields>
