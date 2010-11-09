@@ -1,11 +1,14 @@
 <!-- TMPL_INCLUDE NAME="doc-head-open.inc" -->
 <title>Koha &rsaquo; Administration &rsaquo; Solr config</title>
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
+<script type="text/javascript" src="/intranet-tmpl/prog/en/lib/jquery/plugins/ui.sortable.js"></script>
 <script type="text/javascript" language="javascript">
     $(document).ready(function() {
         $('.delete').click(function() {
             $(this).parents('tr').remove();
         });
+        $('#indexes tbody').sortable();
+        $('#indexes tbody').disableSelection();
         $('.add').click(function() {
             var code     = $('#code').val();
             var label    = $('#label').val();
@@ -16,6 +19,7 @@
             if ( code != '' && label != '' ) {
             
                 var line  = '<tr>';
+		    line += '<td></td>';
                     line += '<td><input name="code" maxlength="15" type="text" value="'+code+'" /\></td>';
                     line += '<td><input name="label" maxlength="15" type="text" value="'+label+'" /\></td>';
                     line += '<td><input name="faceted" type="checkbox" '+faceted+' value="'+code+'" /\></td>';
@@ -89,6 +93,7 @@
                         <table id="indexes" class="zebra">
                             <thead>
                                 <tr>
+				    <th></th>
                                     <th>Code</th>
                                     <th>Label</th>
                                     <th>Faceted</th>
@@ -99,7 +104,8 @@
                             </thead>
                             <tbody>
                                 <!-- TMPL_LOOP NAME="indexloop" -->
-                                    <tr <!--TMPL_IF name="__odd__"-->class="highlight"<!--/TMPL_IF-->>
+                                    <tr>
+				        <td></td>
                                         <td>
                                             <!--TMPL_IF name="mandatory"-->
                                                 <input name="code" type="text" maxlength="15" value="<!-- TMPL_VAR NAME="code" -->" disabled="disabled" />
@@ -128,6 +134,7 @@
                             </tbody>
                             <tfoot>
                                 <tr>
+				    <td></td>
                                     <td><input id="code" type="text" maxlength="15" /></td>
                                     <td><input id="label" type="text" maxlength="15" /></td>
                                     <td><input id="faceted" type="checkbox" /></td>

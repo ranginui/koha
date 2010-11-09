@@ -2486,7 +2486,7 @@ sub GetRessourceTypes {
 
 sub GetIndexes {
     my $dbh = C4::Context->dbh;
-    my $sth = $dbh->prepare("SELECT * FROM indexes WHERE ressource_type = ? ORDER BY code");
+    my $sth = $dbh->prepare("SELECT * FROM indexes WHERE ressource_type = ?");
     $sth->execute(shift);
     return $sth->fetchall_arrayref({});
 }
@@ -2519,7 +2519,7 @@ sub SetIndexes {
     $sth->execute($ressource_type);
     my $query  = "INSERT INTO indexes (`code`,`label`,`faceted`,`ressource_type`,`mandatory`,`sortable`,`plugin`) VALUES ";
     my $i = 0;
-    for ( @$indexes ) {
+    for ( reverse @$indexes ) {
         $i++;
         $query .= "('".$_->{'code'}."','".$_->{'label'}."',".$_->{'faceted'}.",'".$ressource_type."',".$_->{'mandatory'}.",".$_->{'sortable'}.",'".$_->{'plugin'}."')";
         $query .= "," unless $i eq scalar(@$indexes);

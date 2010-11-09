@@ -45,8 +45,7 @@ if ( $input->param('op') and $input->param('op') eq 'edit' ) {
     my @sortable  = $input->param('sortable');
     my @plugin    = $input->param('plugin');
     my @mandatory = $input->param('mandatory');
-    #warn Data::Dumper::Dumper( $input );
-    #warn Data::Dumper::Dumper(\@code, \@label, \@faceted, \@mandatory,\@sortable);
+
     my @indexes;
     for ( 0..@code-1 ) {
         my $icode = $code[$_];
@@ -59,7 +58,6 @@ if ( $input->param('op') and $input->param('op') eq 'edit' ) {
             'mandatory' => $mandatory[$_] eq '1' ? '1' : '0',
         }
     }
-    warn Data::Dumper::Dumper(\@indexes);
     C4::Search::SetIndexes($ressource_type, \@indexes);
 }
 
