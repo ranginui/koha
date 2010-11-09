@@ -322,6 +322,7 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
     ( <!-- TMPL_VAR NAME="count" --> )</a>
    </li>
  <li> <a href="/cgi-bin/koha/opac-detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->#descriptions">Title Notes</a></li>
+ <li> <a href="/cgi-bin/koha/opac-detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->#openlibrary">Open Library</a></li>
 <!-- TMPL_IF NAME="SYNDETICS_TOC" -->
  <li> <a href="/cgi-bin/koha/opac-detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->#toc">TOC</a></li>
 <!-- /TMPL_IF -->
@@ -384,6 +385,27 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
 </div>
 <!-- /TMPL_IF -->
 
+<div id="openlibrary"></div>
+    <script type="text/javascript">
+      var json_results;
+      <!-- TMPL_LOOP NAME="MARCSUBJCTS" -->                                                                 
+      <!-- TMPL_LOOP NAME="MARCSUBJECT_SUBFIELDS_LOOP" -->
+      <!-- TMPL_IF EXPR="code eq 'a'" -->
+      json_results = "/cgi-bin/koha/openlibrary.pl?subject=<!-- TMPL_VAR NAME="value" -->"
+      $.getJSON(json_results, function(data){
+          $('#openlibrary').append("<b><!-- TMPL_VAR NAME="value" --></b><br />");
+          $.each(data.subjects, function(i,item){      
+              $('#openlibrary').append('<a href="/cgi-bin/koha/opac-search.pl?q=su:'+item.name + '">' + item.name + '</a>');
+              $('#openlibrary').append("<br />");
+          });
+      });
+
+      <!-- /TMPL_IF -->
+      <!-- /TMPL_LOOP -->
+
+      <!-- /TMPL_LOOP -->
+     </script>
+     
 <div id="holdings">
 <!-- TMPL_IF name="count" -->
     <!-- TMPL_IF name="lotsofitems" -->
