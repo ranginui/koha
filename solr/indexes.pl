@@ -41,6 +41,7 @@ my $ressource_type = $input->param('ressource_type') || 'biblio';
 if ( $input->param('op') and $input->param('op') eq 'edit' ) {
     my @code      = $input->param('code');
     my @label     = $input->param('label');
+    my @type      = $input->param('type');
     my @faceted   = $input->param('faceted');
     my @sortable  = $input->param('sortable');
     my @plugin    = $input->param('plugin');
@@ -52,6 +53,7 @@ if ( $input->param('op') and $input->param('op') eq 'edit' ) {
         push @indexes, {
             'code'      => $icode,
             'label'     => $label[$_],
+            'type'      => $type[$_],
             'faceted'   => scalar(grep(/$icode/, @faceted)),
             'sortable'  => scalar(grep(/$icode/, @sortable)),
             'plugin'    => $plugin[$_],
@@ -93,4 +95,3 @@ $template->param(
 );
 
 output_html_with_http_headers $input, $cookie, $template->output;
-

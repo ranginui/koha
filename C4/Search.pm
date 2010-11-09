@@ -2517,11 +2517,11 @@ sub SetIndexes {
     my $dbh = C4::Context->dbh;
     my $sth = $dbh->prepare("DELETE FROM indexes WHERE ressource_type = ?");
     $sth->execute($ressource_type);
-    my $query  = "INSERT INTO indexes (`code`,`label`,`faceted`,`ressource_type`,`mandatory`,`sortable`,`plugin`) VALUES ";
+    my $query  = "INSERT INTO indexes (`code`,`label`,`type`,`faceted`,`ressource_type`,`mandatory`,`sortable`,`plugin`) VALUES ";
     my $i = 0;
     for ( reverse @$indexes ) {
         $i++;
-        $query .= "('".$_->{'code'}."','".$_->{'label'}."',".$_->{'faceted'}.",'".$ressource_type."',".$_->{'mandatory'}.",".$_->{'sortable'}.",'".$_->{'plugin'}."')";
+        $query .= "('".$_->{'code'}."','".$_->{'label'}."','".$_->{'type'}."',".$_->{'faceted'}.",'".$ressource_type."',".$_->{'mandatory'}.",".$_->{'sortable'}.",'".$_->{'plugin'}."')";
         $query .= "," unless $i eq scalar(@$indexes);
     }
     my $sth2 = $dbh->prepare($query);
