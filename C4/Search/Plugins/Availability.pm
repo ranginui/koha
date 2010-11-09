@@ -30,8 +30,8 @@ sub ComputeValue {
     my ( $record ) = @_;
     my $availability = 1;
 
-    foreach my $field ( $record->field('995') ) {
-        $availability = 0 if ( $field->subfield('n') );
+    for ( $record->field('995') ) {
+        $availability = 0 if $_->subfield('n');
     }
 
     return ( $availability );
