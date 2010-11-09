@@ -177,6 +177,9 @@ function placeHold () {
                 <th>&nbsp;</th>
             </tr>
 		<!-- TMPL_LOOP NAME="itemsloop" -->
+		    <!-- TMPL_IF NAME="coins" -->
+			<!-- COinS / OpenURL --><span class="Z3988" title="<!-- TMPL_VAR NAME="coins" -->"></span>
+		    <!-- /TMPL_IF -->
 			<!-- TMPL_UNLESS NAME="__odd__" -->
 			<tr class="highlight">
 			<!-- TMPL_ELSE -->

@@ -1213,7 +1213,6 @@ sub GetCOinSBiblio {
 	    my $author = '';
 	    $author = $record->subfield($field, 'a') || '';
 	    $author .= ", "  . $record->subfield($field, 'b')              if ($author and $record->subfield($field, 'b'));
-	    $author .= " - " . join(' - ', $record->subfield($field, '4')) if ($record->subfield($field, '4'));
 	    $author .= " ("  . $record->subfield($field, 'f') . ")"        if ($record->subfield($field, 'f'));
 	    
 	    $oauthors .= "&amp;rft.au=$author" if ($author);
@@ -1223,7 +1222,6 @@ sub GetCOinSBiblio {
 	    my $author = '';
 	    $author = $record->subfield($field, 'a') || '';
 	    $author .= ", "  . $record->subfield($field, 'b')              if ($author and $record->subfield($field, 'b'));
-	    $author .= " - " . join(' - ', $record->subfield($field, '4')) if ($record->subfield($field, '4'));
 	    $author .= " ("  . $record->subfield($field, 'c') . ")"        if ($record->subfield($field, 'c'));
 	    
 	    $oauthors .= "&amp;rft.au=$author" if ($author);
