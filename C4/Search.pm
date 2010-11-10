@@ -104,20 +104,20 @@ sub FindDuplicate {
     # search duplicate on ISBN, easy and fast..
     # ... normalize first
     if ( $result->{isbn} ) {
-        $query = "sfield_isbn:\"$result->{isbn}\"";
+        $query = "str_isbn:\"$result->{isbn}\"";
     } else {
-        $query  = "sfield_title:\"$result->{title}\"";
-        $query .= " and sfield_itemtype:\"$result->{itemtype}\""
+        $query  = "txt_title:\"$result->{title}\"";
+        $query .= " and str_itemtype:\"$result->{itemtype}\""
           if ( $result->{itemtype} );
         if ( $result->{author} ) {
-            $query .= " and sfield_author:\"$result->{author}\"";
+            $query .= " and str_author:\"$result->{author}\"";
         }
     }
 
     # If unimarc, then search duplicate on EAN
     if ( C4::Context->preference("marcflavour") eq "UNIMARC" ) {
         for ( $record->field('073') ) {
-            $query .= ' or sfield_ean="'.$_->subfield('a').'"';
+            $query .= ' or str_ean="'.$_->subfield('a').'"';
 	}
     }
 
@@ -2500,13 +2500,13 @@ sub GetSortableIndexes {
 
 sub GetFacetedIndexes {
     my $dbh = C4::Context->dbh;
-    my $sth = $dbh->prepare("SELECT code FROM indexes WHERE faceted = 1 AND ressource_type = ? ORDER BY code");
+    my $sth = $dbh->prepare("SELECT `type`, `code` FROM indexes WHERE faceted = 1 AND ressource_type = ? ORDER BY code");
     $sth->execute(shift);
 
     my @indexes;
 
     while ( my $row = $sth->fetchrow_hashref() ) {
-       push @indexes, "sfield_" . $row->{code};
+       push @indexes, $row->{type}.'_'.$row->{code};
     }
 
     return \@indexes;

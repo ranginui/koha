@@ -131,8 +131,8 @@ $template->param( search_languages_loop => getAllLanguages() );
 my $sort_by = $cgi->param('sort_by') || C4::Context->preference('OPACdefaultSortField').' '. C4::Context->preference('OPACdefaultSortOrder');
 my $sortloop = C4::Search::GetSortableIndexes('biblio');
 for ( @$sortloop ) { # because html template is stupid
-    $_->{'asc_selected'}  = $sort_by eq $_->{'code'}.' asc';
-    $_->{'desc_selected'} = $sort_by eq $_->{'code'}.' desc';
+    $_->{'asc_selected'}  = $sort_by eq $_->{'type'}.'_'.$_->{'code'}.' asc';
+    $_->{'desc_selected'} = $sort_by eq $_->{'type'}.'_'.$_->{'code'}.' desc';
 }
 
 $template->param(
@@ -144,7 +144,7 @@ $template->param(
 my $itemtypes = GetItemTypes;
 
 # the index parameter is different for item-level itemtypes
-my $itype_or_itemtype = ( C4::Context->preference("item-level_itypes") ) ? 'itype' : 'itemtype';
+my $itype_or_itemtype = ( C4::Context->preference("item-level_itypes") ) ? 'str_itype' : 'str_itemtype';
 my @itemtypesloop;
 my $selected = 1;
 my $cnt;
@@ -154,7 +154,7 @@ if ( !$advanced_search_types or $advanced_search_types eq 'itemtypes' ) {
     foreach my $thisitemtype ( sort { $itemtypes->{$a}->{'description'} cmp $itemtypes->{$b}->{'description'} } keys %$itemtypes ) {
         my %row = (
             number      => $cnt++,
-            ccl         => $itype_or_itemtype,
+            index       => $itype_or_itemtype,
             code        => $thisitemtype,
             selected    => $selected,
             description => $itemtypes->{$thisitemtype}->{'description'},
@@ -305,7 +305,7 @@ my @facets;
 while ( my ($index,$facet) = each %{$res->facets} ) {
     if ( @$facet > 1 ) {
         my @values;
-        my $code = substr($index, 7);
+        my ($type, $code) = split /_/, $index;
 
         for ( my $i = 0 ; $i < scalar(@$facet) ; $i++ ) {
             my $value = $facet->[$i++];
@@ -315,13 +315,13 @@ while ( my ($index,$facet) = each %{$res->facets} ) {
             push @values, {
                 'value'   => $value,
                 'count'   => $count,
-                'active'  => $filters{$code} eq "\"$value\"", # TODO fails on diacritics
+                'active'  => $filters{$index} eq "\"$value\"",
                 'filters' => \@tplfilters,
             };
         }
+
         push @facets, {
             'index'  => $index,
-            'code'   => $code,
             'label'  => C4::Search::GetIndexLabelFromCode($code),
             'values' => \@values,
         };
@@ -336,7 +336,7 @@ $template->param(
     'facets_loop'    => \@facets,
     'query'          => $params->{'q'},
     'searchdesc'     => $params->{'q'} || @tplfilters,
-    'availability'   => $filters{'availability'},
+    'availability'   => $filters{'int_availability'},
 );
 
 # VI. BUILD THE TEMPLATE

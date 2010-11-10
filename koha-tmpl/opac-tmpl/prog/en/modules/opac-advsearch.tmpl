@@ -28,7 +28,7 @@
                         <select class="advsearch" name="idx">
                             <option value="all_fields">Keyword</option>
                             <!-- TMPL_LOOP NAME="indexloop" -->
-                                <option value="<!-- TMPL_VAR NAME="code" -->"><!-- TMPL_VAR NAME="label" --></option>
+                                <option value="<!-- TMPL_VAR NAME="type" -->_<!-- TMPL_VAR NAME="code" -->"><!-- TMPL_VAR NAME="label" --></option>
                             <!-- /TMPL_LOOP -->
                         </select>
                         <input type="text" size="30" name="q" title="Enter search terms" value="" />
@@ -58,8 +58,8 @@
                     <tr>
                         <!--TMPL_LOOP Name="itemtypeloop"-->
                             <td>
-                                <input type="checkbox" id="<!-- TMPL_VAR NAME="ccl" -->-<!--TMPL_VAR Name="number" -->" name="filters" value='<!-- TMPL_VAR NAME="ccl" -->:"<!--TMPL_VAR Name="description" -->"'/>
-                                <label for="<!-- TMPL_VAR NAME="ccl" -->-<!--TMPL_VAR Name="number" -->">
+                                <input type="checkbox" id="<!-- TMPL_VAR NAME="index" -->-<!--TMPL_VAR NAME="number" -->" name="filters" value='<!-- TMPL_VAR NAME="index" -->:"<!--TMPL_VAR NAME="description" -->"'/>
+                                <label for="<!-- TMPL_VAR NAME="index" -->-<!--TMPL_VAR NAME="number" -->">
                                     <!-- TMPL_IF name="imageurl"-->
                                     <img border="0" src="<!--TMPL_VAR Name="imageurl" -->" alt="<!--TMPL_VAR Name="description" -->" /><!-- /TMPL_IF -->&nbsp;
                                     <!--TMPL_VAR Name="description" -->
@@ -166,12 +166,12 @@
                         <select name="filters" id="branchloop">
                             <option value="">All libraries</option>
                             <!-- TMPL_LOOP NAME="branchloop" -->
-                                <option value='holdingbranch:"<!-- TMPL_VAR NAME="branchname" -->"' <!--TMPL_IF NAME="selected"-->selected="selected"<!--/TMPL_IF--> >
+                                <option value='str_holdingbranch:"<!-- TMPL_VAR NAME="branchname" -->"' <!--TMPL_IF NAME="selected"-->selected="selected"<!--/TMPL_IF--> >
                                     <!-- TMPL_VAR NAME="branchname" -->
                                 </option>
                             <!-- /TMPL_LOOP -->
                         </select>
-                        <div style="margin-top:.4em"><label for="available-items"><input type="checkbox" id="available-items" name="filters" value="availability:1" /> Only items currently available for loan or reference</label></div>
+                        <div style="margin-top:.4em"><label for="available-items"><input type="checkbox" id="available-items" name="filters" value="int_availability:1" /> Only items currently available for loan or reference</label></div>
                     </fieldset>
                 </div>
             <!-- /TMPL_UNLESS -->
