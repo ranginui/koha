@@ -12,7 +12,7 @@ $|=1; # flushes output
 my ( $reset, $number, $recordtype );
 GetOptions(
     'r'   => \$reset,
-    'n:i' => \$number,
+    'n:s' => \$number,
     't:s' => \$recordtype,
 );
 
