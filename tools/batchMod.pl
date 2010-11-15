@@ -151,13 +151,15 @@ if ( $op eq "action" ) {
         }
 
         if ($values_to_blank) {
+            my $index=0;
             foreach my $disabledsubf (@disabled) {
                 if ( $marcitem && $marcitem->field($itemtagfield) ) {
-                    $marcitem->field($itemtagfield)->update( $disabledsubf => "" );
+                    $marcitem->field($itemtagfield)->update( $subfields[$index] => "" ) if $disabledsubf;
                 } else {
                     $marcitem = MARC::Record->new();
-                    $marcitem->append_fields( MARC::Field->new( $itemtagfield, '', '', $disabledsubf => "" ) );
+                    $marcitem->append_fields( MARC::Field->new( $itemtagfield, '', '', $subfields[$index] => "" ) ) if $disabledsubf;
                 }
+            $index++;
             }
         }
         # For each item
@@ -589,7 +591,7 @@ sub UpdateMarcWith($$) {
     my @fields_to = $marcto->field($itemtag);
     foreach my $subfield ( $fieldfrom->subfields() ) {
         foreach my $field_to_update (@fields_to) {
-            if ( $subfield->[1] ne "" ) {
+            if ( $subfield->[1]) {
                 $field_to_update->update( $subfield->[0] => $subfield->[1] );
             } else {
                 $field_to_update->delete_subfield( code => $subfield->[0] );
