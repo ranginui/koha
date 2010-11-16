@@ -345,8 +345,8 @@ if ( $template_type eq 'advsearch' ) {
 my $sort_by = $cgi->param('sort_by') || C4::Context->preference('OPACdefaultSortField').' '. C4::Context->preference('OPACdefaultSortOrder');
 my $sortloop = C4::Search::GetSortableIndexes('biblio');
 for ( @$sortloop ) { # because html template is stupid
-    $_->{'asc_selected'}  = $sort_by eq $_->{'code'}.' asc';
-    $_->{'desc_selected'} = $sort_by eq $_->{'code'}.' desc';
+    $_->{'asc_selected'}  = $sort_by eq $_->{'type'}.'_'.$_->{'code'}.' asc';
+    $_->{'desc_selected'} = $sort_by eq $_->{'type'}.'_'.$_->{'code'}.' desc';
 }
 
 $template->param(
@@ -428,27 +428,26 @@ $template->param(
 );
 
 # populate results with records
-my @results = map { $_->id =~ m/(\d+)$/; GetBiblio( $1 ); } @{ $res->items };
+my @results = map { GetBiblio $_->{'values'}->{'recordid'} } @{ $res->items };
 
 # build facets
 my @facets;
 while ( my ($index,$facet) = each %{$res->facets} ) {
     if ( @$facet > 1 ) {
         my @values;
-        my $code = substr($index, 7);
+        my ($type, $code) = split /_/, $index;
         for ( my $i = 0 ; $i < scalar(@$facet) ; $i++ ) {
             my $value = $facet->[$i++];
             my $count = $facet->[$i];
             push @values, {
                 'value'   => $value,
                 'count'   => $count,
-                'active'  => $filters{$code} eq "\"$value\"", # TODO fails on diacritics
+                'active'  => $filters{$index} eq "\"$value\"", # TODO fails on diacritics
                 'filters' => \@tplfilters,
             };
         }
         push @facets, {
             'index'  => $index,
-            'code'   => $code,
             'label'  => C4::Search::GetIndexLabelFromCode($code),
             'values' => \@values,
         };
@@ -463,7 +462,7 @@ $template->param(
     'facets_loop'    => \@facets,
     'query'          => $params->{'q'},
     'searchdesc'     => $query_desc || $limit_desc,
-    'availability'   => $filters{'availability'},
+    'availability'   => $filters{'int_availability'},
 );
 
 # VI. BUILD THE TEMPLATE

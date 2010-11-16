@@ -15,8 +15,10 @@
                 <label for="orderby">Sort by </label>
                 <select name="orderby" id="orderby">
                     <option value="">No order</option>
-                    <option value="name asc" selected="selected">Heading Ascendant</option>
-                    <option value="name desc">Heading Descendant</option>
+                    <option value="txt_name asc" selected="selected">Heading Ascendant</option>
+                    <option value="txt_name desc">Heading Descendant</option>
+                    <option value="int_usedinxbiblios asc">Usage Ascendant</option>
+                    <option value="int_usedinxbiblios desc">Usage Descendant</option>
                 </select>
             </li>
         </ol>

@@ -10,7 +10,7 @@
 	                Showing only <strong>available</strong> items.
 	                <a href="/cgi-bin/koha/opac-search.pl?q=<!-- TMPL_VAR ESCAPE="URL" NAME="query" --><!-- TMPL_LOOP NAME="filters" --><!-- TMPL_UNLESS EXPR="ind eq 'int_availability'" -->&amp;filters=<!--TMPL_VAR ESCAPE="URL" NAME="ind"-->:&quot;<!--TMPL_VAR ESCAPE="URL" NAME="val"-->&quot;<!-- /TMPL_UNLESS --><!-- /TMPL_LOOP --><!-- TMPL_IF NAME="sort_by" -->&amp;sort_by=<!-- TMPL_VAR ESCAPE="URL" NAME="sort_by" --><!-- /TMPL_IF -->">Show all items</a>
 	                <!-- TMPL_ELSE -->
-	                Limit to <a href="/cgi-bin/koha/opac-search.pl?q=<!-- TMPL_VAR ESCAPE="URL" NAME="query" --><!-- TMPL_LOOP NAME="filters" --><!-- TMPL_UNLESS EXPR="ind eq code" -->&amp;filters=<!--TMPL_VAR ESCAPE="URL" NAME="ind"-->:&quot;<!--TMPL_VAR ESCAPE="URL" NAME="val"-->&quot;<!-- /TMPL_UNLESS --><!-- /TMPL_LOOP -->&amp;filters=int_availability:&quot;1&quot;<!-- TMPL_IF NAME="sort_by" -->&amp;sort_by=<!-- TMPL_VAR ESCAPE="URL" NAME="sort_by" --><!-- /TMPL_IF -->">currently available items.</a>
+	                Limit to <a href="/cgi-bin/koha/opac-search.pl?q=<!-- TMPL_VAR ESCAPE="URL" NAME="query" --><!-- TMPL_LOOP NAME="filters" --><!-- TMPL_UNLESS EXPR="ind eq index" -->&amp;filters=<!--TMPL_VAR ESCAPE="URL" NAME="ind"-->:&quot;<!--TMPL_VAR ESCAPE="URL" NAME="val"-->&quot;<!-- /TMPL_UNLESS --><!-- /TMPL_LOOP -->&amp;filters=int_availability:&quot;1&quot;<!-- TMPL_IF NAME="sort_by" -->&amp;sort_by=<!-- TMPL_VAR ESCAPE="URL" NAME="sort_by" --><!-- /TMPL_IF -->">currently available items.</a>
 	                <!-- /TMPL_IF -->
 	            </li>
 	        </ul>

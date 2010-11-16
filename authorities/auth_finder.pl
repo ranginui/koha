@@ -54,8 +54,8 @@ if ( $searchquery ) {
     my $count       = 20;
     
     my $filters = {
-        recordtype => 'authority',
-        authtype   => $authtypecode,
+        recordtype   => 'authority',
+        str_authtype => $authtypecode,
     };
 
     my $results = SimpleSearch( $searchquery, $filters, $page, $count, $orderby );
@@ -72,7 +72,7 @@ if ( $searchquery ) {
         my $record = GetAuthority( $_->{'values'}->{'recordid'} );
         {
             authid  => $_->{'values'}->{'recordid'},
-            summary => BuildSummary( $record, $_->{'values'}->{'recordid'}, $_->{'values'}->{'sfield_authtype'} ),
+            summary => BuildSummary( $record, $_->{'values'}->{'recordid'}, $_->{'values'}->{'str_authtype'} ),
             used    => CountUsage( $_->{'values'}->{'recordid'} ),
         }
     } @{ $results->{items} };

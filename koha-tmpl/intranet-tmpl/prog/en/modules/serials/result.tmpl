@@ -39,11 +39,12 @@
                         </tr>
                     <!-- /TMPL_LOOP -->
                 </table>
+
+                <!-- TMPL_INCLUDE NAME="page-numbers.inc" -->
+
             <!-- TMPL_ELSE -->
                 <h2>No results found for <b><!-- TMPL_VAR NAME="query" --></b></h2>
             <!-- /TMPL_IF-->
-
-            <!-- TMPL_INCLUDE NAME="page-numbers.inc" -->
 
            <p><a href="subscription-bib-search.pl">Search for another record</a></p>
            <fieldset class="action"><a class="button close" href="#">Close</a></fieldset>

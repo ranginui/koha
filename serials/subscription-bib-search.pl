@@ -64,7 +64,7 @@ my $dbh                   = C4::Context->dbh;
 my $count                 = 20;
 my $page                  = $input->param('page') || 1;
 my $advanced_search_types = C4::Context->preference("AdvancedSearchTypes");
-my $itype_or_itemtype     = C4::Context->preference("item-level_itypes") ? 'itype' : 'itemtype';
+my $itype_or_itemtype     = C4::Context->preference("item-level_itypes") ? 'str_itype' : 'str_itemtype';
 
 my ( $template, $loggedinuser, $cookie );
 
@@ -77,9 +77,9 @@ if ( $op eq "do_search" && $query ) {
     my $itemtypelimit = $input->param('itemtypelimit');
     if ( $itemtypelimit ) {
         if ( ! $advanced_search_types or $advanced_search_types eq 'itemtypes' ) {
-            $filters->{$itype_or_itemtype} = $itemtypelimit
+            $filters->{$itype_or_itemtype} = "\"$itemtypelimit\"";
         } else {
-            $filters->{$advanced_search_types} = $itemtypelimit
+            $filters->{$advanced_search_types} = "\"$itemtypelimit\"";
         }
     }
 

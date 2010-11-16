@@ -49,7 +49,7 @@ if ( $op eq "do_search" ) {
     my $count        = 20;
 
     my $filters = { recordtype => 'authority' };
-    $filters->{authtype} = $authtypecode if $authtypecode;
+    $filters->{'str_authtype'} = $authtypecode if $authtypecode;
 
     my $results = SimpleSearch($value, $filters, $page, $count, $orderby);
 

@@ -20,7 +20,9 @@
         <input id="value_anywhere" type="text" name="value" value="<!-- TMPL_VAR NAME="value" -->" />
         <select name="orderby">
             <option value="">None</option>
-            <option value="score asc" selected="selected">Relevance</option>
+            <option value="score desc" selected="selected">Relevance</option>
+            <option value="txt_name asc">Name</option>
+            <option value="int_usedinxbiblios desc">Usage</option>
          </select>
          <input type="submit" class="submit" value="Submit" />
     </form>
