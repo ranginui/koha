@@ -39,6 +39,8 @@ use POSIX qw(ceil floor strftime);
 use URI::Escape;
 use Storable qw(thaw freeze);
 use Data::Pagination;
+use C4::XSLT;
+use C4::Charset;
 
 # create a new CGI object
 # FIXME: no_undef_params needs to be tested
@@ -298,7 +300,20 @@ $template->param(
 );
 
 # populate results with records
-my @results = map { GetBiblio $_->{'values'}->{'recordid'} } @{ $res->items };
+my @results;
+for ( @{ $res->items } ) {
+    my $biblionumber = $_->{'values'}->{'recordid'};
+    my $result = GetBiblio( $biblionumber );
+    my $record = GetMarcBiblio( $biblionumber );
+
+    SetUTF8Flag( $record ) if $record;
+
+    if ( C4::Context->preference("OPACXSLTResultsDisplay") ) {
+        $result->{'OPACXSLTResultsRecord'} = XSLTParse4Display( $biblionumber, $record, C4::Context->preference("OPACXSLTResultsDisplay") );
+    }
+
+    push @results, $result;
+}
 
 # build facets
 my @facets;
