@@ -19,6 +19,7 @@ use strict;
 
 #use warnings; FIXME - Bug 2505
 require Exporter;
+use 5.10.0;
 use C4::Context;
 use C4::Biblio;    # GetMarcFromKohaField, GetBiblioData
 use C4::AuthoritiesMarc;
@@ -2564,7 +2565,13 @@ sub GetSubfieldsForIndex {
     my $dbh = C4::Context->dbh;
     my $sth = $dbh->prepare("SELECT field, subfield FROM indexmappings WHERE `index`=? ORDER BY field, subfield");
     $sth->execute($index);
-    return $sth->fetchrow_hashref;
+    my $arrayref = $sth->fetchall_arrayref({});
+
+    my $subfields;
+    for ( @$arrayref ) {
+        push @{ $subfields->{ $_->{'field'} } }, $_->{'subfield'};
+    }
+    return $subfields;
 }
 
 sub GetSolrConnection {
@@ -2587,9 +2594,9 @@ sub IndexRecord {
         my $frameworkcode;
         my $recordid = "${recordtype}_$id";
 
-        if($recordtype eq "authority") {
+        if ( $recordtype eq "authority" ) {
             $record = GetAuthority( $id );
-        } elsif ($recordtype eq "biblio") {
+        } elsif ( $recordtype eq "biblio" ) {
             $record = GetMarcBiblio( $id );
             $frameworkcode = GetFrameworkCode( $id );
         }
@@ -2608,47 +2615,61 @@ sub IndexRecord {
         for my $index ( @$indexes ) {
 
             my @values;
-            my $mapping = GetSubfieldsForIndex( $index->{code} );
+            my $mapping = GetSubfieldsForIndex( $index->{'code'} );
 
-            if ( $index->{plugin} ) {
-                my $plugin = $index->{plugin};
+            if ( $index->{'plugin'} ) {
+                my $plugin = $index->{'plugin'};
                 $plugin = LoadSearchPlugin( $plugin ) if $plugin;
                 @values = &$plugin( $record );
             } else {
-                for my $field( $record->field( $mapping->{field} ) ) {
-                    for my $subfield ( $field->subfield( $mapping->{subfield} ) ) {
+	        for my $mf ( keys %$mapping ) {
+                    for my $field ( $record->field( $mf ) ) {
+                        for my $ms ( @{ $mapping->{$mf} } ) {
+			    for my $subfieldvalue ( $field->subfield( $ms ) ) {
 
-                        # authorised values and branches management
-                        if ($recordtype eq "biblio") {
-                            my $structure = C4::MarcFramework::GetSubfieldStructure($mapping->{field},$mapping->{subfield},$frameworkcode);
-                            if ( $structure->{'authorised_value'} eq 'branches' ) {
-                                $subfield = GetBranchName($subfield);
-                            } elsif ( $structure->{'authorised_value'} eq 'itemtypes' ) {
-                                my $itemtype = getitemtypeinfo($subfield);
-                                $subfield = $itemtype->{'description'};
-                            } elsif ( $structure->{'authorised_value'} ne '' ) {
-                                my $authorisedvalues = GetAuthorisedValues($structure->{'authorised_value'},undef,undef);
-                                for ( @$authorisedvalues ) {
-                                    $subfield = $_->{lib} if $_->{authorised_value} eq $subfield;
-                                }
-                            }
-                        }
+				# authorised values and branches management
+				$subfieldvalue = FillSubfieldWithAuthorisedValues( $frameworkcode, $mf, $ms, $subfieldvalue ) if $recordtype eq "biblio";
 
-                        push @values, $subfield;
+				push @values, $subfieldvalue;
+			    }
+			}
                     }
-                }
+		}
             }
 
-            $solrrecord->set_value( $index->{type} . "_" . $index->{code}, \@values);
+            $solrrecord->set_value( $index->{'type'} . "_" . $index->{'code'}, \@values);
         }
         push @recordpush, $solrrecord;
 
-        if ( scalar(@recordpush) == 1000 ) {
+        if ( @recordpush == 5000 ) {
             $sc->add( \@recordpush );
             @recordpush = ();
         }
     }
     $sc->add( \@recordpush );
+}
+
+sub FillSubfieldWithAuthorisedValues {
+    my ( $frameworkcode, $fieldcode, $subfieldcode, $subfieldvalue ) = @_;
+
+    my $structure = C4::MarcFramework::GetSubfieldStructure( $fieldcode, $subfieldcode, $frameworkcode );
+
+    given ( $structure->{'authorised_value'} ) {
+        when( 'branches' ) {
+	    return GetBranchName( $subfieldvalue );
+	}
+	when( 'itemtypes' ) {
+	    my $itemtype = getitemtypeinfo( $subfieldvalue );
+	    return $itemtype->{'description'};
+	}
+	when( length ) {
+            my $authorisedvalues = GetAuthorisedValues( $structure->{'authorised_value'} );
+	    for ( @$authorisedvalues ) {
+	        return $_->{'lib'} if $_->{'authorised_value'} eq $subfieldvalue;
+            }
+	}
+    }
+    return $subfieldvalue;
 }
 
 sub DeleteRecordIndex {
