@@ -49,6 +49,7 @@ type_fees['F'] = '';
 type_fees['A'] = '';
 type_fees['N'] = '';
 type_fees['M'] = '';
+type_fees['REF'] = '';
 [% FOREACH invoice_types_loo IN invoice_types_loop %]
 type_fees['[% invoice_types_loo.authorised_value %]'] = "[% invoice_types_loo.lib %]";
 [% END %]
@@ -60,6 +61,7 @@ type_fees['[% invoice_types_loo.authorised_value %]'] = "[% invoice_types_loo.li
           <option value="A">Account Management Fee</option>
           <option value="N">New Card</option>
           <option value="M">Sundry</option>
+	  <option value="REF">Cash Refund</option>
           [% FOREACH invoice_types_loo IN invoice_types_loop %]
             <option value="[% invoice_types_loo.authorised_value %]">[% invoice_types_loo.authorised_value %]</option>
           [% END %]

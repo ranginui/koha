@@ -374,11 +374,11 @@ sub manualinvoice {
     if ( $type eq 'RR' ) {
 	$desc .= " Rental Reward";
     }
-    
-#    if ( $type eq 'REF' ) {
-#        $desc .= " Cash Refund";
-#        $amountleft = refund( '', $borrowernumber, $amount );
-#    }
+
+    if ( $type eq 'REF' ) {
+        $desc .= " Cash Refund";
+        $amountleft = refund( $borrowernumber, $amount );
+    }
     if (   ( $type eq 'L' )
         or ( $type eq 'F' )
         or ( $type eq 'A' )
