@@ -1378,8 +1378,14 @@ sub ModReserveCancelAll {
     my $nextreservinfo;
     my ( $itemnumber, $borrowernumber ) = @_;
 
+    #get reservenumber
+    my $dbh = C4::Context->dbh;
+    my $sth = $dbh->prepare("SELECT reservenumber FROM reserves WHERE itemnumber=? AND borrowernumber=?");
+    $sth->execute($itemnumber, $borrowernumber);
+    my ($reservenumber) = $sth->fetchrow;
+
     #step 1 : cancel the reservation
-    my $CancelReserve = CancelReserve( undef, $itemnumber, $borrowernumber );
+    my $CancelReserve = CancelReserve( $reservenumber);
 
     #step 2 launch the subroutine of the others reserves
     ( $messages, $nextreservinfo ) = GetOtherReserves($itemnumber);
@@ -1649,7 +1655,7 @@ sub _FixPriority {
     my ( $biblio, $borrowernumber, $rank, $ignoreSetLowestRank, $reservenumber ) = @_;
     my $dbh = C4::Context->dbh;
     if ( $rank eq "del" ) {
-        CancelReserve( $biblio, undef, $borrowernumber );
+        CancelReserve( $reservenumber, $biblio);
     }
     if ( $rank eq "W" || $rank eq "0" ) {
 
