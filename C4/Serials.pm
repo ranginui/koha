@@ -918,7 +918,7 @@ sub GetExpirationDate {
     my @date = split( /-/, $enddate );
     return if ( scalar(@date) != 3 || not check_date(@date) );
     if ( ( $subscription->{periodicity} % 16 ) > 0 ) {
-
+ 
         # If Not Irregular
         if ( my $length = $subscription->{numberlength} ) {
 
@@ -2208,7 +2208,7 @@ sub GetNextDate(@) {
 
     #   1  week
     if ( $subscription->{periodicity} == 2 ) {
-        my ( $wkno, $year ) = eval { Week_of_Year( $year, $month, $day ) };
+        my ( $wkno, $yearweek ) = eval { Week_of_Year( $year, $month, $day ) };
         if ($@) { warn "year month day : $year $month $day $subscription->{subscriptionid} : $@"; }
         else {
             for ( my $i = 0 ; $i < @irreg ; $i++ ) {
@@ -2225,7 +2225,7 @@ sub GetNextDate(@) {
 
     #   1 / 2 weeks
     if ( $subscription->{periodicity} == 3 ) {
-        my ( $wkno, $year ) = eval { Week_of_Year( $year, $month, $day ) };
+        my ( $wkno, $yearweek ) = eval { Week_of_Year( $year, $month, $day ) };
         if ($@) { warn "year month day : $year $month $day $subscription->{subscriptionid} : $@"; }
         else {
             for ( my $i = 0 ; $i < @irreg ; $i++ ) {
@@ -2241,7 +2241,7 @@ sub GetNextDate(@) {
 
     #   1 / 3 weeks
     if ( $subscription->{periodicity} == 4 ) {
-        my ( $wkno, $year ) = eval { Week_of_Year( $year, $month, $day ) };
+        my ( $wkno, $yearweek ) = eval { Week_of_Year( $year, $month, $day ) };
         if ($@) { warn "année mois jour : $year $month $day $subscription->{subscriptionid} : $@"; }
         else {
             for ( my $i = 0 ; $i < @irreg ; $i++ ) {
