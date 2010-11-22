@@ -3395,7 +3395,6 @@ $DBversion = '3.01.00.077';
 if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 
     $dbh->do("SET FOREIGN_KEY_CHECKS=0 ");
-    $dbh->do("DROP TABLE IF EXISTS `aqbudgetperiods` ");
     $dbh->do(
         qq|
                     CREATE TABLE IF NOT EXISTS `aqbudgetperiods` (
