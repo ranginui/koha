@@ -84,8 +84,12 @@ my $totordered = 0;
 my $totcomtd   = 0;
 my $totavail   = 0;
 
-foreach my $budget ( @{$budget_arr} ) {
+my $total_active        = 0;
+my $totspent_active     = 0;
+my $totordered_active   = 0;
+my $totavail_active     = 0;
 
+foreach my $budget ( @$budget_arr ) {
     $budget->{budget_code_indent} =~ s/\ /\&nbsp\;/g;
 
     $budget->{'budget_branchname'} = GetBranchName( $budget->{'budget_branchcode'} );
@@ -113,14 +117,19 @@ foreach my $budget ( @{$budget_arr} ) {
     $totspent   += $budget->{'budget_spent'};
     $totordered += $budget->{'budget_ordered'};
     $totavail   += $budget->{'budget_avail'};
-
+    
+    if ($budget->{budget_period_active}){
+    $total_active      += $budget->{'budget_amount'};
+    $totspent_active   += $budget->{'budget_spent'};
+    $totordered_active += $budget->{'budget_ordered'};
+    $totavail_active   += $budget->{'budget_avail'};    
+    }
     for my $field (qw( budget_amount budget_spent budget_ordered budget_avail )) {
         $budget->{$field} = $num_formatter->format_price( $budget->{$field} );
     }
 }
 
 $template->param(
-
     type        => 'intranet',
     loop_budget => $budget_arr,
     branchname  => $branchname,
@@ -129,7 +138,11 @@ $template->param(
     totordered  => $num_formatter->format_price($totordered),
     totcomtd    => $num_formatter->format_price($totcomtd),
     totavail    => $num_formatter->format_price($totavail),
-    suggestions_count    => $suggestions_count,
+    total_active        => $num_formatter->format_price($total_active),
+    totspent_active     => $num_formatter->format_price($totspent_active),
+    totordered_active   => $num_formatter->format_price($totordered_active),
+    totavail_active     => $num_formatter->format_price($totavail_active),
+    suggestions_count   => $suggestions_count,
 );
 
 output_html_with_http_headers $query, $cookie, $template->output;
