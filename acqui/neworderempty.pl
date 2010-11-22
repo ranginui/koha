@@ -353,6 +353,7 @@ $template->param(
     isbn             => $data->{'isbn'},
     seriestitle      => $data->{'seriestitle'},
     itemtypeloop  => \@itemtypes,
+    collectiontitle      => $data->{'collectiontitle'},
     quantity         => $data->{'quantity'},
     quantityrec      => $data->{'quantity'},
     rrp              => $data->{'rrp'},
@@ -361,6 +362,7 @@ $template->param(
     ecost => $data->{'ecost'},
     notes => $data->{'notes'},
     publishercode => $data->{'publishercode'},
+    place => $data->{'place'},
 
     import_batch_id => $import_batch_id,
 

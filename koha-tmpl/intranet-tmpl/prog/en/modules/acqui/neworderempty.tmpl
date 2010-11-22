@@ -188,21 +188,24 @@ $(document).ready(function()
         </li>
         <li>
             <!-- TMPL_IF name="biblionumber" -->
-            <span class="label">Publisher: </span>
+            <span class="label">Published by: </span>
                 <input type="hidden" size="20" name="publishercode" id="publishercode" value="<!-- TMPL_VAR NAME="publishercode" -->" /><!-- TMPL_VAR NAME="publishercode" -->
             <!-- TMPL_ELSE -->
-            <label for="publishercode"> Publisher: </label>
+            <label for="publishercode">Published by: </label>
                 <input type="text" size="20" name="publishercode" id="publishercode" value="<!-- TMPL_VAR NAME="publishercode" -->" />
-            <!-- /TMPL_IF -->
-        </li>
-        <li>
-            <!-- TMPL_IF name="biblionumber" -->
-            <span class="label">Publication year: </span>
+            <!-- /TMPL_IF --><span><!-- TMPL_IF name="biblionumber" -->
+            <span class="label">&nbsp;At: </span>
+                <input type="hidden" size="20" name="place" id="place" value="<!-- TMPL_VAR NAME="place" -->" /><!-- TMPL_VAR NAME="place" -->
+            <!-- TMPL_ELSE -->
+            <label for="place">&nbsp;At: </label>
+                <input type="text" size="20" name="place" id="place" value="<!-- TMPL_VAR NAME="place" -->" />
+            <!-- /TMPL_IF --></span><span><!-- TMPL_IF name="biblionumber" -->
+            <span class="label">&nbsp;On: </span>
                 <input type="hidden" size="20" name="publicationyear" id="publicationyear" value="<!-- TMPL_VAR NAME="publicationyear" -->" /><!-- TMPL_VAR NAME="publicationyear" -->
             <!-- TMPL_ELSE -->
-            <label for="publicationyear">Publication year: </label>
-                <input type="text" size="20" name="publicationyear" id="publicationyear" value="<!-- TMPL_VAR NAME="publicationyear" -->" />
-            <!-- /TMPL_IF -->
+            <label for="publicationyear">&nbsp;On: </label>
+                <input type="text" size="4" name="publicationyear" id="publicationyear" value="<!-- TMPL_VAR NAME="publicationyear" -->" />
+            <!-- /TMPL_IF --></span>
         </li>
         <li>
             <!-- TMPL_IF name="biblionumber" -->
@@ -216,10 +219,10 @@ $(document).ready(function()
         <li>
             <!-- TMPL_IF name="biblionumber" -->
             <span class="label">Series: </span>
-                <input type="hidden" size="20" name="series" id="series" value="<!-- TMPL_VAR NAME="seriestitle" -->" /><span class="title"><!-- TMPL_VAR NAME="seriestitle" --></span>
+                <input type="hidden" size="20" name="series" id="series" value="<!-- TMPL_VAR NAME="collectiontitle" -->" /><span class="title"><!-- TMPL_VAR NAME="collectiontitle" --></span>
             <!-- TMPL_ELSE -->
             <label for="series">Series: </label>
-                <input type="text" size="20" name="series" id="series" value="<!-- TMPL_VAR NAME="seriestitle" -->" />
+                <input type="text" size="20" name="series" id="series" value="<!-- TMPL_VAR NAME="collectiontitle" -->" />
             <!-- /TMPL_IF -->
             </li>
             <!-- TMPL_UNLESS name="biblionumber" -->
