@@ -21,7 +21,7 @@
                             line += '<option value="<!-- TMPL_VAR NAME="code" -->"';
                             if ( index == '<!-- TMPL_VAR NAME="code" -->' ) { line += 'selected="selected"'; }
                             line += '>';
-                            line += '<!-- TMPL_VAR NAME="label" -->';
+                            line += '<!-- TMPL_VAR ESCAPE="javascript" NAME="label" -->';
                             line += '</option>';
                         <!-- /TMPL_LOOP -->
                     line += '</select></td>';
