@@ -20,7 +20,7 @@
             
                 var line  = '<tr>';
 		    line += '<td><input name="mandatory" type="hidden" maxlength="1" value="0" /></td>';
-                    line += '<td><input name="code" maxlength="15" type="text" value="'+code+'" /\></td>';
+                    line += '<td><input name="code" maxlength="25" type="text" value="'+code+'" /\></td>';
                     line += '<td><input name="label" maxlength="25" type="text" value="'+label+'" /\></td>';
                     line += '<td>';
                     line += '<select name="type">';
@@ -117,10 +117,10 @@
 				        <td></td>
                                         <td>
                                             <!--TMPL_IF name="mandatory"-->
-                                                <input name="code" type="text" maxlength="15" value="<!-- TMPL_VAR NAME="code" -->" disabled="disabled" />
-                                                <input name="code" type="hidden" maxlength="15" value="<!-- TMPL_VAR NAME="code" -->" />
+                                                <input name="code" type="text" maxlength="25" value="<!-- TMPL_VAR NAME="code" -->" disabled="disabled" />
+                                                <input name="code" type="hidden" maxlength="25" value="<!-- TMPL_VAR NAME="code" -->" />
                                             <!--TMPL_ELSE-->
-                                                <input name="code" type="text" maxlength="15" value="<!-- TMPL_VAR NAME="code" -->" />
+                                                <input name="code" type="text" maxlength="25" value="<!-- TMPL_VAR NAME="code" -->" />
                                             <!--/TMPL_IF-->
                                             <input name="mandatory" type="hidden" maxlength="1" value="<!-- TMPL_VAR NAME="mandatory" -->" />
                                         </td>
@@ -152,7 +152,7 @@
                             <tfoot>
                                 <tr>
 				    <td></td>
-                                    <td><input id="code" type="text" maxlength="15" /></td>
+                                    <td><input id="code" type="text" maxlength="25" /></td>
                                     <td><input id="label" type="text" maxlength="25" /></td>
                                     <td>
 			                <select id="type">
