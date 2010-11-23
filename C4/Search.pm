@@ -2628,21 +2628,26 @@ sub IndexRecord {
                 $plugin = LoadSearchPlugin( $plugin ) if $plugin;
                 @values = &$plugin( $record );
             } else {
-	        for my $mf ( keys %$mapping ) {
-                    for my $field ( $record->field( $mf ) ) {
-                        for my $ms ( @{ $mapping->{$mf} } ) {
-			    for my $subfieldvalue ( $field->subfield( $ms ) ) {
+                for my $tag ( keys %$mapping ) {
+                    for my $field ( $record->field( $tag ) ) {
+                        for my $code ( @{ $mapping->{$tag} } ) {
 
-				# authorised values and branches management
-				$subfieldvalue = FillSubfieldWithAuthorisedValues( $frameworkcode, $mf, $ms, $subfieldvalue ) if $recordtype eq "biblio";
+                            # Index all subfields if code is *
+                            if ( $code eq '*' ) {
+                                push @values, $_->[1] for $field->subfields;
+                            } else {
+                                for my $value ( $field->subfield( $code ) ) {
 
-				push @values, $subfieldvalue;
-			    }
-			}
+                                    # authorised values and branches management
+                                    $value = FillSubfieldWithAuthorisedValues( $frameworkcode, $tag, $code, $value ) if $recordtype eq "biblio";
+
+                                    push @values, $value;
+                                }
+                            }
+                        }
                     }
-		}
+                }
             }
-
             $solrrecord->set_value( $index->{'type'} . "_" . $index->{'code'}, \@values);
         }
         push @recordpush, $solrrecord;
@@ -2656,26 +2661,26 @@ sub IndexRecord {
 }
 
 sub FillSubfieldWithAuthorisedValues {
-    my ( $frameworkcode, $fieldcode, $subfieldcode, $subfieldvalue ) = @_;
+    my ( $frameworkcode, $fieldcode, $subfieldcode, $value ) = @_;
 
     my $structure = C4::MarcFramework::GetSubfieldStructure( $fieldcode, $subfieldcode, $frameworkcode );
 
     given ( $structure->{'authorised_value'} ) {
         when( 'branches' ) {
-	    return GetBranchName( $subfieldvalue );
-	}
-	when( 'itemtypes' ) {
-	    my $itemtype = getitemtypeinfo( $subfieldvalue );
-	    return $itemtype->{'description'};
-	}
-	when( length ) {
+            return GetBranchName( $value );
+        }
+        when( 'itemtypes' ) {
+            my $itemtype = getitemtypeinfo( $value );
+            return $itemtype->{'description'};
+        }
+        when( length ) {
             my $authorisedvalues = GetAuthorisedValues( $structure->{'authorised_value'} );
-	    for ( @$authorisedvalues ) {
-	        return $_->{'lib'} if $_->{'authorised_value'} eq $subfieldvalue;
+            for ( @$authorisedvalues ) {
+                return $_->{'lib'} if $_->{'authorised_value'} eq $value;
             }
-	}
+        }
     }
-    return $subfieldvalue;
+    return $value;
 }
 
 sub DeleteRecordIndex {
