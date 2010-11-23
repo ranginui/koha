@@ -29,11 +29,19 @@ use Getopt::Long;
 
 my ( $test, @authtypes );
 my $want_help = 0;
+my $all = 0;
 GetOptions(
     'aut|authtypecode:s' => \@authtypes,
+    'all'                => \$all,
     't'                  => \$test,
     'h|help'             => \$want_help
 );
+
+
+if ($all && @authtypes) {
+    print "Cannot use --all and --authtypecode at the same time!\n";
+    exit 0;
+}
 
 if ($want_help) {
     print_usage();
@@ -47,7 +55,10 @@ my $thresholdmax = 0;
 my @results;
 
 # prepare the request to retrieve all authorities of the requested types
-my $rqselect = $dbh->prepare( qq{SELECT * from auth_header where authtypecode IN (} . join( ",", map { $dbh->quote($_) } @authtypes ) . ")" );
+my $query = "SELECT * from auth_header";
+$query .= " where authtypecode IN (" . join( ",", map { $dbh->quote($_) } @authtypes ) . ")" if (!$all);
+my $rqselect = $dbh->prepare($query);
+
 $| = 1;
 
 $rqselect->execute;
