@@ -2630,18 +2630,24 @@ sub IndexRecord {
             } else {
                 for my $tag ( keys %$mapping ) {
                     for my $field ( $record->field( $tag ) ) {
-                        for my $code ( @{ $mapping->{$tag} } ) {
 
-                            # Index all subfields if code is *
-                            if ( $code eq '*' ) {
-                                push @values, $_->[1] for $field->subfields;
-                            } else {
-                                for my $value ( $field->subfield( $code ) ) {
+                        if ( $field->is_control_field ) {
+                            push @values, $field->data;
+                        } else {
 
-                                    # authorised values and branches management
-                                    $value = FillSubfieldWithAuthorisedValues( $frameworkcode, $tag, $code, $value ) if $recordtype eq "biblio";
+                            for my $code ( @{ $mapping->{$tag} } ) {
 
-                                    push @values, $value;
+                                # Index all subfields if code is *
+                                if ( $code eq '*' ) {
+                                    push @values, $_->[1] for $field->subfields;
+                                } else {
+                                    for my $value ( $field->subfield( $code ) ) {
+
+                                        # authorised values and branches management
+                                        $value = FillSubfieldWithAuthorisedValues( $frameworkcode, $tag, $code, $value ) if $recordtype eq "biblio";
+
+                                        push @values, $value;
+                                    }
                                 }
                             }
                         }
