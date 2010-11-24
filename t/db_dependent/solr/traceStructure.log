@@ -1,0 +1,219 @@
+$VAR1 = bless( {
+                 'spell_suggestions' => {},
+                 'query' => bless( {
+                                     'count' => 999999999,
+                                     'page' => 1,
+                                     'query' => 'str_biblionumber:113581033',
+                                     'filters' => {}
+                                   }, 'Data::SearchEngine::Query' ),
+                 'spell_frequencies' => {},
+                 'pager' => bless( {
+                                   'total_entries' => 1,
+                                   'entries_per_page' => 999999999,
+                                   'current_page' => 1
+                                 }, 'Data::SearchEngine::Paginator' ),
+                 'items' => [
+                              bless( {
+                                       'values' => {
+                                                     'txt_title-series' => "Hautes \x{e9}tudes orientales. Extr\x{ea}me-Orient",
+                                                     'str_publisher' => 'Droz',
+                                                     'txt_title' => "Hautes \x{e9}tudes orientales. Extr\x{ea}me-Orient",
+                                                     'str_pubdate' => '2007',
+                                                     'str_pubplace' => "Gen\x{e8}ve",
+                                                     'recordtype' => 'biblio',
+                                                     'str_isbn' => '978-2-600-01143-3',
+                                                     'str_itemtype' => "Texte imprim\x{e9}",
+                                                     'id' => 'biblio_1',
+                                                     'str_name-geographic' => 'rameau',
+                                                     'str_author' => "\x{c9}cole pratique des hautes \x{e9}tudes Section des sciences historiques et philologiques",
+                                                     'str_subject' => 'Mythologie hindoue',
+                                                     'str_lang' => 'fre',
+                                                     'str_ean' => '9782600011433',
+                                                     'int_availability' => 1,
+                                                     'str_biblionumber' => 'Armoires Livres',
+                                                     'str_identifier' => '113581033',
+                                                     'str_homebranch' => 'y   a   001yy',
+                                                     'str_itype' => "Texte imprim\x{e9}",
+                                                     'str_issn' => '0073-0971',
+                                                     'recordid' => '1',
+                                                     'str_name' => '080',
+                                                     'txt_note' => 'Bibliogr. p. [311]-320. Index',
+                                                     'txt_title-cover' => "histoires anciennes tir\x{e9}es du Hariva\x{1e43}\x{15b}a, \x{e9}d. cr., Appendice I, n\x{b0} 41",
+                                                     'str_corporate-name' => '340'
+                                                   },
+                                       'score' => '0',
+                                       'id' => 'biblio_1'
+                                     }, 'Data::SearchEngine::Item' )
+                            ],
+                 'facets' => {},
+                 'elapsed' => '0.00490593910217285'
+               }, 'Data::SearchEngine::Solr::Results' );
+1..5
+
+
+$VAR1 = undef;
+$VAR1 = bless( {
+                 'spell_suggestions' => {},
+                 'query' => bless( {
+                                     'count' => 10,
+                                     'page' => 1,
+                                     'query' => '*:*',
+                                     'filters' => {}
+                                   }, 'Data::SearchEngine::Query' ),
+                 'spell_frequencies' => {},
+                 'pager' => bless( {
+                                     'total_entries' => 9,
+                                     'entries_per_page' => 10,
+                                     'current_page' => 1
+                                   }, 'Data::SearchEngine::Paginator' ),
+                 'items' => [
+                              bless( {
+                                       'values' => {
+                                                     'str_author' => 'Poliakova Tatiana Viktorovna',
+                                                     'str_publisher' => "\x{c8}ksmo",
+                                                     'txt_title' => "Vse to\x{10d}ki nad \x{ec}",
+                                                     'str_lang' => 'rus',
+                                                     'int_availability' => 1,
+                                                     'recordtype' => 'biblio',
+                                                     'recordid' => '1',
+                                                     'str_isbn' => '978-5-699-21320-7',
+                                                     'id' => 'biblio_1'
+                                                   },
+                                       'score' => '0',
+                                       'id' => 'biblio_1'
+                                     }, 'Data::SearchEngine::Item' ),
+                              bless( {
+                                       'values' => {
+                                                     'str_author' => 'Brawer Moshe',
+                                                     'str_subject' => 'Atlases',
+                                                     'str_publisher' => 'Orenshtin',
+                                                     'txt_title' => "Atlas \x{2be}unibersi\x{1e6d}\x{2be}ai \x{1e25}ada\x{161}",
+                                                     'str_lang' => 'heb',
+                                                     'int_availability' => 1,
+                                                     'recordtype' => 'biblio',
+                                                     'recordid' => '2',
+                                                     'id' => 'biblio_2'
+                                                   },
+                                       'score' => '0',
+                                       'id' => 'biblio_2'
+                                     }, 'Data::SearchEngine::Item' ),
+                              bless( {
+                                       'values' => {
+                                                     'str_author' => "Luganceva Tat\x{2b9}\x{e2}na",
+                                                     'str_subject' => 'Crime',
+                                                     'str_publisher' => "\x{400}ksmo",
+                                                     'txt_title' => "Zub darenogo kon\x{e2}",
+                                                     'str_lang' => 'rus',
+                                                     'int_availability' => 1,
+                                                     'recordtype' => 'biblio',
+                                                     'str_isbn' => '978-5-699-20282-9',
+                                                     'recordid' => '3',
+                                                     'id' => 'biblio_3'
+                                                   },
+                                       'score' => '0',
+                                       'id' => 'biblio_3'
+                                     }, 'Data::SearchEngine::Item' ),
+                              bless( {
+                                       'values' => {
+                                                     'str_author' => "Ch\x{14d} Haesuk",
+                                                     'str_publisher' => "Sensh\x{16b} Daigaku Shuppankyoku",
+                                                     'txt_title' => "Higuchi Ichiy\x{14d} sakuhin kenky\x{16b}",
+                                                     'str_lang' => 'jpn',
+                                                     'int_availability' => 1,
+                                                     'recordtype' => 'biblio',
+                                                     'recordid' => '4',
+                                                     'str_isbn' => '4-88125-187-2',
+                                                     'id' => 'biblio_4',
+                                                     'txt_note' => "Originallement pr\x{e9}sent\x{e9} comme th\x{e8}se de l'auteur \x{e0} Sensh\x{16b} Daigaku en 2005"
+                                                   },
+                                       'score' => '0',
+                                       'id' => 'biblio_4'
+                                     }, 'Data::SearchEngine::Item' ),
+                              bless( {
+                                       'values' => {
+                                                     'str_author' => "Minami Y\x{16b}ta",
+                                                     'str_publisher' => "Sensh\x{16b} Daigaku Shuppankyoku",
+                                                     'txt_title' => "Murakami Ry\x{16b} sakka sakuhin kenky\x{16b}",
+                                                     'str_lang' => 'jpn',
+                                                     'int_availability' => 1,
+                                                     'recordtype' => 'biblio',
+                                                     'recordid' => '5',
+                                                     'str_isbn' => '4-88125-186-4',
+                                                     'id' => 'biblio_5'
+                                                   },
+                                       'score' => '0',
+                                       'id' => 'biblio_5'
+                                     }, 'Data::SearchEngine::Item' ),
+                              bless( {
+                                       'values' => {
+                                                     'str_author' => 'Matsushita Masaki',
+                                                     'str_subject' => "Po\x{e9}sie japonaise",
+                                                     'str_publisher' => 'Kindai bungeisha',
+                                                     'txt_title' => "Kash\x{16b} nihon rett\x{14d} wo utau",
+                                                     'str_lang' => 'jpn',
+                                                     'int_availability' => 1,
+                                                     'recordtype' => 'biblio',
+                                                     'str_isbn' => '978-4-7733-7442-1',
+                                                     'recordid' => '6',
+                                                     'id' => 'biblio_6'
+                                                   },
+                                       'score' => '0',
+                                       'id' => 'biblio_6'
+                                     }, 'Data::SearchEngine::Item' ),
+                              bless( {
+                                       'values' => {
+                                                     'str_author' => 'Ogawa Kazusuke',
+                                                     'str_subject' => 'Cerisier',
+                                                     'str_publisher' => "\x{100}tsu Ando Kurafutsu",
+                                                     'txt_title' => 'Sakura to Nihon bunka',
+                                                     'str_lang' => 'jpn',
+                                                     'int_availability' => 1,
+                                                     'recordtype' => 'biblio',
+                                                     'str_isbn' => '4-901592-38-6',
+                                                     'recordid' => '7',
+                                                     'id' => 'biblio_7'
+                                                   },
+                                       'score' => '0',
+                                       'id' => 'biblio_7'
+                                     }, 'Data::SearchEngine::Item' ),
+                              bless( {
+                                       'values' => {
+                                                     'str_author' => 'Takizawa Hisashi',
+                                                     'str_subject' => 'Art, Japanese',
+                                                     'str_publisher' => 'Surugadai Shuppansha',
+                                                     'txt_title' => 'Kindai Nihonjin no Furansu',
+                                                     'str_lang' => 'jpn',
+                                                     'int_availability' => 1,
+                                                     'recordtype' => 'biblio',
+                                                     'str_isbn' => '4-411-02226-5',
+                                                     'recordid' => '8',
+                                                     'id' => 'biblio_8',
+                                                     'txt_note' => "Pr\x{e9}alablement publi\x{e9} dans la revue \"Kuintetto\""
+                                                   },
+                                       'score' => '0',
+                                       'id' => 'biblio_8'
+                                     }, 'Data::SearchEngine::Item' ),
+                              bless( {
+                                       'values' => {
+                                                     'str_author' => 'Takeuchi Toshinobu',
+                                                     'str_publisher' => 'Soft Bank Creative',
+                                                     'txt_title' => "Nihon rett\x{14d}",
+                                                     'str_lang' => 'jpn',
+                                                     'int_availability' => 1,
+                                                     'recordtype' => 'biblio',
+                                                     'recordid' => '9',
+                                                     'str_isbn' => '978-4-7973-4122-5',
+                                                     'id' => 'biblio_9'
+                                                   },
+                                       'score' => '0',
+                                       'id' => 'biblio_9'
+                                     }, 'Data::SearchEngine::Item' )
+                            ],
+                 'facets' => {},
+                 'elapsed' => '0.187813997268677'
+               }, 'Data::SearchEngine::Solr::Results' );
+Wide character in print at /usr/share/perl/5.10/Test/Builder.pm line 1472.
+bacasable.t .. ok
+All tests successful.
+Files=1, Tests=2,  2 wallclock secs ( 0.03 usr  0.01 sys +  1.07 cusr  0.07 csys =  1.18 CPU)
+Result: PASS
