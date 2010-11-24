@@ -455,7 +455,7 @@ while ( my ($index,$facet) = each %{$res->facets} ) {
 }
 
 $template->param(
-    'total'          => $res->count,
+    'total'          => $res->{'pager'}->{'total_entries'},
     'opacfacets'     => 1,
     'search_error'   => $error,
     'SEARCH_RESULTS' => \@results,
