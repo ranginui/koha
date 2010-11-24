@@ -2637,18 +2637,16 @@ sub IndexRecord {
 
                             for my $code ( @{ $mapping->{$tag} } ) {
 
-                                # Index all subfields if code is *
-                                if ( $code eq '*' ) {
-                                    push @values, $_->[1] for $field->subfields;
-                                } else {
-                                    for my $value ( $field->subfield( $code ) ) {
+                                my @sfvals = $code eq '*'
+                                           ? map { $_->[1] } $field->subfields
+                                           : map { $_      } $field->subfield( $code );
 
-                                        # authorised values and branches management
-                                        $value = FillSubfieldWithAuthorisedValues( $frameworkcode, $tag, $code, $value ) if $recordtype eq "biblio";
-
-                                        push @values, $value;
-                                    }
+                                for ( @sfvals ) {
+                                    $_ = NormalizeDate( $_ ) if $index->{'type'} eq 'date';
+                                    $_ = FillSubfieldWithAuthorisedValues( $frameworkcode, $tag, $code, $_ ) if $recordtype eq "biblio";
+                                    push @values, $_;
                                 }
+
                             }
                         }
                     }
@@ -2664,6 +2662,15 @@ sub IndexRecord {
         }
     }
     $sc->add( \@recordpush );
+}
+
+sub NormalizeDate {
+    given( shift ) {
+        when( /(..)\/(..)\/(....)/ ) { return "$3-$2-$1T00:00:00Z" }
+        when( /(....)\/(..)/       ) { return "$1-$2-01T00:00:00Z" }
+        when( /(..)\/(....)/       ) { return "$2-$1-01T00:00:00Z" }
+        when( /(....)/             ) { return "$1-01-01T00:00:00Z" }
+    }
 }
 
 sub FillSubfieldWithAuthorisedValues {
