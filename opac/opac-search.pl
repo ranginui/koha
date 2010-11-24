@@ -275,6 +275,12 @@ $template->param('filters' => \@tplfilters );
 # perform the search
 my $res = SimpleSearch( $cgi->param('q'), \%filters, $page, $count, $sort_by);
 
+if (!$res){
+    $template->param(query_error => "Bad request! help message ?");
+    output_with_http_headers $cgi, $cookie, $template->output, 'html';
+    exit;
+}
+
 my $pager = Data::Pagination->new(
     $res->{'pager'}->{'total_entries'},
     $count,

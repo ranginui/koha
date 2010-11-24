@@ -2747,7 +2747,7 @@ sub SimpleSearch {
     my $result = eval { $sc->search( $sq ) };
     warn $@ if $@;
 
-    return $result;
+    return $result if (ref($result) eq "Data::SearchEngine::Solr::Results");
 }
 
 
