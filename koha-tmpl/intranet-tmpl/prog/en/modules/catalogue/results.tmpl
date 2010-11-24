@@ -395,6 +395,9 @@ function GetZ3950Terms(){
 				<!-- COinS / OpenURL --><span class="Z3988" title="<!-- TMPL_VAR NAME="coins" -->"></span> 
 			    <!-- /TMPL_IF -->
 
+                                <!-- TMPL_IF NAME="IntranetXSLTResultsDisplay" -->
+				    <!-- TMPL_VAR NAME="IntranetXSLTResultsRecord" -->
+				<!-- TMPL_ELSE -->
                                 <p><!-- TMPL_VAR NAME="result_number" -->.
                                     <!-- TMPL_IF name="BiblioDefaultViewmarc" -->
                                         <a class="title" href="/cgi-bin/koha/catalogue/MARCdetail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" ESCAPE="URL" -->">
@@ -465,6 +468,7 @@ function GetZ3950Terms(){
                                     <!-- TMPL_ELSE -->
                                         <a class="reserve" id="reserve_<!-- TMPL_VAR NAME="biblionumber" -->" href="/cgi-bin/koha/reserve/request.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->">Holds</a>
                                     <!-- /TMPL_IF -->
+                                    <!-- /TMPL_IF --><!-- end of no xslt block -->
                                 </td>
 
                                 <td><div class="availability">

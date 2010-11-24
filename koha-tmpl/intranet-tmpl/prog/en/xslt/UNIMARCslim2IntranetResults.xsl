@@ -20,17 +20,17 @@
   <xsl:variable name="leader6" select="substring($leader,7,1)"/>
   <xsl:variable name="leader7" select="substring($leader,8,1)"/>
   <xsl:variable name="biblionumber" 
-select="marc:datafield[@tag=999]/marc:subfield[@code='a']"/>
+select="marc:datafield[@tag=999]/marc:subfield[@code='9']"/>
   <xsl:variable name="isbn" select="marc:datafield[@tag=010]/marc:subfield[@code='a']"/>
      	
   <xsl:if test="marc:datafield[@tag=200]">
     <xsl:for-each select="marc:datafield[@tag=200]">
-      	<a><xsl:attribute name="href">
-             /cgi-bin/koha/opac-detail.pl?biblionumber=
-             <xsl:value-of select="$biblionumber"/>
-             <xsl:if test="$leader7='s'">#subscriptions</xsl:if>
+      	<a><xsl:attribute name="href">/cgi-bin/koha/opac-detail.pl?biblionumber=<xsl:value-of select="$biblionumber"/>
            </xsl:attribute>
-        <xsl:value-of select="marc:subfield[@code='a']"/>
+        <xsl:variable name="title" select="marc:subfield[@code='a']"/>
+        <xsl:variable name="ntitle"
+             select="translate($title, '&#x0098;&#x009C;&#xC29C;&#xC29B;&#xC298;&#xC288;&#xC289;','')"/>
+        <xsl:value-of select="$ntitle" />
       </a>
       <xsl:if test="marc:subfield[@code='e']">
         <xsl:text> : </xsl:text>
@@ -57,6 +57,7 @@ select="marc:datafield[@tag=999]/marc:subfield[@code='a']"/>
         <xsl:text> ; </xsl:text>
         <xsl:value-of select="marc:subfield[@code='g']"/>
       </xsl:if>
+      <xsl:text> </xsl:text>
     </xsl:for-each>
   </xsl:if>
 
@@ -185,6 +186,13 @@ select="marc:datafield[@tag=999]/marc:subfield[@code='a']"/>
       <span class="unavailable">
         <xsl:text>In transit (</xsl:text>
         <xsl:value-of select="count(key('item-by-status', 'In transit'))"/>
+        <xsl:text>). </xsl:text>
+      </span>
+    </xsl:if>
+    <xsl:if test="count(key('item-by-status', 'Waiting'))>0">
+      <span class="unavailable">
+        <xsl:text>On hold (</xsl:text>
+        <xsl:value-of select="count(key('item-by-status', 'Waiting'))"/>
         <xsl:text>). </xsl:text>
       </span>
     </xsl:if>

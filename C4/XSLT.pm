@@ -137,7 +137,7 @@ sub XSLTParse4Display {
     warn "bibnumber : ",$biblionumber;
     my $record = transformMARCXML4XSLT( $biblionumber, $orig_record );
     warn "record : ",$record->as_formatted;
-	my $itemsimageurl = GetKohaImageurlFromAuthorisedValues( "CCODE", $orig_record->field('099')->subfield("t")) || '';
+	my $itemsimageurl = GetKohaImageurlFromAuthorisedValues( "CCODE", $orig_record->subfield("099", "t")) || '';
 	my $logoxml = "<logo>" . $itemsimageurl . "</logo>\n";
     #return $record->as_formatted();
     my $itemsxml  = buildKohaItemsNamespace($biblionumber);

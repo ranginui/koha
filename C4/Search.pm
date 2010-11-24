@@ -1636,6 +1636,7 @@ sub searchResults {
 
 	# If it is opac, or OPAC, or OpAc or whatever, we use 'OPAC' so it works with the XSLT syspref
 	$interface =~ s/(opac)/\U$1/i;
+	$interface =~ s/(intranet)/Intranet/i;
 
         if ( C4::Context->preference($interface."XSLTResultsDisplay") && !$scan ) {
             $oldbiblio->{$interface."XSLTResultsRecord"} = XSLTParse4Display( $biblionumber, $marcrecord, C4::Context->preference($interface."XSLTResultsDisplay") );
