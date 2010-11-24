@@ -42,6 +42,13 @@ $got = C4::Search::SimpleSearch("str_biblionumber:1135*");
 is ($got->{pager}->{total_entries},  1, "query=str_biblionumber:1135* => biblionumber:1135* is found 1 time");
 is ($got->{items}->[0]->{values}->{recordid}, "113581033" , "query=str_biblionumber:1135*  => good biblionumber:113581033 found");
 
+#Dates - not implemented yet > should return result
+$got = C4::Search::SimpleSearch("date_entereddate:2009");
+ok (got);
+$got = C4::Search::SimpleSearch("date_entereddate:201007");
+ok ($got);
+$got = C4::Search::SimpleSearch("date_entereddate:200907-201001");
+ok ($got);
 
 #warn Data::Dumper::Dumper($got);
 #warn Data::Dumper::Dumper($got->{items}->[0]->{values}->{recordid});
