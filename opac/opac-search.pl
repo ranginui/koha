@@ -130,7 +130,8 @@ $template->param(
 $template->param( search_languages_loop => getAllLanguages() );
 
 # load the sorting stuff
-my $sort_by = $cgi->param('sort_by') || C4::Context->preference('OPACdefaultSortField').' '. C4::Context->preference('OPACdefaultSortOrder');
+my $sort_by = $cgi->param('sort_by') || join(' ', grep { defined } ( C4::Context->preference('OPACdefaultSortField')
+                                                                   , C4::Context->preference('OPACdefaultSortOrder') ) );
 my $sortloop = C4::Search::GetSortableIndexes('biblio');
 for ( @$sortloop ) { # because html template is stupid
     $_->{'asc_selected'}  = $sort_by eq $_->{'type'}.'_'.$_->{'code'}.' asc';

@@ -342,7 +342,8 @@ if ( $template_type eq 'advsearch' ) {
 #  * returns paramater list as tied hash ref
 #  * we can edit the values by changing the key
 #  * multivalued CGI paramaters are returned as a packaged string separated by "\0" (null)
-my $sort_by = $cgi->param('sort_by') || C4::Context->preference('OPACdefaultSortField').' '. C4::Context->preference('OPACdefaultSortOrder');
+my $sort_by = $cgi->param('sort_by') || join(' ', grep { defined } ( C4::Context->preference('OPACdefaultSortField')
+                                                                   , C4::Context->preference('OPACdefaultSortOrder') ) );
 my $sortloop = C4::Search::GetSortableIndexes('biblio');
 for ( @$sortloop ) { # because html template is stupid
     $_->{'asc_selected'}  = $sort_by eq $_->{'type'}.'_'.$_->{'code'}.' asc';
