@@ -26,7 +26,7 @@ sub add_biblio_from_file {
 	my ( $filename ) = @_;
 
     # stage_biblios_file.pl call
-    my $staggingCmd = '$PERL5LIB/misc/stage_biblios_file.pl --file $PERL5LIB/t/db_dependent/solr/data/'.$filename;
+    my $staggingCmd = '$CURDEVDIR/misc/stage_biblios_file.pl --file $CURDEVDIR/t/db_dependent/solr/data/'.$filename;
     my $output = `$staggingCmd`;
 
 	my $batchNumber;
@@ -36,7 +36,7 @@ sub add_biblio_from_file {
 	}
 
     # commit_biblios_file.pl call
-	my $commitCmd = '$PERL5LIB/misc/commit_biblios_file.pl --batch-number '.$batchNumber;
+	my $commitCmd = '$CURDEVDIR/misc/commit_biblios_file.pl --batch-number '.$batchNumber;
     $output = `$commitCmd`;
 	print "\ncmd:\n $commitCmd \noutput:\n $output";
 
