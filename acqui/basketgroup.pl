@@ -304,12 +304,22 @@ if ( $op eq "add" ) {
         # determine default billing and delivery places depending on librarian homebranch and existing basketgroup data
         my $borrower = GetMember( ( 'borrowernumber' => $loggedinuser ) );
         $billingplace  = $billingplace  || C4::Context->userenv->{"branch"};
-        #$deliveryplace = $freedeliveryplace || $deliveryplace || C4::Context->userenv->{"branch"};
         $deliveryplace = $deliveryplace || C4::Context->userenv->{"branch"};
         my $branches = GetBranches;
 
         # Build the combobox to select the billing place
         my @billingplaceloop;
+
+	# In case there's no branch selected
+	if ($billingplace eq "NO_LIBRARY_SET") {
+	    my %row = (
+		value => "",
+		selected => 1,
+		branchname => "--",
+	    );
+	    push @billingplaceloop, \%row;
+	}
+
         for ( sort keys %$branches ) {
             my $selected = 1 if $_ eq $billingplace;
             my %row = (
@@ -319,10 +329,21 @@ if ( $op eq "add" ) {
             );
             push @billingplaceloop, \%row;
         }
-        $template->param( billingplaceloop => \@billingplaceloop );
+	        $template->param( billingplaceloop => \@billingplaceloop );
 
         # Build the combobox to select the delivery place
         my @deliveryplaceloop;
+
+	# In case there's no branch selected
+	if ($deliveryplace eq "NO_LIBRARY_SET") {
+	    my %row = (
+		value => "",
+		selected => 1,
+		branchname => "--",
+	    );
+	    push @deliveryplaceloop, \%row;
+	}
+
         for ( sort keys %$branches ) {
             my $selected = 1 if $_ eq $deliveryplace;
             my %row = (
@@ -332,6 +353,7 @@ if ( $op eq "add" ) {
             );
             push @deliveryplaceloop, \%row;
         }
+	
         $template->param( deliveryplaceloop => \@deliveryplaceloop );
 
         $template->param( booksellerid => $booksellerid );
@@ -452,6 +474,7 @@ if ( $op eq "add" ) {
             name              => $basketgroupname,
             booksellerid      => $booksellerid,
             basketlist        => \@baskets,
+            billingplace      => $billingplace,
             deliveryplace     => $deliveryplace,
             freedeliveryplace => $freedeliveryplace,
             deliverycomment   => $deliverycomment,

@@ -549,7 +549,7 @@ sub NewBasketgroup {
     die "booksellerid is required to create a basketgroup" unless $basketgroupinfo->{'booksellerid'};
     my $query = "INSERT INTO aqbasketgroups (";
     my @params;
-    foreach my $field ( 'name', 'deliveryplace', 'deliverycomment', 'closed' ) {
+    foreach my $field ( 'name', 'deliveryplace', 'freedeliveryplace', 'deliverycomment', 'billingplace', 'closed' ) {
         if ( $basketgroupinfo->{$field} ) {
             $query .= "$field, ";
             push( @params, $basketgroupinfo->{$field} );
