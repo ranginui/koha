@@ -1587,6 +1587,8 @@ sub searchResults {
                     $item_in_transit_count++ if $transfertwhen ne '';
                     $item_onhold_count++     if $reservestatus eq 'Waiting';
                     $item->{status} = $item->{wthdrawn} . "-" . $item->{itemlost} . "-" . $item->{damaged} . "-" . $item->{notforloan};
+		    #if only reserved or/and in transit, item can be hold
+                    $can_place_holds = 1 unless ($item->{withdrawn} || $item->{itemlost} || $item->{damaged});
                     $other_count++;
 
                     my $key = $prefix . $item->{status};
