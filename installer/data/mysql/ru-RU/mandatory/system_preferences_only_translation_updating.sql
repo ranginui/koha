@@ -211,12 +211,6 @@ UPDATE systempreferences SET explanation='Определение глобаль�
 UPDATE systempreferences SET explanation='Определение МАРК-кода для организации — http://www.loc.gov/marc/organizations/orgshome.html' WHERE variable='MARCOrgCode';
 -- 	Define MARC Organization Code - http://www.loc.gov/marc/organizations/orgshome.html
 
-UPDATE systempreferences SET explanation='Если включено, Zebra-индексирование отключено (более простая установка но медленнее поиск)' WHERE variable='NoZebra';
--- 	If ON, Zebra indexing is turned off, simpler setup, but slower searches. WARNING: using NoZebra on even modest sized collections is very slow.
-
-UPDATE systempreferences SET explanation='Запись в особой форме хеша для индексов NoZebra. Записывать подобно следующему: \'indexname\' => \'100a,245a,500*\',\'indexname2\' => \'...\'' WHERE variable='NoZebraIndexes';
--- Enter a specific hash for NoZebra indexes. Enter : \'indexname\' => \'100a,245a,500*\',\'index2\' => \'...\'	
-
 UPDATE systempreferences SET explanation='Включение функции сокрытия в ЭК, требует дальнейшей настройки, обратитесь к системному администратору для получения более детальной информации' WHERE variable='OpacSuppression';
 -- 	Turn ON the OPAC Suppression feature, requires further setup, ask your system administrator for details
 

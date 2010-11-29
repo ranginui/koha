@@ -128,6 +128,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
                 "
     );
+<<<<<<< HEAD
     $dbh->do(
         "CREATE TABLE IF NOT EXISTS `nozebra` (
                 `server` varchar(20)     NOT NULL,
@@ -140,6 +141,9 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
                 "
     );
     print "Upgrade to $DBversion done (adding tags and nozebra tables )\n";
+=======
+    print "Upgrade to $DBversion done (adding tags table )\n";
+>>>>>>> [SOLR] Port of the installer
     SetVersion($DBversion);
 }
 
@@ -595,18 +599,6 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     $dbh->do("UPDATE action_logs SET action_id = if (\@a, \@a:=\@a+1, \@a:=1)");
     $dbh->do("ALTER TABLE action_logs MODIFY action_id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY");
     print "Upgrade to $DBversion done (added column to action_logs)\n";
-    SetVersion($DBversion);
-}
-
-$DBversion = "3.00.00.018";
-if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
-    $dbh->do(
-        "ALTER TABLE `zebraqueue`
-                    ADD `done` INT NOT NULL DEFAULT '0',
-                    ADD `time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ;
-            "
-    );
-    print "Upgrade to $DBversion done (adding timestamp and done columns to zebraque table to improve problem tracking) added)\n";
     SetVersion($DBversion);
 }
 
@@ -1239,12 +1231,6 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     SetVersion($DBversion);
 }
 
-$DBversion = "3.00.00.055";
-if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
-    $dbh->do("ALTER TABLE `zebraqueue` ADD KEY `zebraqueue_lookup` (`server`, `biblio_auth_number`, `operation`, `done`)");
-    print "Upgrade to $DBversion done ( Added index on zebraqueue. )\n";
-    SetVersion($DBversion);
-}
 $DBversion = "3.00.00.056";
 if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     if ( C4::Context->preference("marcflavour") eq 'UNIMARC' ) {
@@ -2255,12 +2241,6 @@ UPDATE systempreferences
   WHERE variable = 'CataloguingLog'
     AND explanation NOT LIKE '%WARNING%'
 END_SQL
-    $dbh->do(<<'END_SQL');
-UPDATE systempreferences
-  SET explanation = CONCAT( explanation, '. WARNING: using NoZebra on even modest sized collections is very slow.' )
-  WHERE variable = 'NoZebra'
-    AND explanation NOT LIKE '%WARNING%'
-END_SQL
     print "Upgrade to $DBversion done (warning added to OPACShelfBrowser system preference)\n";
     SetVersion($DBversion);
 }
@@ -2418,9 +2398,6 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion)) {
 	    $dbh->do("UPDATE `systempreferences` SET type='Free' WHERE variable='BakerTaylorUsername'");
 	    $dbh->do("UPDATE `systempreferences` SET type='Free' WHERE variable='BakerTaylorPassword'");
 	    $dbh->do("UPDATE `systempreferences` SET type='Textarea', options='70|10' WHERE variable='ISBD'");
-	    $dbh->do(
-	"UPDATE `systempreferences` SET type='Textarea', options='70|10', explanation='Enter a specific hash for NoZebra indexes. Enter : \\\'indexname\\\' => \\\'100a,245a,500*\\\',\\\'index2\\\' => \\\'...\\\'' WHERE variable='NoZebraIndexes'"
-	    );
 	    print "Upgrade to $DBversion done (fix display of many sysprefs)\n";
 	}
     SetVersion($DBversion);
@@ -2777,6 +2754,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     SetVersion($DBversion);
 }
 
+<<<<<<< HEAD
 $DBversion = '3.01.00.027';
 if ( C4::Context->preference("Version") < TransformToNum($DBversion)) {
 	if($compare_version < TransformToNum("3.00.02.010") or $compare_version >TransformToNum("3.01.00.000"))
@@ -2787,6 +2765,8 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion)) {
     SetVersion($DBversion);
 }
 
+=======
+>>>>>>> [SOLR] Port of the installer
 $DBversion = '3.01.00.028';
 if ( C4::Context->preference("Version") < TransformToNum($DBversion)) {
 	if($compare_version < TransformToNum("3.00.02.011") or $compare_version >TransformToNum("3.01.00.000"))
@@ -4916,6 +4896,117 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 	");
     print "Upgrade to $DBversion done (Adding OpacHiddenItems syspref)\n";
     SetVersion($DBversion);
+
+$DBversion = "3.02.00.055";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+	$dbh->do(q{
+    DROP TABLE IF EXISTS `indexes`;
+    });
+	$dbh->do(q{
+    CREATE TABLE `indexes` (
+      `id` bigint unsigned NOT NULL auto_increment,
+      `code` varchar(255) NOT NULL DEFAULT '',
+      `label` varchar(255) DEFAULT NULL,
+      `type` varchar(20) DEFAULT NULL,
+      `faceted` tinyint(4) DEFAULT NULL,
+      `ressource_type` varchar(255) DEFAULT NULL,
+      `mandatory` tinyint(4) DEFAULT NULL,
+      `sortable` tinyint(4) DEFAULT NULL,
+      `plugin` varchar(255) DEFAULT NULL,
+      PRIMARY KEY (`id`),
+      UNIQUE (`code`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    });
+	$dbh->do(q{
+    DROP TABLE IF EXISTS `indexmappings`;
+    });
+	$dbh->do(q{
+    CREATE TABLE `indexmappings` (
+      `field` char(3) DEFAULT NULL,
+      `subfield` char(1) DEFAULT NULL,
+      `index` varchar(15) DEFAULT NULL,
+      `ressource_type` varchar(20) DEFAULT NULL
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    });
+
+    if ( C4::Context->preference("marcflavour") eq 'UNIMARC' ) {
+        $dbh->do(q{
+        LOCK TABLES `indexes` WRITE;
+        });
+        $dbh->do(q{
+        INSERT INTO `indexes` (`code`,`label`,`type`,`faceted`,`ressource_type`,`mandatory`,`sortable`,`plugin`) VALUES 
+        ('usedinxbiblios','Used in X biblios','int',0,'authority',1,1,'C4::Search::Plugins::UsedInXBiblios'),
+        ('name','Name','txt',1,'authority',0,0,''),
+        ('itemtype','Type','str',1,'biblio',0,1,''),
+        ('lang','Langue','str',1,'biblio',1,0,''),
+        ('issn','ISSN','str',0,'biblio',0,0,''),
+        ('note','Note','txt',0,'biblio',0,0,''),
+        ('publisher','Editeur','str',1,'biblio',0,1,''),
+        ('size','Taille','str',0,'biblio',0,0,''),
+        ('year','Annee','date',1,'biblio',0,1,''),
+        ('subject','Sujet','str',1,'biblio',0,0,''),
+        ('date','Date','date',0,'authority',0,0,''),
+        ('authtype','Authority Type','str',1,'authority',0,1,''),
+        ('title','Titre','txt',0,'biblio',1,1,''),
+        ('ean','EAN','str',0,'biblio',1,0,''),
+        ('callnumber','Cote','str',0,'biblio',0,0,''),
+        ('authorities','Formes Rejetées','txt',0,'biblio',0,0,'C4::Search::Plugins::Authorities'),
+        ('barcode','Code bare','str',0,'biblio',0,0,''),
+        ('authid','AuthId','int',0,'biblio',0,0,''),
+        ('availability','Disponibilité','int',0,'biblio',0,0,'C4::Search::Plugins::Availability'),
+        ('author','Auteur','txt',1,'biblio',0,1,'C4::Search::Plugins::Author'),
+        ('isbn','ISBN','str',0,'biblio',0,0,''),
+        ('holdingbranch','Dépositaire','str',1,'biblio',0,0,''),
+        ('homebranch','Propriétaire','str',1,'biblio',0,0,'');
+        });
+        $dbh->do(q{
+        UNLOCK TABLES;
+        });
+        $dbh->do(q{
+        LOCK TABLES `indexmappings` WRITE;
+        });
+        $dbh->do(q{
+        INSERT INTO `indexmappings` VALUES 
+        ('995','c','holdingbranch','biblio'),
+        ('995','b','homebranch','biblio'),
+        ('909','a','itemtype','biblio'),
+        ('250','a','name','authority'),
+        ('210','a','name','authority'),
+        ('712','9','authid','biblio'),
+        ('712','9','authid','biblio'),
+        ('710','b','author','biblio'),
+        ('710','a','author','biblio'),
+        ('710','9','authid','biblio'),
+        ('702','9','authid','biblio'),
+        ('701','9','authid','biblio'),
+        ('700','b','author','biblio'),
+        ('700','a','author','biblio'),
+        ('700','a','author','biblio'),
+        ('700','9','authid','biblio'),
+        ('610','9','authid','biblio'),
+        ('606','a','subject','biblio'),
+        ('328','a','note','biblio'),
+        ('300','a','note','biblio'),
+        ('200','a','name','authority'),
+        ('152','b','authtype','authority'),
+        ('210','c','publisher','biblio'),
+        ('200','f','author','biblio'),
+        ('200','a','title','biblio'),
+        ('101','a','lang','biblio'),
+        ('011','a','issn','biblio'),
+        ('010','a','isbn','biblio'),
+        ('995','k','callnumber','biblio'),
+        ('995','n','availability','biblio'),
+        ('995','v','barcode','biblio'),
+        ('073','a','ean','biblio'),
+        ('200','b','name','authority');
+        });
+        $dbh->do(q{
+        UNLOCK TABLES;
+        });
+    }
+	print "Upgrade to $DBversion done (Solr tables)\n";
+	SetVersion ($DBversion);
 }
 
 $DBversion = "3.02.00.055";
