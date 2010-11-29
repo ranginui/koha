@@ -135,7 +135,7 @@ sub getTranslatedLanguages {
 
     }
 
-    my $languages = C4::Context->preference($preference) || 'en';
+    my $languages = C4::Context->preference($preference) || 'en,fr-FR,uk-UA,pl-PL,ru-RU';
     @enabled_languages = split ",", $languages;
     $htdocs = C4::Context->config($config);
     if ( $theme and -d "$htdocs/$theme" ) {
