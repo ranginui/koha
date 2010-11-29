@@ -38,14 +38,15 @@ sub ComputeValue {
         for my $bfield ( $brecord->field( $bfieldtoindex ) ) {
             for my $bsubfield ( $bfield->subfield( '9' ) ) {
                 my $arecord = GetAuthority( $bsubfield );
-    	    
-	        for my $afieldtoindex ( @afieldstoindex ) {
-    	            for my $afield ( $arecord->field( $afieldtoindex ) ) {
+
+                next unless $arecord;
+                for my $afieldtoindex ( @afieldstoindex ) {
+                    for my $afield ( $arecord->field( $afieldtoindex ) ) {
                         my @asubfields = $afield->subfields;
-    		        push @values, $_->[1] for @asubfields;
-    	            }
-		}
-    	    }
+                        push @values, $_->[1] for @asubfields;
+                    }
+                }
+            }
         }
     }
 
