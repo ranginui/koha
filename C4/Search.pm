@@ -2568,8 +2568,11 @@ sub GetIndexLabelFromCode {
 
 sub GetSubfieldsForIndex {
     my $index = shift;
+    my $notorderby = shift;
     my $dbh = C4::Context->dbh;
-    my $sth = $dbh->prepare("SELECT field, subfield FROM indexmappings WHERE `index`=? ORDER BY field, subfield");
+    my $query = "SELECT field, subfield FROM indexmappings WHERE `index` = ?";
+    $query .= " ORDER BY field, subfield" unless $notorderby;
+    my $sth = $dbh->prepare($query);
     $sth->execute($index);
     my $arrayref = $sth->fetchall_arrayref({});
 
@@ -2621,7 +2624,7 @@ sub IndexRecord {
         for my $index ( @$indexes ) {
 
             my @values;
-            my $mapping = GetSubfieldsForIndex( $index->{'code'} );
+            my $mapping = GetSubfieldsForIndex( $index->{'code'}, 1 );
 
             if ( $index->{'plugin'} ) {
                 my $plugin = $index->{'plugin'};
@@ -2644,7 +2647,7 @@ sub IndexRecord {
                                 for ( @sfvals ) {
                                     $_ = NormalizeDate( $_ ) if $index->{'type'} eq 'date';
                                     $_ = FillSubfieldWithAuthorisedValues( $frameworkcode, $tag, $code, $_ ) if $recordtype eq "biblio";
-                                    push @values, $_;
+                                    push @values, $_ if $_;
                                 }
 
                             }
@@ -2666,11 +2669,12 @@ sub IndexRecord {
 
 sub NormalizeDate {
     given( shift ) {
-        when( /(..)\/(..)\/(....)/ ) { return "$3-$2-$1T00:00:00Z" }
-        when( /(....)\/(..)/       ) { return "$1-$2-01T00:00:00Z" }
-        when( /(..)\/(....)/       ) { return "$2-$1-01T00:00:00Z" }
-        when( /(....)/             ) { return "$1-01-01T00:00:00Z" }
+        when( /^(\d{2}).(\d{2}).(\d{4})$/ ) { return "$3-$2-$1T00:00:00Z" }
+        when( /^(\d{4}).(\d{2})$/         ) { return "$1-$2-01T00:00:00Z" }
+        when( /^(\d{2}).(\d{4})$/         ) { return "$2-$1-01T00:00:00Z" }
+        when( /^(\d{4})$/                 ) { return "$1-01-01T00:00:00Z" }
     }
+    return undef;
 }
 
 sub FillSubfieldWithAuthorisedValues {
@@ -2686,11 +2690,12 @@ sub FillSubfieldWithAuthorisedValues {
             my $itemtype = getitemtypeinfo( $value );
             return $itemtype->{'description'};
         }
-        when( length ) {
-            my $authorisedvalues = GetAuthorisedValues( $structure->{'authorised_value'} );
-            for ( @$authorisedvalues ) {
-                return $_->{'lib'} if $_->{'authorised_value'} eq $value;
-            }
+        when( '' ) { return $value; }
+        default {
+            use Memoize;
+            memoize('GetAuthorisedValueLib');
+            my $tmp = GetAuthorisedValueLib( $structure->{'authorised_value'}, $value );
+            return $tmp if $tmp;
         }
     }
     return $value;
