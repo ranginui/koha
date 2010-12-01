@@ -102,7 +102,9 @@ if ( $action eq 'move' ) {
 } elsif ( $action eq 'cancel' ) {
     my $borrowernumber = $input->param('borrowernumber');
     my $biblionumber   = $input->param('biblionumber');
-    CancelReserve( $biblionumber, '', $borrowernumber );
+    #CancelReserve( $biblionumber, '', $borrowernumber );
+    my $reservenumber = GetReserveNumber($borrowernumber, $biblionumber);
+    CancelReserve( $reservenumber, $biblionumber);
 } elsif ( $action eq 'setLowestPriority' ) {
     my $borrowernumber = $input->param('borrowernumber');
     my $biblionumber   = $input->param('biblionumber');
@@ -456,11 +458,10 @@ foreach my $biblionumber (@biblionumbers) {
         } @$reserves
       ) {
         my %reserve;
-
         $reserve{'reservenumber'}   = $res->{'reservenumber'};
 
         my @optionloop;
-        for ( my $i = 1 ; $i <= $totalcount ; $i++ ) {
+        for ( my $i = 1 ; $i <= $count ; $i++ ) {
             push(
                 @optionloop,
                 {   num      => $i,
