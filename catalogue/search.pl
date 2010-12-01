@@ -376,7 +376,6 @@ if ($@ || $error) {
     $template->param(query_error => $error.$@);
     output_html_with_http_headers $cgi, $cookie, $template->output;
     exit;
->>>>>>> [SOLR] Adding a plugin for authors.
 }
 
 my @results;
