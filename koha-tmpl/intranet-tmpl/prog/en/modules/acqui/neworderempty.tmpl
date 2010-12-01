@@ -221,7 +221,23 @@ $(document).ready(function()
             <label for="series">Series: </label>
                 <input type="text" size="20" name="series" id="series" value="<!-- TMPL_VAR NAME="seriestitle" -->" />
             <!-- /TMPL_IF -->
-        </li>
+            </li>
+            <!-- TMPL_UNLESS name="biblionumber" -->
+            <!-- TMPL_IF name="itemtypeloop" -->
+            <li>
+                <span class="label">Item type:</span>
+                <select name="itemtype" style="width:12em;">
+                <!-- TMPL_LOOP NAME="itemtypeloop" -->
+                    <!-- TMPL_IF Name="selected"-->
+                    <option value="<!-- TMPL_VAR NAME="itemtype" -->" selected="selected"><!-- TMPL_VAR NAME="description" --></option>
+                    <!--TMPL_ELSE --> <option value="<!-- TMPL_VAR NAME="itemtype" -->"><!-- TMPL_VAR NAME="description" --></option>
+                    <!-- /TMPL_IF -->
+                <!-- /TMPL_LOOP -->
+                </select>
+            </li>
+            <!-- /TMPL_IF -->
+            <!-- /TMPL_UNLESS -->
+
         </ol>
     </fieldset>
     <!-- TMPL_IF name="items" -->
