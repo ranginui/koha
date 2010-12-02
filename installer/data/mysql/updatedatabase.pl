@@ -4696,7 +4696,7 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
 		if (@$search){
 			my $search=$dbh->selectall_arrayref("select * from systempreferences where variable='MergeAuthoritiesOnUpdate'");
 			if (@$search){
-	    		$dbh->do("DELETE FROM systempreferences set variable='dontmerge'");
+	    		$dbh->do("DELETE FROM systempreferences WHERE variable='dontmerge'");
 			}
 			else {
 	    		$dbh->do("UPDATE systempreferences set variable='MergeAuthoritiesOnUpdate' ,value=1-value*1 WHERE variable='dontmerge'");
