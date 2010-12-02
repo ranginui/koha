@@ -32,10 +32,18 @@
       <analyzer>
         <tokenizer class="solr.StandardTokenizerFactory"/>
         <filter class="solr.StandardFilterFactory"/>
+        <!-- no more l' d' qu' etc. based on elision words file -->
+        <filter class="solr.ElisionFilterFactory" articles="elisionwords.txt"/>
+        <!-- no more le la les du  etc. based on stopwords file -->
+        <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords_fr.txt"/>
+        <!-- data will be pushed in lower case (during indexing and search) -->
         <filter class="solr.LowerCaseFilterFactory"/>
-        <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt"/>
+        <!-- texts will be found with their synonyms if written in synonyms file -->
+        <filter class="solr.SynonymFilterFactory" synonyms="synonyms_fr.txt" ignoreCase="true" expand="true"/>
+        <!-- Phonetic / Metaphone search -->
+        <filter class="solr.PhoneticFilterFactory" encoder="DoubleMetaphone"/>
+        <!-- Stemming search -->
         <filter class="solr.SnowballPorterFilterFactory" language="French" />
-        <filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
         <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
       </analyzer>
     </fieldtype>
@@ -64,5 +72,7 @@
 
  <!-- Default Boolean Operator -->
  <solrQueryParser defaultOperator="AND"/>
+
+ <!--similarity class="org.apache.lucene.search.DefaultSimilarity"/-->
 
 </schema>
