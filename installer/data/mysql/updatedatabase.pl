@@ -128,22 +128,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
                 "
     );
-<<<<<<< HEAD
-    $dbh->do(
-        "CREATE TABLE IF NOT EXISTS `nozebra` (
-                `server` varchar(20)     NOT NULL,
-                `indexname` varchar(40)  NOT NULL,
-                `value` varchar(250)     NOT NULL,
-                `biblionumbers` longtext NOT NULL,
-                KEY `indexname` (`server`,`indexname`),
-                KEY `value` (`server`,`value`))
-                ENGINE=InnoDB DEFAULT CHARSET=utf8;
-                "
-    );
-    print "Upgrade to $DBversion done (adding tags and nozebra tables )\n";
-=======
     print "Upgrade to $DBversion done (adding tags table )\n";
->>>>>>> [SOLR] Port of the installer
     SetVersion($DBversion);
 }
 
@@ -2754,19 +2739,6 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     SetVersion($DBversion);
 }
 
-<<<<<<< HEAD
-$DBversion = '3.01.00.027';
-if ( C4::Context->preference("Version") < TransformToNum($DBversion)) {
-	if($compare_version < TransformToNum("3.00.02.010") or $compare_version >TransformToNum("3.01.00.000"))
-	{
-	    $dbh->do("ALTER TABLE zebraqueue CHANGE `biblio_auth_number` `biblio_auth_number` bigint(20) unsigned NOT NULL default 0");
-	    print "Upgrade to $DBversion done (Increased size of zebraqueue biblio_auth_number to address bug 3148.)\n";
-	}
-    SetVersion($DBversion);
-}
-
-=======
->>>>>>> [SOLR] Port of the installer
 $DBversion = '3.01.00.028';
 if ( C4::Context->preference("Version") < TransformToNum($DBversion)) {
 	if($compare_version < TransformToNum("3.00.02.011") or $compare_version >TransformToNum("3.01.00.000"))
@@ -4896,6 +4868,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 	");
     print "Upgrade to $DBversion done (Adding OpacHiddenItems syspref)\n";
     SetVersion($DBversion);
+}
 
 $DBversion = "3.02.00.055";
 if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
@@ -5005,8 +4978,13 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
         UNLOCK TABLES;
         });
     }
-	print "Upgrade to $DBversion done (Solr tables)\n";
-	SetVersion ($DBversion);
+    $dbh->do("INSERT IGNORE INTO `systempreferences` (variable,value,explanation,options,type) VALUES('SolrAPI','http://localhost:8080/solr','Solr web service URL.','','Free');");
+    $dbh->do("UPDATE `systempreferences` SET options='score|str_callnumber|date_pubdate|date_acqdate|txt_title|str_author' WHERE variable IN ('defaultSortField', 'OPACdefaultSortField')");
+    $dbh->do("UPDATE `systempreferences` SET options='asc|desc' WHERE variable IN ('defaultSortOrder', 'OPACdefaultSortOrder')");
+    $dbh->do("UPDATE `systempreferences` SET value='score' WHERE variable IN ('defaultSortField', 'OPACdefaultSortField')");
+    $dbh->do("UPDATE `systempreferences` SET value='desc' WHERE variable IN ('defaultSortOrder', 'OPACdefaultSortOrder')");
+    print "Upgrade to $DBversion done (Solr tables)\n";
+    SetVersion ($DBversion);
 }
 
 $DBversion = "3.02.00.055";
