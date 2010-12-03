@@ -78,12 +78,14 @@ if ($cardnumber) {
         if (card_exist($cardnumber)) {
 	    resetTimestamp($cardnumber, 'cardnumber');
 	    updateCategorycode($carddata->{categorycode}, $cardnumber) if $carddata->{categorycode} ne '';
+	    updateDateexpiry($carddata->{ENDDATE}, $cardnumber, 'cardnumber');
             print $query->redirect("/cgi-bin/koha/circ/circulation.pl?findborrower=$cardnumber");
 	    exit;
         }
         elsif (my $borrowernumber = getMemberByAppligest($carddata->{'APPLIGEST'}, $carddata->{'ETABLISSEM'})) {
 	    resetTimestamp($borrowernumber, 'borrowernumber');
 	    updateCard($borrowernumber, $cardnumber);
+	    updateDateexpiry($carddata->{ENDDATE}, $borrowernumber, 'borrowernumber');
             print $query->redirect("/cgi-bin/koha/circ/circulation.pl?borrowernumber=$borrowernumber");
 	    exit;
         }
@@ -129,7 +131,7 @@ sub get_card_data {
 
     my $doc = get "http://139.124.135.90:8080/axis2/services/SquirelWebServices/getBiblibData?pupi=$cardnumber&year=$schooltyear";
     my $xmlsimple = XML::Simple->new();
-    my $data = $xmlsimple->XMLin($doc);
+    my $data = $xmlsimple->XMLin($doc) if $doc;
 
     my ($step, $category, $etablissement, $composante, $appligest);
 

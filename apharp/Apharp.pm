@@ -32,6 +32,8 @@ our @EXPORT = qw(
     &insert_borrower
     &category_for 
     &appendtolog 
+    &updateDateexpiry
+    &get_readable_date
     &make_message );
 
 sub getBorrowers {
@@ -107,6 +109,22 @@ sub resetTimestamp {
 	my $res = $sth->execute();
     }
 
+}
+
+sub updateDateexpiry {
+    my ( $timestamp, $identifier, $by ) = @_;
+    my $borrowernumber;
+
+    if ($by eq 'borrowernumber') {
+        $borrowernumber = $identifier;
+    } else {
+        $borrowernumber = getMemberByCardnumber($identifier);
+    }
+
+    my $query = "UPDATE borrowers SET dateexpiry=? WHERE borrowernumber=?";
+    my $dbh = C4::Context->dbh;
+    my $sth = $dbh->prepare($query);
+    my $res = $sth->execute( get_readable_date( $timestamp ), $borrowernumber);
 }
 
 sub updateCategorycode {
@@ -372,8 +390,6 @@ sub extract_extended_attributes {
 }
 
 sub insert_borrower {
-    #AddMember: cardnumber, surname, firstname, branchcode, categorycode
-    #Attributes: COMPOSANTE (=> branchcode), APPLIGEST, ETABLISSEM, CODEETAPE(=> categorycode)
     my $carddata = shift;
     my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
 
@@ -391,7 +407,7 @@ sub insert_borrower {
     }
 
     $borrower{dateenrolled} ||= C4::Dates->new()->output('iso');
-    $borrower{dateexpiry} ||= calcExpiryDate($borrower{categorycode},$borrower{dateenrolled}) if ($borrower{categorycode});
+    $borrower{dateexpiry} = get_readable_date( $carddata->{ENDDATE} );
 
     #On rajoute les 8 zéros au debut de la chaine
     $borrower{cardnumber} =  '00000000' . $borrower{cardnumber};  
@@ -404,6 +420,16 @@ sub insert_borrower {
         return 1;
     }
    
+}
+
+sub get_readable_date {
+    my $timestamp = shift;
+
+    $timestamp =~ s/000$//;
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime( $timestamp );
+    $year += 1900;
+    $mon += 1;
+    return "$year-$mon-$mday";
 }
 
 sub category_for {

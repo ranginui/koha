@@ -114,7 +114,7 @@ if (@$borrowers) {
     print $message;
 
     my %mail = (
-        smtp    => 'smtp.nerim.net',
+        smtp    => 'localhost',
         To      => 'alex.arnaud@biblibre.com',
         From    => 'alex.arnaud@biblibre.com',
         Subject => 'Borrowers update result',
