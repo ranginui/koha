@@ -76,6 +76,7 @@ BEGIN {
       &GetUsedMarcStructure
       &GetXmlBiblio
       &GetCOinSBiblio
+      &GetMarcPrice
 
       &GetAuthorisedValueDesc
       &GetMarcStructure
@@ -3673,7 +3674,7 @@ sub GetMarcPrice {
     my $subfield;
     
     if ( $marcflavour eq "MARC21" ) {
-        @listtags = ('345', '010');
+        @listtags = ('345', '020');
         $subfield="c";
     } elsif ( $marcflavour eq "UNIMARC" ) {    # assume unimarc if not marc21
         @listtags = ('345', '010');
