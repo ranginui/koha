@@ -10,18 +10,20 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opac_uk_UA\n"
 "POT-Creation-Date: 2010-10-23 12:00+0300\n"
-"PO-Revision-Date: 2010-11-06 11:42+0300\n"
-"Last-Translator: Serhij Dubyk <serhijdubyk@gmail.com>\n"
+"PO-Revision-Date: 2010-12-03 12:24+1300\n"
+"Last-Translator: Serhij Dubyk / Сергій Дубик <serhijdubyk@gmail.com>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
+"10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Pootle 2.0.3\n"
 "X-Poedit-Country: UKRAINE\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Poedit-KeywordsList: інтегроване бібліотечне програмне забезпечення;Open Source Library System;відкрита бібліотечна система\n"
+"X-Poedit-KeywordsList: інтегроване бібліотечне програмне забезпечення;Open "
+"Source Library System;відкрита бібліотечна система\n"
 "X-Poedit-Language: Ukrainian\n"
 
 #. SCRIPT
@@ -31,7 +33,7 @@ msgstr " одиницю(і) додано до Вашого возика"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/compact.xsl:32
 msgid "#"
-msgstr ""
+msgstr "#"
 
 #. A
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:170
@@ -88,9 +90,9 @@ msgstr "%s &rsaquo; Самообслуговування"
 #. %1$s: TMPL_VAR name=description
 #. %2$s: TMPL_VAR name=categorycode
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-userupdate.tmpl:152
-#, fuzzy, c-format
+#, c-format
 msgid "%s (%s)"
-msgstr "%s %s (%s)"
+msgstr "%s (%s)"
 
 #. %1$s: TMPL_VAR name=bibliotitle
 #. %2$s: TMPL_VAR name=biblionumber
@@ -139,9 +141,9 @@ msgstr "%s каталог &rsaquo; ISBD"
 #. %1$s: TMPL_VAR name=LibraryNameTitle
 #. %2$s: TMPL_VAR name=title
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-reserve.tmpl:1
-#, fuzzy, c-format
+#, c-format
 msgid "%s Catalog &rsaquo; Placing hold %s for"
-msgstr "%s каталог &rsaquo; Резервування %s для"
+msgstr "%s каталог &rsaquo; Встановлення резервування „%s“ для"
 
 #. %1$s: TMPL_VAR name=issues_count
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-user.tmpl:196
@@ -225,9 +227,9 @@ msgstr "%s, %s"
 #. %2$s: TMPL_VAR name=B_address2
 #. %3$s: TMPL_VAR name=B_city
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-userdetails.tmpl:24
-#, fuzzy, c-format
+#, c-format
 msgid "%s, %s, %s"
-msgstr "%s, %s"
+msgstr "%s, %s, %s"
 
 #. For the first occurrence,
 #. %1$s: TMPL_VAR name=result_number
@@ -599,7 +601,7 @@ msgstr "(опубліковано %s)"
 #: ../../koha-tmpl/opac-tmpl/prog/en/includes/opac-facets.inc:7
 #: ../../koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:173
 msgid "(related searches:"
-msgstr "(пов’язані пошуки: "
+msgstr "(споріднені пошуки: "
 
 #. For the first occurrence,
 #. %1$s: TMPL_VAR name=notes
@@ -674,12 +676,12 @@ msgstr "- %s,"
 #. SCRIPT
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:134
 msgid "- You must enter a List Name"
-msgstr ""
+msgstr "— Ви повинні ввести назву списку"
 
 #. SCRIPT
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:64
 msgid "- You must enter a Title"
-msgstr ""
+msgstr "— Ви повинні ввести заголовок"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-ISBDdetail.tmpl:80
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:828
@@ -911,9 +913,9 @@ msgstr "<!-- TMPL_VAR NAME=\"LibraryName\" --> RSS подача пошуку"
 
 #. INPUT type=text
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-userupdate.tmpl:77
-#, fuzzy
 msgid "<!-- TMPL_VAR NAME=\"description\" --> (<!-- TMPL_VAR NAME=\"categorycode\" -->)"
-msgstr "$<!-- TMPL_VAR NAME=\"code\" --> <!-- TMPL_VAR NAME=\"value\" -->"
+msgstr ""
+"<!-- TMPL_VAR NAME=\"description\" --> (<!-- TMPL_VAR NAME=\"categorycode\" -->)"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/ilsdi.tmpl:396
 #, c-format
@@ -1081,9 +1083,8 @@ msgid "A record matching barcode <b>%s</b> has already been added."
 msgstr "Запис, якому відповідає штрих-код <b>%s</b> вже був доданий."
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-reserve.tmpl:414
-#, fuzzy
 msgid "A specific copy"
-msgstr "Розміщуємо резервування на конкретний примірник"
+msgstr "Конкретний примірник"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:33
 #, fuzzy
@@ -1092,7 +1093,7 @@ msgstr "MARC"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:332
 msgid "About the Author"
-msgstr ""
+msgstr "Про автора"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:626
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:470
@@ -1258,7 +1259,6 @@ msgid "Advanced Search"
 msgstr "Детальніший пошук"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:79
-#, fuzzy
 msgid "All Libraries"
 msgstr "Усі бібліотеки"
 
@@ -1385,21 +1385,18 @@ msgstr "Де-небудь: "
 
 #. SCRIPT
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-user.tmpl:69
-#, fuzzy
 msgid "Are you sure you want to cancel this hold?"
-msgstr "Чи Ви справді хочете спорожнити Ваш возик?"
+msgstr "Чи Ви справді хочете скасувати це резервування?"
 
 #. SCRIPT
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:134
-#, fuzzy
 msgid "Are you sure you want to delete this list?"
-msgstr "Чи Ви справді хочете вилучити відібрані одиниці?"
+msgstr "Чи Ви справді хочете вилучити цей список?"
 
 #. SCRIPT
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-search-history.tmpl:19
-#, fuzzy
 msgid "Are you sure you want to delete your search history?"
-msgstr "Чи Ви справді хочете спорожнити Ваш возик?"
+msgstr "Чи Ви справді хочете очистити Вашу історію пошуків?"
 
 #. SCRIPT
 #: ../../koha-tmpl/opac-tmpl/prog/en/includes/doc-head-close.inc:62
@@ -1413,9 +1410,8 @@ msgstr "Чи Ви справді хочете вилучити відібран�
 
 #. SCRIPT
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:134
-#, fuzzy
 msgid "Are you sure you want to remove these items from the list?"
-msgstr "Чи Ви справді хочете вилучити відібрані одиниці?"
+msgstr "Чи Ви справді хочете вилучити ці одиниці зі списку?"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:600
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-full-serial-issues.tmpl:195
@@ -1432,13 +1428,13 @@ msgstr "статті на юридичні теми"
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:578
 #, c-format
 msgid "At branch: %s"
-msgstr "До підрозділу: %s"
+msgstr "В підрозділі: %s"
 
 #. %1$s: TMPL_VAR name=branchname
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:577
-#, fuzzy, c-format
+#, c-format
 msgid "At library: %s"
-msgstr "У бібліотеці: %s %s"
+msgstr "У бібліотеці: %s"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/includes/subtypes_unimarc.inc:4
 msgid "Audience"
@@ -1446,7 +1442,7 @@ msgstr "Аудиторія"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:277
 msgid "Audiovisual Profile:"
-msgstr ""
+msgstr "Аудіовізуальний профіль: "
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:89
 #, fuzzy
@@ -1487,21 +1483,20 @@ msgstr "Автор "
 #: ../../koha-tmpl/opac-tmpl/prog/en/includes/resort_form.inc:9
 #: ../../koha-tmpl/opac-tmpl/prog/en/includes/resort_form.inc:10
 msgid "Author (A-Z)"
-msgstr "Автор (за алфавітом)"
+msgstr "Автор (А-Я)"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/includes/resort_form.inc:11
 #: ../../koha-tmpl/opac-tmpl/prog/en/includes/resort_form.inc:12
 msgid "Author (Z-A)"
-msgstr "Автор (зворотньо за алфавітом)"
+msgstr "Автор (Я-А)"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:561
 msgid "Author Notes provided by Syndetics"
-msgstr ""
+msgstr "Нотатки про автора, надані Syndetics"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:186
-#, fuzzy
 msgid "Author(s)"
-msgstr "Автор(и): "
+msgstr "Автор(и)"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-sendbasket.tmpl:21
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-sendshelf.tmpl:21
@@ -1566,9 +1561,9 @@ msgstr "Доступно у бібліотеці"
 
 #. %1$s: TMPL_VAR name=AmazonTld
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:759
-#, fuzzy, c-format
+#, c-format
 msgid "Average Rating (from Amazon%s):"
-msgstr "Усереднена оцінка (зі сайту Amazon.com): "
+msgstr "Усереднена оцінка (з Amazon%s): "
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:598
 msgid "Awaited"
@@ -1576,11 +1571,11 @@ msgstr "Очікують"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:295
 msgid "Awards:"
-msgstr ""
+msgstr "Нагороди: "
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:829
 msgid "BIBTEX"
-msgstr ""
+msgstr "BibTeX"
 
 # Books - книги
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:34
@@ -1590,15 +1585,15 @@ msgstr ""
 msgid "BK"
 msgstr "BK"
 
+# http://www.babeltheque.com/
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:351
 msgid "Babelthèque"
-msgstr ""
+msgstr "Babelthèque"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-sendshelfform.tmpl:16
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-downloadshelf.tmpl:31
-#, fuzzy
 msgid "Back to lists"
-msgstr "Назад до бібліографічного запису"
+msgstr "Назад до списків"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-reserve.tmpl:450
 msgid "Barcode"
@@ -1612,7 +1607,7 @@ msgstr "один раз на два роки"
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-downloadcart.tmpl:14
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-downloadshelf.tmpl:20
 msgid "BibTex"
-msgstr "BibTex"
+msgstr "BibTeX"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-authoritiessearchresultlist.tmpl:45
 msgid "Biblio records"
@@ -1661,7 +1656,7 @@ msgstr "видання шрифтами Брайля або Муна"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:363
 msgid "Branch"
-msgstr ""
+msgstr "Підрозділ"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:130
 msgid "Brief Display"
@@ -1941,9 +1936,9 @@ msgstr "каталог &rsaquo; Серіальні видання"
 
 #. %1$s: TMPL_VAR name=bibliotitle
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-full-serial-issues.tmpl:1
-#, fuzzy, c-format
+#, c-format
 msgid "Catalog &rsaquo; Subscription information for %s"
-msgstr "Інформація про підписку для %s"
+msgstr "каталог &rsaquo; Інформація про підписку для „%s“"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-tags.tmpl:1
 msgid "Catalog &rsaquo; Tags"
@@ -2115,9 +2110,8 @@ msgstr "Клацніть, щоб додати у возик"
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:289
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:297
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:298
-#, fuzzy
 msgid "Click to open in new window"
-msgstr "Клацніть, щоб переглянути у Google Books"
+msgstr "Клацніть, щоб відкрити у новому вікні"
 
 #. DIV
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-user.tmpl:226
@@ -2224,7 +2218,7 @@ msgstr "Підтвердити"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-reserve.tmpl:221
 msgid "Confirm holds for:"
-msgstr ""
+msgstr "Підтвердіть резервування для: "
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-userdetails.tmpl:21
 msgid "Contact Details"
@@ -2594,7 +2588,7 @@ msgstr "ПОМИЛКА: помилка бази даних. Вилучити (н
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-reserve.tmpl:212
 msgid "ERROR: Internal error: incomplete hold request."
-msgstr ""
+msgstr "ПОМИЛКА: внутрішня помилка: незавершений запит на резервування."
 
 #. %1$s: TMPL_VAR name=unrecognized
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:175
@@ -2712,7 +2706,7 @@ msgstr "Розширений вміст: "
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:494
 msgid "Enhanced Descriptions from Syndetics:"
-msgstr ""
+msgstr "Розширені описи з Syndetics: "
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:2
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:75
@@ -2788,11 +2782,11 @@ msgstr "Приклад виклику"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:322
 msgid "Excerpt"
-msgstr ""
+msgstr "Уривок"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:532
 msgid "Excerpt provided by Syndetics"
-msgstr ""
+msgstr "Уривок, наданий Syndetics"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-ISBDdetail.tmpl:35
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:31
@@ -2804,7 +2798,7 @@ msgstr "Розширений перегляд у МАРК"
 #. SCRIPT
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-reserve.tmpl:154
 msgid "Expecting a specific copy selection."
-msgstr ""
+msgstr "Очікується вибір конкретного примірника."
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-user.tmpl:346
 #, fuzzy
@@ -2851,9 +2845,8 @@ msgid "Fiction"
 msgstr "художня література"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:286
-#, fuzzy
 msgid "Fiction Notes:"
-msgstr "художня література"
+msgstr "Примітки про художню літературу: "
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:213
 msgid "Filmographies"
@@ -2899,7 +2892,7 @@ msgstr "Наприклад: 1999-2001. Можна також використо�
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:64
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:134
 msgid "Form not submitted because of the following problem(s)"
-msgstr ""
+msgstr "Форма не передана через наступну проблему(и)"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:577
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:421
@@ -3073,11 +3066,11 @@ msgstr "Резервування"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-reserve.tmpl:247
 msgid "Hold Not Needed After"
-msgstr ""
+msgstr "Зарезервоване не буде потрібне після"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-reserve.tmpl:245
 msgid "Hold Starts on Date"
-msgstr ""
+msgstr "Резервування починається з дати"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-user.tmpl:172
 msgid "Hold date"
@@ -3279,7 +3272,7 @@ msgstr "Випуск №"
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:580
 #, c-format
 msgid "Issues between: %s and:"
-msgstr ""
+msgstr "Випуски між: %s та:"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-serial-issues.tmpl:13
 msgid "Issues for a subscription"
@@ -3580,7 +3573,7 @@ msgstr "Назва списку: "
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:229
 msgid "List(s) this item appears in:"
-msgstr ""
+msgstr "Список(и), у яких присутня ця одиниця: "
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:99
 #: ../../koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:103
@@ -3844,9 +3837,9 @@ msgstr "Відсутнє"
 
 #. %1$s: TMPL_VAR name=missinglist
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:581
-#, fuzzy, c-format
+#, c-format
 msgid "Missing issues: %s"
-msgstr "Спроба видати %s"
+msgstr "Відсутніх випусків: %s"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:523
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:55
@@ -3959,9 +3952,8 @@ msgstr "Нова мітка: "
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:153
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:327
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:198
-#, fuzzy
 msgid "New&nbsp;Tag:"
-msgstr "Нова мітка: "
+msgstr "Нова&nbsp;мітка: "
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:250
 msgid "New:"
@@ -3982,9 +3974,8 @@ msgstr "Наступні &gt;&gt;"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-reserve.tmpl:268
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-reserve.tmpl:395
-#, fuzzy
 msgid "Next available copy"
-msgstr " доступні "
+msgstr "Наступний доступний примірник"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/sco/sco-main.tmpl:218
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-alert-subscribe.tmpl:21
@@ -4023,9 +4014,8 @@ msgid "No alternate contact on file."
 msgstr "У записі немає додаткового зв’язку."
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-reserve.tmpl:287
-#, fuzzy
 msgid "No available items."
-msgstr "Примірники доступні тут: "
+msgstr "Немає доступних примірників."
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:952
 msgid "No copies available"
@@ -4112,14 +4102,12 @@ msgstr "Немає результатів, щоб відповідали Ваш�
 #. SCRIPT
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:118
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:134
-#, fuzzy
 msgid "No tag was specified."
-msgstr "Жодної одиниці не було відібрано"
+msgstr "Мітка не була вказана."
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:244
-#, fuzzy
 msgid "No tags from this library for this title."
-msgstr "Немає міток для цього заголовку."
+msgstr "Немає міток з цієї бібліотеки для цього заголовку."
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:305
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:405
@@ -4501,7 +4489,6 @@ msgid "Pick Up Location"
 msgstr "Місце забирання"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-reserve.tmpl:252
-#, fuzzy
 msgid "Pickup Location"
 msgstr "Місце забирання"
 
@@ -4529,9 +4516,8 @@ msgid "Place Hold"
 msgstr "Встановити резервування"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-reserve.tmpl:249
-#, fuzzy
 msgid "Place On"
-msgstr "Розміщено"
+msgstr "Розмістити"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:148
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:322
@@ -4641,9 +4627,8 @@ msgid "Print"
 msgstr "Друк"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:210
-#, fuzzy
 msgid "Print List"
-msgstr "Редагувати список"
+msgstr "Видрукувати список"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-reserve.tmpl:242
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-user.tmpl:349
@@ -4802,9 +4787,8 @@ msgid "Regularity"
 msgstr "Регулярність"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:346
-#, fuzzy
 msgid "Related"
-msgstr "Споріднені зв'язки:"
+msgstr "Споріднене"
 
 # Споріднені зв'язки:
 # Посилання по темі:
@@ -4815,9 +4799,8 @@ msgid "Related Subjects:"
 msgstr "Споріднена тематика: "
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:737
-#, fuzzy
 msgid "Related Titles"
-msgstr "Споріднені зв'язки:"
+msgstr "Споріднені заголовки"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-userdetails.tmpl:63
 msgid "Relationship:"
@@ -4938,11 +4921,11 @@ msgstr "Рецензії"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:222
 msgid "Reviews from LibraryThing.com:"
-msgstr ""
+msgstr "Огляди від LibraryThing.com: "
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:541
 msgid "Reviews provided by Syndetics"
-msgstr ""
+msgstr "Огляди, надані Syndetics"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:250
 msgid "Résumé:"
@@ -5097,9 +5080,8 @@ msgid "Select a List"
 msgstr "Вибираємо список"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-reserve.tmpl:444
-#, fuzzy
 msgid "Select a specific copy:"
-msgstr "Розміщуємо резервування на конкретний примірник"
+msgstr "Виберіть конкретний примірник: "
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:16
 msgid "Select local databases:"
@@ -5164,18 +5146,16 @@ msgid "Serial"
 msgstr "Серіальне видання"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:354
-#, fuzzy
 msgid "Serial Collection"
-msgstr "Зібрання"
+msgstr "Зібрання серіального видання"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/includes/subtypes_unimarc.inc:121
 msgid "Serial Type"
 msgstr "Тип серіального видання"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:364
-#, fuzzy
 msgid "Serial collection"
-msgstr "змішаний"
+msgstr "Зібрання серіального видання"
 
 #. For the first occurrence,
 #. %1$s: TMPL_VAR name=serial
@@ -5198,9 +5178,8 @@ msgid "Series"
 msgstr "Серії"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:267
-#, fuzzy
 msgid "Series Information:"
-msgstr "Інформація"
+msgstr "Інформація про серії: "
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:282
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:70
@@ -5243,7 +5222,7 @@ msgstr "Показати усі примірники"
 #. IMG
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-reserve.tmpl:346
 msgid "Show Calendar"
-msgstr ""
+msgstr "Показати календар"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-readingrecord.tmpl:48
 msgid "Show Last 50 Items Only"
@@ -5326,9 +5305,8 @@ msgid "Sorry, the system doesn't think you have permission to access this page."
 msgstr "Даруйте, система вважає, що Ви не маєте дозволу на доступ до цієї сторінки."
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:771
-#, fuzzy
 msgid "Sorry, there are no reviews from this library available for this title."
-msgstr "Даруйте, немає рецензій по цьому заголовку."
+msgstr "Даруйте, немає оглядів з цієї бібліотеки для цього заголовку."
 
 #. %1$s: TMPL_VAR name=too_much_oweing
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-reserve.tmpl:188
@@ -5605,24 +5583,24 @@ msgstr "Огляди"
 msgid "System Maintenance"
 msgstr "Обслуговування системи"
 
+# Table Of Contents
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:318
 msgid "TOC"
-msgstr ""
+msgstr "Зміст"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:517
 msgid "Table of Contents provided by Syndetics"
-msgstr ""
+msgstr "Зміст, наданий Syndetics"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:150
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:324
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:134
-#, fuzzy
 msgid "Tag"
-msgstr "Мітки: "
+msgstr "Мітка"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:338
 msgid "Tag Browser"
-msgstr ""
+msgstr "Оглядач міток: "
 
 # Хмара тематик
 #: ../../koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:111
@@ -5639,9 +5617,8 @@ msgstr "Стан мітки тут."
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:240
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:244
-#, fuzzy
 msgid "Tags from this library:"
-msgstr "Повідомлення від бібліотеки"
+msgstr "Мітки з цієї бібліотеки: "
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:463
 msgid "Tags:"
@@ -5673,9 +5650,9 @@ msgstr " "
 
 #. %1$s: TMPL_VAR name=opacdisplaycount
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:584
-#, fuzzy, c-format
+#, c-format
 msgid "The %s latest issues for this subscription:"
-msgstr "Останні три випуски пов'язані з цією підпискою: "
+msgstr "Останні %s випуски для цієї підписки: "
 
 #. %1$s: TMPL_VAR name=limit
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:40
@@ -5745,9 +5722,9 @@ msgstr "Ідентифікатор користувача "
 
 #. %1$s: TMPL_VAR name=subscriptionsnumber
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:575
-#, fuzzy, c-format
+#, c-format
 msgid "There are %s subscription(s) associated with this title."
-msgstr "(Маємо %s підписку(и), пов’язану(і) з цим заголовком)."
+msgstr "З цим заголовком пов’язано підписок: %s."
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:679
 msgid "There are no comments for this item."
@@ -5796,9 +5773,8 @@ msgid "This error means that you are forbidden for some reason to see this page.
 msgstr "Ця помилка означає, що Вам забороняється з деякої причини бачити цю сторінку."
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:574
-#, fuzzy
 msgid "This is a serial"
-msgstr "Це підписка на серіальне видання"
+msgstr "Це серіальне видання"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-addbybiblionumber.tmpl:64
 msgid "This is not an open list. Items cannot be added to it."
@@ -5825,11 +5801,15 @@ msgstr "Ця одиниця вже є у Вашому возику"
 #, c-format
 msgid "This page contains enriched content visible when JavaScript is enabled or by clicking <a1>here</a>."
 msgstr ""
+"Ця сторінка містить розширений вміст, видимий при увімкнутому JavaScript чи "
+"при натисненні <a1>тут</a>."
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:382
 #, c-format
 msgid "This record has many physical items. <a1>Click here to view them all.</a>"
 msgstr ""
+"Цей запис має багато фізичних примірників. <a1>Натисніть тут, щоб "
+"переглянути їх усіх.</a>"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:304
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:376
@@ -5839,7 +5819,7 @@ msgstr "Цей запис не має жодного примірника."
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-reserve.tmpl:289
 msgid "This title cannot be requested."
-msgstr ""
+msgstr "Цей заголовок не може бути запитаний."
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/includes/subtypes_unimarc.inc:148
 msgid "Three times a month"
@@ -5893,9 +5873,8 @@ msgid "Title (Z-A)"
 msgstr "Заголовок (зворотньо за алфавітом)"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:316
-#, fuzzy
 msgid "Title Notes"
-msgstr "Заголовки"
+msgstr "Примітки щодо заголовку"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:275
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-results-grouped.tmpl:126
@@ -5986,9 +5965,8 @@ msgid "URL(s)"
 msgstr "Веб-адреса(и)"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-reserve.tmpl:496
-#, fuzzy
 msgid "Unavailable (lost or missing)"
-msgstr "(втрачено або відсутнє)"
+msgstr "Недоступно (втрачено або відсутнє)"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-serial-issues.tmpl:97
 msgid "Unavailable Issues"
@@ -6233,7 +6211,7 @@ msgstr "Ви маєте кредит на суму: "
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-reserve.tmpl:284
 msgid "You have already requested this title."
-msgstr ""
+msgstr "Ви вже раніше запитували цей заголовок."
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-readingrecord.tmpl:28
 msgid "You have never borrowed anything from this library."
@@ -7168,9 +7146,8 @@ msgstr "АБІС Коха ЕК - %s"
 
 #. ABBR
 #: ../../koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:86
-#, fuzzy
 msgid "koha:biblionumber:<!-- TMPL_VAR NAME=\"biblionumber\" -->"
-msgstr "koha:isbn:<!-- TMPL_VAR NAME=\"isbn\" -->"
+msgstr "koha:biblionumber:<!-- TMPL_VAR NAME=\"biblionumber\" -->"
 
 #: ../../koha-tmpl/opac-tmpl/prog/en/includes/subtypes_unimarc.inc:22
 #: ../../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:353
@@ -8121,122 +8098,178 @@ msgstr ""
 
 #~ msgid "$%s"
 #~ msgstr "%s грн."
+
 #~ msgid "%s -- Self Checkout"
 #~ msgstr "%s -- самообслуговування"
+
 #~ msgid "%s record(s)"
 #~ msgstr "%s одиниц(я/і)"
+
 #~ msgid "%s;"
 #~ msgstr "%s;"
+
 #~ msgid "&lt;&lt; Back to Cart"
 #~ msgstr "&lt;&lt; Назад до возика"
+
 #~ msgid "&lt;&lt;Previous"
 #~ msgstr "&lt;&lt;Попередні"
+
 #~ msgid "&nbsp;&nbsp;&nbsp;&nbsp; Corporate Name Phrase"
 #~ msgstr "&nbsp;&nbsp;&nbsp;&nbsp; Назва колективного автора як фраза"
+
 #~ msgid "&nbsp;No results found."
 #~ msgstr "&nbsp; Нічого не знайдено."
+
 #~ msgid "&rsaquo; Select"
 #~ msgstr "&rsaquo; Вибір"
+
 #~ msgid "(no title)"
 #~ msgstr "(без заголовку)"
+
 #~ msgid "-- Library Catalog"
 #~ msgstr "каталог бібліотеки"
+
 #~ msgid "/cgi-bin/koha/opac-search.pl?idc=su&amp;q="
 #~ msgstr "/cgi-bin/koha/opac-search.pl?idc=su&amp;q="
+
 #~ msgid "/cgi-bin/koha/opac-search.pl?idx=au&amp;q="
 #~ msgstr "/cgi-bin/koha/opac-search.pl?idx=au&amp;q="
+
 #~ msgid "; By %s"
 #~ msgstr "; %s"
+
 #~ msgid "<a1>%s</a>,"
 #~ msgstr "<a1>%s</a>,"
+
 #~ msgid "<a1>Click here</a> for more information on subscription(s) history"
 #~ msgstr ""
 #~ "Для отримання більш конкретної інформації про історію підписки(ок)"
 #~ "<a1>клацніть тут</a>"
+
 #~ msgid "<a1>Normal View</a> <a2>Full History</a>"
 #~ msgstr "<a1>Звичайний вигляд</a> <a2>Повна історія</a>"
+
 #~ msgid "<a1>Normal View</a> <a2>MARC View</a>"
 #~ msgstr "<a1>Звичайний вигляд</a> <a2>Перегляд у МАРК</a>"
+
 #~ msgid "<b>Selected items :</b> <a1>Remove</a>"
 #~ msgstr "<b>Відібрані одиниці:</b> <a1>Вилучити</a>"
+
 #~ msgid "<em>Error type:</em> %s"
 #~ msgstr "<em>Тип помилки:</em> %s"
+
 #~ msgid "<em>Title:</em> %s"
 #~ msgstr "<em>Заголовок:</em> %s"
+
 #~ msgid "Attempting to issue %s by %s to %s %s."
 #~ msgstr "Спроба видати %s, %s відвідувачу %s %s."
+
 #~ msgid "Authors: %s"
 #~ msgstr "Автори: %s"
+
 #~ msgid "Below is a list of the three latest issues :"
 #~ msgstr "Нижче - список трьох найостанніших випусків: "
+
 #~ msgid "Between %S"
 #~ msgstr "Між %S"
+
 #~ msgid "Books"
 #~ msgstr "Книги"
+
 #~ msgid "Books on Tape"
 #~ msgstr "Книги на плівці"
+
 #~ msgid ""
 #~ "Books, Pamphlets, Technical reports, Manuscripts, Legal papers, Theses "
 #~ "and dissertations"
 #~ msgstr ""
 #~ "Книги, брошури, технічні звіти, рукописи, юридичні папери, автореферати і "
 #~ "дисертації"
+
 #~ msgid "Catalog &rsaquo; Details for:"
 #~ msgstr "каталог &rsaquo; Подробиці для біб. запису: "
+
 #~ msgid "Catalog &rsaquo; Dictionary Search"
 #~ msgstr "каталог &rsaquo; Пошук у словнику"
+
 #~ msgid "Catalog Search Results"
 #~ msgstr "Результати пошуку у каталозі"
+
 #~ msgid "Catalogue &rsaquo; Recent Acquisitions"
 #~ msgstr "каталог &rsaquo; Останні надходження"
+
 #~ msgid "Checking out to %s %s (%s)"
 #~ msgstr "Видається відвідувачу %s %s (%s)"
+
 #~ msgid "Click Here to Complete Transaction"
 #~ msgstr "Натисніть тут, щоб завершити операцію"
+
 #~ msgid "Click Here to End Transaction"
 #~ msgstr "Натисніть тут, щоб закінчити операцію"
+
 #~ msgid "Click here if done."
 #~ msgstr "Клацніть тут, якщо виконано. "
+
 #~ msgid "Compact view"
 #~ msgstr "Компактний вигляд"
+
 #~ msgid "Computer Files"
 #~ msgstr "Комп’ютерні файли"
+
 #~ msgid "Computer files, Data, Software"
 #~ msgstr "Комп’ютерні файли, дані, програмне забезпечення"
+
 #~ msgid "Confirm Reservation"
 #~ msgstr "Підтвердити резервування"
+
 #~ msgid "Confirm?"
 #~ msgstr "Підтвердити?"
+
 #~ msgid "Copy Number"
 #~ msgstr "Номер примірника"
+
 #~ msgid "Copyright:"
 #~ msgstr "Авторські права:"
+
 #~ msgid "Copyrightdate"
 #~ msgstr "Дата авторського права"
+
 #~ msgid "Date desc"
 #~ msgstr "Дата надходження"
+
 #~ msgid "Descriptions"
 #~ msgstr "Описи"
+
 #~ msgid "Detailed notes:"
 #~ msgstr "Нотатки:"
+
 #~ msgid "Dictionary Search"
 #~ msgstr "Пошук у словнику"
+
 #~ msgid "Download shelf"
 #~ msgstr "Звантаження переліку"
+
 #~ msgid "Download shelf:"
 #~ msgstr "Звантажити перелік: "
+
 #~ msgid "E-mail:"
 #~ msgstr "Електронічна пошта: "
+
 #~ msgid "Enter the item barcode:"
 #~ msgstr "Вводимо штрих-код одиниці: "
+
 #~ msgid "Error Issuing Book"
 #~ msgstr "Помилка видачі книги"
+
 #~ msgid "Finish and Place Reservation"
 #~ msgstr "Закінчити і зарезервувати"
+
 #~ msgid "For:"
 #~ msgstr "Для: "
+
 #~ msgid "Format:"
 #~ msgstr "Формат: "
+
 #~ msgid ""
 #~ "Hi, Here is your list called %s, sent from our online catalog. Please "
 #~ "note that the attached file is a MARC biblographic records file which can "
@@ -8248,122 +8281,178 @@ msgstr ""
 #~ "записів у МАРК-форматі, який можна імпортувати до персонального "
 #~ "бібліографічного програмного забезпечення на кшталт EndNote, Reference "
 #~ "Manager чи ProCite."
+
 #~ msgid "ISBD"
 #~ msgstr "ISBD"
+
 #~ msgid "Issue number"
 #~ msgstr "Номер випуску"
+
 #~ msgid "Issues"
 #~ msgstr "Видачі"
+
 #~ msgid "Issues for %s"
 #~ msgstr "Видачі для %s"
+
 #~ msgid "Issuing Question"
 #~ msgstr "Питання щодо видачі"
+
 #~ msgid "Item Types:"
 #~ msgstr "Типи одиниць: "
+
 #~ msgid "Item type:"
 #~ msgstr "Тип одиниці: "
+
 #~ msgid "Item waiting to be pulled"
 #~ msgstr "Примірник чекає, щоб його забрати"
+
 #~ msgid "Items :"
 #~ msgstr "Одиниці: "
+
 #~ msgid "Items Borrowed Notifications"
 #~ msgstr "Повідомлення про випозичання примірників"
+
 #~ msgid "Items Returned Notifications"
 #~ msgstr "Повідомлення про повернення примірників"
+
 #~ msgid "Keyword(s):"
 #~ msgstr "Ключові слова: "
+
 #~ msgid "Kits"
 #~ msgstr "Комплекти"
+
 #~ msgid "Koha Self Checkout"
 #~ msgstr "Коха-самообслуговування"
+
 #~ msgid "Last Seen"
 #~ msgstr "Востаннє побачено"
+
 #~ msgid "Limit by item type:"
 #~ msgstr "Обмежитися наступними типами примірників: "
+
 #~ msgid "Limit type to: match any of the following"
 #~ msgstr "Обмеження типу: підберіть дещо з наступного"
+
 #~ msgid "Limit type to: match any of the following:"
 #~ msgstr "Обмеження типу: підберіть дещо з наступного: "
+
 #~ msgid "List by:"
 #~ msgstr "Основа переліку: "
+
 #~ msgid "Local History Materials"
 #~ msgstr "Матеріали з місцевої історії"
+
 #~ msgid "Manage your Messaging settings"
 #~ msgstr "Керування Вашими налаштуваннями повідомлень"
+
 #~ msgid "Maps"
 #~ msgstr "Карти"
+
 #~ msgid "Maps, Globes"
 #~ msgstr "Карти, глобуси"
+
 #~ msgid ""
 #~ "Motion pictures, Videorecordings, Filmstrips, Slides, Transparencies, "
 #~ "Photos, Cards, Charts, Drawings"
 #~ msgstr ""
 #~ "Кінофільми, відеозаписи, діафільми, слайди, діапозитиви, фотографії, "
 #~ "карти, схеми, креслення"
+
 #~ msgid "Next&gt;&gt;"
 #~ msgstr "Наступні&gt;&gt;"
+
 #~ msgid "No borrower matched %s"
 #~ msgstr "Немає абонентів бібліотеки, щоб мали найменування %s"
+
 #~ msgid "No result found !"
 #~ msgstr "Нічого не знайдено!"
+
 #~ msgid "No results found in Authorities."
 #~ msgstr "Нічого не знайдено у авторитетних джерелах. "
+
 #~ msgid "No results found in the catalog."
 #~ msgstr "Нічого не знайдено у каталозі."
+
 #~ msgid "No results in Authorities"
 #~ msgstr "Нічого не знайдено у авторитетних джерелах"
+
 #~ msgid "Not Published"
 #~ msgstr "Не опубліковано"
+
 #~ msgid "Not for loan :"
 #~ msgstr "Не для позики: "
+
 #~ msgid "Online Koha"
 #~ msgstr "Коха &rsaquo; Електронний "
+
 #~ msgid "Online Stores (Bookfinder.com)"
 #~ msgstr "он-лайн крамницях (Bookfinder.com)"
+
 #~ msgid "Other Databases (Google Scholar)"
 #~ msgstr "інших базах даних (Google Scholar)"
+
 #~ msgid "Other Libraries (WorldCat)"
 #~ msgstr "інших бібліотеках (WorldCat)"
+
 #~ msgid "Password or PIN"
 #~ msgstr "Пароль чи ПІН-код"
+
 #~ msgid "Permanent Address"
 #~ msgstr "Постійна адреса"
+
 #~ msgid "Physical Details:"
 #~ msgstr "Фіз. характеристика: "
+
 #~ msgid "Pick up From:"
 #~ msgstr "Де отримувати: "
+
 #~ msgid "Pick up from:"
 #~ msgstr "Де отримувати: "
+
 #~ msgid "Place a hold on <a1>%s</a>"
 #~ msgstr "Встановлення резервування на <a1>%s</a>"
+
 #~ msgid "Place a hold on the next available copy"
 #~ msgstr "Встановлювати резервування на наступний доступний примірник"
+
 #~ msgid "Please Click Here to Exit"
 #~ msgstr "Будь ласка, натисніть тут, щоб вийти"
+
 #~ msgid "Priority:"
 #~ msgstr "Пріоритет: "
+
 #~ msgid "Published"
 #~ msgstr "Опубліковано"
+
 #~ msgid "Rating (from Amazon.com):"
 #~ msgstr "Оцінка (зі сайту Amazon.com): "
+
 #~ msgid "Recent Acquisitions"
 #~ msgstr "Останні надходження"
+
 #~ msgid "Record No.:"
 #~ msgstr "№ запису: "
+
 #~ msgid "Reference"
 #~ msgstr "Довідники"
+
 #~ msgid "Renewable"
 #~ msgstr "Продовжуване"
+
 #~ msgid "Results %s to %s of %s in Authorities."
 #~ msgstr "Результати пошуку з %s до %s із %s у авторитетних джерелах."
+
 #~ msgid "Results %s to %s of %s in the catalog"
 #~ msgstr "Результати пошуку з %s до %s із %s у каталозі "
+
 #~ msgid "Results %s to %s of %s in the catalog."
 #~ msgstr "Результати пошуку з %s до %s із %s у каталозі. "
+
 #~ msgid "Scan next item, or"
 #~ msgstr "Проскануйте наступний примірник, або "
+
 #~ msgid "Search results"
 #~ msgstr "Результати пошуку"
+
 #~ msgid "Sel &amp; close"
 #~ msgstr "Виб. і закр."
-

@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uk-UA-i-staff-t-prog-v-3000000\n"
 "POT-Creation-Date: 2010-10-23 12:02+0300\n"
-"PO-Revision-Date: 2010-11-05 08:58+1300\n"
+"PO-Revision-Date: 2010-12-03 11:20+1300\n"
 "Last-Translator: Serhij Dubyk / Сергій Дубик <serhijdubyk@gmail.com>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
 "Language: uk\n"
@@ -323,9 +323,9 @@ msgstr "%S років"
 
 #. %1$S: type=text name=limit-yr
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/advsearch.tmpl:113
-#, fuzzy, c-format
+#, c-format
 msgid "%S&nbsp;&nbsp;(format: yyyy-yyyy)"
-msgstr "&nbsp;&nbsp;(формат: рррр-рррр)"
+msgstr "%S&nbsp;&nbsp;(формат: рррр-рррр)"
 
 #. %1$S: type=text name=enddate
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/serials/serials-recieve.tmpl:323
@@ -559,9 +559,9 @@ msgstr ""
 
 #. %1$s: TMPL_VAR name=duedate
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/returns.tmpl:388
-#, fuzzy, c-format
+#, c-format
 msgid "%s (overdue)"
-msgstr "Прострочення"
+msgstr "%s (прострочений)"
 
 #. For the first occurrence,
 #. %1$s: TMPL_VAR name=subfield
@@ -821,9 +821,9 @@ msgstr "%s не вдалося розпакувати."
 #. %1$s: TMPL_VAR name=budget_name
 #. %2$s: TMPL_VAR name=budget_period_description
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tmpl:255
-#, fuzzy, c-format
+#, c-format
 msgid "%s for Budget '%s'"
-msgstr "за запитом „%s“"
+msgstr "%s для кошторису „%s“"
 
 #. %1$s: TMPL_VAR name=TCOUNTS
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/picture-upload.tmpl:48
@@ -855,9 +855,9 @@ msgstr "%s записів про примірники було знайдено 
 #. %1$s: TMPL_VAR name=count
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/virtualshelves/shelves.tmpl:349
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/virtualshelves/shelves.tmpl:400
-#, fuzzy, c-format
+#, c-format
 msgid "%s item(s)"
-msgstr "%S одиниц(я/і)"
+msgstr "%s одиниц(я/і)"
 
 #. %1$s: TMPL_VAR name=not_deleted_items
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/batchMod-del.tmpl:145
@@ -1478,7 +1478,7 @@ msgstr "&nbsp;&nbsp;&nbsp;&nbsp; Особисте ім’я"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/search_indexes.inc:10
 msgid "&nbsp;&nbsp;&nbsp;&nbsp; Personal Name as Phrase"
-msgstr "&nbsp;&nbsp;&nbsp;&nbsp; Особисте ім'я як фраза"
+msgstr "&nbsp;&nbsp;&nbsp;&nbsp; Особисте ім’я як фраза"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/search_indexes.inc:13
 msgid "&nbsp;&nbsp;&nbsp;&nbsp; Series Title"
@@ -1544,7 +1544,6 @@ msgstr "&quot;Додати МАРК&quot;"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbudget.tmpl:7
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbookfund.tmpl:13
-#, fuzzy
 msgid ""
 "&quot;Funds&quot; are accounts that you establish to track your expenditures "
 "for library materials. They may be used for any kind of material and should "
@@ -1553,13 +1552,13 @@ msgid ""
 "third line for magazines, and a fourth budget line for electronic databases, "
 "then you would have four funds."
 msgstr ""
-"„Статті витрат“ - бухгалтерські рахунки, які Ви встановлюєте для "
-"відстежування своїх витрат на бібліотечні матеріали. Вони можуть "
-"використовуються для будь-яких видів матеріалів, не лише для книг, і повинні "
-"відповідати рядкам у Ваших витратах на бібліотечні матеріали. Наприклад, "
-"якщо Ваша бібліотека встановлює одні витрати для книг, інші для "
-"аудіовізуальних матеріалів, треті для журналів та четверті витрати для "
-"електронних баз даних, то Ви матимете чотири статті витрат."
+"„Кошти“ — бухгалтерські рахунки, які Ви встановлюєте для відстежування своїх "
+"витрат на бібліотечні матеріали. Вони можуть використовуються для будь-яких "
+"видів матеріалів і повинні відповідати деяким рядкам у Вашому кошторисі на "
+"бібліотечні матеріали. Наприклад, якщо Ваша бібліотека встановлює один рядок "
+"кошторису на книги, інший для аудіовізуальних матеріалів, третій для "
+"журналів та четвертий для електронних баз даних, то Ви матимете чотири рядки "
+"з коштами."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/cataloguing/addbiblio.tmpl:199
 msgid ""
@@ -1929,9 +1928,9 @@ msgstr "Несуттєві слова &rsaquo; Вилучити несуттєв
 
 #. %1$s: TMPL_VAR name=budget_period_description
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgetperiods.tmpl:70
-#, fuzzy, c-format
+#, c-format
 msgid "&rsaquo; Delete budget '%s'?"
-msgstr "Витрати &rsaquo; Вилучити витрату?"
+msgstr "&rsaquo; Вилучити кошторис „%s“?"
 
 #. %1$s: TMPL_VAR name=searchfield
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/stopwords.tmpl:5
@@ -1943,13 +1942,13 @@ msgstr "Несуттєві слова &rsaquo; Вилучити несуттєв
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/virtualshelves/shelves.tmpl:2
 #, c-format
 msgid "&rsaquo; Edit List %s"
-msgstr "&rsaquo; Редагування списку %s"
+msgstr "&rsaquo; Редагування списку „%s“"
 
 #. %1$s: TMPL_VAR name=shelfname
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/virtualshelves/shelves.tmpl:119
-#, fuzzy, c-format
+#, c-format
 msgid "&rsaquo; Edit List <i>%s</i>"
-msgstr "&rsaquo; Редагування списку <i>%s</i>"
+msgstr "&rsaquo; Редагування списку <i>„%s“</i>"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/cleanborrowers.tmpl:2
 msgid "&rsaquo; Finished"
@@ -2421,9 +2420,9 @@ msgstr "(Запис № %s) &rsaquo; Примірники"
 
 #. %1$s: TMPL_VAR name=subscriptionsnumber
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/detail.tmpl:387
-#, fuzzy, c-format
+#, c-format
 msgid "(There are %s subscriptions associated with this title)."
-msgstr "(Ми маємо %s підписку(и), пов'язану(і) з цим заголовком)."
+msgstr "(З цим заголовком пов’язано підписок: %s)."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/results.tmpl:507
 msgid "(Withdrawn)"
@@ -2989,31 +2988,30 @@ msgid ""
 "Budget&quot; which records the amount availalbe to spend during the period "
 "of the budget. A budget must have a start and end date."
 msgstr ""
-"- &quot;статті витрат&quot; використовуються для поєднання &quot;"
-"витрат&quot; у групи. Наприклад стаття витрат може називатися &quot;загальні "
-"збереження&quot;, та міститиме &quot;витрати&quot; що поєднують суми, які "
-"необхідно витрачати протягом бюджетного періоду витрат. Витрати повинні мати "
-"початкову та кінцеву дату."
+"— „кошториси“ використовуються для об’єднання „коштів“ у групи. Наприклад, "
+"кошторис може називатися „Загальний бюджет“ і міститеме „кошти“, що фіксують "
+"суми, які необхідно витрачати протягом періоду дії кошторису (бюджетного "
+"періоду). Кошторис повинен мати дати початку та кінця."
 
 #. SCRIPT
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tmpl:84
 msgid "- Budget amount cannot be blank"
-msgstr ""
+msgstr "— сума кошторису не може бути порожньою"
 
 #. SCRIPT
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tmpl:84
 msgid "- Budget code cannot be blank"
-msgstr ""
+msgstr "— код кошторису не може бути пустим"
 
 #. SCRIPT
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tmpl:84
 msgid "- Budget name cannot be blank"
-msgstr ""
+msgstr "— назва кошторису не можу бути порожньою"
 
 #. SCRIPT
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tmpl:84
 msgid "- Budget parent is current budget"
-msgstr ""
+msgstr "— батьківським кошторисом є поточний кошторис"
 
 #. SCRIPT
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/currency.tmpl:51
@@ -3058,7 +3056,7 @@ msgstr "відсутнє значення"
 #. SCRIPT
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqcontract.tmpl:52
 msgid "- Start date missing or invalid."
-msgstr ""
+msgstr "— дата початку відсутня чи невірна."
 
 #. SCRIPT
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/currency.tmpl:51
@@ -3344,8 +3342,8 @@ msgid ""
 msgstr ""
 ".&nbsp; Одиниці можуть бути додані до замовлень у надходженнях. Деталі "
 "одиниці додаються при отриманні одиниці. Використання модуля надходжень для "
-"додавання одиниць дозволяє Вам відстежувати витрати бібліотеки згідно статей "
-"витрат та сум витрат."
+"додавання одиниць дозволяє Вам відстежувати витрати бібліотеки відповідно "
+"коштам й кошторисам."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/virtualshelves/addbybiblionumber.tmpl:46
 #, fuzzy
@@ -4917,7 +4915,7 @@ msgstr ""
 #. A
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/addbiblio.tmpl:750
 msgid "<!-- TMPL_VAR NAME=\"tag_lib\"--> - Click to Expand this Tag"
-msgstr ""
+msgstr "<!-- TMPL_VAR NAME=\"tag_lib\"--> — клацніть щоб розкрити цю ознаку"
 
 #. IMG
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/circ-menu.inc:10
@@ -5126,14 +5124,14 @@ msgid "<a1>Authorized Values</a> &rsaquo; Confirm Deletion"
 msgstr "<a1>Авторитетні значення</a> &rsaquo; Підтвердження вилучення"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgetperiods.tmpl:97
-#, fuzzy, c-format
+#, c-format
 msgid "<a1>Budget</a> &rsaquo;"
-msgstr "<a1>Витрати</a> &rsaquo;"
+msgstr "<a1>Кошторис</a> &rsaquo;"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgetperiods.tmpl:109
 #, c-format
 msgid "<a1>Budgets</a> &rsaquo;"
-msgstr "<a1>Витрати</a> &rsaquo;"
+msgstr "<a1>Кошториси</a> &rsaquo;"
 
 #. %1$s: TMPL_VAR name=buildx
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/guided_reports_start.tmpl:57
@@ -5154,32 +5152,31 @@ msgid "<a1>Clean Patron Records</a> &rsaquo;"
 msgstr "<a1>Чищення облікових записів відвідувачів</a> &rsaquo;"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqcontract.tmpl:66
-#, fuzzy, c-format
+#, c-format
 msgid "<a1>Contracts</a> &rsaquo;"
-msgstr "<a1>Міста</a> &rsaquo;"
+msgstr "<a1>Договори</a> &rsaquo;"
 
 #. %1$s: TMPL_VAR name=contractnumber
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqcontract.tmpl:77
-#, fuzzy, c-format
+#, c-format
 msgid "<a1>Contracts</a> &rsaquo; Confirm Deletion of Contract %s"
-msgstr "<a1>Друкарки</a> &rsaquo; Підтвердження вилучення друкарки '%s'"
+msgstr "<a1>Договори</a> &rsaquo; Підтвердження вилучення договору „%s“"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqcontract.tmpl:81
-#, fuzzy, c-format
+#, c-format
 msgid "<a1>Contracts</a> &rsaquo; Contract Deleted"
-msgstr "<a1>Друкарки</a> &rsaquo; Друкарку вилучено"
+msgstr "<a1>Договори</a> &rsaquo; Договір вилучено"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqcontract.tmpl:73
-#, fuzzy, c-format
+#, c-format
 msgid "<a1>Contracts</a> &rsaquo; Data recorded"
-msgstr "<a1>Несуттєві лова</a> &rsaquo; Дані збережені"
+msgstr "<a1>Договори</a> &rsaquo; Дані збережені"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/memberentrygen.tmpl:90
-#, fuzzy, c-format
+#, c-format
 msgid "<a1>Detail</a> Duplicate ? <a2>Yes</a> &nbsp;&nbsp;&nbsp; No, it is not"
 msgstr ""
-"Подвійний підозрював <a1>Деталь</a> Подвійний ? <a2>Так</a> &nbsp;&nbsp;"
-"&nbsp; Ні, ні"
+"<a1>Докладно</a> Дублікат? <a2>Так</a> &nbsp;&nbsp;&nbsp; Ні, не є таким"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/matching-rules.tmpl:568
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/printers.tmpl:193
@@ -5192,24 +5189,24 @@ msgid "<a1>Edit</a> <a2>Delete</a>"
 msgstr "<a1>Редагувати</a> <a2>Вилучити</a>"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tmpl:230
-#, fuzzy, c-format
+#, c-format
 msgid "<a1>Edit</a> <a2>Delete</a> <a3>Add Child Fund</a>"
-msgstr "<a1>Редагувати</a> <a2>Вилучити</a>"
+msgstr "<a1>Зміна</a> <a2>Вилучити</a> <a3>Додати вкладені кошти</a>"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgetperiods.tmpl:284
-#, fuzzy, c-format
+#, c-format
 msgid "<a1>Edit</a> <a2>Delete</a> <a3>Add Fund</a>"
-msgstr "<a1>Редагувати</a> <a2>Вилучити</a>"
+msgstr "<a1>Зміна</a> <a2>Вилучити</a><a3>Додати кошти</a>"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tmpl:149
-#, fuzzy, c-format
+#, c-format
 msgid "<a1>Funds</a> &rsaquo;"
-msgstr "<a1>Витрати</a> &rsaquo;"
+msgstr "<a1>Кошти</a> &rsaquo;"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tmpl:150
-#, fuzzy, c-format
+#, c-format
 msgid "<a1>Funds</a> &rsaquo; Delete fund?"
-msgstr "<a1>Витрати</a> &rsaquo; Вилучити витрату?"
+msgstr "<a1>Кошти</a> &rsaquo; Вилучити ці кошти?"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/member.tmpl:9
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/serials/serials-home.tmpl:23
@@ -5368,21 +5365,20 @@ msgstr ""
 "<a1>Домівка</a> &rsaquo; <a2>Керування</a> &rsaquo; Правила, що Виходять"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tmpl:147
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "<a1>Home</a> &rsaquo; <a2>Administration</a> &rsaquo; <a3>Budgets</a> "
 "&rsaquo;"
-msgstr ""
-"<a1>Домівка</a> &rsaquo; <a2>Керування</a> &rsaquo; Правила, що Виходять"
+msgstr "<a1>Домівка</a> &rsaquo; <a2>Керування</a> &rsaquo; <a3>Кошториси</a>"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqplan.tmpl:74
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "<a1>Home</a> &rsaquo; <a2>Administration</a> &rsaquo; <a3>Budgets</a> "
 "&rsaquo; <a4>Funds</a> &rsaquo; <a5>Planning</a> &rsaquo;"
 msgstr ""
-"<a1>Домівка</a> &rsaquo; <a2>Керування</a> &rsaquo; <a3>МАРК-структури</a> "
-"&rsaquo; <a4>Склад структури %s</a> &rsaquo;"
+"<a1>Домівка</a> &rsaquo; <a2>Керування</a> &rsaquo; <a3>Кошториси</a> "
+"&rsaquo; <a4>Кошти</a> &rsaquo; <a5>Планування</a> &rsaquo;"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/cities.tmpl:24
 #, fuzzy, c-format
@@ -5450,11 +5446,12 @@ msgstr ""
 "<a1>Домівка</a> &rsaquo; <a2>Керування</a> &rsaquo; Правила, що Виходять"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/item_circulation_alerts.tmpl:91
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "<a1>Home</a> &rsaquo; <a2>Administration</a> &rsaquo; Item Circulation Alerts"
 msgstr ""
-"<a1>Домівка</a> &rsaquo; <a2>Керування</a> &rsaquo; Правила, що Виходять"
+"<a1>Домівка</a> &rsaquo; <a2>Керування</a> &rsaquo; Попередження при обігу "
+"примірників"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/checkmarc.tmpl:10
 #, fuzzy, c-format
@@ -5572,7 +5569,7 @@ msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/addbiblio.tmpl:606
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/merge.tmpl:170
-#, fuzzy, c-format
+#, c-format
 msgid "<a1>Home</a> &rsaquo; <a2>Cataloging</a> &rsaquo;"
 msgstr "<a1>Домівка</a> &rsaquo; <a2>Каталогізація</a> &rsaquo;"
 
@@ -5582,8 +5579,8 @@ msgstr "<a1>Домівка</a> &rsaquo; <a2>Каталогізація</a> &rsaq
 msgid ""
 "<a1>Home</a> &rsaquo; <a2>Cataloging</a> &rsaquo; Attach an item to <i>%s</i>"
 msgstr ""
-"<a1>Домівка</a> &rsaquo; <a2>Каталог</a> &rsaquo; Подробиці для біб. запису: "
-"<i>„%s“</i>"
+"<a1>Домівка</a> &rsaquo; <a2>Каталогізація</a> &rsaquo; Подробиці для біб. "
+"запису: <i>„%s“</i>"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/offline_circ/process_koc.tmpl:41
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:143
@@ -5922,20 +5919,20 @@ msgid "<a1>Home</a> &rsaquo; <a2>Tools</a> &rsaquo;"
 msgstr "<a1>Домівка</a> &rsaquo; <a2>Інструменти</a> &rsaquo;"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/batchMod-del.tmpl:37
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "<a1>Home</a> &rsaquo; <a2>Tools</a> &rsaquo; <a3>Batch item deletion</a>"
 msgstr ""
-"<a1>Домівка</a> &rsaquo; <a2>Інструменти</a> &rsaquo; <a3>Імпорт "
-"відвідувачів</a>"
+"<a1>Домівка</a> &rsaquo; <a2>Інструменти</a> &rsaquo; <a3>Пакетне вилучення "
+"примірників</a>"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/batchMod-edit.tmpl:37
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "<a1>Home</a> &rsaquo; <a2>Tools</a> &rsaquo; <a3>Batch item modification</a>"
 msgstr ""
-"<a1>Домівка</a> &rsaquo; <a2>Інструменти</a> &rsaquo; <a3>Імпорт "
-"відвідувачів</a>"
+"<a1>Домівка</a> &rsaquo; <a2>Інструменти</a> &rsaquo; <a3>Пакетна зміна "
+"примірників</a>"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/import_borrowers.tmpl:14
 #, c-format
@@ -5989,8 +5986,9 @@ msgid ""
 "<a1>Home</a> &rsaquo; <a2>Tools</a> &rsaquo; <a3>Patron Card Creator</a> "
 "&rsaquo; <a4>Manage Patron Card Batches</a> &rsaquo; Manage Batch Number %s"
 msgstr ""
-"<a1>Домівка</a> &rsaquo; <a2>Інструменти</a> &rsaquo; <a3>Наклейки</a> "
-"&rsaquo; <a4>Профілі друкарок</a> &rsaquo; Створення профіля друкарки"
+"<a1>Домівка</a> &rsaquo; <a2>Інструменти</a> &rsaquo; <a3>Утворювач квитків "
+"відвідувачів</a> &rsaquo; <a4>Профілі друкарок</a> &rsaquo; Створення "
+"профіля друкарки"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/edit-layout.tmpl:140
 #, fuzzy, c-format
@@ -5998,8 +5996,8 @@ msgid ""
 "<a1>Home</a> &rsaquo; <a2>Tools</a> &rsaquo; <a3>Patron Card Creator</a> "
 "&rsaquo; <a4>Mange Patron Card Layouts</a> &rsaquo;"
 msgstr ""
-"<a1>Домівка</a> &rsaquo; <a2>Інстументи</a> &rsaquo; <a3>Наклейки</a> "
-"&rsaquo; Створення макету"
+"<a1>Домівка</a> &rsaquo; <a2>Інстументи</a> &rsaquo; <a3>Утворювач квитків "
+"відвідувачів</a> &rsaquo; Створення макету"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/edit-template.tmpl:70
 #, fuzzy, c-format
@@ -6007,8 +6005,9 @@ msgid ""
 "<a1>Home</a> &rsaquo; <a2>Tools</a> &rsaquo; <a3>Patron Card Creator</a> "
 "&rsaquo; <a4>Patron Card Templates</a> &rsaquo; Edit Patron Card Template"
 msgstr ""
-"<a1>Домівка</a>&rsaquo; <a2>Інструменти</a> &rsaquo; <a3>Наклейки</a> "
-"&rsaquo; <a4>Шаблони наклейок</a> &rsaquo; Редагування шаблону наклейки"
+"<a1>Домівка</a>&rsaquo; <a2>Інструменти</a> &rsaquo; <a3>Утворювач квитків "
+"відвідувачів</a> &rsaquo; <a4>Шаблони наклейок</a> &rsaquo; Редагування "
+"шаблону наклейки"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/edit-profile.tmpl:70
 #, fuzzy, c-format
@@ -6016,8 +6015,9 @@ msgid ""
 "<a1>Home</a> &rsaquo; <a2>Tools</a> &rsaquo; <a3>Patron Card Creator</a> "
 "&rsaquo; <a4>Printer Profiles</a> &rsaquo; Edit Printer Profile"
 msgstr ""
-"<a1>Домівка</a>&rsaquo; <a2>Інструменти</a> &rsaquo; <a3>Наклейки</a> "
-"&rsaquo; <a4>Профілі друкарок</a> &rsaquo; Редагування профілю друкарки"
+"<a1>Домівка</a>&rsaquo; <a2>Інструменти</a> &rsaquo; <a3>Утворювач квитків "
+"відвідувачів</a> &rsaquo; <a4>Профілі друкарок</a> &rsaquo; Редагування "
+"профілю друкарки"
 
 #. %1$s: TMPL_VAR name=card_element_title
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/manage.tmpl:123
@@ -6026,8 +6026,8 @@ msgid ""
 "<a1>Home</a> &rsaquo; <a2>Tools</a> &rsaquo; <a3>Patron Card Creator</a> "
 "&rsaquo; Manage Card %s"
 msgstr ""
-"<a1>Домівка</a> &rsaquo; <a2>Інструменти</a> &rsaquo; <a3>Наклейки</a> "
-"&rsaquo;"
+"<a1>Домівка</a> &rsaquo; <a2>Інструменти</a> &rsaquo; <a3>Утворювач квитків "
+"відвідувачів</a> &rsaquo;"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/image-manage.tmpl:96
 #, fuzzy, c-format
@@ -6035,40 +6035,42 @@ msgid ""
 "<a1>Home</a> &rsaquo; <a2>Tools</a> &rsaquo; <a3>Patron Card Creator</a> "
 "&rsaquo; Manage Images"
 msgstr ""
-"<a1>Домівка</a> &rsaquo; <a2>Інструменти</a> &rsaquo; <a3>Наклейки</a> "
-"&rsaquo; Шаблони наклейок"
+"<a1>Домівка</a> &rsaquo; <a2>Інструменти</a> &rsaquo; <a3>Утворювач квитків "
+"відвідувачів</a> &rsaquo; Шаблони наклейок"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/addItems.tmpl:9
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "<a1>Home</a> &rsaquo; <a2>Tools</a> &rsaquo; <a3>Rotating Collections</a> "
 "&rsaquo; Add/Remove Items"
 msgstr ""
-"<a1>Домівка</a> &rsaquo; <a2>Інструменти</a> &rsaquo; <a3>Наклейки</a> "
-"&rsaquo;"
+"<a1>Домівка</a> &rsaquo; <a2>Інструменти</a> &rsaquo; <a3> Почергово "
+"переміщувані зібрання</a> &rsaquo; Додати/вилучити примірники"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/editCollections.tmpl:9
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "<a1>Home</a> &rsaquo; <a2>Tools</a> &rsaquo; <a3>Rotating Collections</a> "
 "&rsaquo; Edit Collections"
 msgstr ""
-"<a1>Домівка</a>&rsaquo; <a2>Інструменти</a> &rsaquo; <a3>Наклейки</a> "
-"&rsaquo; Профілі друкарок"
+"<a1>Домівка</a>&rsaquo; <a2>Інструменти</a> &rsaquo; <a3> Почергово "
+"переміщувані зібрання</a> &rsaquo; Редагування зібрань"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/transferCollection.tmpl:9
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "<a1>Home</a> &rsaquo; <a2>Tools</a> &rsaquo; <a3>Rotating Collections</a> "
 "&rsaquo; Transfer Collection"
 msgstr ""
-"<a1>Домівка</a>&rsaquo; <a2>Інструменти</a> &rsaquo; <a3>Наклейки</a> "
-"&rsaquo; Профілі друкарок"
+"<a1>Домівка</a>&rsaquo; <a2>Інструменти</a> &rsaquo; <a3> Почергово "
+"переміщувані зібрання</a> &rsaquo; Передача зібрання"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/csv-profiles.tmpl:20
-#, fuzzy, c-format
+#, c-format
 msgid "<a1>Home</a> &rsaquo; <a2>Tools</a> &rsaquo; CSV export profiles"
-msgstr "<a1>Домівка</a> &rsaquo; <a2>Інструменти</a> &rsaquo; Експорт МАРК"
+msgstr ""
+"<a1>Домівка</a> &rsaquo; <a2>Інструменти</a> &rsaquo; Профілі експорту до "
+"CSV"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/holidays.tmpl:149
 #, c-format
@@ -6095,21 +6097,25 @@ msgstr ""
 "<a1>Домівка</a> &rsaquo; <a2>Інструменти</a> &rsaquo;  Трігери сповіщень"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/home.tmpl:10
-#, fuzzy, c-format
+#, c-format
 msgid "<a1>Home</a> &rsaquo; <a2>Tools</a> &rsaquo; Patron Card Creator"
-msgstr "<a1>Домівка</a> &rsaquo; <a2>Інструменти</a> &rsaquo; Календар"
+msgstr ""
+"<a1>Домівка</a> &rsaquo; <a2>Інструменти</a> &rsaquo; Утворювач квитків "
+"відвідувачів"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/labels/spinelabel-home.tmpl:8
-#, fuzzy, c-format
+#, c-format
 msgid "<a1>Home</a> &rsaquo; <a2>Tools</a> &rsaquo; Quick spine label creator"
-msgstr "<a1>Домівка</a> &rsaquo; <a2>Інструменти</a> &rsaquo; Календар"
+msgstr ""
+"<a1>Домівка</a> &rsaquo; <a2>Інструменти</a> &rsaquo; Швидкий утворювач "
+"наклейки на корінець"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/rotatingCollections.tmpl:9
-#, fuzzy, c-format
+#, c-format
 msgid "<a1>Home</a> &rsaquo; <a2>Tools</a> &rsaquo; Rotating Collections"
 msgstr ""
-"<a1>Домівка</a> &rsaquo; <a2>Інструменти</a> &rsaquo; Коментарі, що очікують "
-"на регулювання"
+"<a1>Домівка</a> &rsaquo; <a2>Інструменти</a> &rsaquo; Почергово переміщувані "
+"зібрання"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/sms/sms-home.tmpl:9
 #, c-format
@@ -6364,11 +6370,9 @@ msgid "<a1>Perform a new search</a> <a2>Close</a>"
 msgstr "<a1>Виконати новий пошук</a> <a2>Зачинити</a>"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/z3950_search.tmpl:140
-#, fuzzy, c-format
+#, c-format
 msgid "<a1>Preview MARC</a> <a2>Preview Card</a> <a3>Import</a><a4> X </a>"
-msgstr ""
-"<a1>пошук</a> <a2>Списки</a> <a3>Додати бібліографічний запис</a> "
-"<a4>Обслуговування каталогу</a>"
+msgstr "<a1>Перегляд в МАРК</a> <a2>Перегляд картки</a> <a3>Імпортувати</a>"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/subject.tmpl:36
 #, c-format
@@ -6566,24 +6570,24 @@ msgstr ""
 "<a1>Завантажити більше зображень</a> <a2>Повернутися до інструментів</a>"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/z3950servers.tmpl:75
-#, fuzzy, c-format
+#, c-format
 msgid "<a1>Z39.50 Servers</a> &rsaquo;"
-msgstr "<a1>Z39.50-сервери</a> &rsaquo;"
+msgstr "<a1>Сервери Z39.50</a> &rsaquo;"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/z3950servers.tmpl:76
-#, fuzzy, c-format
+#, c-format
 msgid "<a1>Z39.50 Servers</a> &rsaquo; Confirm Deletion"
-msgstr "<a1>Z39.50-сервери</a> &rsaquo; Підтвердження вилучення"
+msgstr "<a1>Сервери Z39.50</a> &rsaquo; Підтвердження вилучення"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/z3950servers.tmpl:77
-#, fuzzy, c-format
+#, c-format
 msgid "<a1>Z39.50 Servers</a> &rsaquo; Z39.50 Server Added"
-msgstr "<a1>Z39.50-сервери</a> &rsaquo; Додано Z39.50-сервер"
+msgstr "<a1>Сервери Z39.50</a> &rsaquo; Додано сервер Z39.50"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/z3950servers.tmpl:78
-#, fuzzy, c-format
+#, c-format
 msgid "<a1>Z39.50 Servers</a> &rsaquo; Z39.50 Server Deleted"
-msgstr "<a1>Z39.50-сервери</a> &rsaquo; Вилучено Z39.50-сервер"
+msgstr "<a1>Сервери Z39.50</a> &rsaquo; Вилучено сервер Z39.50"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/inventory.tmpl:190
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/inventory.tmpl:226
@@ -6642,7 +6646,7 @@ msgid ""
 "<b>Download a starter CSV file with all the columns <a1>here</a>.</b> Values "
 "are comma-separated."
 msgstr ""
-"<b>Завантажте початковий CSV-файл зі всіма колонками <a1>тут</a>.</b> "
+"<b>Завантажте початковий CSV-файл зі всіма колонками <a1>звідси</a>.</b> "
 "Значення відокремлюються комою."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/picture-upload.tmpl:97
@@ -6845,9 +6849,9 @@ msgid "<em>Get there:</em> More > Reports > Guided Reports > Use Saved"
 msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/reports/guided_reports.tmpl:47
-#, fuzzy
 msgid "<em>Get there:</em> More > Tools > Task Scheduler"
-msgstr "<em>Перейдіть сюди:</em> Більше &gt; Інструменти &gt; Сповіщення"
+msgstr ""
+"<em>Перейдіть сюди:</em> Більше &gt; Інструменти &gt; Планувальник задач"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/authorities/authorities.tmpl:15
 #, fuzzy
@@ -6960,9 +6964,8 @@ msgid "= used to change the holding branch of an item"
 msgstr "= використовуються, щоб змінити підрозділ фондотримач одиниці"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/virtualshelves/shelves.tmpl:316
-#, fuzzy
 msgid "A <b>Open</b> List can be seen and managed by everybody."
-msgstr "<b>Відкритий</b> список може бачити та складати кожен."
+msgstr "<b>Відкритий</b> список може переглядати  та складати кожен."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/virtualshelves/shelves.tmpl:314
 msgid "A <b>Private</b> List is managed by you and can be seen only by you."
@@ -6984,7 +6987,7 @@ msgstr ""
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/virtualshelves/shelves.tmpl:130
 #, c-format
 msgid "A List named %s already exists!"
-msgstr "Список з назвою %s вже існує!"
+msgstr "Список з назвою „%s“ вже існує!"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/authorities/authorities-home.tmpl:5
 #, fuzzy
@@ -7025,9 +7028,8 @@ msgid "A confirmation will appear with the item information"
 msgstr "Підтвердження з'явиться з інформацією про примірник"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbudgets.tmpl:5
-#, fuzzy
 msgid "A fund is added to a budget."
-msgstr "Статті витрат та суми витрат"
+msgstr "Кошти додані до кошторису."
 
 #. SCRIPT
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reserve/request.tmpl:133
@@ -7454,9 +7456,8 @@ msgstr "Інформація про підписку"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/admin-menu.inc:35
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/admin-home.tmpl:79
-#, fuzzy
 msgid "Acquisition parameters"
-msgstr "Додаткові параметри"
+msgstr "Параметри надходжень"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/error-bottom.inc:7
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/prefs-menu.inc:3
@@ -7575,9 +7576,9 @@ msgid ""
 "Actual Cost will be used to subtract from your budgets (whereas the other "
 "fees will be used when calculating replacement costs)"
 msgstr ""
-"Дійсна вартість використовуватиметься, щоб відмінусувати від Ваших витрат (в "
-"той час як інші види плати використовуватимуться для підрахунку вартості "
-"заміни)."
+"Фактична вартість буде використовуватися для вирахування з Ваших кошторисів "
+"(у той час як інші види сплат будуть використовуватися при розрахунку "
+"вартості заміни)."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/parcel.tmpl:256
 #, fuzzy
@@ -7647,9 +7648,8 @@ msgid "Add Credit"
 msgstr "Додати кредит"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tmpl:2
-#, fuzzy
 msgid "Add Fund"
-msgstr "Доповнення"
+msgstr "Додавання коштів"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/branches.tmpl:267
 msgid "Add Group"
@@ -7667,9 +7667,9 @@ msgstr "Додати тип одиниці зберігання"
 
 #. %1$s: TMPL_VAR name=colTitle
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/addItems.tmpl:37
-#, fuzzy, c-format
+#, c-format
 msgid "Add Item to <i>%s</i>"
-msgstr "Додаємо одиницю до <i>(%s) </i>"
+msgstr "Додаємо примірник у зібрання <i>„%s“</i>"
 
 #. For the first occurrence,
 #. SCRIPT
@@ -7772,9 +7772,8 @@ msgid "Add a basket to %s"
 msgstr "Додаємо одиницю до <i>(%s) </i>"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbudgetperiods.tmpl:7
-#, fuzzy
 msgid "Add a budget"
-msgstr "Додати витрати"
+msgstr "Додати кошторис"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/fieldmapping.tmpl:49
 #, fuzzy
@@ -7861,7 +7860,7 @@ msgstr "Додати бібліотечний запис"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgetperiods.tmpl:102
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgetperiods.tmpl:137
 msgid "Add budget"
-msgstr "Додати витрати"
+msgstr "Додати кошторис"
 
 #. INPUT type=submit
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/members-search.tmpl:93
@@ -7896,9 +7895,8 @@ msgid "Add framework"
 msgstr "Додати структуру"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tmpl:149
-#, fuzzy
 msgid "Add fund"
-msgstr "Доповнення"
+msgstr "Додавання коштів"
 
 #. INPUT type=submit name=submit
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/nohelp.tmpl:8
@@ -8022,9 +8020,8 @@ msgstr "Додаємо постачальника"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/rotatingCollections.tmpl:23
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/rotatingCollections.tmpl:31
-#, fuzzy
 msgid "Add/Remove Items"
-msgstr "Додати одиницю"
+msgstr "Додати/вилучити примірники"
 
 #. %1$s: TMPL_VAR name=added_source
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/classsources.tmpl:243
@@ -8089,9 +8086,8 @@ msgstr "Додавання авторитетного джерела (%s)"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbudget.tmpl:12
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbookfund.tmpl:24
-#, fuzzy
 msgid "Adding a Fund"
-msgstr "Доповнення"
+msgstr "Додавання коштів"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/members/memberentry.tmpl:5
 msgid "Adding a New Patron"
@@ -8148,9 +8144,8 @@ msgstr "Додаткова подяка…"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/tools-menu.inc:74
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/tools-home.tmpl:63
-#, fuzzy
 msgid "Additional Tools"
-msgstr "Додаткові автори:"
+msgstr "Додаткові інструменти"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/memberentrygen.tmpl:943
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:261
@@ -8531,9 +8526,8 @@ msgid "All Locations"
 msgstr "Розташування"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/acqui-home.tmpl:52
-#, fuzzy
 msgid "All available funds"
-msgstr "Доступно"
+msgstr "Усі доступні кошти"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/installer/step1.tmpl:61
 msgid "All dependencies installed."
@@ -8747,21 +8741,19 @@ msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/authorised_values.tmpl:185
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/authorised_values.tmpl:188
-#, fuzzy
 msgid ""
 "An authorized value attached to acquisitions, that can be used for stats "
 "purposes"
 msgstr ""
-"Asort1 — авторитетне значення що прив'язується до надходжень, і може "
-"використовуватися з метою статистики. "
+"Авторитетне значення відноситься до надходжень і може використовуватися з "
+"метою статистики. "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/authorised_values.tmpl:179
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/authorised_values.tmpl:182
-#, fuzzy
 msgid ""
 "An authorized value attached to patrons, that can be used for stats purposes"
 msgstr ""
-"Bsort1 — авторитетне значення що додається до даних користувача, яке може "
+"Авторитетне значення відноситься до даних відвідувачів і може "
 "використовуватися з метою статистики."
 
 #. %1$s: TMPL_VAR name=batch_id
@@ -9277,6 +9269,7 @@ msgstr ""
 "зарезервовані."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/labels/label-home.tmpl:40
+#, fuzzy
 msgid ""
 "At the top of each screen within the Label Creator, you will see a toolbar "
 "allowing quick access to relevant functions. The menu to the left of each "
@@ -9286,10 +9279,11 @@ msgid ""
 "quick navigation to previously traversed sections. And finally, you can find "
 "more detailed information on each section of the Label Creator by clicking "
 "the online help link at the upper left-hand corner of every page."
-msgstr ""
+msgstr "...Утворювач наклейок..."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/home.tmpl:35
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/patroncards/home.tmpl:14
+#, fuzzy
 msgid ""
 "At the top of each screen within the Patron Card Creator, you will see a "
 "toolbar allowing quick access to relevant functions. The menu to the left of "
@@ -9300,7 +9294,7 @@ msgid ""
 "finally, you can find more detailed information on each section of the "
 "Patron Card Creator by clicking the online help link at the upper left-hand "
 "corner of every page."
-msgstr ""
+msgstr "...Утворювач квитків відвідувачів..."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/circ/circulation.tmpl:7
 msgid ""
@@ -9650,9 +9644,9 @@ msgstr "Авторитетні значення"
 
 #. %1$s: TMPL_VAR name=category
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/authorised_values.tmpl:215
-#, fuzzy, c-format
+#, c-format
 msgid "Authorized values for category %s :"
-msgstr "Категорія авторитетного джерела: "
+msgstr "Авторитетні значення для категорії „%s“: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/authorised_values.tmpl:3
 #, fuzzy
@@ -10131,24 +10125,25 @@ msgstr " — партія"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/batchMod-del.tmpl:46
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/tools-home.tmpl:97
 msgid "Batch item deletion"
-msgstr ""
+msgstr "Пакетне вилучення примірників"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/batchMod-del.tmpl:46
+#, fuzzy
 msgid "Batch item deletion results"
-msgstr ""
+msgstr "...Пакетне вилучення примірників"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/tools-menu.inc:50
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/batchMod.tmpl:2
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/batchMod.tmpl:24
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/tools-home.tmpl:102
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/batchMod-edit.tmpl:45
-#, fuzzy
 msgid "Batch item modification"
-msgstr "Класифікація"
+msgstr "Пакетна зміна примірників"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/batchMod-edit.tmpl:45
+#, fuzzy
 msgid "Batch item modification results"
-msgstr ""
+msgstr "..Пакетна зміна примірників"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/label-status.inc:6
 msgid "Batch:"
@@ -10429,9 +10424,8 @@ msgid "Book"
 msgstr "Книги"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:399
-#, fuzzy
 msgid "Book fund:"
-msgstr "Доповнення"
+msgstr "Кошти: "
 
 #. IMG
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/advsearch.tmpl:223
@@ -10589,49 +10583,43 @@ msgstr "Сортувальне поле 2 "
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/acquisitions_stats.tmpl:255
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:203
 msgid "Budget"
-msgstr "Витрата"
+msgstr "Кошторис"
 
-# Дата початку витрат чи Дата завершення витрат
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgetperiods.tmpl:261
-#, fuzzy
 msgid "Budget Name"
-msgstr "Дата витрати"
+msgstr "Назва кошторису"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqplan.tmpl:3
-#, fuzzy
 msgid "Budget Planning"
-msgstr "Планування"
+msgstr "Планування кошторису"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbudget.tmpl:27
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbookfund.tmpl:36
-#, fuzzy
 msgid ""
 "Budget information will also be accessible via the 'Acquisitions' module"
-msgstr "Budget інформація також буде доступна через модуль 'Придбання'"
+msgstr "Інформація про кошторис також буде доступна через модуль „Надходження“"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/budgetperiods-admin.inc:34
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/budgets-admin-toolbar.inc:109
-#, fuzzy
 msgid "Budget planning"
-msgstr "Планування серіальних видань"
+msgstr "Планування кошторису"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/neworderempty.tmpl:251
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/neworderempty.tmpl:254
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:158
-#, fuzzy
 msgid "Budget:"
-msgstr "Витрата"
+msgstr "Кошторис: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/neworderempty.tmpl:309
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/neworderempty.tmpl:312
 msgid "Budgeted GST:"
-msgstr "Плановане ПДВ: "
+msgstr "Кошторисний ПДВ: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/neworderempty.tmpl:297
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/neworderempty.tmpl:300
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/orderreceive.tmpl:123
 msgid "Budgeted cost:"
-msgstr "Планована вартість: "
+msgstr "Кошторисна вартість: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/budgetperiods-admin.inc:32
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/acquisitions-menu.inc:8
@@ -10640,17 +10628,16 @@ msgstr "Планована вартість: "
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbudgetperiods.tmpl:3
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/admin-home.tmpl:84
 msgid "Budgets"
-msgstr "Витрати"
+msgstr "Кошториси"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgetperiods.tmpl:120
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgetperiods.tmpl:256
-#, fuzzy
 msgid "Budgets administration"
-msgstr "Керування статтями витрат"
+msgstr "Керування кошторисами"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/acqui/acqui-home.tmpl:14
 msgid "Budgets and Funds"
-msgstr "Статті витрат та суми витрат"
+msgstr "Кошториси та кошти"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbudgetperiods.tmpl:5
 msgid ""
@@ -10658,6 +10645,10 @@ msgid ""
 "acquisitions. An example would be to create a budget for the current year "
 "and then breaking that into Funds for different areas of the library."
 msgstr ""
+"Кошториси — це градація верхнього рівня, що використовується для ведення "
+"бухгалтерського обліку витрат, пов’язаних з надходженнями. Наприклад, можна "
+"створити кошторис на поточний рік, а потім розбити його на кошти для різних "
+"областей бібліотеки."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/guided_reports_start.tmpl:135
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/guided_reports_start.tmpl:155
@@ -10868,23 +10859,21 @@ msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/tools/csv-profiles.tmpl:3
 msgid "CSV Profiles"
-msgstr "CSV-профілі"
+msgstr "Профілі CSV"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/tools/csv-profiles.tmpl:5
 msgid ""
 "CSV Profiles are created to define how you would like your cart or list to "
 "export."
-msgstr ""
+msgstr "Профілі форматування CSV"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/tools-menu.inc:80
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/tools-home.tmpl:71
-#, fuzzy
 msgid "CSV profiles"
-msgstr "CSV-профілі"
+msgstr "Профілі форматування CSV"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/csv-profiles.tmpl:62
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/csv-profiles.tmpl:143
-#, fuzzy
 msgid "CSV separator:"
 msgstr "Розділювач CSV: "
 
@@ -10979,7 +10968,6 @@ msgid "Call number"
 msgstr "Шифр для замовлення"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/addItems.tmpl:65
-#, fuzzy
 msgid "Callnumber"
 msgstr "Шифр для замовлення"
 
@@ -11278,15 +11266,14 @@ msgid "Cannot be put on hold"
 msgstr "Встановити резервування"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgetperiods.tmpl:230
-#, fuzzy
 msgid "Cannot delete budget"
-msgstr "Невдається вилучити"
+msgstr "Не вдається вилучити кошторис"
 
 #. %1$s: TMPL_VAR name=budget_period_description
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgetperiods.tmpl:111
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot delete budget '%s'"
-msgstr "Невдалося вилучити тип одиниці '%s'"
+msgstr "Не вдається вилучити кошторис „%s“"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/classsources.tmpl:223
 #, fuzzy
@@ -12542,6 +12529,8 @@ msgid ""
 "Choose the time period this budget is for, whether it's an academic year, a "
 "fiscal year, a quarter, etc."
 msgstr ""
+"Оберіть період часу для цього кошторису, це може бути навчальний рік, "
+"фінансовий рік, квартал тощо"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/authorities/authorities.tmpl:8
 #, fuzzy
@@ -12584,7 +12573,7 @@ msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbudgets.tmpl:20
 msgid "Choose which library will be using this fund"
-msgstr ""
+msgstr "Виберіть, яка бібліотека буде використовувати ці кошти"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/tools/inventory.tmpl:9
 msgid ""
@@ -12594,9 +12583,8 @@ msgid ""
 msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/transferCollection.tmpl:30
-#, fuzzy
 msgid "Choose your Library:"
-msgstr "Вибираємо бібліотеку: "
+msgstr "Виберіть Вашу бібліотеку: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/circ/selectbranchprinter.tmpl:18
 #, fuzzy
@@ -13044,9 +13032,8 @@ msgstr "Клацання 'Додають Елемент' після входу �
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbudget.tmpl:21
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbookfund.tmpl:31
-#, fuzzy
 msgid "Click 'Add budget' next to the fund you want to edit"
-msgstr "Клацніть 'Додати бюджет' поряд з фондом, який Ви хочете редагувати"
+msgstr "Клацніть на „Додати кошторис“ поряд з коштами, які Ви хочете редагувати"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/virtualshelves/shelves.tmpl:61
 #, fuzzy
@@ -13091,7 +13078,7 @@ msgstr "Імпортувати"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/branch_transfer_limits.tmpl:16
 msgid "Click 'Library Transfer Limits'"
-msgstr ""
+msgstr "Натисніть „Обмеження бібліотечних переміщень“"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/suggestion/suggestion.tmpl:27
 #, fuzzy
@@ -13100,12 +13087,11 @@ msgstr "Керування пропозиціями"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/authtypes.tmpl:28
 msgid "Click 'New Authority Framework'"
-msgstr "Натисніть „Нова структура авторитетного джерела”."
+msgstr "Натисніть „Нова структура авторитетного джерела”"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/authorities/authorities.tmpl:7
-#, fuzzy
 msgid "Click 'New Authority'"
-msgstr "Тип авторитетного джерела "
+msgstr "Клацніть на „Нове авторитетне джерело“"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/cities.tmpl:9
 msgid "Click 'New City'"
@@ -13128,9 +13114,8 @@ msgstr "Новий файл"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbudget.tmpl:14
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbookfund.tmpl:26
-#, fuzzy
 msgid "Click 'New Fund'"
-msgstr "Нова стаття витрат"
+msgstr "Клацніть на „Нові кошти“"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/tools/letter.tmpl:8
 msgid "Click 'New Notice'"
@@ -13285,9 +13270,8 @@ msgstr ""
 "'Особливості OPAC'"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/item_circulation_alerts.tmpl:11
-#, fuzzy
 msgid "Click on 'Item Circulation Alerts'&nbsp;"
-msgstr "Клацніть 'Передачу' по меню Круговорот"
+msgstr "Клацніть на „Попередження при обігу примірників“"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/acqui/lateorders.tmpl:8
 #, fuzzy
@@ -13451,9 +13435,8 @@ msgstr "Клацніть, щоб редагувати"
 
 #. A
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/addbiblio.tmpl:772
-#, fuzzy
 msgid "Click to Expand this Tag"
-msgstr "Клацніть, щоб Розширити цю Ознаку"
+msgstr "Клацніть, щоб розкрити цю ознаку"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/serials/serials-edit.tmpl:280
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/serials/serials-edit.tmpl:383
@@ -13523,9 +13506,8 @@ msgstr ""
 #. IMG
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/addbiblio.tmpl:813
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/authorities/authorities.tmpl:711
-#, fuzzy
 msgid "Clone this subfield"
-msgstr "Так, вилучити це підполе"
+msgstr "Здублювати це підполе"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/clone-rules.tmpl:16
 #, fuzzy
@@ -13649,13 +13631,13 @@ msgstr "Зібрання"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/editCollections.tmpl:39
 #, c-format
 msgid "Collection '%s' Failed To Be Updated!"
-msgstr ""
+msgstr "Зібрання „%s“ не вдалося поновити!"
 
 #. %1$s: TMPL_VAR name=updatedTitle
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/editCollections.tmpl:37
-#, fuzzy, c-format
+#, c-format
 msgid "Collection '%s' Updated Succesfully!"
-msgstr "Оновлено успішно"
+msgstr "Зібрання „%s“ поновлено успішно!"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:109
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:296
@@ -13663,9 +13645,8 @@ msgid "Collection Title:"
 msgstr "Назва зібрання: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/transferCollection.tmpl:16
-#, fuzzy
 msgid "Collection Transfered Successfully"
-msgstr "Оновлено успішно"
+msgstr "Зібрання успішно передано"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/detailprint.tmpl:21
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/detail.tmpl:148
@@ -13809,9 +13790,10 @@ msgstr "Коментарі/рецензії"
 msgid "Comments:"
 msgstr "Коментарі"
 
+# було „об'єднані витрати“
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/acqui/neworderempty.tmpl:12
 msgid "Commited budget"
-msgstr "об'єднані витрати"
+msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/serials/serial-issues-full.tmpl:43
 msgid "Compact view"
@@ -13916,7 +13898,7 @@ msgstr "Підтвердіть вилучення %s?"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/categorie.tmpl:180
 #, c-format
 msgid "Confirm Deletion of Category %s"
-msgstr "Підтвердіть вилучення категорії %s"
+msgstr "Підтвердіть вилучення категорії „%s“"
 
 #. For the first occurrence,
 #. %1$s: TMPL_VAR name=categorycode
@@ -13924,19 +13906,19 @@ msgstr "Підтвердіть вилучення категорії %s"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/categorie.tmpl:84
 #, c-format
 msgid "Confirm Deletion of Category '%s'"
-msgstr "Підтвердіть вилучення категорії '%s'"
+msgstr "Підтвердіть вилучення категорії „%s“"
 
 #. %1$s: TMPL_VAR name=contractnumber
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqcontract.tmpl:157
-#, fuzzy, c-format
+#, c-format
 msgid "Confirm Deletion of Contract %s"
-msgstr "Підтвердіть вилучення категорії %s"
+msgstr "Підтвердіть вилучення договору „%s“"
 
 #. %1$s: TMPL_VAR name=contractnumber
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqcontract.tmpl:9
-#, fuzzy, c-format
+#, c-format
 msgid "Confirm Deletion of Contract '%s'"
-msgstr "Підтвердіть вилучення категорії '%s'"
+msgstr "Підтвердіть вилучення договору „%s“"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/currency.tmpl:141
 msgid "Confirm Deletion of Currency"
@@ -14043,9 +14025,9 @@ msgstr "Зв'язок встановлено."
 
 #. %1$s: TMPL_VAR name=server
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/z3950_search.tmpl:156
-#, fuzzy, c-format
+#, c-format
 msgid "Connection failed to %s"
-msgstr "Зв'язок встановлено."
+msgstr "Не вдалося з’єднатися з „%s“"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/branchoverdues.tmpl:104
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/branchoverdues.tmpl:158
@@ -14107,9 +14089,8 @@ msgstr "Зміст"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/virtualshelves/shelves.tmpl:345
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/virtualshelves/shelves.tmpl:396
-#, fuzzy
 msgid "Contents"
-msgstr "Зміст"
+msgstr "Вміст"
 
 #. %1$s: TMPL_VAR name=shelfname
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/virtualshelves/shelves.tmpl:162
@@ -14189,76 +14170,66 @@ msgid "Continuo"
 msgstr "бассо контінуо"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/basketheader.tmpl:137
-#, fuzzy
 msgid "Contract"
-msgstr "Дані для зв'язку"
+msgstr "Договір"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqcontract.tmpl:10
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqcontract.tmpl:177
-#, fuzzy
 msgid "Contract Deleted"
-msgstr "Дані вилучено"
+msgstr "Договір вилучено"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqcontract.tmpl:161
-#, fuzzy
 msgid "Contract description:"
-msgstr "проектна документація"
+msgstr "Опис договору: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqcontract.tmpl:163
-#, fuzzy
 msgid "Contract end date:"
-msgstr "Відповідальна особа"
+msgstr "Дата закінчення договору: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqcontract.tmpl:102
-#, fuzzy
 msgid "Contract id"
-msgstr "Дані для зв'язку"
+msgstr "Ідент. договору"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/neworderempty.tmpl:86
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqcontract.tmpl:160
-#, fuzzy
 msgid "Contract name:"
-msgstr "Відповідальна особа"
+msgstr "Назва договору: "
 
 #. %1$s: TMPL_VAR name=basketcontractname
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/basket.tmpl:157
-#, fuzzy, c-format
+#, c-format
 msgid "Contract name: <a1>%s</a>"
-msgstr "Відповідальна особа"
+msgstr "Назва договору: <a1>„%s“</a>"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/neworderempty.tmpl:85
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqcontract.tmpl:159
-#, fuzzy
 msgid "Contract number:"
-msgstr "Відповідальна особа"
+msgstr "Номер договору: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqcontract.tmpl:162
-#, fuzzy
 msgid "Contract start date:"
-msgstr "історія звіт про підписку"
+msgstr "Дата початку договору: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/supplier.tmpl:207
-#, fuzzy
 msgid "Contract(s)"
-msgstr "Дані для зв'язку"
+msgstr "Договір(и)"
 
 #. %1$s: TMPL_VAR name=booksellername
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqcontract.tmpl:201
-#, fuzzy, c-format
+#, c-format
 msgid "Contract(s) of %s"
-msgstr "Вміст <i>\"%s\"</i>"
+msgstr "Договори з „%s“"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/acquisitions-toolbar.inc:47
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqcontract.tmpl:83
-#, fuzzy
 msgid "Contracts"
-msgstr "Дані для зв'язку"
+msgstr "Договори"
 
 #. %1$s: TMPL_VAR name=booksellername
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqcontract.tmpl:7
-#, fuzzy, c-format
+#, c-format
 msgid "Contracts of %s"
-msgstr "Вміст <i>\"%s\"</i>"
+msgstr "Договори з „%s“"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128c.tmpl:188
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_128c.tmpl:190
@@ -14271,10 +14242,10 @@ msgstr "контрабас"
 msgid "Contributing Companies"
 msgstr "Компанії, що сприяли розвитку Коха"
 
+# Ідентифікатор запису?
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/z3950_search.tmpl:88
-#, fuzzy
 msgid "Control No.:"
-msgstr "Шифр для замовлення"
+msgstr "Контрольний номер: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/smart-rules.tmpl:53
 msgid "Control where patrons can place holds from using the 'Hold Policy' menu"
@@ -14583,16 +14554,13 @@ msgid "Create manual invoice"
 msgstr "Виставити ручний рахунок"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/tools-home.tmpl:118
-#, fuzzy
 msgid "Create printable labels and barcodes from catalog data"
 msgstr ""
-"Створення придатних для видруку наклейок та штрих-кодів з даних каталогу та "
-"квитків відвідувачів з даних відвідувачів"
+"Створення придатних для видруку наклейок та штрих-кодів з даних каталогу"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/tools-home.tmpl:40
-#, fuzzy
 msgid "Create printable patron cards"
-msgstr "Чищення облікових записів відвідувачів"
+msgstr "Створення придатних для видруку квитків відвідувачів"
 
 #. INPUT type=submit name=submit
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/guided_reports_start.tmpl:95
@@ -14705,16 +14673,16 @@ msgstr "Грошова одиниця"
 #. %1$s: TMPL_VAR name=cur
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqplan.tmpl:142
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgetperiods.tmpl:257
-#, fuzzy, c-format
+#, c-format
 msgid "Currency = %s"
-msgstr "Грошова одиниця"
+msgstr "Грошова одиниця = %s"
 
 #. %1$s: TMPL_VAR name=cur
 #. %2$s: TMPL_VAR name=cur_format
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tmpl:243
-#, fuzzy, c-format
+#, c-format
 msgid "Currency = %s %s"
-msgstr "Грошова одиниця"
+msgstr "Грошова одиниця = %s %s"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/billing.tmpl:90
 #, fuzzy
@@ -14753,9 +14721,8 @@ msgid "Current Library"
 msgstr "Поточна бібліотека: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/rotatingCollections.tmpl:22
-#, fuzzy
 msgid "Current Location"
-msgstr "Поточ. розташ.: "
+msgstr "Поточне розташування"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/moredetail.tmpl:64
 msgid "Current Location:"
@@ -15368,20 +15335,19 @@ msgid ""
 "patron records"
 msgstr ""
 "Означення розширених атрибутів (ідентифікаторів та статистичних категорій) "
-"для записів відвідувачів"
+"для записів відвідувачів."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/admin-home.tmpl:88
 msgid "Define funds within your budgets"
-msgstr ""
+msgstr "Розподіл коштів у рамках Вашого кошторису"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/admin-home.tmpl:36
 msgid "Define item types used for circulation rules."
 msgstr "Означення типів одиниць, що використовуються у правилах обігу."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/admin-home.tmpl:34
-#, fuzzy
 msgid "Define libraries, branches and groups."
-msgstr "Бібліотеки, підрозділи та групи"
+msgstr "Означення бібліотек, підрозділів та груп."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/tools-home.tmpl:30
 msgid ""
@@ -15405,13 +15371,12 @@ msgstr ""
 "відвідувачів і може використовуватися для географічної статистики."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/admin-home.tmpl:57
-#, fuzzy
 msgid ""
 "Define rules for check-in and checkout notifications for combinations of "
 "libraries, patron categories, and item types"
 msgstr ""
-"Означення правил обігу та випадків стягнення штрафів для поєднань бібліотек, "
-"категорій відвідувачів та типів одиниць."
+"Означення правил показу повідомлень для видачі та повернення для комбінацій "
+"бібліотек, категорій відвідувачів та типів одиниць."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/currency.tmpl:5
 msgid "Define the currencies you deal with here."
@@ -15470,9 +15435,8 @@ msgstr ""
 "Z39.50."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/admin-home.tmpl:85
-#, fuzzy
 msgid "Define your budgets"
-msgstr "Уточніть Ваш пошук"
+msgstr "Встановлення Ваших кошторисів"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/branches.tmpl:258
 #, fuzzy
@@ -15481,7 +15445,7 @@ msgstr "по спаданню"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/z3950servers.tmpl:5
 msgid "Defines the Z39.50 servers you want Koha to search."
-msgstr "Означаються Z39.50-сервери, по яким Коха вестиме пошук."
+msgstr "Оначення серверів Z39.50, за якими Коха вестиме пошук."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/overduerules.tmpl:30
 #, fuzzy
@@ -15671,7 +15635,7 @@ msgstr "Вилучити список"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/cities.tmpl:78
 #, c-format
 msgid "Delete City \"%s?\""
-msgstr "Вилучити місто \"%s?\""
+msgstr "Вилучити місто „%s“?"
 
 #. INPUT type=submit name=submit
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/dictionary.tmpl:63
@@ -15681,9 +15645,9 @@ msgstr "Визначення"
 
 #. %1$s: TMPL_VAR name=budget_name
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tmpl:376
-#, fuzzy, c-format
+#, c-format
 msgid "Delete Fund %s?"
-msgstr "Вилучити витрату?"
+msgstr "Вилучити кошти „%s“?"
 
 #. INPUT type=button
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/image-manage.tmpl:182
@@ -15702,7 +15666,7 @@ msgstr "Повідомлена ознака"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/itemtypes.tmpl:252
 #, c-format
 msgid "Delete Item Type '%s'?"
-msgstr "Видаліть Тип Елементу '%s'?"
+msgstr ""
 
 #. INPUT type=submit
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/branches.tmpl:145
@@ -15722,7 +15686,7 @@ msgstr "Вилучити запис"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/roadtype.tmpl:94
 #, c-format
 msgid "Delete Road Type \"%s?\""
-msgstr "Видаліть Дорожній Type \"%s?\""
+msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/stopwords.tmpl:91
 msgid "Delete Stop Word"
@@ -15738,9 +15702,8 @@ msgid "Delete Subscription"
 msgstr "Вилучити підписку"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/tools-home.tmpl:98
-#, fuzzy
 msgid "Delete a batch of items"
-msgstr "Вилучити усі примірники"
+msgstr "Вилучення групи примірників"
 
 #. SCRIPT
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/cat-toolbar.inc:160
@@ -15755,9 +15718,9 @@ msgstr "Вилучити відвідувачів, хто не випозича�
 #. %1$s: TMPL_VAR name=budget_period_description
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgetperiods.tmpl:113
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgetperiods.tmpl:235
-#, fuzzy, c-format
+#, c-format
 msgid "Delete budget '%s'?"
-msgstr "Вилучити витрату?"
+msgstr "Вилучити кошторис „%s“?"
 
 #. INPUT type=submit
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/classsources.tmpl:201
@@ -15832,9 +15795,8 @@ msgstr "Вилучити цю категорію"
 
 #. INPUT type=submit
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqcontract.tmpl:170
-#, fuzzy
 msgid "Delete this Contract"
-msgstr "Вилучити цю друкарку"
+msgstr "Вилучити цей договір"
 
 #. INPUT type=submit
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/currency.tmpl:153
@@ -15865,7 +15827,7 @@ msgstr "Вилучити цю витрату"
 #. INPUT type=submit
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tmpl:388
 msgid "Delete this budget"
-msgstr "Вилучити цю витрату"
+msgstr "Вилучити цей кошторис"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/holidays.tmpl:234
 msgid "Delete this holiday"
@@ -15880,9 +15842,8 @@ msgstr "вилучити цей збережений звіт"
 #. IMG
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/addbiblio.tmpl:814
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/authorities/authorities.tmpl:714
-#, fuzzy
 msgid "Delete this subfield"
-msgstr "Так, вилучити це підполе"
+msgstr "Вилучити це підполе"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:524
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reserve/request.tmpl:568
@@ -16015,9 +15976,8 @@ msgstr "Опис "
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/authorised_values.tmpl:64
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/authorised_values.tmpl:118
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/authorised_values.tmpl:219
-#, fuzzy
 msgid "Description (OPAC)"
-msgstr "Опис "
+msgstr "Опис для ЕК"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/billing.tmpl:40
 #, fuzzy, c-format
@@ -16222,9 +16182,8 @@ msgstr "Місце виводу: "
 
 #. SCRIPT
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/budgetperiods-admin.inc:30
-#, fuzzy
 msgid "Display all root budgets"
-msgstr "Показати усі витрати"
+msgstr "Показати усі кореневі кошториси"
 
 #. A
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/viewlog.tmpl:169
@@ -16426,11 +16385,11 @@ msgstr "Малювати напрямні рамки"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/returns.tmpl:306
 #, c-format
 msgid "Dropbox Mode. (Effective checkin date is %s )."
-msgstr "Режим повернення у „книжковий ящик“. (Датою повернення вважається %s)."
+msgstr "режим повернення у „книжковий ящик“ (датою повернення вважається %s)."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/returns.tmpl:353
 msgid "Dropbox mode"
-msgstr "Режим повернення у „книжковий ящик“"
+msgstr "режим повернення у „книжковий ящик“"
 
 #. For the first occurrence,
 #. SCRIPT
@@ -16485,20 +16444,17 @@ msgstr "Здублювати"
 
 #. SCRIPT
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/budgets-admin-toolbar.inc:104
-#, fuzzy
 msgid "Duplicate budget"
-msgstr "Здублювати"
+msgstr "Здублювати кошторис"
 
 #. SCRIPT
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/budgetperiods-admin.inc:30
-#, fuzzy
 msgid "Duplicate root budget"
-msgstr "Здублювати"
+msgstr "Здублювати кореневий кошторис"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/memberentrygen.tmpl:89
-#, fuzzy
 msgid "Duplicate suspected"
-msgstr "Здублювати"
+msgstr "Підозра на дублікат"
 
 #. %1$s: TMPL_VAR name=duplicateauthvalue
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/authorities/authorities.tmpl:577
@@ -16649,13 +16605,12 @@ msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbudget.tmpl:17
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbookfund.tmpl:27
-#, fuzzy
 msgid ""
 "Each fund has a unique fund code, limited to a maximum of five characters, "
 "which identifies it"
 msgstr ""
-"Кожен фонд має унікальний код фонду, обмежив максимумом п'яти символів, який "
-"ідентифікує це"
+"Кожні кошти мають унікальний код коштів, обмежений п’ятьма знаками, що "
+"ідентифікують його. "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/preferences.tmpl:6
 #, fuzzy
@@ -16772,9 +16727,8 @@ msgstr "Зібрання"
 
 #. INPUT type=button
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/rotatingCollections.tmpl:43
-#, fuzzy
 msgid "Edit Collections"
-msgstr "Зібрання"
+msgstr "Редагувати зібрання"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tmpl:227
 #, fuzzy
@@ -16812,7 +16766,7 @@ msgstr "Редагуємо шаблон наклейки"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/virtualshelves/shelves.tmpl:278
 #, c-format
 msgid "Edit List <i>%s</i>"
-msgstr "Редагуємо список <i>\"%s\"</i>"
+msgstr "Редагуємо список <i>„%s“</i>"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/virtualshelves/shelves.tmpl:31
 #, fuzzy
@@ -16930,9 +16884,8 @@ msgstr "Редагування бібліографічного запису"
 
 #. SCRIPT
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/budgets-admin-toolbar.inc:104
-#, fuzzy
 msgid "Edit budget"
-msgstr "Додати витрати"
+msgstr "Редагувати кошторис"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/virtualshelves/shelves.tmpl:34
 #, fuzzy
@@ -17057,7 +17010,6 @@ msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/z3950_search.tmpl:130
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/addbooks.tmpl:131
-#, fuzzy
 msgid "Edition"
 msgstr "Видання"
 
@@ -17370,6 +17322,8 @@ msgid ""
 "Enter a barcode to generate a printable spine label. For use with dedicated "
 "label printers"
 msgstr ""
+"Введіть штрих-код для створення придатної для друку наклейки на корінці. Для "
+"використання із спеціалізованими друкарками наклейок."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/labels/label-edit-layout.tmpl:108
 msgid ""
@@ -17452,19 +17406,16 @@ msgid "Enter an alternate address (if you require one for your library)."
 msgstr "Додаткова адреса"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/authorities-search.inc:67
-#, fuzzy
 msgid "Enter any authority field:"
-msgstr "вставити авторитетне джерело: "
+msgstr "Введіть будь-яке поле авторитетного джерела: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/authorities-search.inc:5
-#, fuzzy
 msgid "Enter authority heading ($a):"
-msgstr "Введіть заголовок повноважень ($a):"
+msgstr "Введіть авторитетний заголовок ($a): "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/authorities-search.inc:35
-#, fuzzy
 msgid "Enter authority heading:"
-msgstr "довідка по авторитетним значенням"
+msgstr "Введіть авторитетний заголовок: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/branchtransfers.tmpl:110
 msgid "Enter barcode:"
@@ -17482,13 +17433,12 @@ msgstr "Відформатуйте файл у форматі CSV з насту�
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbudget.tmpl:18
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbookfund.tmpl:28
-#, fuzzy
 msgid ""
 "Enter in a fund name to provide more information for staff members about the "
 "fund"
 msgstr ""
-"Увійдіть до імені фонду, щоб забезпечити більше інформації для членів штату "
-"про фонд"
+"Введіть назву коштів з метою надати більше інформації для працівників "
+"бібліотеки про кошти."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/members/memberentry.tmpl:126
 #, fuzzy
@@ -17869,11 +17819,10 @@ msgid ""
 msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/csv-profiles.tmpl:113
-#, fuzzy
 msgid "Example: Personal name=200|Entry element=210$a|300|009"
 msgstr ""
-"Приклад: Ім’я особи - первинна інтелектуальна відповідальність=700|"
-"Початковий елемент вводу=700$a|200|215"
+"Приклад: Ім’я особи — первинна інтелектуальна "
+"відповідальність=700|Початковий елемент вводу=700$a|200|215"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/patroncards/edit-profile.tmpl:21
 msgid ""
@@ -18142,15 +18091,14 @@ msgid "FORMAT"
 msgstr "UNIMARC"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/transferCollection.tmpl:20
-#, fuzzy
 msgid "Failed to Transfer Collection!"
-msgstr "Вибір зібрання"
+msgstr "Не вдалося передати зібрання!"
 
 #. %1$s: TMPL_VAR name=addedBarcode
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/addItems.tmpl:23
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to add item with barcode '%s'!"
-msgstr "Немає одиниці зі штрих-кодом: %s"
+msgstr "Не вдалося додати примірник зі штрих-кодом „%s“!"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/scheduler.tmpl:21
 #, fuzzy
@@ -18163,9 +18111,9 @@ msgstr "Не вдалося застосувати інше правило ві�
 
 #. %1$s: TMPL_VAR name=removedBarcode
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/addItems.tmpl:32
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to remove item with barcode '%s'!"
-msgstr "Немає одиниці зі штрих-кодом: %s"
+msgstr "Не вдалося вилучити примірник зі штрих-кодом „%s“!"
 
 #. For the first occurrence,
 #. SCRIPT
@@ -18320,7 +18268,6 @@ msgstr "Назва файлу: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/csv-profiles.tmpl:75
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/csv-profiles.tmpl:183
-#, fuzzy
 msgid "Field separator:"
 msgstr "Розділювач полів: "
 
@@ -18641,7 +18588,7 @@ msgstr "Дата публікації першого випуску: "
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:346
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:357
 msgid "First name:"
-msgstr "Ім'я: "
+msgstr "Ім’я: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/labels/label-edit-profile.tmpl:17
 #, fuzzy
@@ -18678,7 +18625,7 @@ msgstr ""
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/stats_screen.tmpl:91
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/stats_screen.tmpl:122
 msgid "Firstname"
-msgstr "Ім'я"
+msgstr "Ім’я"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/detail.tmpl:337
 msgid "Fix Itemtype"
@@ -18865,7 +18812,7 @@ msgstr "Не стягувати пеню при поверненні: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/returns.tmpl:344
 msgid "Forgive overdue charges"
-msgstr "Не стягувати плату за прострочення"
+msgstr "не стягувати плату за прострочення"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/mancredit.tmpl:42
 msgid "Forgiven"
@@ -19214,6 +19161,11 @@ msgid ""
 "the system will try to divide the amount accordingly, you may have to make "
 "some edits to split things more accurately."
 msgstr ""
+"Звідси Ви можете планувати витрати зі свого кошторису вручну, шляхом "
+"введення значень або, натиснувши кнопку „Автозаповнення рядка“. Якщо Ви "
+"виберете автоматичне заповнення форми, система буде намагатися розділити "
+"суму відповідно, і Вам, можливо, доведеться внести деякі зміни, щоб "
+"розділити більш точно."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/reviews/reviewswaiting.tmpl:23
 #, fuzzy
@@ -19308,11 +19260,11 @@ msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbudget.tmpl:30
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbookfund.tmpl:39
-#, fuzzy
 msgid ""
 "From this module you can easily see what has been spent from each budget"
 msgstr ""
-"Від цього модуля ви можете легко бачити, що витрачалося від кожного бюджету"
+"З даного модуля Ви можете легко побачити, що було витрачено з кожного "
+"кошторису"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/histsearch.tmpl:25
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/parcels.tmpl:130
@@ -19351,99 +19303,86 @@ msgstr "Визначник функціонального призначення
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/acqui-home.tmpl:63
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tmpl:253
 msgid "Fund"
-msgstr "Стаття витрат"
+msgstr "Кошти"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbookfund.tmpl:3
 msgid "Fund Administration"
-msgstr "Керування статтями витрат"
+msgstr "Керування коштами"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tmpl:379
-#, fuzzy
 msgid "Fund Amount:"
-msgstr "Сума пені"
+msgstr "Сума коштів: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbudgets.tmpl:16
 msgid "Fund Code is a unique identifer for your fund"
-msgstr ""
+msgstr "Код коштів є унікальним ідентифікатором Ваших коштів"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tmpl:271
-#, fuzzy
 msgid "Fund Code:"
-msgstr "Статтю витрат додано"
+msgstr "Код коштів: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tmpl:276
-#, fuzzy
 msgid "Fund Name:"
-msgstr "Статтю витрат додано"
+msgstr "Назва коштів: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tmpl:264
-#, fuzzy
 msgid "Fund Parent:"
-msgstr "Статтю витрат додано"
+msgstr "Кошти-предок: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tmpl:166
-#, fuzzy
 msgid "Fund code"
-msgstr "Статтю витрат додано"
+msgstr "Код коштів"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tmpl:403
-#, fuzzy
 msgid "Fund filters"
-msgstr "Фільтри"
+msgstr "Відбір коштів"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tmpl:167
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqplan.tmpl:147
-#, fuzzy
 msgid "Fund name"
-msgstr "Статтю витрат додано"
+msgstr "Назва коштів"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqplan.tmpl:164
-#, fuzzy
 msgid "Fund remaining"
-msgstr "звукозапис"
+msgstr "Залишилося коштів"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqplan.tmpl:148
-#, fuzzy
 msgid "Fund total"
-msgstr "Часткова сума"
+msgstr "Коштів загалом"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/budgetperiods-admin.inc:33
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/acquisitions-menu.inc:9
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/admin-menu.inc:40
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbudgets.tmpl:3
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/admin-home.tmpl:87
-#, fuzzy
 msgid "Funds"
-msgstr "Стаття витрат"
+msgstr "Кошти"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbudget.tmpl:3
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbookfund.tmpl:10
-#, fuzzy
 msgid "Funds &amp; Budgets"
-msgstr "Статті витрат та суми витрат"
+msgstr "Кошти та кошториси"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbudget.tmpl:19
-#, fuzzy
 msgid "Funds can be library specific if needed, but this is an optional field"
 msgstr ""
-"Фонди можуть бути бібліотека/відгалужуватися специфікою, якщо потрібно, але "
-"це необов'язкове поле"
+"Кошти можуть бути для окремої бібліотеки, якщо це необхідно, але це не є "
+"обов’язкове поле"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbookfund.tmpl:29
-#, fuzzy
 msgid ""
 "Funds can be library/branch specific if needed, but this is an optional field"
 msgstr ""
-"Фонди можуть бути бібліотека/відгалужуватися специфікою, якщо потрібно, але "
-"це необов'язкове поле"
+"Кошти можуть бути для окремих бібліотеки/підрозділу, якщо це необхідно, але "
+"це не є обов’язкове поле"
 
 #. For the first occurrence,
 #. %1$s: TMPL_VAR name=budget_period_description
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tmpl:148
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tmpl:162
-#, fuzzy, c-format
+#, c-format
 msgid "Funds for '%s'"
-msgstr "за запитом „%s“"
+msgstr "Кошти для „%s“"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/fieldmapping.tmpl:17
 msgid "Future developments will include additional keyword assigned fields."
@@ -19944,9 +19883,8 @@ msgstr "Рядок заголовку не вдалося проаналізув
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/authorities-search.inc:60
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/authorities-search.inc:92
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_210c.tmpl:34
-#, fuzzy
 msgid "Heading A-Z"
-msgstr "Заголовок A-Z"
+msgstr "заголовки за алфавітом"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/auth-finder-search.inc:51
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_686a.tmpl:65
@@ -19962,9 +19900,8 @@ msgstr "заголовки за спаданням"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/authorities-search.inc:61
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/authorities-search.inc:93
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_210c.tmpl:35
-#, fuzzy
 msgid "Heading Z-A"
-msgstr "Очолюючи"
+msgstr "заголовки зворотньо за алфавітом"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS32.xsl:2775
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2MODS3-1.xsl:2299
@@ -20512,11 +20449,8 @@ msgstr ""
 "'джерела у використанні' для всього інші безперешкодно."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbudgets.tmpl:7
-#, fuzzy
 msgid "IMPORTANT: A budget must be defined before a fund can be created."
-msgstr ""
-"ВАЖЛИВО: параметри системи потрібно визначити перед додаванням нових "
-"відвідувачів."
+msgstr "ВАЖЛИВО: кошторис повинен бути встановлений до визначення коштів."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/reports/bor_issues_top.tmpl:12
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/reports/cat_issues_top.tmpl:13
@@ -20797,26 +20731,24 @@ msgstr ""
 "врегулювання бібліотека."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbookfund.tmpl:32
-#, fuzzy
 msgid ""
 "IMPORTANT: Your dates will not save correctly unless you have set your date "
 "format ('dateformat') in the Global System Preferences under 'I18N/L10N' -- "
 "DO THIS BEFORE setting budgets"
 msgstr ""
-"ВАЖЛИВЕ ЗАУВАЖЕННЯ: Ваші дати не збережуть правильно, якби тільки ви "
-"встановили свій формат ('dateformat') дати в Глобальних Перевагах System під "
-"'I18N/L10N'-- РОБЛЯТЬ ЦЕ ПЕРЕД врегулюванням бюджетів"
+"ВАЖЛИВО: дати не зберігатимуться правильно, якщо у Ви не встановили формат "
+"дати („dateformat“) в загальних системних налаштуваннях у розділі "
+"„I18N/L10N“ — ЗРОБІТЬ ЦЕ ПЕРЕД налаштуванням кошторисів"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbudget.tmpl:22
-#, fuzzy
 msgid ""
 "IMPORTANT: Your dates will not save correctly unless you have set your date "
 "format ('dateformat') in the Global System Preferences under 'I18N/L10N'-- "
 "DO THIS BEFORE setting budgets"
 msgstr ""
-"ВАЖЛИВЕ ЗАУВАЖЕННЯ: Ваші дати не збережуть правильно, якби тільки ви "
-"встановили свій формат ('dateformat') дати в Глобальних Перевагах System під "
-"'I18N/L10N'-- РОБЛЯТЬ ЦЕ ПЕРЕД врегулюванням бюджетів"
+"ВАЖЛИВО: дати не зберігатимуться правильно, якщо у Ви не встановили формат "
+"дати („dateformat“) в загальних системних налаштуваннях у розділі "
+"„I18N/L10N“ — ЗРОБІТЬ ЦЕ ПЕРЕД налаштуванням кошторисів"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/admin-home.tmpl:10
 #, fuzzy
@@ -21309,7 +21241,7 @@ msgid ""
 msgstr ""
 "Якщо Ви збираєтеся використовувати друкарку (або декілька друкарок), що "
 "прикріплені до Вашого Коха-сервера для створення статистики та повідомлення "
-"про операції, то Вам потрібно надати кожній друкарці ім'я та сказати Коха, "
+"про операції, то Вам потрібно надати кожній друкарці ім’я та сказати Коха, "
 "як звернутися до цього. Ви робите це, вказуючи Коха яку чергу друку "
 "використовувати."
 
@@ -21344,6 +21276,8 @@ msgid ""
 "If you choose 'Plan by MONTHS' you will see the budgeted amount broken down "
 "by months"
 msgstr ""
+"Якщо оберете „Розпланувати за місяцями“, Ви побачите кошторисну суму з "
+"розбивкою по місяцях"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/reports/catalogue_out.tmpl:10
 #, fuzzy
@@ -21938,6 +21872,8 @@ msgid ""
 "In the amount box do not use any symbols, simply enter the amount of the "
 "budget with numbers and decimals."
 msgstr ""
+"У полі суми не використовувати будь-які символи, просто введіть суму "
+"кошторису як число з десятковим дробами."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/authtypes.tmpl:17
 msgid "In the biblio framework, the reported tag"
@@ -21963,7 +21899,7 @@ msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbudgets.tmpl:11
 msgid "In the form that appears you wan to enter the basics about your fund."
-msgstr ""
+msgstr "У формі, що з’явиться,  необхідно ввести основне про Ваші кошти."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/classsources.tmpl:9
 #, fuzzy
@@ -22184,7 +22120,7 @@ msgstr "Новий тип авторитетного джерела"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/auth.tmpl:6
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/auth.tmpl:35
 msgid "Invalid username or password"
-msgstr "Недійсне ім'я користувача або пароль"
+msgstr "Недійсне ім’я користувача або пароль"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/inventory.tmpl:35
 #, fuzzy
@@ -22408,7 +22344,7 @@ msgid ""
 "five or six checked servers may slow down your Z39.50 search results, even "
 "if they are queried all together."
 msgstr ""
-"Хороша ідея мати добірку у виборі серверів. Визначаючи більш ніж п'ять або "
+"Хороша ідея мати добірку у виборі серверів. Визначаючи більш ніж п’ять або "
 "шість перевіряльних серверів Ви, можливо, уповільнете Z39.50-пошуки, навіть "
 "якщо Вони запитується усі разом."
 
@@ -22479,9 +22415,8 @@ msgstr "Одиниці оформлені при отриманні"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/item_circulation_alerts.tmpl:2
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/item_circulation_alerts.tmpl:102
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/admin-home.tmpl:56
-#, fuzzy
 msgid "Item Circulation Alerts"
-msgstr "Звіти щодо обігу"
+msgstr "Попередження при обігу примірників"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/returns.tmpl:198
 #, fuzzy
@@ -22565,9 +22500,8 @@ msgid "Item callnumber between:"
 msgstr "Шифр примірника: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/admin-menu.inc:21
-#, fuzzy
 msgid "Item circulation alerts"
-msgstr "Звіти щодо обігу"
+msgstr "Попередження при обігу примірників"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/batchMod-del.tmpl:160
 #, fuzzy
@@ -22737,15 +22671,15 @@ msgstr "Одиниця була позичена <a1>%s</a> %s і була по�
 
 #. %1$s: TMPL_VAR name=addedBarcode
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/addItems.tmpl:21
-#, fuzzy, c-format
+#, c-format
 msgid "Item with barcode '%s' Added Succesfully!"
-msgstr "Немає одиниці зі штрих-кодом: %s"
+msgstr "Примірник зі штрихкодом „%s“ успішно доданий!"
 
 #. %1$s: TMPL_VAR name=addedBarcode
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/addItems.tmpl:30
 #, c-format
 msgid "Item with barcode '%s' Removed Succesfully!"
-msgstr ""
+msgstr "Примірник зі штрихкодом „%s“ успішно вилучений!"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/MARCdetail.tmpl:74
 msgid "Item(s)"
@@ -22777,9 +22711,8 @@ msgid "Items Checked Out"
 msgstr "Одиниці видані"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/addItems.tmpl:60
-#, fuzzy
 msgid "Items In This Collection"
-msgstr "Зібрання серіального видання"
+msgstr "Примірники у цьому зібранні"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/reserveratios.tmpl:85
 #, fuzzy
@@ -23074,9 +23007,8 @@ msgid "Koha &rsaquo; Acquisitions &rsaquo; Add order from a suggestion"
 msgstr "Коха &rsaquo; Надходження &rsaquo; Додавання замовлення із пропозиції"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqcontract.tmpl:2
-#, fuzzy
 msgid "Koha &rsaquo; Acquisitions &rsaquo; Contracts &rsaquo;"
-msgstr "Коха &rsaquo; Надходження &rsaquo; Купуюча Корзина %s &rsaquo;"
+msgstr "Коха &rsaquo; Надходження &rsaquo; Договори %s &rsaquo;"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/lateorders.tmpl:2
 msgid "Koha &rsaquo; Acquisitions &rsaquo; Late orders"
@@ -23112,9 +23044,8 @@ msgid "Koha &rsaquo; Acquisitions &rsaquo; Shopping Basket %s &rsaquo;"
 msgstr "Коха &rsaquo; Надходження &rsaquo; Купуюча Корзина %s &rsaquo;"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/z3950_search.tmpl:2
-#, fuzzy
 msgid "Koha &rsaquo; Acquisitions &rsaquo; Z39.50 Search Results"
-msgstr "Коха &rsaquo; Надходження &rsaquo; Пошук Existing Records"
+msgstr "Коха &rsaquo; Надходження &rsaquo; Результати пошуку через Z39.50"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/virtualshelves/addbybiblionumber.tmpl:2
 msgid "Koha &rsaquo; Add to List"
@@ -23154,14 +23085,13 @@ msgid "Koha &rsaquo; Administration &rsaquo; Authorized Values"
 msgstr "Коха &rsaquo; Керування &rsaquo; Авторитетні значення"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgetperiods.tmpl:60
-#, fuzzy
 msgid "Koha &rsaquo; Administration &rsaquo; Budgets"
-msgstr "Коха &rsaquo; Керування &rsaquo;"
+msgstr "Коха &rsaquo; Керування &rsaquo; Кошториси"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqplan.tmpl:2
-#, fuzzy
 msgid "Koha &rsaquo; Administration &rsaquo; Budgets &rsaquo; Budget planning"
-msgstr "Коха &rsaquo; Керування &rsaquo; Статті витрат та суми витрат"
+msgstr ""
+"Коха &rsaquo; Керування &rsaquo; Кошториси &rsaquo; Планування кошторису"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/classsources.tmpl:2
 msgid "Koha &rsaquo; Administration &rsaquo; Classification Sources"
@@ -23175,9 +23105,8 @@ msgstr ""
 "Коха &rsaquo; Керування &rsaquo; Грошові одиниці &amp; обмінні курси &rsaquo;"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tmpl:2
-#, fuzzy
 msgid "Koha &rsaquo; Administration &rsaquo; Funds"
-msgstr "Коха &rsaquo; Керування &rsaquo;"
+msgstr "Коха &rsaquo; Керування &rsaquo; Кошти"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/smart-rules.tmpl:2
 #, fuzzy
@@ -23192,9 +23121,8 @@ msgid ""
 msgstr "Коха &rsaquo; Адміністрування &rsaquo; Правила, що Виходять"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/item_circulation_alerts.tmpl:2
-#, fuzzy
 msgid "Koha &rsaquo; Administration &rsaquo; Item Circulation Alerts"
-msgstr "Коха &rsaquo; Керування &rsaquo; Типи одиниць"
+msgstr "Коха &rsaquo; Керування &rsaquo; Попередження при обігу примірників"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/itemtypes.tmpl:2
 msgid "Koha &rsaquo; Administration &rsaquo; Item Types"
@@ -23294,9 +23222,8 @@ msgid "Koha &rsaquo; Borrowers &rsaquo; Create Manual Invoice"
 msgstr "Коха &rsaquo; Позичальники &rsaquo; Виставити ручний рахунок"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudget_owner_search.tmpl:2
-#, fuzzy
 msgid "Koha &rsaquo; Budget Owner Search"
-msgstr "Коха &rsaquo; Пошук за поручителем"
+msgstr "Коха &rsaquo; Пошук власника кошторису"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/deletemem.tmpl:2
 #, fuzzy
@@ -23583,7 +23510,7 @@ msgstr "Коха &rsaquo; Пошук постачальника %s"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/image-manage.tmpl:2
 #, fuzzy
 msgid "Koha &rsaquo; Patron Card Creator &rsaquo; Manage Images"
-msgstr "Коха &rsaquo; Відвідувачі &rsaquo;"
+msgstr "Коха &rsaquo; Утворювач квитків відвідувачів &rsaquo;"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/members-search.tmpl:2
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/member.tmpl:2
@@ -23820,19 +23747,16 @@ msgid "Koha &rsaquo; Tools &rsaquo;"
 msgstr "Коха &rsaquo; Інструменти &rsaquo; Протоколи"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/batchMod-del.tmpl:2
-#, fuzzy
 msgid "Koha &rsaquo; Tools &rsaquo; Batch item deletion"
-msgstr "Коха &rsaquo; Інструменти &rsaquo; Планувальник задач"
+msgstr "Коха &rsaquo; Інструменти &rsaquo; Пакетне вилучення примірників"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/batchMod-edit.tmpl:2
-#, fuzzy
 msgid "Koha &rsaquo; Tools &rsaquo; Batch item modification"
-msgstr "Коха &rsaquo; Інструменти &rsaquo; Календар"
+msgstr "Коха &rsaquo; Інструменти &rsaquo; Пакетна зміна примірників"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/csv-profiles.tmpl:1
-#, fuzzy
 msgid "Koha &rsaquo; Tools &rsaquo; CSV export profiles"
-msgstr "Коха &rsaquo; Інструменти &rsaquo; Експорт МАРКА"
+msgstr "Коха &rsaquo; Інструменти &rsaquo; Профілі експорту до CSV"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/holidays.tmpl:2
 msgid "Koha &rsaquo; Tools &rsaquo; Calendar"
@@ -23912,28 +23836,29 @@ msgstr "Коха &rsaquo; Інструменти &rsaquo; Сповіщення"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/edit-layout.tmpl:2
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/edit-profile.tmpl:2
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/home.tmpl:2
-#, fuzzy
 msgid "Koha &rsaquo; Tools &rsaquo; Patron Card Creator"
-msgstr "Коха &rsaquo; Інструменти &rsaquo; Прибирання записів відвідувачів"
+msgstr "Коха &rsaquo; Інструменти &rsaquo; Утворювач квитків відвідувачів"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/edit-batch.tmpl:2
 #, fuzzy
 msgid ""
 "Koha &rsaquo; Tools &rsaquo; Patron Card Creator &rsaquo; Manage Patron Card "
 "Batches"
-msgstr "Коха &rsaquo; Інструменти &rsaquo; Новини Коха"
+msgstr "Коха &rsaquo; Інструменти &rsaquo; Утворювач квитків відвідувачів"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/card-print.tmpl:2
 #, fuzzy
 msgid ""
 "Koha &rsaquo; Tools &rsaquo; Patron Card Creator &rsaquo; Patron Card "
 "Printing/Exporting"
-msgstr "Коха &rsaquo; Інструменти &rsaquo; Наклейки &rsaquo; Створення макету"
+msgstr ""
+"Коха &rsaquo; Інструменти &rsaquo; Утворювач квитків відвідувачів &rsaquo; "
+"Створення макету"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/edit-template.tmpl:2
 #, fuzzy
 msgid "Koha &rsaquo; Tools &rsaquo; Patron Card Creator &rsaquo; Templates"
-msgstr "Коха &rsaquo; Інструменти &rsaquo; Завантаження зображень відвідувачів"
+msgstr "Коха &rsaquo; Інструменти &rsaquo; Утворювач квитків відвідувачів"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/manage.tmpl:2
 #, fuzzy
@@ -23950,35 +23875,35 @@ msgid ""
 msgstr "Коха &rsaquo; Інструменти &rsaquo; Наклейки &rsaquo; Створення макету"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/labels/spinelabel-home.tmpl:1
-#, fuzzy
 msgid "Koha &rsaquo; Tools &rsaquo; Quick spine label creator"
-msgstr "Коха &rsaquo; Інструменти &rsaquo; Новини Коха"
+msgstr ""
+"Коха &rsaquo; Інструменти &rsaquo; Швидкий утворювач наклейки на корінець"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/rotatingCollections.tmpl:2
-#, fuzzy
 msgid "Koha &rsaquo; Tools &rsaquo; Rotating Collections"
-msgstr "Коха &rsaquo; Інструменти &rsaquo; Сповіщення"
+msgstr "Коха &rsaquo; Інструменти &rsaquo; Почергово переміщувані зібрання"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/addItems.tmpl:2
-#, fuzzy
 msgid ""
 "Koha &rsaquo; Tools &rsaquo; Rotating Collections &rsaquo; Add/Remove Items"
-msgstr "Коха &rsaquo; Інструменти &rsaquo; Наклейки &rsaquo; Створення макету"
+msgstr ""
+"Коха &rsaquo; Інструменти &rsaquo; Почергово переміщувані зібрання &rsaquo; "
+"Додавання/вилучення примірників"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/editCollections.tmpl:2
-#, fuzzy
 msgid ""
 "Koha &rsaquo; Tools &rsaquo; Rotating Collections &rsaquo; Edit Collections"
 msgstr ""
-"Коха &rsaquo; Серіальні видання &rsaquo; „%s“ &rsaquo; Редагування списку "
-"маршрутизації"
+"Коха &rsaquo; Інструменти &rsaquo; Почергово переміщувані зібрання &rsaquo; "
+"Редагування зібрань"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/transferCollection.tmpl:2
-#, fuzzy
 msgid ""
 "Koha &rsaquo; Tools &rsaquo; Rotating Collections &rsaquo; Transfer "
 "Collection"
-msgstr "Коха &rsaquo; Інструменти &rsaquo; Наклейки &rsaquo; Створення макету"
+msgstr ""
+"Коха &rsaquo; Інструменти &rsaquo; Почергово переміщувані зібрання &rsaquo; "
+"Передача зібрання"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/sms/sms-home.tmpl:2
 msgid "Koha &rsaquo; Tools &rsaquo; Send SMS Message"
@@ -24021,9 +23946,8 @@ msgstr "Коха &rsaquo; веб-встановлювач &rsaquo; крок 3"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/z3950_search.tmpl:2
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/z3950/searchresult.tmpl:2
-#, fuzzy
 msgid "Koha &rsaquo; Z39.50 Search Results"
-msgstr "Коха &rsaquo; Результати пошуку зі Z39.50"
+msgstr "Коха &rsaquo; Результати пошуку через Z39.50"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/authorities/blinddetail-biblio-search.tmpl:2
 msgid "Koha -- Authority details"
@@ -24349,15 +24273,14 @@ msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/z3950_search.tmpl:52
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/z3950_search.tmpl:87
-#, fuzzy
 msgid "LC Call Number:"
-msgstr "Шифр для замовлення"
+msgstr "Шифр зберігання у Бібліотеці Конгресу: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/z3950_search.tmpl:109
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/basket/basket.tmpl:247
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/z3950_search.tmpl:132
 msgid "LCCN"
-msgstr "LCCN"
+msgstr "LCCN (ш.з.БК)"
 
 # Контро́льний но́мер Бібліоте́ки Конгре́су (англ. Library of Congress Control Number (LCCN)) 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/detailprint.tmpl:28
@@ -24433,9 +24356,8 @@ msgstr "Ширина наклейки: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/tools-menu.inc:59
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/tools-home.tmpl:117
-#, fuzzy
 msgid "Label creator"
-msgstr "створювач"
+msgstr "Утворювач наклейок"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/marctagstructure.tmpl:75
 msgid "Label for lib:"
@@ -24758,7 +24680,7 @@ msgstr "Legal (21,59 х 35,56 см)"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/koha2marclinks.tmpl:154
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/auth_tag_structure.tmpl:206
 msgid "Lib"
-msgstr "Мітка/ім'я"
+msgstr "Мітка/ім’я"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/about.tmpl:226
 #, fuzzy
@@ -24813,9 +24735,8 @@ msgid "Libraries, branches and groups"
 msgstr "Бібліотеки, підрозділи та групи"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/admin-menu.inc:8
-#, fuzzy
 msgid "Libraries, branches, groups"
-msgstr "Бібліотеки, підрозділи та групи"
+msgstr "Бібліотеки, підрозділи, групи"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/members-search.tmpl:103
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/member.tmpl:38
@@ -24873,9 +24794,8 @@ msgstr "Бібліотечне завідування"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/branch_transfer_limits.tmpl:2
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/admin-home.tmpl:54
-#, fuzzy
 msgid "Library Transfer Limits"
-msgstr "Підрозділи бібліотеки"
+msgstr "Обмеження бібліотечних переміщень"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/members/memberentry.tmpl:135
 #, fuzzy
@@ -24953,9 +24873,8 @@ msgid "Library set-up"
 msgstr "Бібліотечні встановлення"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/admin-menu.inc:20
-#, fuzzy
 msgid "Library transfer limits"
-msgstr "Підрозділи бібліотеки"
+msgstr "Обмеження бібліотечних переміщень"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:298
 msgid "Library use"
@@ -25018,6 +24937,9 @@ msgid ""
 "Limit the ability to transfer items between libraries based on the library "
 "sending, the library receiving, and the item type involved."
 msgstr ""
+"Обмеження можливості переміщення примірників між бібліотеками для вказаних "
+"відправляючої бібліотеки, отримуючої бібліотеки та типу примірника, що "
+"переміщується."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/admin-home.tmpl:55
 msgid ""
@@ -25025,6 +24947,10 @@ msgid ""
 "sending, the library receiving, and the item type involved. These rules only "
 "go into effect if the preference UseBranchTransferLimits is set to ON."
 msgstr ""
+"Обмеження можливості переміщення примірників між бібліотеками для вказаних "
+"відправляючої бібліотеки, отримуючої бібліотеки та типу примірника, що "
+"переміщується. Ці правила вступить у силу лише, якщо параметр "
+"„UseBranchTransferLimits“ встановлений у положення ВКЛ."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/smart-rules.tmpl:29
 msgid ""
@@ -25131,12 +25057,10 @@ msgstr "Учасники списку: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/virtualshelves/shelves.tmpl:345
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/virtualshelves/shelves.tmpl:396
-#, fuzzy
 msgid "List Name"
-msgstr "Назва списку: "
+msgstr "Назва списку"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/virtualshelves/shelves.tmpl:259
-#, fuzzy
 msgid "List Name:"
 msgstr "Назва списку: "
 
@@ -25318,9 +25242,8 @@ msgid "Location:"
 msgstr "Розташування"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgetperiods.tmpl:205
-#, fuzzy
 msgid "Lock Budget"
-msgstr "Витрата"
+msgstr "Заблокувати кошторис"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgetperiods.tmpl:265
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgetperiods.tmpl:281
@@ -25333,6 +25256,7 @@ msgid ""
 "Locking a budget means that Funds will not be able to be modified by "
 "librarians"
 msgstr ""
+"Блокування кошторису означає, що кошти не можуть бути змінені бібліотекарями"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/tools/viewlog.tmpl:3
 #, fuzzy
@@ -25362,9 +25286,8 @@ msgid "Login &raquo;"
 msgstr "Вхід &raquo;"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/memberentrygen.tmpl:114
-#, fuzzy
 msgid "Login/password already exists."
-msgstr "Логін/пароль вже існує."
+msgstr "Логін та пароль вже існують."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/prefs-menu.inc:12
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/viewlog.tmpl:7
@@ -25771,11 +25694,9 @@ msgstr "Головний запис (лише $a)"
 msgid "Make <a1>Payment</a>"
 msgstr "Make <a1>Оплата</a>"
 
-# Дата початку витрат чи Дата завершення витрат
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgetperiods.tmpl:198
-#, fuzzy
 msgid "Make Budget Active"
-msgstr "Дата витрати"
+msgstr "Зробити кошторис активним"
 
 #. INPUT type=submit name=submit
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/pay.tmpl:84
@@ -26097,6 +26018,10 @@ msgid ""
 "This will allow you to record orders that were places in a previous budget "
 "period."
 msgstr ""
+"Маркування кошторису активним робить його придатним для використання при "
+"розміщенні замовлень у модулі надходжень, навіть якщо замовлення розміщене "
+"після дати закінчення кошторису. Це дозволить Вам записувати замовлення, які "
+"були розміщені у попередній кошторисний період."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/xslt/UNIMARCslim2intranetDetail.xsl:363
 #, fuzzy
@@ -26464,7 +26389,7 @@ msgstr "Регулювання коментарів відвідувачів"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/tools-home.tmpl:50
 msgid "Moderate patron tags"
-msgstr "Регулювання міток відвідувачів"
+msgstr "Регулювання читацьких міток"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/members-menu.inc:9
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/hold-menu.inc:33
@@ -26533,9 +26458,8 @@ msgid "Modify Currency '%s'"
 msgstr "Редагування грошової одиниці '%s'"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tmpl:2
-#, fuzzy
 msgid "Modify Fund"
-msgstr "Змінити слово"
+msgstr "Редагування коштів"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/itemtypes.tmpl:142
 msgid "Modify Item Type"
@@ -26603,21 +26527,20 @@ msgid "Modify bibliogra"
 msgstr "Змінюємо бібліотеку"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgetperiods.tmpl:135
-#, fuzzy
 msgid "Modify budget"
-msgstr "Додати витрати"
+msgstr "Змінити кошторис"
 
 #. %1$s: TMPL_VAR name=budget_period_description
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgetperiods.tmpl:99
-#, fuzzy, c-format
+#, c-format
 msgid "Modify budget %s"
-msgstr "Редагування грошової одиниці '%s'"
+msgstr "Змінити кошторис „%s“"
 
 #. %1$s: TMPL_VAR name=budget_period_id
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgetperiods.tmpl:64
-#, fuzzy, c-format
+#, c-format
 msgid "Modify budget'%s'"
-msgstr "Редагування грошової одиниці '%s'"
+msgstr "Змінити кошторис „%s“"
 
 #. %1$s: TMPL_VAR name=categorycode
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/categorie.tmpl:103
@@ -26643,17 +26566,17 @@ msgstr "Змінений джерело класифікації %s"
 #. %1$s: TMPL_VAR name=contractname
 #. %2$s: TMPL_VAR name=booksellername
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqcontract.tmpl:95
-#, fuzzy, c-format
+#, c-format
 msgid "Modify contract %s for %s"
-msgstr "Редагування категорії %s"
+msgstr "Редагування договору „%s“ з „%s“"
 
 #. For the first occurrence,
 #. %1$s: TMPL_VAR name=contractname
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqcontract.tmpl:4
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqcontract.tmpl:68
-#, fuzzy, c-format
+#, c-format
 msgid "Modify contract '%s'"
-msgstr "Редагування категорії '%s'"
+msgstr "Редагування договору „%s“"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/currency.tmpl:84
 msgid "Modify currency"
@@ -26673,14 +26596,12 @@ msgid "Modify framework text"
 msgstr "Зміна тексту для структури"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tmpl:149
-#, fuzzy
 msgid "Modify fund"
-msgstr "Змінити слово"
+msgstr "Редагування коштів"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/tools-home.tmpl:103
-#, fuzzy
 msgid "Modify items in a batch"
-msgstr "Додати примірник(и) до партії"
+msgstr "Зміна групи примірників"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/branches.tmpl:73
 msgid "Modify library"
@@ -26994,9 +26915,8 @@ msgstr "Просувайтеся Вперед"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/addbiblio.tmpl:793
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/authorities/authorities.tmpl:683
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/authorities/authorities.tmpl:685
-#, fuzzy
 msgid "Move Up"
-msgstr "Просувайтеся Вперед"
+msgstr "Перемістити вище"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/cleanborrowers.tmpl:112
 #, fuzzy
@@ -27141,9 +27061,8 @@ msgstr "Найменування "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/supplier.tmpl:45
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqcontract.tmpl:107
-#, fuzzy
 msgid "Name *"
-msgstr "Найменування "
+msgstr "Назва *"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_124f.tmpl:13
 msgid "Name of Satellite for Remote Sensing Image:"
@@ -27171,7 +27090,7 @@ msgstr "Номер квитка: "
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/letter.tmpl:229
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/branches.tmpl:288
 msgid "Name:"
-msgstr "Ім'я: "
+msgstr "Ім’я: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/issues_stats.tmpl:283
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/catalogue_stats.tmpl:207
@@ -27286,9 +27205,8 @@ msgstr "Нове"
 
 #. SCRIPT
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/authorities-toolbar.inc:42
-#, fuzzy
 msgid "New Authority"
-msgstr "Тип авторитетного джерела "
+msgstr "Нове авторитетне джерело"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/authtypes.tmpl:129
 msgid "New Authority Type"
@@ -27320,14 +27238,12 @@ msgid "New Batch"
 msgstr "Нова партія наклейок"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/budgets-admin-toolbar.inc:106
-#, fuzzy
 msgid "New Budget"
-msgstr "Витрата"
+msgstr "Новий кошторис"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/csv-profiles.tmpl:52
-#, fuzzy
 msgid "New CSV export profile"
-msgstr "Керування профілями експорту у CSV"
+msgstr "Новий профіль для експорту в CSV"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/maninvoice.tmpl:61
 msgid "New Card"
@@ -27350,9 +27266,8 @@ msgstr "Індекс Десяткової Класифікації Дьюї (Д�
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/acquisitions-toolbar.inc:46
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqcontract.tmpl:198
-#, fuzzy
 msgid "New Contract"
-msgstr "Дані для зв'язку"
+msgstr "Новий договір"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/currency.tmpl:3
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/currency.tmpl:59
@@ -27437,9 +27352,8 @@ msgstr "Нова друкарка"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/patroncards-toolbar.inc:67
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/labels-toolbar.inc:67
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/labels-new-toolbar.inc:20
-#, fuzzy
 msgid "New Profile"
-msgstr "Профіль: "
+msgstr "Новий профіль"
 
 #. For the first occurrence,
 #. SCRIPT
@@ -27491,7 +27405,7 @@ msgstr "Новий шаблон наклейки"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/member-password.tmpl:42
 msgid "New Username:"
-msgstr "Нове ім'я користувача: "
+msgstr "Нове ім’я користувача: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/acquisitions-toolbar.inc:52
 msgid "New Vendor"
@@ -27523,9 +27437,8 @@ msgstr "Поличка замовлень"
 
 #. SCRIPT
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/budgets-admin-toolbar.inc:104
-#, fuzzy
 msgid "New budget"
-msgstr "витрати"
+msgstr "Новий кошторис"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/authorised_values.tmpl:27
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/authorised_values.tmpl:41
@@ -27541,15 +27454,14 @@ msgstr "Нове місто"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqcontract.tmpl:5
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqcontract.tmpl:69
-#, fuzzy
 msgid "New contract"
-msgstr "Нова стаття"
+msgstr "Новий договір"
 
 #. %1$s: TMPL_VAR name=booksellername
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqcontract.tmpl:97
-#, fuzzy, c-format
+#, c-format
 msgid "New contract for %s"
-msgstr "Нове авторитетне значення для %s"
+msgstr "Новий договір з „%s“"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/currency.tmpl:86
 msgid "New currency"
@@ -27557,9 +27469,8 @@ msgstr "Нова грошова одиниця"
 
 #. SCRIPT
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/budgets-admin-toolbar.inc:104
-#, fuzzy
 msgid "New fund for"
-msgstr "Новий постачальник"
+msgstr "Нові кошти для "
 
 #. %1$s: TMPL_VAR name=label_batch
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/stage-marc-import.tmpl:61
@@ -27584,6 +27495,8 @@ msgstr "Нова бібліотека"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/csv-profiles.tmpl:273
 msgid "New line (\\n)"
 msgstr ""
+"перехід на новий рядок (\n"
+")"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/virtualshelves-toolbar.inc:89
 #, fuzzy
@@ -27601,11 +27514,9 @@ msgstr "Новий рядок замовлення"
 msgid "New printer"
 msgstr "Нова друкарка"
 
-# 124^b - профіль
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/csv-profiles.tmpl:42
-#, fuzzy
 msgid "New profile"
-msgstr "профіль"
+msgstr "Новий профіль"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:88
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:173
@@ -27620,9 +27531,8 @@ msgstr "Новий дорожній тип"
 
 #. SCRIPT
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/budgetperiods-admin.inc:30
-#, fuzzy
 msgid "New root budget"
-msgstr "витрачені кошти"
+msgstr "Новий кореневий кошторис"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/serials/subscription-add.tmpl:2
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/serials/subscription-add.tmpl:955
@@ -27876,7 +27786,7 @@ msgstr "Відвідувач нічого не зарезервовував."
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/branchtransfers.tmpl:135
 #, c-format
 msgid "No Item with barcode: %s"
-msgstr "Немає одиниці зі штрих-кодом: %s"
+msgstr "Немає одиниці зі штрих-кодом: „%s“"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/label-status.inc:4
 #, c-format
@@ -27936,9 +27846,8 @@ msgid "No address stored."
 msgstr "Не вказана адреса."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgetperiods.tmpl:291
-#, fuzzy
 msgid "No budget"
-msgstr "витрати"
+msgstr "Немає кошторису"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/hold-menu.inc:12
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/circ-menu.inc:28
@@ -27977,14 +27886,12 @@ msgid "No email stored."
 msgstr "Не вказана електронна пошта."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tmpl:238
-#, fuzzy
 msgid "No fund found"
-msgstr "Нічого не знайдено у журналі дій"
+msgstr "Не знайдено жодних коштів"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqplan.tmpl:292
-#, fuzzy
 msgid "No funds to display for this search criteria"
-msgstr "Введіть пошукові терміни"
+msgstr "Немає коштів, щоб відповідали цьому критерію пошуку"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/results.tmpl:454
 msgid "No holds allowed"
@@ -28709,17 +28616,15 @@ msgstr ""
 "коробку, 'так' і відправляються не неперевірено ні для 'чого')"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/admin-home.tmpl:14
-#, fuzzy
 msgid ""
 "Note not all basic parameters are required to be set. For example if you do "
 "not plan to use budget based acquisitions, then Accounts and Budgets, "
 "Currencies and Exchange Rates can be ignored."
 msgstr ""
-"Візьміть до уваги те, що не всі системні параметри потрібно налаштовувати. "
-"Наприклад, якщо Ви не плануєте використовувати надходження, що базуються на "
-"певному бюджеті, то облікові записи, кошти (бюджет), валюти та обмінні курси "
-"можна проігнорувати. За детальнішою інформацією загляньте на Коха Вікі (wiki."
-"koha.org) та KohaDocs (www.kohadocs.org)."
+"Візьміть до уваги те, що не усі основні системні параметри потрібно "
+"налаштовувати. Наприклад, якщо Ви не плануєте використовувати надходження, "
+"що базуються на кошторисах, то фінансові кошти і кошториси, валюти й обмінні "
+"курси можна проігнорувати."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/categorie.tmpl:18
 msgid "Note on Permissions"
@@ -28854,6 +28759,8 @@ msgid ""
 "Notes are simply for any descriptive notes you might want to add so that "
 "librarians know when to use this fund"
 msgstr ""
+"Нотатки — це просто будь-які описові замітки, які Ви можете додати, так щоб "
+"бібліотекарі знали, коли варто використовувати ці кошти."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/search_indexes.inc:22
 msgid "Notes/Comments"
@@ -28899,7 +28806,7 @@ msgstr "Нічого не знайдено"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/z3950_search.tmpl:158
 #, c-format
 msgid "Nothing found. <a1>Try another search</a>."
-msgstr "Нічого не знайшло. <a1>Пробуйте інший пошук</a>."
+msgstr "Нічого не знайдено. <a1>Спробуйте інший пошук</a>."
 
 #. For the first occurrence,
 #. SCRIPT
@@ -29326,11 +29233,11 @@ msgstr "Новини електронного каталогу та інтерф
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/memberentrygen.tmpl:857
 msgid "OPAC login"
-msgstr "Ім'я входу в електронний каталог"
+msgstr "Ім’я входу в електронний каталог"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:318
 msgid "OPAC login:"
-msgstr "Ім'я входу в електронний каталог: "
+msgstr "Ім’я входу в електронний каталог: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/serials/serials-recieve.tmpl:328
 #, fuzzy
@@ -29524,9 +29431,8 @@ msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbudget.tmpl:20
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbookfund.tmpl:30
-#, fuzzy
 msgid "Once a fund is created a budget can then be applied to it"
-msgstr "Як тільки фонд створений, бюджет може потім бути застосований до цього"
+msgstr "Як тільки кошти будуть створені, можна застосовувати кошторис"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/tags/review.tmpl:13
 msgid ""
@@ -29547,13 +29453,12 @@ msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbudget.tmpl:26
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbookfund.tmpl:35
-#, fuzzy
 msgid ""
 "Once budgets have been added you can see/search them all by clicking 'Show "
 "all budgets' under the list of funds"
 msgstr ""
-"Як тільки бюджети були додані, що ви можете бачення/пошук їх цілком "
-"клацанням 'Показують всі бюджети' під списком фондів"
+"Як тільки кошториси будуть додані, Ви можете бачити/шукати за ними, "
+"натиснувши посилання „Показати усі кошториси“під списком коштів."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/tools/cleanborrowers.tmpl:8
 #, fuzzy
@@ -29650,6 +29555,8 @@ msgid ""
 "Once you have made your edits, click the 'Save Changes' button. You will be "
 "brought to a list of your existing budgets."
 msgstr ""
+"Після того як Ви зробили свої зміни, натисніть кнопку „Зберегти зміни“. Ви "
+"будете перенаправлені до переліку існуючих кошторисів."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/patroncards/edit-profile.tmpl:25
 msgid ""
@@ -30483,9 +30390,8 @@ msgid "Patron Attributes"
 msgstr "Види атрибутів відвідувачів"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/patroncards-menu.inc:2
-#, fuzzy
 msgid "Patron Card Creator Home"
-msgstr "Створювач наклейок та квитків відвідувачів"
+msgstr "Домівка „Утворювача квитків відвідувачів“"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/edit-layout.tmpl:370
 #, fuzzy
@@ -30548,7 +30454,7 @@ msgstr "Дані відвідувача"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:104
 #, c-format
 msgid "Patron Details for %s %s (%s)"
-msgstr "Дані відвідувача - %s %s (%s)"
+msgstr "Дані відвідувача — %s %s (%s)"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/members/boraccount.tmpl:3
 #, fuzzy
@@ -30626,9 +30532,8 @@ msgstr "Види атрибутів відвідувачів"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/tools-menu.inc:32
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/tools-home.tmpl:39
-#, fuzzy
 msgid "Patron card creator"
-msgstr "Відвідувачі та обіг"
+msgstr "Утворювач квитків відвідувачів"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/admin-home.tmpl:43
 msgid "Patron categories"
@@ -31519,7 +31424,7 @@ msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/installer/auth.tmpl:39
 msgid "Please enter your username and password:"
-msgstr "Будь ласка, введіть Ваше ім'я користувача та пароль: "
+msgstr "Будь ласка, введіть Ваше ім’я користувача та пароль: "
 
 #. SCRIPT
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/serials/subscription-add.tmpl:949
@@ -31742,9 +31647,8 @@ msgstr "Формат запису інформації: відеозаписи"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/z3950_search.tmpl:110
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/z3950_search.tmpl:133
-#, fuzzy
 msgid "Preview"
-msgstr "Продовжити"
+msgstr "Перегляд"
 
 #. %1$s: TMPL_VAR name=title
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/serials/routing-preview.tmpl:27
@@ -32067,21 +31971,18 @@ msgstr "Назва профілю:  "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/csv-profiles.tmpl:59
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/csv-profiles.tmpl:140
-#, fuzzy
 msgid "Profile description:"
 msgstr "Опис профілю: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/csv-profiles.tmpl:109
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/csv-profiles.tmpl:289
-#, fuzzy
 msgid "Profile marcfields:"
 msgstr "МАРК-поля профілю: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/csv-profiles.tmpl:56
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/csv-profiles.tmpl:128
-#, fuzzy
 msgid "Profile name:"
-msgstr "Назва профілю:  "
+msgstr "Назва профілю: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/edit-profile.tmpl:84
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/labels/label-edit-profile.tmpl:57
@@ -32441,13 +32342,13 @@ msgstr "Роздрукувати швидкий листок"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/labels/spinelabel-home.tmpl:3
 msgid "Quick Spine Label Creator"
-msgstr ""
+msgstr "Швидкий утворювач наклейки на корінець"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/tools-menu.inc:60
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/tools-home.tmpl:122
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/labels/spinelabel-home.tmpl:15
 msgid "Quick spine label creator"
-msgstr ""
+msgstr "Швидкий утворювач наклейки на корінець"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/hold-transfer-slip.tmpl:36
 #, fuzzy
@@ -32511,9 +32412,10 @@ msgstr "Курс"
 msgid "Rate:"
 msgstr "Курс: "
 
+# Всі ті поля, які відображаються в підтримувані точки доступу (крім 1035)
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/z3950_search.tmpl:89
 msgid "Raw (any):"
-msgstr ""
+msgstr "Будь-яке доступне поле: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/mainpage.tmpl:11
 msgid "Read Koha Documentation"
@@ -32540,17 +32442,15 @@ msgid "Reading Record for %s %s"
 msgstr "Історія читання - %s%s"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/batchMod-del.tmpl:152
-#, fuzzy
 msgid "Reason"
-msgstr "Поличка замовлень"
+msgstr "Причина"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/addItems.tmpl:24
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/addItems.tmpl:33
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/transferCollection.tmpl:21
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/editCollections.tmpl:40
-#, fuzzy
 msgid "Reason:"
-msgstr "Поличка замовлень"
+msgstr "Причина: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/authorised_values.tmpl:191
 #, fuzzy
@@ -32870,9 +32770,8 @@ msgid "Remove Duplicates"
 msgstr "Вилучити дублікати"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/addItems.tmpl:48
-#, fuzzy
 msgid "Remove Item from Collection"
-msgstr "Вибір зібрання"
+msgstr "Вилучити примірник із зібрання"
 
 #. For the first occurrence,
 #. SCRIPT
@@ -33300,9 +33199,9 @@ msgstr "Результати пошуку з %s до %s зі %s"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/members-search.tmpl:91
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/member.tmpl:29
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/serials/member-search.tmpl:49
-#, fuzzy, c-format
+#, c-format
 msgid "Results %s to %s of %s found for"
-msgstr "Результати від %s по %s з %s для пошуку по запиту '"
+msgstr "Результати від %s по %s з %s для пошуку по запиту "
 
 #. %1$s: TMPL_VAR name=startfrom
 #. %2$s: TMPL_VAR name=endat
@@ -33347,12 +33246,11 @@ msgstr "Подробиці відвідувача"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/transferCollection.tmpl:43
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/editCollections.tmpl:120
 msgid "Return to Rotating Collections Home"
-msgstr ""
+msgstr "Повернутися на сторінку „Почергово переміщувані зібрання“"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/batchMod-del.tmpl:169
-#, fuzzy
 msgid "Return to batch item deletion"
-msgstr "Подробиці відвідувача"
+msgstr "Повернутися до пакетного вилучення примірників"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/guided_reports_start.tmpl:560
 #, c-format
@@ -33494,26 +33392,24 @@ msgstr "Рон Вікершам {Ron Wickersham}"
 
 #. SCRIPT
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/budgetperiods-admin.inc:30
-#, fuzzy
 msgid "Root Budgets"
-msgstr "Витрати"
+msgstr "Кореневі кошториси"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/rotatingCollections.tmpl:15
-#, fuzzy
 msgid "Rotating Collections"
-msgstr "c — зібрання, колекція, добірка"
+msgstr "Почергово переміщувані зібрання"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/addItems.tmpl:15
 msgid "Rotating Collections: Add/Remove Items"
-msgstr ""
+msgstr "Почергово переміщувані зібрання: додавання/вилучення примірників"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/editCollections.tmpl:14
 msgid "Rotating Collections: Edit Collections"
-msgstr ""
+msgstr "Почергово переміщувані зібрання: редагування зібрань"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/transferCollection.tmpl:13
 msgid "Rotating Collections: Transfer Collection"
-msgstr ""
+msgstr "Почергово переміщувані зібрання: передача зібрання"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/serials/serials-collection.tmpl:84
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/serials/serials-collection.tmpl:199
@@ -33962,32 +33858,28 @@ msgid "Search"
 msgstr "Пошук"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/authorities-search.inc:101
-#, fuzzy
 msgid "Search All Headings"
-msgstr "Пошук все ще незавершений..."
+msgstr "Пошук усіх заголовків"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/authorities-search.inc:99
-#, fuzzy
 msgid "Search Authorities"
-msgstr "Інтернет-пошук"
+msgstr "Пошук авторитетних джерел"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/budgets-admin-search.inc:106
 msgid "Search Budgets"
-msgstr "Шукаємо витрати"
+msgstr "Пошук у кошторисах"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/budgets-admin-search.inc:49
-#, fuzzy
 msgid "Search Budgets:"
-msgstr "Шукаємо витрати"
+msgstr "Шукати у кошторисах: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/cities-admin-search.inc:86
 msgid "Search Cities"
 msgstr "Пошук міст"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/contracts-admin-search.inc:86
-#, fuzzy
 msgid "Search Contracts"
-msgstr "Пошук сповіщень"
+msgstr "Пошук договорів"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/currencies-admin-search.inc:21
 msgid "Search Currencies"
@@ -34012,9 +33904,8 @@ msgid "Search For:"
 msgstr "Шукати: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/authorities-search.inc:100
-#, fuzzy
 msgid "Search Main Heading"
-msgstr "Пошук все ще незавершений..."
+msgstr "Пошук основного заголовку"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/letters-search.inc:21
 msgid "Search Notices"
@@ -34100,7 +33991,7 @@ msgstr "Шукати по назві категорії відвідувачів
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/contracts-admin-search.inc:49
 msgid "Search by contract name or/and description:"
-msgstr ""
+msgstr "Шукати за назвою договору та/чи описом: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/intranet-main.tmpl:46
 msgid "Search catalog:&nbsp;"
@@ -34111,9 +34002,8 @@ msgid "Search for Biblio"
 msgstr "Пошук бібліографічного запису"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudget_owner_search.tmpl:29
-#, fuzzy
 msgid "Search for Budget Owner"
-msgstr "Шукаємо витрати"
+msgstr "Пошук власника кошторису"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/marctagstructure.tmpl:142
 msgid "Search for Tag"
@@ -34251,9 +34141,8 @@ msgstr "Знайдіть відповідності рядка %S"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/z3950_search.tmpl:82
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/z3950_search.tmpl:103
-#, fuzzy
 msgid "Search targets"
-msgstr "Шукаємо витрати"
+msgstr "Цілі для пошуку"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/budgets-admin-search.inc:108
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/contracts-admin-search.inc:88
@@ -35003,7 +34892,7 @@ msgstr "Встановити привілеї"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/member-flags.tmpl:87
 #, c-format
 msgid "Set Privileges for %s, %s"
-msgstr "Встановлюємо привілеї - %s, %s"
+msgstr "Встановлюємо привілеї — %s, %s"
 
 #. INPUT type=submit name=submit
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/moredetail.tmpl:84
@@ -35211,9 +35100,8 @@ msgid "Show More"
 msgstr "Показати більше"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqplan.tmpl:118
-#, fuzzy
 msgid "Show active funds only"
-msgstr "Показані лише "
+msgstr "Показувати лише активні кошти"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqplan.tmpl:129
 msgid "Show actual/estimated values:"
@@ -35251,9 +35139,8 @@ msgid "Show my"
 msgstr "Показати"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqplan.tmpl:103
-#, fuzzy
 msgid "Show my funds only"
-msgstr "Показані лише "
+msgstr "Показувати лише мої кошти"
 
 #. IMG
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgetperiods.tmpl:150
@@ -35388,9 +35275,8 @@ msgid "Sort 2:"
 msgstr "Сортувальне поле 2: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/virtualshelves/shelves.tmpl:396
-#, fuzzy
 msgid "Sort By"
-msgstr "Сортуємо: "
+msgstr "Сортування"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/overdue.tmpl:202
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/results.tmpl:217
@@ -35595,9 +35481,10 @@ msgstr "Серії: "
 msgid "Spent"
 msgstr "Витрачено"
 
+# витрачені кошти
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/acqui/neworderempty.tmpl:16
 msgid "Spent budget"
-msgstr "витрачені кошти"
+msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/detail.tmpl:217
 #, fuzzy
@@ -35699,12 +35586,10 @@ msgid "Stage MARC Records For Import"
 msgstr "Заготівля МАРК-записів для імпорту"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/tools-menu.inc:68
-#, fuzzy
 msgid "Stage MARC for import"
-msgstr "Заготовити для імпорту"
+msgstr "Заготівля МАРК для імпорту"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/tools-home.tmpl:134
-#, fuzzy
 msgid "Stage MARC records for import"
 msgstr "Заготівля МАРК-записів для імпорту"
 
@@ -35732,9 +35617,8 @@ msgid "Staged MARC management"
 msgstr "Керування типами одиниць"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/tools-home.tmpl:139
-#, fuzzy
 msgid "Staged MARC record management"
-msgstr "Заготівля МАРК-записів для імпорту"
+msgstr "Керування заготовленими МАРК-записами"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/addorderiso2709.tmpl:36
 #, fuzzy
@@ -35750,10 +35634,11 @@ msgstr "Заготовлено"
 msgid "Stan Brinkerhoff"
 msgstr ""
 
+# Пошук за стандартним ідентифікатором 
+# Призначення: Пошук за стандартними ідентифікаторами - ISBN, ISSN, ISMN, CODEN і т.п. без урахування конкретної схеми ідентифікатора.
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/z3950_search.tmpl:96
-#, fuzzy
 msgid "Standard ID:"
-msgstr "стандарт (ДСТУ, ГОСТ, ГСТ, ТУ тощо)"
+msgstr "Стандартний ідентифікатор (будь-який): "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/search_indexes.inc:17
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/labels/search.tmpl:35
@@ -35766,12 +35651,10 @@ msgid "Standard Number:"
 msgstr "Стандартний номер: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgetperiods.tmpl:262
-#, fuzzy
 msgid "Start Date"
-msgstr "Дата початку: "
+msgstr "Дата початку"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/reports/stats_screen.tmpl:23
-#, fuzzy
 msgid "Start Date:"
 msgstr "Дата початку: "
 
@@ -35796,20 +35679,18 @@ msgid "Start date"
 msgstr "Дата початку"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqcontract.tmpl:113
-#, fuzzy
 msgid "Start date *"
-msgstr "Дата початку"
+msgstr "Дата початку *"
 
 #. SCRIPT
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgetperiods.tmpl:57
-#, fuzzy
 msgid "Start date missing"
-msgstr "порт відсутній"
+msgstr "Дата початку відсутня"
 
 #. SCRIPT
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgetperiods.tmpl:57
 msgid "Start date must be before end date"
-msgstr ""
+msgstr "Дата початку повинна передувати кінцевій даті"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/serials/subscription-renew.tmpl:26
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/export.tmpl:73
@@ -36183,9 +36064,8 @@ msgstr "Код підполя: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/csv-profiles.tmpl:88
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/csv-profiles.tmpl:230
-#, fuzzy
 msgid "Subfield separator:"
-msgstr "Розділювач підполів:  "
+msgstr "Розділювач підполів: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/auth_subfields_structure.tmpl:120
 msgid "Subfield:"
@@ -36231,9 +36111,8 @@ msgstr "Тематичні рубрики: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/z3950_search.tmpl:57
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/z3950_search.tmpl:94
-#, fuzzy
 msgid "Subject Heading:"
-msgstr "Предметні рубрики"
+msgstr "Предметна рубрика: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/maint/catmaintain.tmpl:91
 #, fuzzy
@@ -37033,21 +36912,20 @@ msgid ""
 "TIP: For instructions on ordering from a suggestion see 'Managing "
 "Suggestions' in this manual"
 msgstr ""
-"ПІДКАЗКА: Для детальних інструкцій стосовно здійснення замовлень щодо "
-"пропозицій/побажань читача дивіться 'Керування пропозиціями читача' у даній "
+"ПІДКАЗКА: для детальних інструкцій стосовно здійснення замовлень щодо "
+"пропозицій/побажань читача дивіться „Керування пропозиціями читача“ у даній "
 "інструкції."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbudget.tmpl:5
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbookfund.tmpl:5
-#, fuzzy
 msgid ""
 "TIP: Funds may be ignored if you are setting your Global System Preferences "
 "for 'Acquisitions' to &quot;simple&quot; acquisitions: the funds are only "
 "useful when using &quot;normal&quot; acquisitions."
 msgstr ""
-"Статті витрат будуть проігноровані, якщо Ви встановите у параметрах системи "
-"\"простий\" варіант надходжень: статті витрат корисні лише при \"нормальному"
-"\" способі надходжень."
+"ПІДКАЗКА: кошти можуть бути проігноровані, якщо Ви встановите у параметрах "
+"системи „простий“ варіант надходжень: кошти корисні лише при „нормальному“ "
+"способі надходжень."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/branches.tmpl:48
 msgid ""
@@ -37285,15 +37163,14 @@ msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbudget.tmpl:10
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbookfund.tmpl:20
-#, fuzzy
 msgid ""
 "TIP: The first time you access this page, you will be asked to add your "
 "first fund -- thereafter you will have the option of editing and deleting "
 "funds."
 msgstr ""
-"При першому звернені до цієї сторінки Вам буде запропоновано додати Вашу "
-"першу статтю витрат -- з того часу Ви також матимете можливість редагування "
-"та вилучення статей витрат."
+"ПІДКАЗКА: при першому звернені до цієї сторінки Вам буде запропоновано "
+"додати Ваші перші кошти — після цього у Вас буде можливість редагування та "
+"вилучення коштів."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/patron-attr-types.tmpl:29
 #, fuzzy
@@ -37566,9 +37443,8 @@ msgid "Tag Deleted"
 msgstr "Ознаку вилучено"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/tools-menu.inc:38
-#, fuzzy
 msgid "Tag moderation"
-msgstr "g- Генерал"
+msgstr "Регулювання міток"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/marctagstructure.tmpl:74
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/matching-rules.tmpl:232
@@ -37654,7 +37530,6 @@ msgstr "Планувальник задач"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/tools-menu.inc:89
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/tools-home.tmpl:86
-#, fuzzy
 msgid "Task scheduler"
 msgstr "Планувальник задач"
 
@@ -37967,7 +37842,7 @@ msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/tools/csv-profiles.tmpl:10
 msgid "The 'Profile description' is for your own benefit"
-msgstr ""
+msgstr "„Опис профілю“ корисний для Вашої власної вигоди"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/tools/csv-profiles.tmpl:9
 msgid ""
@@ -38058,10 +37933,11 @@ msgid ""
 "The Description should be something that will help you identify the budget "
 "when ordering"
 msgstr ""
+"В описі має бути щось, що допоможе Вам ототожнити кошторис при замовленні"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbudgets.tmpl:17
 msgid "The Fund Name should be something that librarians will understand"
-msgstr ""
+msgstr "Назва коштів має бути зрозумілою для бібліотекарів"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/reports/reports-home.tmpl:13
 #, fuzzy
@@ -38079,16 +37955,17 @@ msgid ""
 "The Koha Acquisitions module provides a way where the library can record "
 "orders placed with vendors and manage purchase budgets."
 msgstr ""
-"Модуль надходжень Коха забезпечує спосіб за яким бібліотека може записувати "
-"замовлення з інформацією про продавців а також керувати витратами (бюджетом) "
-"призначеними на купівлю."
+"Модуль надходжень Коха надає спосіб за яким бібліотека може записувати "
+"замовлення, разом з інформацією про продавців, а також керувати кошторисами "
+"на закупівлю."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/labels/label-home.tmpl:26
+#, fuzzy
 msgid ""
 "The Label Creator allow you to use layouts and templates which you design to "
 "print a nearly unlimited variety of labels including barcodes. Here are some "
 "of the features of the Label Creator module:"
-msgstr ""
+msgstr "....Утворювач наклейок..."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/cataloguing/addbiblio.tmpl:77
 msgid ""
@@ -38116,7 +37993,7 @@ msgid ""
 "The Patron Card Creator allow you to use layouts and templates which you "
 "design to print a nearly unlimited variety of patron cards including "
 "barcodes. Here are some of the features of the Patron Card Creator module:"
-msgstr ""
+msgstr "...Утворювач квитків відвідувачів..."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/members/members-home.tmpl:6
 #, fuzzy
@@ -38286,21 +38163,23 @@ msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/labels/label-home.tmpl:41
 #, c-format
+#, fuzzy
 msgid ""
 "The developers of the Label Creator module hope you will find this an "
 "extremely useful tool in the course of your cataloging work. You are "
 "encouraged to submit any enhancement requests as well as any bugs via "
 "<a1>Koha Project Bugzilla</a>."
-msgstr ""
+msgstr "....Утворювач наклейок..."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/home.tmpl:36
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/patroncards/home.tmpl:15
 #, c-format
+#, fuzzy
 msgid ""
 "The developers of the Patron Card Creator module hope you will find this an "
 "extremely useful tool. You are encouraged to submit any enhancement requests "
 "as well as any bugs via <a1>Koha Project Bugzilla</a>."
-msgstr ""
+msgstr "...Утворювач квитків відвідувачів..."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/reports/dictionary.tmpl:5
 #, fuzzy
@@ -38405,11 +38284,8 @@ msgstr ""
 "'Гаразд': "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/memberentrygen.tmpl:111
-#, fuzzy
 msgid "The following fields are wrong. Please fix them."
-msgstr ""
-"Наступні поля введені неправильно. Будь ласка, поверніться назад та виправте "
-"їх."
+msgstr "Наступні поля введені неправильно. Будь ласка, виправте їх."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/pendingreserves.tmpl:48
 msgid ""
@@ -38614,7 +38490,7 @@ msgstr "%s відвідувачів було успішно вилучено"
 msgid ""
 "The other image can be something like a library logo or symbol that you "
 "uploaded using the 'Manage Images' module of the Patron Card Creator Tool."
-msgstr ""
+msgstr "...Утворювач квитків відвідувачів..."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/circ/selectbranchprinter.tmpl:16
 #, fuzzy
@@ -38667,8 +38543,8 @@ msgid ""
 "The reservoir can be populated with MARC records through the &quot;Stage "
 "MARC Records for Import&quot; under Tools."
 msgstr ""
-"Сховище може бути наповнене МАРК-записами через &quot;Заготівля МАРК-записів "
-"для імпорту&quot; у розділі інструментів."
+"Сховище може бути наповнене МАРК-записами з допомогою „Заготівлі "
+"МАРК-записів для імпорту“ у розділі інструментів."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/cataloguing/addbooks.tmpl:15
 #, fuzzy
@@ -38786,10 +38662,10 @@ msgid ""
 "editor."
 msgstr ""
 "Повідомлена ознака повинна містити номер МАРК-ознаки. Кожне підполе у "
-"відібраній ознаці копіюватиметься до \"ознаки призначення\" у бібліотечному "
+"відібраній ознаці копіюватиметься до „ознаки призначення“ у бібліотечному "
 "записі, наприклад, в УКРМАРКу, ознака 200 з авторитетним значенням персони "
-"буде повідомлена у 600, 700, 701, залежно від того, що буде вибрано у МАРК-"
-"редакторові бібліотечних записів."
+"буде повідомлена у 600, 700, 701, залежно від того, що буде вибрано у "
+"МАРК-редакторові бібліотечних записів."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/tools/scheduler.tmpl:3
 msgid ""
@@ -38888,19 +38764,16 @@ msgstr "Лише одиниці доступні зараз "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/rotatingCollections.tmpl:37
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/editCollections.tmpl:65
-#, fuzzy
 msgid "There are no Collections currently defined."
-msgstr "Наразі не означено жодного профілю друкарки."
+msgstr "Наразі не визначено жодного зібрання."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/addItems.tmpl:77
-#, fuzzy
 msgid "There are no Items in this Collection."
-msgstr "Немає збережених правил відповідності."
+msgstr "Немає жодного примірника у цьому зібранні."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqcontract.tmpl:225
-#, fuzzy
 msgid "There are no contracts with this vendor."
-msgstr "Є два шляхи зробити це: "
+msgstr "З цим постачальником немає жодного договору."
 
 #. For the first occurrence,
 #. %1$s: TMPL_VAR name=batch_id
@@ -39140,15 +39013,14 @@ msgstr ""
 "хто заповнений :"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/authorised_values.tmpl:166
-#, fuzzy
 msgid ""
 "These values can be used in many pull down menus throughout the Koha system. "
 "You can define as many categories as you want, and as many authorized values "
 "as you want in each category."
 msgstr ""
-"Ця таблиця використовується у МАРК-визначенні. Ви можете означити стільки "
-"категорій, скільки захочете, і так багато авторитетних джерел, скільки "
-"бажатимете у кожній категорії."
+"Ці значення можуть використовуватися у багатьох випадаючих меню в рамках "
+"усієї системи Коха. Ви можете визначити скільки завгодно категорій, а також "
+"довільну кількість авторитетних значень для кожної категорії."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/advsearch.tmpl:195
 msgid "Theses"
@@ -39436,10 +39308,12 @@ msgstr "Цей екран ділиться на 2 частини"
 
 #. %1$s: TMPL_VAR name=collectionBranch
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/returns.tmpl:58
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "This item is part of a Rotating Collection and needs to be Transferred to %s"
-msgstr "Одиниця очікує на  %s"
+msgstr ""
+"Цей примірник є частиною почергово переміщуваного зібрання та потребує "
+"передачі у бібліотеку „%s“"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/returns.tmpl:62
 #, fuzzy
@@ -39470,14 +39344,14 @@ msgid ""
 msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/item_circulation_alerts.tmpl:5
-#, fuzzy
 msgid ""
 "This matrix is to be used to define rules for check-in and checkout "
 "notifications for combinations of libraries, patron categories, and item "
 "types"
 msgstr ""
-"Означення правил обігу та випадків стягнення штрафів для поєднань бібліотек, "
-"категорій відвідувачів та типів одиниць."
+"Ця матриця буде використовуватися для визначення правил відображення "
+"повідомлень при видачі та поверненні для комбінацій бібліотек, категорій "
+"відвідувачів та типів одиниць."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/memberentrygen.tmpl:840
 msgid "This message appears on this patron's user page in the OPAC"
@@ -39842,15 +39716,14 @@ msgid "This tool will allow you to modify a batch of item records from Koha."
 msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/serials/checkexpiration.tmpl:5
-#, fuzzy
 msgid ""
 "This tool will let you search for all serials that will expire before a "
 "specific date. This is a handy tool when it comes time to budget for new "
 "serials."
 msgstr ""
-"Цей інструмент дозволить вам знайти всі серіали, які видихнуть перед "
-"специфічною датою. Це зручний інструмент, коли він прибуває час, щоб "
-"передбачити в бюджеті нові серіали."
+"Цей інструмент дозволить Вам знайти усі серіальні видання, які закінчуються "
+"до певної дати. Це зручний інструмент, коли приходить час, щоб закласти в "
+"кошторис нові серіальні видання."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/image-manage.tmpl:129
 msgid ""
@@ -40130,6 +40003,7 @@ msgstr "Заголовок: "
 msgid "Title-page availability code"
 msgstr "Код наявності титульного аркуша"
 
+# z3950_search (Пошук по заголовку)
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/acquisitions-search.inc:14
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/acquisitions-history-search.inc:15
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/suggestions-add-search.inc:52
@@ -40201,9 +40075,8 @@ msgid "To add a CSV Profile enter the following info:"
 msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbudgetperiods.tmpl:9
-#, fuzzy
 msgid "To add a budget click the 'New Budget' button."
-msgstr "Клацніть кнопку 'Новий'"
+msgstr "Щоб додати кошторис натисніть кнопку „Новий кошторис“."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/circ/circulation.tmpl:40
 msgid ""
@@ -40235,12 +40108,12 @@ msgid "To add a new category, click 'New Category'"
 msgstr "Щоб додати нову категорію, клацають 'Нову Категорію'"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/aqbudgets.tmpl:9
-#, fuzzy
 msgid ""
 "To add a new fund click the New button and then choose which Budget you "
 "would like to add the fund to."
 msgstr ""
-"Щоб додати нове свято, клацають по даті, до якої ви хотіли б додати свято"
+"Щоб додати нові кошти натисніть на кнопку „Створити“, а потім виберіть, до "
+"якого кошторису Ви хотіли б додати кошти."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/branches.tmpl:33
 #, fuzzy
@@ -40307,12 +40180,12 @@ msgid ""
 "listed there accept anonymous connections. (Be sure to choose servers which "
 "deliver records in the proper MARC format for your Koha installation.)"
 msgstr ""
-"Щоб додати сервери, Вам потрібно буде знати доменне ім'я або IP-адресу "
+"Щоб додати сервери, Вам потрібно буде знати доменне ім’я або IP-адресу "
 "сервера, номер використовуваного порту, та ім'я бази даних для доступу. Ця "
-"інформація доступна для багатьох серверів у всьому світі на веб-сайті "
-"\"Index Data\" у http://www.indexdata.dk/targettest/. Всі сервери, внесені "
-"там до списку, приймають анонімні зв'язки. (Не забувайте вибрати сервери, "
-"які доставляють записи до Вашої інсталяції Коха у належному МАРК-форматі.)"
+"інформація доступна для багатьох серверів у всьому світі на веб-сайті „Index "
+"Data“ у http://www.indexdata.dk/targettest/. Всі сервери, внесені там до "
+"списку, приймають анонімні зв'язки. (Не забувайте вибрати сервери, які "
+"доставляють записи до Вашої інсталяції Коха у належному МАРК-форматі.)"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/members/member-flags.tmpl:5
 #, fuzzy
@@ -40730,6 +40603,11 @@ msgid ""
 "Releases' and a fund for 'Science Fiction.' It is an optional way to further "
 "organize your finances."
 msgstr ""
+"Праворуч від кожних коштів Ви знайдете „Змінити“, „Вилучити“ та „Додати "
+"вкладені кошти“. Вкладені кошти є під-коштами для коштів у списку. "
+"Наприклад, можна мати кошти „Фантастика“, до яких ввійдуть кошти „Нові "
+"випуски“ та кошти „Наукова фантастика“. Це додатковий спосіб подальшої "
+"організації своїх фінансів."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/authtypes.tmpl:36
 msgid ""
@@ -41045,9 +40923,8 @@ msgstr "Переміщення"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/rotatingCollections.tmpl:24
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/rotatingCollections.tmpl:32
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/transferCollection.tmpl:36
-#, fuzzy
 msgid "Transfer Collection"
-msgstr "Зібрання серіального видання"
+msgstr "Передати зібрання"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/circ/returns.tmpl:179
 msgid "Transfer Now?"
@@ -42138,7 +42015,7 @@ msgstr "Ідентифікатор користувача: "
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/installer/auth.tmpl:40
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/auth.tmpl:44
 msgid "Username:"
-msgstr "Ім'я користувача: "
+msgstr "Ім’я користувача: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/reports/dictionary.tmpl:57
 #, fuzzy
@@ -42146,9 +42023,8 @@ msgid "Using A Definition"
 msgstr "Визначення"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/tools/csv-profiles.tmpl:20
-#, fuzzy
 msgid "Using CSV Profiles"
-msgstr "CSV-профілі"
+msgstr "Користання з профілів CSV"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/cataloguing/addbiblio.tmpl:122
 msgid "Using Z39.50 for Copy Cataloging"
@@ -42489,9 +42365,8 @@ msgstr "Перегляд каталожних груп за типами оди�
 
 #. A
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgetperiods.tmpl:277
-#, fuzzy
 msgid "View funds for <!-- TMPL_VAR name=\"budget_period_description\" -->"
-msgstr "Номер серіального видання <!-- TMPL_VAR name=\"subscriptionid\" -->"
+msgstr "Перегляд коштів на „<!-- TMPL_VAR name=\"budget_period_description\" -->“"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/members/boraccount.tmpl:45
 #, fuzzy
@@ -42820,13 +42695,14 @@ msgid "Weight"
 msgstr "Вага"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/labels/label-home.tmpl:25
+#, fuzzy
 msgid "Welcome to Koha's Label Creator Module"
-msgstr ""
+msgstr "....Утворювач наклейок..."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/home.tmpl:25
 #, fuzzy
 msgid "Welcome to Koha's Patron Card Creator Module"
-msgstr "Створювач наклейок та квитків відвідувачів"
+msgstr "...Утворювач квитків відвідувачів..."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/installer/auth.tmpl:35
 msgid "Welcome to the Koha Web Installer"
@@ -42919,15 +42795,15 @@ msgstr "Що таке „фактична ціна“?"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/acqui/neworderempty.tmpl:11
 msgid "What is the &quot;Budgeted Price&quot;?"
-msgstr "Що таке &quot;планована ціна&quot;?"
+msgstr "Що таке „кошторисна ціна“?"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/acqui/neworderempty.tmpl:8
 msgid "What is the &quot;Replacement Price&quot;?"
-msgstr "Що таке &quot;ціна заміни&quot;?"
+msgstr "Що таке „ціна заміни“?"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/acqui/neworderempty.tmpl:5
 msgid "What is the &quot;Vendor Price&quot;?"
-msgstr "Що таке „Ціна постачальника“?"
+msgstr "Що таке „ціна постачальника“?"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/cataloguing/addbooks.tmpl:13
 msgid "What is the reservoir?"
@@ -42972,6 +42848,8 @@ msgid ""
 "When complete, click 'Submit' and you will be brought to a list of all of "
 "the funds for the budget."
 msgstr ""
+"Коли закінчите, натисніть кнопку „Відправити“, і Ви будете перенаправлені до "
+"переліку усіх коштів з кошторису."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/cataloguing/addbiblio.tmpl:95
 msgid ""
@@ -43044,6 +42922,8 @@ msgid ""
 "When viewing the list of funds click the 'Planning' button and choose how "
 "you would like to plan to spend your budget."
 msgstr ""
+"При перегляді переліку коштів натисніть кнопку „Планування“ і виберіть, як "
+"Ви хотіли б розпланувати витрати з Вашого кошторису."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/auth_subfields_structure.tmpl:32
 msgid ""
@@ -43579,6 +43459,8 @@ msgid ""
 "You can choose to assign this fund to a librarian. Doing so will make it so "
 "that only that librarian can make changes to the Fund"
 msgstr ""
+"Ви можете призначити ці кошти бібліотекарю. Це дозволить зробити так, що "
+"лише цей бібліотекар міг вносити зміни до коштів."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/serials/subscription-add.tmpl:69
 msgid ""
@@ -43727,6 +43609,8 @@ msgid ""
 "You can restrict who can order from this fund by choosing either the owner "
 "or the library from the 'Restrict access to' menu"
 msgstr ""
+"Ви можете обмежити хто може замовляти з цих коштів, вибравши власника чи "
+"бібліотеку через меню „Обмежити доступ до“."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/serials/serials-home.tmpl:7
 msgid ""
@@ -43794,14 +43678,13 @@ msgstr ""
 "класифікації' або 'представляючи правило'."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/acqui/acqui-home.tmpl:7
-#, fuzzy
 msgid ""
 "You do not need to use Acquisitions to add items to your catalog. If you do "
 "not want to track orders and budget expenditure, then use the"
 msgstr ""
 "Вам не потрібно використовувати надходження, щоб додати одиниці до Вашого "
-"каталогу. Якщо у Вас нема потреби прослідкувати замовлення та витрати, то "
-"використовуйте можливість"
+"каталогу. Якщо у Вас нема потреби прослідкувати замовлення та витрати за "
+"кошторисом, то використовуйте можливість"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/tools/overduerules.tmpl:205
 #, fuzzy
@@ -43882,7 +43765,7 @@ msgstr ""
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/acqui-home.tmpl:27
 #, c-format
 msgid "You must <a1>define a budget</a> in Administration"
-msgstr "Ви повинні <a1>встановити витрати</a> у розділі керування"
+msgstr "Ви повинні <a1>встановити кошторис</a> у розділі керування"
 
 #. SCRIPT
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/serials/subscription-add.tmpl:949
@@ -43962,14 +43845,14 @@ msgid ""
 "used to calculate the remain balances in your materials budgets when you "
 "purchase materials using \"normal\" acquisitions."
 msgstr ""
-"Ви повинні тут принаймні визначити свою локальну грошову одиницю, надати їй "
-"ім'я (наприклад ГРИВНЯ, ЄВРО чи РУБЕЛЬ) та встановити \"курс\"=1. Якщо Ви "
-"робите бізнес з постачальниками, які працюють у іншій валюті, введіть ім'я "
-"цієї валюти (наприклад ПЕСО) та встановіть приблизний обмінний курс у "
-"порівнянні з Вашою валютою. (Примітка: імена обмежені 10-ма символами). "
+"Ви повинні тут, принаймні, визначити свою місцеву грошову одиницю, надати їй "
+"назву (наприклад ГРИВНЯ, ЄВРО чи РУБЛЬ) та встановити її „курс“ у 1. Якщо "
+"Ви маєте справи з постачальниками, які працюють в іншій валюті, введіть "
+"назву цієї валюти (наприклад ПЕСО) та встановіть приблизний обмінний курс у "
+"порівнянні з Вашою валютою. (Примітка: назви обмежені 10-ма символами). "
 "Обмінний курс використовується, щоб обчислити залишковий баланс у Ваших "
-"матеріальних витратах, при отриманні цінностей, що використовують \"нормальні"
-"\" надходження."
+"фінансових кошторисах, при закупівлях з використанням „нормальних“ "
+"надходжень."
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/virtualshelves/shelves.tmpl:47
 #, fuzzy
@@ -44148,7 +44031,7 @@ msgstr "Повідомлення"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/acqui-home.tmpl:29
 msgid "Your administrator must define a budget in Administration"
-msgstr "Ваш керівник повинен встановити витрати у розділі керування"
+msgstr "Ваш керівник повинен встановити кошторис у розділі керування"
 
 #. SCRIPT
 #: ../../koha-tmpl/intranet-tmpl/prog/en/includes/doc-head-close.inc:96
@@ -44254,15 +44137,13 @@ msgstr "Цільові сервери для клієнта Z39.50"
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/addbiblio.tmpl:705
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/results.tmpl:241
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/results.tmpl:248
-#, fuzzy
 msgid "Z39.50 Search"
-msgstr "Пошук із Z39.50"
+msgstr "Пошук через Z39.50"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/z3950_search.tmpl:44
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/z3950_search.tmpl:79
-#, fuzzy
 msgid "Z39.50 Search Points"
-msgstr "Результати пошуку зі Z39.50"
+msgstr "Пункти пошуку за Z39.50"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/z3950servers.tmpl:237
 msgid "Z39.50 Server Added"
@@ -44283,29 +44164,24 @@ msgstr "Назва сервера Z39.50: "
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/z3950servers.tmpl:2
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/z3950servers.tmpl:74
-#, fuzzy
 msgid "Z39.50 Servers"
-msgstr "Назва сервера Z39.50: "
+msgstr "Сервери Z39.50"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/z3950servers.tmpl:3
-#, fuzzy
 msgid "Z39.50 Servers &rsaquo;"
-msgstr "z39.50-сервери &rsaquo;"
+msgstr "Сервери Z39.50 &rsaquo;"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/z3950servers.tmpl:4
-#, fuzzy
 msgid "Z39.50 Servers &rsaquo; Confirm Deletion"
-msgstr "z39.50-сервери &rsaquo; Підтвердження вилучення"
+msgstr "Сервери Z39.50 &rsaquo; Підтвердження вилучення"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/z3950servers.tmpl:5
-#, fuzzy
 msgid "Z39.50 Servers &rsaquo; Z39.50 Server Added"
-msgstr "z39.50-сервери &rsaquo; z39.50-сервер додано"
+msgstr "Сервери Z39.50 &rsaquo; Сервер Z39.50 додано"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/z3950servers.tmpl:6
-#, fuzzy
 msgid "Z39.50 Servers &rsaquo; Z39.50 Server Deleted"
-msgstr "z39.50-сервери &rsaquo; z39.50-сервер вилучено"
+msgstr "Сервери Z39.50 &rsaquo; Сервер Z39.50 вилучено"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/z3950servers.tmpl:294
 msgid "Z39.50 Servers Administration"
@@ -44313,12 +44189,11 @@ msgstr "Керування серверами Z39.50"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/z3950servers.tmpl:3
 msgid "Z39.50 servers administration"
-msgstr "Керування Z39.50-серверами"
+msgstr "Керування серверами Z39.50"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/z3950/searchresult.tmpl:16
-#, fuzzy
 msgid "Z3950 Search Results"
-msgstr "Результати пошуку зі Z39.50"
+msgstr "Результати пошуку через Z39.50"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/installer/step3.tmpl:188
 #, fuzzy
@@ -46250,7 +46125,7 @@ msgstr "бронза"
 #. P
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/acqui/lateorders.tmpl:62
 msgid "budget"
-msgstr "витрати"
+msgstr "кошторис"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_116.tmpl:1399
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_116.tmpl:1401
@@ -49144,7 +49019,7 @@ msgstr ""
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/admin/aqbudgets.tmpl:416
 msgid "funds only"
-msgstr ""
+msgstr "лише кошти"
 
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_117.tmpl:87
 #: ../../koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_117.tmpl:89
