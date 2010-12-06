@@ -41,6 +41,8 @@ use Storable qw(thaw freeze);
 use Data::Pagination;
 use C4::XSLT;
 use C4::Charset;
+use 5.10.0;
+
 
 # create a new CGI object
 # FIXME: no_undef_params needs to be tested
