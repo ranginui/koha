@@ -31,7 +31,10 @@
     <fieldtype name="text" class="solr.TextField" positionIncrementGap="100" >
       <analyzer>
         <tokenizer class="solr.StandardTokenizerFactory"/>
+        <!-- remove dots from acronyms -->
         <filter class="solr.StandardFilterFactory"/>
+        <!-- find é/à/où when looking for e/a/ou -->
+        <charFilter class="solr.MappingCharFilterFactory" mapping="mapping-ISOLatin1Accent.txt"/>
         <!-- no more l' d' qu' etc. based on elision words file -->
         <filter class="solr.ElisionFilterFactory" articles="elisionwords.txt"/>
         <!-- no more le la les du  etc. based on stopwords file -->
@@ -40,10 +43,11 @@
         <filter class="solr.LowerCaseFilterFactory"/>
         <!-- texts will be found with their synonyms if written in synonyms file -->
         <filter class="solr.SynonymFilterFactory" synonyms="synonyms_fr.txt" ignoreCase="true" expand="true"/>
-        <!-- Phonetic / Metaphone search -->
-        <filter class="solr.PhoneticFilterFactory" encoder="DoubleMetaphone"/>
+        <!-- Phonetic / Metaphone search
+        <filter class="solr.PhoneticFilterFactory" encoder="DoubleMetaphone"/> -->
         <!-- Stemming search -->
         <filter class="solr.SnowballPorterFilterFactory" language="French" />
+        <!-- Remove duplicate tokens if same text and position value -->
         <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
       </analyzer>
     </fieldtype>
