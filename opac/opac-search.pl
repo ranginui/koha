@@ -29,7 +29,7 @@ use warnings;
 use C4::Context;
 use C4::Output;
 use C4::Auth qw(:DEFAULT get_session);
-use C4::Languages qw(getAllLanguages);
+use C4::Languages qw(getAllLanguages getAllLanguagesAuthorizedValues);
 use C4::Search;
 use C4::Biblio;    # GetBiblioData
 use C4::Koha;
@@ -127,7 +127,7 @@ $template->param(
 );
 
 # load the language limits (for search)
-$template->param( search_languages_loop => getAllLanguages() );
+$template->param( search_languages_loop => getAllLanguagesAuthorizedValues() );
 
 # load the sorting stuff
 my $sort_by = $cgi->param('sort_by') || join(' ', grep { defined } ( C4::Context->preference('OPACdefaultSortField')
@@ -147,7 +147,7 @@ $template->param(
 my $itemtypes = GetItemTypes;
 
 # the index parameter is different for item-level itemtypes
-my $itype_or_itemtype = ( C4::Context->preference("item-level_itypes") ) ? 'str_itype' : 'str_itemtype';
+my $itype_or_itemtype = C4::Context->preference("item-level_itypes") ? 'str_itype' : 'str_itemtype';
 my @itemtypesloop;
 my $selected = 1;
 my $cnt;
@@ -172,6 +172,7 @@ if ( !$advanced_search_types or $advanced_search_types eq 'itemtypes' ) {
     for my $thisitemtype (@$advsearchtypes) {
         my %row = (
             number      => $cnt++,
+            index       => 'str_ccode',
             ccl         => $advanced_search_types,
             code        => $thisitemtype->{authorised_value},
             selected    => $selected,
@@ -273,14 +274,98 @@ while ( my ($k, $v) = each %filters) {
 }
 $template->param('filters' => \@tplfilters );
 
+# construct the param array
+
+my $q;
+if ( (my @x = eval {$cgi->param('q')} ) > 1  ){
+    $q = '';
+    my $i = 0;
+    for my $kw ($cgi->param('q')){
+        if ($i == 0){
+            if (($cgi->param('idx'))[$i] ne 'all_fields'){
+                $q .= ($cgi->param('idx'))[$i] . ':' . $kw;
+            }else{
+                $q .= $kw;
+            }
+
+            $i = $i + 1;
+            next;
+        }
+        given (($cgi->param('op'))[$i-1]) {
+            when ('and'){
+                if (($cgi->param('idx'))[$i] ne 'all_fields'){
+                    $q .= ' AND ' . ($cgi->param('idx'))[$i] . ':'.$kw;
+                }else{
+                    $q .= ' AND ' . $kw;
+                }
+            }
+            when ('or'){
+                if (($cgi->param('idx'))[$i] ne 'all_fields'){
+                    $q .= ' OR ' . ($cgi->param('idx'))[$i] . ':'.$kw;
+                }else{
+                    $q .= ' OR ' . $kw;
+                }
+            }
+            when ('not'){
+                if (($cgi->param('idx'))[$i] ne 'all_fields'){
+                    $q .= ' -' . ($cgi->param('idx'))[$i] . ':'.$kw;
+                }else{
+                    $q .= ' -' . $kw;
+                }
+            }
+        }
+        $i = $i + 1;
+    }
+}else{
+    $q = $cgi->param('q');
+}
+
+# append year limits if they exist
+if ( $params->{'limit-yr'} ) {
+    if ( $params->{'limit-yr'} =~ /\d{4}-\d{4}/ ) {
+        my ( $yr1, $yr2 ) = split( /-/, $params->{'limit-yr'} );
+        $q .= ' AND date_pubdate:["' . C4::Search::NormalizeDate($yr1) . '" TO "' . C4::Search::NormalizeDate($yr2) . '"]';
+    } elsif ( $params->{'limit-yr'} =~ /-\d{4}/ ) {
+        $params->{'limit-yr'} =~ /-(\d{4})/;
+        $q .= ' AND date_pubdate:[* TO "' . C4::Search::NormalizeDate($1) . '"]';
+    } elsif ( $params->{'limit-yr'} =~ /\d{4}-/ ) {
+        $params->{'limit-yr'} =~ /(\d{4})-/;
+        $q .= ' AND date_pubdate:["' . C4::Search::NormalizeDate($1) . '" TO *]';
+    } elsif ( $params->{'limit-yr'} =~ /\d{4}/ ) {
+        $q .= ' AND date_pubdate:"' . C4::Search::NormalizeDate($params->{'limit-yr'}) . '"';
+    } else {
+        #FIXME: Should return a error to the user, incorect date format specified
+    }
+}
+
+
+
 # perform the search
-my $res = SimpleSearch( $cgi->param('q'), \%filters, $page, $count, $sort_by);
+my $res = SimpleSearch( $q, \%filters, $page, $count, $sort_by);
 
 if (!$res){
     $template->param(query_error => "Bad request! help message ?");
     output_with_http_headers $cgi, $cookie, $template->output, 'html';
     exit;
 }
+
+## If there's just one result, redirect to the detail page
+if ( $res->{'pager'}->{'total_entries'} == 1
+    && $format ne 'rss2'
+    && $format ne 'opensearchdescription'
+    && $format ne 'atom' ) {
+
+    my $biblionumber = $res->{'items'}->[0]->{'values'}->{'str_biblionumber'};
+    if ( C4::Context->preference('BiblioDefaultView') eq 'isbd' ) {
+        print $cgi->redirect("/cgi-bin/koha/opac-ISBDdetail.pl?biblionumber=$biblionumber");
+    } elsif ( C4::Context->preference('BiblioDefaultView') eq 'marc' ) {
+        print $cgi->redirect("/cgi-bin/koha/opac-MARCdetail.pl?biblionumber=$biblionumber");
+    } else {
+        print $cgi->redirect("/cgi-bin/koha/opac-detail.pl?biblionumber=$biblionumber");
+    }
+    exit;
+}
+
 
 my $pager = Data::Pagination->new(
     $res->{'pager'}->{'total_entries'},
@@ -356,8 +441,8 @@ $template->param(
     'search_error'   => $error,
     'SEARCH_RESULTS' => \@results,
     'facets_loop'    => \@facets,
-    'query'          => $params->{'q'},
-    'searchdesc'     => $params->{'q'} || @tplfilters,
+    'query'          => $q,
+    'searchdesc'     => $q || @tplfilters,
     'availability'   => $filters{'int_availability'},
 );
 

@@ -53,7 +53,7 @@ BEGIN {
       &getTranslatedLanguages
       &getAllLanguages
     );
-    @EXPORT_OK = qw(getFrameworkLanguages getTranslatedLanguages getAllLanguages get_bidi regex_lang_subtags language_get_description accept_language);
+    @EXPORT_OK = qw(getFrameworkLanguages getTranslatedLanguages getAllLanguages getAllLanguagesAuthorizedValues get_bidi regex_lang_subtags language_get_description accept_language);
     $DEBUG     = 0;
 }
 
@@ -207,6 +207,19 @@ sub getAllLanguages {
         push @languages_loop, $language_subtag_registry;
     }
     return \@languages_loop;
+}
+
+=head2 getAllLanguagesAuthorizedValues
+
+Internal function, returns an array of all authorized values for language
+
+=cut
+
+sub getAllLanguagesAuthorizedValues {
+    my $dbh = C4::Context->dbh;
+    my $sth = $dbh->prepare("SELECT lib FROM authorised_values WHERE category='LANG' ORDER BY lib");
+    $sth->execute();
+    return $sth->fetchall_arrayref({});
 }
 
 =head2 _get_themes

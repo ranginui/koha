@@ -77,10 +77,10 @@
             <p>
                 <label for="filters">Language: </label>                                        
                 <select name="filters">
-                    <option value="">No Limit</option>
+                    <option value="" selected="selected">No Limit</option>
                         <!-- TMPL_LOOP NAME="search_languages_loop" -->
-                            <option value='lang:"<!-- TMPL_VAR NAME="iso639_2_code" -->"' <!-- TMPL_IF NAME="selected" -->selected="selected"<!-- /TMPL_IF -->>
-                                <!-- TMPL_VAR NAME="language_description" -->
+                            <option value='str_lang:"<!-- TMPL_VAR NAME="lib" -->"' <!-- TMPL_IF NAME="selected" -->selected="selected"<!-- /TMPL_IF -->>
+                                <!-- TMPL_VAR NAME="lib" -->
                             </option>
                         <!-- /TMPL_LOOP -->
                 </select>
