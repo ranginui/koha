@@ -54,8 +54,8 @@ if ( $input->param('op') and $input->param('op') eq 'edit' ) {
             'code'      => $icode,
             'label'     => $label[$_],
             'type'      => $type[$_],
-            'faceted'   => scalar(grep(/$icode/, @faceted)),
-            'sortable'  => scalar(grep(/$icode/, @sortable)),
+            'faceted'   => scalar(grep(/^$icode$/, @faceted)),
+            'sortable'  => scalar(grep(/^$icode$/, @sortable)),
             'plugin'    => $plugin[$_],
             'mandatory' => $mandatory[$_] eq '1' ? '1' : '0',
         }

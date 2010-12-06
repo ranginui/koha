@@ -4870,7 +4870,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     SetVersion($DBversion);
 }
 
-$DBversion = "3.02.00.056";
+$DBversion = "3.02.00.057";
 if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
 	$dbh->do(q{
     DROP TABLE IF EXISTS `indexes`;
@@ -4914,7 +4914,7 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
         ('onloan','En prêt','int',0,'biblio',0,0,''),
         ('date','Date','date',0,'authority',0,0,''),
         ('authtype','Authority Type','str',1,'authority',0,1,''),
-        ('name','Auteur personne','str',2,'biblio',0,2,''),
+        ('name','Auteur personne','str',1,'biblio',0,1,''),
         ('music-source','Source éditoriale','str',0,'biblio',0,0,''),
         ('music-number','Référence éditoriale','int',0,'biblio',0,0,''),
         ('video-mt','video-mt','str',0,'biblio',0,0,''),
@@ -4951,7 +4951,7 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
         ('title','Titre','txt',0,'biblio',1,1,''),
         ('title-series','Collection','txt',0,'biblio',0,0,''),
         ('title-cover','Titre de couverture','txt',0,'biblio',0,0,''),
-        ('author','Auteur','str',2,'biblio',0,2,'C4::Search::Plugins::Author'),
+        ('author','Auteur','str',1,'biblio',0,1,'C4::Search::Plugins::Author'),
         ('title-uniform','Titre uniforme','txt',0,'biblio',0,0,''),
         ('isbn','ISBN','str',0,'biblio',0,0,''),
         ('entereddate','Date de saisie','date',0,'biblio',0,0,''),
