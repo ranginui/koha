@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://opac.solr.localhost/" />
+<title>Basic Search</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">Basic Search</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>transl1</td>
+	<td>*:*</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchsubmit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>“*:* recordtype:biblio” returned 100 results.</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>transl1</td>
+	<td>juge</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchsubmit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Le jugement du soir</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>transl1</td>
+	<td>maudit</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchsubmit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Le crépuscule des maudits</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>transl1</td>
+	<td>mautid~</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchsubmit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Le crépuscule des maudits</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>transl1</td>
+	<td>maud~</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchsubmit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Le crépuscule des maudits</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>transl1</td>
+	<td>str_publisher:Ed.?France-Emp?re</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchsubmit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Le crépuscule des maudits</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>transl1</td>
+	<td>str_publisher:&quot;Ed. France-Empire&quot;</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchsubmit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Le crépuscule des maudits</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>transl1</td>
+	<td>str_publisher:Ed.*</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchsubmit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Le crépuscule des maudits</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>transl1</td>
+	<td>&quot;nuit jour&quot;~5</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchsubmit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Mes nuits sont plus belles que vos jours</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>La Nuit, le jour et toutes les autres nuits</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>transl1</td>
+	<td>str_publisher:Ed* NOT str_author:Atkinson*</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchsubmit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>“str_publisher:Ed* NOT str_author:Atkinson* recordtype:biblio” returned 3 results</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>transl1</td>
+	<td>date_pubdate:1999*</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchsubmit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>“date_pubdate:1999* recordtype:biblio” returned 13 results</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>transl1</td>
+	<td>date_pubdate:[1995-01-01T00:00:00Z TO 2000-01-01T00:00:00Z]</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchsubmit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>“date_pubdate:[1995-01-01T00:00:00Z TO 2000-01-01T00:00:00Z] recordtype:biblio” returned 57 results</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>transl1</td>
+	<td>date_acqdate:&quot;2010-08-31T00:00:00Z&quot;</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchsubmit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>“date_acqdate:&quot;2010-08-31T00:00:00Z&quot; recordtype:biblio” returned 100 results</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>transl1</td>
+	<td>crepuscule</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchsubmit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td> Le crépuscule</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>
