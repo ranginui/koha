@@ -2655,7 +2655,8 @@ sub IndexRecord {
                     }
                 }
             }
-            $solrrecord->set_value( $index->{'type'} . "_" . $index->{'code'}, \@values);
+            $solrrecord->set_value(       $index->{'type'}."_".$index->{'code'},    \@values);
+            $solrrecord->set_value("srt_".$index->{'type'}."_".$index->{'code'}, pop @values) if $index->{'sortable'} and @values > 0;
         }
         push @recordpush, $solrrecord;
 
@@ -2739,6 +2740,8 @@ sub SimpleSearch {
     $page        ||= 1;
     $max_results ||= 999999999;
     $sort        ||= 'score desc';
+
+    $sort = "srt_$sort" if $sort =~ /^(str|txt|int|date)_/;
 
     my $sc = GetSolrConnection;
 
