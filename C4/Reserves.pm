@@ -455,6 +455,7 @@ sub CanBookBeReserved{
     my $itype         = C4::Context->preference('item-level_itypes');
     my $reservesrights= C4::Context->preference('maxreserves');
     my $reservescount = 0;
+    my $AllowHoldPolicyOverride = C4::Context->preference('AllowHoldPolicyOverride');
     
     # we retrieve the user rights
     my @args;
@@ -469,7 +470,7 @@ sub CanBookBeReserved{
 
     $reservescount = GetReserveCount($borrowernumber);
 
-    if($reservescount < $reservesrights){
+    if($reservescount < $reservesrights || $AllowHoldPolicyOverride){
         return 1;
     }else{
         return 0;
@@ -493,6 +494,7 @@ sub CanItemBeReserved{
     my $controlbranch   = C4::Context->preference('ReservesControlBranch') || "ItemHomeLibrary";
     my $itype           = C4::Context->preference('item-level_itypes') ? "itype" : "itemtype";
     my $allowedreserves = C4::Context->preference('maxreserves');
+    my $AllowHoldPolicyOverride = C4::Context->preference('AllowHoldPolicyOverride');
     
     # we retrieve borrowers and items informations #
     my $item     = C4::Items::GetItem($itemnumber);
@@ -515,7 +517,7 @@ sub CanItemBeReserved{
     my $reservecount = GetReserveCount($borrowernumber);
 
     # we check if it's ok or not
-    if(( $reservecount < $allowedreserves ) and $issuingrule->{maxissueqty} ){
+    if(( $reservecount < $allowedreserves || $AllowHoldPolicyOverride ) and $issuingrule->{maxissueqty} ){
         return 1;
     }else{
         return 0;
