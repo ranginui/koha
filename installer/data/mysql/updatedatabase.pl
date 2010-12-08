@@ -4870,7 +4870,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     SetVersion($DBversion);
 }
 
-$DBversion = "3.02.00.058";
+$DBversion = "3.02.00.059";
 if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
 	$dbh->do(q{
     DROP TABLE IF EXISTS `indexes`;
@@ -4920,7 +4920,7 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
         ('video-mt','video-mt','str',0,'biblio',0,0,''),
         ('graphics-types','graphics-types','str',0,'biblio',0,0,''),
         ('type-of-serial','Type de périodique','str',0,'biblio',0,0,''),
-        ('illustration-code','Code d\'illustration','str',0,'biblio',0,0,''),
+        ('illustration-code','Code d\'illustration','str',0,'biblio',0,0,'C4::Search::Plugins::Illustration'),
         ('second-author-firstname','Prénom du second auteur','str',0,'biblio',0,0,''),
         ('second-author-name','Nom du second auteur','str',0,'biblio',0,0,''),
         ('author-name-personal','Nom de l\'auteur','str',0,'biblio',0,1,''),
@@ -4941,8 +4941,8 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
         ('holdingbranch','Dépositaire','str',1,'biblio',0,0,''),
         ('abstract','Résumé','str',0,'biblio',0,0,''),
         ('dewey','Cote dewey','str',0,'biblio',0,0,''),
-        ('itype','Type de prêt','str',0,'biblio',0,0,''),
-        ('ccode','Type de document','str',1,'biblio',0,1,''),
+        ('itype','Type de document','str',0,'biblio',0,0,''),
+        ('ccode','Code de collection','str',1,'biblio',0,1,''),
         ('authorities','Formes Rejetées','txt',0,'biblio',0,0,'C4::Search::Plugins::Authorities'),
         ('lastmodified','Date de modification','date',0,'biblio',0,0,''),
         ('genre','Genre','str',1,'biblio',0,0,''),
@@ -4957,7 +4957,6 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
         ('entereddate','Date de saisie','date',0,'biblio',0,0,''),
         ('title-host','Document hôte','txt',0,'biblio',0,0,''),
         ('biblionumber','Biblionumber','str',0,'biblio',0,0,''),
-        ('itemtype','Type de document','str',0,'biblio',0,0,''),
         ('name-geographic','Sujet géographique','str',0,'biblio',0,0,''),
         ('pubplace','Lieu de publication','str',0,'biblio',0,0,''),
         ('lang','Langue','str',0,'biblio',1,0,''),
