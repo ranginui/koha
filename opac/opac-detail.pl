@@ -145,7 +145,7 @@ if ( scalar(@serialcollections) > 0 ) {
 #coping with subscriptions
 if ( $dat->{'serial'} ) {
     my $subscriptionsnumber = CountSubscriptionFromBiblionumber($biblionumber);
-    my @subscriptions = GetSubscriptions( $dat->{title}, $dat->{issn}, $biblionumber );
+    my @subscriptions = GetSubscriptions(undef ,undef, $biblionumber );
 
     my @subs;
     $dat->{'serial'} = 1 if $subscriptionsnumber;
