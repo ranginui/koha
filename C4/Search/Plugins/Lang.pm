@@ -34,7 +34,7 @@ sub ComputeValue {
     my $lang;
     if ( my $f100a = $record->subfield('100', 'a') ) {
         my $p2224 = substr $f100a, 22, 3;
-	$lang = GetAuthorisedValueDesc('','',$p2224,'','','LANGUES');
+        $lang = GetAuthorisedValueDesc('','',$p2224,'','','LANGUES');
     }
 
     return ( $lang );

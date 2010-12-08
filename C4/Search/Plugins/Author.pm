@@ -26,15 +26,17 @@ our @EXPORT = qw/
     /;
 our $VERSION = 3.0.1;
 
-sub ComputeValue {
-    my ( $record ) = @_;
+=head2 fonction
+   return "7..$a 7..$b"
+=cut
 
-    return map {
+sub ComputeValue {
+    map {
         join(' ', (
             $_->subfield('a'),
             $_->subfield('b')
         ));
-    } $record->field('7..');
+    } shift->field('7..');
 }
 
 1;

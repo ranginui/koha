@@ -31,20 +31,20 @@ sub ComputeValue {
     my ( $record ) = @_;
 
     my %h = (
-	'a' => 'Jeunesse (général)',
-	'b' => 'Pré-scolaire, 0-5 ans',
-	'c' => 'Scolaire, 5-10 ans',
-	'd' => 'Enfant, 10-14 ans',
-	'e' => 'Jeune adule, 14-20 ans',
-	'k' => 'Adulte, haut niveau',
-	'm' => 'Adulte, grand public',
-	'u' => 'Inconnu',
+        'a' => 'Jeunesse (général)',
+        'b' => 'Pré-scolaire, 0-5 ans',
+        'c' => 'Scolaire, 5-10 ans',
+        'd' => 'Enfant, 10-14 ans',
+        'e' => 'Jeune adule, 14-20 ans',
+        'k' => 'Adulte, haut niveau',
+        'm' => 'Adulte, grand public',
+        'u' => 'Inconnu',
     );
 
     my @audience;
     if ( my $f100a = $record->subfield('100', 'a') ) {
         my $p1719 = substr $f100a, 18, 3;
-	@audience = map { $h{ $_ } ? $h{ $_ } : () } split //, $p1719;
+        @audience = map { $h{ $_ } ? $h{ $_ } : () } split //, $p1719;
     }
 
     return @audience;

@@ -27,6 +27,10 @@ our @EXPORT = qw/
     /;
 our $VERSION = 3.0.1;
 
+=head2 fonction
+    return rejected forms
+=cut
+
 sub ComputeValue {
     my $brecord = shift;
     
@@ -34,12 +38,14 @@ sub ComputeValue {
     my @afieldstoindex = ( '2..', '5..' );
 
     my @values;
+    #for each 6..$9 and 7..$9 take authority linked
     for my $bfieldtoindex ( @bfieldstoindex ) {
         for my $bfield ( $brecord->field( $bfieldtoindex ) ) {
             for my $bsubfield ( $bfield->subfield( '9' ) ) {
                 my $arecord = GetAuthority( $bsubfield );
 
                 next unless $arecord;
+                #for each 2.. and 5.. (wich contains rejected forms) of the authority return all subfields
                 for my $afieldtoindex ( @afieldstoindex ) {
                     for my $afield ( $arecord->field( $afieldtoindex ) ) {
                         my @asubfields = $afield->subfields;

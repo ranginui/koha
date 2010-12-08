@@ -26,6 +26,13 @@ our @EXPORT = qw/
     /;
 our $VERSION = 3.0.1;
 
+=head2 fonction
+    return 1 if an item is available
+    seems wrong: 
+       - dispo en rayon? = pas mis de côté + pas retiré + pas en cours de prêt + pas en transit
+       - dispo au pret?
+=cut
+
 sub ComputeValue {
     my ( $record ) = @_;
     my $availability = 1;
