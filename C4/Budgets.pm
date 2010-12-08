@@ -48,6 +48,9 @@ BEGIN {
 
       &GetBudgetPeriod
       &GetBudgetPeriods
+      &GetBudgetFirstChild
+      &GetBudgetParent
+      &GetBudgetSecondChild
       &ModBudgetPeriod
       &AddBudgetPeriod
       &DelBudgetPeriod
@@ -471,6 +474,59 @@ sub GetBudgetPeriod {
     return $data;
 }
 
+# -------------------------------------------------------------------
+sub GetBudgetFirstChild {
+   my $dbh = C4::Context->dbh;
+   my $query = "SELECT *
+    FROM `aqbudgets`
+    WHERE budget_parent_id
+    IN (
+    SELECT budget_id FROM `aqbudgets`
+    JOIN `aqbudgetperiods` ON aqbudgets.budget_period_id = aqbudgetperiods.budget_period_id
+    WHERE ((`budget_parent_id` IS NULL)AND (`budget_period_active` LIKE 1)))
+    ORDER BY `aqbudgets`.`budget_parent_id`, budget_name ASC";
+   my $sth= $dbh->prepare($query);
+    $sth->execute();
+    my $data = $sth->fetchall_arrayref({});
+    #warn Data::Dumper::Dumper($data);
+    return $data;
+}
+# -------------------------------------------------------------------
+sub GetBudgetParent {
+    my $dbh = C4::Context->dbh;
+    my $query = "SELECT *
+    FROM `aqbudgets`
+    JOIN `aqbudgetperiods` ON aqbudgets.budget_period_id = aqbudgetperiods.budget_period_id
+    WHERE ((`budget_parent_id` IS NULL)AND (`budget_period_active` LIKE 1))
+    ORDER BY `aqbudgets`.`budget_id`, budget_name ASC";
+    my $sth= $dbh->prepare($query);
+    $sth->execute();
+    my $data = $sth->fetchall_arrayref({});
+    #warn Data::Dumper::Dumper($data);
+    return $data;
+}
+# -------------------------------------------------------------------
+sub GetBudgetSecondChild {
+    my $dbh = C4::Context->dbh;
+    my $query = "SELECT *
+    FROM `aqbudgets`
+    WHERE budget_parent_id
+    IN (
+    SELECT budget_id
+    FROM `aqbudgets`
+    WHERE budget_parent_id
+    IN (
+    SELECT budget_id
+    FROM `aqbudgets`
+    JOIN `aqbudgetperiods` ON aqbudgets.budget_period_id = aqbudgetperiods.budget_period_id
+    WHERE ((`budget_parent_id` IS NULL)AND (`budget_period_active` LIKE 1))))
+    ORDER BY `aqbudgets`.`budget_parent_id` , budget_name ASC";
+    my $sth= $dbh->prepare($query);
+    $sth->execute();
+    my $data = $sth->fetchall_arrayref({});
+    #warn Data::Dumper::Dumper($data);
+    return $data;
+}
 # -------------------------------------------------------------------
 sub DelBudgetPeriod {
     my ($budget_period_id) = @_;
