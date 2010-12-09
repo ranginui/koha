@@ -1321,6 +1321,7 @@ sub searchResults {
             $oldbiblio->{summary} = $newsummary;
         }
 
+        # --------------------------------------------------
         # Pull out the items fields
         my @fields = $marcrecord->field($itemtag);
 
@@ -1492,6 +1493,7 @@ sub searchResults {
             ( ++$availableitemscount > $maxitems ) and last;
             push @available_items_loop, $available_items->{$key};
         }
+        #--------------------------------------------------------------
 
         # XSLT processing of some stuff
         use C4::Charset;
@@ -1547,6 +1549,361 @@ sub searchResults {
     }
 }
     return @newresults;
+}
+
+
+sub getSubfieldsToSearch {
+    ## find column names of items related to MARC
+    my $dbh = C4::Context->dbh;
+    my $sth = $dbh->prepare("SHOW COLUMNS FROM items");
+    $sth->execute;
+    my %subfieldstosearch;
+    while ( ( my $column ) = $sth->fetchrow ) {
+        my ( $tagfield, $tagsubfield ) = &GetMarcFromKohaField( "items." . $column, "" );
+        $subfieldstosearch{$column} = $tagsubfield;
+    }
+    return \%subfieldstosearch;
+}
+
+sub getBranches {
+    #Build branchnames hash
+    #find branchname
+    #get branch information.....
+    my $dbh = C4::Context->dbh;
+    my %branches;
+    my $bsth = $dbh->prepare("SELECT branchcode,branchname FROM branches");    # FIXME : use C4::Branch::GetBranches
+    $bsth->execute();
+    while ( my $bdata = $bsth->fetchrow_hashref ) {
+        $branches{ $bdata->{'branchcode'} } = $bdata->{'branchname'};
+    }
+
+    return \%branches;
+}
+
+sub getItemTypes {
+    #Build itemtype hash
+    #find itemtype & itemtype image
+    my $dbh = C4::Context->dbh;
+    my %itemtypes;
+    my $bsth = $dbh->prepare("SELECT itemtype,description,imageurl,summary,notforloan FROM itemtypes");
+    $bsth->execute();
+    while ( my $bdata = $bsth->fetchrow_hashref ) {
+        foreach (qw(description imageurl summary notforloan)) {
+            $itemtypes{ $bdata->{'itemtype'} }->{$_} = $bdata->{$_};
+        }
+    }
+    return \%itemtypes;
+}
+
+sub getItemTag {
+    #search item field code
+    my $dbh = C4::Context->dbh;
+    my $sth = $dbh->prepare("SELECT tagfield FROM marc_subfield_structure WHERE kohafield LIKE 'items.itemnumber'");
+    $sth->execute;
+    my ($itemtag) = $sth->fetchrow;
+    return $itemtag;
+}
+
+sub getSummary {
+    my ($biblio, $itemtypes, $marcrecord) = @_;
+    my $summary = $itemtypes->{ $biblio->{itemtype} }->{summary};
+    my @fields  = $marcrecord->fields();
+
+    my $newsummary;
+    foreach my $line ( "$summary\n" =~ /(.*)\n/g ) {
+        my $tags = {};
+        foreach my $tag ( $line =~ /\[(\d{3}[\w|\d])\]/ ) {
+            $tag =~ /(.{3})(.)/;
+            if ( $marcrecord->field($1) ) {
+                my @abc = $marcrecord->field($1)->subfield($2);
+                $tags->{$tag} = $#abc + 1;
+            }
+        }
+
+        # We catch how many times to repeat this line
+        my $max = 0;
+        foreach my $tag ( keys(%$tags) ) {
+            $max = $tags->{$tag} if ( $tags->{$tag} > $max );
+        }
+
+        # we replace, and repeat each line
+        for ( my $i = 0 ; $i < $max ; $i++ ) {
+            my $newline = $line;
+
+            foreach my $tag ( $newline =~ /\[(\d{3}[\w|\d])\]/g ) {
+                $tag =~ /(.{3})(.)/;
+
+                if ( $marcrecord->field($1) ) {
+                    my @repl          = $marcrecord->field($1)->subfield($2);
+                    my $subfieldvalue = $repl[$i];
+
+                    if ( !utf8::is_utf8($subfieldvalue) ) {
+                        utf8::decode($subfieldvalue);
+                    }
+
+                    $newline =~ s/\[$tag\]/$subfieldvalue/g;
+                }
+            }
+            $newsummary .= "$newline\n";
+        }
+    }
+
+    $newsummary =~ s/\[(.*?)]//g;
+    $newsummary =~ s/\n/<br\/>/g;
+
+    return $newsummary;
+
+}
+
+sub getItemsInfos {
+    my ($biblionumber, $interface ) = @_;
+
+    my $marcrecord = C4::Biblio::GetMarcBiblio($biblionumber);
+    
+    my $subfieldstosearch = getSubfieldsToSearch();
+
+    my $itemtag = getItemTag();
+
+    my $branches = getBranches();
+    
+    # FIXME - We build an authorised values hash here, using the default framework
+    # though it is possible to have different authvals for different fws.
+    my $shelflocations = GetKohaAuthorisedValues( 'items.location', '' );
+
+    my $notforloan_authorised_value = GetAuthValCode( 'items.notforloan', '' );
+
+    my $itemtypes = getItemTypes();
+
+    my @fields = $marcrecord->field($itemtag);
+
+
+    # Setting item statuses for display
+    my @available_items_loop;
+    my @onloan_items_loop;
+    my @other_items_loop;
+
+    my $available_items;
+    my $onloan_items;
+    my $other_items;
+
+    my $ordered_count         = 0;
+    my $available_count       = 0;
+    my $onloan_count          = 0;
+    my $longoverdue_count     = 0;
+    my $other_count           = 0;
+    my $wthdrawn_count        = 0;
+    my $itemlost_count        = 0;
+    my $itembinding_count     = 0;
+    my $itemdamaged_count     = 0;
+    my $item_in_transit_count = 0;
+    my $can_place_holds       = 0;
+    my $item_onhold_count     = 0;
+    my $items_count           = scalar(@fields);
+    my $maxitems =
+      ( C4::Context->preference('maxItemsInSearchResults') )
+      ? C4::Context->preference('maxItemsInSearchResults') - 1
+      : 1;
+
+    # loop through every item
+    foreach my $field (@fields) {
+        my $item;
+
+        # populate the items hash
+        foreach my $code ( keys %$subfieldstosearch ) {
+            $item->{$code} = $field->subfield( $subfieldstosearch->{$code} );
+        }
+
+        # Hidden items
+        my @items = ($item);
+        my (@hiddenitems) = GetHiddenItemnumbers(@items);
+        $item->{'hideatopac'} = 1 if (@hiddenitems); 
+
+        my $hbranch     = C4::Context->preference('HomeOrHoldingBranch') eq 'homebranch' ? 'homebranch'    : 'holdingbranch';
+        my $otherbranch = C4::Context->preference('HomeOrHoldingBranch') eq 'homebranch' ? 'holdingbranch' : 'homebranch';
+
+        # set item's branch name, use HomeOrHoldingBranch syspref first, fall back to the other one
+        if ( $item->{$hbranch} ) {
+            $item->{'branchname'} = $branches->{ $item->{$hbranch} };
+        } elsif ( $item->{$otherbranch} ) {    # Last resort
+            $item->{'branchname'} = $branches->{ $item->{$otherbranch} };
+        }
+
+        my $prefix = $item->{$hbranch} . '--' . $item->{location} . $item->{itype} . $item->{itemcallnumber};
+
+        # For each grouping of items (onloan, available, unavailable), we build a key to store relevant info about that item
+        if ( $item->{onloan} ) {
+            $onloan_count++;
+            my $key = $prefix . $item->{onloan} . $item->{barcode};
+            $onloan_items->{$key}->{due_date} = format_date( $item->{onloan} );
+            $onloan_items->{$key}->{count}++ if $item->{$hbranch};
+            $onloan_items->{$key}->{branchname}     = $item->{branchname};
+            $onloan_items->{$key}->{location}       = $shelflocations->{ $item->{location} };
+            $onloan_items->{$key}->{itemcallnumber} = $item->{itemcallnumber};
+            $onloan_items->{$key}->{imageurl}       = getitemtypeimagelocation( $interface, $itemtypes->{ $item->{itype} }->{imageurl} );
+
+            # if something's checked out and lost, mark it as 'long overdue'
+            if ( $item->{itemlost} ) {
+                $onloan_items->{$prefix}->{longoverdue}++;
+                $longoverdue_count++;
+            } else {    # can place holds as long as item isn't lost
+                $can_place_holds = 1;
+            }
+        }
+
+        # items not on loan, but still unavailable ( lost, withdrawn, damaged )
+        else {
+
+            # item is on order
+            if ( $item->{notforloan} == -1 ) {
+                $ordered_count++;
+            }
+
+            # is item in transit?
+            my $transfertwhen = '';
+            my ( $transfertfrom, $transfertto );
+
+            # is item on the reserve shelf?
+            my $reservestatus = 0;
+            my $reserveitem;
+
+            unless ( $item->{wthdrawn}
+                || $item->{itemlost}
+                || $item->{damaged}
+                || $item->{notforloan}
+                || $items_count > 20 ) {
+
+                # A couple heuristics to limit how many times
+                # we query the database for item transfer information, sacrificing
+                # accuracy in some cases for speed;
+                #
+                # 1. don't query if item has one of the other statuses
+                # 2. don't check transit status if the bib has
+                #    more than 20 items
+                #
+                # FIXME: to avoid having the query the database like this, and to make
+                #        the in transit status count as unavailable for search limiting,
+                #        should map transit status to record indexed in Zebra.
+                #
+                ( $transfertwhen, $transfertfrom, $transfertto ) = C4::Circulation::GetTransfers( $item->{itemnumber} );
+                ( $reservestatus, $reserveitem ) = C4::Reserves::CheckReserves( $item->{itemnumber} );
+            }
+
+            # item is withdrawn, lost or damaged
+            if (   $item->{wthdrawn}
+                || $item->{itemlost}
+                || $item->{damaged}
+                || $item->{notforloan}
+                || $item->{hideatopac}
+                || $reservestatus eq 'Waiting'
+                || ( $transfertwhen ne '' ) ) {
+                $wthdrawn_count++        if $item->{wthdrawn};
+                $itemlost_count++        if $item->{itemlost};
+                $itemdamaged_count++     if $item->{damaged};
+                $item_in_transit_count++ if $transfertwhen ne '';
+                $item_onhold_count++     if $reservestatus eq 'Waiting';
+                $item->{status} = $item->{wthdrawn} . "-" . $item->{itemlost} . "-" . $item->{damaged} . "-" . $item->{notforloan};
+                #if only reserved or/and in transit, item can be hold
+                $can_place_holds = 1 unless ($item->{withdrawn} || $item->{itemlost} || $item->{damaged});
+                $other_count++;
+
+                my $key = $prefix . $item->{status};
+                foreach (qw(wthdrawn itemlost damaged branchname itemcallnumber hideatopac)) {
+                    $other_items->{$key}->{$_} = $item->{$_};
+                }
+                $other_items->{$key}->{intransit} = ( $transfertwhen ne '' ) ? 1 : 0;
+                $other_items->{$key}->{onhold} = ($reservestatus) ? 1 : 0;
+                $other_items->{$key}->{notforloan} = GetAuthorisedValueDesc( '', '', $item->{notforloan}, '', '', $notforloan_authorised_value )
+                  if $notforloan_authorised_value and $item->{notforloan};
+                $other_items->{$key}->{count}++ if $item->{$hbranch};
+                $other_items->{$key}->{location} = $shelflocations->{ $item->{location} };
+                $other_items->{$key}->{imageurl} = getitemtypeimagelocation( $interface, $itemtypes->{ $item->{itype} }->{imageurl} );
+            }
+
+            # item is available
+            else {
+                $can_place_holds = 1;
+                $available_count++;
+                $available_items->{$prefix}->{count}++ if $item->{$hbranch};
+                foreach (qw(branchname itemcallnumber hideatopac)) {
+                    $available_items->{$prefix}->{$_} = $item->{$_};
+                }
+                $available_items->{$prefix}->{location} = $shelflocations->{ $item->{location} };
+                $available_items->{$prefix}->{imageurl} = getitemtypeimagelocation( $interface, $itemtypes->{ $item->{itype} }->{imageurl} );
+            }
+        }
+    }    # notforloan, item level and biblioitem level
+
+    my ( $availableitemscount, $onloanitemscount, $otheritemscount );
+    for my $key ( sort keys %$onloan_items ) {
+        ( ++$onloanitemscount > $maxitems ) and last;
+        push @onloan_items_loop, $onloan_items->{$key};
+    }
+    for my $key ( sort keys %$other_items ) {
+        ( ++$otheritemscount > $maxitems ) and last;
+        push @other_items_loop, $other_items->{$key};
+    }
+    for my $key ( sort keys %$available_items ) {
+        ( ++$availableitemscount > $maxitems ) and last;
+        push @available_items_loop, $available_items->{$key};
+    }
+
+    my $biblio = GetBiblio($biblionumber);
+
+    my $marcflavour = C4::Context->preference("marcflavour");
+
+    $biblio->{biblionumber} = $biblionumber;
+    my $fw = (defined $biblionumber) ? GetFrameworkCode($biblionumber) : '';
+    $biblio->{subtitle} = GetRecordValue( 'subtitle', $marcrecord, $fw );
+
+    # add imageurl to itemtype if there is one
+    $biblio->{imageurl} = getitemtypeimagelocation( $interface, $itemtypes->{ $biblio->{itemtype} }->{imageurl} );
+
+    $biblio->{'authorised_value_images'} = C4::Items::get_authorised_value_images( C4::Biblio::get_biblio_authorised_values( $biblio->{'biblionumber'}, $marcrecord ) );
+    $biblio->{normalized_upc} = GetNormalizedUPC( $marcrecord, $marcflavour );
+    $biblio->{normalized_ean} = GetNormalizedEAN( $marcrecord, $marcflavour );
+    $biblio->{normalized_oclc} = GetNormalizedOCLCNumber( $marcrecord, $marcflavour );
+    $biblio->{normalized_isbn} = GetNormalizedISBN( undef, $marcrecord, $marcflavour );
+    $biblio->{content_identifier_exists} = 1
+      if ( $biblio->{normalized_isbn} or $biblio->{normalized_oclc} or $biblio->{normalized_ean} or $biblio->{normalized_upc} );
+
+    # edition information, if any
+    $biblio->{edition}     = $biblio->{editionstatement};
+    $biblio->{description} = $itemtypes->{ $biblio->{itemtype} }->{description};
+
+    # Build summary if there is one (the summary is defined in the itemtypes table)
+    # FIXME: is this used anywhere, I think it can be commented out? -- JF
+    warn Data::Dumper::Dumper $itemtypes;
+    if ( $itemtypes->{ $biblio->{itemtype} }->{summary} ) {
+        $biblio->{summary} = getSummary($biblio, $itemtypes, $marcrecord);
+    }
+
+
+    # last check for norequest : if itemtype is notforloan, it can't be reserved either, whatever the items
+    $can_place_holds = 0
+      if $itemtypes->{ $biblio->{itemtype} }->{notforloan};
+    $biblio->{norequests} = 1 unless $can_place_holds;
+    $biblio->{itemsplural}          = 1 if $items_count > 1;
+    $biblio->{items_count}          = $items_count;
+    $biblio->{available_items_loop} = \@available_items_loop;
+    $biblio->{onloan_items_loop}    = \@onloan_items_loop;
+    $biblio->{other_items_loop}     = \@other_items_loop;
+    $biblio->{availablecount}       = $available_count;
+    $biblio->{availableplural}      = 1 if $available_count > 1;
+    $biblio->{onloancount}          = $onloan_count;
+    $biblio->{onloanplural}         = 1 if $onloan_count > 1;
+    $biblio->{othercount}           = $other_count;
+    $biblio->{otherplural}          = 1 if $other_count > 1;
+    $biblio->{wthdrawncount}        = $wthdrawn_count;
+    $biblio->{itemlostcount}        = $itemlost_count;
+    $biblio->{damagedcount}         = $itemdamaged_count;
+    $biblio->{intransitcount}       = $item_in_transit_count;
+    $biblio->{onholdcount}          = $item_onhold_count;
+    $biblio->{orderedcount}         = $ordered_count;
+    $biblio->{isbn} =~ s/-//g;    # deleting - in isbn to enable amazon content
+
+
+    return $biblio;
+ 
 }
 
 =head2 SearchAcquisitions

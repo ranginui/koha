@@ -428,7 +428,32 @@ $template->param(
 );
 
 # populate results with records
-my @results = map { GetBiblio $_->{'values'}->{'recordid'} } @{ $res->items };
+my @results;
+for my $searchresult ( @{ $res->items } ) {
+    my $interface = 'intranet';
+    my $biblionumber = $searchresult->{'values'}->{'recordid'};
+
+    my $biblio = C4::Search::getItemsInfos($biblionumber, $interface);
+
+    my $display = 1;
+    if (lc($interface) eq "opac") {
+        if (C4::Context->preference('hidelostitems') or C4::Context->preference('hidenoitems')) {
+            if (C4::Context->preference('hidelostitems') and $biblio->{itemlost_count} >= $biblio->{items_count}) {
+                $display = 0;
+            }
+            if (C4::Context->preference('hidenoitems') and $biblio->{available_count} == 0) {
+                $display = 0;
+            }
+        }
+        if ($display == 1) {
+            $biblio->{result_number} = ++$biblio->{shown};
+            push( @results, $biblio);
+        }
+    } else {
+        push( @results, $biblio );
+    }
+
+}
 
 # build facets
 my @facets;
