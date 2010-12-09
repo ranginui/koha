@@ -9,10 +9,7 @@ use C4::Search;
 use KohaTest::Search::SolrSearch;
 
 #To launch this test, you can truncate some tables and populate db with these 3 lines
-#KohaTest::Search::SolrSearch::add_biblio_from_file ('split0000000');
-#KohaTest::Search::SolrSearch::add_biblio_from_file ('2704807655.utf8');
-#KohaTest::Search::SolrSearch::add_biblio_from_file('bib-8.utf8');
-#KohaTest::Search::SolrSearch::index_all_datas;
+#KohaTest::Search::SolrSearch::add_biblio_from_file('set/lot_notices_test.mrc');
 
 #plan tests => 1;
 plan 'no_plan';
