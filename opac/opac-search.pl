@@ -159,7 +159,7 @@ if ( !$advanced_search_types or $advanced_search_types eq 'itemtypes' ) {
     foreach my $thisitemtype ( sort { $itemtypes->{$a}->{'description'} cmp $itemtypes->{$b}->{'description'} } keys %$itemtypes ) {
         my %row = (
             number      => $cnt++,
-            index       => $itype_or_itemtype,
+        index       => $itype_or_itemtype,
             code        => $thisitemtype,
             selected    => $selected,
             description => $itemtypes->{$thisitemtype}->{'description'},
@@ -394,19 +394,53 @@ $template->param(
 );
 
 # populate results with records
+#my @results;
+#for ( @{ $res->items } ) {
+#    my $biblionumber = $_->{'values'}->{'recordid'};
+#    my $result = GetBiblio( $biblionumber );
+#    my $record = GetMarcBiblio( $biblionumber );
+#
+#    SetUTF8Flag( $record ) if $record;
+#
+#    if ( C4::Context->preference("OPACXSLTResultsDisplay") ) {
+#        $result->{'OPACXSLTResultsRecord'} = XSLTParse4Display( $biblionumber, $record, C4::Context->preference("OPACXSLTResultsDisplay") );
+#    }
+#
+#    push @results, $result;
+#}
+
+
+# populate results with records
 my @results;
-for ( @{ $res->items } ) {
-    my $biblionumber = $_->{'values'}->{'recordid'};
-    my $result = GetBiblio( $biblionumber );
-    my $record = GetMarcBiblio( $biblionumber );
+my $it = C4::Search::getItemTypes();
+my $subfieldstosearch = C4::Search::getSubfieldsToSearch();
+my $itemtag = C4::Search::getItemTag();
+my $b = C4::Search::getBranches();
+for my $searchresult ( @{ $res->items } ) {
+    my $interface = 'opac';
+    my $biblionumber = $searchresult->{'values'}->{'recordid'};
 
-    SetUTF8Flag( $record ) if $record;
+    my $biblio = C4::Search::getItemsInfos($biblionumber, $interface,
+        $itemtypes, $subfieldstosearch, $itemtag, $b);
 
-    if ( C4::Context->preference("OPACXSLTResultsDisplay") ) {
-        $result->{'OPACXSLTResultsRecord'} = XSLTParse4Display( $biblionumber, $record, C4::Context->preference("OPACXSLTResultsDisplay") );
+    my $display = 1;
+    if (lc($interface) eq "opac") {
+        if (C4::Context->preference('hidelostitems') or C4::Context->preference('hidenoitems')) {
+            if (C4::Context->preference('hidelostitems') and $biblio->{itemlostcount} >= $biblio->{items_count}) {
+                $display = 0;
+            }
+            if (C4::Context->preference('hidenoitems') and $biblio->{available_count} == 0) {
+                $display = 0;
+            }
+        }
+        if ($display == 1) {
+            $biblio->{result_number} = ++$biblio->{shown};
+            push( @results, $biblio);
+        }
+    } else {
+        push( @results, $biblio );
     }
 
-    push @results, $result;
 }
 
 # build facets

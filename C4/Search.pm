@@ -1656,23 +1656,23 @@ sub getSummary {
 }
 
 sub getItemsInfos {
-    my ($biblionumber, $interface ) = @_;
+    my ($biblionumber, $interface, $itemtypes, $subfieldstosearch, $itemtag, $branches) = @_;
 
     my $marcrecord = C4::Biblio::GetMarcBiblio($biblionumber);
     
-    my $subfieldstosearch = getSubfieldsToSearch();
+    %$subfieldstosearch or $subfieldstosearch = getSubfieldsToSearch;
 
-    my $itemtag = getItemTag();
+    $itemtag = getItemTag if not $itemtag;
 
-    my $branches = getBranches();
+    %$branches or $branches=getBranches;
+
+    %$itemtypes or $itemtypes=getItemTypes;
     
     # FIXME - We build an authorised values hash here, using the default framework
     # though it is possible to have different authvals for different fws.
     my $shelflocations = GetKohaAuthorisedValues( 'items.location', '' );
 
     my $notforloan_authorised_value = GetAuthValCode( 'items.notforloan', '' );
-
-    my $itemtypes = getItemTypes();
 
     my @fields = $marcrecord->field($itemtag);
 
@@ -1847,7 +1847,7 @@ sub getItemsInfos {
         push @available_items_loop, $available_items->{$key};
     }
 
-    my $biblio = GetBiblio($biblionumber);
+    my $biblio = GetBiblioData($biblionumber);
 
     my $marcflavour = C4::Context->preference("marcflavour");
 
@@ -1872,7 +1872,6 @@ sub getItemsInfos {
 
     # Build summary if there is one (the summary is defined in the itemtypes table)
     # FIXME: is this used anywhere, I think it can be commented out? -- JF
-    warn Data::Dumper::Dumper $itemtypes;
     if ( $itemtypes->{ $biblio->{itemtype} }->{summary} ) {
         $biblio->{summary} = getSummary($biblio, $itemtypes, $marcrecord);
     }
@@ -1901,6 +1900,11 @@ sub getItemsInfos {
     $biblio->{orderedcount}         = $ordered_count;
     $biblio->{isbn} =~ s/-//g;    # deleting - in isbn to enable amazon content
 
+    SetUTF8Flag( $marcrecord ) if $marcrecord;
+
+    if ( C4::Context->preference("OPACXSLTResultsDisplay") ) {
+        $biblio->{'OPACXSLTResultsRecord'} = XSLTParse4Display( $biblionumber, $marcrecord, C4::Context->preference("OPACXSLTResultsDisplay") );
+    }
 
     return $biblio;
  

@@ -429,16 +429,21 @@ $template->param(
 
 # populate results with records
 my @results;
+my $itemtypes = C4::Search::getItemTypes();
+my $subfieldstosearch = C4::Search::getSubfieldsToSearch();
+my $itemtag = C4::Search::getItemTag();
+my $b = C4::Search::getBranches();
 for my $searchresult ( @{ $res->items } ) {
     my $interface = 'intranet';
     my $biblionumber = $searchresult->{'values'}->{'recordid'};
 
-    my $biblio = C4::Search::getItemsInfos($biblionumber, $interface);
+    my $biblio = C4::Search::getItemsInfos($biblionumber, $interface,
+        $itemtypes, $subfieldstosearch, $itemtag, $b);
 
     my $display = 1;
     if (lc($interface) eq "opac") {
         if (C4::Context->preference('hidelostitems') or C4::Context->preference('hidenoitems')) {
-            if (C4::Context->preference('hidelostitems') and $biblio->{itemlost_count} >= $biblio->{items_count}) {
+            if (C4::Context->preference('hidelostitems') and $biblio->{itemlostcount} >= $biblio->{items_count}) {
                 $display = 0;
             }
             if (C4::Context->preference('hidenoitems') and $biblio->{available_count} == 0) {
