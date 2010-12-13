@@ -107,6 +107,7 @@ BEGIN {
       &GetReserveFee
       &GetReserveInfo
       &GetReserveStatus
+      &GetReserveNumber
 
       &GetOtherReserves
 
@@ -598,6 +599,36 @@ sub GetReserveCount {
     $sth->execute($borrowernumber);
     my $row = $sth->fetchrow_hashref;
     return $row->{counter};
+}
+
+=item GetReserveNumber
+
+$reservenumber = &GetReserveNumber($borrowernumber, $biblionumber, $itemnumber);
+
+this function returns the reserve id.
+
+=cut
+
+sub GetReserveNumber {
+    my ($borrowernumber, $biblionumber, $itemnumber) = @_;
+    my @params;
+    my $dbh = C4::Context->dbh;
+
+    my $query = '
+        SELECT reservenumber
+        FROM reserves
+          WHERE borrowernumber = ?
+          AND biblionumber = ?
+    ';
+    push @params, ($borrowernumber, $biblionumber);
+    if  (defined $itemnumber) {
+        $query .= ' AND itemnumber = ?';
+	push @params, $itemnumber;
+    }
+    my $sth = $dbh->prepare($query);
+    $sth->execute(@params);
+    my $reservenumber = $sth->fetchrow;
+    return $reservenumber;
 }
 
 =item GetOtherReserves
@@ -1094,7 +1125,26 @@ sub CancelReserve {
         $sth->execute( $reservenumber );
 
         # now fix the priority on the others....
-        _FixPriority( '', '', $priority,'', $reservenumber );
+        #_FixPriority( '', '', $priority,'', $reservenumber );
+    }
+    my $query = qq/
+        UPDATE reserves
+	SET priority = priority-1
+        WHERE  priority > ?
+	AND biblionumber = ?
+    /;
+    $sth = $dbh->prepare($query);
+    $sth->execute( $reserve->{'priority'}, $reserve->{'biblionumber'});
+    if ( $reserve->{'found'} eq 'W' )
+    {
+        $query = qq/
+            UPDATE reserves
+	    SET found = 'W'
+            WHERE  priority = 0
+	    AND biblionumber = ?
+        /;
+        $sth = $dbh->prepare($query);
+        $sth->execute( $reserve->{'biblionumber'});
     }
 }
 
@@ -1243,7 +1293,7 @@ sub ModReserveFill {
     # now fix the priority on the others (if the priority wasn't
     # already sorted!)....
     unless ( $priority == 0 ) {
-        _FixPriority( $priority, $biblionumber,undef,undef, $res->{reservenumber} );
+        _FixPriority( $priority,$biblionumber,undef,undef, $res->{reservenumber} );
     }
 }
 
@@ -1329,8 +1379,9 @@ sub ModReserveAffect {
         ";
       }
       else {
-        my ($holdexpyear,$holdexpmonth,$holdexpday) = Today();
-        my $holdstartdate = C4::Dates->new(sprintf "%02d/%02d/%04d",$holdexpmonth,$holdexpday,$holdexpyear, 'us');
+        #my ($holdexpyear,$holdexpmonth,$holdexpday) = Today();
+        #my $holdstartdate = C4::Dates->new(sprintf "%02d/%02d/%04d",$holdexpmonth,$holdexpday,$holdexpyear, 'us');
+	my $holdstartdate = C4::Dates->new();
 
         # Grab branch for calendar purposes
         $sth = $dbh->prepare("SELECT branchcode FROM reserves WHERE borrowernumber=? AND biblionumber=?");
