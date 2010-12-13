@@ -42,7 +42,7 @@ BEGIN {
     $VERSION = 3.01;
     @ISA     = qw(Exporter);
     @EXPORT  = qw(
-      &GetLetters &getletter &addalert &getalert &delalert &findrelatedto &SendAlerts GetPrintMessages
+      &GetLetters &getletter &addalert &getalert &delalert &findrelatedto &SendAlerts GetPrintMessages DelEmptyMessages
     );
 }
 
@@ -709,6 +709,22 @@ ENDSQL
     my $result = $sth->execute(@query_params);
     return $sth->fetchall_arrayref( {} );
 }
+
+=head2 DelEmptyMessages
+    &DelcwEmptyMessages()
+    
+    Delete all messages without subjet nor content
+    
+=cut
+sub DelEmptyMessages {
+    my $dbh = C4::Context->dbh;
+
+    my $sth = $dbh->prepare("
+        DELETE FROM message_queue WHERE subject is null and content is null;
+    ");
+    $sth->execute();
+}
+
 
 =head2 _add_attachements
 
