@@ -81,6 +81,55 @@ h4.collapse a { font-size : 80%; text-decoration: none; } fieldset.brief ol { di
 .overlay { top: 180px; left: 50%; position: absolute; margin-left: -100px; width: 200px; text-align: center; display: none; margin-top: -10px; background: #eeffd4; padding: .5em; color: #000; }
 </style>
 <!--/TMPL_IF-->
+<script type="text/JavaScript">
+// <![CDATA[
+    $(document).ready(function() {
+    $('#sub_budgetid').hide();
+    $('#su_sub_budgetid').hide();
+    $("#budgetid").val("").attr('selected', 'selected');
+           
+        $('#budgetid').change(function() {
+        var budget= $('#budgetid').val();
+                
+        if (budget ==""){
+        $('#sub_budgetid').hide();
+        $('#su_sub_budgetid').hide();
+        $('#sub_budgetid option:visible').hide();
+        $('#su_sub_budgetid option:visible').hide();
+        $("#sub_budgetid").val("").attr('selected', 'selected');
+        $("#su_sub_budgetid").val("").attr('selected', 'selected');
+        }
+        else {
+        $('#sub_budgetid').show();
+        $('#sub_budgetid option:visible').hide();
+        $('.'+budget).show();
+        $('#a').show();
+        $("#sub_budgetid").val("").attr('selected', 'selected');
+        $('#su_sub_budgetid option:visible').hide();
+        $('#su_sub_budgetid').hide();
+        }
+        });
+
+        $('#sub_budgetid').change(function() {
+        var subbudget= $('#sub_budgetid').val();
+        
+        if (subbudget ==""){
+        $('#su_sub_budgetid').hide();
+        $("#su_sub_budgetid").val("").attr('selected', 'selected');
+        $("#sub_budgetid").val("").attr('selected', 'selected');
+        
+        }
+        else {
+        $('#su_sub_budgetid').show();
+        $('#su_sub_budgetid option:visible').hide();
+        $('.'+subbudget).show();
+        $('#b').show();
+        $("#su_sub_budgetid").val("").attr('selected', 'selected');
+        }
+        });
+    });
+// ]]>
+</script>
 </head>
 <body>
 <!-- TMPL_INCLUDE name="header.inc" -->
@@ -160,6 +209,14 @@ h4.collapse a { font-size : 80%; text-decoration: none; } fieldset.brief ol { di
             <select name="budgetid" id="budgetid">
                 <option value="">Any</option><!-- TMPL_LOOP name="budgetsloop" -->
                 <!-- TMPL_IF NAME="selected" --><option value="<!-- TMPL_VAR name="budget_id" -->" selected="selected"><!-- TMPL_VAR name="budget_name" --></option><!-- TMPL_ELSE --><option value="<!-- TMPL_VAR name="budget_id" -->"><!-- TMPL_VAR name="budget_name" --></option><!-- /TMPL_IF --><!-- /TMPL_LOOP -->
+            </select>
+            <select name="sub_budgetid" id="sub_budgetid" >
+                <option value="" id="a">Any</option><!-- TMPL_LOOP name="sub_budgetsloop" -->
+                <!-- TMPL_IF NAME="selected" --><option value="<!-- TMPL_VAR name="budget_id" -->" selected="selected" class="<!-- TMPL_VAR name="budget_parent_id" -->" style ="display : none;"><!-- TMPL_VAR name="budget_name" --></option><!-- TMPL_ELSE --><option value="<!-- TMPL_VAR name="budget_id" -->" class="<!-- TMPL_VAR name="budget_parent_id" -->" style ="display : none;" ><!-- TMPL_VAR name="budget_name" --></option><!-- /TMPL_IF --><!-- /TMPL_LOOP -->
+            </select>
+            <select name="su_sub_budgetid" id="su_sub_budgetid">
+                <option value="" id="b">Any</option><!-- TMPL_LOOP name="su_sub_budgetsloop" -->
+                <!-- TMPL_IF NAME="selected" --><option value="<!-- TMPL_VAR name="budget_id" -->" selected="selected" class="<!-- TMPL_VAR name="budget_parent_id" -->" style ="display : none;"><!-- TMPL_VAR name="budget_name" --></option><!-- TMPL_ELSE --><option value="<!-- TMPL_VAR name="budget_id" -->" class="<!-- TMPL_VAR name="budget_parent_id" -->" style ="display : none;"><!-- TMPL_VAR name="budget_name" --></option><!-- /TMPL_IF --><!-- /TMPL_LOOP -->
             </select>
 		</li></ol>
     </fieldset><input type="hidden" id="returnsuggested" name="returnsuggested" value="<!--TMPL_IF Name="returnsuggestedby"--><!--TMPL_VAR Name="returnsuggestedby"--><!-- TMPL_ELSE -->noone<!--/TMPL_IF-->"/>

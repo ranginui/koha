@@ -83,8 +83,8 @@ my $tabcode         = $input->param('tabcode');
 
 # filter informations which are not suggestion related.
 my $suggestion_ref = $input->Vars;
-
-delete $$suggestion_ref{$_} foreach qw( suggestedbyme op displayby tabcode edit_field );
+$suggestion_ref->{'budgetid'} = $suggestion_ref->{'su_sub_budgetid'}||$suggestion_ref->{'sub_budgetid'}||$suggestion_ref->{'budgetid'};
+delete $$suggestion_ref{$_} foreach qw( suggestedbyme op displayby tabcode edit_field sub_budgetid su_sub_budgetid);
 foreach ( keys %$suggestion_ref ) {
     delete $$suggestion_ref{$_} if ( !$$suggestion_ref{$_} && ( $op eq 'else' || $op eq 'change' ) );
 }
@@ -210,7 +210,7 @@ if ( $op =~ /else/ ) {
         "notabs"    => $displayby eq "",
         suggestions => \@allsuggestions,
     );
-}
+};
 
 foreach my $element qw(managedby suggestedby acceptedby) {
 
@@ -286,10 +286,14 @@ my $budgets = GetBudgets($searchbudgets);
 foreach my $budget (@$budgets) {
     $budget->{'selected'} = 1 if ( $$suggestion_ref{'budgetid'} && $budget->{'budget_id'} eq $$suggestion_ref{'budgetid'} );
 }
+my $bud = GetBudgetParent();
+my $subbud = GetBudgetFirstChild();
+my $susubbud = GetBudgetSecondChild();
 
-$template->param( budgetsloop => $budgets );
+$template->param( budgetsloop => $bud );
+$template->param( sub_budgetsloop => $subbud );
+$template->param( su_sub_budgetsloop => $susubbud );
 $template->param( "statusselected_$$suggestion_ref{'STATUS'}" =>1);
-
 my %hashlists;
 foreach my $field qw(managedby acceptedby suggestedby budgetid) {
     my $values_list;
