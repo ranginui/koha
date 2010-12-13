@@ -237,6 +237,20 @@ sub generate_subfield_form {
         return \%subfield_data;
 }
 
+sub removeFieldsForPrefill {
+    #FIXME: this is not generic enough
+    my $item = shift;
+    my $field = $item->field('995');
+    $field->delete_subfield(code => 'f');
+    $field->delete_subfield(code => 'k');
+    $field->delete_subfield(code => 'u');
+    $field->delete_subfield(code => 'v');
+    $field->delete_subfield(code => 'x');
+    $field->delete_subfield(code => 'z');
+
+    return $item;
+
+}
 
 my $input = new CGI;
 my $dbh = C4::Context->dbh;
@@ -287,6 +301,7 @@ if ($prefillitem) {
 	$lastitemcookie = uri_unescape($lastitemcookie);
 	if ( thaw($lastitemcookie) ) {
 	    $cookieitemrecord = thaw($lastitemcookie) ;
+	    $cookieitemrecord = removeFieldsForPrefill($cookieitemrecord);
 	}
     }
 }
@@ -393,6 +408,7 @@ if ( $op eq "additem" ) {
             }
         }
         $itemrecord = $record;
+	$itemrecord = removeFieldsForPrefill($itemrecord) if ($prefillitem);
     }
 
     # If we have to add multiple copies
@@ -622,6 +638,7 @@ my $onlymine = C4::Context->preference('IndependantBranches') &&
 my $branches = GetBranchesLoop(C4::Context->userenv->{branch},$onlymine);  # build once ahead of time, instead of multiple times later.
 
 # Using last created item if it exists
+
 $itemrecord = $cookieitemrecord if ($prefillitem and not $justaddeditem); 
 
 # We generate form, and fill with values if defined
