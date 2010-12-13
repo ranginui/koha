@@ -24,6 +24,22 @@ use C4::Koha;
 
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
+eval {
+    my $servers = C4::Context->config('memcached_servers');
+    if ($servers) {
+        require Memoize::Memcached;
+        import Memoize::Memcached qw(memoize_memcached);
+
+        my $memcached = {
+            servers    => [$servers],
+            key_prefix => C4::Context->config('memcached_namespace') || 'koha',
+        };
+
+        memoize_memcached( 'GetSubfieldStructure', memcached => $memcached, expire_time => 600000 );    #cache for 10 minutes
+        memoize_memcached( 'GetTagStructure', memcached => $memcached, expire_time => 600000 );    #cache for 10 minutes
+    }
+};
+
 BEGIN {
 
     # set the version for version checking
@@ -86,8 +102,34 @@ sub GetTagStructure {
 sub GetSubfieldStructure {
     my ( $tagfield, $tagsubfield, $frameworkcode ) = @_;
     my $dbh = C4::Context->dbh;
-    my $sth = $dbh->prepare( "select * from marc_subfield_structure where tagfield=? and tagsubfield=? and frameworkcode=?" );
-    $sth->execute( $tagfield, $tagsubfield, $frameworkcode );
+
+    my $sth;
+
+    if ($tagsubfield eq '*') {
+        if ($tagfield !~ /\./) {  # xxx* match
+            $sth = $dbh->prepare( "select * from marc_subfield_structure where tagfield=? and frameworkcode=?" );
+        } else {
+            if (substr($tagfield,1,3) eq '..') { # x..*
+                $tagfield = (substr($tagfield,0,1))."__";
+            } elsif (substr($tagfield,2,3) eq '.') { # xx.*
+                $tagfield = (substr($tagfield,0,2))."_";
+            }
+            $sth = $dbh->prepare( "select * from marc_subfield_structure where tagfield like ? and frameworkcode=?" );
+        }
+        $sth->execute( $tagfield,  $frameworkcode );
+    } elsif ($tagfield =~ /\./) {
+        if (substr($tagfield,1,3) eq '..') { #x..y
+            $tagfield = (substr($tagfield,0,1))."__";
+        } elsif (substr($tagfield,2,3) eq '.') { # xx.y
+            $tagfield = (substr($tagfield,0,2))."_";
+        }
+        $sth = $dbh->prepare( "select * from marc_subfield_structure where tagfield like ? and tagsubfield=? and frameworkcode=?" );
+        $sth->execute( $tagfield, $tagsubfield, $frameworkcode );
+    } else { # xxxy
+        $sth = $dbh->prepare( "select * from marc_subfield_structure where tagfield=? and tagsubfield=? and frameworkcode=?" );
+        $sth->execute( $tagfield, $tagsubfield, $frameworkcode );
+    }
+
     return $sth->fetchrow_hashref;
 }
 
