@@ -2929,10 +2929,9 @@ sub GetIndexLabelFromCode {
 
 sub GetSubfieldsForIndex {
     my $index = shift;
-    my $notorderby = shift;
     my $dbh = C4::Context->dbh;
     my $query = "SELECT field, subfield FROM indexmappings WHERE `index` = ?";
-    $query .= " ORDER BY field, subfield" unless $notorderby;
+    $query .= " ORDER BY field, subfield";
     my $sth = $dbh->prepare($query);
     $sth->execute($index);
     my $arrayref = $sth->fetchall_arrayref({});
@@ -2985,7 +2984,7 @@ sub IndexRecord {
         for my $index ( @$indexes ) {
 
             my @values;
-            my $mapping = GetSubfieldsForIndex( $index->{'code'}, 1 );
+            my $mapping = GetSubfieldsForIndex( $index->{'code'} );
 
             if ( $index->{'plugin'} ) {
                 my $plugin = $index->{'plugin'};
@@ -3010,14 +3009,13 @@ sub IndexRecord {
                                     $_ = FillSubfieldWithAuthorisedValues( $frameworkcode, $tag, $code, $_ ) if $recordtype eq "biblio";
                                     push @values, $_ if $_;
                                 }
-
                             }
                         }
                     }
                 }
             }
             $solrrecord->set_value(       $index->{'type'}."_".$index->{'code'},    \@values);
-            $solrrecord->set_value("srt_".$index->{'type'}."_".$index->{'code'}, pop @values) if $index->{'sortable'} and @values > 0;
+            $solrrecord->set_value("srt_".$index->{'type'}."_".$index->{'code'}, shift @values) if $index->{'sortable'} and @values > 0;
         }
         push @recordpush, $solrrecord;
 
