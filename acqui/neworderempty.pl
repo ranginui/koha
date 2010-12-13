@@ -303,6 +303,9 @@ if ( C4::Context->preference('AcqCreateItem') eq 'ordering' && !$ordernumber ) {
     $template->param( items => \@itemloop );
 }
 
+# Get the item types list, but only if item_level_itype is YES. Otherwise, it will be in the item, no need to display it in the biblio
+my @itemtypes = C4::ItemType->all unless C4::Context->preference('item-level_itypes');
+
 # fill template
 $template->param(
     close       => $close,
@@ -349,6 +352,7 @@ $template->param(
     budget_loop      => $budget_loop,
     isbn             => $data->{'isbn'},
     seriestitle      => $data->{'seriestitle'},
+    itemtypeloop  => \@itemtypes,
     quantity         => $data->{'quantity'},
     quantityrec      => $data->{'quantity'},
     rrp              => $data->{'rrp'},
