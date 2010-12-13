@@ -1,0 +1,1 @@
+INSERT IGNORE INTO `systempreferences` (variable,value,options,explanation,type) VALUES ('HomeOrHoldingBranch','homebranch','homebranch|holdingbranch','With independent branches turned on this decides whether to check the items holdingbranch or homebranch at circulatilon','choice');
