@@ -135,7 +135,7 @@
 		      <!-- TMPL_VAR NAME="marc_lib" -->
 		      <!-- TMPL_IF name="mandatory" --> *</b><!-- /TMPL_IF -->
 	       </label>
-           <input type="checkbox" title="check to delete subfield <!-- TMPL_VAR NAME="subfield" -->" name="disable_input">
+           <input type="checkbox" title="check to delete subfield <!-- TMPL_VAR NAME="subfield" -->" name="disable_input" value="<!-- TMPL_VAR NAME="subfield" -->" />
                 <!-- TMPL_VAR NAME="marc_value" -->
                 <input type="hidden" name="tag"       value="<!-- TMPL_VAR NAME="tag" -->" />
                 <input type="hidden" name="subfield"       value="<!-- TMPL_VAR NAME="subfield" -->" />

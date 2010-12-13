@@ -47,7 +47,7 @@
             // gather up form submission
             var inputs = [];
             $(':input', f).each(function() {
-                if (this.type == 'radio') {
+                if (this.type == 'radio' or this.type == 'checkbox') {
                     if (this.checked) {
                         inputs.push(this.name + '=' + escape(this.value));
                     }

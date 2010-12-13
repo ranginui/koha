@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Copyright 2000-2002 Katipo Communications
+# Copyright 2010 BibLibre
 #
 # This file is part of Koha.
 #
@@ -95,7 +95,7 @@ if ( $op eq "action" ) {
     my @subfields = $input->param('subfield');
     my @values    = $input->param('field_value');
     my @disabled  = $input->param('disable_input');
-
+    
     # build indicator hash.
     my @ind_tag   = $input->param('ind_tag');
     my @indicator = $input->param('indicator');
@@ -151,15 +151,13 @@ if ( $op eq "action" ) {
         }
 
         if ($values_to_blank) {
-            my $index=0;
             foreach my $disabledsubf (@disabled) {
                 if ( $marcitem && $marcitem->field($itemtagfield) ) {
-                    $marcitem->field($itemtagfield)->update( $subfields[$index] => "" ) if $disabledsubf;
+                    $marcitem->field($itemtagfield)->update( $disabledsubf => "" );
                 } else {
                     $marcitem = MARC::Record->new();
-                    $marcitem->append_fields( MARC::Field->new( $itemtagfield, '', '', $subfields[$index] => "" ) ) if $disabledsubf;
+                    $marcitem->append_fields( MARC::Field->new( $itemtagfield, '', '', $disabledsubf => "" ) );
                 }
-            $index++;
             }
         }
         # For each item
