@@ -96,7 +96,7 @@ sub GetSuppliersWithLateIssues {
         LEFT JOIN       serial ON serial.subscriptionid=subscription.subscriptionid
         LEFT JOIN       aqbooksellers ON subscription.aqbooksellerid = aqbooksellers.id
         WHERE           subscription.subscriptionid = serial.subscriptionid
-        AND             (serial.STATUS = 3 OR serial.STATUS = 4)
+        AND             (serial.STATUS = 3 OR serial.STATUS = 4 OR serial.STATUS = 7)
         ORDER BY name
     |;
     return $dbh->selectall_arrayref( $query, { Slice => {} } );
