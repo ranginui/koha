@@ -33,7 +33,7 @@
         <tokenizer class="solr.StandardTokenizerFactory"/>
         <!-- remove dots from acronyms -->
         <filter class="solr.StandardFilterFactory"/>
-        <!-- find é/à/où when looking for e/a/ou -->
+        <!-- find letters with diacritics when looking for e/a/ou -->
         <charFilter class="solr.MappingCharFilterFactory" mapping="mapping-ISOLatin1Accent.txt"/>
         <!-- no more l' d' qu' etc. based on elision words file -->
         <filter class="solr.ElisionFilterFactory" articles="elisionwords.txt"/>
