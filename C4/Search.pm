@@ -3052,8 +3052,6 @@ sub FillSubfieldWithAuthorisedValues {
         }
         when( '' ) { return $value; }
         default {
-            use Memoize;
-            memoize('GetAuthorisedValueLib');
             my $tmp = GetAuthorisedValueLib( $structure->{'authorised_value'}, $value );
             return $tmp if $tmp;
         }
