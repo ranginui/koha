@@ -405,7 +405,7 @@ sub select_2_select_count_value ($) {
     $debug and warn "original query: $sql\ncount query: $countsql\n";
     my $sth1 = C4::Context->dbh->prepare($countsql);
     $sth1->execute();
-    my $total = $sth1->fetchrow();
+    my $total = $sth1->rows();
     $debug and warn "total records for this query: $total\n";
     return $total;
 }
@@ -414,7 +414,11 @@ sub select_2_select_count ($) {
 
     # Modify the query passed in to create a count query... (I think this covers all cases -crn)
     my ($sql) = strip_limit(shift) or return;
-    $sql =~ s/\bSELECT\W+(?:\w+\W+){1,}?FROM\b|\bSELECT\W\*\WFROM\b/SELECT count(*) FROM /ig;
+    if (!$sql =~ /\bSELECT.*count(\*)\b/){
+    $sql =~ s/\bSELECT\W+(?:\w+\W+){1,}?FROM\b|\bSELECT\W\*\WFROM\b/SELECT count(*) FROM /i;
+    $sql =~ s/GROUP BY.*//g;
+    $sql =~ s/ORDER BY.*//g;
+    }
     return $sql;
 }
 
