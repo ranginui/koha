@@ -76,70 +76,72 @@ sub plugin {
     my ($input) = @_;
     my $isbn = $input->param('isbn');
 
-    my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-        {   template_name   => "cataloguing/value_builder/ajax.tmpl",
-            query           => $input,
-            type            => "intranet",
-            authnotrequired => 0,
-            flagsrequired   => { editcatalogue => '*' },
-            debug           => 1,
+    if ($isbn) {
+        my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
+            {   template_name   => "cataloguing/value_builder/ajax.tmpl",
+                query           => $input,
+                type            => "intranet",
+                authnotrequired => 0,
+                flagsrequired   => { editcatalogue => '*' },
+                debug           => 1,
+            }
+        );
+
+        my $dbh = C4::Context->dbh;
+        my $len = 0;
+        my $sth = $dbh->prepare('SELECT publishercode FROM biblioitems WHERE REPLACE(isbn, "-", "") LIKE ? OR REPLACE(isbn, "-", "") LIKE ? LIMIT 1');
+    
+        $isbn =~ s/-//g;
+        if ( length($isbn) == 13 ) {
+            $isbn = substr( $isbn, 3, length($isbn) - 3 );
         }
-    );
+    
+        if ( length($isbn) <= 10 ) {
 
-    my $dbh = C4::Context->dbh;
-    my $len = 0;
-    my $sth = $dbh->prepare('SELECT publishercode FROM biblioitems WHERE REPLACE(isbn, "-", "") LIKE ? OR REPLACE(isbn, "-", "") LIKE ? LIMIT 1');
+            $len = 5;
+            if ( substr( $isbn, 0, 1 ) <= 7 ) {
+                $len = 0;
+            } elsif ( substr( $isbn, 0, 2 ) <= 94 ) {
+                $len = 2;
+            } elsif ( substr( $isbn, 0, 3 ) <= 995 ) {
+                $len = 3;
+            } elsif ( substr( $isbn, 0, 4 ) <= 9989 ) {
+                $len = 4;
+            }
 
-    $isbn =~ s/-//g;
-    if ( length($isbn) == 13 ) {
-        $isbn = substr( $isbn, 3, length($isbn) - 3 );
+            my $x = substr( $isbn, $len );
+            my $seg2 = "";
+
+            if ( substr( $x, 0, 2 ) <= 19 ) {
+                $seg2 = substr( $x, 0, 2 );
+            } elsif ( substr( $x, 0, 3 ) <= 699 ) {
+                $seg2 = substr( $x, 0, 3 );
+            } elsif ( substr( $x, 0, 4 ) <= 8399 ) {
+                $seg2 = substr( $x, 0, 4 );
+            } elsif ( substr( $x, 0, 5 ) <= 89999 ) {
+                $seg2 = substr( $x, 0, 5 );
+            } elsif ( substr( $x, 0, 6 ) <= 9499999 ) {
+                $seg2 = substr( $x, 0, 6 );
+            } else {
+                $seg2 = substr( $x, 0, 7 );
+            }
+
+            while ( $len-- ) {
+                $seg2 = "_" . $seg2;
+            }
+
+            $len = 10 - length($seg2);
+
+            while ( $len-- ) {
+                $seg2 .= "_";
+            }
+            $sth->execute( $seg2, "978$seg2" );
+
+        }
+        if ( ( my $publishercode ) = $sth->fetchrow ) {
+            $template->param( return => $publishercode );
+        }
+        output_html_with_http_headers $input, $cookie, $template->output;
     }
-
-    if ( length($isbn) <= 10 ) {
-
-        $len = 5;
-        if ( substr( $isbn, 0, 1 ) <= 7 ) {
-            $len = 1;
-        } elsif ( substr( $isbn, 0, 2 ) <= 94 ) {
-            $len = 2;
-        } elsif ( substr( $isbn, 0, 3 ) <= 995 ) {
-            $len = 3;
-        } elsif ( substr( $isbn, 0, 4 ) <= 9989 ) {
-            $len = 4;
-        }
-
-        my $x = substr( $isbn, $len );
-        my $seg2 = "";
-
-        if ( substr( $x, 0, 2 ) <= 19 ) {
-            $seg2 = substr( $x, 0, 2 );
-        } elsif ( substr( $x, 0, 3 ) <= 699 ) {
-            $seg2 = substr( $x, 0, 3 );
-        } elsif ( substr( $x, 0, 4 ) <= 8399 ) {
-            $seg2 = substr( $x, 0, 4 );
-        } elsif ( substr( $x, 0, 5 ) <= 89999 ) {
-            $seg2 = substr( $x, 0, 5 );
-        } elsif ( substr( $x, 0, 6 ) <= 9499999 ) {
-            $seg2 = substr( $x, 0, 6 );
-        } else {
-            $seg2 = substr( $x, 0, 7 );
-        }
-
-        while ( $len-- ) {
-            $seg2 = "_" . $seg2;
-        }
-
-        $len = 10 - length($seg2);
-
-        while ( $len-- ) {
-            $seg2 .= "_";
-        }
-        $sth->execute( $seg2, "978$seg2" );
-
-    }
-    if ( ( my $publishercode ) = $sth->fetchrow ) {
-        $template->param( return => $publishercode );
-    }
-    output_html_with_http_headers $input, $cookie, $template->output;
 }
 1;
