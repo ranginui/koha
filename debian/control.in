@@ -21,6 +21,7 @@ Depends: ${misc:Depends}, ${koha:Depends},
  libjs-yui,
  mysql-client,
  tinymce2, 
+ xmlstarlet,
  yaz
 Suggests: mysql-server
 Homepage: http://koha-community.org/
