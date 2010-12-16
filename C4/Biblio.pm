@@ -77,6 +77,7 @@ BEGIN {
       &GetXmlBiblio
       &GetCOinSBiblio
       &GetMarcPrice
+      &GetMarcQuantity
 
       &GetAuthorisedValueDesc
       &GetMarcStructure
@@ -3684,12 +3685,44 @@ sub GetMarcPrice {
     }
     
     for my $field ( $record->field(@listtags) ) {
-        for my $subfield_value  ($field->subfields($subfield)){
+        for my $subfield_value  ($field->subfield($subfield)){
             #check value
             return $subfield_value if ($subfield_value);
         }
     }
+    return 0; # no price found
 }
+
+=head3 GetMarcQuantity
+
+return the quantity of a book. Used in acquisition only, when importing a file an iso2709 from a bookseller
+Warning : this is not really in the marc standard. In Unimarc, Electre (the most widely used bookseller) use the 969$a
+
+=cut
+
+sub GetMarcQuantity {
+    my ( $record, $marcflavour ) = @_;
+    my @listtags;
+    my $subfield;
+    
+    if ( $marcflavour eq "MARC21" ) {
+        return 0
+    } elsif ( $marcflavour eq "UNIMARC" ) {    # assume unimarc if not marc21
+        @listtags = ('969');
+        $subfield="a";
+    } else {
+        return;
+    }
+    
+    for my $field ( $record->field(@listtags) ) {
+        for my $subfield_value  ($field->subfield($subfield)){
+            #check value
+            return $subfield_value if ($subfield_value);
+        }
+    }
+    return 0; # no price found
+}
+
 
 1;
 

@@ -30,16 +30,13 @@ use C4::Context;
 use C4::Auth;
 use C4::Input;
 use C4::Output;
-use C4::ImportBatch
-  qw/GetImportBatchRangeDesc GetNumberOfNonZ3950ImportBatches GetImportRecordMatches GetImportBibliosRange GetImportBatchOverlayAction GetImportBatchNoMatchAction GetImportBatchItemAction GetImportRecordMarc GetImportBatch/;
+use C4::ImportBatch;
 use C4::Matcher;
 use C4::Search qw/FindDuplicate BiblioAddAuthorities/;
-use C4::Acquisition qw/NewOrder/;
 use C4::Biblio;
 use C4::Items;
-use C4::Koha qw/GetItemTypes/;
-use C4::Budgets qw/GetBudgets GetBudgetHierarchy/;
-use C4::Acquisition qw/NewOrderItem/;
+use C4::Koha;
+use C4::Budgets;
 use C4::Bookseller qw/GetBookSellerFromId/;
 
 
@@ -48,10 +45,6 @@ use C4::Suggestions;    # GetSuggestion
 use C4::Branch;         # GetBranches
 use C4::Members;
 #needed for z3950 import:
-use C4::ImportBatch qw/GetImportRecordMarc SetImportRecordStatus/;
-use C4::Acquisition;
-use C4::Koha;
-use C4::Budgets;
 use C4::Acquisition;
 use C4::Bookseller;
 
@@ -170,9 +163,11 @@ if ( $op eq "" ) {
             my $patron = C4::Members->GetMember( borrowernumber => $loggedinuser );
             my $branch = C4::Branch->GetBranchDetail( $patron->{branchcode} );
             my ($invoice);
+            # get quantity in the MARC record (1 if none)
+            my $quantity = GetMarcQuantity($marcrecord, C4::Context->preference('marcflavour')) || 1;
             my %orderinfo = (
                 "biblionumber", $biblionumber, "basketno", $cgiparams->{'basketno'},
-                "quantity", 1, "branchcode", $branch, 
+                "quantity", $quantity, "branchcode", $branch, 
                 "booksellerinvoicenumber", $invoice, 
                 "budget_id", $budget_id, "uncertainprice", 1,
                 "sort1", $cgiparams->{'sort1'},"sort2", $cgiparams->{'sort2'},
