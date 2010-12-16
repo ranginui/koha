@@ -46,29 +46,29 @@
 <!-- /TMPL_IF -->
 
 <!-- TMPL_IF NAME="casAuthentication" -->
-<h4>Cas Login</h4>
+<h4>Connexion aux services personnalisés</h4>
+<p>Pour consulter vos prêts en cours ou passés, faire des suggestions d'achat ou créer vos propres listes de références, vous devez vous identifier :</p>
 
 <!-- TMPL_IF NAME="invalidCasLogin" -->
     <!-- This is what is displayed if cas login has failed -->
     <p>Sorry, the CAS login failed.</p>
 <!-- /TMPL_IF -->
 
-<p><acronym title="Central Authentication Service">If you have a CAS account</acronym>, 
+
+<li>au moyen de vos codes d'accès ENT si vous faites partie de la communauté universitaire d'Aix-Marseille </li>
 <!-- TMPL_IF name="casServerUrl" -->
     please <a href="<!-- TMPL_VAR NAME="casServerUrl" -->">click here to login</a>.<p>
 <!-- /TMPL_IF -->
 
 <!-- TMPL_IF name="casServersLoop" -->
-please choose against which one you would like to authenticate: </p>
-<ul>
+<ul><ul><ul>
     <!-- TMPL_LOOP name="casServersLoop" -->
-	<li><a href="<!-- TMPL_VAR name="value" -->"><!-- TMPL_VAR name="name" --></a></li>
+	<li>Connexion pour les étudiants et personnels <a href="<!-- TMPL_VAR name="value" -->"><!-- TMPL_VAR name="name" --></a></li>
     <!-- /TMPL_LOOP -->
 <!-- /TMPL_IF -->
-</ul>
+</ul></ul></ul>
 
-<h4>Local Login</h4>
-<p>If you do not have a CAS account, but a local account, you can still log in : </p>
+<li>au moyen des identifiants qui vous ont été communiqués par la bibliothèque dans laquelle vous vous êtes inscrit si vous n'êtes pas universitaire</li>
 
 <!-- /TMPL_IF -->
 
@@ -84,8 +84,6 @@ please choose against which one you would like to authenticate: </p>
 </ol></fieldset>
 
 <input type="submit" value="Log In" class="submit" />
-<div>  <h5>Don't have a password yet?</h5><p> If you don't have a password yet, stop by the circulation desk the next time you're in the library. We'll happily set one up for you.</p>
-<h5>Don't have a library card?</h5><p> If you don't have a library card, stop by your local library to sign up.  </p></div>
 </form>
 
 
