@@ -26,7 +26,6 @@ Build-Depends: libcgi-session-driver-memcached-perl,
  libdbi-perl,
  libdigest-sha-perl | perl,
  libemail-date-perl,
- libfile-temp-perl | perl-modules,
  libgd-barcode-perl,
  libgd-gd2-noxpm-perl | libgd-gd2-perl,
  libgraphics-magick-perl,
@@ -95,6 +94,7 @@ Depends: ${misc:Depends}, ${koha:Depends},
  mysql-client,
  pwgen,
  tinymce2, 
+ xmlstarlet,
  yaz
 Suggests: mysql-server
 Homepage: http://koha-community.org/
