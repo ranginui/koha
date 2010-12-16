@@ -143,6 +143,7 @@ if ($barcode) {
     if ( $stickyduedate && !$query->param("stickyduedate") ) {
         $session->clear('stickyduedate');
         $stickyduedate = $query->param('stickyduedate');
+        $duedatespec   = $query->param('duedatespec');
     }
 }
 
