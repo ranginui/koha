@@ -136,7 +136,14 @@ sub checkpw_ldap {
 		}
         my $search = search_method($db, $userid) or return 0;   # warnings are in the sub
         $userldapentry = $search->shift_entry;
-		my $cmpmesg = $db->compare( $userldapentry, attr=>'userpassword', value => $password );
+
+	#Opus specific code: grctm0, 2010-12-16
+	my $ldapCryptedPassword = $userldapentry->get_value("userpassword");
+	$ldapCryptedPassword =~ s/{CRYPT}//i;
+	my $cryptedPassword = "{CRYPT}" . crypt($password, $ldapCryptedPassword);
+	#End Opus specific code; note, next line changed value=> to $cryptedPassword, not "$password"
+
+		my $cmpmesg = $db->compare( $userldapentry, attr=>'userpassword', value => $cryptedPassword );
 		if ($cmpmesg->code != 6) {
 			warn "LDAP Auth rejected : invalid password for user '$userid'. " . description($cmpmesg);
 			return 0;
