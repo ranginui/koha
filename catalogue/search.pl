@@ -493,6 +493,7 @@ $template->param(
     'query'          => $params->{'q'},
     'searchdesc'     => $query_desc || $limit_desc,
     'availability'   => $filters{'int_availability'},
+    'count'          => C4::Context->preference('OPACnumSearchResults') || 20,
 );
 
 # VI. BUILD THE TEMPLATE

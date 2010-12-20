@@ -480,6 +480,7 @@ $template->param(
     'query'          => $q,
     'searchdesc'     => $q || @tplfilters,
     'availability'   => $filters{'int_availability'},
+    'count'          => $count,
 );
 
 # VI. BUILD THE TEMPLATE
