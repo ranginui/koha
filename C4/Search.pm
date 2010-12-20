@@ -2991,9 +2991,8 @@ sub IndexRecord {
                 $plugin = LoadSearchPlugin( $plugin ) if $plugin;
                 @values = &$plugin( $record );
             } else {
-                for my $tag ( keys %$mapping ) {
+                for my $tag ( sort keys %$mapping ) {
                     for my $field ( $record->field( $tag ) ) {
-
                         if ( $field->is_control_field ) {
                             push @values, $field->data;
                         } else {
