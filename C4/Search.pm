@@ -40,6 +40,7 @@ use Data::SearchEngine::Query;
 use Data::SearchEngine::Item;
 use Data::SearchEngine::Solr;
 use C4::MarcFramework;
+use Time::Progress;
 
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $DEBUG);
 
@@ -2958,7 +2959,9 @@ sub IndexRecord {
     my $sc      = GetSolrConnection;
 
     my @recordpush;
+    my $g;
     for my $id ( @$recordids ) {
+        
         my $record;
         my $frameworkcode;
         my $recordid = "${recordtype}_$id";
@@ -3019,8 +3022,22 @@ sub IndexRecord {
         push @recordpush, $solrrecord;
 
         if ( @recordpush == 5000 ) {
+            if (defined $g) {
+              $g->stop;
+              print "Time building documents - ".$g->elapsed_str;
+            }
+            
+            my $p = new Time::Progress;
+            $p->restart;
+            
             $sc->add( \@recordpush );
             @recordpush = ();
+            
+            $p->stop;
+            print "Time solr call - ".$p->elapsed_str;
+            
+            $g = new Time::Progress;
+            $g->restart;
         }
     }
     $sc->add( \@recordpush );
