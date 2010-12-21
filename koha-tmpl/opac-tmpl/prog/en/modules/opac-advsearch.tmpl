@@ -25,12 +25,16 @@
                             <!-- /TMPL_IF -->
                         <!-- /TMPL_IF -->
                         <!-- TMPL_IF NAME="expanded_options" --><!-- TMPL_VAR NAME="left_content" --><!-- /TMPL_IF --> 
-                        <select class="advsearch" name="idx">
-                            <option value="all_fields">Keyword</option>
-                            <!-- TMPL_LOOP NAME="indexloop" -->
-                                <option value="<!-- TMPL_VAR NAME="type" -->_<!-- TMPL_VAR NAME="code" -->"><!-- TMPL_VAR NAME="label" --></option>
-                            <!-- /TMPL_LOOP -->
-                        </select>
+                        <!-- TMPL_IF NAME="OpacAdvancedSearchContent" -->
+                            <!-- TMPL_VAR NAME="OpacAdvancedSearchContent" -->
+                        <!-- TMPL_ELSE -->
+                            <select class="advsearch" name="idx">
+                                <option value="all_fields">Keyword</option>
+                                <!-- TMPL_LOOP NAME="indexloop" -->
+                                    <option value="<!-- TMPL_VAR NAME="type" -->_<!-- TMPL_VAR NAME="code" -->"><!-- TMPL_VAR NAME="label" --></option>
+                                <!-- /TMPL_LOOP -->
+                            </select>
+                        <!-- /TMPL_IF -->
                         <input type="text" size="30" name="q" title="Enter search terms" value="" />
                         <!-- TMPL_IF NAME="expanded_options" -->
                             <!-- TMPL_IF NAME="__last__" --><a href="JavaScript:add_field();" id="ButtonPlus" title="Add another field">[+]</a><!-- /TMPL_IF -->
