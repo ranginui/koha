@@ -174,7 +174,7 @@ if ( !$advanced_search_types or $advanced_search_types eq 'itemtypes' ) {
     for my $thisitemtype (@$advsearchtypes) {
         my %row = (
             number      => $cnt++,
-            index       => 'str_ccode',
+            index       => 'srt_str_ccode',
             ccl         => $advanced_search_types,
             code        => $thisitemtype->{authorised_value},
             selected    => $selected,
