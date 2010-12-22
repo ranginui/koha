@@ -259,7 +259,11 @@ sub calculate {
     $strcalc .= " AND borrowers.categorycode like '" . @$filters[0] . "'" if ( @$filters[0] );
     my $strqueryfilter = "SELECT DISTINCT borrowernumber FROM old_issues WHERE borrowernumber IS NOT NULL ";
     if ( @$filters[1] ) {
-        my $strqueryfilter .= "AND old_issues.timestamp> @$filters[1] ";
+        $strqueryfilter .= "AND old_issues.timestamp> @$filters[1] ";
+    }
+    $strqueryfilter.= "UNION DISTINCT SELECT DISTINCT borrowernumber FROM issues WHERE borrowernumber IS NOT NULL ";
+    if ( @$filters[1] ) {
+        $strqueryfilter .= "AND issues.timestamp> @$filters[1] ";
     }
     $strcalc .= " AND borrowers.borrowernumber not in ($strqueryfilter)";
     $strcalc .= " group by borrowers.borrowernumber";
