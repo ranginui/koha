@@ -330,8 +330,6 @@ for my $kw ($cgi->param('q')){
         }
         $i = $i + 1;
     }
-}else{
-    $q = $cgi->param('q');
 }
 
 # append year limits if they exist
