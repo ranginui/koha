@@ -28,7 +28,7 @@ use C4::Search;
 use C4::AuthoritiesMarc::MARC21;
 use C4::AuthoritiesMarc::UNIMARC;
 use C4::Charset;
-use List::MoreUtils qw/none/;
+use List::MoreUtils qw/none first_index/;
 use C4::Debug;
 
 use vars qw($VERSION @ISA @EXPORT);
@@ -1374,7 +1374,7 @@ sub merge {
     my ($auth_tag_to_report_to) = $sth->fetchrow;
 
     my @record_to;
-    @record_to = $MARCto->field($auth_tag_to_report_to)->subfields() if $MARCto->field($auth_tag_to_report_to);
+    @record_to = grep {$_->[0]!~/[0-9]/} $MARCto->field($auth_tag_to_report_to)->subfields() if $MARCto->field($auth_tag_to_report_to);
     my $field_to;
     $field_to = $MARCto->field($auth_tag_to_report_to) if $MARCto->field($auth_tag_to_report_to);
     my @record_from;
@@ -1402,7 +1402,7 @@ sub merge {
         }
     } else {
         #zebra connection  
- 	my ($err,$res,$result) = C4::Search::SimpleSearch("an=$mergefrom",0,10);
+ 	my ($err,$res,$result) = C4::Search::SimpleSearch("an=$mergefrom",0,999999);
         my $z=0;
 	$debug && warn scalar(@$res);
         foreach my $rawrecord( @$res ) {
@@ -1422,63 +1422,65 @@ sub merge {
         push @tags_using_authtype, $tagfield;
     }
     my $tag_to=0;  
-#    if ($authtypecodeto ne $authtypecodefrom){  
+#    if ((defined $authtypecodeto) and ($authtypecodeto ne $authtypecodefrom)){  
 #        # If many tags, take the first
 #        $sth->execute($authtypecodeto);    
 #        $tag_to=$sth->fetchrow;
 #        #warn $tag_to;    
 #    }  
-    # BulkEdit marc records
-    # May be used as a template for a bulkedit field  
     foreach my $marcrecord(@reccache){
-	    $debug && warn "before merge",$marcrecord->as_formatted;
         foreach my $tagfield (@tags_using_authtype){
             foreach my $field ($marcrecord->field($tagfield)){
                 my $update;           
                 my $tag=$field->tag();          
 		my @newsubfields;
 		my %indexes;
-		foreach my $subfield ($field->subfields()){
-			$debug && warn @$subfield, " ", $mergefrom," ",$mergeto;
-		    if ($subfield->[0] eq 9 and $subfield->[1] eq $mergefrom){
-			$debug && warn $subfield->[1], " ", $mergeto;
-			    $subfield->[1] = $mergeto;
-		    	    $update=1;
-		    	$debug && warn "update 1";
-		    }
-
-		    if ($update){
-		    # Removing numeric subfields from the authority record
-		    for my $subfieldfrom (@record_from) {
-			$debug && warn $subfield->[1], " ", $subfieldfrom->[1];
-			next if ($subfield->[0] eq 9);
-		    	if ($subfield->[0] eq $subfieldfrom->[0]){
-			    if (exists $indexes{$subfield->[0]}){
-			    $indexes{$subfield->[0]}++;
-			    } else {
-			    $indexes{$subfield->[0]}=0;
-			    }
-				my @subfstemp=$field_to->subfield($subfield->[0]);
-				$debug && warn @subfstemp;
-				$subfield->[1] = $subfstemp[$indexes{$subfield->[0]}];
-				$update=1;
-				last;
+		#get to next field if no subfield
+		my @localsubfields = $field->subfields();
+		my $index_9_auth =0;
+		my $found =0;
+		for my $subf (@localsubfields) {
+		#			$debug && warn Data::Dumper::Dumper($subf);
+			if (($subf->[0] eq "9") and ($subf->[1] == $mergefrom))
+			{
+			    $found=1;
+			    $debug && warn "found $mergefrom ".$subf->[1];
+			    last;
 			}
+			$index_9_auth++;
+		};
+		#$debug && warn "$index_9_auth $#localsubfields $found";
+		next if ($index_9_auth >= $#localsubfields and !$found);
+		#Get the next $9 subfield
+		my $nextindex_9 =0;
+		for my $subf (@localsubfields[$index_9_auth + 1 .. $#localsubfields]){
+			last if ($subf->[0] =~ /[12456789]/); 
+			$nextindex_9++;
+		};
+		#Change the first tag if required
+		# That is : change the first tag ($a) to what it is in the biblio record
+		# Since some composed authorities will place the $a into $x or $y
+		my @tags=grep {$_->[0] !~/[0-9]/} @localsubfields[$index_9_auth..$nextindex_9];
+		$debug && warn @tags;
+		if (defined $tags[0]->[0] and $tags[0]->[0] ne "a"){
+		    for my $record (@record_to){
+		       if ($record->[0] eq "a"){
+			 $record->[0] =$tags[0]->[0];
+			 last;
+		       }
 		    }
-		    }
-			$debug && warn @$subfield;
-          	    push @newsubfields,@$subfield;
 		}
+		#$debug && warn "$index_9_auth $nextindex_9 data to add ".Data::Dumper::Dumper(@record_to);
+		# Replace in local subfields the subfields related to recordfrom with data from record_to
+	        splice(@localsubfields,$index_9_auth,$nextindex_9 + 1,([9,$mergeto],@record_to));
+		#$debug && warn "after splice ".Data::Dumper::Dumper(@localsubfields);
+		#very nice api for MARC::Record
+		# It seems that some elements localsubfields can be undefined so skip them
+          	@newsubfields=map{(defined $_?@$_:())}@localsubfields;
 		#filter to subfields which are not in the subfield
-		# and not in 1245678
-		for my $subf (grep {my $subftag=$_->[0];$subftag !~m/[1245678]/ and none {$subftag eq $_}@newsubfields }@record_to){
-		   push @newsubfields,@$subf;
-		}
-		if ($update){
                 my $field_to=MARC::Field->new(($tag_to?$tag_to:$tag),$field->indicator(1),$field->indicator(2),@newsubfields);
                 $marcrecord->delete_field($field);
                 $marcrecord->insert_fields_ordered($field_to);            
-                }
             }    #for each tag
         }    #foreach tagfield
         my ( $bibliotag, $bibliosubf ) = GetMarcFromKohaField( "biblio.biblionumber", "" );
@@ -1488,7 +1490,7 @@ sub merge {
         } else {
             $biblionumber = $marcrecord->subfield( $bibliotag, $bibliosubf );
         }
-#	    $debug && warn $biblionumber,$marcrecord->as_formatted;
+	#    $debug && warn $biblionumber,$marcrecord->as_formatted;
         unless ($biblionumber){
             warn "pas de numéro de notice bibliographique dans : ".$marcrecord->as_formatted;
             next;
