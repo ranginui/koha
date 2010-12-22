@@ -35,7 +35,7 @@ sub ComputeValue {
     my $brecord = shift;
     
     my @bfieldstoindex = ( '6..', '7..' );
-    my @afieldstoindex = ( '2..', '5..' );
+    my @afieldstoindex = ( '2..', '4..', '7..' );
 
     my @values;
     #for each 6..$9 and 7..$9 take authority linked
@@ -45,7 +45,7 @@ sub ComputeValue {
                 my $arecord = GetAuthority( $bsubfield );
 
                 next unless $arecord;
-                #for each 2.. and 5.. (wich contains rejected forms) of the authority return all subfields
+                #for each 2.. and 4.. and 7.. (wich contains vedette, rejected and parralleles forms) of the authority return all subfields
                 for my $afieldtoindex ( @afieldstoindex ) {
                     for my $afield ( $arecord->field( $afieldtoindex ) ) {
                         my @asubfields = $afield->subfields;
