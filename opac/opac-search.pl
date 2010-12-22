@@ -279,51 +279,47 @@ $template->param('filters' => \@tplfilters );
 # construct the param array
 
 my $q;
-$q = '';
+if ( (my @x = eval {$cgi->param('q')} ) > 1  ){
+    $q = '';
+    my $i = 0;
+    for my $kw ($cgi->param('q')){
+        if ($i == 0){
+            if (($cgi->param('idx'))[$i] ne 'all_fields'){
+                $q .= ($cgi->param('idx'))[$i] . ':' . $kw;
+            }else{
+                $q .= $kw;
+            }
 
-my $i = 0;
-for my $kw ($cgi->param('q')){
-    if ($i == 0){
-        if (($cgi->param('idx'))[$i] ne 'all_fields'){
-            $q .= ($cgi->param('idx'))[$i] . ':' . $kw;
-        }else{
-            $q .= $kw;
+            $i = $i + 1;
+            next;
         }
-
+        given (($cgi->param('op'))[$i-1]) {
+            when ('and'){
+                if (($cgi->param('idx'))[$i] ne 'all_fields'){
+                    $q .= ' AND ' . ($cgi->param('idx'))[$i] . ':'.$kw;
+                }else{
+                    $q .= ' AND ' . $kw;
+                }
+            }
+            when ('or'){
+                if (($cgi->param('idx'))[$i] ne 'all_fields'){
+                    $q .= ' OR ' . ($cgi->param('idx'))[$i] . ':'.$kw;
+                }else{
+                    $q .= ' OR ' . $kw;
+                }
+            }
+            when ('not'){
+                if (($cgi->param('idx'))[$i] ne 'all_fields'){
+                    $q .= ' -' . ($cgi->param('idx'))[$i] . ':'.$kw;
+                }else{
+                    $q .= ' -' . $kw;
+                }
+            }
+        }
         $i = $i + 1;
-        next;
     }
-    given (($cgi->param('op'))[$i-1]) {
-        when (undef){
-            if (($cgi->param('idx'))[$i] ne 'all_fields'){
-                $q .= ' AND ' . ($cgi->param('idx'))[$i] . ':'.$kw;
-            }else{
-                $q .= ' AND ' . $kw;
-            }
-        }
-        when ('and'){
-            if (($cgi->param('idx'))[$i] ne 'all_fields'){
-                $q .= ' AND ' . ($cgi->param('idx'))[$i] . ':'.$kw;
-            }else{
-                $q .= ' AND ' . $kw;
-            }
-        }
-        when ('or'){
-            if (($cgi->param('idx'))[$i] ne 'all_fields'){
-                $q .= ' OR ' . ($cgi->param('idx'))[$i] . ':'.$kw;
-            }else{
-                $q .= ' OR ' . $kw;
-            }
-        }
-        when ('not'){
-            if (($cgi->param('idx'))[$i] ne 'all_fields'){
-                $q .= ' -' . ($cgi->param('idx'))[$i] . ':'.$kw;
-            }else{
-                $q .= ' -' . $kw;
-            }
-        }
-    }
-    $i = $i + 1;
+}else{
+    $q = $cgi->param('q');
 }
 
 # append year limits if they exist
