@@ -278,12 +278,24 @@ $template->param('filters' => \@tplfilters );
 
 # construct the param array
 
-my $q;
-if ( (my @x = eval {$cgi->param('q')} ) > 1  ){
-    $q = '';
-    my $i = 0;
-    for my $kw ($cgi->param('q')){
-        if ($i == 0){
+my $q = '';
+my $i = 0;
+for my $kw ($cgi->param('q')){
+    if ($i == 0){
+        if ( (my @x = eval {$cgi->param('idx')} ) == 0 ){
+            $q = $cgi->param('q');
+            next;
+        }
+        if (($cgi->param('idx'))[$i] ne 'all_fields'){
+            $q .= ($cgi->param('idx'))[$i] . ':' . $kw;
+        }else{
+            $q .= $kw;
+        }
+        $i = $i + 1;
+        next;
+    }
+    given (($cgi->param('op'))[$i-1]) {
+        when (undef){
             if (($cgi->param('idx'))[$i] ne 'all_fields'){
                 $q .= ($cgi->param('idx'))[$i] . ':' . $kw;
             }else{
