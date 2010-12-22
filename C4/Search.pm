@@ -40,7 +40,6 @@ use Data::SearchEngine::Query;
 use Data::SearchEngine::Item;
 use Data::SearchEngine::Solr;
 use C4::MarcFramework;
-use Time::Progress;
 
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $DEBUG);
 
