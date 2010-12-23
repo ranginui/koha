@@ -52,6 +52,18 @@
       </analyzer>
     </fieldtype>
 
+    <fieldtype name="simple_text" class="solr.TextField" positionIncrementGap="100" >
+      <analyzer>
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <!-- remove dots from acronyms -->
+        <filter class="solr.StandardFilterFactory"/>
+        <!-- find letters with diacritics when looking for e/a/ou -->
+        <charFilter class="solr.MappingCharFilterFactory" mapping="mapping-ISOLatin1Accent.txt"/>
+        <!-- data will be pushed in lower case (during indexing and search) -->
+        <filter class="solr.LowerCaseFilterFactory"/>
+      </analyzer>
+    </fieldtype>
+
   </types>
  <fields>
 
@@ -63,15 +75,17 @@
    <field name="allfields" type="text" indexed="true" stored="false" multiValued="true" />
 
    <!-- Dynamic MARC field indexing -->
-   <dynamicField name="str_*"      type="string"  indexed="true" stored="true" multiValued="true"/>
-   <dynamicField name="txt_*"      type="text"    indexed="true" stored="true" multiValued="true"/>
-   <dynamicField name="int_*"      type="integer" indexed="true" stored="true" multiValued="true"/>
-   <dynamicField name="date_*"     type="date"    indexed="true" stored="true" multiValued="true"/>
+   <dynamicField name="str_*"      type="string"        indexed="true" stored="true" multiValued="true"/>
+   <dynamicField name="txt_*"      type="text"          indexed="true" stored="true" multiValued="true"/>
+   <dynamicField name="int_*"      type="integer"       indexed="true" stored="true" multiValued="true"/>
+   <dynamicField name="date_*"     type="date"          indexed="true" stored="true" multiValued="true"/>
+   <dynamicField name="ste_*"      type="simple_text"   indexed="true" stored="true" multiValued="true"/>
 
-   <dynamicField name="srt_str_*"  type="string"  indexed="true" stored="true" multiValued="false"/>
-   <dynamicField name="srt_txt_*"  type="string"  indexed="true" stored="true" multiValued="false"/>
-   <dynamicField name="srt_int_*"  type="integer" indexed="true" stored="true" multiValued="false"/>
-   <dynamicField name="srt_date_*" type="date"    indexed="true" stored="true" multiValued="false"/>
+   <dynamicField name="srt_str_*"  type="string"        indexed="true" stored="true" multiValued="false"/>
+   <dynamicField name="srt_txt_*"  type="string"        indexed="true" stored="true" multiValued="false"/>
+   <dynamicField name="srt_int_*"  type="integer"       indexed="true" stored="true" multiValued="false"/>
+   <dynamicField name="srt_date_*" type="date"          indexed="true" stored="true" multiValued="false"/>
+   <dynamicField name="srt_ste_*"  type="simple_text"   indexed="true" stored="true" multiValued="false"/>
 
  </fields>
 

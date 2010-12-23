@@ -25,6 +25,7 @@
                     line += '<td>';
                     line += '<select name="type">';
 		    line += '<option value="str">String</option>';
+		    line += '<option value="ste">Simple Text</option>';
 		    line += '<option value="txt">Text</option>';
 		    line += '<option value="int">Integer</option>';
 		    line += '<option value="date">Date</option>';
@@ -128,6 +129,7 @@
 					<td>
 					    <select name="type">
 					        <option <!-- TMPL_IF EXPR="type eq 'str'" -->selected="selected"<!-- /TMPL_IF --> value="str">String</option>
+					        <option <!-- TMPL_IF EXPR="type eq 'ste'" -->selected="selected"<!-- /TMPL_IF --> value="ste">Simple Text</option>
 					        <option <!-- TMPL_IF EXPR="type eq 'txt'" -->selected="selected"<!-- /TMPL_IF --> value="txt">Text</option>
 					        <option <!-- TMPL_IF EXPR="type eq 'int'" -->selected="selected"<!-- /TMPL_IF --> value="int">Integer</option>
 					        <option <!-- TMPL_IF EXPR="type eq 'date'" -->selected="selected"<!-- /TMPL_IF --> value="date">Date</option>
@@ -157,6 +159,7 @@
                                     <td>
 			                <select id="type">
 					    <option value="str">String</option>
+					    <option value="ste">Simple Text</option>
 					    <option value="txt">Text</option>
 					    <option value="int">Integer</option>
 					    <option value="date">Date</option>

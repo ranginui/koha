@@ -4951,7 +4951,7 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
         ('title','Titre','txt',0,'biblio',1,1,''),
         ('title-series','Collection','str',1,'biblio',0,0,''),
         ('title-cover','Titre de couverture','txt',0,'biblio',0,0,''),
-        ('author','Auteur','str',1,'biblio',0,1,'C4::Search::Plugins::Author'),
+        ('author','Auteur','ste',1,'biblio',0,1,'C4::Search::Plugins::Author'),
         ('title-uniform','Titre uniforme','txt',0,'biblio',0,0,''),
         ('isbn','ISBN','str',0,'biblio',0,0,''),
         ('entereddate','Date de saisie','date',0,'biblio',0,0,''),
