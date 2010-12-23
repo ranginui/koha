@@ -31,6 +31,7 @@ use C4::Output;
 use C4::Auth qw(:DEFAULT get_session);
 use C4::Languages qw(getAllLanguages getAllLanguagesAuthorizedValues);
 use C4::Search;
+use C4::Search::Query::Solr;
 use C4::Biblio;    # GetBiblioData
 use C4::Koha;
 use C4::Tags qw(get_tags);
@@ -277,60 +278,10 @@ while ( my ($k, $v) = each %filters) {
 $template->param('filters' => \@tplfilters );
 
 # construct the param array
-
-my $q = '';
-my $i = 0;
-for my $kw ($cgi->param('q')){
-    if ($i == 0){
-        if ( (my @x = eval {$cgi->param('idx')} ) == 0 ){
-            $q = $cgi->param('q');
-            next;
-        }
-        if (($cgi->param('idx'))[$i] ne 'all_fields'){
-            $q .= ($cgi->param('idx'))[$i] . ':' . $kw;
-        }else{
-            $q .= $kw;
-        }
-        $i = $i + 1;
-        next;
-    }
-    given (($cgi->param('op'))[$i-1]) {
-        when (undef){
-            if (($cgi->param('idx'))[$i] ne 'all_fields'){
-                $q .= ($cgi->param('idx'))[$i] . ':' . $kw;
-            }else{
-                $q .= $kw;
-            }
-
-            $i = $i + 1;
-            next;
-        }
-        given (($cgi->param('op'))[$i-1]) {
-            when ('and'){
-                if (($cgi->param('idx'))[$i] ne 'all_fields'){
-                    $q .= ' AND ' . ($cgi->param('idx'))[$i] . ':'.$kw;
-                }else{
-                    $q .= ' AND ' . $kw;
-                }
-            }
-            when ('or'){
-                if (($cgi->param('idx'))[$i] ne 'all_fields'){
-                    $q .= ' OR ' . ($cgi->param('idx'))[$i] . ':'.$kw;
-                }else{
-                    $q .= ' OR ' . $kw;
-                }
-            }
-            when ('not'){
-                if (($cgi->param('idx'))[$i] ne 'all_fields'){
-                    $q .= ' -' . ($cgi->param('idx'))[$i] . ':'.$kw;
-                }else{
-                    $q .= ' -' . $kw;
-                }
-            }
-        }
-        $i = $i + 1;
-    }
-}
+my @indexes = $cgi->param('idx');
+my @operators = $cgi->param('op');
+my @operands = $cgi->param('q');
+my $q = C4::Search::Query::Solr->new(\@indexes, \@operands, \@operators);
 
 # append year limits if they exist
 if ( $params->{'limit-yr'} ) {
