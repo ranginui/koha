@@ -3015,7 +3015,7 @@ sub IndexRecord {
                 }
             }
             $solrrecord->set_value(       $index->{'type'}."_".$index->{'code'},    \@values);
-            $solrrecord->set_value("srt_".$index->{'type'}."_".$index->{'code'}, shift @values) if $index->{'sortable'} and @values > 0;
+            $solrrecord->set_value("srt_".$index->{'type'}."_".$index->{'code'}, @values[0]) if $index->{'sortable'} and @values > 0;
         }
         push @recordpush, $solrrecord;
 
