@@ -2567,6 +2567,7 @@ CREATE TABLE `pending_offline_operations` (
   `barcode` VARCHAR(20) NOT NULL,
   `cardnumber` VARCHAR(16) NULL,
   PRIMARY KEY (`operationid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `indexes`

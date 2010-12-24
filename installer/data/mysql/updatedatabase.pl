@@ -4914,7 +4914,7 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
         ('onloan','En prêt','int',0,'biblio',0,0,''),
         ('date','Date','date',0,'authority',0,0,''),
         ('authtype','Authority Type','str',1,'authority',0,1,''),
-        ('name','Auteur personne','str',0,'biblio',0,O,''),
+        ('name','Auteur personne','str',0,'biblio',0,0,''),
         ('music-source','Source éditoriale','str',0,'biblio',0,0,''),
         ('music-number','Référence éditoriale','int',0,'biblio',0,0,''),
         ('video-mt','video-mt','str',0,'biblio',0,0,''),
@@ -4974,7 +4974,7 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
         ('serials','Ressources continues','txt',0,'biblio',0,0,''),
         ('printed-music','Musique imprimée','txt',0,'biblio',0,0,''),
         ('electronic-ressource','Ressource électronique','txt',0,'biblio',0,0,''),
-        ('country-heading','Pays d'édition','str',0,'biblio',0,0,'');
+        ('country-heading','Pays d\'édition','str',0,'biblio',0,0,'');
         });
         $dbh->do(q{
         UNLOCK TABLES;
