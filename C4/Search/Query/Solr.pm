@@ -33,7 +33,7 @@ sub new {
                 $q = @$operands[0];
                 last;
             }
-            if (@$indexes[$i] ne 'all_fields'){
+            if (@$indexes[$i] ne 'all_fields' && @$indexes[$i] ne ''){
                 $q .= @$indexes[$i] . ':' . $kw;
             }else{
                 $q .= $kw;
