@@ -9,6 +9,7 @@ use C4::Search;
 use KohaTest::Search::SolrSearch;
 
 #To launch this test, you can truncate some tables and populate db with these 3 lines
+# INSERT INTO `branches` (`branchcode`,`branchname`) VALUES ('VITRE','Vitré');
 #KohaTest::Search::SolrSearch::add_biblio_from_file('set/lot_notices_test.mrc');
 
 #plan tests => 1;

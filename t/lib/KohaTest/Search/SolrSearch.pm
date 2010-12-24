@@ -26,7 +26,7 @@ sub add_biblio_from_file {
 	my ( $filename ) = @_;
 
     # stage_biblios_file.pl call
-    my $staggingCmd = '$CURDEVDIR/misc/stage_biblios_file.pl --file $CURDEVDIR/t/db_dependent/solr/data/'.$filename;
+    my $staggingCmd = '$CURDEVDIR/misc/stage_biblios_file.pl --file $CURDEVDIR/t/db_dependent/solr/data/'.$filename.' --add-items';
     my $output = `$staggingCmd`;
 
 	my $batchNumber;
