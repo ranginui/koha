@@ -37,6 +37,7 @@ our @EXPORT = qw(
     &make_message );
 
 sub getBorrowers {
+    # Récupere la liste des lecteurs a mettre à jour 
     my $opt = shift;
     my $new = $opt->{'new'};
     my $in = join(", ",@{ $opt->{list} }) if $opt->{list};
