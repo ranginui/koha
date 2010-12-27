@@ -31,7 +31,7 @@ use C4::Output;
 use C4::Auth qw(:DEFAULT get_session);
 use C4::Languages qw(getAllLanguages getAllLanguagesAuthorizedValues);
 use C4::Search;
-use C4::Search::Query::Solr;
+use C4::Search::Query;
 use C4::Biblio;    # GetBiblioData
 use C4::Koha;
 use C4::Tags qw(get_tags);
@@ -281,7 +281,7 @@ $template->param('filters' => \@tplfilters );
 my @indexes = $cgi->param('idx');
 my @operators = $cgi->param('op');
 my @operands = $cgi->param('q');
-my $q = C4::Search::Query::Solr->new(\@indexes, \@operands, \@operators);
+my $q = C4::Search::Query->new(\@indexes, \@operands, \@operators);
 
 # append year limits if they exist
 if ( $params->{'limit-yr'} ) {

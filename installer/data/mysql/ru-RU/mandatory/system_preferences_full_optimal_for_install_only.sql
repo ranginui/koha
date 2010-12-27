@@ -292,3 +292,4 @@ INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES (
 -- from 3.00.06.005
 
 INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('SolrAPI','http://localhost:8080/solr','','Solr web service URL.','Free');
+INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('SearchEngine','Solr','Solr|Zebra','Search Engine','Choice');

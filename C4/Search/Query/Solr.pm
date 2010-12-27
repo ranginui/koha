@@ -20,12 +20,15 @@ use warnings;
 
 use 5.10.0;
 
+use C4::Search::Query;
+
 sub new {
 
     my ($class, $indexes, $operands, $operators) = @_;
 
     my $q = '';
     my $i = 0;
+    my $index_name;
     for my $kw (@$operands){
         # First element
         if ($i == 0){
@@ -33,8 +36,14 @@ sub new {
                 $q = @$operands[0];
                 last;
             }
-            if (@$indexes[$i] ne 'all_fields' && @$indexes[$i] ne ''){
-                $q .= @$indexes[$i] . ':' . $kw;
+            if ( @$indexes[$i] ne 'all_fields' ) {
+                $index_name = C4::Search::Query::getIndexName(@$indexes[$i])->{name};
+            }else{
+                $index_name = '';
+            }
+
+            if ($index_name ne 'all_fields' && $index_name ne ''){
+                $q .= $index_name . ':' . $kw;
             }else{
                 $q .= $kw;
             }
@@ -42,42 +51,38 @@ sub new {
             next;
         }
         # And others
+        $index_name = C4::Search::Query::getIndexName(@$indexes[$i])->{name} if @$indexes[$i];
         given (@$operators[$i-1]) {
             when (undef){
-                if (@$indexes[$i] ne 'all_fields'){
-                    $q .= @$indexes[$i] . ':' . $kw;
+                if ($index_name ne 'all_fields'){
+                    $q .= ' OR ' . $index_name . ':' . $kw;
                 }else{
-                    $q .= $kw;
-                }
-
-                $i = $i + 1;
-                next;
-            }
-            given (@$operators[$i-1]) {
-                when ('and'){
-                    if (@$indexes[$i] ne 'all_fields'){
-                        $q .= ' AND ' . @$indexes[$i] . ':'.$kw;
-                    }else{
-                        $q .= ' AND ' . $kw;
-                    }
-                }
-                when ('or'){
-                    if (@$indexes[$i] ne 'all_fields'){
-                        $q .= ' OR ' . @$indexes[$i] . ':'.$kw;
-                    }else{
-                        $q .= ' OR ' . $kw;
-                    }
-                }
-                when ('not'){
-                    if (@$indexes[$i] ne 'all_fields'){
-                        $q .= ' -' . @$indexes[$i] . ':'.$kw;
-                    }else{
-                        $q .= ' -' . $kw;
-                    }
+                    $q .= ' OR ' . $kw;
                 }
             }
-            $i = $i + 1;
+            when ('and'){
+                if ($index_name ne 'all_fields'){
+                    $q .= ' AND ' . $index_name . ':'.$kw;
+                }else{
+                    $q .= ' AND ' . $kw;
+                }
+            }
+            when ('or'){
+                if ($index_name ne 'all_fields'){
+                    $q .= ' OR ' . $index_name . ':'.$kw;
+                }else{
+                    $q .= ' OR ' . $kw;
+                }
+            }
+            when ('not'){
+                if ($index_name ne 'all_fields'){
+                    $q .= ' -' . $index_name . ':'.$kw;
+                }else{
+                    $q .= ' -' . $kw;
+                }
+            }
         }
+        $i = $i + 1;
     }
 
     return $q;
