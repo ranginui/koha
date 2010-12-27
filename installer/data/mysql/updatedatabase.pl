@@ -5115,7 +5115,7 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     $dbh->do("UPDATE `systempreferences` SET options='asc|desc' WHERE variable IN ('defaultSortOrder', 'OPACdefaultSortOrder')");
     $dbh->do("UPDATE `systempreferences` SET value='score' WHERE variable IN ('defaultSortField', 'OPACdefaultSortField')");
     $dbh->do("UPDATE `systempreferences` SET value='desc' WHERE variable IN ('defaultSortOrder', 'OPACdefaultSortOrder')");
-    $dbh->do("ALTER TABLE `koha_solr`.`indexes` ADD COLUMN `rpn_index` INT  NOT NULL AFTER `plugin`, ADD COLUMN `ccl_index_name` VARCHAR(255)  NOT NULL AFTER `rpn_index`");
+    $dbh->do("ALTER TABLE `indexes` ADD COLUMN `rpn_index` INT  NOT NULL AFTER `plugin`, ADD COLUMN `ccl_index_name` VARCHAR(255)  NOT NULL AFTER `rpn_index`");
     $dbh->do("INSERT IGNORE INTO `systempreferences` (variable,value,options,explanation,type) VALUES('SearchEngine','Solr','Solr|Zebra','Search Engine','Choice')");
     print "Upgrade to $DBversion done (Solr tables)\n";
     SetVersion ($DBversion);
