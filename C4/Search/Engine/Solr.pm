@@ -22,6 +22,7 @@ use C4::Context;
 use C4::Biblio;
 use C4::Branch;
 use C4::Koha;
+use C4::AuthoritiesMarc;
 use Data::SearchEngine::Solr;
 use Data::SearchEngine::Query;
 use Data::SearchEngine::Item;
@@ -200,8 +201,6 @@ sub FillSubfieldWithAuthorisedValues {
 sub SimpleSearch {
     my ( $q, $filters, $page, $max_results, $sort) = @_;
 
-    warn ">mr".$max_results;
-
     $q           ||= '*:*';
     $filters     ||= {};
     $page        ||= 1;
@@ -229,7 +228,6 @@ sub SimpleSearch {
     my $result = eval { $sc->search( $sq ) };
     warn $@ if $@;
 
-    warn "C4::Engine::SimpleSearch";
     return $result if (ref($result) eq "Data::SearchEngine::Solr::Results");
     return "error";
 }
