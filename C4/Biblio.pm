@@ -433,7 +433,7 @@ sub DelBiblio {
         # the previous version of the record
         $oldRecord = GetMarcBiblio($biblionumber);
     }
-    C4::Search::DeleteRecordIndex('biblio', $biblionumber);
+    C4::Search::Engine::Solr::DeleteRecordIndex('biblio', $biblionumber);
 
     # delete biblioitems and items from Koha tables and save in deletedbiblioitems,deleteditems
     $sth = $dbh->prepare("SELECT biblioitemnumber FROM biblioitems WHERE biblionumber=?");

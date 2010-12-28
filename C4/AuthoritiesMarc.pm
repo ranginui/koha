@@ -480,7 +480,7 @@ sub DelAuthority {
     my ($authid) = @_;
     my $dbh = C4::Context->dbh;
 
-    C4::Search::DeleteRecordIndex( "authority", $authid );
+    C4::Search::Engine::Solr::DeleteRecordIndex( "authority", $authid );
     $dbh->do("delete from auth_header where authid=$authid");
 
 }

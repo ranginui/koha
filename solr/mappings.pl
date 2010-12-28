@@ -23,7 +23,7 @@ use CGI;
 use C4::Koha;
 use C4::Output;
 use C4::Auth;
-use C4::Search;
+use C4::Search::Engine::Solr;
 
 my $input = new CGI;
 my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
@@ -52,11 +52,11 @@ if ( $input->param('op') and $input->param('op') eq 'edit' ) {
         }
     }
     #warn Data::Dumper::Dumper(\@indexes);
-    C4::Search::SetMappings($ressource_type, \@indexes);
+    C4::Search::Engine::Solr::SetMappings($ressource_type, \@indexes);
 }
 
-my $ressourcetypes = C4::Search::GetRessourceTypes;
-my $mappingloop    = C4::Search::GetMappings($ressource_type);
+my $ressourcetypes = C4::Search::Engine::Solr::GetRessourceTypes;
+my $mappingloop    = C4::Search::Engine::Solr::GetMappings($ressource_type);
 
 # This block would be useless with template toolkit
 my @ressourcetypeloop = map { {
@@ -66,7 +66,7 @@ my @ressourcetypeloop = map { {
 
 # This block would be useless with template toolkit
 for my $m ( @$mappingloop ) {
-    my $indexloop     = C4::Search::GetIndexes($ressource_type);
+    my $indexloop     = C4::Search::Engine::Solr::GetIndexes($ressource_type);
     $_->{'selected'}  = $_->{'code'} eq $m->{'index'} for @$indexloop;
     $m->{'indexloop'} = $indexloop;
 }
@@ -74,7 +74,7 @@ for my $m ( @$mappingloop ) {
 $template->param(
     ressource_type    => $ressource_type,
     ressourcetypeloop => \@ressourcetypeloop,
-    indexloop         => C4::Search::GetIndexes($ressource_type),
+    indexloop         => C4::Search::Engine::Solr::GetIndexes($ressource_type),
     mappingloop       => $mappingloop,
 );
 

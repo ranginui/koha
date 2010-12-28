@@ -135,7 +135,7 @@ $template->param( search_languages_loop => getAllLanguagesAuthorizedValues() );
 # load the sorting stuff
 my $sort_by = $cgi->param('sort_by') || join(' ', grep { defined } ( C4::Context->preference('OPACdefaultSortField')
                                                                    , C4::Context->preference('OPACdefaultSortOrder') ) );
-my $sortloop = C4::Search::GetSortableIndexes('biblio');
+my $sortloop = C4::Search::Engine::Solr::GetSortableIndexes('biblio');
 for ( @$sortloop ) { # because html template is stupid
     $_->{'asc_selected'}  = $sort_by eq $_->{'type'}.'_'.$_->{'code'}.' asc';
     $_->{'desc_selected'} = $sort_by eq $_->{'type'}.'_'.$_->{'code'}.' desc';
@@ -203,7 +203,7 @@ if ( $template_type && $template_type eq 'advsearch' ) {
     # determine what to display next to the search boxes (ie, boolean option
     # shouldn't appear on the first one, scan indexes should, adding a new
     # box should only appear on the last, etc.
-    my $indexloop = C4::Search::GetIndexes('biblio');
+    my $indexloop = C4::Search::Engine::Solr::GetIndexes('biblio');
     my $search_boxes_count = C4::Context->preference("OPACAdvSearchInputCount") || 3;
     my @search_boxes_array = map {{ indexloop => $indexloop }} 1..$search_boxes_count;
     
@@ -287,15 +287,15 @@ my $q = C4::Search::Query->new(\@indexes, \@operands, \@operators);
 if ( $params->{'limit-yr'} ) {
     if ( $params->{'limit-yr'} =~ /\d{4}-\d{4}/ ) {
         my ( $yr1, $yr2 ) = split( /-/, $params->{'limit-yr'} );
-        $q .= ' AND date_pubdate:["' . C4::Search::NormalizeDate($yr1) . '" TO "' . C4::Search::NormalizeDate($yr2) . '"]';
+        $q .= ' AND date_pubdate:["' . C4::Search::Engine::Solr::NormalizeDate($yr1) . '" TO "' . C4::Search::Engine::Solr::NormalizeDate($yr2) . '"]';
     } elsif ( $params->{'limit-yr'} =~ /-\d{4}/ ) {
         $params->{'limit-yr'} =~ /-(\d{4})/;
-        $q .= ' AND date_pubdate:[* TO "' . C4::Search::NormalizeDate($1) . '"]';
+        $q .= ' AND date_pubdate:[* TO "' . C4::Search::Engine::Solr::NormalizeDate($1) . '"]';
     } elsif ( $params->{'limit-yr'} =~ /\d{4}-/ ) {
         $params->{'limit-yr'} =~ /(\d{4})-/;
-        $q .= ' AND date_pubdate:["' . C4::Search::NormalizeDate($1) . '" TO *]';
+        $q .= ' AND date_pubdate:["' . C4::Search::Engine::Solr::NormalizeDate($1) . '" TO *]';
     } elsif ( $params->{'limit-yr'} =~ /\d{4}/ ) {
-        $q .= ' AND date_pubdate:"' . C4::Search::NormalizeDate($params->{'limit-yr'}) . '"';
+        $q .= ' AND date_pubdate:"' . C4::Search::Engine::Solr::NormalizeDate($params->{'limit-yr'}) . '"';
     } else {
         #FIXME: Should return a error to the user, incorect date format specified
     }
@@ -426,7 +426,7 @@ while ( my ($index,$facet) = each %{$res->facets} ) {
 
         push @facets, {
             'index'  => $index,
-            'label'  => C4::Search::GetIndexLabelFromCode($code),
+            'label'  => C4::Search::Engine::Solr::GetIndexLabelFromCode($code),
             'values' => \@values,
         };
     }

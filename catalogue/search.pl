@@ -344,7 +344,7 @@ if ( $template_type eq 'advsearch' ) {
 #  * multivalued CGI paramaters are returned as a packaged string separated by "\0" (null)
 my $sort_by = $cgi->param('sort_by') || join(' ', grep { defined } ( C4::Context->preference('OPACdefaultSortField')
                                                                    , C4::Context->preference('OPACdefaultSortOrder') ) );
-my $sortloop = C4::Search::GetSortableIndexes('biblio');
+my $sortloop = C4::Search::Engine::Solr::GetSortableIndexes('biblio');
 for ( @$sortloop ) { # because html template is stupid
     $_->{'asc_selected'}  = $sort_by eq $_->{'type'}.'_'.$_->{'code'}.' asc';
     $_->{'desc_selected'} = $sort_by eq $_->{'type'}.'_'.$_->{'code'}.' desc';
@@ -478,7 +478,7 @@ while ( my ($index,$facet) = each %{$res->facets} ) {
         }
         push @facets, {
             'index'  => $index,
-            'label'  => C4::Search::GetIndexLabelFromCode($code),
+            'label'  => C4::Search::Engine::Solr::GetIndexLabelFromCode($code),
             'values' => \@values,
         };
     }
