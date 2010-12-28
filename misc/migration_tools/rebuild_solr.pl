@@ -27,7 +27,14 @@ my $solrurl = C4::Context->preference("SolrAPI");
 #Script
 
 &PrintHelp if ($want_help);
-&ResetIndex if ($reset);
+if ($reset){
+  if ($recordtype){
+      &ResetIndex("recordtype:".$recordtype);
+  } else {
+      &ResetIndex("*:*");
+  }
+}
+
 
 if (defined $biblionumber){
     &IndexBiblio($biblionumber);
@@ -74,7 +81,8 @@ sub CommitCommand {
 }
 
 sub ResetCommand {
-    my $deleteurl = "/update?stream.body=%3Cdelete%3E%3Cquery%3E*:*%3C/query%3E%3C/delete%3E";
+    my ($query) = @_;
+    my $deleteurl = "/update?stream.body=%3Cdelete%3E%3Cquery%3E".$query."%3C/query%3E%3C/delete%3E";
     my $urlreturns = get $solrurl.$deleteurl;
 }
 
