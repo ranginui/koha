@@ -22,6 +22,21 @@ use 5.10.0;
 
 use C4::Search::Query;
 
+=head1 NAME
+
+C4::Search::Query::Solr
+
+=head1 SYNOPSIS
+
+Generate new Solr query from indexes, operands and operators
+
+=head1 DESCRIPTION
+
+return a Solr query
+
+=head1 FUNCTIONS
+
+=cut
 sub new {
 
     my ($class, $indexes, $operands, $operators) = @_;
@@ -29,19 +44,25 @@ sub new {
     my $q = '';
     my $i = 0;
     my $index_name;
+
+    # Foreach operands
     for my $kw (@$operands){
         # First element
         if ($i == 0){
             if ( (my @x = eval {@$indexes} ) == 0 ){
+                # There is no index, then query is in first operand
                 $q = @$operands[0];
                 last;
             }
+
+            # Catch index name if it's not 'all_fields'
             if ( @$indexes[$i] ne 'all_fields' ) {
-                $index_name = C4::Search::Query::getIndexName(@$indexes[$i])->{name};
+                $index_name = @$indexes[$i];
             }else{
                 $index_name = '';
             }
 
+            # Generate index:operand
             if ($index_name ne 'all_fields' && $index_name ne ''){
                 $q .= $index_name . ':' . $kw;
             }else{
@@ -51,40 +72,34 @@ sub new {
             next;
         }
         # And others
-        $index_name = C4::Search::Query::getIndexName(@$indexes[$i])->{name} if @$indexes[$i];
-        given (@$operators[$i-1]) {
-            when (undef){
-                if ($index_name ne 'all_fields'){
-                    $q .= ' OR ' . $index_name . ':' . $kw;
-                }else{
-                    $q .= ' OR ' . $kw;
-                }
-            }
-            when ('and'){
+        $index_name = @$indexes[$i] if @$indexes[$i];
+        given (uc(@$operators[$i-1])) {
+            when ('AND'){
                 if ($index_name ne 'all_fields'){
                     $q .= ' AND ' . $index_name . ':'.$kw;
                 }else{
                     $q .= ' AND ' . $kw;
                 }
             }
-            when ('or'){
+            when ('NOT'){
                 if ($index_name ne 'all_fields'){
-                    $q .= ' OR ' . $index_name . ':'.$kw;
+                    $q .= ' NOT ' . $index_name . ':'.$kw;
                 }else{
-                    $q .= ' OR ' . $kw;
+                    $q .= ' NOT ' . $kw;
                 }
             }
-            when ('not'){
+            default {
                 if ($index_name ne 'all_fields'){
-                    $q .= ' -' . $index_name . ':'.$kw;
+                    $q .= ' OR ' . $index_name . ':' . $kw;
                 }else{
-                    $q .= ' -' . $kw;
+                    $q .= ' OR ' . $kw;
                 }
             }
         }
         $i = $i + 1;
     }
 
+    warn "REQUETE = " . $q;
     return $q;
 
 }

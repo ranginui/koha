@@ -384,7 +384,7 @@ foreach (@$reviews) {
     $_->{userid}       = $borrowerData->{'userid'};
     $_->{cardnumber}   = $borrowerData->{'cardnumber'};
     $_->{datereviewed} = format_date( $_->{datereviewed} );
-    if ( $borrowerData->{'borrowernumber'} eq $borrowernumber ) {
+    if ( $borrowernumber && $borrowerData->{'borrowernumber'} eq $borrowernumber ) {
         $_->{your_comment} = 1;
         $loggedincommenter = 1;
     }

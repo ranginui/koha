@@ -419,7 +419,7 @@ while ( my ($index,$facet) = each %{$res->facets} ) {
             push @values, {
                 'value'   => $value,
                 'count'   => $count,
-                'active'  => $filters{$index} eq "\"$value\"",
+                'active'  => $filters{$index} && $filters{$index} eq "\"$value\"",
                 'filters' => \@tplfilters,
             };
         }

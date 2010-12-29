@@ -145,6 +145,7 @@ use C4::Output;
 use C4::Auth qw(:DEFAULT get_session);
 use C4::Biblio;
 use C4::Search;
+use C4::Search::Query;
 use C4::Languages qw(getAllLanguages);
 use C4::Koha;
 use C4::VirtualShelves qw(GetRecentShelves);
@@ -401,7 +402,11 @@ while ( my ($k, $v) = each %filters) {
 $template->param('filters' => \@tplfilters );
 
 # perform the search
-my $res = SimpleSearch( $cgi->param('q'), \%filters, $page, $count, $sort_by);
+my @indexes = $cgi->param('idx');
+my @operators = $cgi->param('op');
+my @operands = $cgi->param('q');
+my $q = C4::Search::Query->new(\@indexes, \@operands, \@operators);
+my $res = SimpleSearch( $q, \%filters, $page, $count, $sort_by);
 
 my $pager = Data::Pagination->new(
     $res->{'pager'}->{'total_entries'},
