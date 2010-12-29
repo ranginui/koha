@@ -146,10 +146,10 @@ INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('numSearchResults',20,'Spécifie le nombre maximum de réponses à afficher sur les pages de résultats',NULL,'Integer');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('OPACnumSearchResults',20,'Spécifie le nombre maximum de réponses à afficher sur les pages de résultats',NULL,'Integer');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('maxItemsInSearchResults',20,'Spécifie le nombre maximum d''exemplaires à afficher sur les pages de résultats',NULL,'free');
-INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('defaultSortField',NULL,'Spécifie le champ utilisé par défaut pour le tri','relevance|popularity|call_number|pubdate|acqdate|title|author','Choice');
-INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('defaultSortOrder',NULL,'Spécifie le sens du tri par défaut','asc|dsc|az|za','Choice');
-INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('OPACdefaultSortField',NULL,'Spécifie le champ utilisé par défaut pour le tri','relevance|popularity|call_number|pubdate|acqdate|title|author','Choice');
-INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('OPACdefaultSortOrder',NULL,'Spécifie le sens du tri par défaut','asc|dsc|za|az','Choice');
+INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('defaultSortField','relevance','Spécifie le champ utilisé par défaut pour le tri','relevance|popularity|call_number|pubdate|acqdate|title|author','Choice');
+INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('defaultSortOrder','dsc','Spécifie le sens du tri par défaut','asc|dsc|az|za','Choice');
+INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('OPACdefaultSortField','relevance','Spécifie le champ utilisé par défaut pour le tri','relevance|popularity|call_number|pubdate|acqdate|title|author','Choice');
+INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('OPACdefaultSortOrder','dsc','Spécifie le sens du tri par défaut','asc|dsc|za|az','Choice');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('staffClientBaseURL','','Spécifie l''adresse de l''interface professionnelle ',NULL,'free');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('minPasswordLength',3,'Spécifie la longueur minimale des mots de passe',NULL,'free');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('noItemTypeImages',0,'Si activé, n''affiche pas les vignettes de type de document',NULL,'YesNo');

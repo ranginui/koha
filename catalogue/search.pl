@@ -279,7 +279,7 @@ if ( $template_type eq 'advsearch' ) {
 
     # set the default sorting
     my $default_sort_by = C4::Context->preference('defaultSortField') . "_" . C4::Context->preference('defaultSortOrder')
-      if ( C4::Context->preference('OPACdefaultSortField') && C4::Context->preference('OPACdefaultSortOrder') );
+      if ( C4::Context->preference('defaultSortField') && C4::Context->preference('defaultSortOrder') );
     $template->param( $default_sort_by => 1 );
 
     # determine what to display next to the search boxes (ie, boolean option
