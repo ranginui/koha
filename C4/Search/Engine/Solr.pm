@@ -18,6 +18,7 @@ package C4::Search::Engine::Solr;
 use utf8;
 use Modern::Perl;
 
+use C4::AuthoritiesMarc;
 use C4::Context;
 use C4::Biblio;
 use C4::Branch;
