@@ -7,17 +7,29 @@
 }
 </style>
 <script type="text/javascript" src="<!-- TMPL_VAR name="themelang" -->/lib/jquery/plugins/jquery.tablesorter.min.js"></script>
+<script type="text/javascript" src="<!-- TMPL_VAR name="themelang" -->/lib/jquery/plugins/jquery.uitablefilter.js"></script>
 <script type="text/javascript">
 //<![CDATA[
  $(document).ready(function() {
-        $("#vendorst").tablesorter({
-	    headers: { 
-		3: { 
-		    sorter: false 
-		}
-	    } 
-	}); 
- }); 
+     $(function() { 
+        var theTable = $('table.basketst')
+
+     $("#filter").keyup(function() {
+        $.uiTableFilter( theTable, this.value );
+     })
+
+     $('#filter-form').submit(function(){
+        theTable.find("tbody > tr:visible > td:eq(1)").mousedown();
+        return false;
+        }).focus(); //Give focus to input field
+});  
+     
+    $(".basketst").tablesorter({
+	   dateFormat: 'uk',
+	   headers: {3: {sorter: "shortDate"}},
+	   sortList: [[3,1]],
+    });
+}); 
  //]]>
 </script>
 
@@ -40,6 +52,7 @@
 <!-- TMPL_ELSE -->
 <h1>You searched on <b>vendor <!-- TMPL_VAR name="supplier" -->,</b> <!-- TMPL_VAR name="count" --> results found</h1>
 <!-- /TMPL_IF -->
+<form id="filter-form">Filter: <input name="filter" id="filter" value="" maxlength="30" size="30" type="text"></form><br>
 <!-- TMPL_IF name="loop_suppliers" -->
     <div id="acqui_order_supplierlist">
         <table id="vendorst">
@@ -73,8 +86,10 @@
                 <!-- TMPL_ELSE -->
                 <td><a href="supplier.pl?supplierid=<!-- TMPL_VAR name="supplierid" -->">NO NAME</a></td>
                 <!-- /TMPL_IF -->
-                <td>	<table>
+                <td>	
+                <table class="basketst">
                         <!-- TMPL_IF NAME="loop_basket"-->
+                          <thead>  
                             <tr>
                                 <th>Basket (#)</th>
                                 <th>Items</th>
@@ -82,6 +97,8 @@
                                 <th>Date</th>
                                 <th>&nbsp;</th>
                             </tr>
+                            </thead>
+                            <tbody>
                             <!-- TMPL_LOOP NAME="loop_basket" -->
                             <!--TMPL_IF Name="uncertainprices"-->
                                 <tr class="problem">
@@ -114,6 +131,7 @@
                         <!-- TMPL_ELSE -->
                             <tr><td>No pending baskets</td></tr>
                         <!-- /TMPL_IF -->
+                        </tbody>
                         </table>
                 </td>
                 </tr>
