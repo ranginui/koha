@@ -220,6 +220,7 @@ sub SimpleSearch {
 
     $sc->options->{'fq'} = [ map { "$_:".$filters->{$_} } keys %$filters ];
 
+    utf8::decode($q);
     my $sq = Data::SearchEngine::Query->new(
         page  => $page,
         count => $max_results,
