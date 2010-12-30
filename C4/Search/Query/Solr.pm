@@ -99,7 +99,6 @@ sub new {
         $i = $i + 1;
     }
 
-    warn "REQUETE = " . $q;
     return $q;
 
 }

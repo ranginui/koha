@@ -22,6 +22,7 @@ use 5.10.0;
 
 use C4::Search::Query::Solr;
 use C4::Search::Query::Zebra;
+use C4::Context;
 
 =head1 NAME
 
@@ -157,7 +158,6 @@ sub new {
         }
 
         when( 'Solr' ) {
-            warn Data::Dumper::Dumper $indexes;
             my $new_indexes;
             my $new_operands;
             my $idx;
