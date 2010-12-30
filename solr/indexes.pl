@@ -39,25 +39,29 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
 my $ressource_type = $input->param('ressource_type') || 'biblio';
 
 if ( $input->param('op') and $input->param('op') eq 'edit' ) {
-    my @code      = $input->param('code');
-    my @label     = $input->param('label');
-    my @type      = $input->param('type');
-    my @faceted   = $input->param('faceted');
-    my @sortable  = $input->param('sortable');
-    my @plugin    = $input->param('plugin');
-    my @mandatory = $input->param('mandatory');
+    my @code            = $input->param('code');
+    my @label           = $input->param('label');
+    my @type            = $input->param('type');
+    my @faceted         = $input->param('faceted');
+    my @sortable        = $input->param('sortable');
+    my @plugin          = $input->param('plugin');
+    my @mandatory       = $input->param('mandatory');
+    my @rpn_index       = $input->param('rpn_index');
+    my @ccl_index_name  = $input->param('ccl_index_name');
 
     my @indexes;
     for ( 0..@code-1 ) {
         my $icode = $code[$_];
         push @indexes, {
-            'code'      => $icode,
-            'label'     => $label[$_],
-            'type'      => $type[$_],
-            'faceted'   => scalar(grep(/^$icode$/, @faceted)),
-            'sortable'  => scalar(grep(/^$icode$/, @sortable)),
-            'plugin'    => $plugin[$_],
-            'mandatory' => $mandatory[$_] eq '1' ? '1' : '0',
+            'code'           => $icode,
+            'label'          => $label[$_],
+            'type'           => $type[$_],
+            'faceted'        => scalar(grep(/^$icode$/, @faceted)),
+            'sortable'       => scalar(grep(/^$icode$/, @sortable)),
+            'plugin'         => $plugin[$_],
+            'mandatory'      => $mandatory[$_] eq '1' ? '1' : '0',
+            'rpn_index'      => $rpn_index[$_],
+            'ccl_index_name' => $ccl_index_name[$_],
         }
     }
     C4::Search::Engine::Solr::SetIndexes($ressource_type, \@indexes);

@@ -9,26 +9,28 @@
         });
         $('#indexes tbody').sortable();
         $('.add').click(function() {
-            var code     = $('#code').val();
-            var label    = $('#label').val();
-            var type     = $('#type').val();
-            var faceted  = $('#faceted').attr('checked') ? 'checked="checked"' : '';
-            var sortable = $('#sortable').attr('checked') ? 'checked="checked"' : '';
-            var plugin   = $('#plugin').val();
+            var code            = $('#code').val();
+            var label           = $('#label').val();
+            var type            = $('#type').val();
+            var faceted         = $('#faceted').attr('checked') ? 'checked="checked"' : '';
+            var sortable        = $('#sortable').attr('checked') ? 'checked="checked"' : '';
+            var plugin          = $('#plugin').val();
             
             if ( code != '' && label != '' ) {
             
                 var line  = '<tr>';
-		    line += '<td><input name="mandatory" type="hidden" maxlength="1" value="0" /></td>';
+                    line += '<td><input name="mandatory" type="hidden" maxlength="1" value="0" /></td>';
                     line += '<td><input name="code" maxlength="25" type="text" value="'+code+'" /\></td>';
+                    line += '<input name="rpn_index" maxlength="25" type="hidden" value="0" /\>';
+                    line += '<input name="ccl_index_name" maxlength="25" type="hidden" value="" /\>';
                     line += '<td><input name="label" maxlength="25" type="text" value="'+label+'" /\></td>';
                     line += '<td>';
                     line += '<select name="type">';
-		    line += '<option value="str">String</option>';
-		    line += '<option value="ste">Simple Text</option>';
-		    line += '<option value="txt">Text</option>';
-		    line += '<option value="int">Integer</option>';
-		    line += '<option value="date">Date</option>';
+                    line += '<option value="str">String</option>';
+                    line += '<option value="ste">Simple Text</option>';
+                    line += '<option value="txt">Text</option>';
+                    line += '<option value="int">Integer</option>';
+                    line += '<option value="date">Date</option>';
                     line += '</select>';
                     line += '</td>';
                     line += '<td><input name="faceted" type="checkbox" '+faceted+' value="'+code+'" /\></td>';
@@ -102,7 +104,7 @@
                         <table id="indexes" class="zebra">
                             <thead>
                                 <tr>
-				    <th></th>
+                                    <th></th>
                                     <th>Code</th>
                                     <th>Label</th>
                                     <th>Type</th>
@@ -115,7 +117,7 @@
                             <tbody>
                                 <!-- TMPL_LOOP NAME="indexloop" -->
                                     <tr>
-				        <td></td>
+                                        <td></td>
                                         <td>
                                             <!--TMPL_IF name="mandatory"-->
                                                 <input name="code" type="text" maxlength="25" value="<!-- TMPL_VAR NAME="code" -->" disabled="disabled" />
@@ -124,17 +126,19 @@
                                                 <input name="code" type="text" maxlength="25" value="<!-- TMPL_VAR NAME="code" -->" />
                                             <!--/TMPL_IF-->
                                             <input name="mandatory" type="hidden" maxlength="1" value="<!-- TMPL_VAR NAME="mandatory" -->" />
+                                            <input name="rpn_index" maxlength="25" type="hidden" value="<!-- TMPL_VAR NAME="rpn_index" -->" />
+                                            <input name="ccl_index_name" maxlength="25" type="hidden" value="<!-- TMPL_VAR NAME="ccl_index_name" -->" />
                                         </td>
                                         <td><input name="label" type="text" maxlength="25" value="<!-- TMPL_VAR NAME="label" -->" /></td>
-					<td>
-					    <select name="type">
-					        <option <!-- TMPL_IF EXPR="type eq 'str'" -->selected="selected"<!-- /TMPL_IF --> value="str">String</option>
-					        <option <!-- TMPL_IF EXPR="type eq 'ste'" -->selected="selected"<!-- /TMPL_IF --> value="ste">Simple Text</option>
-					        <option <!-- TMPL_IF EXPR="type eq 'txt'" -->selected="selected"<!-- /TMPL_IF --> value="txt">Text</option>
-					        <option <!-- TMPL_IF EXPR="type eq 'int'" -->selected="selected"<!-- /TMPL_IF --> value="int">Integer</option>
-					        <option <!-- TMPL_IF EXPR="type eq 'date'" -->selected="selected"<!-- /TMPL_IF --> value="date">Date</option>
-					    </select>
-					</td>
+                                        <td>
+                                            <select name="type">
+                                                <option <!-- TMPL_IF EXPR="type eq 'str'" -->selected="selected"<!-- /TMPL_IF --> value="str">String</option>
+                                                <option <!-- TMPL_IF EXPR="type eq 'ste'" -->selected="selected"<!-- /TMPL_IF --> value="ste">Simple Text</option>
+                                                <option <!-- TMPL_IF EXPR="type eq 'txt'" -->selected="selected"<!-- /TMPL_IF --> value="txt">Text</option>
+                                                <option <!-- TMPL_IF EXPR="type eq 'int'" -->selected="selected"<!-- /TMPL_IF --> value="int">Integer</option>
+                                                <option <!-- TMPL_IF EXPR="type eq 'date'" -->selected="selected"<!-- /TMPL_IF --> value="date">Date</option>
+                                            </select>
+                                        </td>
                                         <td><input name="faceted" type="checkbox" <!-- TMPL_IF NAME="faceted" -->checked="checked"<!-- /TMPL_IF --> value="<!-- TMPL_VAR NAME="code" -->" /></td>
                                         <td><input name="sortable" type="checkbox" <!-- TMPL_IF NAME="sortable" -->checked="checked"<!-- /TMPL_IF --> value="<!-- TMPL_VAR NAME="code" -->" /></td>
                                         <td>
@@ -153,18 +157,18 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-				    <td></td>
+                                    <td></td>
                                     <td><input id="code" type="text" maxlength="25" /></td>
                                     <td><input id="label" type="text" maxlength="25" /></td>
                                     <td>
-			                <select id="type">
-					    <option value="str">String</option>
-					    <option value="ste">Simple Text</option>
-					    <option value="txt">Text</option>
-					    <option value="int">Integer</option>
-					    <option value="date">Date</option>
-			                </select>
-				    </td>
+                                        <select id="type">
+                                            <option value="str">String</option>
+                                            <option value="ste">Simple Text</option>
+                                            <option value="txt">Text</option>
+                                            <option value="int">Integer</option>
+                                            <option value="date">Date</option>
+                                        </select>
+                                    </td>
                                     <td><input id="faceted" type="checkbox" /></td>
                                     <td><input id="sortable" type="checkbox" /></td>
                                     <td>

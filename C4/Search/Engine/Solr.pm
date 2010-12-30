@@ -91,7 +91,7 @@ sub SetIndexes {
     my $sth = $dbh->prepare("DELETE FROM indexes WHERE ressource_type = ?");
     $sth->execute($ressource_type);
 
-    my $query  = "INSERT INTO indexes (`code`,`label`,`type`,`faceted`,`ressource_type`,`mandatory`,`sortable`,`plugin`) VALUES (?,?,?,?,?,?,?,?)";
+    my $query  = "INSERT INTO indexes (`code`,`label`,`type`,`faceted`,`ressource_type`,`mandatory`,`sortable`,`plugin`, `rpn_index`, `ccl_index_name`) VALUES (?,?,?,?,?,?,?,?,?,?)";
     my $sth2 = $dbh->prepare($query);
     for ( @$indexes ) {
         $sth2->execute(
@@ -102,7 +102,9 @@ sub SetIndexes {
 	    $ressource_type,
 	    $_->{'mandatory'},
 	    $_->{'sortable'},
-	    $_->{'plugin'}
+	    $_->{'plugin'},
+        $_->{'rpn_index'},
+        $_->{'ccl_index_name'}
 	);
     }
 }
