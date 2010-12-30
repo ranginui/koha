@@ -78,7 +78,8 @@ sub GetFacetedIndexes {
     my @indexes;
 
     while ( my $row = $sth->fetchrow_hashref() ) {
-       push @indexes, $row->{type}.'_'.$row->{code};
+        # Facets must be in str field (created by indexrecord)
+        push @indexes, 'str_'.$row->{code};
     }
 
     return \@indexes;
@@ -301,6 +302,11 @@ sub IndexRecord {
             }
             $solrrecord->set_value(       $index->{'type'}."_".$index->{'code'},    \@values);
             $solrrecord->set_value("srt_".$index->{'type'}."_".$index->{'code'}, $values[0]) if $index->{'sortable'} and @values > 0;
+
+            # Add index str for facets if it's not exist
+            if ( $index->{'faceted'} and @values > 0 and $index->{'type'} ne 'str' ) {
+                $solrrecord->set_value("str_".$index->{'code'}, $values[0]);
+            }
         }
         push @recordpush, $solrrecord;
 
