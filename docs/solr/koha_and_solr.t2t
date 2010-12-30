@@ -1,0 +1,33 @@
+Koha use with Solr - Beginner guide, advanced user and technical documentation
+Claire Hernandez <claire.hernandez@biblibre.com>
+30/12/2010 
+
+%!target : dbk
+%!encoding: UTF-8
+
+= Beginner guide =
+
+== Simple queries ==
+
+== Advanced queries ==
+
+
+
+= Advanced user guide = 
+
+== Use of field types ==
+
+== Indexes configuration ==
+
+
+
+
+= Technical guide =
+
+== Indexing ==
+
+== Quierying ==
+
+== code == 
+
+== database ==
