@@ -20,7 +20,7 @@ use warnings;
 
 use 5.10.0;
 
-sub new {
+sub buildQuery {
 
     my ($class, $indexes, $operands, $operators) = @_;
     die "not implemented!"

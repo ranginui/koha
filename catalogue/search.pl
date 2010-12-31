@@ -405,7 +405,7 @@ $template->param('filters' => \@tplfilters );
 my @indexes = $cgi->param('idx');
 my @operators = $cgi->param('op');
 my @operands = $cgi->param('q');
-my $q = C4::Search::Query->new(\@indexes, \@operands, \@operators);
+my $q = C4::Search::Query->buildQuery(\@indexes, \@operands, \@operators);
 my $res = SimpleSearch( $q, \%filters, $page, $count, $sort_by);
 
 my $pager = Data::Pagination->new(

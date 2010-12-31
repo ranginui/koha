@@ -98,32 +98,33 @@ sub FindDuplicate {
     # search duplicate on ISBN, easy and fast..
     # ... normalize first
     if ( $result->{isbn} ) {
-        $query = "str_isbn:\"$result->{isbn}\"";
+        $query = "isbn:\"$result->{isbn}\"";
     } else {
-        $query  = "txt_title:\"$result->{title}\"";
-        $query .= " and str_itemtype:\"$result->{itemtype}\""
+        $query  = "title:\"$result->{title}\"";
+        $query .= " and itemtype:\"$result->{itemtype}\""
           if ( $result->{itemtype} );
         if ( $result->{author} ) {
-            $query .= " and str_author:\"$result->{author}\"";
+            $query .= " and author:\"$result->{author}\"";
         }
     }
 
     # If unimarc, then search duplicate on EAN
     if ( C4::Context->preference("marcflavour") eq "UNIMARC" ) {
         for ( $record->field('073') ) {
-            $query .= ' or str_ean="'.$_->subfield('a').'"';
-	}
+            $query .= ' or ean:"'.$_->subfield('a').'"';
+        }
     }
 
+    $query = C4::Search::Query::normalSearch($query);
     my $res = SimpleSearch($query);
 
     my @results;
     for ( @{ $res->items } ) {
         my $result = GetBiblio( $_->{'values'}->{'recordid'} );
-	if ( $result ) {
-	    push @results, $result->{'biblionumber'};
-	    push @results, $result->{'title'};
-	}
+        if ( $result ) {
+            push @results, $result->{'biblionumber'};
+            push @results, $result->{'title'};
+        }
     }
 
     return @results;

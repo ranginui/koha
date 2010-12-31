@@ -37,7 +37,8 @@ return a Solr query
 =head1 FUNCTIONS
 
 =cut
-sub new {
+
+sub buildQuery {
 
     my ($class, $indexes, $operands, $operators) = @_;
 

@@ -194,9 +194,9 @@ sub splitToken {
 }
 
 =head2
-Generate new Query functions of search engine used
+build query functions of search engine used
 =cut
-sub new {
+sub buildQuery {
 
     my ($class, $indexes, $operands, $operators) = @_;
 
@@ -204,7 +204,7 @@ sub new {
 
     given( $search_engine ) {
         when( 'Zebra' ) {
-            return C4::Search::Query::Zebra->new($indexes, $operands, $operators);
+            return C4::Search::Query::Zebra->buildQuery($indexes, $operands, $operators);
         }
 
         when( 'Solr' ) {
@@ -216,7 +216,7 @@ sub new {
             if ( (my @x = eval {@$indexes} ) == 0 ) {
                 # Particular *:* query
                 if (@$operands[0] eq '*:*'){
-                    return C4::Search::Query::Solr->new($indexes, $operands, $operators);
+                    return C4::Search::Query::Solr->buildQuery($indexes, $operands, $operators);
                 }
 
                 my $new_string = splitToken(@$operands[0]);
@@ -235,9 +235,18 @@ sub new {
                 $new_operands = $operands;
             }
 
-            return C4::Search::Query::Solr->new($new_indexes, $new_operands, $operators);
+            return C4::Search::Query::Solr->buildQuery($new_indexes, $new_operands, $operators);
         }
     }
+}
+
+sub normalSearch {
+    my ($class, $query) = @_;
+    my $indexes = ();
+    my $operands = ();
+    my $operators = ();
+    push @$operands, $query;
+    return buildQuery($class, $indexes, $operands, $operators);
 }
 
 1;

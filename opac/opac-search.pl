@@ -150,7 +150,7 @@ $template->param(
 my $itemtypes = GetItemTypes;
 
 # the index parameter is different for item-level itemtypes
-my $itype_or_itemtype = C4::Context->preference("item-level_itypes") ? 'str_itype' : 'str_itemtype';
+my $itype_or_itemtype = C4::Context->preference("item-level_itypes") ? 'itype' : 'itemtype';
 my @itemtypesloop;
 my $selected = 1;
 my $cnt;
@@ -160,7 +160,7 @@ if ( !$advanced_search_types or $advanced_search_types eq 'itemtypes' ) {
     foreach my $thisitemtype ( sort { $itemtypes->{$a}->{'description'} cmp $itemtypes->{$b}->{'description'} } keys %$itemtypes ) {
         my %row = (
             number      => $cnt++,
-        index       => $itype_or_itemtype,
+            index       => $itype_or_itemtype,
             code        => $thisitemtype,
             selected    => $selected,
             description => $itemtypes->{$thisitemtype}->{'description'},
@@ -175,7 +175,7 @@ if ( !$advanced_search_types or $advanced_search_types eq 'itemtypes' ) {
     for my $thisitemtype (@$advsearchtypes) {
         my %row = (
             number      => $cnt++,
-            index       => 'srt_str_ccode',
+            index       => 'srt_'.C4::Search::Query::getIndexName('ccode'),
             ccl         => $advanced_search_types,
             code        => $thisitemtype->{authorised_value},
             selected    => $selected,
@@ -317,8 +317,7 @@ if ( $res->{'pager'}->{'total_entries'} == 1
     && $format ne 'rss2'
     && $format ne 'opensearchdescription'
     && $format ne 'atom' ) {
-
-    my $biblionumber = $res->{'items'}->[0]->{'values'}->{'str_biblionumber'};
+    my $biblionumber = $res->{'items'}->[0]->{'values'}->{C4::Search::Query::getIndexName('biblionumber')};
     if ( C4::Context->preference('BiblioDefaultView') eq 'isbd' ) {
         print $cgi->redirect("/cgi-bin/koha/opac-ISBDdetail.pl?biblionumber=$biblionumber");
     } elsif ( C4::Context->preference('BiblioDefaultView') eq 'marc' ) {
