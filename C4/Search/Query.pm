@@ -144,6 +144,56 @@ sub getIndexName {
 }
 
 =head2
+Return token with correct index name
+=cut
+sub splitToken {
+    my $token = shift;
+
+    my $idx;
+    my $operand;
+
+    my @values;
+    my $attr;
+    my $string = $token;
+    # Foreach couple of index:operand
+    while ( $token =~ m/[^ ]*:[^ ]*/g ) {
+        @values = split ':', $&;
+        $idx = (@values)[0];
+        my $old_operand = (@values)[1];
+        my $old_idx = $idx;
+        $operand = $old_operand;
+
+        # split on ',' for potential attr zebra
+        @values = split ',', $idx;
+        $idx = (@values)[0];
+        $attr = (@values)[1];
+        $idx = getIndexName $idx;
+
+        given ( $attr ) {
+            when ( 'phr' ) {
+                # If phr on attr, we add ""
+                if ( !$old_operand =~ /^"/ ) {
+                    $operand = "$old_operand";
+                }
+                $operand =~ s/'(.*)'/"$1"/;
+            }
+
+            when ( 'wrdl' ) {
+                # nothing to do, it's default Solr's configuration
+            }
+        }
+        # Replace new index in string
+        $string =~ s/(^| )$old_idx:/ $idx:/;
+        $string =~ s/:$old_operand/:$operand/;
+    }
+
+    # Delete first space causing by previous replacement
+    $string =~ s/^ //;
+
+    return $string;
+}
+
+=head2
 Generate new Query functions of search engine used
 =cut
 sub new {
@@ -169,49 +219,14 @@ sub new {
                     return C4::Search::Query::Solr->new($indexes, $operands, $operators);
                 }
 
-                my @values;
-                my $attr;
-                my $operand;
-                push @$new_operands, @$operands[0];
-
-                # Foreach couple of index:operand
-                while ( @$operands[0] =~ m/[^ ]*:[^ ]*/g ) {
-                    @values = split ':', $&;
-                    $idx = (@values)[0];
-                    my $old_operand = (@values)[1];
-                    my $old_idx = $idx;
-                    $operand = $old_operand;
-
-                    # split on ',' for potential attr zebra
-                    @values = split ',', $idx;
-                    $idx = (@values)[0];
-                    $attr = (@values)[1];
-                    $idx = getIndexName $idx;
-
-                    given ( $attr ) {
-                        when ( 'phr' ) {
-                            # If phr on attr, we add ""
-                            if ( !$old_operand =~ /^"/ ) {
-                                $operand = "$old_operand";
-                            }
-                            $operand =~ s/'(.*)'/"$1"/;
-                        }
-
-                        when ( 'wrdl' ) {
-                            # nothing to do, it's default Solr's configuration
-                        }
-                    }
-                    # Replace new index in string
-                    @$new_operands[0] =~ s/(^| )$old_idx:/ $idx:/;
-                    @$new_operands[0] =~ s/:$old_operand/:$operand/;
-                }
-                # Delete first space causing by previous replacement
-                @$new_operands[0] =~ s/^ //;
+                my $new_string = splitToken(@$operands[0]);
 
                 # Upper case for operators
-                @$new_operands[0] =~ s/ or / OR /g;
-                @$new_operands[0] =~ s/ and / AND /g;
-                @$new_operands[0] =~ s/ not / NOT /g;
+                $new_string =~ s/ or / OR /g;
+                $new_string =~ s/ and / AND /g;
+                $new_string =~ s/ not / NOT /g;
+                push @$new_operands, $new_string;
+
             }else{
                 # Advanced search
                 for $idx (@$indexes){
