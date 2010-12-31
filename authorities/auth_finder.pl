@@ -28,6 +28,7 @@ use C4::AuthoritiesMarc;
 use C4::Acquisition;
 use C4::Koha;
 use C4::Search;
+use C4::Search::Query;
 use Data::Pagination;
 
 my $query        = new CGI;
@@ -53,9 +54,10 @@ if ( $searchquery ) {
     my $page        = $query->param('page') || 1;
     my $count       = 20;
     
+    my $authtype_index = C4::Search::Query::getIndexName('authtype');
     my $filters = {
         recordtype   => 'authority',
-        str_authtype => $authtypecode,
+        $authtype_index => $authtypecode,
     };
 
     my $results = SimpleSearch( $searchquery, $filters, $page, $count, $orderby );
@@ -72,7 +74,7 @@ if ( $searchquery ) {
         my $record = GetAuthority( $_->{'values'}->{'recordid'} );
         {
             authid  => $_->{'values'}->{'recordid'},
-            summary => BuildSummary( $record, $_->{'values'}->{'recordid'}, $_->{'values'}->{'str_authtype'} ),
+            summary => BuildSummary( $record, $_->{'values'}->{'recordid'}, $_->{'values'}->{$authtype_index} ),
             used    => CountUsage( $_->{'values'}->{'recordid'} ),
         }
     } @{ $results->{items} };

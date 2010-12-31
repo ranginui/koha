@@ -128,9 +128,11 @@ $template->param(
     branchloop       => $branchloop,
     searchdomainloop => GetBranchCategories( undef, 'searchdomain' ),
 );
+$template->param( holdingbranch_index => C4::Search::Query::getIndexName('holdingbranch') );
 
 # load the language limits (for search)
 $template->param( search_languages_loop => getAllLanguagesAuthorizedValues() );
+$template->param( lang_index => C4::Search::Query::getIndexName('lang') );
 
 # load the sorting stuff
 my $sort_by = $cgi->param('sort_by') || join(' ', grep { defined } ( C4::Context->preference('OPACdefaultSortField')
@@ -281,7 +283,7 @@ $template->param('filters' => \@tplfilters );
 my @indexes = $cgi->param('idx');
 my @operators = $cgi->param('op');
 my @operands = $cgi->param('q');
-my $q = C4::Search::Query->new(\@indexes, \@operands, \@operators);
+my $q = C4::Search::Query->buildQuery(\@indexes, \@operands, \@operators);
 
 # append year limits if they exist
 if ( $params->{'limit-yr'} ) {

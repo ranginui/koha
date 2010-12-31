@@ -83,7 +83,7 @@
                 <select name="filters">
                     <option value="" selected="selected">No Limit</option>
                         <!-- TMPL_LOOP NAME="search_languages_loop" -->
-                            <option value='str_lang:"<!-- TMPL_VAR NAME="lib" -->"' <!-- TMPL_IF NAME="selected" -->selected="selected"<!-- /TMPL_IF -->>
+                            <option value='<!-- TMPL_VAR NAME="lang_index" -->:"<!-- TMPL_VAR NAME="lib" -->"' <!-- TMPL_IF NAME="selected" -->selected="selected"<!-- /TMPL_IF -->>
                                 <!-- TMPL_VAR NAME="lib" -->
                             </option>
                         <!-- /TMPL_LOOP -->
@@ -166,7 +166,7 @@
                         <select name="filters" id="branchloop">
                             <option value="">All libraries</option>
                             <!-- TMPL_LOOP NAME="branchloop" -->
-                                <option value='str_holdingbranch:"<!-- TMPL_VAR NAME="branchname" -->"' <!--TMPL_IF NAME="selected"-->selected="selected"<!--/TMPL_IF--> >
+                                <option value='<!-- TMPL_VAR NAME="holdingbranch_index" -->:"<!-- TMPL_VAR NAME="branchname" -->"' <!--TMPL_IF NAME="selected"-->selected="selected"<!--/TMPL_IF--> >
                                     <!-- TMPL_VAR NAME="branchname" -->
                                 </option>
                             <!-- /TMPL_LOOP -->

@@ -26,6 +26,7 @@ use C4::Output;
 use C4::AuthoritiesMarc;
 use C4::Koha;
 use C4::Search;
+use C4::Search::Query;
 use Data::Pagination;
 
 my $query        = new CGI;
@@ -49,7 +50,7 @@ if ( $op eq "do_search" ) {
     my $count        = 20;
 
     my $filters = { recordtype => 'authority' };
-    $filters->{'str_authtype'} = $authtypecode if $authtypecode;
+    $filters->{C4::Search::Query::getIndexName('authtype')} = $authtypecode if $authtypecode;
 
     my $results = SimpleSearch($value, $filters, $page, $count, $orderby);
 

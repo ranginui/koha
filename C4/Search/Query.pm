@@ -53,7 +53,7 @@ sub initIndexesMapper {
 
     my $dbh = C4::Context->dbh or return 1;
 
-    my $sth = $dbh->prepare("SELECT * FROM indexes");
+    my $sth = $dbh->prepare("SELECT * FROM indexes WHERE ressource_type='biblio'");
     $sth->execute;
 
     # Populate hash
