@@ -12,7 +12,27 @@ __Public__: Tout utilisateur de l'opac.
 
 == Apports de Solr ==
 
-http://www.biblibre.com/fr/blog/billet/d%C3%A9veloppements-solr-pour-koha
+Solr est un moteur de recherche et d'indexation. L'objectif est d'intégrer Solr en lieu et place de zebra dans koha pour répondre aux différents manques de ce dernier.
+
+[Article de blog au sujet des avantages du projet http://www.biblibre.com/fr/blog/billet/d%C3%A9veloppements-solr-pour-koha]
+Pour résumer, Zebra ne convient plus pour certaines raisons, entre autres :
+- Pas d'indexation en temps réel
+- Difficultés pour les accès aux données
+- Fichiers de configuration difficile à comprendre
+- Gestion des facettes
+- Manque au niveau de la recherche
+- etc.
+
+Quelques recherches apportées par Solr:
+- Recherche par facettes
+- Recherche floue ('mautid~' retourne 'maudit')
+- Recherche de proximité (“vision lotus”~10)
+- keyword boosting ('Droz rameau^4' ⇒ rajoute de la pertinence à rameau)
+- Recherche par synonymes ('damnés' retournera 'maudit' si définit dans un fichier)
+- Recherche metaphone (phonétique) ('amr' retourne 'amour')
+- spell check (suggestion orthographique)
+
+Solr est donc un moteur d'indexation et de recherche basé sur Lucene. Voir le site de Lucene pour le wiki de la communauté ainsi que les différentes configurations possibles, etc. Lucene est en train de devenir présent un petit peu partout. Il offre des connecteurs de plus en plus nombreux dans de plus en plus de langages.
 
 == Requêtes simples ==
 
@@ -35,11 +55,47 @@ Des index sont configurés pour chaque installation de Koha.
 en lister quelques uns couramment utilisés
 >
 
+
+
+
 = Guide d'utilisation avancé = 
 
 __Public:__ Toute personne abilitée à utiliser l'interface pro de Koha et à configurer les index.
 
+
+== Références==
+[Solr Query Syntax http://wiki.apache.org/solr/SolrQuerySyntax]
+
+== Sysprefs ==
+
+- **solrApi** à l'adresse du core solr ex: http://flaubert.biblibre.com:8080/solr/migrationstetienne
+- **defaultSortField** à score|txt_title
+- **OPACdefaultSortField** à score|txt_title
+- **SearchEngine** à Solr|Zebra
+
 == Configuration des indexes ==
+
+=== Les index ===
+
+Voir la page [indexes.pl http://solr.biblibre.com/cgi-bin/koha/solr/indexes.pl] (demo / demo) sur descartes.
+
+2 onglets : authority et biblio, ce sont les mêmes.
+
+**L'onglet biblio :**
+
+- Des champs grisés sont les champs qui ne peuvent pas être supprimés.
+Les colonnes :
+- Code : code de l'index
+- Label : label qui va s'afficher pour cet index
+- Type : le type de l'index (ne pas se tromper entre string et text)
+- Faceted : le champ sera-t-il faceté ou pas ?
+- Sortable : Le champ doit-il être triable ou pas ?
+- Plugin : On n'a pas envie que les données viennent du Marc
+Les lignes du tableau peuvent être déplace en drag'n drop pour modifier l'ordre (qui sera utilisé dans les listes déroulantes).
+
+**Les mappings**
+
+Voir la page [mappings.pl http://solr.biblibre.com/cgi-bin/koha/solr/mappings.pl]. Par exemple : 7.. * : tous les sous champs des 7XX et va les mettre dans l'index sélectionné.
 
 == Utilisation des types d'index ==
 
@@ -93,7 +149,6 @@ __Exemples:__
 - **comporte** trouve "comportement"
 - ...
 
-===Integer===
 
 __Caractéristiques:__
 __Utilisation:__
@@ -112,14 +167,243 @@ __Exemples:__
 
 L'index ciblé contiendra les champs 2..(vedette), 4.. (rejetée) et 7.. (parrallèle) de l'autorité liée.
 
+
+
+
+
 = Guide technique =
 
 __Public:__ Développeur, mainteneur, administrateur etc.
 
+
+== Installation ==
+
+=== Les bases de Solr ===
+
+==== Configuration ====
+
+``` git clone gitolite@git.biblibre.com:solr_conf.git solr
+
+**schema.xml**
+
+- Les champs statiques (id, recordtype, recordid, allfields(=any sous zebra))
+- Les champs dynamiques (str_*, txt_*, int_*, date_*). Les champs dynamiques nous permettent de définir des champs ailleurs que dans ce fichier (pour nous, en bdd).
+- uniqueKey : id unique
+- defaultSearchField : champ de recherche par défaut
+- copyfield : récupère tous les champs et les place dans allfields
+- solrQueryParser defaultOperator : opérateur booléen par défaut
+
+**solrconfig.xml**
+
+- pas de spécificités particulières pour l'instant
+
+==== Interface d'administration ====
+
+- http://localhost:8080/solr/core1/admin
+
+=== Locale ===
+
+Il est possible d'installer solr en simple ou multi core. La seconde option est conseillée et décrite dans le document.
+
+- Suivre la procédure habituelle
+- Code source actuel
+``` git checkout -b wip_solr remotes/origin/wip/solr
+- Fichier environment_Makefile.pl suffisant
+```
+export PERL_MM_USE_DEFAULT=1 # makes the environment variables work
+
+export DESTDIR=/.../sites/...         # here would be koha configuration, logs
+
+export WEBSERVER_HOST=EDITME
+export WEBSERVER_IP=EDITME
+
+export INSTALL_MODE=dev
+export RUN_DATABASE_TESTS=no
+export DB_TYPE=mysql
+
+export DB_HOST='localhost'
+export DB_NAME='<dbname>'
+
+export DB_USER='<dbuser>'
+export DB_PASS='<dbpass>'
+```
+
+Dépendances et logiciel sous debian:
+``` 
+  sudo aptitude install libdata-searchengine-perl 
+    libdata-searchengine-solr-perl 
+    libmoosex-storage-perl
+    libdata-paginator-perl
+    libdata-pagination-perl
+    libmoosex-types-perl
+    libwebservice-solr-perl
+    libmodule-list-perl
+    libmodern-perl-perl
+```
+
+Installer les tomcat et solr
+``` sudo aptitude install solr-tomcat
+
+=== Non multi-core ===
+
+(Déconseillée mais possible)
+
+Dans le cas d'une installation **non multi-core**, faire utiliser à solr la bonne conf
+```
+mv /etc/solr/conf /etc/solr/conf.bak
+ln -s /.../versions/solr/etc/solr/conf /etc/solr/conf
+vim /.../versions/solr/etc/solr/conf/solrconfig.xml changer le dataDir
+```
+
+=== Multi-code ===
+
+(Conseillée)
+
+http://wiki.apache.org/solr/CoreAdmin
+
+Créer /usr/share/solr/solr.xml contenant par exemple
+```
+<?xml version="1.0" encoding="UTF-8" ?>
+<solr persistent="false" sharedLib="lib">
+  <cores adminPath="/admin/cores" shareSchema="true">
+    <core name="am123" instanceDir="/home/koha/sites/am123/etc/solr" dataDir="data" />
+    <core name="sanop" instanceDir="/home/koha/sites/sanop/etc/solr" dataDir="data" />
+    <core name="lyon3" instanceDir="/home/koha/sites/lyon3/etc/solr" dataDir="data" />
+  </cores>
+</solr>
+```
+
+Cloner dans le etc du site du client le dépot qu'hdl a prévu à cet effet.
+Attention, tomcat6 doit avoir les droits rw sur etc/solr/data.
+
+```
+  cd /home/koha/sites/am123/etc
+  git clone gitolite@git.biblibre.com:solr_conf.git solr
+  sudo chmod -R 777 data
+```
+
+Reloader tomcat
+
+- Vérifier les cores : http://localhost:8080/solr/admin/cores
+- Vérifier que la recherche est accessible : http://localhost:8080/solr/am123/select?q=*:*
+- Vérifier que l'administration du core est accessible : http://localhost:8080/solr/am123/admin/
+- Vérifier que l'admin est accessible : http://localhost:8080/solr/am123/admin/
+
+Coté Koha, renseigner la syspref SolrAPI avec quelque chose du genre http://localhost:8080/solr/am123/
+
+Pistes pour la suite :
+
+- avoir http://solr.am123.localhost au lieu de http://localhost:8080/solr/am123/ -> testé et faisable
+- gérer des droits pour qu'un client ne se branche pas sur l'index d'un autre client -> a voir avec Marc/hdl (service /update)
+
+
 == Indexation ==
+
+
+Indexation de 100 notices biblio puis authority
+```
+./misc/migration_tools/rebuild_solr.pl -r -t biblio -n 100
+./misc/migration_tools/rebuild_solr.pl -r -t authority -n 100
+```
+Commande pour les tests de temps:
+``` time ./misc/migration_tools/rebuild_solr.pl -r -t authority 2> /tmp/solrindexation.log
+
+pour indexer toutes les notices, retirer l'option -n (pls heures)
+``` rebuild-solr.pl -t biblio && rebuild-solr.pl -t authority
+
+./rebuild_solr --help
+```
+Use this batch job to reindex all biblio or authority records in your Koha database.  This job is useful only if you are using Solr search engine.
+
+Parameters:
+    -t biblio               index bibliographic records
+
+    -t authority            index authority records
+
+    -r                      clear Solr index before adding records to index - use this option carefully!
+
+    -n 100                  index 100 first records
+
+    -n "100,2"              index 2 records after 100th (101 and 102)
+
+    -w 101                  index biblio with biblionumber equals 101
+
+    --help or -h            show this message.
+
+```
 
 == Recherche ==
 
 == Code perl == 
 
+=== C4::Search::Engine::Solr.pm ===
+
+==== IndexRecord ====
+
+- boucle sur les identifiants
+- getauthority ou getbiblio (en fonction du param)
+- instanciation d'un document solr
+- boucle sur les index (cf table indexes)
+si l'index est relié à un plugin, le plugin retourne les données à indexer
+si controlfield, on l'index, sinon on boucle sur les subfields
+si date, on la normalise au format ISO
+si biblio, on récupère les champs autorisés et on index les labels
+- création de l'index en lui filant ses valeurs
+
+==== SimpleSearch ====
+
+Les paramètres :
+- $q : la requête
+- $filters : les filtres
+- $page : numéro de la page
+- $max_results : nombre de résultats max à retourner
+- $sort : tri
+
+- ouverture de la connexion
+- récupération des facettes
+- application des filtres
+- exécution de la requête
+- récupération des résultats
+
+=== C4::Search::Plugins::* ===
+
+- UsedInXBiblios.pm: ComputeValue avec en entrée la notice biblio et retourne un tableau. == getbiblionumber.
+- Audience.pm : Récupération du record. Table de correspondance.
+
 == Base de données ==
+
+Les différentes tables modifiées :
+
+- indexes et indexmappings : les champs correponds aux champs de l'interface
+- suppression de zebraqueue et de tout ce qui était relatif à NoZebra
+
+== Pertinence des résultats ==
+
+- ++ [Vue d'ensemble du principe du scoring http://lucene.apache.org/java/2_9_1/scoring.htmlVue]
+- ++ [Algorithme par défaut: DefaultSimilarity http://lucene.apache.org/java/3_0_2/api/core/org/apache/lucene/search/Similarity.html] il est possible de surcharger cet algo et de faire le notre (;)
+- ++ [Explication des termes utilisés http://www.lucenetutorial.com/advanced-topics/scoring.html]
+- ++ [Search Application Relevance Issues Grant Ingersoll lucidimagination http://www.lucidimagination.com/Community/Hear-from-the-Experts/Articles/Search-Application-Relevance-IssuesDebugging]
+- [Findability in Lucene and Solr http://www.lucidimagination.com/Community/Hear-from-the-Experts/Articles/Optimizing-Findability-Lucene-and-SolrOptimizing]
+- http://wiki.apache.org/solr/SolrRelevancyFAQ
+- http://wiki.apache.org/solr/SolrRelevancyCookbook
+- http://stackoverflow.com/questions/2099288/solr-searching-numeric-matching-and-relevance
+- http://www.slideshare.net/LucidImagination/an-introduction-to-basics-of-search-and-relevancy-with-apache-solr
+- http://www.docshare.com/doc/239216/An-Introduction-to-Basics-of-Search-and-Relev
+
+Solr - Débugguer la pertinence : rajouter l'option et ce type de résultat s'ajoute à chaque document indexé retrouvé
+``` &fl=*,score 
+``` <float name="score">8.582654</float> 
+Solr - Débugguer la query:
+``` &debugQuery=true
+
+== Services web solr ==
+
+Solr met à disposition un certain nombre de [services web http://wiki.apache.org/solr/UpdateXmlMessages] qui sont donc accessibles par une simple url:
+Nettoyer l'index d'une instance (/!\)
+```
+/update?stream.body=%3Cdelete%3E%3Cquery%3E*:*%3C/query%3E%3C/delete%3E
+/update?stream.body=%3Ccommit/%3E
+```
+Optimize
+``` /update?optimize=true&maxSegments=10&waitFlush=false'
+
