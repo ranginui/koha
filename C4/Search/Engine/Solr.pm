@@ -221,7 +221,12 @@ sub SimpleSearch {
     $sc->options->{'facet.field'}    = GetFacetedIndexes($filters->{recordtype});
     $sc->options->{'sort'}           = $sort;
 
-    $sc->options->{'fq'} = [ map { "$_:".$filters->{$_} } keys %$filters ];
+    $sc->options->{'fq'} = [ 
+        map { 
+            utf8::decode($filters->{$_});
+            "$_:".$filters->{$_}
+        } keys %$filters 
+    ];
 
     utf8::decode($q);
     my $sq = Data::SearchEngine::Query->new(
