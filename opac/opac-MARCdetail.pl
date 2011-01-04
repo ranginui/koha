@@ -86,6 +86,11 @@ if ( C4::Context->preference("RequestOnOpac") ) {
     $RequestOnOpac = 1;
 }
 
+my $uploadWebPath;
+if (C4::Context->preference('uploadWebPath')) {
+    $uploadWebPath = C4::Context->preference('uploadWebPath');
+}
+
 # fill arrays
 my @loop_data = ();
 my $tag;
@@ -151,7 +156,13 @@ for ( my $tabloop = 0 ; $tabloop <= 10 ; $tabloop++ ) {
                     if ( $sf_def->{authtypecode} ) {
                         $subfield_data{authority} = $fields[$x_i]->subfield(9);
                     }
+		    
                     $subfield_data{marc_value} = GetAuthorisedValueDesc( $fields[$x_i]->tag(), $subf[$i][0], $subf[$i][1], '', $tagslib, '', 'opac' );
+		    if ($tagslib->{ $fields[$x_i]->tag() }->{ $subf[$i][0] }->{value_builder} eq "upload.pl" and $uploadWebPath) {
+			my $file_uri = qq($uploadWebPath/$subf[$i][1]);
+			$subfield_data{marc_value} = qq/<a href="$file_uri">$subfield_data{marc_value}<\/a>/;
+		    }
+
                 }
                 $subfield_data{marc_subfield} = $subf[$i][0];
                 $subfield_data{marc_tag}      = $fields[$x_i]->tag();

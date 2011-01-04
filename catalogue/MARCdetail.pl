@@ -187,7 +187,12 @@ for ( my $tabloop = 0 ; $tabloop <= 10 ; $tabloop++ ) {
                     if ( $tagslib->{ $fields[$x_i]->tag() }->{ $subf[$i][0] }->{authtypecode} ) {
                         $subfield_data{authority} = $fields[$x_i]->subfield(9);
                     }
-                    $subfield_data{marc_value} = GetAuthorisedValueDesc( $fields[$x_i]->tag(), $subf[$i][0], $subf[$i][1], '', $tagslib ) || $subf[$i][1];
+		    if ($tagslib->{ $fields[$x_i]->tag() }->{ $subf[$i][0] }->{value_builder} eq "upload.pl" ) {
+			$subfield_data{is_file} = 1;
+			$subfield_data{file_uri} = C4::Context->preference('uploadWebPath') . "/" . $subf[$i][1];
+		    } 
+		    $subfield_data{marc_value} = GetAuthorisedValueDesc( $fields[$x_i]->tag(), $subf[$i][0], $subf[$i][1], '', $tagslib ) || $subf[$i][1];
+		    warn GetAuthorisedValueDesc( $fields[$x_i]->tag(), $subf[$i][0], $subf[$i][1], '', $tagslib ) ;
 
                 }
                 $subfield_data{marc_subfield} = $subf[$i][0];

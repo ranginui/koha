@@ -294,3 +294,5 @@ INSERT INTO systempreferences (variable,value, options, explanation, type) VALUE
 INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('OPACPickUpLocation','1','Permet aux adhérent de choisir leur bibliothèque de retrait pour une réservation','','YesNo');
 INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('CI-3M:AuthorizedIPs','','Liste des IPs autorisées pour la magnétisation 3M','','Free');
 INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('AllowMultipleHoldsPerBib','','','Entrez ici la liste des types de documents (séparés par des espaces) pour lesquelles vous voulez permettre la réservation multiple des exemplaires.','Free');
+INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('uploadPath','','Le chemin vers le répertoire de stockage pour le plugin upload.pl','','');
+INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('uploadWebPath','','Le chemin vers le répertoire de stockage à partir de la racine de publication du serveur web pour le plugin upload.pl','','');

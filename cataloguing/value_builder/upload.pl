@@ -12,8 +12,8 @@ use C4::AuthoritiesMarc;
 use C4::Output;
 use File::Basename;
 
-# TODO: Turn this into a syspref
-my $upload_path = '/home/koha/tmp/uploaded_files';
+my $upload_path = C4::Context->preference('uploadPath');
+warn $upload_path;
 
 =head1
 
@@ -40,7 +40,7 @@ sub plugin_javascript {
         }
     
         function Clic$function_name(index) {
-            defaultvalue = document.getElementById(\"$field_number\").value;
+            defaultvalue = document.getElementById(index).value;
             window.open(\"../cataloguing/plugin_launcher.pl?plugin_name=upload.pl&index=\"+index+\"&result=\"+defaultvalue,'upload','width=600,height=400,toolbar=false,scrollbars=no');
     
         }
