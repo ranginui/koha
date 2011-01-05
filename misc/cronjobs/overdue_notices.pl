@@ -428,11 +428,6 @@ END_SQL
                 : ($MAX)
             );                                            # issues being more than maxdays late are managed somewhere else. (borrower probably suspended)
 
-            if ( !$overdue_rules->{"letter$i"} ) {
-                $verbose and warn "No letter$i code for branch '$branchcode'";
-                next PERIOD;
-            }
-
             # $letter->{'content'} is the text of the mail that is sent.
             # this text contains fields that are replaced by their value. Those fields must be written between brackets
             # The following fields are available :
@@ -473,6 +468,17 @@ END_SQL
             $verbose and warn $borrower_sql . "\n $branchcode | " . $overdue_rules->{'categorycode'} . "\n ($mindays, $maxdays)\nreturns " . $sth->rows . " rows";
 
             while ( my ( $itemcount, $borrowernumber, $firstname, $lastname, $address1, $address2, $city, $postcode, $country, $email, $longest_issue ) = $sth->fetchrow ) {
+                if ( $overdue_rules->{"debarred$i"} ) {
+
+                    #action taken is debarring
+                    C4::Members::DebarMember( $borrowernumber, '9999-12-31' );
+                    $verbose and warn "debarring $borrowernumber $firstname $lastname\n";
+                }
+                if ( !$overdue_rules->{"letter$i"} ) {
+                    $verbose and warn "No letter$i code for branch '$branchcode'";
+                    next PERIOD;
+                }
+
                 $email=C4::Members::GetFirstValidEmailAddress($borrowernumber);
                 $verbose and warn "borrower $firstname, $lastname ($borrowernumber) has $itemcount items triggering level $i.";
 
@@ -486,12 +492,6 @@ END_SQL
                     next PERIOD;
                 }
 
-                if ( $overdue_rules->{"debarred$i"} ) {
-
-                    #action taken is debarring
-                    C4::Members::DebarMember( $borrowernumber, '9999-12-31' );
-                    $verbose and warn "debarring $borrowernumber $firstname $lastname\n";
-                }
                 my @params = ( $listall ? ( $borrowernumber, 1, $MAX ) : ( $borrowernumber, $mindays, $maxdays ) );
                 $sth2->execute(@params);
                 my $itemcount = 0;
