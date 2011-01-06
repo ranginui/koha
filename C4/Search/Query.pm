@@ -15,11 +15,7 @@ package C4::Search::Query;
 # Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA  02111-1307 USA
 
-use strict;
-use warnings;
-
-use 5.10.0;
-
+use Modern::Perl; 
 use C4::Search::Query::Solr;
 use C4::Search::Query::Zebra;
 use C4::Context;
@@ -46,58 +42,66 @@ Initialize indexes hash from database (indexes table)
 =cut
 sub initIndexesMapper {
 
-    # if indexes_mapper already populate
-    if ( (my @x = eval {%indexes_mapper} ) != 0) {
-        return;
-    }
-
+    return if %indexes_mapper;
     my $dbh = C4::Context->dbh or return 1;
 
     my $sth = $dbh->prepare("SELECT * FROM indexes WHERE ressource_type='biblio'");
     $sth->execute;
 
-    # Populate hash
-    while ( my $line = $sth->fetchrow_hashref ) {
-        $indexes_mapper{ $line->{code} } = {
-            Zebra => {
-                rpn_index => $line->{rpn_index},
-                ccl_index_name => $line->{ccl_index_name}
-            },
-            Solr => {
-                name => $line->{type}.'_'.$line->{code},
-                sortable => $line->{sortable}
-            }
-        };
-    }
+    my $datas = $sth->fetchall_hashref( qw(code) );
 
-    # Add member for all fields
-    $indexes_mapper{all_fields}->{Solr}->{name} = 'all_fields';
-    $indexes_mapper{all_fields}->{Solr}->{sortable} = 0;
-    $indexes_mapper{all_fields}->{Zebra}->{ccl_index_name} = 'kw';
+    %indexes_mapper =
+    ( all_fields =>
+    { Zebra =>
+        { rpn_index => 0
+        , ccl_index_name => 'kw'
+        }
+	, Solr =>
+	    { name     => 'all_fields'
+        , sortable => 0
+	    }
+	}
+
+    , map {
+	$$_{code} =>
+	    { Zebra =>
+		{ rpn_index      => $$_{rpn_index}
+		, ccl_index_name => $$_{ccl_index_name}
+		}
+	    , Solr =>
+		{ name           => $$_{type} . '_' . $$_{code}
+		, sortable       => $$_{sortable}
+		}
+	    }
+    } values %$datas);
+
+}
+
+=head2 getSolrIndexFromZebra
+Return Solr index from zebra index
+=cut
+sub getSolrIndexFromZebra {
+    my ( $name ) = @_;
+    for ( values %indexes_mapper ) {
+        return $$_{Solr}{name} if $$_{Zebra}{ccl_index_name} ~~ $name ;
+    }
 }
 
 =head2 getSolrIndex
 Return Solr index name
 =cut
 sub getSolrIndex {
+
     my $index = shift;
-    my $search_engine;
 
     # init mapper if it's not already done
-    initIndexesMapper;
+    %indexes_mapper or initIndexesMapper;
 
-    # finding good index
-    foreach my $code ( keys %indexes_mapper ) {
-        if ( $indexes_mapper{$code}->{Zebra}->{ccl_index_name} && $indexes_mapper{$code}->{Zebra}->{ccl_index_name} eq $index ) {
-            return $indexes_mapper{$code}->{Solr}->{name};
-        }
-    }
+    #warn Data::Dumper::Dumper %indexes_mapper;
+    $indexes_mapper{$index}->{Solr}->{name} 
+    || getSolrIndexFromZebra ($index)
+    || $index
 
-    # not find, it's a Solr index
-    return $indexes_mapper{$index}->{Solr}->{name} if $indexes_mapper{$index};
-
-    # else we return argument
-    return $index;
 }
 
 =head2 getZebraIndex
@@ -213,20 +217,8 @@ sub buildQuery {
             my $idx;
 
             # 'Normal' search
-            if ( (my @x = eval {@$indexes} ) == 0 ) {
-                # Particular *:* query
-                if (@$operands[0] eq '*:*'){
-                    return C4::Search::Query::Solr->buildQuery($indexes, $operands, $operators);
-                }
-
-                my $new_string = splitToken(@$operands[0]);
-
-                # Upper case for operators
-                $new_string =~ s/ or / OR /g;
-                $new_string =~ s/ and / AND /g;
-                $new_string =~ s/ not / NOT /g;
-                push @$new_operands, $new_string;
-
+            if ( not @$indexes ) {
+                return C4::Search::Query->normalSearch(@$operands[0]);
             }else{
                 # Advanced search
                 for $idx (@$indexes){
@@ -242,11 +234,21 @@ sub buildQuery {
 
 sub normalSearch {
     my ($class, $query) = @_;
-    my $indexes = ();
-    my $operands = ();
-    my $operators = ();
-    push @$operands, $query;
-    return buildQuery($class, $indexes, $operands, $operators);
+
+    # Particular *:* query
+    if ($query  eq '*:*'){
+        return $query;
+    }
+
+    my $new_query = splitToken($query);
+
+    # Upper case for operators
+    $new_query =~ s/ or / OR /g;
+    $new_query =~ s/ and / AND /g;
+    $new_query =~ s/ not / NOT /g;
+
+    return $new_query;
+
 }
 
 1;
