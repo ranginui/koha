@@ -45,7 +45,7 @@ sub initIndexesMapper {
     return if %indexes_mapper;
     my $dbh = C4::Context->dbh or return 1;
 
-    my $sth = $dbh->prepare("SELECT * FROM indexes WHERE ressource_type='biblio'");
+    my $sth = $dbh->prepare("SELECT * FROM indexes");
     $sth->execute;
 
     my $datas = $sth->fetchall_hashref( qw(code) );

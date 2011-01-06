@@ -123,7 +123,11 @@ if ( $op eq "do_search" ) {
     } );
 }
 
-$template->param( authtypesloop => \@authtypesloop );
+$template->param( 
+    authtypesloop    => \@authtypesloop,
+    name_index_name  => C4::Search::Query::getIndexName('name_a'),
+    usage_index_name => C4::Search::Query::getIndexName('usedinxbiblios')
+);
 
 # Print the page
 output_html_with_http_headers $query, $cookie, $template->output;
