@@ -408,6 +408,12 @@ my @operands = $cgi->param('q');
 my $q = C4::Search::Query->buildQuery(\@indexes, \@operands, \@operators);
 my $res = SimpleSearch( $q, \%filters, $page, $count, $sort_by);
 
+if (!$res){
+    $template->param(query_error => "Bad request! help message ?");
+    output_with_http_headers $cgi, $cookie, $template->output, 'html';
+    exit;
+}
+
 my $pager = Data::Pagination->new(
     $res->{'pager'}->{'total_entries'},
     $count,

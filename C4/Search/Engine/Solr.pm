@@ -239,7 +239,6 @@ sub SimpleSearch {
     warn $@ if $@;
 
     return $result if (ref($result) eq "Data::SearchEngine::Solr::Results");
-    return "error";
 }
 
 
