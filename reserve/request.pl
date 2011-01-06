@@ -337,12 +337,13 @@ foreach my $biblioitemnumber (@biblioitemnumbers) {
     
         # if independent branches is on we need to check if the person can reserve
         # for branches they arent logged in to
+	my $homeorholdingbranch=C4::Context->preference('HomeOrHoldingBranch') || "homebranch";
         if ( C4::Context->preference("IndependantBranches") ) { 
             if (! C4::Context->preference("canreservefromotherbranches")){
-                # cant reserve items so need to check if item homebranch and userenv branch match if not we cant reserve
+                # cant reserve items so need to check if item homebranch or holdingbranch and userenv branch match if not we cant reserve
                 my $userenv = C4::Context->userenv; 
                 if ( ($userenv) && ( $userenv->{flags} %2 != 1 ) ) {
-                    $item->{cantreserve} = 1 if ( $item->{homebranch} ne $userenv->{branch} );
+                    $item->{cantreserve} = 1 if ( $item->{$homeorholdingbranch} ne $userenv->{branch} );
                 } 
             }
         }
@@ -355,7 +356,7 @@ foreach my $biblioitemnumber (@biblioitemnumbers) {
         $item->{'holdallowed'} = $branchitemrule->{'holdallowed'};
 
         if ( $branchitemrule->{'holdallowed'} == 0 ||
-                ( $branchitemrule->{'holdallowed'} == 1 && $borrowerinfo->{'branchcode'} ne $item->{'homebranch'} ) ) {
+                ( $branchitemrule->{'holdallowed'} == 1 && $borrowerinfo->{'branchcode'} ne $item->{'$homeorholdingbranch'} ) ) {
             $policy_holdallowed = 0;
         }
 

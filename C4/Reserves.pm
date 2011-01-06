@@ -504,9 +504,14 @@ sub CanItemBeReserved{
     my $branchfield  = "reserves.branchcode";
     
     if( $controlbranch eq "ItemHomeLibrary" ){
-        $branchcode = $item->{homebranch};
+	my $homeorholdingbranch=C4::Context->preference("HomeOrHoldingBranch")||"homebranch";
+        $branchcode = $item->{$homeorholdingbranch};
     }elsif( $controlbranch eq "PatronLibrary" ){
         $branchcode = $borrower->{branchcode};
+    }
+    else
+    {
+	$branchcode = C4::Context->userenv->{'branch'};
     }
     
     # we retrieve user rights on this itemtype and branchcode
