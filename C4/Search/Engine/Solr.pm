@@ -28,6 +28,7 @@ use Data::SearchEngine::Solr;
 use Data::SearchEngine::Query;
 use Data::SearchEngine::Item;
 use Data::SearchEngine::Solr::Results;
+use Time::Progress;
 
 =head1 NAME
 
@@ -245,11 +246,13 @@ sub SimpleSearch {
 sub IndexRecord {
     my $recordtype = shift;
     my $recordids  = shift;
+    my $debug = C4::Context->preference("DebugLevel");
 
     my $indexes = GetIndexes( $recordtype );
     my $sc      = GetSolrConnection;
 
     my @recordpush;
+    my $g;
     for my $id ( @$recordids ) {
         
         my $record;
@@ -317,8 +320,22 @@ sub IndexRecord {
         push @recordpush, $solrrecord;
 
         if ( @recordpush == 5000 ) {
+            if (defined $g) {
+              $g->stop;
+              $debug eq '2' && print "Time building documents - ".$g->elapsed_str;
+            }
+
+            my $p = new Time::Progress;
+            $p->restart;
+
             $sc->add( \@recordpush );
             @recordpush = ();
+
+            $p->stop;
+            $debug eq '2' && print "Time solr call - ".$p->elapsed_str;
+
+            $g = new Time::Progress;
+            $g->restart;
         }
     }
     $sc->add( \@recordpush );
