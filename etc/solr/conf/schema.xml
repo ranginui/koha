@@ -55,11 +55,9 @@
     <fieldtype name="simple_text" class="solr.TextField" positionIncrementGap="100" >
       <analyzer>
         <tokenizer class="solr.StandardTokenizerFactory"/>
-        <!-- remove dots from acronyms -->
         <filter class="solr.StandardFilterFactory"/>
-        <!-- find letters with diacritics when looking for e/a/ou -->
         <charFilter class="solr.MappingCharFilterFactory" mapping="mapping-ISOLatin1Accent.txt"/>
-        <!-- data will be pushed in lower case (during indexing and search) -->
+        <filter class="solr.ElisionFilterFactory" articles="elisionwords.txt"/>
         <filter class="solr.LowerCaseFilterFactory"/>
       </analyzer>
     </fieldtype>
