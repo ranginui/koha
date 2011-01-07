@@ -80,6 +80,7 @@ __Public:__ Toute personne abilitée à utiliser l'interface pro de Koha et à c
 Voir la page [indexes.pl http://solr.biblibre.com/cgi-bin/koha/solr/indexes.pl] (demo / demo) sur descartes.
 
 2 onglets : authority et biblio, ce sont les mêmes.
+/!\ Il ne doit pas exister d'index ayant le même nom pour une autorié et une notice.
 
 **L'onglet biblio :**
 
