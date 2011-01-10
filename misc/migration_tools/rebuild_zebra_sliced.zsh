@@ -46,7 +46,7 @@ for ((i=$BIBLIOSTART ; i<$BIBLIOEND ; i=i+$INCREMENT)) do
     ./rebuild_zebra.pl -b -v -x -nosanitize -d /tmp/rebuild -k -ofset $INCREMENT -min $i >logs/rebuild$INCREMENT.$i.log 2>logs/rebuild$INCREMENT.$i.err
     if (($INCREMENT >1 )); then
         if (grep -l "previous transaction" logs/rebuild$INCREMENT.$i.err); then
-            echo "Faut que je splitte le $i"
+            echo "I must split the $i"
             ((subincrement=$INCREMENT/10))
             ((newBIBLIOEND=$i+$INCREMENT))
             $0 $subincrement $i $newBIBLIOEND
