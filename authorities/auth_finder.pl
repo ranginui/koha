@@ -54,7 +54,7 @@ if ( $searchquery ) {
     my $page        = $query->param('page') || 1;
     my $count       = 20;
     
-    my $authtype_index = C4::Search::Query::getIndexName('authtype');
+    my $authtype_index = C4::Search::Query::getIndexName('auth-type');
     my $filters = {
         recordtype   => 'authority',
         $authtype_index => $authtypecode,

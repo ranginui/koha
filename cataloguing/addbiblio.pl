@@ -706,7 +706,7 @@ AND (authtypecode IS NOT NULL AND authtypecode<>\"\")|
             # No authorities id in the tag.
             # Search if there is any authorities to link to.
             my $query = '*:*';
-            my $authtype_index = C4::Search::Query::getIndexName('authtype');
+            my $authtype_index = C4::Search::Query::getIndexName('auth-type');
             my $filters = {
                 recordtype   => 'authority',
                 $authtype_index => $data->{authtypecode},
