@@ -2261,6 +2261,7 @@ CREATE TABLE `accountlines` (
   `accountno` smallint(6) NOT NULL default 0,
   `itemnumber` int(11) default NULL,
   `date` date default NULL,
+  `time` TIME default NULL,
   `amount` decimal(28,6) default NULL,
   `description` mediumtext,
   `dispute` mediumtext,
