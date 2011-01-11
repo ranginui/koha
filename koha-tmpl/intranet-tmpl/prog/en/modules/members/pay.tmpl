@@ -113,17 +113,12 @@ function partpaymentchange(value,accountlineid,amountoutstanding)
 	<td><!-- TMPL_VAR name="description" --> <!-- TMPL_VAR name="title" escape="html" --></td>
 	<td>
 	<!-- TMPL_IF NAME="net_balance" -->
-	<input type="text" name="note<!-- TMPL_VAR name="i" -->" value="
-	<!-- /TMPL_IF -->
-	<!-- TMPL_VAR name="note" -->
-	<!-- TMPL_IF NAME="net_balance" -->" /><!-- /TMPL_IF -->
+	<input type="text" name="note<!-- TMPL_VAR name="i" -->" value="<!-- TMPL_VAR name="note" -->" /><!-- /TMPL_IF -->
 	</td>
 	<td>
 	<!-- TMPL_IF NAME="net_balance" -->
-	<input type="text" class="numeric_only" readOnly="true" id="partpaymentamount<!-- TMPL_VAR name="i" -->" name="partpaymentamount<!-- TMPL_VAR name="i" -->" value="
-	<!-- /TMPL_IF -->
-	<!-- TMPL_VAR name="partpaymentamount" -->
-	<!-- TMPL_IF NAME="net_balance" -->" onKeyUp="partpaymentchange(this.value,<!-- TMPL_VAR name="i" -->,<!-- TMPL_VAR name="amountoutstanding" -->)" /><!-- /TMPL_IF -->
+	<input type="text" class="numeric_only" readOnly="true" id="partpaymentamount<!-- TMPL_VAR name="i" -->" name="partpaymentamount<!-- TMPL_VAR name="i" -->" value="<!-- TMPL_VAR name="partpaymentamount" -->" onKeyUp="partpaymentchange(this.value,<!-- TMPL_VAR name="i" -->,<!-- TMPL_VAR name="amountoutstanding" -->)" /><!-- /TMPL_IF -->
+	</td>
 	</td>
 	<td><!-- TMPL_VAR name="accounttype" --></td>
 	<td><!-- TMPL_VAR name="notify_id" --></td>
