@@ -67,7 +67,7 @@ function searchauthority() {
       <td><a href="detail.pl?authid=<!-- TMPL_VAR NAME="authid" -->">Details</a></td>
   <!-- TMPL_UNLESS name="isEDITORS" -->
       <td>
-        <a href="../catalogue/search.pl?q=*:*&amp;filters=int_authid:<!--TMPL_VAR ESCAPE="URL" Name="authid" -->" class="button"><!-- TMPL_VAR NAME="used" --> biblio(s)</a>
+        <a href="../catalogue/search.pl?q=*:*&amp;filters=<!-- TMPL_VAR NAME="authid_index_name" -->:<!--TMPL_VAR ESCAPE="URL" Name="authid" -->" class="button"><!-- TMPL_VAR NAME="used" --> biblio(s)</a>
       </td>
   <!-- /TMPL_UNLESS -->
       <td>

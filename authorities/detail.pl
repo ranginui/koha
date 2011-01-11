@@ -47,6 +47,7 @@ use C4::Output;
 use CGI;
 use MARC::Record;
 use C4::Koha;
+use C4::Search::Query;
 
 # use C4::Biblio;
 # use C4::Catalogue;
@@ -451,11 +452,12 @@ foreach my $thisauthtype ( sort { $authtypes->{$b} cmp $authtypes->{$a} } keys %
 }
 
 $template->param(
-    authid        => $authid,
-    count         => $count,
-    biblio_fields => $biblio_fields,
-    authtypetext  => $authtypes->{$authtypecode}{'authtypetext'},
-    authtypesloop => \@authtypesloop,
+    authid            => $authid,
+    authid_index_name => C4::Search::Query::getIndexName('authid'),
+    count             => $count,
+    biblio_fields     => $biblio_fields,
+    authtypetext      => $authtypes->{$authtypecode}{'authtypetext'},
+    authtypesloop     => \@authtypesloop,
 );
 output_html_with_http_headers $query, $cookie, $template->output;
 

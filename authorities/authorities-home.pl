@@ -196,12 +196,12 @@ if ( $op eq "do_search" ) {
     );
 
     ( $template, $loggedinuser, $cookie ) = get_template_and_user( {
-        template_name   => "authorities/searchresultlist.tmpl",
-        query           => $query,
-        type            => 'intranet',
-        authnotrequired => 0,
-        flagsrequired   => { catalogue => 1 },
-        debug           => 1,
+        template_name     => "authorities/searchresultlist.tmpl",
+        query             => $query,
+        type              => 'intranet',
+        authnotrequired   => 0,
+        flagsrequired     => { catalogue => 1 },
+        debug             => 1,
     } );
 
     $template->param(
@@ -216,12 +216,14 @@ if ( $op eq "do_search" ) {
         orderby       => $orderby,
     );
 
+    my $authid_index_name = C4::Search::Query::getIndexName('authid');
     my @resultrecords;
     for ( @{$results->{items}} ) {
         my $authrecord = GetAuthority( $_->{values}->{recordid} );
 
         my $authority  = {
            authid  => $_->{values}->{recordid},
+           authid_index_name => $authid_index_name,
            summary => BuildSummary( $authrecord, $_->{values}->{recordid} ),
            used    => CountUsage( $_->{values}->{recordid} ),
         };
