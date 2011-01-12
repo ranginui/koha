@@ -1,5 +1,4 @@
 <div id="header-wrapper"><div id="members">
-<h1>PNF</h1>
   <!-- TMPL_IF NAME="opacuserlogin" -->
 	<ul>
 <!-- TMPL_UNLESS NAME="loggedinusername" -->
@@ -33,6 +32,8 @@
             <!-- TMPL_IF name="mylibraryfirst" --> (in <!-- TMPL_VAR name="mylibraryfirst" --> only)<!-- /TMPL_IF -->
 	<!-- /TMPL_UNLESS -->
     </label>
+    <input type=hidden name="limit" value="mc-itype=AV">
+    <input type=hidden name="limit" value="mc-itype=BK">
 
 	<select name="idx" id="masthead_search" class="left" style="max-width:10em;width:10em;">
 	<!-- TMPL_IF NAME="ms_kw" -->
