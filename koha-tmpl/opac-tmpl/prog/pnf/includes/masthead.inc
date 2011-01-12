@@ -1,4 +1,5 @@
 <div id="header-wrapper"><div id="members">
+<h1>PNF</h1>
   <!-- TMPL_IF NAME="opacuserlogin" -->
 	<ul>
 <!-- TMPL_UNLESS NAME="loggedinusername" -->
