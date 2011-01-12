@@ -176,6 +176,13 @@ if($input->param('field') and not defined $op){
         foreach my $biblionumber ( @biblionumbers ){
             my $record = GetMarcBiblio($biblionumber);
             my $biblio = GetBiblio($biblionumber);
+            unless ($record) {
+                my @failed_actions;
+                push @failed_actions, {action=> "invalid biblionumber"};
+                $report_actions{$biblionumber}->{status}="Actions_Failed";
+                $report_actions{$biblionumber}->{failed_actions}=\@failed_actions;
+                next;# skip if the biblionumber is wrong
+            }
             my $report = 0;
             my @failed_actions;
             for(my $i = 0 ; $i < scalar(@fields) ; $i++ ){
@@ -213,6 +220,7 @@ for my $biblionumber (@biblionumbers){
     if (defined $op){
         $biblio->{$report_actions{$biblionumber}->{status}}=1;
         $biblio->{failed_actions}=$report_actions{$biblionumber}->{failed_actions};
+        $biblio->{biblionumber} = $biblionumber; # useless except for wrong biblionumber entered by the librarian. GetBiblio returns nothing in this case
     }
     push @biblioinfos, $biblio;
 }
