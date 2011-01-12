@@ -34,6 +34,11 @@
     </label>
     <input type=hidden name="limit" value="mc-itype=AV">
     <input type=hidden name="limit" value="mc-itype=BK">
+    <input type=hidden name="limit" value="mc-itype=DB">
+    <input type=hidden name="limit" value="mc-itype=EBO">
+    <input type=hidden name="limit" value="mc-itype=EJOU">
+    <input type=hidden name="limit" value="mc-itype=JOU">
+    <input type=hidden name="limit" value="mc-itype=MF">
 
 	<select name="idx" id="masthead_search" class="left" style="max-width:10em;width:10em;">
 	<!-- TMPL_IF NAME="ms_kw" -->
@@ -70,7 +75,8 @@
         <option selected="selected" value="callnum">Call Number</option>
 		<!-- TMPL_ELSE -->
         <option value="callnum">Call Number</option>
-		<!-- /TMPL_IF --></select>
+		<!-- /TMPL_IF -->		
+		</select>
 <!-- TMPL_IF NAME="ms_value" -->
         <input type="text" id = "transl1" name="q" value="<!-- TMPL_VAR ESCAPE="HTML" NAME="ms_value" -->" class="left" style="width: 35%; font-size: 111%;"/><div id="translControl"></div>
 <!-- TMPL_ELSE -->
