@@ -81,8 +81,8 @@ sub _get_template_file {
     # if the template doesn't exist, load the English one as a last resort
     my $filename = "$htdocs/$theme/$lang/modules/$tmplbase";
     unless (-f $filename) {
-        $lang = 'en';
-        $filename = "$htdocs/$theme/$lang/modules/$tmplbase";
+#        $lang = 'en';
+        $filename = "$htdocs/$theme/en/modules/$tmplbase";
     }
 
     return ( $htdocs, $theme, $lang, $filename );
@@ -101,10 +101,12 @@ sub gettemplate {
         global_vars       => 1,
         case_sensitive    => 1,
         loop_context_vars => 1, # enable: __first__, __last__, __inner__, __odd__, __counter__ 
-        path              => ["$htdocs/$theme/$lang/$path"]
+        path              => ["$htdocs/$theme/$lang/$path",
+	    "$htdocs/$theme/en/$path"
+	]
     );
     my $themelang=( $interface ne 'intranet' ? '/opac-tmpl' : '/intranet-tmpl' )
-          . "/$theme/$lang";
+          . "/$theme/en";
     $template->param(
         themelang => $themelang,
         yuipath   => (C4::Context->preference("yuipath") eq "local"?"$themelang/lib/yui":C4::Context->preference("yuipath")),
@@ -155,9 +157,9 @@ sub themelanguage {
     # First, check the user's preferences
     my $lang;
     my $http_accept_language = $ENV{ HTTP_ACCEPT_LANGUAGE };
-    $lang = accept_language( $http_accept_language, 
-              getTranslatedLanguages($interface,'prog') )
-      if $http_accept_language;
+#    $lang = accept_language( $http_accept_language, 
+#              getTranslatedLanguages($interface,'prog') )
+#      if $http_accept_language;
     # But, if there's a cookie set, obey it
     $lang = $query->cookie('KohaOpacLanguage') if (defined $query and $query->cookie('KohaOpacLanguage'));
     # Fall back to English
