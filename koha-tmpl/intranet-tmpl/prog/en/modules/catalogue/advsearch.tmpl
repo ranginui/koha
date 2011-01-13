@@ -85,18 +85,22 @@
     <div id="itemtypelist">
 <!-- ITEMTYPE LIMITS -->
 	<fieldset>
-     <legend>Limit to any of the following:</legend>
+    <legend>Limit to any of the following:</legend>
+
     <table>
         <tr>
-      <!--TMPL_LOOP Name="itemtypeloop"-->
-        <td>
-        <!-- TMPL_IF name="imageurl"--><img border="0" src="<!--TMPL_VAR Name="imageurl" -->" alt="<!--TMPL_VAR Name="description" -->" /><!-- /TMPL_IF -->
-		<input type="checkbox" id="<!-- TMPL_VAR NAME="ccl" -->-<!--TMPL_VAR Name="number" -->" name="limit" value="mc-<!-- TMPL_VAR NAME="ccl" -->:<!--TMPL_VAR Name="code" -->" />&nbsp;
-        <label for="<!-- TMPL_VAR NAME="ccl" -->-<!--TMPL_VAR Name="number" -->"><!--TMPL_VAR Name="description" --></label></td>
-        <!-- TMPL_UNLESS name="count5" --></tr><tr><!-- /TMPL_UNLESS -->
-      <!--/TMPL_LOOP-->
-	  <!-- FIXME: for validation, avoid generating empty row -->
-      </tr>
+        <!--TMPL_LOOP Name="itemtypeloop"-->
+            <td>
+                <input type="checkbox" id="<!-- TMPL_VAR NAME="index" -->-<!--TMPL_VAR NAME="number" -->" name="filters" value='<!-- TMPL_VAR NAME="index" -->:"<!--TMPL_VAR NAME="description" -->"'/>
+                <label for="<!-- TMPL_VAR NAME="index" -->-<!--TMPL_VAR NAME="number" -->">
+                    <!-- TMPL_IF name="imageurl"-->
+                    <img border="0" src="<!--TMPL_VAR Name="imageurl" -->" alt="<!--TMPL_VAR Name="description" -->" /><!-- /TMPL_IF -->&nbsp;
+                    <!--TMPL_VAR Name="description" -->
+                </label>
+            </td>
+            <!-- TMPL_UNLESS name="count5" --><!-- TMPL_UNLESS name="__last__" --></tr><tr><!-- /TMPL_UNLESS --><!-- /TMPL_UNLESS -->
+        <!--/TMPL_LOOP-->
+        </tr>
     </table>
 	</fieldset>
 <!-- /ITEMTYPE LIMITS -->
@@ -114,21 +118,20 @@
 </div>
 <div id="language" class="container">
 <!-- LANGUAGE LIMIT -->
-		<p><label for="language-limit">Language: </label>                                        
-		<select name="limit">
-		<option value="">No Limit</option>
-		<!-- TMPL_LOOP NAME="search_languages_loop" -->
-		<!-- TMPL_IF NAME="selected" -->
-		<option value="ln,rtrn:<!-- TMPL_VAR NAME="iso639_2_code" -->" selected="selected"><!-- TMPL_VAR NAME="language_description" --></option>
-		<!-- TMPL_ELSE -->
-		<option value="ln,rtrn:<!-- TMPL_VAR NAME="iso639_2_code" -->"><!-- TMPL_VAR NAME="language_description" --></option>
-		<!-- /TMPL_IF -->
-		
-		<!-- /TMPL_LOOP -->
-		</select></p><!-- <a href="">Show all languages</a>-->
-<!-- /LANGUAGE LIMIT -->
+    <p>
+        <label for="filters">Language: </label>
+        <select name="filters">
+            <option value="" selected="selected">No Limit</option>
+                <!-- TMPL_LOOP NAME="search_languages_loop" -->
+                    <option value='<!-- TMPL_VAR NAME="lang_index" -->:"<!-- TMPL_VAR NAME="lib" -->"' <!-- TMPL_IF NAME="selected" -->selected="selected"<!-- /TMPL_IF -->>
+                        <!-- TMPL_VAR NAME="lib" -->
+                    </option>
+                <!-- /TMPL_LOOP -->
+        </select>
+    </p>
 </div>
 </fieldset>
+<!-- /LANGUAGE LIMIT -->
 <!-- /BASIC LIMITS -->
 </div>
 
@@ -260,21 +263,19 @@
 <!-- AVAILABILITY LIMITS -->
     <fieldset><legend>Location and availability: </legend>
 <div id="currently-avail" class="container">
-        <label for="available-items">Only items currently available</label> <input type="checkbox" id="available-items" name="limit" value="available" />
+        <label for="available-items">Only items currently available</label> <input type="checkbox" id="available-items" name="filters" value="int_availability:1" />
 </div>
 <p />
 <div id="select-libs" class="container">
-        <label for="branchloop">Individual Libraries:</label><select name="limit" id="branchloop" onchange='if(this.value != ""){document.getElementById("categoryloop").disabled=true;} else {document.getElementById("categoryloop").disabled=false;}'>
-        <option value="">All Libraries</option>
-        <!-- TMPL_LOOP NAME="branchloop" -->
-        <!-- TMPL_IF NAME="selected" -->
-        <option value="branch:<!-- TMPL_VAR NAME="value" -->" selected="selected"><!-- TMPL_VAR NAME="branchname" --></option>
-        <!-- TMPL_ELSE -->
-        <option value="branch:<!-- TMPL_VAR NAME="value" -->"><!-- TMPL_VAR NAME="branchname" --></option>
-        <!-- /TMPL_IF -->
+        <label for="branchloop">Individual Libraries:</label>
+        <select name="filters" id="branchloop" onchange='if(this.value != ""){document.getElementById("categoryloop").disabled=true;} else {document.getElementById("categoryloop").disabled=false;}'>
+            <option value="">All Libraries</option>
+            <!-- TMPL_LOOP NAME="branchloop" -->
+            <option value='<!-- TMPL_VAR NAME="holdingbranch_index" -->:"<!-- TMPL_VAR NAME="branchname" -->"' <!--TMPL_IF NAME="selected"-->selected="selected"<!--/TMPL_IF--> >
+                <!-- TMPL_VAR NAME="branchname" -->
+            </option>
         <!-- /TMPL_LOOP -->
         </select>
-    <!-- <input type="hidden" name="limit" value="branch: MAIN" /> -->
         <!-- TMPL_IF NAME="searchdomainloop" -->
     <p>OR</p> <!-- should addjs to grey out group pulldown if a library is selected. -->
         <label for="categoryloop">Groups of Libraries</label><select name="multibranchlimit" id="categoryloop">
@@ -287,6 +288,7 @@
 </div>
     </fieldset>
 <!-- /AVAILABILITY LIMITS -->
+
 </div>
 
 <!-- RANK LIMITS -->

@@ -178,7 +178,6 @@ if ( !$advanced_search_types or $advanced_search_types eq 'itemtypes' ) {
         my %row = (
             number      => $cnt++,
             index       => C4::Search::Query::getIndexName('ccode'),
-            ccl         => $advanced_search_types,
             code        => $thisitemtype->{authorised_value},
             selected    => $selected,
             description => $thisitemtype->{'lib'},
@@ -302,8 +301,6 @@ if ( $params->{'limit-yr'} ) {
         #FIXME: Should return a error to the user, incorect date format specified
     }
 }
-
-
 
 # perform the search
 my $res = SimpleSearch( $q, \%filters, $page, $count, $sort_by);

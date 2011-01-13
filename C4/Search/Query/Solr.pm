@@ -46,6 +46,11 @@ sub buildQuery {
     my $i = 0;
     my $index_name;
 
+    @$operands or @$operands = map {
+        s/ ^\s+ | \s+$ //gx; # trim
+        length($_) ?  "[* TO *]" : ()
+    }  @$indexes;
+
     # Foreach operands
     for my $kw (@$operands){
         # First element

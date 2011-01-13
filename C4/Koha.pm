@@ -1129,8 +1129,7 @@ sub GetAuthorisedValues {
         push @results, $data;
     }
 
-    #my $data = $sth->fetchall_arrayref({});
-    return \@results;    #$data;
+    return \@results;
 }
 
 sub GetAuthorisedValueLib {

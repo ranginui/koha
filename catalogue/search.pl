@@ -146,7 +146,7 @@ use C4::Auth qw(:DEFAULT get_session);
 use C4::Biblio;
 use C4::Search;
 use C4::Search::Query;
-use C4::Languages qw(getAllLanguages);
+use C4::Languages qw(getAllLanguagesAuthorizedValues);
 use C4::Koha;
 use C4::VirtualShelves qw(GetRecentShelves);
 use POSIX qw(ceil floor);
@@ -163,8 +163,7 @@ my ( $template, $borrowernumber, $cookie );
 # decide which template to use
 my $template_name;
 my $template_type;
-my @params = $cgi->param("limit");
-if ( ( @params >= 1 ) || ( $cgi->param("q") ) || ( $cgi->param('multibranchlimit') ) || ( $cgi->param('limit-yr') ) ) {
+if ( ( $cgi->param("idx") ) || ( $cgi->param("q") ) || ( $cgi->param('multibranchlimit') ) || ( $cgi->param('limit-yr') ) ) {
     $template_name = 'catalogue/results.tmpl';
 } else {
     $template_name = 'catalogue/advsearch.tmpl';
@@ -226,6 +225,8 @@ my $categories = GetBranchCategories( undef, 'searchdomain' );
 
 $template->param( branchloop => \@branch_loop, searchdomainloop => $categories );
 
+$template->param( holdingbranch_index => C4::Search::Query::getIndexName('holdingbranch') );
+
 # load the Type stuff
 # load the Type stuff
 my $itemtypes = GetItemTypes;
@@ -241,7 +242,7 @@ if ( !$advanced_search_types or $advanced_search_types eq 'itemtypes' ) {
     foreach my $thisitemtype ( sort { $itemtypes->{$a}->{'description'} cmp $itemtypes->{$b}->{'description'} } keys %$itemtypes ) {
         my %row = (
             number      => $cnt++,
-            ccl         => $itype_or_itemtype,
+            index       => $itype_or_itemtype,
             code        => $thisitemtype,
             selected    => $selected,
             description => $itemtypes->{$thisitemtype}->{'description'},
@@ -251,13 +252,13 @@ if ( !$advanced_search_types or $advanced_search_types eq 'itemtypes' ) {
         $selected = 0 if ($selected);
         push @itemtypesloop, \%row;
     }
-    $template->param( itemtypeloop => \@itemtypesloop );
 } else {
     my $advsearchtypes = GetAuthorisedValues($advanced_search_types);
+    warn Data::Dumper::Dumper $advsearchtypes;
     for my $thisitemtype ( sort { $a->{'lib'} cmp $b->{'lib'} } @$advsearchtypes ) {
         my %row = (
             number      => $cnt++,
-            ccl         => $advanced_search_types,
+            index       => C4::Search::Query::getIndexName('ccode'),
             code        => $thisitemtype->{authorised_value},
             selected    => $selected,
             description => $thisitemtype->{'lib'},
@@ -266,8 +267,8 @@ if ( !$advanced_search_types or $advanced_search_types eq 'itemtypes' ) {
         );
         push @itemtypesloop, \%row;
     }
-    $template->param( itemtypeloop => \@itemtypesloop );
 }
+$template->param( itemtypeloop => \@itemtypesloop );
 
 # The following should only be loaded if we're bringing up the advanced search template
 if ( $template_type eq 'advsearch' ) {
@@ -314,8 +315,8 @@ if ( $template_type eq 'advsearch' ) {
     );
 
     # load the language limits (for search)
-    my $languages_limit_loop = getAllLanguages();
-    $template->param( search_languages_loop => $languages_limit_loop, );
+    $template->param( search_languages_loop => getAllLanguagesAuthorizedValues() );
+    $template->param( lang_index => C4::Search::Query::getIndexName('lang') );
 
     # use the global setting by default
     if ( C4::Context->preference("expandedSearchOption") == 1 ) {
@@ -406,6 +407,25 @@ my @indexes = $cgi->param('idx');
 my @operators = $cgi->param('op');
 my @operands = $cgi->param('q');
 my $q = C4::Search::Query->buildQuery(\@indexes, \@operands, \@operators);
+
+# append year limits if they exist
+if ( $params->{'limit-yr'} ) {
+    if ( $params->{'limit-yr'} =~ /\d{4}-\d{4}/ ) {
+        my ( $yr1, $yr2 ) = split( /-/, $params->{'limit-yr'} );
+        $q .= ' AND date_pubdate:["' . C4::Search::Engine::Solr::NormalizeDate($yr1) . '" TO "' . C4::Search::Engine::Solr::NormalizeDate($yr2) . '"]';
+    } elsif ( $params->{'limit-yr'} =~ /-\d{4}/ ) {
+        $params->{'limit-yr'} =~ /-(\d{4})/;
+        $q .= ' AND date_pubdate:[* TO "' . C4::Search::Engine::Solr::NormalizeDate($1) . '"]';
+    } elsif ( $params->{'limit-yr'} =~ /\d{4}-/ ) {
+        $params->{'limit-yr'} =~ /(\d{4})-/;
+        $q .= ' AND date_pubdate:["' . C4::Search::Engine::Solr::NormalizeDate($1) . '" TO *]';
+    } elsif ( $params->{'limit-yr'} =~ /\d{4}/ ) {
+        $q .= ' AND date_pubdate:"' . C4::Search::Engine::Solr::NormalizeDate($params->{'limit-yr'}) . '"';
+    } else {
+        #FIXME: Should return a error to the user, incorect date format specified
+    }
+}
+
 my $res = SimpleSearch( $q, \%filters, $page, $count, $sort_by);
 
 if (!$res){

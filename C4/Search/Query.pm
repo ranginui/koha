@@ -97,7 +97,6 @@ sub getSolrIndex {
     # init mapper if it's not already done
     %indexes_mapper or initIndexesMapper;
 
-    #warn Data::Dumper::Dumper %indexes_mapper;
     $indexes_mapper{$index}->{Solr}->{name} 
     || getSolrIndexFromZebra ($index)
     || $index
