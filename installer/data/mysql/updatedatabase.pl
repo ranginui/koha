@@ -4920,6 +4920,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 
 $DBversion = "3.02.00.055";
 if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+<<<<<<< HEAD
     $dbh->do("
 	ALTER TABLE `items` DROP INDEX `itemsstocknumberidx`;
 	");
@@ -4965,6 +4966,14 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     print "Upgrade to $DBversion done (Adding upload plugin sysprefs)\n";
     SetVersion($DBversion);
 }
+
+$DBversion = "3.02.00.057";
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+    $dbh->do("ALTER TABLE overduerules ALTER delay1 SET DEFAULT NULL, ALTER delay2 SET DEFAULT NULL, ALTER delay3 SET DEFAULT NULL");
+    print "Upgrade to $DBversion done (Setting NULL default value for delayn columns in table overduerules)\n";
+    SetVersion($DBversion);
+}
+
 
 =item DropAllForeignKeys($table)
 
