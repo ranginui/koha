@@ -212,7 +212,7 @@ sub SimpleSearch {
     $max_results ||= 999999999;
     $sort        ||= 'score desc';
 
-    $sort = "srt_$sort" if $sort =~ /^(str|txt|int|date)_/;
+    $sort = "srt_$sort" if $sort =~ /^(str|txt|int|date|ste)_/;
 
     my $sc = GetSolrConnection;
 
