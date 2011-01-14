@@ -4920,7 +4920,6 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 
 $DBversion = "3.02.00.055";
 if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
-<<<<<<< HEAD
     $dbh->do("
 	ALTER TABLE `items` DROP INDEX `itemsstocknumberidx`;
 	");
@@ -4954,7 +4953,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     SetVersion($DBversion);
 }
 
-$DBversion = "3.02.00.056";
+$DBversion = "3.02.00.058";
 if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     $dbh->do("
 	INSERT IGNORE INTO `systempreferences` (variable,value,explanation,options,type) VALUES('uploadPath','','Sets the upload path for the upload.pl plugin','','');
@@ -4967,7 +4966,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     SetVersion($DBversion);
 }
 
-$DBversion = "3.02.00.057";
+$DBversion = "3.02.00.059";
 if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     $dbh->do("ALTER TABLE overduerules ALTER delay1 SET DEFAULT NULL, ALTER delay2 SET DEFAULT NULL, ALTER delay3 SET DEFAULT NULL");
     print "Upgrade to $DBversion done (Setting NULL default value for delayn columns in table overduerules)\n";
