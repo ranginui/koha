@@ -254,7 +254,6 @@ if ( !$advanced_search_types or $advanced_search_types eq 'itemtypes' ) {
     }
 } else {
     my $advsearchtypes = GetAuthorisedValues($advanced_search_types);
-    warn Data::Dumper::Dumper $advsearchtypes;
     for my $thisitemtype ( sort { $a->{'lib'} cmp $b->{'lib'} } @$advsearchtypes ) {
         my %row = (
             number      => $cnt++,
@@ -427,6 +426,7 @@ if ( $params->{'limit-yr'} ) {
 }
 
 my $res = SimpleSearch( $q, \%filters, $page, $count, $sort_by);
+C4::Context->preference("DebugLevel") eq '2' && warn "ProSolrSimpleSearch:q=$q:";
 
 if (!$res){
     $template->param(query_error => "Bad request! help message ?");

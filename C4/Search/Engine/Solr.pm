@@ -320,9 +320,10 @@ sub IndexRecord {
         push @recordpush, $solrrecord;
 
         if ( @recordpush == 5000 ) {
+            $debug eq '2' && print "id:".$id." ".`date`;
             if (defined $g) {
               $g->stop;
-              $debug eq '2' && print "Time building documents - ".$g->elapsed_str;
+              $debug eq '2' && print "Building - ".$g->elapsed_str;
             }
 
             my $p = new Time::Progress;
@@ -332,7 +333,7 @@ sub IndexRecord {
             @recordpush = ();
 
             $p->stop;
-            $debug eq '2' && print "Time solr call - ".$p->elapsed_str;
+            $debug eq '2' && print "Indexing - ".$p->elapsed_str;
 
             $g = new Time::Progress;
             $g->restart;

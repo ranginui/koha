@@ -65,6 +65,9 @@ if ( $op eq "do_search" ) {
                 when ( 'FAM' ) {
                     push @$indexes, 'auth-name-heading';
                 }
+                when ( 'SNG' ) {
+                    push @$indexes, 'auth-name-geographic-heading';
+                }
                 when ( 'SAUTTIT' ) {
                     push @$indexes, 'auth-name-title-heading';
                 }
@@ -187,6 +190,7 @@ if ( $op eq "do_search" ) {
     my $q = C4::Search::Query->buildQuery($indexes, $operands, ());
 
     my $results = SimpleSearch($q, $filters, $page, $count, $orderby);
+    C4::Context->preference("DebugLevel") eq '2' && warn "AuthSolrSimpleSearch:q=$q:";
 
     my $pager = Data::Pagination->new(
         $results->{pager}->{total_entries},
