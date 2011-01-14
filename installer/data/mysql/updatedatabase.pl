@@ -3752,6 +3752,17 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
 $DBversion = '3.01.00.999';
 if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     print "Upgrade to $DBversion done (3.2.0 release candidate)\n";
+   SetVersion ($DBversion);
+}
+
+# Bumping the number Plant and Food need this, and it wont make it into 3.2.x
+# So numbering before them, so they dont hurt, will need to be tidied for 3.4
+$DBversion = "3.01.01.001";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES ('ShelfBrowserUsesLocation','1','Use the item location when finding items for the shelf browser.','1','YesNo')");
+    $dbh->do("INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES ('ShelfBrowserUsesHomeBranch','1','Use the item home branch when finding items for the shelf browser.','1','YesNo')");
+    $dbh->do("INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES ('ShelfBrowserUsesCcode','0','Use the item collection code when finding items for the shelf browser.','1','YesNo')");
+    print "Upgrade to $DBversion done (Add flexible shelf browser constraints)\n";
     SetVersion ($DBversion);
 }
 
