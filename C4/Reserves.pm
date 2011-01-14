@@ -439,7 +439,6 @@ sub CanItemBeReserved {
     my $branchcode;
     
     my $controlbranch = C4::Context->preference('ReservesControlBranch');
-    my $itype = C4::Context->preference('item-level_itypes') ? "itype" : "itemtype";
 
     # we retrieve borrowers and items informations #
     my $item     = C4::Items::GetItem($itemnumber);
@@ -457,7 +456,7 @@ sub CanItemBeReserved {
     
     # We see if he have right or not to reserve this item(Y or N), we don't care about the number of reserves allowed
     # if he have no rule set, he have not right
-    my $issuingrule = GetIssuingRule($borrower->{categorycode}, $item->{$itype}, $branchcode);
+    my $issuingrule = GetIssuingRule($borrower->{categorycode}, $item->{'itype'}, $branchcode);
     return 0 if( defined $issuingrule->{reservesallowed} && not $issuingrule->{reservesallowed} ); 
     
     # We retrieve the count of reserves allowed for this category code
