@@ -70,7 +70,7 @@ if ( $format =~ /(rss|atom|opensearchdescription)/ ) {
     $template_name = 'opac-opensearch.tmpl';
 } elsif ($build_grouped_results) {
     $template_name = 'opac-results-grouped.tmpl';
-} elsif ( ( @params >= 1 ) || ( $cgi->param("q") ) || ( $cgi->param('multibranchlimit') ) || ( $cgi->param('limit-yr') ) ) {
+} elsif ( ($cgi->param("filters")) || ( $cgi->param("idx") ) || ( $cgi->param("q") ) || ( $cgi->param('multibranchlimit') ) || ( $cgi->param('limit-yr') ) ) {
     $template_name = 'opac-results.tmpl';
 } else {
     $template_name = 'opac-advsearch.tmpl';

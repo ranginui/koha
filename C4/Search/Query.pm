@@ -186,8 +186,8 @@ sub splitToken {
             }
         }
         # Replace new index in string
-        $string =~ s/(^| )$old_idx:/ $idx:/;
-        $string =~ s/:$old_operand/:$operand/;
+        $string =~ s/\Q(^| )$old_idx:\E/ $idx:/;
+        $string =~ s/\Q:$old_operand\E/:$operand/;
     }
 
     # Delete first space causing by previous replacement

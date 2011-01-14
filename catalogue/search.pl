@@ -163,7 +163,7 @@ my ( $template, $borrowernumber, $cookie );
 # decide which template to use
 my $template_name;
 my $template_type;
-if ( ( $cgi->param("idx") ) || ( $cgi->param("q") ) || ( $cgi->param('multibranchlimit') ) || ( $cgi->param('limit-yr') ) ) {
+if ( ($cgi->param("filters")) || ( $cgi->param("idx") ) || ( $cgi->param("q") ) || ( $cgi->param('multibranchlimit') ) || ( $cgi->param('limit-yr') ) ) {
     $template_name = 'catalogue/results.tmpl';
 } else {
     $template_name = 'catalogue/advsearch.tmpl';

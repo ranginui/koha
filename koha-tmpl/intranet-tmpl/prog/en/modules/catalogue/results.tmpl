@@ -205,7 +205,10 @@ function GetZ3950Terms(){
     <!-- TMPL_IF NAME="total" -->
         <div id="searchheader">
             <form action="/cgi-bin/koha/catalogue/search.pl" method="get" id="sortbyform">
-                <input type="hidden" name="q" value="<!-- TMPL_VAR NAME="query" -->" />
+                <input type="hidden" name="q" value="<!-- TMPL_VAR ESCAPE="HTML" NAME="query" -->" />
+                <!-- TMPL_LOOP NAME="filters" -->
+	                <input type="hidden" name="filters" value="<!--TMPL_VAR NAME="ind"-->:&quot;<!--TMPL_VAR ESCAPE="HTML" NAME="val"-->&quot;" />
+                <!-- /TMPL_LOOP -->
                 <!-- TMPL_IF NAME="searchdesc" -->
                     <!-- TMPL_LOOP NAME="QUERY_INPUTS"-->
                     <input type="hidden" name="<!-- TMPL_VAR ESCAPE=HTML NAME="input_name" -->" value="<!-- TMPL_VAR ESCAPE=HTML NAME="input_value" -->"/>
