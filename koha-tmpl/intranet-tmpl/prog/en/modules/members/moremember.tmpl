@@ -801,13 +801,13 @@ $(document).ready(function() {
 		<!-- /TMPL_LOOP --></tbody>
     </table>
 
-        <fieldset class="action">
-        <input type="submit" name="renew_checked" value="Renew or Return checked items" />
-        <input type="submit" id="renew_all" name="renew_all" value="Renew all" />
-        </fieldset>
-    <!-- TMPL_ELSE --><p>Patron has nothing checked out.</p><!-- /TMPL_IF -->
-	</div>
-	
+        <fieldset class="action"><input type="submit" class="cancel" name="submit" value="Cancel Marked Requests" /></fieldset>
+    </form>
+    <!-- TMPL_ELSE -->
+    <p>Patron has nothing on hold.</p>
+    <!-- /TMPL_IF -->
+    </div>
+
 
 </div>
 <!-- /TMPL_IF --> <!-- unknowuser -->
