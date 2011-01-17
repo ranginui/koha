@@ -186,7 +186,7 @@ sub splitToken {
             }
         }
         # Replace new index in string
-        $string =~ s/\Q(^| )$old_idx:\E/ $idx:/;
+        $string =~ s/(^| )\Q$old_idx:\E/ $idx:/;
         $string =~ s/\Q:$old_operand\E/:$operand/;
     }
 
