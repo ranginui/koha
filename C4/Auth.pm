@@ -920,11 +920,13 @@ sub checkauth {
         suggestion           => C4::Context->preference("suggestion"),
         virtualshelves       => C4::Context->preference("virtualshelves"),
         LibraryName          => C4::Context->preference("LibraryName"),
+	
         opacuserlogin        => C4::Context->preference("opacuserlogin"),
         OpacNav              => C4::Context->preference("OpacNav"),
         opaccredits          => C4::Context->preference("opaccredits"),
         opacreadinghistory   => C4::Context->preference("opacreadinghistory"),
         opacsmallimage       => C4::Context->preference("opacsmallimage"),
+	opacstylesheet            => "" . C4::Context->preference("opacstylesheet"),	
         opaclayoutstylesheet => C4::Context->preference("opaclayoutstylesheet"),
         opaccolorstylesheet  => C4::Context->preference("opaccolorstylesheet"),
         opaclanguagesdisplay => C4::Context->preference("opaclanguagesdisplay"),
@@ -937,8 +939,7 @@ sub checkauth {
         opacheader           => C4::Context->preference("opacheader"),
         TagsEnabled                  => C4::Context->preference("TagsEnabled"),
         OPACUserCSS           => C4::Context->preference("OPACUserCSS"),
-        intranetcolorstylesheet =>
-								C4::Context->preference("intranetcolorstylesheet"),
+        intranetcolorstylesheet => C4::Context->preference("intranetcolorstylesheet"),
         intranetstylesheet => C4::Context->preference("intranetstylesheet"),
         intranetbookbag    => C4::Context->preference("intranetbookbag"),
         IntranetNav        => C4::Context->preference("IntranetNav"),
