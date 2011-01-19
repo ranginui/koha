@@ -317,7 +317,7 @@ if ( $res->{'pager'}->{'total_entries'} == 1
     && $format ne 'rss2'
     && $format ne 'opensearchdescription'
     && $format ne 'atom' ) {
-    my $biblionumber = $res->{'items'}->[0]->{'values'}->{C4::Search::Query::getIndexName('biblionumber')};
+    my $biblionumber = $res->{'items'}->[0]->{'values'}->{C4::Search::Query::getIndexName('recordid')};
     if ( C4::Context->preference('BiblioDefaultView') eq 'isbd' ) {
         print $cgi->redirect("/cgi-bin/koha/opac-ISBDdetail.pl?biblionumber=$biblionumber");
     } elsif ( C4::Context->preference('BiblioDefaultView') eq 'marc' ) {
