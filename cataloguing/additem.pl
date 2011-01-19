@@ -131,7 +131,7 @@ sub generate_subfield_form {
                 foreach my $thisbranch (@$branches) {
                     push @authorised_values, $thisbranch->{value};
                     $authorised_lib{$thisbranch->{value}} = $thisbranch->{branchname};
-                    $value = $thisbranch->{value} if $thisbranch->{selected};
+                    $value = $thisbranch->{value} if ($thisbranch->{selected} and not defined ($value));
                 }
             }
             elsif ( $subfieldlib->{authorised_value} eq "itemtypes" ) {
