@@ -32,19 +32,11 @@
             <!-- TMPL_IF name="mylibraryfirst" --> (in <!-- TMPL_VAR name="mylibraryfirst" --> only)<!-- /TMPL_IF -->
 	<!-- /TMPL_UNLESS -->
     </label>
-    <input type=hidden name="limit" value="mc-itype=AV">
-    <input type=hidden name="limit" value="mc-itype=BK">
-    <input type=hidden name="limit" value="mc-itype=DB">
-    <input type=hidden name="limit" value="mc-itype=EBO">
-    <input type=hidden name="limit" value="mc-itype=EJOU">
-    <input type=hidden name="limit" value="mc-itype=JOU">
-    <input type=hidden name="limit" value="mc-itype=MF">
-
 	<select name="idx" id="masthead_search" class="left" style="max-width:10em;width:10em;">
 	<!-- TMPL_IF NAME="ms_kw" -->
-        <option selected="selected" value="">Library Catalog</option>
+        <option selected="selected" value="kw">Library Catalog</option>
 		<!-- TMPL_ELSE -->
-        <option value="">Library Catalog</option>
+        <option value="kw">Library Catalog</option>
 		<!-- /TMPL_IF -->
 		<!-- TMPL_IF NAME="ms_ti" -->
         <option selected="selected" value="ti">Title</option>
@@ -100,7 +92,9 @@
       <input name="limit" value="<!-- TMPL_VAR name="opac_search_limit" -->" type="hidden" />
    <!-- /TMPL_IF -->
 
-
+    <input type=hidden name="op" value="not">
+    <input type=hidden name="idx" value="itype,phr">                                                                   
+    <input type=hidden name="q" value="ACT"> 
     <input type="submit" value="Go" id="searchsubmit" class="left" />
 <!-- TMPL_IF NAME="opacbookbag" --><span id="cmspan"></span><!-- /TMPL_IF -->
 
