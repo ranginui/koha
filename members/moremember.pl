@@ -459,14 +459,6 @@ sub GetCriteriumDesc {
     my $countsuggestions=0;
     my $reasonsloop = GetAuthorisedValues("SUGGEST");
     foreach my $criteriumvalue ( map { $$_{'value'} } @$criteria_list ) {
-        my $definedvalue = defined $$suggestion_ref{$displayby} && $$suggestion_ref{$displayby} ne "";
-
-        next if ( $definedvalue && $$suggestion_ref{$displayby} ne $criteriumvalue );
-        $$suggestion_ref{$displayby} = $criteriumvalue;
-
-        #        warn $$suggestion_ref{$displayby}."=$criteriumvalue; $displayby";
-        #warn "===========================================";
-        #warn Data::Dumper::Dumper($suggestion_ref);
         my $suggestions = &SearchSuggestion($suggestion_ref);
         foreach my $suggestion (@$suggestions) {
             $suggestion->{budget_name} = GetBudget( $suggestion->{budgetid} )->{budget_name} if $suggestion->{budgetid};
@@ -479,14 +471,13 @@ sub GetCriteriumDesc {
             }
             $countsuggestions++;
         }
-push @allsuggestions,
+        push @allsuggestions,
           { "suggestiontype" => $criteriumvalue || "suggest",
             "suggestiontypelabel" => GetCriteriumDesc( $criteriumvalue, $displayby ) || "",
             "suggestionscount"    => scalar(@$suggestions),
             'suggestions_loop'    => $suggestions,
             'reasonsloop'         => $reasonsloop,
           };
-        delete $$suggestion_ref{$displayby} unless $definedvalue;
     }
         if($countsuggestions>0)
         {
