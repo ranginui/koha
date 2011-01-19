@@ -1898,7 +1898,7 @@ sub CanBookBeRenewed {
     my $item      = GetItem($itemnumber)                                or return undef;
     my $itemissue = GetItemIssue($itemnumber)                           or return undef;
     my $branchcode = _GetCircControlBranch( $item, $borrower );
-    if ( $itemissue->{'overdue'} ) {
+    if ( $itemissue->{'overdue'}  and C4::Context->preference('BlockRenewWhenOverdue')) {
         $renewokay = 0;
         $error->{message} = 'overdue';
     }

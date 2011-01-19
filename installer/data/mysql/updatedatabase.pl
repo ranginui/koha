@@ -4973,6 +4973,15 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     SetVersion($DBversion);
 }
 
+$DBversion = "3.02.00.060";
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+    $dbh->do(qq{
+	INSERT IGNORE INTO `systempreferences` (variable,value,explanation,options,type) VALUES('BlockRenewWhenOverdue','0','If Set, when item is overdue, renewals are blocked','','YesNo');
+    });
+    print "Upgrade to $DBversion done (Adds New System preference BlockRenewWhenOverdue)\n";
+    SetVersion($DBversion);
+}
+
 
 =item DropAllForeignKeys($table)
 
