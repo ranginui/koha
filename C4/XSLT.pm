@@ -134,9 +134,7 @@ sub XSLTParse4Display {
     my ( $biblionumber, $orig_record, $xslfilename ) = @_;
 
     # grab the XML, run it through our stylesheet, push it out to the browser
-    warn "bibnumber : ",$biblionumber;
     my $record = transformMARCXML4XSLT( $biblionumber, $orig_record );
-    warn "record : ",$record->as_formatted;
 	my $itemsimageurl = GetKohaImageurlFromAuthorisedValues( "CCODE", $orig_record->subfield("099", "t")) || '';
 	my $logoxml = "<logo>" . $itemsimageurl . "</logo>\n";
     #return $record->as_formatted();
