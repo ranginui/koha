@@ -1716,8 +1716,10 @@ sub SetMemberInfosInTemplate {
 
     foreach (qw(dateenrolled dateexpiry dateofbirth)) {
         my $userdate = $borrower->{$_};
-        unless ($userdate) {
+        unless ($userdate && $userdate ne "0000-00-00") {
+            $debug and warn sprintf "Empty \$data{%12s}", $_;
             $borrower->{$_} = '';
+            $template->param( $_ => $borrower->{$_} );
             next;
         }
         $userdate = C4::Dates->new( $userdate, 'iso' )->output('syspref');
