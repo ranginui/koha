@@ -1533,7 +1533,8 @@ sub GetMarcAuthors {
               if ( $marcflavour eq 'UNIMARC' and ( $authors_subfield->[0] =~ /4/ ) );
             my @this_link_loop = @link_loop;
             my $separator = C4::Context->preference("authoritysep") unless $count_auth == 0;
-            push @subfields_loop, { code => $subfieldcode, value => $value, link_loop => \@this_link_loop, separator => $separator } unless ( $authors_subfield->[0] eq '9' );
+            # ignore $9 and $6
+            push @subfields_loop, { code => $subfieldcode, value => $value, link_loop => \@this_link_loop, separator => $separator } unless ( $authors_subfield->[0] eq '9' or $authors_subfield->[0] eq '6' );
             $count_auth++;
         }
         push @marcauthors, { MARCAUTHOR_SUBFIELDS_LOOP => \@subfields_loop };
