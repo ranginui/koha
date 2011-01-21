@@ -61,6 +61,7 @@ INSERT INTO `auth_tag_structure` (`authtypecode`, `tagfield`, `liblibrarian`, `l
 INSERT INTO `auth_tag_structure` (`authtypecode`, `tagfield`, `liblibrarian`, `libopac`, `repeatable`, `mandatory`, `authorised_value`) VALUES ('', '410', 'Forme rejetée', '', 1, 0, '');
 INSERT INTO `auth_tag_structure` (`authtypecode`, `tagfield`, `liblibrarian`, `libopac`, `repeatable`, `mandatory`, `authorised_value`) VALUES ('', '415', 'Forme rejetée', '', 1, 0, '');
 INSERT INTO `auth_tag_structure` (`authtypecode`, `tagfield`, `liblibrarian`, `libopac`, `repeatable`, `mandatory`, `authorised_value`) VALUES ('', '430', 'Forme rejetée', '', 1, 0, NULL);
+INSERT INTO `auth_tag_structure` (`authtypecode`, `tagfield`, `liblibrarian`, `libopac`, `repeatable`, `mandatory`, `authorised_value`) VALUES ('', '440', 'Forme rejetée', '', 1, 0, NULL);
 INSERT INTO `auth_tag_structure` (`authtypecode`, `tagfield`, `liblibrarian`, `libopac`, `repeatable`, `mandatory`, `authorised_value`) VALUES ('', '450', 'Forme rejetée', '', 1, 0, '');
 INSERT INTO `auth_tag_structure` (`authtypecode`, `tagfield`, `liblibrarian`, `libopac`, `repeatable`, `mandatory`, `authorised_value`) VALUES ('', '500', 'Forme associée', '', 1, 0, '');
 INSERT INTO `auth_tag_structure` (`authtypecode`, `tagfield`, `liblibrarian`, `libopac`, `repeatable`, `mandatory`, `authorised_value`) VALUES ('', '515', 'Forme associée', '', 1, 0, NULL);
