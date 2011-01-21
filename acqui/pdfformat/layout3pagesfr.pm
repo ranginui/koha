@@ -94,7 +94,7 @@ sub printorders {
         # add basketgroup number
         $text->font( $pdf->corefont( "Times", -encoding => "utf8" ), 6 / mm );
         $text->translate( 20 / mm, ( $height - 15 ) / mm );
-        $text->text( "Order N°" . $basketgroup->{'id'} . ". Basket N° " . $basket->{basketno} . ". " . $basket->{booksellernote} );
+        $text->text( "Commande N°" . $basketgroup->{'id'} . ". Panier N° " . $basket->{basketno} . ". " . $basket->{booksellernote} );
 
         my $pdftable = new PDF::Table();
         my $abaskets;
