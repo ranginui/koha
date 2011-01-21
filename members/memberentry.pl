@@ -625,6 +625,10 @@ if ($nok) {
 if ( !defined( $data{'dateenrolled'} ) or $data{'dateenrolled'} eq '' ) {
     $data{'dateenrolled'} = C4::Dates->today('iso');
 }
+if ( $op eq 'duplicate' ) {
+    $data{'dateenrolled'} = C4::Dates->today('iso');
+    $data{'dateexpiry'} = GetExpiryDate( $data{'categorycode'}, $data{'dateenrolled'} );
+}
 if ( C4::Context->preference('uppercasesurnames') ) {
     $data{'surname'}     = uc( $data{'surname'} );
     $data{'contactname'} = uc( $data{'contactname'} );
@@ -633,7 +637,16 @@ if ( C4::Context->preference('uppercasesurnames') ) {
 $data{debarred} = C4::Overdues::CheckBorrowerDebarred($borrowernumber);
 $data{datedebarred} = $data{debarred} if ( $data{debarred} ne "9999-12-31" );
 foreach (qw(dateenrolled dateexpiry dateofbirth debarred)) {
-    $data{$_} = format_date( $data{$_} );    # back to syspref for display
+    my $userdate = $data{$_};
+    $debug and printf STDERR "%s : %s", $_, $userdate;
+    unless ($userdate && $userdate ne "0000-00-00") {
+        $debug and warn sprintf "Empty \$data{%12s}", $_;
+        $data{$_} = '';
+        next;
+    }
+    $userdate = C4::Dates->new( $userdate, 'iso' )->output('syspref');
+    $data{$_} = $userdate || '';
+    #$data{$_} = format_date( $data{$_} );    # back to syspref for display
     $template->param( $_ => $data{$_} );
 }
 

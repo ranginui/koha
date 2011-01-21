@@ -128,9 +128,11 @@ $template->param( $data->{'categorycode'} => 1 );
 $debug and printf STDERR "dates (enrolled,expiry,birthdate) raw: (%s, %s, %s)\n", map { $data->{$_} } qw(dateenrolled dateexpiry dateofbirth);
 foreach (qw(dateenrolled dateexpiry dateofbirth)) {
     my $userdate = $data->{$_};
-    unless ($userdate) {
+    $debug and printf STDERR "%s : %s", $_, $userdate;
+    unless ($userdate && $userdate ne "0000-00-00") {
         $debug and warn sprintf "Empty \$data{%12s}", $_;
         $data->{$_} = '';
+        $template->param( $_ => $data->{$_} );
         next;
     }
     $userdate = C4::Dates->new( $userdate, 'iso' )->output('syspref');

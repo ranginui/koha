@@ -299,3 +299,4 @@ INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES
 INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('PrefillItem','0','When a new item is added, should it be prefilled with last created item values?','','YesNo');
 INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('uploadPath','','Sets the upload path for the upload.pl plugin','','');
 INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('uploadWebPath','','Set the upload path starting from document root for the upload.pl plugin','','');
+INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('BlockRenewWhenOverdue','0','Blocks renewals when overdue','','YesNo');
