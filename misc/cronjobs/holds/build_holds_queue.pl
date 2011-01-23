@@ -268,7 +268,7 @@ sub MapItemsToHoldRequests {
 
         # look for local match first
         my $pickup_branch = $request->{branchcode};
-        if (exists $items_by_branch{$pickup_branch} and 
+        if ($pickup_branch and exists $items_by_branch{$pickup_branch} and 
             not ($items_by_branch{$pickup_branch}->[0]->{holdallowed} == 1 and 
                  $request->{borrowerbranch} ne $items_by_branch{$pickup_branch}->[0]->{homebranch}) 
            ) {
