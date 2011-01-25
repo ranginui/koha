@@ -379,9 +379,12 @@ function verify_images() {
                         [% IF ( itemloo.reservedate ) %](placed [% itemloo.reservedate %])[% END %]
                     [% END %]
                 [% END %]
-                [% UNLESS ( itemloo.itemnotforloan ) %][% UNLESS ( itemloo.onloan ) %][% UNLESS ( itemloo.itemlost ) %][% UNLESS ( itemloo.wthdrawn ) %][% UNLESS ( itemloo.damaged ) %][% UNLESS ( itemloo.transfertwhen ) %][% UNLESS ( itemloo.reservedate ) %]
+                [% IF ( itemloo.restricted ) %]
+                    [% itemloo.restrictedvalue %]
+                [% END %]
+                [% UNLESS ( itemloo.itemnotforloan ) %][% UNLESS ( itemloo.onloan ) %][% UNLESS ( itemloo.itemlost ) %][% UNLESS ( itemloo.wthdrawn ) %][% UNLESS ( itemloo.damaged ) %][% UNLESS ( itemloo.transfertwhen ) %][% UNLESS ( itemloo.reservedate ) %][% UNLESS ( restricted ) %]
                                         Available
-                [% END %][% END %][% END %][% END %][% END %][% END %][% END %]
+                [% END %][% END %][% END %][% END %][% END %][% END %][% END %][% END %]
 
                 [% IF ( itemloo.restricted ) %]<span class="restricted">([% itemloo.restricted %])</span>[% END %]
                         
