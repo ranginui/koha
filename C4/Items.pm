@@ -1298,6 +1298,19 @@ sub GetItemsInfo {
             my ($lib) = $stackstatus->fetchrow;
             $data->{stack} = $lib;
         }
+
+        # Get restricted value
+        
+        my $restrictedstatus = $dbh->prepare(
+	                    "SELECT lib
+                   FROM   authorised_values
+                   WHERE  category=?
+                   AND    authorised_value=?
+              "
+              );
+        $restrictedstatus->execute( 'RESTRICTED', $data->{'restricted'});
+        my ($lib) = $restrictedstatus->fetchrow;
+        $data->{restrictedvalue} = $lib;
         # Find the last 3 people who borrowed this item.
         my $sth2 = $dbh->prepare("SELECT * FROM old_issues,borrowers
                                     WHERE itemnumber = ?
