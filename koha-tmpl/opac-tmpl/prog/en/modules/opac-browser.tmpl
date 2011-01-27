@@ -27,7 +27,7 @@
                 <td width="33%">
                 <p>
                 <!-- TMPL_IF name="endnode" -->
-                    <a href="opac-search.pl?q=Dewey-classification:<!-- TMPL_VAR name="classification" ESCAPE="uri" -->"><!-- TMPL_VAR name="description" ESCAPE="html" --></a>
+                    <a href="opac-search.pl?q=Local-classification:<!-- TMPL_VAR name="classification" ESCAPE="uri" -->"><!-- TMPL_VAR name="description" ESCAPE="html" --></a>
                 <!-- TMPL_ELSE -->
                     <a href="opac-browser.pl?level=<!-- TMPL_VAR name="level"-->&amp;filter=<!-- TMPL_VAR name="classification" ESCAPE="uri" -->"><!-- TMPL_VAR name="description" ESCAPE="html" --></a>
                 <!-- /TMPL_IF --></p>
