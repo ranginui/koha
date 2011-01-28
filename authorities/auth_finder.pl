@@ -49,20 +49,11 @@ my @authtypesloop = map { {
     index        => $index,
 } } keys %$authtypes;
 
-if ( $searchquery ) {
-    my $orderby     = $query->param('orderby');
+if ( $query->param('op') eq 'do_search' ) {
+    my $orderby     = $query->param('orderby') || 'score desc';
     my $page        = $query->param('page') || 1;
     my $count       = 20;
-    
-    my $authtype_index = C4::Search::Query::getIndexName('auth-type');
-    $authtypecode = "[* TO *]" if ($authtypecode eq '');
-    my $filters = {
-        recordtype   => 'authority',
-        $authtype_index => $authtypecode,
-    };
 
-    my $results = SimpleSearch( $searchquery, $filters, $page, $count, $orderby );
-    
     ( $template, $loggedinuser, $cookie ) = get_template_and_user( {
         template_name   => "authorities/searchresultlist-auth.tmpl",
         query           => $query,
@@ -70,6 +61,41 @@ if ( $searchquery ) {
         authnotrequired => 0,
         flagsrequired   => { catalogue => 1 },
     } );
+
+    my @searchtypes = ('authority_search', 'main_heading', 'all_headings');
+
+    my $indexes;
+    my $value;
+    my $operands;
+    my $operators;
+    for my $searchtype (@searchtypes) {
+        if ( $query->param($searchtype) ) {
+            push @$indexes, @{GetIndexesBySearchtype($searchtype, $authtypecode)};
+            my $value = $query->param($searchtype) || '[* TO *]';
+            for (@$indexes) {
+                push @$operands, $value;
+                push @$operators, 'AND';
+            }
+            $template->param($searchtype => $query->param($searchtype));
+        }
+    }
+
+    if ( not $indexes ) {
+        push @$indexes, @{GetIndexesBySearchtype('all_headings', $authtypecode)};
+        for (@$indexes) {
+            push @$operands, '[* TO *]';
+        }
+    }
+
+    my $filters = {
+        recordtype => 'authority',
+    };
+    my $authtype_index = C4::Search::Query::getIndexName('auth-type');
+    $filters->{$authtype_index} = $authtypecode if $authtypecode;
+
+    my $q = C4::Search::Query->buildQuery( $indexes, $operands, $operators );
+    warn $q;
+    my $results = SimpleSearch( $q, $filters, $page, $count, $orderby );
 
     my @resultdatas = map {
         my $record = GetAuthority( $_->{'values'}->{'recordid'} );
@@ -126,6 +152,8 @@ $template->param(
     index         => $index,
     authtypesloop => \@authtypesloop,
     authtypecode  => $authtypecode,
+    name_index_name => C4::Search::Query::getIndexName('auth_name'),
+    usedinxbiblios_index_name => C4::Search::Query::getIndexName('usedinxbiblios'),
 );
 
 # Print the page
