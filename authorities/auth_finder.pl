@@ -55,6 +55,7 @@ if ( $searchquery ) {
     my $count       = 20;
     
     my $authtype_index = C4::Search::Query::getIndexName('auth-type');
+    $authtypecode = "[* TO *]" if ($authtypecode eq '');
     my $filters = {
         recordtype   => 'authority',
         $authtype_index => $authtypecode,
