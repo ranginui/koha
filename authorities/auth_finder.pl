@@ -32,8 +32,7 @@ use C4::Search::Query;
 use Data::Pagination;
 
 my $query        = new CGI;
-my $searchquery  = $query->param('value_mainstr') || '*:*';
-my $authtypecode = $query->param('authtypecode');
+my $authtypecode = $query->param('authtypecode') || '';
 my $index        = $query->param('index');
 my $tagid        = $query->param('tagid');
 my $resultstring = $query->param('result');
@@ -94,7 +93,6 @@ if ( $query->param('op') eq 'do_search' ) {
     $filters->{$authtype_index} = $authtypecode if $authtypecode;
 
     my $q = C4::Search::Query->buildQuery( $indexes, $operands, $operators );
-    warn $q;
     my $results = SimpleSearch( $q, $filters, $page, $count, $orderby );
 
     my @resultdatas = map {
@@ -116,7 +114,6 @@ if ( $query->param('op') eq 'do_search' ) {
     my $pager_params = [
         { ind => 'index'        , val => $index        },
         { ind => 'authtypecode' , val => $authtypecode },
-        { ind => 'value_mainstr', val => $searchquery  },
         { ind => 'order_by'     , val => $orderby      },
     ];
 
@@ -128,7 +125,6 @@ if ( $query->param('op') eq 'do_search' ) {
         total          => $pager->{'total_entries'},
         pager_params   => $pager_params,
         result         => \@resultdatas,
-        value_mainstr  => $searchquery,
         orderby        => $orderby,
         authtypecode   => $authtypecode,
     );
@@ -145,14 +141,11 @@ if ( $query->param('op') eq 'do_search' ) {
 }
 
 $template->param(
-    value_mainstr => $query->param('value_mainstr') || "",
-    value_main    => $query->param('value_main')    || "",
-    value_any     => $query->param('value_any')     || "",
     tagid         => $tagid,
     index         => $index,
     authtypesloop => \@authtypesloop,
     authtypecode  => $authtypecode,
-    name_index_name => C4::Search::Query::getIndexName('auth_name'),
+    name_index_name => C4::Search::Query::getIndexName('auth-name'),
     usedinxbiblios_index_name => C4::Search::Query::getIndexName('usedinxbiblios'),
 );
 
