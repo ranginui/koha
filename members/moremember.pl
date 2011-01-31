@@ -235,9 +235,9 @@ $template->param( lib2 => $lib2 ) if ($lib2);
 #
 my @borrowernumbers = GetMemberRelatives($borrowernumber);
 my $issue       = GetPendingIssues($borrowernumber);
-my $relissue    = GetPendingIssues(@borrowernumbers);
+my $relissue    = GetPendingIssues(@borrowernumbers) if (@borrowernumbers);
 my $issuecount  = scalar(@$issue);
-my $relissuecount  = scalar(@$relissue);
+my $relissuecount  = scalar(@$relissue) if ($relissue);
 my $roaddetails = &GetRoadTypeDetails( $data->{'streettype'} );
 my $today       = POSIX::strftime( "%Y-%m-%d", localtime );       # iso format
 my @issuedata;
