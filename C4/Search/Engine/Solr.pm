@@ -29,6 +29,9 @@ use Data::SearchEngine::Query;
 use Data::SearchEngine::Item;
 use Data::SearchEngine::Solr::Results;
 use Time::Progress;
+use Moose;
+
+extends 'Data::SearchEngine::Solr';
 
 =head1 NAME
 
@@ -44,7 +47,7 @@ Contains SimpleSearch and IndexRecord for Solr search engine.
 
 
 sub GetSolrConnection {
-    Data::SearchEngine::Solr->new(
+    C4::Search::Engine::Solr->new(
         url     => C4::Context->preference("SolrAPI"),
         options => { autocommit => 1 }
     );
@@ -358,6 +361,32 @@ sub NormalizeDate {
         when( /^(\d{4})$/                 ) { return "$1-01-01T00:00:00Z" }
     }
     return undef;
+}
+
+# overide add method in Data::SearchEngine::Solr to not use optimize function!
+sub add {
+    warn "C4::Search::Engine:Solr";
+    my ($self, $items, $options) = @_;
+
+    my @docs;
+    foreach my $item (@{ $items }) {
+        my $doc = WebService::Solr::Document->new;
+        $doc->add_fields(id => $item->id);
+
+        foreach my $key ($item->keys) {
+            my $val = $item->get_value($key);
+            if(ref($val)) {
+                foreach my $v (@{ $val }) {
+                    $doc->add_fields($key => $v);
+                }
+            }  else {
+                $doc->add_fields($key => $val);
+            }
+        }
+        push(@docs, $doc);
+    }
+
+    $self->_solr->add(\@docs, $options);
 }
 
 
