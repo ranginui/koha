@@ -513,6 +513,7 @@ sub ModAuthority {
         print AUTH $authid;
         close AUTH;
     }
+    C4::Search::IndexRecord("authority", [ $authid ] );
     return $authid;
 }
 
