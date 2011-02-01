@@ -739,7 +739,9 @@ sub CancelHold {
     return { code => 'NotCanceled' } unless any { $itemnumber eq $_ } @reserveditems;
 
     # Cancel the reserve
-    CancelReserve( $itemnumber, undef, $borrowernumber );
+    for my $reserve (grep {$_->{itemnumber} eq $itemnumber } @reserveditems){
+        CancelReserve( $reserve->{reservenumber});
+    }
 
     return { code => 'Canceled' };
 }

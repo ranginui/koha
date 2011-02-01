@@ -968,11 +968,11 @@ sub AddIssue {
                     # warn "Reserved";
                     # The item is reserved by someone else.
                     if ($cancelreserve) {    # cancel reserves on this item
-                        CancelReserve( 0, $res->{'itemnumber'}, $res->{'borrowernumber'} );
+                        CancelReserve( $res->{'reservenumber'} );
                     }
                 }
                 if ($cancelreserve) {
-                    CancelReserve( $res->{'biblionumber'}, 0, $res->{'borrowernumber'} );
+                    CancelReserve( $res->{'reservenumber'} );
                 } else {
 
                     # set waiting reserve to first in reserve queue as book isn't waiting now
