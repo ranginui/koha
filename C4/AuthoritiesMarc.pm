@@ -28,6 +28,7 @@ use C4::AuthoritiesMarc::UNIMARC;
 use C4::Charset;
 use List::MoreUtils qw/none first_index/;
 use C4::Debug;
+use C4::Search::Query;
 require C4::Search;
 
 use vars qw($VERSION @ISA @EXPORT);
@@ -700,12 +701,16 @@ sub FindDuplicateAuthority {
             $query .= " and he,wrdl=\"" . $_->[1] . "\"" if ( $_->[0] =~ /[A-z]/ );
         }
     }
-    my ( $error, $results, $total_hits ) = C4::Search::SimpleSearch( $query, 0, 1, ["authorityserver"] );
+
+    $query = C4::Search::Query->normalSearch($query);
+    my $results = C4::Search::SimpleSearch($query);
 
     # there is at least 1 result => return the 1st one
-    if ( @$results > 0 ) {
-        my $marcrecord = MARC::File::USMARC::decode( $results->[0] );
-        return $marcrecord->field('001')->data, BuildSummary( $marcrecord, $marcrecord->field('001')->data, $authtypecode );
+    if ( @{$results->items} > 0 ) {
+        my $authid = @{$results->items}[0]->{values}->{recordid};
+        my $authrecord = GetAuthority($authid);
+
+        return $authid, BuildSummary( $authrecord, $authid, $authtypecode);
     }
 
     # no result, returns nothing
@@ -1127,13 +1132,14 @@ sub merge {
             }
         }
     } else {
-        #zebra connection  
- 	my ($err,$res,$result) = C4::Search::SimpleSearch("an=$mergefrom",0,999999);
-        my $z=0;
-	$debug && warn scalar(@$res);
-        foreach my $rawrecord( @$res ) {
-      	    my $marcrecord = MARC::File::USMARC::decode($rawrecord);
-	    SetUTF8Flag($marcrecord);
+        my $query = C4::Search::Query->normalSearch("an=$mergefrom");
+        my $results = C4::Search::SimpleSearch($query);
+
+        $debug && warn scalar(@$results);
+
+        foreach my $rawrecord( @{$results->items} ) {
+            my $marcrecord = GetMarcBiblio(@{$results->items}[0]->{values}->{recordid});
+            SetUTF8Flag($marcrecord);
             push @reccache, $marcrecord;
         }
     }

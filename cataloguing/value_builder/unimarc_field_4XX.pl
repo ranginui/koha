@@ -303,11 +303,11 @@ sub plugin {
         my $startfrom      = $query->param('startfrom');
         my $resultsperpage = $query->param('resultsperpage') || 20;
         my $orderby;
-        $search = 'kw,wrdl=' . $search . ' and mc-itemtype=' . $itype if $itype;
-        my ( $errors, $results, $total_hits ) = SimpleSearch( $search, $startfrom * $resultsperpage, $resultsperpage );
+        $search = 'kw,wrdl=' . $search . ' and mc-itype=' . $itype if $itype;
+        $search = C4::Search::Query->normalSearch($query);
+        my $results = SimpleSearch( $search, $startfrom * $resultsperpage, $resultsperpage );
+        my $total_hits = $results->{'pager'}->{'total_entries'};
         my $total = scalar(@$results);
-
-        #        warn " biblio count : ".$total;
 
         ( $template, $loggedinuser, $cookie ) = get_template_and_user(
             {   template_name   => "cataloguing/value_builder/unimarc_field_4XX.tmpl",
@@ -328,7 +328,7 @@ sub plugin {
         my @arrayresults;
         my @field_data = ($search);
         for ( my $i = 0 ; $i < $resultsperpage ; $i++ ) {
-            my $record = MARC::Record::new_from_usmarc( $results->[$i] );
+            my $record = GetMarcBiblio(@{$results->items}[$i]->{values}->{recordid});
             my $rechash = TransformMarcToKoha( $dbh, $record );
             my $pos;
             my $countitems = 1 if ( $rechash->{itemnumber} );
@@ -347,15 +347,6 @@ sub plugin {
             $rechash->{CN} = $CN;
             push @arrayresults, $rechash;
         }
-
-        #         for(my $i = 0 ; $i <= $#marclist ; $i++)
-        #         {
-        #             push @field_data, { term => "marclist", val=>$marclist[$i] };
-        #             push @field_data, { term => "and_or", val=>$and_or[$i] };
-        #             push @field_data, { term => "excluding", val=>$excluding[$i] };
-        #             push @field_data, { term => "operator", val=>$operator[$i] };
-        #             push @field_data, { term => "value", val=>$value[$i] };
-        #         }
 
         my @numbers = ();
 

@@ -157,10 +157,12 @@ sub splitToken {
 
     my @values;
     my $attr;
+    $token =~ s/=/:/g;
     my $string = $token;
     # Foreach couple of index:operand
     while ( $token =~ m/[^ ]*:[^ ]*/g ) {
         @values = split ':', $&;
+        @values = split '=', $& if not @values;
         $idx = (@values)[0];
         my $old_operand = (@values)[1];
         my $old_idx = $idx;
@@ -183,6 +185,10 @@ sub splitToken {
 
             when ( 'wrdl' ) {
                 # nothing to do, it's default Solr's configuration
+            }
+
+            when ( 'ext' ) {
+                # not yet implemented ! TODO
             }
         }
         # Replace new index in string
