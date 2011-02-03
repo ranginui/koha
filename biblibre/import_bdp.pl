@@ -97,7 +97,8 @@ if ( $query->param("import") ) {
         push @command, $retourscript;
         push @command, "-file";
         push @command, "$upload_dir/$filename";
-    	
+        push @command, "-b";
+        push @command, C4::Context->userenv->{branch};
         push @command, "-t" if ($test);
         push @command, "-v";
         
