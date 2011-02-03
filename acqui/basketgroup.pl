@@ -227,10 +227,13 @@ sub printbasketgrouppdf {
                 
                 # Editor Number
                 my $en;
-                if ( C4::Context->preference("marcflavour") eq 'UNIMARC' ) {
-                     $en = MARC::Record::new_from_xml( $ord->{marcxml}, 'UTF-8' )->subfield( '345', "b" );
-                 } elsif ( C4::Context->preference("marcflavour") eq 'MARC21' ) {
-                     $en = MARC::Record::new_from_xml( $ord->{marcxml}, 'UTF-8' )->subfield( '037', "a" );
+                my $marcrecord=eval{MARC::Record::new_from_usmarc( $ord->{marc} )};
+                 if ($marcrecord){
+                     if ( C4::Context->preference("marcflavour") eq 'UNIMARC' ) {
+                         $en = $marcrecord->subfield( '345', "b" );
+                     } elsif ( C4::Context->preference("marcflavour") eq 'MARC21' ) {
+                         $en = $marcrecord->subfield( '037', "a" );
+                     }
                 }
                 if ($en) {
                     push( @ba_order, $en );
