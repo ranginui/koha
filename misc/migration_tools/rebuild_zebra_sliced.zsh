@@ -42,15 +42,21 @@ BIBLIOEND=$3
 
 #/home/koha/src/misc/migration_tools/rebuild_zebra.pl -r -b -v -x -nosanitize -ofset 1 -min 1
 for ((i=$BIBLIOSTART ; i<$BIBLIOEND ; i=i+$INCREMENT)) do
-    echo "I = " $i
+    echo "I = " $i "with increment " $INCREMENT
     ./rebuild_zebra.pl -b -v -x -nosanitize -d /tmp/rebuild -k -ofset $INCREMENT -min $i >logs/rebuild$INCREMENT.$i.log 2>logs/rebuild$INCREMENT.$i.err
     if (($INCREMENT >1 )); then
-        if (grep -l "previous transaction" logs/rebuild$INCREMENT.$i.err); then
-            echo "I must split the $i"
+        if { grep -q "previous transaction" logs/rebuild$INCREMENT.$i.err } ; then
+            echo "I must split $i (increment $INCREMENT) because previous transaction didn't reach commit"
+            ((subincrement=$INCREMENT/10))
+            ((newBIBLIOEND=$i+$INCREMENT))
+            $0 $subincrement $i $newBIBLIOEND
+        elif { ! grep -q "Records: $INCREMENT" logs/rebuild$INCREMENT.$i.err } ; then
+            echo "I must split $i (increment $INCREMENT) because index was uncomplete, less than $INCREMENT records indexed"
             ((subincrement=$INCREMENT/10))
             ((newBIBLIOEND=$i+$INCREMENT))
             $0 $subincrement $i $newBIBLIOEND
         fi
     fi
 done
+
 
