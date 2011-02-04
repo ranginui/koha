@@ -185,6 +185,35 @@ function submitForm(form) {
 <!--  TMPL_IF NAME="grouping" -->
 	<div id="bd"> 
 	    <div class="yui-g"> 
+		    <div class="yui-u grouping"> 
+
+				<form action="<!-- TMPL_VAR name="scriptname" -->" method="post" name="basketgroups" id="basketgroups">
+	            <div id="groups">
+	            <div class="workarea_alt" >
+	            <h3>Ungrouped Baskets</h3>
+	            <ul id="ungrouped" class="draglist_alt">
+	            <!-- TMPL_IF NAME="baskets" -->
+	                <!-- TMPL_LOOP NAME="baskets" -->
+	                    <li class="ungrouped" id="b-<!-- TMPL_VAR NAME="basketno" -->" >
+	                        <a href="basket.pl?basketno=<!-- TMPL_VAR NAME="basketno" -->">
+	                        <!-- TMPL_IF NAME="basketname" -->
+	                            <!-- TMPL_VAR NAME="basketname" -->
+	                        <!-- TMPL_ELSE -->
+	                            No name, basketnumber: <!-- TMPL_VAR NAME="basketno" -->
+	                        <!-- /TMPL_IF -->
+	                        </a>, <br />
+	                        Total: <!-- TMPL_VAR name="total" -->
+	                        <input type="hidden" class="basket" name="basket" value="<!-- TMPL_VAR NAME="basketno" -->" />
+	                    </li>
+	                    <!-- /TMPL_LOOP -->
+	                <!-- /TMPL_IF -->
+	                </ul>
+	            </div>
+	            </div>
+	            </form>
+
+			</div> 
+			
 		    <div class="yui-u first"> 
 		    	<form action="" method="post" id="groupingform" onsubmit="return submitForm(this)">
 					<fieldset id="various" class='various' >
@@ -207,52 +236,25 @@ function submitForm(form) {
 						<textarea cols="26" name="freedeliveryplace" id="freedeliveryplace"><!-- TMPL_VAR NAME="freedeliveryplace" --></textarea>
 						<h3><label for="deliverycomment">Delivery comment:</label></h3>
 						<textarea cols="26" name="deliverycomment" id="deliverycomment"><!-- TMPL_VAR NAME="deliverycomment" --></textarea>
-						<div class="yui-u first">
-		             		<div class="workarea">
-							    <h3>Grouping:</h3>
-							    <ul class="draglist" id="bg">
-								    <!-- TMPL_LOOP NAME="selectedbaskets" -->
-				                        <li class="grouped" id="b-<!-- TMPL_VAR NAME="basketno" -->" >
-				                            <a href="basket.pl?basketno=<!-- TMPL_VAR NAME="basketno" -->">
-				                            <!-- TMPL_IF NAME="basketname" -->
-				                                <!-- TMPL_VAR NAME="basketname" -->
-				                            <!-- TMPL_ELSE -->
-				                                No name, basketnumber: <!-- TMPL_VAR NAME="basketno" -->
-				                            <!-- /TMPL_IF -->
-				                            </a>, <br />
-				                            Total: <!-- TMPL_VAR name="total" -->
-				                            <input type="hidden" class="basket" name="basket" value="<!-- TMPL_VAR NAME="basketno" -->" />
-				                        </li>
-			                        <!-- /TMPL_LOOP -->
+		         		<div class="workarea">
+							<h3>Grouping:</h3>
+							<ul class="draglist" id="bg">
+								<!-- TMPL_LOOP NAME="selectedbaskets" -->
+				                    <li class="grouped" id="b-<!-- TMPL_VAR NAME="basketno" -->" >
+				                        <a href="basket.pl?basketno=<!-- TMPL_VAR NAME="basketno" -->">
+				                        <!-- TMPL_IF NAME="basketname" -->
+				                            <!-- TMPL_VAR NAME="basketname" -->
+				                        <!-- TMPL_ELSE -->
+				                            No name, basketnumber: <!-- TMPL_VAR NAME="basketno" -->
+				                        <!-- /TMPL_IF -->
+				                        </a>, <br />
+				                        Total: <!-- TMPL_VAR name="total" -->
+				                        <input type="hidden" class="basket" name="basket" value="<!-- TMPL_VAR NAME="basketno" -->" />
+				                    </li>
+			                    <!-- /TMPL_LOOP -->
 
-							    </ul>
-						    </div>
+							</ul>
 						</div>
-				<div class="yui-u">
-				<form action="<!-- TMPL_VAR name="scriptname" -->" method="post" name="basketgroups" id="basketgroups">
-	
-					<div class="workarea" >
-        				<h3>Ungrouped Baskets</h3>
-        				<ul id="ungrouped" class="draglist_alt">
-        					<!-- TMPL_IF NAME="baskets" -->
-            				<!-- TMPL_LOOP NAME="baskets" -->
-                				<li class="ungrouped" id="b-<!-- TMPL_VAR NAME="basketno" -->" >
-                    				<a href="basket.pl?basketno=<!-- TMPL_VAR NAME="basketno" -->">
-                    					<!-- TMPL_IF NAME="basketname" -->
-                        					<!-- TMPL_VAR NAME="basketname" -->
-                    					<!-- TMPL_ELSE -->
-                        					No name, basketnumber: <!-- TMPL_VAR NAME="basketno" -->
-                    					<!-- /TMPL_IF -->
-                    				</a>, <br />
-                    				Total: <!-- TMPL_VAR name="total" -->
-                    				<input type="hidden" class="basket" name="basket" value="<!-- TMPL_VAR NAME="basketno" -->" />
-                				</li>
-                				<!-- /TMPL_LOOP -->
-            				<!-- /TMPL_IF -->
-            			</ul>
-        			</div>
-				</form>
-				</div>
 						<div><input type="checkbox" name="close"> Close</input></div>
 		                <input type="hidden" name="booksellerid" value="<!-- TMPL_VAR name="booksellerid" -->" />
 		                <!-- TMPL_IF NAME="basketgroupid" -->
