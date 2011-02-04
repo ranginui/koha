@@ -49,7 +49,7 @@ BEGIN {
       save_report get_saved_reports execute_query get_saved_report create_compound run_compound
       get_column_type get_distinct_values save_dictionary get_from_dictionary
       delete_definition delete_report format_results get_sql
-      select_2_select_count_value update_sql
+      select_2_select_count_value nb_rows update_sql
     );
 }
 
@@ -423,6 +423,15 @@ sub strip_limit ($) {
     ( $sql =~ /\bLIMIT\b/i ) or return ( $sql, 0, undef );
     $sql =~ s/\bLIMIT\b\s*(\d+)(\s*\,\s*(\d+))?\s*/ /ig;
     return ( $sql, ( defined $2 ? $1 : 0 ), ( defined $3 ? $3 : $1 ) );    # offset can default to 0, LIMIT cannot!
+}
+
+sub nb_rows($) {
+    my $sql = shift or return;
+    my $sth = C4::Context->dbh->prepare($sql);
+    $sth->execute();
+    while ($sth->fetchrow()) {
+    }
+    return $sth->rows;
 }
 
 sub execute_query ($;$$$) {
