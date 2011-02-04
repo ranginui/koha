@@ -2203,7 +2203,7 @@ sub MoveItemFromBiblio {
 
 =over 4
 
-DelItemCheck($dbh, $biblionumber, $itemnumber);
+DelItemCheck($dbh, $biblionumber, $itemnumber, $branch);
 
 =back
 
@@ -2212,8 +2212,9 @@ Exported function (core API) for deleting an item record in Koha if there no cur
 =cut
 
 sub DelItemCheck {
-    my ( $dbh, $biblionumber, $itemnumber ) = @_;
+    my ( $dbh, $biblionumber, $itemnumber, $branch ) = @_;
     my $error;
+#warn "branch param : ".$branch;
 
     # check that there is no issue on this item before deletion.
     my $sth = $dbh->prepare("select * from issues i where i.itemnumber=?");
@@ -2221,10 +2222,12 @@ sub DelItemCheck {
     
     my $item = GetItem($itemnumber);
     my $onloan = $sth->fetchrow;
+    $branch = (C4::Context->userenv) ? C4::Context->userenv->{branch} || '' :'' unless $branch; 
+warn "branch : ".$branch;
     if ($onloan) {
         $error = "book_on_loan";
     }
-    elsif (C4::Context->preference("IndependantBranches") and (C4::Context->userenv->{branch} ne $item->{C4::Context->preference("HomeOrHoldingBranch")||'homebranch'})){
+    elsif (C4::Context->preference("IndependantBranches") and ($branch ne $item->{C4::Context->preference("HomeOrHoldingBranch")||'homebranch'})){
         $error = "not_same_branch";
     } else {
 
