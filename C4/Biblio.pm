@@ -362,6 +362,8 @@ sub ModBiblio {
     # update the MARC record (that now contains biblio and items) with the new record data
     &ModBiblioMarc( $record, $biblionumber, $frameworkcode );
 
+    C4::Search::IndexRecord( "biblio" , [ $biblionumber ] );
+
     # modify the other koha tables
     _koha_modify_biblio( $dbh, $oldbiblio, $frameworkcode );
     _koha_modify_biblioitem_nonmarc( $dbh, $oldbiblio );
