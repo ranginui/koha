@@ -777,7 +777,7 @@ my $breedingid    = $input->param('breedingid');
 my $z3950         = $input->param('z3950');
 my $op            = $input->param('op');
 my $mode          = $input->param('mode');
-my $frameworkcode = $input->param('frameworkcode');
+my $frameworkcode = $input->param('frameworkcode')||"Default";
 my $redirect      = $input->param('redirect');
 my $dbh           = C4::Context->dbh;
 
