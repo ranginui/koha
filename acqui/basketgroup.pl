@@ -185,7 +185,6 @@ sub printbasketgrouppdf {
 
     my $pdfformat = C4::Context->preference("OrderPdfFormat");
     eval "use $pdfformat";
-    warn @_;
     eval "use C4::Branch";
 
     my $basketgroup = GetBasketgroup($basketgroupid);
@@ -212,8 +211,8 @@ sub printbasketgrouppdf {
                 } else {
                     push( @ba_order, undef );
                 }
-                if ( $ord->{itemtype} ) {
-                    push( @ba_order, $itemtypes->{ $bib->{itemtype} }->{description} ) if $bib->{itemtype};
+                if ( $ord->{itemtype} and $bib->{itemtype} ) {
+                    push( @ba_order, $itemtypes->{ $bib->{itemtype} }->{description} );
                 } else {
                     push( @ba_order, undef );
                 }
@@ -221,24 +220,27 @@ sub printbasketgrouppdf {
                 #             } else {
                 #                 push(@ba_order, undef, undef);
                 for my $key (qw/author title publishercode quantity listprice ecost/) {
-                    push( @ba_order, $ord->{$key} );    #Order lines
+                    push( @ba_order, ($ord->{$key} || undef));    #Order lines
                 }
-                push( @ba_order,  $bookseller->{discount} );
+                push( @ba_order,  $bookseller->{discount} || undef );
                 push( @ba_order,  $bookseller->{gstrate} * 100 || C4::Context->preference("gist") || 0 );
-                push( @ba_orders, \@ba_order );
-
+                
                 # Editor Number
                 my $en;
-                if ( C4::Context->preference("marcflavour") eq 'UNIMARC' ) {
-                    $en = MARC::Record::new_from_xml( $ord->{marcxml}, 'UTF-8' )->subfield( '345', "b" );
-                } elsif ( C4::Context->preference("marcflavour") eq 'MARC21' ) {
-                    $en = MARC::Record::new_from_xml( $ord->{marcxml}, 'UTF-8' )->subfield( '037', "a" );
+                my $marcrecord=eval{MARC::Record::new_from_usmarc( $ord->{marc} )};
+                 if ($marcrecord){
+                     if ( C4::Context->preference("marcflavour") eq 'UNIMARC' ) {
+                         $en = $marcrecord->subfield( '345', "b" );
+                     } elsif ( C4::Context->preference("marcflavour") eq 'MARC21' ) {
+                         $en = $marcrecord->subfield( '037', "a" );
+                     }
                 }
                 if ($en) {
                     push( @ba_order, $en );
                 } else {
                     push( @ba_order, undef );
                 }
+            push( @ba_orders, \@ba_order );
             }
         }
         $orders{ $basket->{basketno} } = \@ba_orders;
@@ -290,7 +292,6 @@ if ( $op eq "add" ) {
 
             # Get general informations about the basket group to prefill the form
             my $basketgroup = GetBasketgroup($basketgroupid);
-	    warn Data::Dumper::Dumper($basketgroup);
             $template->param(
                 name            => $basketgroup->{name},
                 deliverycomment => $basketgroup->{deliverycomment},
@@ -426,9 +427,7 @@ if ( $op eq "add" ) {
     printbasketgrouppdf($basketgroupid);
 } elsif ( $op eq "delete" ) {
     my $basketgroupid = $input->param('basketgroupid');
-    warn $basketgroupid;
     DelBasketgroup($basketgroupid);
-    warn "---------------";
     print $input->redirect( '/cgi-bin/koha/acqui/basketgroup.pl?booksellerid=' . $booksellerid );
 
 } elsif ( $op eq 'reopen' ) {
