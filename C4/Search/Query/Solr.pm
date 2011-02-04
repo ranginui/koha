@@ -106,4 +106,24 @@ sub buildQuery {
 
 }
 
+sub normalSearch {
+    my ($class, $query) = @_;
+
+    # Particular *:* query
+    if ($query  eq '*:*'){
+        return $query;
+    }
+
+    my $new_query = C4::Search::Query::splitToken($query);
+
+    $new_query =~ s/all_fields://g;
+
+    # Upper case for operators
+    $new_query =~ s/ or / OR /g;
+    $new_query =~ s/ and / AND /g;
+    $new_query =~ s/ not / NOT /g;
+
+    return $new_query;
+}
+
 1;

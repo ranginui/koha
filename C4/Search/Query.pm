@@ -53,7 +53,7 @@ sub initIndexesMapper {
     %indexes_mapper =
     ( all_fields =>
     { Zebra =>
-        { rpn_index => 0
+        { rpn_index => 1016
         , ccl_index_name => 'kw'
         }
 	, Solr =>
@@ -82,9 +82,18 @@ Return Solr index from zebra index
 =cut
 sub getSolrIndexFromZebra {
     my ( $name ) = @_;
-    for ( values %indexes_mapper ) {
-        return $$_{Solr}{name} if $$_{Zebra}{ccl_index_name} ~~ $name ;
+    for my $i ( values %indexes_mapper ) {
+        for ( @{ $$i{Zebra} }{qw/ rpn_index ccl_index_name /} ) {
+            next if not defined;
+            return $$i{Solr}{name} if
+                $_ =~ /\S\d+\S/ &&
+                $_ ~~ $name;
+
+            return $$i{Solr}{name} if
+                $_ eq $name;
+        }
     }
+    return $name;
 }
 
 =head2 getSolrIndex
@@ -97,8 +106,8 @@ sub getSolrIndex {
     # init mapper if it's not already done
     %indexes_mapper or initIndexesMapper;
 
-    $indexes_mapper{$index}->{Solr}->{name} 
-    || getSolrIndexFromZebra ($index)
+    $indexes_mapper{$index}->{Solr}->{name}
+    || getSolrIndexFromZebra( $index )
     || $index
 
 }
@@ -223,7 +232,7 @@ sub buildQuery {
 
             # 'Normal' search
             if ( not @$indexes ) {
-                return C4::Search::Query->normalSearch(@$operands[0]);
+                return C4::Search::Query::Solr->normalSearch(@$operands[0]);
             }else{
                 # Advanced search
                 for $idx (@$indexes){
@@ -240,20 +249,17 @@ sub buildQuery {
 sub normalSearch {
     my ($class, $query) = @_;
 
-    # Particular *:* query
-    if ($query  eq '*:*'){
-        return $query;
+    my $search_engine = C4::Context->preference("SearchEngine");
+
+    given( $search_engine ) {
+        when( 'Zebra' ) {
+            return C4::Search::Query::Zebra->normalSearch($query);
+        }
+
+        when( 'Solr' ) {
+            return C4::Search::Query::Solr->normalSearch($query);
+        }
     }
-
-    my $new_query = splitToken($query);
-
-    # Upper case for operators
-    $new_query =~ s/ or / OR /g;
-    $new_query =~ s/ and / AND /g;
-    $new_query =~ s/ not / NOT /g;
-
-    return $new_query;
-
 }
-
+ 
 1;
