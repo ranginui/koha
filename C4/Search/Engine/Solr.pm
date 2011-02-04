@@ -365,7 +365,6 @@ sub NormalizeDate {
 
 # overide add method in Data::SearchEngine::Solr to not use optimize function!
 sub add {
-    warn "C4::Search::Engine:Solr";
     my ($self, $items, $options) = @_;
 
     my @docs;

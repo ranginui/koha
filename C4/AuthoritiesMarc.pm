@@ -1138,7 +1138,7 @@ sub merge {
         $debug && warn scalar(@$results);
 
         foreach my $rawrecord( @{$results->items} ) {
-            my $marcrecord = GetMarcBiblio(@{$results->items}[0]->{values}->{recordid});
+            my $marcrecord = GetMarcBiblio($rawrecord->{values}->{recordid});
             SetUTF8Flag($marcrecord);
             push @reccache, $marcrecord;
         }
