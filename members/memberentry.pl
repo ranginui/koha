@@ -116,8 +116,8 @@ unless ( $category_type or !($categorycode) ) {
     my $category_name = $borrowercategory->{'description'};
     $template->param( "categoryname" => $category_name );
 }
-$category_type = "A" unless $category_type;                                              # FIXME we should display a error message instead of a 500 error !
 
+$category_type = "A" unless $category_type;                                              # FIXME we should display a error message instead of a 500 error !
 # if a add or modify is requested => check validity of data.
 %data = %$borrower_data if ($borrower_data);
 
@@ -386,7 +386,7 @@ if ( $nok or !$nodouble ) {
 }
 if ( C4::Context->preference("IndependantBranches") ) {
     my $userenv = C4::Context->userenv;
-    if ( $userenv->{flags} % 2 != 1 && $data{branchcode} ) {
+    if ( $userenv->{flags} % 2 != 1 && $data{'branchcode'} ) {
         unless ( $userenv->{branch} eq $data{'branchcode'} ) {
             print $input->redirect("/cgi-bin/koha/members/members-home.pl");
             exit;
@@ -503,7 +503,7 @@ my $borrotitlepopup = CGI::popup_menu(
     -default  => $default_borrowertitle
 );
 
-my @relationships = split( /,|\|/, C4::Context->preference('BorrowerRelationship') );
+my @relationships = split( /,|\|/, C4::Context->preference('borrowerRelationship') );
 my @relshipdata;
 while (@relationships) {
     my $relship = shift @relationships || '';
@@ -564,7 +564,9 @@ if ($category_type eq 'A' || $category_type eq 'P') {
 # --------------------------------------------------------------------------------------------------------
 #in modify mod :default value from $CGIbranch comes from borrowers table
 #in add mod: default value come from branches table (ip correspendence)
-$default = $data{'branchcode'} if ( $op eq 'modify' || ( $op eq 'add' && $category_type eq 'C' ) );
+if (defined ($data{'branchcode'}) and ( $op eq 'modify' || ( $op eq 'add' && $category_type eq 'C' ) )) {
+    $default = $data{'branchcode'};
+}
 my $CGIbranch = CGI::scrolling_list(
     -id       => 'branchcode',
     -name     => 'branchcode',

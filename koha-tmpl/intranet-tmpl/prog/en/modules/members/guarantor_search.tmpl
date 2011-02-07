@@ -6,7 +6,7 @@
     </style>
     <script type="text/javascript">
         <!--
-        function fillguarantor(id, surname, firstname, streetnumber, address, city, zipcode) {
+        function fillguarantor(id, surname, firstname, streetnumber, address, city, zipcode, branchcode) {
             var $ = window.opener.$;
             var form = $('#entryform').get(0);
 
@@ -35,6 +35,7 @@
             form.address.value = address;
             form.city.value = city;
             form.zipcode.value = zipcode;
+            form.branchcode.value = branchcode;
 
             form.guarantorsearch.value = 'Change';
             self.close();
@@ -78,7 +79,7 @@
 				<td><p><!-- TMPL_VAR NAME="address" --> <!-- TMPL_VAR NAME="city" --></p></td>
                 <td>
                     <form action="">
-                        <input type="button" onclick="fillguarantor('<!-- TMPL_VAR NAME="borrowernumber" -->', '<!-- TMPL_VAR NAME="surname" ESCAPE=JS -->', '<!-- TMPL_VAR NAME="firstname" ESCAPE=JS -->', '<!-- TMPL_VAR NAME="streetnumber" ESCAPE=JS -->', '<!-- TMPL_VAR NAME="address" ESCAPE=JS -->', '<!-- TMPL_VAR NAME="city" ESCAPE=JS -->', '<!-- TMPL_VAR NAME="zipcode" ESCAPE=JS -->'); return false;" value="Select"/>
+                        <input type="button" onclick="fillguarantor('<!-- TMPL_VAR NAME="borrowernumber" -->', '<!-- TMPL_VAR NAME="surname" ESCAPE=JS -->', '<!-- TMPL_VAR NAME="firstname" ESCAPE=JS -->', '<!-- TMPL_VAR NAME="streetnumber" ESCAPE=JS -->', '<!-- TMPL_VAR NAME="address" ESCAPE=JS -->', '<!-- TMPL_VAR NAME="city" ESCAPE=JS -->', '<!-- TMPL_VAR NAME="zipcode" ESCAPE=JS -->','<!-- TMPL_VAR NAME="branchcode" ESCAPE=JS -->'); return false;" value="Select"/>
                     </form>
                 </td>
 			</tr>
