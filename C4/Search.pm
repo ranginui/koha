@@ -101,7 +101,7 @@ sub FindDuplicate {
         $query = "isbn:\"$result->{isbn}\"";
     } else {
         $query  = "title:\"$result->{title}\"";
-        $query .= " and itemtype:\"$result->{itemtype}\""
+        $query .= " and itype:\"$result->{itemtype}\""
           if ( $result->{itemtype} );
         if ( $result->{author} ) {
             $query .= " and author:\"$result->{author}\"";
@@ -115,7 +115,7 @@ sub FindDuplicate {
         }
     }
 
-    $query = C4::Search::Query::normalSearch($query);
+    $query = C4::Search::Query->normalSearch($query);
     my $res = SimpleSearch($query);
 
     my @results;
