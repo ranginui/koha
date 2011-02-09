@@ -3687,7 +3687,12 @@ sub GetMarcPrice {
     for my $field ( $record->field(@listtags) ) {
         for my $subfield_value  ($field->subfield($subfield)){
             #check value
-            return $subfield_value if ($subfield_value);
+            if ($subfield_value) {
+                 # in France, the cents separator is the , but sometimes, ppl use a .
+                 # in this case, the price will be x100 when unformatted ! Replace the . by a , to get a proper price calculation
+                $subfield_value =~ s/\./,/ if C4::Context->preference("CurrencyFormat") eq "FR";
+                return $subfield_value;
+            }
         }
     }
     return 0; # no price found
