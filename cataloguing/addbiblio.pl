@@ -777,14 +777,14 @@ my $breedingid    = $input->param('breedingid');
 my $z3950         = $input->param('z3950');
 my $op            = $input->param('op');
 my $mode          = $input->param('mode');
-my $frameworkcode = $input->param('frameworkcode')||"Default";
+my $frameworkcode = $input->param('frameworkcode');
 my $redirect      = $input->param('redirect');
 my $dbh           = C4::Context->dbh;
 
 my $userflags = ( $frameworkcode eq 'FA' ) ? "fast_cataloging" : "edit_catalogue";
 
 $frameworkcode = &GetFrameworkCode($biblionumber)
-  if ( $biblionumber and not($frameworkcode) );
+  if ( $biblionumber and not($frameworkcode) and $op ne 'addbiblio' );
 
 $frameworkcode = '' if ( $frameworkcode eq 'Default' );
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
