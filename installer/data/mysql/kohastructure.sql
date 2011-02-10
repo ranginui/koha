@@ -734,6 +734,7 @@ CREATE TABLE `deleteditems` (
   `enumchron` varchar(80) default NULL,
   `copynumber` varchar(32) default NULL,
   `stocknumber` varchar(32) default NULL,
+  `statisticvalue` varchar(80) DEFAULT NULL,
   `marc` longblob,
   PRIMARY KEY  (`itemnumber`),
   KEY `delitembarcodeidx` (`barcode`),
