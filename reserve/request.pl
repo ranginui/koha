@@ -405,8 +405,8 @@ foreach my $biblionumber (@biblionumbers) {
 
             my $branchitemrule = GetIssuingRule( $borrowerinfo->{categorycode}, $item->{'itype'}, GetReservesControlBranch( $borrowerinfo, $item ) );
             my $policy_holdrestricted = $branchitemrule->{'reservesallowed'};
-            $item->{'holdrestricted'} = $branchitemrule->{'holdrestricted'};
-
+            # prevent item to be reserved if holdrestricted & branch not the librarian branch & syspref to override not set
+            $item->{'holdrestricted'} = $branchitemrule->{'holdrestricted'} && (C4::Context->userenv->{branch} ne $item->{homebranch}) && !C4::Context->preference('AllowHoldPolicyOverride');
             if ( IsAvailableForItemLevelRequest($itemnumber) and not $item->{cantreserve} and CanItemBeReserved( $borrowerinfo->{borrowernumber}, $itemnumber ) ) {
                 if ( not $policy_holdrestricted and C4::Context->preference('AllowHoldPolicyOverride') ) {
                     $item->{override} = 1;

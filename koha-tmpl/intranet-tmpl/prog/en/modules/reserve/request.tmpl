@@ -406,6 +406,9 @@ function checkMultiHold() {
             <!-- /TMPL_IF -->
             <!-- TMPL_IF NAME="canholdmultiple" -->
                 <input type="checkbox" name="checkitem" value="<!-- TMPL_VAR NAME="itemnumber" -->" />
+            <!-- TMPL_ELSIF NAME="holdrestricted" -->
+                <input disabled="disabled" type="radio" name="checkitem" value="<!-- TMPL_VAR NAME="itemnumber" -->" />
+                <img src="/intranet-tmpl/<!-- TMPL_VAR NAME="theme" -->/img/famfamfam/silk/cross.png" alt="Cannot be put on hold" />
             <!-- TMPL_ELSIF NAME="available" -->
                 <input type="radio" name="checkitem" value="<!-- TMPL_VAR NAME="itemnumber" -->" />
             <!-- TMPL_ELSIF NAME="override" -->
