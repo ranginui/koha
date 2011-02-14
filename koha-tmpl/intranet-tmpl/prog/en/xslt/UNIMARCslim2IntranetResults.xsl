@@ -19,13 +19,12 @@
   <xsl:variable name="leader" select="marc:leader"/>
   <xsl:variable name="leader6" select="substring($leader,7,1)"/>
   <xsl:variable name="leader7" select="substring($leader,8,1)"/>
-  <xsl:variable name="biblionumber" 
-select="marc:datafield[@tag=999]/marc:subfield[@code='9']"/>
+  <xsl:variable name="biblionumber" select="marc:controlfield[@tag=001]"/>
   <xsl:variable name="isbn" select="marc:datafield[@tag=010]/marc:subfield[@code='a']"/>
      	
   <xsl:if test="marc:datafield[@tag=200]">
     <xsl:for-each select="marc:datafield[@tag=200]">
-      	<a><xsl:attribute name="href">/cgi-bin/koha/opac-detail.pl?biblionumber=<xsl:value-of select="$biblionumber"/>
+      	<a><xsl:attribute name="href">/cgi-bin/koha/catalogue/detail.pl?biblionumber=<xsl:value-of select="$biblionumber"/>
            </xsl:attribute>
         <xsl:variable name="title" select="marc:subfield[@code='a']"/>
         <xsl:variable name="ntitle"
@@ -66,6 +65,57 @@ select="marc:datafield[@tag=999]/marc:subfield[@code='9']"/>
   <xsl:call-template name="tag_210" />
 
   <xsl:call-template name="tag_215" />
+
+  <xsl:if test="marc:datafield[@tag=955]">
+    <span class="results_summary">
+      <span class="label">État de collection : </span>
+      <ul>
+        <xsl:for-each select="marc:datafield[@tag=955]">
+          <li>
+ 	      <xsl:choose>
+              <xsl:when test="marc:subfield[@code='5']">
+              	<xsl:call-template name="RCR">
+      		    <xsl:with-param name="code" select="substring-before(marc:subfield[@code='5'], ':')"/>
+      	      	</xsl:call-template>
+	      </xsl:when>
+	      <xsl:otherwise>
+		<xsl:value-of select="marc:subfield[@code='9']"/>
+	      </xsl:otherwise>
+	      </xsl:choose>
+      	      <xsl:if test="marc:subfield[@code='r']">
+      		  , <xsl:value-of select="marc:subfield[@code='r']"/>
+      	      </xsl:if>
+          </li>
+        </xsl:for-each>
+      </ul>
+    </span>
+  </xsl:if>
+    <xsl:if test="marc:datafield[@tag=856]">
+      <span class="results_summary">
+        <span class="label">Ressource en ligne: </span>
+        <xsl:for-each select="marc:datafield[@tag=856]">
+          <a>
+            <xsl:attribute name="href">
+              <xsl:value-of select="marc:subfield[@code='u']"/>
+            </xsl:attribute>
+            <xsl:choose>
+              <xsl:when test="marc:subfield[@code='y' or @code='3' or @code='z']">
+                <xsl:call-template name="subfieldSelect">
+                  <xsl:with-param name="codes">y3z</xsl:with-param>
+                </xsl:call-template>
+              </xsl:when>
+              <xsl:when test="not(marc:subfield[@code='y']) and not(marc:subfield[@code='3']) and not(marc:subfield[@code='z'])">
+              Cliquer ici
+            </xsl:when>
+            </xsl:choose>
+          </a>
+          <xsl:choose>
+            <xsl:when test="position()=last()"/>
+            <xsl:otherwise> | </xsl:otherwise>
+          </xsl:choose>
+        </xsl:for-each>
+      </span>
+    </xsl:if>
 
   <span class="results_summary">
     <span class="label">Disponibilité: </span>
@@ -126,7 +176,7 @@ select="marc:datafield[@tag=999]/marc:subfield[@code='9']"/>
     <xsl:choose>
       <xsl:when test="count(key('item-by-status', 'reference'))>0">
         <span class="available">
-          <b><xsl:text>Copies available for reference: </xsl:text></b>
+          <b><xsl:text>À consulter sur place : </xsl:text></b>
           <xsl:variable name="reference_items"
                         select="key('item-by-status', 'reference')"/>
           <xsl:for-each select="$reference_items[generate-id() = generate-id(key('item-by-status-and-branch', concat(items:status, ' ', items:homebranch))[1])]">
@@ -199,5 +249,14 @@ select="marc:datafield[@tag=999]/marc:subfield[@code='9']"/>
   </span>
 
 </xsl:template>
+
+    <xsl:template name="RCR">
+        <xsl:param name="code"/>
+        <xsl:choose>
+            <!-- Définir ici l'équivalence des RCRs <=> nom de la bibliothèque -->
+            <xsl:when test="$code='130015206'">Muséothèque AGCCPF-PACA</xsl:when>
+            <xsl:otherwise><xsl:value-of select="$code"/></xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
 
 </xsl:stylesheet>
