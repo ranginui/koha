@@ -326,9 +326,9 @@ $(document).ready(function() {
                                     <!--/TMPL_IF-->
                                     </td>
                                     <!-- TMPL_IF NAME="herited_holdrestricted" -->
-                                    <td class="holdrestricted editable reserves boolean herited">
+                                    <td class="holdrestricted editable reserves triple herited">
                                     <!--TMPL_ELSE-->
-                                     <td class="holdrestricted editable reserves boolean">
+                                     <td class="holdrestricted editable reserves triple">
                                     <!--/TMPL_IF-->
                                     <!-- TMPL_IF NAME="holdrestricted" -->
                                     Yes
@@ -392,7 +392,13 @@ $(document).ready(function() {
                                             <option value="0">No</option>
                                         </select>
                                     </td>
-                                    <td class="reserves"><!-- TMPL_IF NAME="holdrestricted"--><input type="checkbox" name="holdrestricted" checked="checked" value="1"/> <!--TMPL_ELSE--><input type="checkbox" name="holdrestricted" value="1"/> <!-- /TMPL_IF --></td>
+                                    <td class="reserves">
+                                            <select name="holdrestricted">
+                                                <option value=""></option>
+                                                <option value="1">Yes</option>
+                                                <option value="0">No</option>
+                                           </select>
+                                   </td>
 		                            <td class="issues"><input name="rentaldiscount" size="2" /></td>
                                     <td><input type="hidden" name="branchcode" value="<!-- TMPL_VAR NAME="branchcode" -->"/><input type="submit" value="Add" class="submit" /></td>
                                 </tr>
