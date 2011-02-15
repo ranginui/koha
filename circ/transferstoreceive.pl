@@ -81,6 +81,9 @@ foreach my $br ( keys %$branches ) {
                 $getransf{'diff'}      = $diff;
             }
             my $gettitle = GetBiblioFromItemNumber( $num->{'itemnumber'} );
+            if (!defined ($gettitle)){
+                next;
+            }
             my $itemtypeinfo = getitemtypeinfo( ( C4::Context->preference('item-level_itypes') ) ? $gettitle->{'itype'} : $gettitle->{'itemtype'} );
 
             $getransf{'datetransfer'} = format_date( $num->{'datesent'} );
