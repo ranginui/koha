@@ -101,6 +101,8 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
         <!-- TMPL_VAR NAME="XSLTBloc" -->
     <!-- TMPL_ELSE -->
     <h1><!-- TMPL_VAR NAME="title" escape="html" --><!-- TMPL_IF NAME="subtitle" --> <span class="subtitle"><!-- TMPL_LOOP NAME="subtitle" --><!-- TMPL_VAR NAME="subfield" --> <!-- /TMPL_LOOP --></span><!-- /TMPL_IF --></h1>
+    <!-- TMPL_IF NAME="source_t"><h4><!-- TMPL_LOOP NAME="source_t" --><!-- TMPL_VAR NAME="subfield"><!-- /TMPL_LOOP -->
+    <!-- TMPL_LOOP NAME="source_g" --><!-- TMPL_VAR NAME="subfield"><!-- /TMPL_LOOP --></h4><!-- /TMPL_IF -->
     <!-- TMPL_IF NAME="author" --><h5 class="author">by <a href="/cgi-bin/koha/opac-search.pl?q=au:<!-- TMPL_VAR NAME="author" ESCAPE="URL" -->"><!-- TMPL_VAR NAME="author" ESCAPE="HTML" --></a></h5><!-- /TMPL_IF --> 
 
     <span class="results_summary"><!-- TMPL_UNLESS NAME="item-level_itypes" -->

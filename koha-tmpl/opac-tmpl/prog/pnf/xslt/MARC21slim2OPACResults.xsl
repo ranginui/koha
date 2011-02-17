@@ -427,6 +427,15 @@
         </xsl:for-each>
         </xsl:if>
     </a>
+    <xsl:if test="marc:datafield[@tag=773]">
+    <br />
+        <xsl:for-each select="marc:datafield[@tag=773]">
+	    <xsl:call-template name="subfieldSelect">
+	        <xsl:with-param name="codes">tg</xsl:with-param>
+            </xsl:call-template>
+	</xsl:for-each>
+    </xsl:if>
+    
     <p>
 
     <!-- Author Statement: Alternate Graphic Representation (MARC 880) -->

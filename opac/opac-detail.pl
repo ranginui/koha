@@ -548,6 +548,8 @@ my $marcseriesarray  = GetMarcSeries  ($record,$marcflavour);
 my $marcurlsarray    = GetMarcUrls    ($record,$marcflavour);
 my $marchostsarray  = GetMarcHosts($record,$marcflavour);
 my $subtitle         = GetRecordValue('subtitle', $record, GetFrameworkCode($biblionumber));
+my $source_t         = GetRecordValue('source_t', $record, GetFrameworkCode($biblionumber));
+my $source_g         = GetRecordValue('source_g', $record, GetFrameworkCode($biblionumber));
 
 # Support newlines in the notes content
 $_->{marcnote} =~ s{\n}{<br />}g foreach (@$marcnotesarray);
@@ -571,6 +573,9 @@ $_->{marcnote} =~ s{\n}{<br />}g foreach (@$marcnotesarray);
                      authorised_value_images => $biblio_authorised_value_images,
                      subtitle                => $subtitle,
                      OpacStarRatings         => C4::Context->preference("OpacStarRatings"),
+	             source                  => "$source_t $source_g",
+	             source_t                => $source_t,
+	             source_g                => $source_g,
     );
 
 if (C4::Context->preference("AlternateHoldingsField") && scalar @items == 0) {
