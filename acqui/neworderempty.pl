@@ -292,7 +292,6 @@ if ( C4::Context->preference('AcqCreateItem') eq 'ordering' && !$ordernumber ) {
     # prepare empty item form
     my $cell = PrepareItemrecordDisplay( '', '', '', 'ACQ' );
 
-    #     warn "==> ".Data::Dumper::Dumper($cell);
     unless ($cell) {
         $cell = PrepareItemrecordDisplay( '', '', '', '' );
         $template->param( 'NoACQframework' => 1 );

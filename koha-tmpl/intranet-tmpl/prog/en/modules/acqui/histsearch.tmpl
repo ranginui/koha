@@ -63,6 +63,7 @@
 	<div id="acqui_histsearch">
 		<table>
 			<tr>
+                <th>Order line</th>
 				<th>Basket</th>
 				<th>Basket group</th>
 				<th>Invoice Number</th>
@@ -70,12 +71,14 @@
 				<th>Vendor</th>
 				<th>Placed on</th>
 				<th>Received on</th>
-				<th>Quantity ordered</th>
+				<th>Quantity received</th>
+                <th>pending order</th>
 				<th>Unit cost</th>
 			</tr>
 			
 			<!-- TMPL_LOOP NAME="suggestions_loop" -->
 				<tr>
+                    <td><!-- TMPL_VAR NAME="parent_ordernumber" --></td>
                     <td><!-- TMPL_VAR name="basketname" --> (<a href="basket.pl?basketno=<!-- TMPL_VAR name="basketno" -->"><!-- TMPL_VAR name="basketno" --></a>)</td>
 			<td><!-- TMPL_VAR name="groupname" --> (<a href="basketgroup.pl?booksellerid=<!-- TMPL_VAR name="id" -->"><!-- TMPL_VAR name="basketgroupid" --></a>)</td>
 					<td><!-- TMPL_IF NAME="invoicenumber" -->
@@ -89,6 +92,7 @@
 					<td><a href="/cgi-bin/koha/acqui/supplier.pl?supplierid=<!-- TMPL_VAR name="id" -->"><!-- TMPL_VAR NAME="name" --></a></td>
 					<td><!-- TMPL_VAR name="creationdate" --></td>
 					<td><!-- TMPL_VAR name="datereceived" --></td>
+					<td><!-- TMPL_VAR name="quantityreceived" --></td>
 					<td><!-- TMPL_VAR name="quantity" --></td>
 					<td><!-- TMPL_VAR name="ecost" --></td>
 				</tr>

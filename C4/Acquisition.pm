@@ -26,7 +26,7 @@ use MARC::Record;
 use C4::Suggestions;
 use C4::Biblio;
 use C4::Debug;
-use C4::SQLHelper qw(InsertInTable);
+use C4::SQLHelper qw(InsertInTable UpdateInTable);
 use C4::Items;
 
 use Time::localtime;
@@ -61,6 +61,8 @@ BEGIN {
       &GetContracts &GetContract
 
       &GetItemnumbersFromOrder
+
+      &GetBiblioCountByBasketno
     );
 }
 
@@ -985,6 +987,7 @@ The following keys are used: "biblionumber", "title", "basketno", "quantity", "n
 
 sub NewOrder {
     my $orderinfo = shift;
+    my $parent_ordernumber = shift;
 #### ------------------------------
     my $dbh = C4::Context->dbh;
     my @params;
@@ -1004,7 +1007,13 @@ sub NewOrder {
         $orderinfo->{quantityreceived} = 0;
     }
 
+    $orderinfo->{parent_ordernumber} = $parent_ordernumber if $parent_ordernumber;
     my $ordernumber = InsertInTable( "aqorders", $orderinfo );
+    if ( not $parent_ordernumber ) {
+        $orderinfo->{parent_ordernumber} = $ordernumber;
+        $orderinfo->{ordernumber} = $ordernumber;
+        UpdateInTable( "aqorders", $orderinfo );
+    }
     return ( $orderinfo->{'basketno'}, $ordernumber );
 }
 
@@ -1228,7 +1237,7 @@ sub ModReceiveOrder {
         }
         $order->{'quantity'} -= $quantrec;
         $order->{'quantityreceived'} = 0;
-        my $newOrder = NewOrder($order);
+        my $newOrder = NewOrder($order, $$order{parent_ordernumber});
     } else {
         $sth = $dbh->prepare(
             "update aqorders
@@ -1680,7 +1689,8 @@ sub GetHistory {
                 aqorders.ordernumber,
                 aqorders.booksellerinvoicenumber as invoicenumber,
                 aqbooksellers.id as id,
-                aqorders.biblionumber
+                aqorders.biblionumber,
+                aqorders.parent_ordernumber
             FROM aqorders
             LEFT JOIN aqbasket ON aqorders.basketno=aqbasket.basketno
 	    LEFT JOIN aqbasketgroups ON aqbasket.basketgroupid=aqbasketgroups.id
@@ -1851,6 +1861,35 @@ sub GetContract {
     my $result = $sth->fetchrow_hashref;
     return $result;
 }
+
+
+=head3 GetBiblioCountByBasketno
+
+=over 4
+
+$biblio_count = &GetBiblioCountByBasketno($basketno);
+
+Looks up the biblio's count that has basketno value $basketno
+
+Returns a quantity
+
+=back
+
+=cut
+sub GetBiblioCountByBasketno {
+    my ($basketno) = @_;
+    my $dbh          = C4::Context->dbh;
+    my $query        = "
+        SELECT COUNT( DISTINCT( biblionumber ) )
+        FROM   aqorders
+        WHERE  basketno = ?
+            AND (datecancellationprinted IS NULL OR datecancellationprinted='0000-00-00');
+        ";
+    my $sth = $dbh->prepare($query);
+    $sth->execute($basketno);
+    return $sth->fetchrow;
+}
+
 
 1;
 __END__
