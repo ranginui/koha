@@ -39,6 +39,7 @@ package C4::Ris;
 
 
 # Modified 2008 by BibLibre for Koha
+# Modified 2011 by Catalyst
 #
 # This file is part of Koha.
 #
@@ -274,6 +275,11 @@ sub marc2ris {
 	else { ## assume marc21
 	    &print_abstract($record->field('520'));
 	}
+    
+        # 856u has the URI
+        if ($record->field('856')){
+	    print_uri($record->field('856'));
+	}	    
 
 	## end RIS dataset
 	print "ER  - \n";
@@ -581,6 +587,17 @@ sub print_issn {
 
 	my $issn = substr($issnfield->subfield('a'), 0, 9);
 	print "SN  - ", &charconv($issn), "\n";
+    }
+}
+
+###
+# print_uri() prints info from 856 u 
+###
+sub print_uri {
+    my $f856 = shift;
+    
+    if (my $uri = $f865->subfield('u')){
+	print "UR  - :", charconv($uri), "\n";
     }
 }
 
@@ -933,6 +950,8 @@ sub print_abstract {
 
 }
 
+    
+    
 ##********************************************************************
 ## charconv(): converts to a different charset based on a global var
 ## Arguments: string
