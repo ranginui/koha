@@ -596,8 +596,8 @@ sub print_issn {
 sub print_uri {
     my $f856 = shift;
     
-    if (my $uri = $f865->subfield('u')){
-	print "UR  - :", charconv($uri), "\n";
+    if (my $uri = $f856->subfield('u')){
+	print "UR  - ", charconv($uri), "\n";
     }
 }
 
