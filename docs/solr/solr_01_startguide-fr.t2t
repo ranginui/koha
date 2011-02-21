@@ -6,9 +6,11 @@ Claire Hernandez <claire.hernandez@biblibre.com>
 %!encoding: UTF-8
 %!outfile: generated/solr_01_startguide-fr.doku
 
+
 = Guide de démarrage =
 
 __Public__: Tout utilisateur de l'opac.
+
 
 == Apports de Solr ==
 
@@ -34,6 +36,7 @@ Quelques recherches apportées par Solr:
 
 Solr est donc un moteur d'indexation et de recherche basé sur Lucene. Voir le site de Lucene pour le wiki de la communauté ainsi que les différentes configurations possibles, etc. Lucene est en train de devenir présent un petit peu partout. Il offre des connecteurs de plus en plus nombreux dans de plus en plus de langages.
 
+
 == Requêtes simples ==
 
 Ces exemples sont des requêtes entrées directement dans le moteur de recherche (boîte de texte en haut de l'opac).
@@ -46,6 +49,7 @@ Ces exemples sont des requêtes entrées directement dans le moteur de recherche
 <todo
 wildcars * et ?
 >
+
 
 == Requêtes avancées ==
 

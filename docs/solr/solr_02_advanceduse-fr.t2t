@@ -6,13 +6,16 @@ Claire Hernandez <claire.hernandez@biblibre.com>
 %!encoding: UTF-8
 %!outfile: generated/solr_02_advanceduse-fr.doku
 
+
 = Guide d'utilisation avancé = 
 
 __Public:__ Toute personne abilitée à utiliser l'interface pro de Koha et à configurer les index.
 
 
 == Références==
+
 [Solr Query Syntax http://wiki.apache.org/solr/SolrQuerySyntax]
+
 
 == Sysprefs ==
 
@@ -21,7 +24,9 @@ __Public:__ Toute personne abilitée à utiliser l'interface pro de Koha et à c
 - **OPACdefaultSortField** à score|txt_title
 - **SearchEngine** à Solr|Zebra
 
+
 == Configuration des indexes ==
+
 
 === Les index ===
 
@@ -46,12 +51,14 @@ Les lignes du tableau peuvent être déplace en drag'n drop pour modifier l'ordr
 
 Voir la page [mappings.pl http://solr.biblibre.com/cgi-bin/koha/solr/mappings.pl]. Par exemple : 7.. * : tous les sous champs des 7XX et va les mettre dans l'index sélectionné.
 
+
 == Utilisation des types d'index ==
 
 Solr permet d'appliquer des filtres pour un type de champs indexé. Un filtre détermine la manière dont va être traité un champs pendant l'indexation ou la recherche. Ces filtres sont disponibles sur toute installation mais un fichier de configuration doit être mis à jour pour les utiliser.
 http://wiki.apache.org/solr/AnalyzersTokenizersTokenFilters
 
 A chaque index correspond un type de champs qui définit quelles sont les recherches possibles sur cet index. Il existe plusieurs types de champs définis:
+
 
 === String ===
 
@@ -67,6 +74,7 @@ __Exemples:__
 - str_callnumber:"MAG3 3 ELG 24" (ste_callnumber:MAG3 aurait retourné cette même notice)
 - str_callnumber:MAG3*
 
+
 ===Simple Text===
 
 __Caractéristiques:__
@@ -78,6 +86,7 @@ __Utilisation:__
 - si les traitements sur le champs ne sont pas nécessaires, préférer le type "String"
 __Exemples:__
 - ste_author:Boris ou ste_author:Vian trouvera les livres de "Boris Vian" (alors que str_author:Boris n'aurait trouvé que les livre de l'auteur "Boris")
+
 
 ===Text===
 
@@ -103,6 +112,7 @@ __Caractéristiques:__
 __Utilisation:__
 __Exemples:__
 
+
 ===Date===
 
 __Caractéristiques:__
@@ -111,6 +121,7 @@ __Exemples:__
 
 
 == Les plugins ==
+
 
 === Forme rejetée "Authorities" ===
 
