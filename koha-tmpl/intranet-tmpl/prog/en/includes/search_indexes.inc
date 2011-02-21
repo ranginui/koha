@@ -18,7 +18,7 @@
     <option value="sn">Standard Number</option>
     <option value="nb">&nbsp;&nbsp;&nbsp;&nbsp; ISBN</option>
     <option value="ns">&nbsp;&nbsp;&nbsp;&nbsp; ISSN</option>
-    <option value="callnum">&nbsp;&nbsp;&nbsp;&nbsp; Call Number</option>
+    <option value="callnum,phr">&nbsp;&nbsp;&nbsp;&nbsp; Call Number</option>
     <option value="ln,rtrn">Language</option>
     <option value="nt">Notes/Comments</option>
     <option value="pb">Publisher</option>
