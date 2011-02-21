@@ -67,6 +67,7 @@ if ( not $indexes ) {
 } else {
     my @values;
     if ( defined $searchstr ) {
+        $searchstr =~ s/--//g;
         push @values, split(' ', $searchstr);
         $values[-1] = $values[-1] . '*';
     } else {
