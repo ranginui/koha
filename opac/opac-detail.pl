@@ -228,7 +228,8 @@ $_->{marcnote} =~ s{\n}{<br />}g foreach (@$marcnotesarray);
                      itemdata_itemnotes          => $itemfields{itemnotes},
                      authorised_value_images => $biblio_authorised_value_images,
                      subtitle                => $subtitle,
-	             source                  => "$source_t $source_g",
+	             source_t                => $source_t,
+	             source_g                => $source_g,
     );
 
 foreach ( keys %{$dat} ) {

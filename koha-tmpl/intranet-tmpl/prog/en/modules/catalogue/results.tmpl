@@ -398,7 +398,12 @@ function GetZ3950Terms(){
                                             <b><!-- TMPL_IF NAME="title" --><!-- TMPL_VAR NAME="title" ESCAPE="html" --><!-- TMPL_ELSE -->No title<!-- /TMPL_IF --></b>
 					                                                </a>
                                         <!-- TMPL_LOOP NAME="subtitle" --> , <!-- TMPL_VAR NAME="subfield" --> <!-- /TMPL_LOOP -->					
-					<!-- TMPL_IF NAME="source" --><br /><!-- TMPL_IF NAME="source" --><!-- /TMPL_IF -->
+					<!-- TMPL_IF NAME="source_t"><br />
+					<!-- TMPL_LOOP NAME="source_t" --><!-- TMPL_VAR NAME="value"><!-- /TMPL_LOOP-->
+					<!-- TMPL_LOOP NAME="source_g" --><!-- TMPL_VAR NAME="value"><!-- /TMPL_LOOP-->
+					<!-- /TMPL_IF -->
+
+
 					<!-- TMPL_IF name="volume" -->,<!-- TMPL_VAR name="volume" --><!-- /TMPL_IF --> <!-- TMPL_IF name="volumeddesc" -->, <!-- TMPL_VAR name="volumeddesc" --><!-- /TMPL_IF -->
                                 </p>
                                 <!-- TMPL_IF name="summary" -->
