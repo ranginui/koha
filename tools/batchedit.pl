@@ -61,7 +61,7 @@ if($input->param('field') and not defined $op){
                  query => $input,
                  type => "intranet",
                  authnotrequired => 0,
-                 flagsrequired => "batchedit",
+                 flagsrequired => { tools => "batchedit" },
         });
     
     
