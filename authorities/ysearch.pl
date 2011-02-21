@@ -48,7 +48,7 @@ if ( $auth_status ne "ok" ) {
 
 my $authtypecode = $query->param('authtypecode') || '';
 my $searchstr = $query->param('query');
-my $searchtype = $query->param('searchtype');
+my $searchtype = $query->param('searchtype') || 'all_headings';
 my $orderby   = $query->param('orderby') || '';
 my $page        = $query->param('page') || 1;
 my $count       = 20;
@@ -56,18 +56,21 @@ my $count       = 20;
 my $indexes;
 my $operands;
 my $operators;
-push @$indexes, @{GetIndexesBySearchtype($searchtype, $authtypecode)};
-my $value = defined $searchstr ? $searchstr . "*" : '[* TO *]';
 
-for (@$indexes) {
-    push @$operands, $value;
-    push @$operators, 'AND';
-}
+push @$indexes, @{GetIndexesBySearchtype($searchtype, $authtypecode)};
 
 if ( not $indexes ) {
     push @$indexes, @{GetIndexesBySearchtype('all_headings', $authtypecode)};
     for (@$indexes) {
         push @$operands, '[* TO *]';
+    }
+} else {
+    my @values;
+    push @values, defined $searchstr ? split(' ', $searchstr) : '[* TO *]';
+
+    for (@$indexes) {
+        push @$operands, $_ for @values;
+        push @$operators, 'AND';
     }
 }
 

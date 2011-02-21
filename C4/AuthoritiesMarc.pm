@@ -846,10 +846,10 @@ sub BuildSummary {
                 my $lang = substr( $field->subfield('8'), 3, 3 );
                 $seeheading .= '<span class="langue"> En ' . $language{$lang} . ' : </span><span class="OT"> ' . $field->subfield('a') . "</span><br />\n";
             }
-            $broaderterms  =~ s/-- \n$//;
-            $narrowerterms =~ s/-- \n$//;
-            $seealso       =~ s/-- \n$//;
-            $see           =~ s/-- \n$//;
+            $broaderterms  =~ s/-- \n$// if $broaderterms;
+            $narrowerterms =~ s/-- \n$// if $narrowerterms;
+            $seealso       =~ s/-- \n$// if $seealso;
+            $see           =~ s/-- \n$// if $see;
             $summary = "<b>" . $heading . "</b><br />" . ( $notes ? "$notes <br />" : "" );
             $summary .= '<p><div class="label">TG : ' . $broaderterms . '</div></p>'  if ($broaderterms);
             $summary .= '<p><div class="label">TS : ' . $narrowerterms . '</div></p>' if ($narrowerterms);
