@@ -66,7 +66,12 @@ if ( not $indexes ) {
     }
 } else {
     my @values;
-    push @values, defined $searchstr ? split(' ', $searchstr) : '[* TO *]';
+    if ( defined $searchstr ) {
+        push @values, split(' ', $searchstr);
+        $values[-1] = $values[-1] . '*';
+    } else {
+        push @values, '[* TO *]';
+    }
 
     for (@$indexes) {
         push @$operands, $_ for @values;
