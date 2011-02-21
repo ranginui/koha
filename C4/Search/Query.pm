@@ -161,7 +161,7 @@ Return token with correct index name
 sub splitToken {
     my $token = shift;
 
-    my $idx;
+    my $idx = 'all_fields';
     my $operand;
 
     my @values;
@@ -181,7 +181,7 @@ sub splitToken {
         @values = split ',', $idx;
         $idx = (@values)[0];
         $attr = (@values)[1];
-        $idx = getIndexName $idx;
+        $idx = getIndexName $idx if $idx;
 
         given ( $attr ) {
             when ( 'phr' ) {
@@ -236,7 +236,7 @@ sub buildQuery {
             }else{
                 # Advanced search
                 for $idx (@$indexes){
-                    push @$new_indexes, getIndexName $idx;
+                    push @$new_indexes, getIndexName($idx ? $idx : 'all_fields');
                 }
                 $new_operands = $operands;
             }

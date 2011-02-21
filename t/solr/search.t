@@ -56,7 +56,7 @@ $got = C4::Search::Query->normalSearch($q);
 $expected = "txt_title:maudits AND a OR ste_author:andre NOT str_ean:blabla";
 is($got, $expected, "Test 'normal' search");
 
-BEGIN { $tests += 6 } # Advanced search
+BEGIN { $tests += 7 } # Advanced search
 @$operands = ("maudits"); # Solr indexes
 @$indexes = ("title", "all_fields", "all_fields");
 @$operators = ();
@@ -98,4 +98,11 @@ is($got, $expected, "Test 'More options' in advanced search");
 $got = C4::Search::Query->buildQuery($indexes, $operands, $operators);
 $expected = "txt_title:crépuscule AND ste_author:André";
 is($got, $expected, "Test Accents in advanced search");
+
+@$operands = ("maudits", "a", "andre"); # Bad indexes types
+@$indexes = ("", undef, ());
+@$operators = ();
+$got = C4::Search::Query->buildQuery($indexes, $operands, $operators);
+$expected = "maudits OR a OR andre";
+is($got, $expected, "Test call with bad indexes types");
 
