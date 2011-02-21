@@ -192,8 +192,9 @@ if (nodename =="barcodes[]"){
         <!-- TMPL_IF Name="emailpro" --><li><span class="label">Email (work): </span><a href="mailto:<!-- TMPL_VAR NAME="emailpro" -->"><!-- TMPL_VAR NAME="emailpro" --></a></li><!--/TMPL_IF-->
     <!-- /TMPL_UNLESS -->
     <li><span class="label">Initials: </span><!-- TMPL_VAR NAME="initials" --></li>
-    <li><span class="label">Date of birth:</span><!-- TMPL_VAR NAME="dateofbirth" --></li>
-    <li><span class="label">Sex:</span><!-- TMPL_VAR NAME="sex" --></li><!-- /TMPL_UNLESS -->
+<!--    <li><span class="label">Date of birth:</span><!-- TMPL_VAR NAME="dateofbirth" --></li> -->
+<!--    <li><span class="label">Sex:</span><!-- TMPL_VAR NAME="sex" --></li> -->
+<!-- /TMPL_UNLESS -->
     <!-- TMPL_IF NAME="printethnicityline" -->
     <li><span class="label">Ethnicity:</span><!-- TMPL_VAR NAME="ethnicity" --></li>
     <li><span class="label">Ethnicity notes: </span><!-- TMPL_VAR NAME="ethnotes" --></li>
@@ -329,7 +330,7 @@ if (nodename =="barcodes[]"){
 	</div>
  </div>
     <div class="action"><a href="memberentry.pl?op=modify&amp;borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->&amp;step=3">Edit</a></div>
- 
+<!-- 
  <div id="patron-alternate-address" style="padding-top: 1em;">
     <h3>Alternate Address</h3>
     <!-- TMPL_UNLESS NAME="I"--><!-- TMPL_UNLESS NAME="C"-->
@@ -348,7 +349,7 @@ if (nodename =="barcodes[]"){
     <li><span class="label">Email: </span><!-- TMPL_VAR NAME="email" --></li>
     <li><span class="label">Relationship: </span><!-- TMPL_VAR NAME="relationship" --></li></ol></div>
    <!-- /TMPL_IF -->
-</div>
+</div> 
 <div class="action"><a href="memberentry.pl?op=modify&amp;borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->&amp;step=6">Edit</a></div>
 
  <div id="patron-alternative-contact" style="padding-top: 1em;">
@@ -363,7 +364,7 @@ if (nodename =="barcodes[]"){
     <li><span class="label">Phone: </span><!-- TMPL_VAR NAME="altcontactphone" --></li></ol></div>
 </div>
 <div class="action"><a href="memberentry.pl?op=modify&amp;borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->&amp;step=2">Edit</a></div>
-
+-->
 </div>
 </div>
 
