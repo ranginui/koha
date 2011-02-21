@@ -206,6 +206,8 @@ my $marcsubjctsarray = GetMarcSubjects($record,$marcflavour);
 my $marcseriesarray  = GetMarcSeries  ($record,$marcflavour);
 my $marcurlsarray    = GetMarcUrls    ($record,$marcflavour);
 my $subtitle         = GetRecordValue('subtitle', $record, GetFrameworkCode($biblionumber));
+my $source_t         = GetRecordValue('source_t', $record, GetFrameworkCode($biblionumber));
+my $source_g         = GetRecordValue('source_g', $record, GetFrameworkCode($biblionumber));
 
 # Support newlines in the notes content
 $_->{marcnote} =~ s{\n}{<br />}g foreach (@$marcnotesarray);
@@ -226,6 +228,8 @@ $_->{marcnote} =~ s{\n}{<br />}g foreach (@$marcnotesarray);
                      itemdata_itemnotes          => $itemfields{itemnotes},
                      authorised_value_images => $biblio_authorised_value_images,
                      subtitle                => $subtitle,
+	             source_t                => $source_t,
+	             source_g                => $source_g,
     );
 
 foreach ( keys %{$dat} ) {
