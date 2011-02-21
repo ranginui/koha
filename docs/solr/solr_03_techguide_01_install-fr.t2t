@@ -11,6 +11,7 @@ Documentation disponible sur http://descartes.biblibre.com/solr/install/solr_03_
 = Installation multi-core avec Jetty = 
 
 Il est possible d'installer solr en simple ou multi core. La seconde option est conseillée et décrite dans le document. Pour note, il existait une procédure initiale avec le paquet "solr-tomcat" qui n'existe plus dans les dépots et qui a été préférée par un lancemnt avec Jetty plus maitrisé et finalement suffisant. Cette architecture est en cours de test sur nos serveurs.
+Cette procédure peut certainement être améliorée avec vos feedbacks!
 
 == Installation de Koha ==
 
@@ -67,7 +68,18 @@ Dépendances et logiciel sous debian:
   - http://descartes.biblibre.com/solr/install/V0.1_solrconf_install.tar
   - http://descartes.biblibre.com/solr/install/V0.1_solr_install.tar
 
-- Extraire les 2 dossiers où vous le souhaitez
+- Extraire les 2 dossiers où vous le souhaitez ($DATA/solr et $DATA/solrconf)
+
+- Ajouter un groupe et un utilisateur "solr"
+
+- Ajouter les permissions au dossier de logs
+```
+mkdir $DATA/solr/logs
+chown -R solr:solr $DATA/solr
+./$DATA/solrconf/launch_solr.sh
+```
+- Donner les droits à "solr:solr" d'écrire dans les dossiers d'index
+``` chown -R solr:solr $DATA/solrconf/multicore/core1/
 
 - lancer solrconf/launch_solr.sh
 

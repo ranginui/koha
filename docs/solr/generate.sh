@@ -16,4 +16,4 @@ txt2tags -t html -o generated/solr_02_advanceduse-fr.html solr_02_advanceduse-fr
 txt2tags -t html -o generated/solr_03_techguide-fr.html solr_03_techguide-fr.t2t
 txt2tags -t html -o generated/solr_03_techguide_01_install-fr.html solr_03_techguide_01_install-fr.t2t
 
-scp generated/*.html descartes:dev/solr/install_v0.1/
+scp generated/*.html descartes:dev/solr/doc/
