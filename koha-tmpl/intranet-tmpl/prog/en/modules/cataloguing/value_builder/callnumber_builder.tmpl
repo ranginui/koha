@@ -15,7 +15,7 @@
         <td>
         <!-- TMPL_LOOP NAME="cn_part1" -->
         <!-- /TMPL_LOOP -->
-        <select name="cn_part1">
+        <select name="cn_part1"><option value=""></option>
         <!-- TMPL_LOOP NAME="cn_part1" -->
         <option value="<!-- TMPL_VAR NAME="authorised_value" -->"><!-- TMPL_VAR NAME="authorised_value" --></option>
         <!-- /TMPL_LOOP -->
@@ -27,7 +27,7 @@
         <td>
         <!-- TMPL_LOOP NAME="cn_part2" -->
         <!-- /TMPL_LOOP -->
-        <select name="cn_part2">
+        <select name="cn_part2"><option value=""></option>
         <!-- TMPL_LOOP NAME="cn_part2" -->
         <option value="<!-- TMPL_VAR NAME="authorised_value" -->"><!-- TMPL_VAR NAME="authorised_value" --></option>
         <!-- /TMPL_LOOP -->
@@ -39,7 +39,7 @@
         <td>
         <!-- TMPL_LOOP NAME="cn_part3" -->
         <!-- /TMPL_LOOP -->
-        <select name="cn_part3">
+        <select name="cn_part3"><option value=""></option>
         <!-- TMPL_LOOP NAME="cn_part3" -->
         <option value="<!-- TMPL_VAR NAME="authorised_value" -->"><!-- TMPL_VAR NAME="authorised_value" --></option>
         <!-- /TMPL_LOOP -->
@@ -51,7 +51,7 @@
         <td>
         <!-- TMPL_LOOP NAME="cn_part4" -->
         <!-- /TMPL_LOOP -->
-        <select name="cn_part4">
+        <select name="cn_part4"><option value=""></option>
         <!-- TMPL_LOOP NAME="cn_part4" -->
         <option value="<!-- TMPL_VAR NAME="authorised_value" -->"><!-- TMPL_VAR NAME="authorised_value" --></option>
         <!-- /TMPL_LOOP -->
@@ -113,7 +113,7 @@
     function report() {
         var doc   = opener.document;
         var field = doc.getElementById("<!-- TMPL_VAR NAME='index'-->");
-        field.value= document.f_pop.cn_part1.value+document.f_pop.cn_part2.value+document.f_pop.cn_part3.value+document.f_pop.cn_part4.value+document.f_pop.dewey.value+document.f_pop.element_cote.value;
+        field.value= document.f_pop.cn_part1.value+" "+document.f_pop.cn_part2.value+" "+document.f_pop.cn_part3.value+" "+document.f_pop.cn_part4.value+" "+document.f_pop.dewey.value+" "+document.f_pop.element_cote.value;
 //         SetPublicationDate();
         self.close();
         return false;
