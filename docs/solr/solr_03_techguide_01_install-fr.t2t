@@ -41,6 +41,11 @@ export DB_PASS='<dbpass>'
 
 == Installation des dépendances logicielles ==
 
+Si vous ne les avez pas, ajoutez dans apt/sources.lists.d/koha_biblibre.list le dépôt biblibre debian :
+```
+deb http://debian.biblibre.com/all ./
+```
+
 Dépendances et logiciel sous debian:
 ``` 
   sudo aptitude install libdata-searchengine-perl 
@@ -73,6 +78,7 @@ Dépendances et logiciel sous debian:
 - Ajouter un groupe et un utilisateur "solr"
 
 - Ajouter les permissions au dossier de logs
+
 ```
 mkdir $DATA/solr/logs
 chown -R solr:solr $DATA/solr
@@ -81,7 +87,10 @@ chown -R solr:solr $DATA/solr
 - Donner les droits à "solr:solr" d'écrire dans les dossiers d'index
 ``` chown -R solr:solr $DATA/solrconf/multicore/core1/
 
-- lancer solrconf/launch_solr.sh
+- pour lancer launch_solr.sh, vous aurez besoin de runit (demande chpst) ainsi que des droits suid pour le groupe solr
+
+- lancer sudo solrconf/launch_solr.sh
+
 
 
 === Description du livrable ===
