@@ -2,6 +2,9 @@ package KohaTest::Search::SolrSearch;
 
 use Test::More;
 use C4::Search;
+use C4::Context;
+
+our $root = C4::Context->config('intranetdir');
 
 #INIT {
     #Test::Class->runtests;
@@ -26,7 +29,7 @@ sub add_biblio_from_file {
 	my ( $filename ) = @_;
 
     # stage_biblios_file.pl call
-    my $staggingCmd = '$CURDEVDIR/misc/stage_biblios_file.pl --file $CURDEVDIR/t/db_dependent/solr/data/'.$filename.' --add-items';
+    my $staggingCmd = $root."/misc/stage_biblios_file.pl --file ".$root."/t/db_dependent/solr/data/".$filename." --add-items";
     my $output = `$staggingCmd`;
 
 	my $batchNumber;
@@ -36,9 +39,14 @@ sub add_biblio_from_file {
 	}
 
     # commit_biblios_file.pl call
-	my $commitCmd = '$CURDEVDIR/misc/commit_biblios_file.pl --batch-number '.$batchNumber;
+	my $commitCmd = $root."/misc/commit_biblios_file.pl --batch-number ".$batchNumber;
     $output = `$commitCmd`;
+    $output =~ m/Number of new bibs added:        (\d+)/;
+    my $nb_bibs = $1;
+
 	print "\ncmd:\n $commitCmd \noutput:\n $output";
+
+    return ($nb_bibs, $batchNumber);
 
 }
 
