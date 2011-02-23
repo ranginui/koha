@@ -3,9 +3,9 @@
 <!-- TMPL_INCLUDE NAME="greybox.inc" -->
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
 <script type="text/javascript">
-	$(document).ready(function() {
-	$('#header_search').tabs();
- });
+    $(document).ready(function() {
+        $('#header_search').tabs();
+    });
 </script>
 </head>
 <body>
@@ -15,33 +15,29 @@
 <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; Cataloging</div>
 
 <div id="doc" class="yui-t7">
+    <div id="bd">
+        <div id="yui-main">
 
-   <div id="bd">
-	<div id="yui-main">
-
-<!-- TMPL_INCLUDE NAME="cataloging-toolbar.inc" -->
-
-	<!-- TMPL_IF name="noitemsfound" -->
-		No results found
-	<!-- /TMPL_IF -->
-
-<!-- display the search results -->
+        <!-- TMPL_INCLUDE NAME="cataloging-toolbar.inc" -->
 
 <!-- TMPL_IF NAME="total"-->
-<!-- TMPL_VAR NAME="total"--> result(s) found in catalog,
-<a href="#searchresult-breeding"><!-- TMPL_VAR NAME="breeding_count" --> result(s) found in reservoir</a>
-<!-- TMPL_VAR name='pagination_bar'-->
+
+<p><!-- TMPL_VAR NAME="total"--> result(s) found in catalog,
+<a href="#searchresult-breeding"><!-- TMPL_VAR NAME="breeding_count" --> result(s) found in reservoir</a></p>
+
+<!-- TMPL_INCLUDE NAME="page-numbers.inc" -->
+
 <div class="searchresults">
     <table>
         <tr>
             <th>Title</th>
             <th>Location</th>
             <th>preview</th>
-            <th>&nbsp;</th>
-            <th>&nbsp;</th>
+            <th></th>
+            <th></th>
         </tr>
     <!-- TMPL_LOOP NAME="resultsloop" -->
-        <!-- TMPL_IF name="even" -->
+        <!-- TMPL_IF NAME="__even__" -->
             <tr class="highlight">
         <!-- TMPL_ELSE -->
             <tr>
@@ -49,16 +45,13 @@
             <td>
                 <p>
                     <a href="/cgi-bin/koha/catalogue/MARCdetail.pl?biblionumber=<!-- TMPL_VAR name="biblionumber" -->"><!-- TMPL_VAR NAME="title" ESCAPE="html" --></a>
-                <!--TMPL_LOOP Name="subtitle"--><!-- TMPL_VAR NAME="subfield" --><!--/TMPL_LOOP--></p>
+                <!--TMPL_LOOP NAME="subtitle"--><!-- TMPL_VAR NAME="subfield" --><!--/TMPL_LOOP-->
+                </p>
                 <!-- TMPL_IF name="summary" -->
                     <p><!-- TMPL_VAR name="summary" --></p>
                 <!-- TMPL_ELSE -->
                     <p>
-                        <!-- TMPL_IF NAME="author" -->
-                            <!-- TMPL_VAR NAME="author" -->
-                        <!-- TMPL_ELSE -->
-                            &nbsp;
-                        <!-- /TMPL_IF -->
+                        <!-- TMPL_VAR NAME="author" -->
 			<!-- TMPL_IF NAME="isbn" --> - <!-- TMPL_VAR NAME="isbn" --> <!-- /TMPL_IF -->
                         <!-- TMPL_IF name="publicationyear" --> - <!-- TMPL_VAR name="publicationyear" --><!-- /TMPL_IF -->
                         <!-- TMPL_IF name="publishercode" -->- <!-- TMPL_VAR name="publishercode" --><!-- /TMPL_IF -->
@@ -96,27 +89,16 @@
                         <!-- TMPL_IF NAME="orderedcount" --> On order (<!-- TMPL_VAR NAME="orderedcount" -->)<!-- /TMPL_IF -->
                     </span>
                 </td>
-				<td> <a href="/cgi-bin/koha/catalogue/showmarc.pl?id=<!-- TMPL_VAR NAME="biblionumber" -->" title="MARC" rel="gb_page_center[600,500]">MARC</a> | <a href="/cgi-bin/koha/catalogue/showmarc.pl?viewas=card&amp;id=<!-- TMPL_VAR NAME="biblionumber" -->" title="MARC" rel="gb_page_center[600,500]">Card</a>
-                </td>
+                <td> <a href="/cgi-bin/koha/catalogue/showmarc.pl?id=<!-- TMPL_VAR NAME="biblionumber" -->" title="MARC" rel="gb_page_center[600,500]">MARC</a> | <a href="/cgi-bin/koha/catalogue/showmarc.pl?viewas=card&amp;id=<!-- TMPL_VAR NAME="biblionumber" -->" title="MARC" rel="gb_page_center[600,500]">Card</a></td>
                 <td><!-- TMPL_IF NAME="CAN_user_editcatalogue_edit_catalogue"--><a href="/cgi-bin/koha/cataloguing/addbiblio.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->">Edit biblio</a>
 					<!-- TMPL_ELSE --><a href="/cgi-bin/koha/cataloguing/addbiblio.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->" class="disabled" onclick="return false;">Edit biblio</a>
 					<!-- /TMPL_IF -->
-
                 </td>
-                <td>
-                    <a href="/cgi-bin/koha/cataloguing/additem.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->">Add holdings</a>
-                </td>
+                <td><a href="/cgi-bin/koha/cataloguing/additem.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->">Add holdings</a></td>
             </tr>
-    <!-- /TMPL_LOOP -->
+        <!-- /TMPL_LOOP -->
     </table>
 </div>
-<!-- TMPL_ELSE -->
-    <!-- TMPL_IF name='query'-->
-        <!-- TMPL_IF NAME="error" --><div class="dialog alert"><!-- /TMPL_IF --><b>No results found</b>
-        <!-- TMPL_IF NAME="error" -->
-            Error: <span class="error"><!-- TMPL_VAR NAME="error" --></span></div>
-        <!-- /TMPL_IF -->
-    <!-- /TMPL_IF -->
 <!-- /TMPL_IF -->
 
 <!-- TMPL_IF name='query'-->
@@ -144,13 +126,14 @@
                 <td><!-- TMPL_VAR NAME="isbn" --></td>
                 <td><!-- TMPL_VAR NAME="copyrightdate" --></td>
                 <td><!-- TMPL_VAR NAME="edition" --></td>
-                <td><!-- TMPL_VAR NAME="file" --></td>
-                <td> <a href="/cgi-bin/koha/catalogue/showmarc.pl?importid=<!-- TMPL_VAR NAME="id" -->" title="MARC" rel="gb_page_center[600,500]">MARC</a> | <a href="/cgi-bin/koha/catalogue/showmarc.pl?viewas=card&amp;importid=<!-- TMPL_VAR NAME="id" -->" title="MARC" rel="gb_page_center[600,500]">Card</a>
-				</td>
-                <td><!-- TMPL_IF NAME="NOTMARC" -->
-                <!-- TMPL_ELSE -->
-                	<a href="/cgi-bin/koha/cataloguing/addbiblio.pl?breedingid=<!-- TMPL_VAR NAME="id" -->" <!-- TMPL_UNLESS NAME="CAN_user_editcatalogue_edit_catalogue" --> class="disabled" onclick="return false;"<!-- /TMPL_UNLESS -->>Add biblio</a>
-                <!-- /TMPL_IF --></td>
+                <td><!-- TMPL_VAR NAME="file_name" --></td>
+                <td> <a href="/cgi-bin/koha/catalogue/showmarc.pl?importid=<!-- TMPL_VAR NAME="import_record_id" -->" title="MARC" rel="gb_page_center[600,500]">MARC</a> | <a href="/cgi-bin/koha/catalogue/showmarc.pl?viewas=card&amp;importid=<!-- TMPL_VAR NAME="import_record_id" -->" title="MARC" rel="gb_page_center[600,500]">Card</a>
+                </td>
+                <td>
+                    <!-- TMPL_UNLESS NAME="NOTMARC" -->
+                        <a href="/cgi-bin/koha/cataloguing/addbiblio.pl?breedingid=<!-- TMPL_VAR NAME="import_record_id" -->" <!-- TMPL_UNLESS NAME="CAN_user_editcatalogue_edit_catalogue" --> class="disabled" onclick="return false;"<!-- /TMPL_UNLESS -->>Add biblio</a>
+                    <!-- /TMPL_UNLESS -->
+                </td>
             </tr>
             <!-- /TMPL_LOOP -->
         </table>

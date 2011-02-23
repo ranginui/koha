@@ -34,6 +34,7 @@ use C4::Serials;
 use C4::XISBN qw(get_xisbns get_biblionumber_from_isbn);
 use C4::External::Amazon;
 use C4::Search;     # enabled_staff_search_views
+use C4::Search::Query;
 use C4::VirtualShelves;
 use C4::XSLT;
 
@@ -238,6 +239,8 @@ $template->param(
     subscriptions       => \@subs,
     subscriptionsnumber => $subscriptionsnumber,
     subscriptiontitle   => $dat->{title},
+    author_index_name   => C4::Search::Query::getIndexName('author'),
+    authid_index_name   => C4::Search::Query::getIndexName('authid'),
 );
 
 # $debug and $template->param(debug_display => 1);

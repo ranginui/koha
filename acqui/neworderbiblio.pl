@@ -1,8 +1,5 @@
 #!/usr/bin/perl
 
-#origninally script to provide intranet (librarian) advanced search facility
-#now script to do searching for acquisitions
-
 # Copyright 2000-2002 Katipo Communications
 # Copyright 2008-2009 BibLibre SARL
 #
@@ -59,8 +56,9 @@ use strict;
 
 #use warnings; FIXME - Bug 2505
 
-use C4::Search;
 use CGI;
+use C4::Search;
+use Data::Pagination;
 use C4::Bookseller;
 use C4::Biblio;
 use C4::Auth;
@@ -68,71 +66,51 @@ use C4::Output;
 use C4::Koha;
 
 my $input = new CGI;
-
-#getting all CGI params into a hash.
 my $params = $input->Vars;
 
 my $page             = $params->{'page'} || 1;
-my $query            = $params->{'q'};
-my $results_per_page = $params->{'num'} || 20;
+my $query            = $params->{'q'}    || '*:*';
+my $results_per_page = $params->{'num'}  || 20;
 my $booksellerid     = $params->{'booksellerid'};
 my $basketno         = $params->{'basketno'};
 my $sub              = $params->{'sub'};
-my $bookseller       = GetBookSellerFromId($booksellerid);
+my $bookseller       = GetBookSellerFromId( $booksellerid );
 
-# getting the template
-my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {   template_name   => "acqui/neworderbiblio.tmpl",
-        query           => $input,
-        type            => "intranet",
-        authnotrequired => 0,
-        flagsrequired   => { acquisition => 'order_manage' },
-    }
+my ( $template, $loggedinuser, $cookie ) = get_template_and_user( {
+    template_name   => "acqui/neworderbiblio.tmpl",
+    query           => $input,
+    type            => "intranet",
+    authnotrequired => 0,
+    flagsrequired   => { acquisition => 'order_manage' },
+} );
+
+my $count = C4::Context->preference('OPACnumSearchResults') || 20;
+
+my $res = SimpleSearch( $query, { recordtype => 'biblio' }, $page, $count );
+
+my @results = map { GetBiblioData $_->{'values'}->{'recordid'} } @{ $res->items };
+
+my $pager = Data::Pagination->new(
+    $res->{'pager'}->{'total_entries'},
+    $count,
+    20,
+    $page,
 );
 
-# Searching the catalog.
-my @operands = $query;
-my ( @operators, @indexes, @sort_by, @limits ) = ();
-my ( $builterror, $builtquery, $simple_query, $query_cgi, $query_desc, $limit, $limit_cgi, $limit_desc, $stopwords_removed, $query_type ) =
-      buildQuery( \@operators, \@operands, \@indexes, @limits, \@sort_by, undef, undef );
-
-    # find results
-my ( $error, $marcresults, $total_hits ) = SimpleSearch( $builtquery, $results_per_page * ( $page - 1 ), $results_per_page );
-
-if ( defined $error ) {
-    warn "error: " . $error;
-    $template->param(
-        query_error  => $error,
-        basketno     => $basketno,
-        booksellerid => $bookseller->{'id'},
-        name         => $bookseller->{'name'},
-    );
-    output_html_with_http_headers $input, $cookie, $template->output;
-    exit;
-}
-
-my @results;
-
-if ($marcresults) {
-    foreach my $result ( @{$marcresults} ) {
-        my $marcrecord = MARC::File::USMARC::decode($result);
-        my $biblio = TransformMarcToKoha( C4::Context->dbh, $marcrecord, '' );
-
-        $biblio->{booksellerid} = $booksellerid;
-        push @results, $biblio;
-
-    }
-}
 $template->param(
-    basketno     => $basketno,
-    booksellerid => $bookseller->{'id'},
-    name         => $bookseller->{'name'},
-    resultsloop  => \@results,
-    total        => $total_hits,
-    query        => $query,
-    pagination_bar =>
-      pagination_bar( "$ENV{'SCRIPT_NAME'}?q=$query&booksellerid=$booksellerid&basketno=$basketno&", getnbpages( $total_hits, $results_per_page ), $page, 'page' ),
+    basketno      => $basketno,
+    booksellerid  => $bookseller->{'id'},
+    name          => $bookseller->{'name'},
+    resultsloop   => \@results,
+    total         => $res->{'pager'}->{'total_entries'},
+    query         => $query,
+    previous_page => $pager->{'prev_page'},
+    next_page     => $pager->{'next_page'},
+    PAGE_NUMBERS  => [ map { { page => $_, current => $_ == $page } } @{ $pager->{'numbers_of_set'} } ],
+    current_page  => $page,
+    pager_params  => [ { ind => 'q'           , val => $query              },
+                       { ind => 'basketno'    , val => $basketno           },
+                       { ind => 'booksellerid', val => $bookseller->{'id'} }, ]
 );
 
-# BUILD THE TEMPLATE
 output_html_with_http_headers $input, $cookie, $template->output;

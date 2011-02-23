@@ -141,15 +141,17 @@ use strict;    # always use
 
 ## load Koha modules
 use C4::Context;
-use C4::Biblio;
 use C4::Output;
 use C4::Auth qw(:DEFAULT get_session);
+use C4::Biblio;
 use C4::Search;
-use C4::Languages qw(getAllLanguages);
+use C4::Search::Query;
+use C4::Languages qw(getAllLanguagesAuthorizedValues);
 use C4::Koha;
 use C4::VirtualShelves qw(GetRecentShelves);
 use POSIX qw(ceil floor);
 use C4::Branch;    # GetBranches
+use Data::Pagination;
 
 # create a new CGI object
 # FIXME: no_undef_params needs to be tested
@@ -161,8 +163,7 @@ my ( $template, $borrowernumber, $cookie );
 # decide which template to use
 my $template_name;
 my $template_type;
-my @params = $cgi->param("limit");
-if ( ( @params >= 1 ) || ( $cgi->param("q") ) || ( $cgi->param('multibranchlimit') ) || ( $cgi->param('limit-yr') ) ) {
+if ( ($cgi->param("filters")) || ( $cgi->param("idx") ) || ( $cgi->param("q") ) || ( $cgi->param('multibranchlimit') ) || ( $cgi->param('limit-yr') ) ) {
     $template_name = 'catalogue/results.tmpl';
 } else {
     $template_name = 'catalogue/advsearch.tmpl';
@@ -224,6 +225,8 @@ my $categories = GetBranchCategories( undef, 'searchdomain' );
 
 $template->param( branchloop => \@branch_loop, searchdomainloop => $categories );
 
+$template->param( holdingbranch_index => C4::Search::Query::getIndexName('holdingbranch') );
+
 # load the Type stuff
 # load the Type stuff
 my $itemtypes = GetItemTypes;
@@ -239,7 +242,7 @@ if ( !$advanced_search_types or $advanced_search_types eq 'itemtypes' ) {
     foreach my $thisitemtype ( sort { $itemtypes->{$a}->{'description'} cmp $itemtypes->{$b}->{'description'} } keys %$itemtypes ) {
         my %row = (
             number      => $cnt++,
-            ccl => qq($itype_or_itemtype,phr),
+            index       => $itype_or_itemtype,
             code        => $thisitemtype,
             selected    => $selected,
             description => $itemtypes->{$thisitemtype}->{'description'},
@@ -249,13 +252,12 @@ if ( !$advanced_search_types or $advanced_search_types eq 'itemtypes' ) {
         $selected = 0 if ($selected);
         push @itemtypesloop, \%row;
     }
-    $template->param( itemtypeloop => \@itemtypesloop );
 } else {
     my $advsearchtypes = GetAuthorisedValues($advanced_search_types);
     for my $thisitemtype ( sort { $a->{'lib'} cmp $b->{'lib'} } @$advsearchtypes ) {
         my %row = (
             number      => $cnt++,
-            ccl         => qq($advanced_search_types,phr),
+            index       => C4::Search::Query::getIndexName('ccode'),
             code        => $thisitemtype->{authorised_value},
             selected    => $selected,
             description => $thisitemtype->{'lib'},
@@ -264,8 +266,8 @@ if ( !$advanced_search_types or $advanced_search_types eq 'itemtypes' ) {
         );
         push @itemtypesloop, \%row;
     }
-    $template->param( itemtypeloop => \@itemtypesloop );
 }
+$template->param( itemtypeloop => \@itemtypesloop );
 
 # The following should only be loaded if we're bringing up the advanced search template
 if ( $template_type eq 'advsearch' ) {
@@ -312,8 +314,8 @@ if ( $template_type eq 'advsearch' ) {
     );
 
     # load the language limits (for search)
-    my $languages_limit_loop = getAllLanguages();
-    $template->param( search_languages_loop => $languages_limit_loop, );
+    $template->param( search_languages_loop => getAllLanguagesAuthorizedValues() );
+    $template->param( lang_index => C4::Search::Query::getIndexName('lang') );
 
     # use the global setting by default
     if ( C4::Context->preference("expandedSearchOption") == 1 ) {
@@ -341,355 +343,189 @@ if ( $template_type eq 'advsearch' ) {
 #  * returns paramater list as tied hash ref
 #  * we can edit the values by changing the key
 #  * multivalued CGI paramaters are returned as a packaged string separated by "\0" (null)
+my $sort_by = $cgi->param('sort_by') || join(' ', grep { defined } ( C4::Context->preference('OPACdefaultSortField')
+                                                                   , C4::Context->preference('OPACdefaultSortOrder') ) );
+my $sortloop = C4::Search::Engine::Solr::GetSortableIndexes('biblio');
+for ( @$sortloop ) { # because html template is stupid
+    $_->{'asc_selected'}  = $sort_by eq $_->{'type'}.'_'.$_->{'code'}.' asc';
+    $_->{'desc_selected'} = $sort_by eq $_->{'type'}.'_'.$_->{'code'}.' desc';
+}
+
+$template->param(
+    'sort_by'  => $sort_by,
+    'sortloop' => $sortloop,
+);
+
+# Fetch the paramater list as a hash in scalar context:
+#  * returns paramater list as tied hash ref
+#  * we can edit the values by changing the key
+#  * multivalued CGI paramaters are returned as a packaged string separated by "\0" (null)
 my $params = $cgi->Vars;
-
-# Params that can have more than one value
-# sort by is used to sort the query
-# in theory can have more than one but generally there's just one
-my @sort_by;
-my $default_sort_by = C4::Context->preference('defaultSortField') . "_" . C4::Context->preference('defaultSortOrder')
-  if ( C4::Context->preference('defaultSortField') && C4::Context->preference('defaultSortOrder') );
-
-@sort_by = $cgi->param('sort_by');
-$sort_by[0] = $default_sort_by unless $sort_by[0];
-foreach my $sort (@sort_by) {
-    $template->param( $sort => 1 );
-}
-$template->param( 'sort_by' => $sort_by[0] );
-
-# Use the servers defined, or just search our local catalog(default)
-my @servers = $cgi->param('server');
-unless (@servers) {
-
-    #FIXME: this should be handled using Context.pm
-    @servers = ("biblioserver");
-
-    # @servers = C4::Context->config("biblioserver");
-}
-
-# operators include boolean and proximity operators and are used
-# to evaluate multiple operands
-my @operators = $cgi->param('op');
-
-# indexes are query qualifiers, like 'title', 'author', etc. They
-# can be single or multiple parameters separated by comma: kw,right-Truncation
-my @indexes = $cgi->param('idx');
-
-# if a simple index (only one)  display the index used in the top search box
-if ( $indexes[0] && !$indexes[1] ) {
-    $template->param( "ms_" . $indexes[0] => 1 );
-}
-
-# an operand can be a single term, a phrase, or a complete ccl query
-my @operands = $cgi->param('q');
-
-# limits are use to limit to results to a pre-defined category such as branch or language
-my @limits = $cgi->param('limit');
-
-if ( $params->{'multibranchlimit'} ) {
-    push @limits, '('.join( " or ", map { "branch: $_ " } @{ GetBranchesInCategory( $params->{'multibranchlimit'} ) } ).')';
-}
-
-my $available;
-foreach my $limit (@limits) {
-    if ( $limit =~ /available/ ) {
-        $available = 1;
-    }
-}
-$template->param( available => $available );
-
-# append year limits if they exist
-my $limit_yr;
-my $limit_yr_value;
-if ( $params->{'limit-yr'} ) {
-    if ( $params->{'limit-yr'} =~ /\d{4}-\d{4}/ ) {
-        my ( $yr1, $yr2 ) = split( /-/, $params->{'limit-yr'} );
-        $limit_yr       = "yr,st-numeric,ge=$yr1 and yr,st-numeric,le=$yr2";
-        $limit_yr_value = "$yr1-$yr2";
-    } elsif ( $params->{'limit-yr'} =~ /\d{4}/ ) {
-        $limit_yr       = "yr,st-numeric=$params->{'limit-yr'}";
-        $limit_yr_value = $params->{'limit-yr'};
-    }
-    push @limits, $limit_yr;
-
-    #FIXME: Should return a error to the user, incorect date format specified
-}
-
-# convert indexes and operands to corresponding parameter names for the z3950 search
-# $ %z3950p will be a hash ref if the indexes are present (advacned search), otherwise undef
-my $z3950par;
-my $indexes2z3950 = {
-    kw        => 'title',
-    au        => 'author',
-    'au,phr'  => 'author',
-    nb        => 'isbn',
-    ns        => 'issn',
-    'lcn,phr' => 'dewey',
-    su        => 'subject',
-    'su,phr'  => 'subject',
-    ti        => 'title',
-    'ti,phr'  => 'title',
-    se        => 'title'
-};
-for ( my $ii = 0 ; $ii < @operands ; ++$ii ) {
-    my $name = $indexes2z3950->{ $indexes[$ii] };
-    if ( defined $name && defined $operands[$ii] ) {
-        $z3950par ||= {};
-        $z3950par->{$name} = $operands[$ii] if !exists $z3950par->{$name};
-    }
-}
+my $tag = $params->{tag};
 
 # Params that can only have one value
-my $scan             = $params->{'scan'};
-my $count            = C4::Context->preference('numSearchResults') || 20;
-my $results_per_page = $params->{'count'} || $count;
-my $offset           = $params->{'offset'} || 0;
+my $count            = C4::Context->preference('OPACnumSearchResults') || 20;
 my $page             = $cgi->param('page') || 1;
 
-#my $offset = ($page-1)*$results_per_page;
 my $hits;
 my $expanded_facet = $params->{'expand'};
 
 # Define some global variables
 my ( $error, $query, $simple_query, $query_cgi, $query_desc, $limit, $limit_cgi, $limit_desc, $stopwords_removed, $query_type );
 
-my @results;
-
-if ($indexes[0] eq "bc" ||$operands[0]=~/^\s*bc[=: ]/){
-    my $bc=$operands[0];
-    $bc=~s/bc[=:]//;
-    my $itemnumber=C4::Items::GetItemnumberFromBarcode($bc);
-    if ($itemnumber){
-        my $item=C4::Items::GetItem($itemnumber);
-        print $cgi->redirect(qq#/cgi-bin/koha/cataloguing/additem.pl?op=edititem&biblionumber=$item->{biblionumber}&itemnumber=$item->{itemnumber}#);
-        exit 1;
-    }
-}
-
-## I. BUILD THE QUERY
-my $lang = C4::Output::getlanguagecookie($cgi);
-( $error, $query, $simple_query, $query_cgi, $query_desc, $limit, $limit_cgi, $limit_desc, $stopwords_removed, $query_type ) =
-  buildQuery( \@operators, \@operands, \@indexes, \@limits, \@sort_by, $scan, $lang );
-
-## parse the query_cgi string and put it into a form suitable for <input>s
-my @query_inputs;
-my $scan_index_to_use;
-
-for my $this_cgi ( split( '&', $query_cgi ) ) {
-    next unless $this_cgi;
-    $this_cgi =~ m/(.*=)(.*)/;
-    my $input_name  = $1;
-    my $input_value = $2;
-    $input_name =~ s/=$//;
-    push @query_inputs, { input_name => $input_name, input_value => $input_value };
-    if ( $input_name eq 'idx' ) {
-        $scan_index_to_use = $input_value;    # unless $scan_index_to_use;
-    }
-}
-$template->param(
-    QUERY_INPUTS      => \@query_inputs,
-    scan_index_to_use => $scan_index_to_use
-);
-
-## parse the limit_cgi string and put it into a form suitable for <input>s
-my @limit_inputs;
-for my $this_cgi ( split( '&', $limit_cgi ) ) {
-    next unless $this_cgi;
-
-    # handle special case limit-yr
-    if ( $this_cgi =~ /yr,st-numeric/ ) {
-        push @limit_inputs, { input_name => 'limit-yr', input_value => $limit_yr_value };
-        next;
-    }
-    $this_cgi =~ m/(.*=)(.*)/;
-    my $input_name  = $1;
-    my $input_value = $2;
-    $input_name =~ s/=$//;
-    push @limit_inputs, { input_name => $input_name, input_value => $input_value };
-}
-$template->param( LIMIT_INPUTS => \@limit_inputs );
-
-## II. DO THE SEARCH AND GET THE RESULTS
-my $total;     # the total results for the whole set
-my $facets;    # this object stores the faceted results that display on the left-hand of the results page
-my @results_array;
-my $results_hashref;
-
-if ( C4::Context->preference('NoZebra') ) {
-    $query        =~ s/yr(:|=)\s*([\d]{1,4})-([\d]{1,4})/(yr>=$2 and yr<=$3)/g;
-    $simple_query =~ s/yr\s*(:|=)([\d]{1,4})-([\d]{1,4})/(yr>=$2 and yr<=$3)/g;
-
-    # warn $query;
-    eval {
-        ( $error, $results_hashref, $facets ) =
-          NZgetRecords( $query, $simple_query, \@sort_by, \@servers, $results_per_page, $offset, $expanded_facet, $branches, $query_type, $scan );
-    };
-} else {
-    eval {
-        ( $error, $results_hashref, $facets ) =
-          getRecords( $query, $simple_query, \@sort_by, \@servers, $results_per_page, $offset, $expanded_facet, $branches, $query_type, $scan );
-    };
-}
-if ( $@ || $error ) {
-    $template->param( query_error => $error . $@ );
+if ($@ || $error) {
+    $template->param(query_error => $error.$@);
     output_html_with_http_headers $cgi, $cookie, $template->output;
     exit;
 }
 
-# At this point, each server has given us a result set
-# now we build that set for template display
-my @sup_results_array;
-for ( my $i = 0 ; $i < @servers ; $i++ ) {
-    my $server = $servers[$i];
-    if ( $server =~ /biblioserver/ ) {    # this is the local bibliographic server
-        $hits = $results_hashref->{$server}->{"hits"};
-        my $page = $cgi->param('page') || 0;
-        my @newresults = searchResults( $query_desc, $hits, $results_per_page, $offset, $scan, 'intranet',@{ $results_hashref->{$server}->{"RECORDS"} } );
-        $total = $total + $results_hashref->{$server}->{"hits"};
-        ## If there's just one result, redirect to the detail page
-        if ( $total == 1 ) {
-            my $biblionumber = $newresults[0]->{biblionumber};
-            my $defaultview  = C4::Context->preference('IntranetBiblioDefaultView');
-            my $views        = {C4::Search::enabled_staff_search_views};
-            if ( $defaultview eq 'isbd' && $views->{can_view_ISBD} ) {
-                print $cgi->redirect("/cgi-bin/koha/catalogue/ISBDdetail.pl?biblionumber=$biblionumber");
-            } elsif ( $defaultview eq 'marc' && $views->{can_view_MARC} ) {
-                print $cgi->redirect("/cgi-bin/koha/catalogue/MARCdetail.pl?biblionumber=$biblionumber");
-            } elsif ( $defaultview eq 'labeled_marc' && $views->{can_view_labeledMARC} ) {
-                print $cgi->redirect("/cgi-bin/koha/catalogue/labeledMARCdetail.pl?biblionumber=$biblionumber");
-            } else {
-                print $cgi->redirect("/cgi-bin/koha/catalogue/detail.pl?biblionumber=$biblionumber");
-            }
-            exit;
-        }
+my @results;
 
-        if ($hits) {
+# Rebuild filters hash from GET data
+my @fil = $cgi->param('filters');
+my %filters;
+for ( @fil ) {
+    my ($k, $v) = split ':', $_;
+    $filters{$k} = $v;
+}
+$filters{'recordtype'} = 'biblio';
 
-	    # Coins
-	    foreach (@newresults) {
-		$_->{coins} = GetCOinSBiblio( $_->{'biblionumber'} );
-	    }
+# This array is used to build facets GUI
+my @tplfilters;
+while ( my ($k, $v) = each %filters) {
+    $v =~ s/"//g;
+    push @tplfilters, {
+        'ind' => $k,
+        'val' => $v,
+    };
+}
+$template->param('filters' => \@tplfilters );
 
-            $template->param( total => $hits );
-            my $limit_cgi_not_availablity = $limit_cgi;
-            $limit_cgi_not_availablity =~ s/&limit=available//g;
-            $template->param( limit_cgi_not_availablity => $limit_cgi_not_availablity );
-            $template->param( limit_cgi                 => $limit_cgi );
-            $template->param( query_cgi                 => $query_cgi );
-            $template->param( query_desc                => $query_desc );
-            $template->param( limit_desc                => $limit_desc );
-            $template->param( z3950_search_params       => C4::Search::z3950_search_args($simple_query) );
-            if ( $query_desc || $limit_desc ) {
-                $template->param( searchdesc => 1 );
-            }
-            $template->param( stopwords_removed => "@$stopwords_removed" ) if $stopwords_removed;
-            $template->param( results_per_page  => $results_per_page );
-            $template->param( SEARCH_RESULTS    => \@newresults );
+# perform the search
+my @indexes = $cgi->param('idx');
+my @operators = $cgi->param('op');
+my @operands = $cgi->param('q');
+my $q = C4::Search::Query->buildQuery(\@indexes, \@operands, \@operators);
 
-            ## FIXME: add a global function for this, it's better than the current global one
-            ## Build the page numbers on the bottom of the page
-            my @page_numbers;
-
-            # total number of pages there will be
-            my $pages = ceil( $hits / $results_per_page );
-
-            # default page number
-            my $current_page_number = 1;
-            $current_page_number = ( $offset / $results_per_page + 1 ) if $offset;
-            my $previous_page_offset = $offset - $results_per_page unless ( $offset - $results_per_page < 0 );
-            my $next_page_offset = $offset + $results_per_page;
-
-            # If we're within the first 10 pages, keep it simple
-            #warn "current page:".$current_page_number;
-            if ( $current_page_number < 10 ) {
-
-                # just show the first 10 pages
-                # Loop through the pages
-                my $pages_to_show = 10;
-                $pages_to_show = $pages if $pages < 10;
-                for ( my $i = 1 ; $i <= $pages_to_show ; $i++ ) {
-
-                    # the offset for this page
-                    my $this_offset = ( ( $i * $results_per_page ) - $results_per_page );
-
-                    # the page number for this page
-                    my $this_page_number = $i;
-
-                    # it should only be highlighted if it's the current page
-                    my $highlight = 1 if ( $this_page_number == $current_page_number );
-
-                    # put it in the array
-                    push @page_numbers, { offset => $this_offset, pg => $this_page_number, highlight => $highlight, sort_by => join " ", @sort_by };
-
-                }
-
-            }
-
-            # now, show twenty pages, with the current one smack in the middle
-            else {
-                for ( my $i = $current_page_number ; $i <= ( $current_page_number + 20 ) ; $i++ ) {
-                    my $this_offset      = ( ( ( $i - 9 ) * $results_per_page ) - $results_per_page );
-                    my $this_page_number = $i - 9;
-                    my $highlight        = 1 if ( $this_page_number == $current_page_number );
-                    if ( $this_page_number <= $pages ) {
-                        push @page_numbers, { offset => $this_offset, pg => $this_page_number, highlight => $highlight, sort_by => join " ", @sort_by };
-                    }
-                }
-            }
-
-            # FIXME: no previous_page_offset when pages < 2
-            $template->param(
-                PAGE_NUMBERS         => \@page_numbers,
-                previous_page_offset => $previous_page_offset
-            ) unless $pages < 2;
-            $template->param( next_page_offset => $next_page_offset ) unless $pages eq $current_page_number;
-        }
-
-        # no hits
-        else {
-            $template->param( searchdesc => 1, query_desc => $query_desc, limit_desc => $limit_desc );
-            $template->param( z3950_search_params => C4::Search::z3950_search_args( $z3950par || $query_desc ) );
-        }
-
-    }    # end of the if local
-
-    # asynchronously search the authority server
-    elsif ( $server =~ /authorityserver/ ) {    # this is the local authority server
-        my @inner_sup_results_array;
-        for my $sup_record ( @{ $results_hashref->{$server}->{"RECORDS"} } ) {
-            my $marc_record_object = MARC::Record->new_from_usmarc($sup_record);
-
-            # warn "Authority Found: ".$marc_record_object->as_formatted();
-            push @inner_sup_results_array,
-              { 'title' => $marc_record_object->field(100)->subfield('a'),
-                'link'  => "&amp;idx=an&amp;q=" . $marc_record_object->field('001')->as_string(),
-              };
-        }
-        push @sup_results_array,
-          { servername             => $server,
-            inner_sup_results_loop => \@inner_sup_results_array
-          } if @inner_sup_results_array;
+# append year limits if they exist
+if ( $params->{'limit-yr'} ) {
+    if ( $params->{'limit-yr'} =~ /\d{4}-\d{4}/ ) {
+        my ( $yr1, $yr2 ) = split( /-/, $params->{'limit-yr'} );
+        $q .= ' AND date_pubdate:["' . C4::Search::Engine::Solr::NormalizeDate($yr1) . '" TO "' . C4::Search::Engine::Solr::NormalizeDate($yr2) . '"]';
+    } elsif ( $params->{'limit-yr'} =~ /-\d{4}/ ) {
+        $params->{'limit-yr'} =~ /-(\d{4})/;
+        $q .= ' AND date_pubdate:[* TO "' . C4::Search::Engine::Solr::NormalizeDate($1) . '"]';
+    } elsif ( $params->{'limit-yr'} =~ /\d{4}-/ ) {
+        $params->{'limit-yr'} =~ /(\d{4})-/;
+        $q .= ' AND date_pubdate:["' . C4::Search::Engine::Solr::NormalizeDate($1) . '" TO *]';
+    } elsif ( $params->{'limit-yr'} =~ /\d{4}/ ) {
+        $q .= ' AND date_pubdate:"' . C4::Search::Engine::Solr::NormalizeDate($params->{'limit-yr'}) . '"';
+    } else {
+        #FIXME: Should return a error to the user, incorect date format specified
     }
+}
 
-    # FIXME: can add support for other targets as needed here
-    $template->param( outer_sup_results_loop => \@sup_results_array );
-}    #/end of the for loop
+my $res = SimpleSearch( $q, \%filters, $page, $count, $sort_by);
+C4::Context->preference("DebugLevel") eq '2' && warn "ProSolrSimpleSearch:q=$q:";
 
-#$template->param(FEDERATED_RESULTS => \@results_array);
+if (!$res){
+    $template->param(query_error => "Bad request! help message ?");
+    output_with_http_headers $cgi, $cookie, $template->output, 'html';
+    exit;
+}
 
-$template->param(
-
-    #classlist => $classlist,
-    total        => $total,
-    opacfacets   => 1,
-    facets_loop  => $facets,
-    scan         => $scan,
-    search_error => $error,
+my $pager = Data::Pagination->new(
+    $res->{'pager'}->{'total_entries'},
+    $count,
+    20,
+    $page,
 );
 
-if ( $query_desc || $limit_desc ) {
-    $template->param( searchdesc => 1 );
+# This array is used to build pagination links
+my @pager_params = map { {
+    ind => 'filters',
+    val => $_->{'ind'}.':"'.$_->{'val'}.'"'
+} } @tplfilters;
+push @pager_params, { ind => 'q'      , val => $cgi->param('q') };
+push @pager_params, { ind => 'sort_by', val => $sort_by         };
+
+# Pager template params
+$template->param(
+    previous_page => $pager->{'prev_page'},
+    next_page     => $pager->{'next_page'},
+    PAGE_NUMBERS  => [ map { { page => $_, current => $_ == $page } } @{ $pager->{'numbers_of_set'} } ],
+    current_page  => $page,
+    pager_params  => \@pager_params,
+);
+
+# populate results with records
+my @results;
+my $itemtypes = C4::Search::getItemTypes();
+my $subfieldstosearch = C4::Search::getSubfieldsToSearch();
+my $itemtag = C4::Search::getItemTag();
+my $b = C4::Search::getBranches();
+for my $searchresult ( @{ $res->items } ) {
+    my $interface = 'intranet';
+    my $biblionumber = $searchresult->{'values'}->{'recordid'};
+
+    my $biblio = C4::Search::getItemsInfos($biblionumber, $interface,
+        $itemtypes, $subfieldstosearch, $itemtag, $b);
+
+    my $display = 1;
+    if (lc($interface) eq "opac") {
+        if (C4::Context->preference('hidelostitems') or C4::Context->preference('hidenoitems')) {
+            if (C4::Context->preference('hidelostitems') and $biblio->{itemlostcount} >= $biblio->{items_count}) {
+                $display = 0;
+            }
+            if (C4::Context->preference('hidenoitems') and $biblio->{available_count} == 0) {
+                $display = 0;
+            }
+        }
+        if ($display == 1) {
+            $biblio->{result_number} = ++$biblio->{shown};
+            push( @results, $biblio);
+        }
+    } else {
+        push( @results, $biblio );
+    }
+
 }
+
+# build facets
+my @facets;
+while ( my ($index,$facet) = each %{$res->facets} ) {
+    if ( @$facet > 1 ) {
+        my @values;
+        my ($type, $code) = split /_/, $index;
+        for ( my $i = 0 ; $i < scalar(@$facet) ; $i++ ) {
+            my $value = $facet->[$i++];
+            my $count = $facet->[$i];
+            push @values, {
+                'value'   => $value,
+                'count'   => $count,
+                'active'  => $filters{$index} eq "\"$value\"", # TODO fails on diacritics
+                'filters' => \@tplfilters,
+            };
+        }
+        push @facets, {
+            'index'  => $index,
+            'label'  => C4::Search::Engine::Solr::GetIndexLabelFromCode($code),
+            'values' => \@values,
+        };
+    }
+}
+
+$template->param(
+    'total'          => $res->{'pager'}->{'total_entries'},
+    'opacfacets'     => 1,
+    'search_error'   => $error,
+    'SEARCH_RESULTS' => \@results,
+    'facets_loop'    => \@facets,
+    'query'          => $params->{'q'},
+    'searchdesc'     => $query_desc || $limit_desc,
+    'availability'   => $filters{'int_availability'},
+    'count'          => C4::Context->preference('OPACnumSearchResults') || 20,
+);
 
 # VI. BUILD THE TEMPLATE
 

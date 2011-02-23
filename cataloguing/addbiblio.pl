@@ -25,6 +25,7 @@ use C4::Output;
 use C4::Auth;
 use C4::Biblio;
 use C4::Search;
+use C4::Search::Query;
 use C4::AuthoritiesMarc;
 use C4::Context;
 use MARC::Record;
@@ -704,20 +705,21 @@ AND (authtypecode IS NOT NULL AND authtypecode<>\"\")|
 
             # No authorities id in the tag.
             # Search if there is any authorities to link to.
-            my $query = 'at=' . $data->{authtypecode} . ' ';
-            map { $query .= ' and he,ext="' . $_->[1] . '"' if ( $_->[0] =~ /[A-z]/ ) } $field->subfields();
-            my ( $error, $results, $total_hits ) = SimpleSearch( $query, undef, undef, ["authorityserver"] );
+            my $query = '*:*';
+            my $authtype_index = C4::Search::Query::getIndexName('auth-type');
+            my $filters = {
+                recordtype   => 'authority',
+                $authtype_index => $data->{authtypecode},
+            };
+            my $name_index = C4::Search::Query::getIndexName('name');
+            for ( $field->subfields ) { $filters->{$name_index} = $_->[1] if $_->[0] =~ /[A-z]/ };
+            my $res = SimpleSearch( $query, $filters );
 
-            # there is only 1 result
-            if ($error) {
-                warn "BIBLIOADDSAUTHORITIES: $error";
-                return ( 0, 0 );
-            }
-            if ( $results && scalar(@$results) == 1 ) {
-                my $marcrecord = MARC::File::USMARC::decode( $results->[0] );
-                $field->add_subfields( '9' => $marcrecord->field('001')->data );
+            if ( $res and $res->{'pager'}->{'total_entries'} == 1 ) {
+                my $item = @{ $res->items }[0];
+                $field->add_subfields( '9' => $item->{'values'}->{'recordid'} );
                 $countlinked++;
-            } elsif ( scalar(@$results) > 1 ) {
+            } elsif ( $res and $res->{'pager'}->{'total_entries'} > 1 ) {
 
                 #More than One result
                 #This can comes out of a lack of a subfield.

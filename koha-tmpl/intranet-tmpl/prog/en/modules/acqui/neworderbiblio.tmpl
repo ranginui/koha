@@ -19,21 +19,11 @@
 
 
 <!-- TMPL_IF NAME="total" -->
-<b><!-- TMPL_VAR NAME="total" -->results found </b> 
-<!-- TMPL_VAR name='pagination_bar'-->
+    <b><!-- TMPL_VAR NAME="total" --> results found </b>
+    <!-- TMPL_INCLUDE NAME="page-numbers.inc" -->
 <!-- TMPL_ELSE -->
-<h3> No results found</h3>
-<p>
-    No results match your search for <span style="font-weight: bold;">&ldquo;<!-- TMPL_VAR NAME="query" -->&rdquo;</span> in <!-- TMPL_VAR NAME="LibraryName" -->
-</p>
-<!-- /TMPL_IF -->
-
-<!-- TMPL_IF NAME="query_error" -->
-<br /><br />
-<b>Error:</b>
-<span class="problem">
-    <!-- TMPL_VAR NAME="query_error" -->
-</span>
+    <h3> No results found</h3>
+    <p>No results match your search for <span style="font-weight: bold;">&ldquo;<!-- TMPL_VAR NAME="query" -->&rdquo;</span> in <!-- TMPL_VAR NAME="LibraryName" --></p>
 <!-- /TMPL_IF -->
 
 <!-- TMPL_IF NAME="total"-->

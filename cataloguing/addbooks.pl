@@ -32,106 +32,64 @@ use C4::Breeding;
 use C4::Output;
 use C4::Koha;
 use C4::Search;
+use Data::Pagination;
 
-my $input = new CGI;
+my $input  = new CGI;
+my $succes = $input->param('biblioitem');
+my $query  = $input->param('q');
+my @value  = $input->param('value');
+my $page   = $input->param('page') || 1;
+my $count  = 20;
 
-my $success          = $input->param('biblioitem');
-my $query            = $input->param('q');
-my @value            = $input->param('value');
-my $page             = $input->param('page') || 1;
-my $results_per_page = 20;
+my ( $template, $loggedinuser, $cookie ) = get_template_and_user( {
+    template_name   => "cataloguing/addbooks.tmpl",
+    query           => $input,
+    type            => "intranet",
+    authnotrequired => 0,
+    flagsrequired   => { editcatalogue => 'edit_catalogue' },
+    debug           => 1,
+} );
 
-my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-    {   template_name   => "cataloguing/addbooks.tmpl",
-        query           => $input,
-        type            => "intranet",
-        authnotrequired => 0,
-        flagsrequired   => { editcatalogue => 'edit_catalogue' },
-        debug           => 1,
-    }
-);
-
-# get framework list
+# Get framework list
 my $frameworks = getframeworks;
-my @frameworkcodeloop;
-foreach my $thisframeworkcode ( sort { $frameworks->{$a} cmp $frameworks->{$b} } keys %{$frameworks} ) {
-    push @frameworkcodeloop,
-      { value         => $thisframeworkcode,
-        frameworktext => $frameworks->{$thisframeworkcode}->{'frameworktext'},
-      };
-}
+warn Data::Dumper::Dumper $frameworks;
+my @frameworkcodeloop = map { {
+    value         => $_,
+    frameworktext => $frameworks->{$_}->{'frameworktext'},
+} } keys %{$frameworks};
 
 # Searching the catalog.
-if ($query) {
+if ( $query ) {
 
-    # build query
-    my @operands = $query;
-    my ( @operators, @indexes, @sort_by, @limits ) = ();
-    my ( $builterror, $builtquery, $simple_query, $query_cgi, $query_desc, $limit, $limit_cgi, $limit_desc, $stopwords_removed, $query_type ) =
-      buildQuery( \@operators, \@operands, \@indexes, @limits, \@sort_by, undef, undef );
-
-    # find results
-    my ( $error, $marcresults, $total_hits ) = SimpleSearch( $builtquery, $results_per_page * ( $page - 1 ), $results_per_page );
-
-    if ( defined $error ) {
-        $template->param( error => $error );
-        warn "error: " . $error;
-        output_html_with_http_headers $input, $cookie, $template->output;
-        exit;
-    }
-
-    # format output
-    # SimpleSearch() give the results per page we want, so 0 offet here
-    my $total = scalar @$marcresults;
-    my @newresults = searchResults( $query, $total, $results_per_page, 0, 0, 'intranet', @$marcresults );
-    $template->param(
-        total          => $total_hits,
-        query          => $query,
-        resultsloop    => \@newresults,
-        pagination_bar => pagination_bar( "/cgi-bin/koha/cataloguing/addbooks.pl?q=$query&", getnbpages( $total_hits, $results_per_page ), $page, 'page' ),
+    # Regular search
+    my $res = SimpleSearch( $query, { recordtype => 'biblio' }, $page, $count );
+    my @results = map { GetBiblio $_->{'values'}->{'recordid'} } @{ $res->items };
+    my $pager = Data::Pagination->new(
+        $res->{'pager'}->{'total_entries'},
+        $count,
+        20,
+        $page,
     );
-}
 
-# fill with books in breeding farm
-
-my $countbr = 0;
-my @resultsbr;
-if ($query) {
-
-    # fill isbn or title, depending on what has been entered
-    #u must do check on isbn because u can find number in beginning of title
-    #check is on isbn legnth 13 for new isbn and 10 for old isbn
+    # BreedingSearch
     my ( $title, $isbn );
-    if ( $query =~ /\d/ ) {
-        my $querylength = length $query;
-        if ( $querylength == 13 || $querylength == 10 ) {
-            $isbn = $query;
-        }
-    }
-    if ( !$isbn ) {
-        $title = $query;
-    }
-    ( $countbr, @resultsbr ) = BreedingSearch( $title, $isbn );
-}
-my $breeding_loop = [];
-for my $resultsbr (@resultsbr) {
-    push @{$breeding_loop},
-      { id               => $resultsbr->{import_record_id},
-        isbn             => $resultsbr->{isbn},
-        copyrightdate    => $resultsbr->{copyrightdate},
-        editionstatement => $resultsbr->{editionstatement},
-        file             => $resultsbr->{file_name},
-        title            => $resultsbr->{title},
-        author           => $resultsbr->{author},
-      };
+    $query =~ /^(\d{10}|\d{12}.)$/ ? $isbn = $1 : $title = $1;
+    my ( $breeding_count, @breeding_loop ) = BreedingSearch( $title, $isbn );
+
+    $template->param(
+        query          => $query,
+        total          => $res->{'pager'}->{'total_entries'},
+        resultsloop    => \@results,
+        PAGE_NUMBERS   => [ map { { page => $_, current => $_ == $page } } @{ $pager->{'numbers_of_set'} } ],
+        pager_params   => [ { ind => 'q', val => $query } ],
+        breeding_count => $breeding_count,
+        breeding_loop  => \@breeding_loop,
+    );
 }
 
 $template->param(
     frameworkcodeloop   => \@frameworkcodeloop,
-    breeding_count      => $countbr,
-    breeding_loop       => $breeding_loop,
     z3950_search_params => C4::Search::z3950_search_args($query),
 );
 
 output_html_with_http_headers $input, $cookie, $template->output;
-

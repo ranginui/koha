@@ -205,6 +205,10 @@ function GetZ3950Terms(){
     <!-- TMPL_IF NAME="total" -->
         <div id="searchheader">
             <form action="/cgi-bin/koha/catalogue/search.pl" method="get" id="sortbyform">
+                <input type="hidden" name="q" value="<!-- TMPL_VAR ESCAPE="HTML" NAME="query" -->" />
+                <!-- TMPL_LOOP NAME="filters" -->
+	                <input type="hidden" name="filters" value="<!--TMPL_VAR NAME="ind"-->:&quot;<!--TMPL_VAR ESCAPE="HTML" NAME="val"-->&quot;" />
+                <!-- /TMPL_LOOP -->
                 <!-- TMPL_IF NAME="searchdesc" -->
                     <!-- TMPL_LOOP NAME="QUERY_INPUTS"-->
                     <input type="hidden" name="<!-- TMPL_VAR ESCAPE=HTML NAME="input_name" -->" value="<!-- TMPL_VAR ESCAPE=HTML NAME="input_value" -->"/>
@@ -398,7 +402,7 @@ function GetZ3950Terms(){
                                 <!-- TMPL_IF NAME="IntranetXSLTResultsDisplay" -->
 				    <!-- TMPL_VAR NAME="IntranetXSLTResultsRecord" -->
 				<!-- TMPL_ELSE -->
-                                <p><!-- TMPL_VAR NAME="result_number" -->.
+                                <p><!-- TMPL_VAR EXPR="__counter__+((current_page-1)*count)" -->.
                                     <!-- TMPL_IF name="BiblioDefaultViewmarc" -->
                                         <a class="title" href="/cgi-bin/koha/catalogue/MARCdetail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" ESCAPE="URL" -->">
                                     <!-- TMPL_ELSIF NAME="BiblioDefaultViewlabeled_marc" -->
@@ -415,7 +419,7 @@ function GetZ3950Terms(){
                                 </p>
                                 <!-- TMPL_IF name="summary" -->
                                         <!-- TMPL_IF NAME="author" -->
-                                            <a href="/cgi-bin/koha/catalogue/search.pl?q=au:<!-- TMPL_VAR NAME="author" ESCAPE="URL" -->" title="Search for this Author"><!-- TMPL_VAR NAME="author" --></a>
+                                            <a href="/cgi-bin/koha/catalogue/search.pl?q=*:*&amp;filters=author:&quot;<!-- TMPL_VAR NAME="author" ESCAPE="URL" -->&quot;" title="Search for this Author"><!-- TMPL_VAR NAME="author" --></a>
                                         <!-- TMPL_ELSE -->
                                             &nbsp;
                                         <!-- /TMPL_IF -->
@@ -435,7 +439,7 @@ function GetZ3950Terms(){
                                     <!-- /TMPL_UNLESS -->
 
                                         <!-- TMPL_IF NAME="author" -->
-                                            <a href="/cgi-bin/koha/catalogue/search.pl?q=au:<!-- TMPL_VAR NAME="author" ESCAPE="URL" -->" title="Search for this Author"><!-- TMPL_VAR NAME="author" --></a>
+                                            <a href="/cgi-bin/koha/catalogue/search.pl?q=*:*&amp;filters=author:&quot;<!-- TMPL_VAR NAME="author" ESCAPE="URL" -->&quot;" title="Search for this Author"><!-- TMPL_VAR NAME="author" --></a>
                                         <!-- TMPL_ELSE -->
                                             &nbsp;
                                         <!-- /TMPL_IF -->
