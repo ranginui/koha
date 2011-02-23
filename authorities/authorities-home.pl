@@ -17,158 +17,129 @@
 # with Koha; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use strict;
-use warnings;
-
+use Modern::Perl;
 use CGI;
 use C4::Auth;
-
 use C4::Context;
-use C4::Auth;
 use C4::Output;
 use C4::AuthoritiesMarc;
-use C4::Acquisition;
-use C4::Koha;    # XXX subfield_is_koha_internal_p
-use C4::Biblio;
+use C4::Koha;
+use C4::Search;
+use C4::Search::Query;
+use Data::Pagination;
 
-my $query = new CGI;
-my $op    = $query->param('op');
-$op ||= q{};
+my $query        = new CGI;
+my $op           = $query->param('op');
+my $dbh          = C4::Context->dbh;
 my $authtypecode = $query->param('authtypecode');
-$authtypecode ||= q{};
-my $dbh = C4::Context->dbh;
+my $searchtype   = $query->param('searchtype');
 
-my $authid = $query->param('authid');
 my ( $template, $loggedinuser, $cookie );
 
 my $authtypes = getauthtypes;
-my @authtypesloop;
-foreach my $thisauthtype (
-    sort { $authtypes->{$a}{'authtypetext'} cmp $authtypes->{$b}{'authtypetext'} }
-    keys %$authtypes
-  ) {
-    my %row = (
-        value        => $thisauthtype,
-        selected     => $thisauthtype eq $authtypecode,
-        authtypetext => $authtypes->{$thisauthtype}{'authtypetext'},
-    );
-    push @authtypesloop, \%row;
-}
+my @authtypesloop = map { {
+    value        => $_,
+    selected     => $_ eq $authtypecode,
+    authtypetext => $authtypes->{$_}{'authtypetext'},
+} } keys %$authtypes;
 
 if ( $op eq "do_search" ) {
-    my @marclist  = $query->param('marclist');
-    my @and_or    = $query->param('and_or');
-    my @excluding = $query->param('excluding');
-    my @operator  = $query->param('operator');
-    my $orderby   = $query->param('orderby');
-    my @value     = $query->param('value');
+    my $orderby      = $query->param('orderby') || 'score desc';
+    my $value        = $query->param('value')   || '[* TO *]';
+    my $page         = $query->param('page')    || 1;
+    my $count        = 20;
 
-    my $startfrom      = $query->param('startfrom')      || 1;
-    my $resultsperpage = $query->param('resultsperpage') || 20;
+    my $filters = { recordtype => 'authority' };
+    $filters->{C4::Search::Query::getIndexName('auth-type')} = $authtypecode if $authtypecode;
 
-    my ( $results, $total ) =
-      SearchAuthorities( \@marclist, \@and_or, \@excluding, \@operator, \@value, ( $startfrom - 1 ) * $resultsperpage, $resultsperpage, $authtypecode, $orderby );
+    my $operands;
+    my $indexes = GetIndexesBySearchtype($searchtype, $authtypecode);
 
-    #     use Data::Dumper; warn Data::Dumper::Dumper(@$results);
-    ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-        {   template_name   => "authorities/searchresultlist.tmpl",
-            query           => $query,
-            type            => 'intranet',
-            authnotrequired => 0,
-            flagsrequired   => { catalogue => 1 },
-            debug           => 1,
-        }
+    for (@$indexes) {
+        push @$operands, $value;
+    }
+    my $q = C4::Search::Query->buildQuery($indexes, $operands, ());
+
+    my $results = SimpleSearch($q, $filters, $page, $count, $orderby);
+    C4::Context->preference("DebugLevel") eq '2' && warn "AuthSolrSimpleSearch:q=$q:";
+
+    my $pager = Data::Pagination->new(
+        $results->{pager}->{total_entries},
+        $count,
+        20,
+        $page,
     );
 
-    my @field_data = ();
-
-    # we must get parameters once again. Because if there is a mainentry, it
-    # has been replaced by something else during the search, thus the links
-    # next/previous would not work anymore
-    my @marclist_ini = $query->param('marclist');
-    for ( my $i = 0 ; $i <= $#marclist ; $i++ ) {
-        if ( $value[$i] ) {
-            push @field_data, { term => "marclist", val => $marclist_ini[$i] };
-            if ( !defined $and_or[$i] ) {
-                $and_or[$i] = q{};
-            }
-            push @field_data, { term => "and_or", val => $and_or[$i] };
-            if ( !defined $excluding[$i] ) {
-                $excluding[$i] = q{};
-            }
-            push @field_data, { term => "excluding", val => $excluding[$i] };
-            push @field_data, { term => "operator",  val => $operator[$i] };
-            push @field_data, { term => "value",     val => $value[$i] };
-        }
-    }
-
-    # construction of the url of each page
-    my $base_url =
-        'authorities-home.pl?' 
-      . join( '&amp;', map { $_->{term} . '=' . $_->{val} } @field_data ) . '&amp;'
-      . join(
-        '&amp;',
-        map { $_->{term} . '=' . $_->{val} } (
-            { term => 'resultsperpage', val => $resultsperpage },
-            { term => 'type',           val => 'intranet' },
-            { term => 'op',             val => 'do_search' },
-            { term => 'authtypecode',   val => $authtypecode },
-            { term => 'orderby',        val => $orderby },
-        )
-      );
-
-    my $from = ( $startfrom - 1 ) * $resultsperpage + 1;
-    my $to;
-    if ( !defined $total ) {
-        $total = 0;
-    }
-
-    if ( $total < $startfrom * $resultsperpage ) {
-        $to = $total;
-    } else {
-        $to = $startfrom * $resultsperpage;
-    }
-
-    $template->param( result => $results ) if $results;
+    ( $template, $loggedinuser, $cookie ) = get_template_and_user( {
+        template_name     => "authorities/searchresultlist.tmpl",
+        query             => $query,
+        type              => 'intranet',
+        authnotrequired   => 0,
+        flagsrequired     => { catalogue => 1 },
+        debug             => 1,
+    } );
 
     $template->param(
-        pagination_bar => pagination_bar( $base_url, int( $total / $resultsperpage ) + 1, $startfrom, 'startfrom' ),
-        total          => $total,
-        from           => $from,
-        to             => $to,
-        isEDITORS => $authtypecode eq 'EDITORS',
+        previous_page => $pager->{prev_page},
+        next_page     => $pager->{next_page},
+        PAGE_NUMBERS  => [ map { { page => $_, current => $_ == $page } } @{$pager->{numbers_of_set}} ],
+        current_page  => $page,
+        from          => $pager->{start_of_slice},
+        to            => $pager->{end_of_slice},
+        total         => $pager->{total_entries},
+        value         => $value,
+        orderby       => $orderby,
+        searchtype    => $searchtype
     );
+
+    my $authid_index_name = C4::Search::Query::getIndexName('authid');
+    my @resultrecords;
+    for ( @{$results->{items}} ) {
+        my $authrecord = GetAuthority( $_->{values}->{recordid} );
+
+        my $authority  = {
+           authid  => $_->{values}->{recordid},
+           authid_index_name => $authid_index_name,
+           summary => BuildSummary( $authrecord, $_->{values}->{recordid} ),
+           used    => CountUsage( $_->{values}->{recordid} ),
+        };
+
+        push @resultrecords, $authority;
+    }
+
+    $template->param( result => \@resultrecords );
 
 } elsif ( $op eq "delete" ) {
 
-    &DelAuthority( $authid, 1 );
+    my $authid = $query->param('authid');
+    DelAuthority( $authid, 1 );
 
-    ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-        {   template_name   => "authorities/authorities-home.tmpl",
-            query           => $query,
-            type            => 'intranet',
-            authnotrequired => 0,
-            flagsrequired   => { catalogue => 1 },
-            debug           => 1,
-        }
-    );
+    ( $template, $loggedinuser, $cookie ) = get_template_and_user( {
+        template_name   => "authorities/authorities-home.tmpl",
+        query           => $query,
+        type            => 'intranet',
+        authnotrequired => 0,
+        flagsrequired   => { catalogue => 1 },
+        debug           => 1,
+    } );
 
-    # 	$template->param("statements" => \@statements,
-    # 						"nbstatements" => $nbstatements);
 } else {
-    ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-        {   template_name   => "authorities/authorities-home.tmpl",
-            query           => $query,
-            type            => 'intranet',
-            authnotrequired => 0,
-            flagsrequired   => { catalogue => 1 },
-            debug           => 1,
-        }
-    );
 
+    ( $template, $loggedinuser, $cookie ) = get_template_and_user( {
+        template_name   => "authorities/authorities-home.tmpl",
+        query           => $query,
+        type            => 'intranet',
+        authnotrequired => 0,
+        flagsrequired   => { catalogue => 1 },
+        debug           => 1,
+    } );
 }
 
-$template->param( authtypesloop => \@authtypesloop, );
+$template->param( 
+    authtypesloop    => \@authtypesloop,
+    name_index_name  => C4::Search::Query::getIndexName('auth_name'),
+    usage_index_name => C4::Search::Query::getIndexName('usedinxbiblios')
+);
 
 # Print the page
 output_html_with_http_headers $query, $cookie, $template->output;
