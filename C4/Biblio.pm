@@ -3423,7 +3423,7 @@ sub ModBiblioMarc {
         }
         substr( $string, 22, 6, "frey50" );
         unless ( $record->subfield( 100, "a" ) ) {
-            $record->insert_grouped_field( MARC::Field->new( 100, "", "", "a" => $string ) );
+            $record->insert_fields_ordered( MARC::Field->new( 100, "", "", "a" => $string ) );
         }
     }
     my $oldRecord;
