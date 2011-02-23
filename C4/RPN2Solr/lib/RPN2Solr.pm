@@ -21,6 +21,7 @@ package RPN2Solr;
 
 use Modern::Perl;
 use Net::Z3950::SimpleServer;
+use Net::Z3950::OID;
 use C4::Biblio;
 use C4::Search;
 use C4::AuthoritiesMarc;
@@ -88,31 +89,30 @@ sub fetch_handler {
     my $set_id = $$args{SETNAME};
     my $offset = $$args{OFFSET};
     
+    my $number_of_hits = $$args{HANDLE}{pager}{total_entries};
+
+    my $item = @{ $$args{HANDLE}{items} }[$offset - 1];
+    my $recordid = $$item{values}{recordid};
+    my $recordtype = $$item{values}{recordtype};
+
     # "1.2.840.10003.5.109.10" == XML
     # "1.2.840.10003.5.10" == USmarc
     my $format_output = $$args{REQ_FORM} eq "1.2.840.10003.5.109.10"
         ? "xml"
         : "usmarc";
 
-    my $number_of_hits = $$args{HANDLE}{pager}{total_entries};
-
-    my $item = @{ $$args{HANDLE}{items} }[$offset - 1];
-    my $recordid = $$item{values}{recordid};
-    my $recordtype = $$item{values}{recordtype};
-    
     my $record;
-
     given ( $format_output ) {
         # We must return an usmarc format
         when ( 'usmarc' ) {
             if ( $recordtype && $recordtype eq 'biblio' ) {
-                $record = GetMarcBiblio( $recordid )->as_formatted;
+                $record = GetMarcBiblio( $recordid )->as_usmarc;
             }elsif ( $recordtype && $recordtype eq 'authority' ) {
-                $record = GetAuthority ( $recordid )->as_formatted;
+                $record = GetAuthority ( $recordid )->as_usmarc;
             }
         }
         when ( 'xml' ) {
-        # We must return a xml format
+            # We must return a xml format
             my $parser = XML::LibXML->new();
             if ( $recordtype && $recordtype eq 'biblio' ) {
                 $record = GetXmlBiblio ( $recordid );
@@ -120,10 +120,18 @@ sub fetch_handler {
                 $record = GetAuthorityXML ( $recordid );
             }
         }
+        default {}
     }
     
     $$args{RECORD} = $record if $record;
-    $$args{LAST} = $number_of_hits == $$args{OFFSET};
+    if ($number_of_hits == $args->{OFFSET}) {
+        $$args{LAST} = 1;
+    } else {
+        $$args{LAST} = 0;
+    }
+
+    $$args{BASENAME} = $recordtype;
+
 }
 
 =head2
@@ -157,9 +165,11 @@ sub construct_string_from_node {
         given ( $key ) {
             when ( 'operands' ) {
                 # Construct operands node
+                push @string, "(";
                 push @string,  construct_string_from_node($$node{operands}[0]);
                 push @string,  get_operator($$node{operator});
                 push @string,  construct_string_from_node($$node{operands}[1]);
+                push @string, ")";
             }
             when ( 'attrspec' ) {
                 # Construct attrspec node
@@ -180,17 +190,9 @@ sub construct_string_from_node {
     }
 
     if (defined $value) {
-        given ( $structure ) {
-            when ( 1 ) { $value = "'$value'"; }
-            when ( 2 ) { }
-            when ( 3 ) { }
-            when ( 4 ) { }
-            when ( 5 ) { 
-                # Call C4::Search::Engine::Solr::NormalizeDate ?
-            }
-            when ( 6 ) { }
-            when ( 109 ) { }
-        }
+        # "" is not match by grammar TODO
+        #$value = "[* TO *]" if $value eq "";
+
         given ( $truncate ) {
             when ( 1 ) { $value = "$value*"; } # Right
             when ( 2 ) { $value = "*$value"; } # Left
@@ -199,17 +201,35 @@ sub construct_string_from_node {
                 # Nothing todo
             }
         }
+
+        given ( $structure ) {
+            when ( 1 ) { $value = "'$value'"; }
+            when ( 2 ) { }
+            when ( 3 ) { }
+            when ( 4 ) { }
+            when ( 5 ) { 
+                # Call C4::Search::Engine::Solr::NormalizeDate ?
+            }
+            when ( 6 ) { 
+                for my $v (split ' ', $value) {
+                    # TODO
+                }
+            }
+            when ( 109 ) { }
+        }
+
         given ( $bib1attr ) {
             # <
-            when ( 1 ) { push @string,  "$index:[* TO $value]"; }
-            when ( 2 ) { push @string,  "$index:[* TO $value]"; }
+            when ( 1 ) { push @string, "$index:[* TO $value]"; }
+            when ( 2 ) { push @string, "$index:[* TO $value]"; }
             
             # =
-            when ( 3 ) { push @string,  "$index:$value"; }
+            when ( 3 ) { push @string, "$index:$value";        }
             
             # >
-            when ( 4 ) { push @string,  "$index:[$value TO *]"; }
-            when ( 5 ) { push @string,  "$index:[$value TO *]"; }
+            when ( 4 ) { push @string, "$index:[$value TO *]"; }
+            when ( 5 ) { push @string, "$index:[$value TO *]"; }
+            when ( 6 ) { push @string, "!$index:$value";        }
         }
     }
 
@@ -237,10 +257,20 @@ sub RPN2Solr {
     }
 }
 
+sub init_handler {
+        my $args = shift;
+
+        $args->{IMP_NAME} = "Z3950-server";
+        $args->{IMP_VER} = "0.1";
+        $args->{ERR_CODE} = 0;
+
+}
+
 my $z = new Net::Z3950::SimpleServer(
     SEARCH => \&search_handler,
-    FETCH  => \&fetch_handler
+    FETCH  => \&fetch_handler,
+    INIT => \&init_handler
 );
 
-$z->launch_server("testz3950.pl", @ARGV) unless caller;
+$z->launch_server("z3950-server", @ARGV) unless caller;
 
