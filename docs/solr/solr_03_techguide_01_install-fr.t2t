@@ -1,0 +1,172 @@
+Utilisation de Koha avec Solr: Guide Technique - Installation v0.1
+Claire Hernandez <claire.hernandez@biblibre.com>
+30/12/2010 
+
+%!target : doku
+%!encoding: UTF-8
+%!outfile: generated/solr_03_techguide_01_install-fr.doku
+
+Documentation disponible sur http://descartes.biblibre.com/solr/install/solr_03_techguide_01_install-fr.html
+
+= Installation multi-core avec Jetty = 
+
+Il est possible d'installer solr en simple ou multi core. La seconde option est conseillée et décrite dans le document. Pour note, il existait une procédure initiale avec le paquet "solr-tomcat" qui n'existe plus dans les dépots et qui a été préférée par un lancemnt avec Jetty plus maitrisé et finalement suffisant. Cette architecture est en cours de test sur nos serveurs.
+Cette procédure peut certainement être améliorée avec vos feedbacks!
+
+== Installation de Koha ==
+
+- Suivre la procédure habituelle d'une installation Koha
+- Code source actuel
+``` git checkout -b wip_solr remotes/origin/wip/solr
+- Fichier environment_Makefile.pl suffisant
+```
+export PERL_MM_USE_DEFAULT=1 # makes the environment variables work
+
+export DESTDIR=/.../sites/...         # here would be koha configuration, logs
+
+export WEBSERVER_HOST=EDITME
+export WEBSERVER_IP=EDITME
+
+export INSTALL_MODE=dev
+export RUN_DATABASE_TESTS=no
+export DB_TYPE=mysql
+
+export DB_HOST='localhost'
+export DB_NAME='<dbname>'
+
+export DB_USER='<dbuser>'
+export DB_PASS='<dbpass>'
+```
+
+
+== Installation des dépendances logicielles ==
+
+Si vous ne les avez pas, ajoutez dans apt/sources.lists.d/koha_biblibre.list le dépôt biblibre debian :
+```
+deb http://debian.biblibre.com/all ./
+```
+
+Dépendances et logiciel sous debian:
+``` 
+  sudo aptitude install libdata-searchengine-perl 
+    libdata-searchengine-solr-perl 
+    libmoosex-storage-perl
+    libdata-paginator-perl
+    libdata-pagination-perl
+    libmoosex-types-perl
+    libwebservice-solr-perl
+    libmodule-list-perl
+    libmodern-perl-perl
+```
+
+
+== Installation et lancement de Solr ==
+
+- option 1: télécharger Solr 1.4 et lancer le "start.jar" comme expliqué dans les README.txt
+
+- option 2: récupérer 2 archives proposées (package nettoyé ne contenant que le nécessaire)
+
+
+=== Procédure d'installation  ===
+
+- Télécharger les 2 paquets proposés
+  - http://descartes.biblibre.com/solr/install/V0.1_solrconf_install.tar
+  - http://descartes.biblibre.com/solr/install/V0.1_solr_install.tar
+
+- Extraire les 2 dossiers où vous le souhaitez ($DATA/solr et $DATA/solrconf)
+
+- Ajouter un groupe et un utilisateur "solr"
+
+- Ajouter les permissions au dossier de logs
+
+```
+mkdir $DATA/solr/logs
+chown -R solr:solr $DATA/solr
+./$DATA/solrconf/launch_solr.sh
+```
+- Donner les droits à "solr:solr" d'écrire dans les dossiers d'index
+``` chown -R solr:solr $DATA/solrconf/multicore/core1/
+
+- pour lancer launch_solr.sh, vous aurez besoin de runit (demande chpst) ainsi que des droits suid pour le groupe solr
+
+- lancer sudo solrconf/launch_solr.sh
+
+
+
+=== Description du livrable ===
+
+Dossier solrconf: contient les liens vers les index, les scripts de lancement
+```
+- launch_solr.sh*                      # script de lancement proposé à monitorer éventuellement
+- multicore/                           # contient le dossier de configuration des cores
+    - nomducore -> /home/koha/etc/solr # lien vers le dossier contenant "conf" (fichiers de configuration) et "data" (fichiers de stockage des index)
+    - solr.xml                         # fichier de configuration des cores
+```
+
+Exemple du contenu du dossier solr
+```
+- /home/koha/etc/solr
+  - conf           # contient les fichiers de configuration Solr de l'instance (schema.xml, solrconfig.xml etc.)
+  - data           # contient les fichiers de gestion des index Solr ("boîte noire")
+```
+
+exemple de fichier solr.xml
+```
+<?xml version="1.0" encoding="UTF-8" ?>
+<solr persistent="false" sharedLib="lib">
+  <cores adminPath="/admin/cores" shareSchema="true">
+    <core name="core1" instanceDir="/home/koha/sites/core1/etc/solr" dataDir="data" />
+    <core name="core2" instanceDir="/home/koha/sites/core2/etc/solr" dataDir="data" />
+    <core name="core3" instanceDir="/home/koha/sites/core3/etc/solr" dataDir="data" />
+  </cores>
+</solr>
+```
+http://wiki.apache.org/solr/CoreAdmin
+
+Dossier solr: contient les binaires, les logs et les fichiers de configuration de Jetty
+```
+- etc/                              # dossier configuration
+  - jetty-logging.xml               # fichier de configuration des traces
+  - jetty.xml                       # fichier de configuration du conteneur (serveur)
+  - webdefault.xml                  # fichier de configuration de la webapp
+- lib/                              # librairies pour faire tourner le conteneur Jetty
+  - jetty-6.1.3.jar                
+  - jetty-util-6.1.3.jar            
+  - jsp-2.1/
+     - ant-1.6.5.jar
+     - core-3.1.1.jar
+     - jsp-2.1.jar
+     - jsp-api-2.1.jar
+     - servlet-api-2.5-6.1.3.jar
+- start.jar                        # lanceur de la webapp solr
+- webapps/                 
+  - solr.war                       # webapp solr (v 1.4)
+```
+
+
+=== Configuration ===
+
+Vous pouvez trouver les fichiers de configuration solr (etc/solr) sur un dépôt utilisé exclusivement pour ce besoin.
+
+```
+  cd /home/koha/etc
+  git clone gitolite@git.biblibre.com:solr_conf.git solr
+  sudo chmod -R 777 data
+```
+
+Coté Koha, renseigner la syspref SolrAPI avec quelque chose du genre http://localhost:8983/solr/core1/
+
+Relancer le serveur qui déploie solr.
+
+- Vérifier les cores : http://localhost:8983/solr/admin/cores
+- Vérifier que la recherche est accessible : http://localhost:8983/solr/core1/select?q=*:*
+- Vérifier que l'administration du core est accessible : http://localhost:8983/solr/core1/admin/
+- Vérifier que l'admin est accessible : http://localhost:8983/solr/core1/admin/
+
+
+Pistes pour améliorer votre installation :
+- avoir http://solr.core1.localhost au lieu de http://localhost:8080/solr/core1/
+- Sécuriser les 2 urls "/update et /admin" pour que personne ne puisse s'y connecter de l'extérieur
+- avoir un cronjob qui lance la commande "optimize" toutes les nuits sur le service
+- avoir un système de backup de l'index (etc/solr/data) un index peut être restauré par simple recopie du dossier
+

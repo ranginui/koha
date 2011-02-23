@@ -1,0 +1,198 @@
+Utilisation de Koha avec Solr: Guide technique
+Claire Hernandez <claire.hernandez@biblibre.com>
+30/12/2010 
+
+%!target : doku
+%!encoding: UTF-8
+%!outfile: generated/solr_03_techguide-fr.doku
+
+
+= Guide technique =
+
+__Public:__ Développeur, mainteneur, administrateur etc.
+
+
+== Installation ==
+
+
+=== Les bases de Solr ===
+
+
+==== Configuration ====
+
+``` git clone gitolite@git.biblibre.com:solr_conf.git solr
+
+**schema.xml**
+
+- Les champs statiques (id, recordtype, recordid, allfields(=any sous zebra))
+- Les champs dynamiques (str_*, txt_*, int_*, date_*). Les champs dynamiques nous permettent de définir des champs ailleurs que dans ce fichier (pour nous, en bdd).
+- uniqueKey : id unique
+- defaultSearchField : champ de recherche par défaut
+- copyfield : récupère tous les champs et les place dans allfields
+- solrQueryParser defaultOperator : opérateur booléen par défaut
+
+**solrconfig.xml**
+
+- pas de spécificités particulières pour l'instant
+
+
+==== Interface d'administration ====
+
+- http://localhost:8080/solr/core1/admin
+
+
+== Indexation ==
+
+
+Indexation de 100 notices biblio puis authority
+```
+./misc/migration_tools/rebuild_solr.pl -r -t biblio -n 100
+./misc/migration_tools/rebuild_solr.pl -r -t authority -n 100
+```
+Commande pour les tests de temps:
+``` time ./misc/migration_tools/rebuild_solr.pl -r -t authority 2> /tmp/solrindexation.log
+
+pour indexer toutes les notices, retirer l'option -n (pls heures)
+``` rebuild-solr.pl -t biblio && rebuild-solr.pl -t authority
+
+./rebuild_solr --help
+```
+Use this batch job to reindex all biblio or authority records in your Koha database.  This job is useful only if you are using Solr search engine.
+
+Parameters:
+    -t biblio               index bibliographic records
+
+    -t authority            index authority records
+
+    -r                      clear Solr index before adding records to index - use this option carefully!
+
+    -n 100                  index 100 first records
+
+    -n "100,2"              index 2 records after 100th (101 and 102)
+
+    -w 101                  index biblio with biblionumber equals 101
+
+    --help or -h            show this message.
+
+```
+
+
+== Recherche ==
+
+
+== Code perl == 
+
+
+=== C4::Search::Engine::Solr.pm ===
+
+
+==== IndexRecord ====
+
+- boucle sur les identifiants
+- getauthority ou getbiblio (en fonction du param)
+- instanciation d'un document solr
+- boucle sur les index (cf table indexes)
+si l'index est relié à un plugin, le plugin retourne les données à indexer
+si controlfield, on l'index, sinon on boucle sur les subfields
+si date, on la normalise au format ISO
+si biblio, on récupère les champs autorisés et on index les labels
+- création de l'index en lui filant ses valeurs
+
+
+==== SimpleSearch ====
+
+Les paramètres :
+- $q : la requête
+- $filters : les filtres
+- $page : numéro de la page
+- $max_results : nombre de résultats max à retourner
+- $sort : tri
+
+- ouverture de la connexion
+- récupération des facettes
+- application des filtres
+- exécution de la requête
+- récupération des résultats
+
+
+=== C4::Search::Query.pm === 
+
+Contient les fonctions principales au requêtage des différents moteurs de recherche utilisés.
+
+fonctions principales :
+
+**initIndexesMapper**
+
+Initialise le hash utilisé dans les autres fonctions. On récupère en bdd la correspondance des index Zebra et des index Solr.
+
+**getIndexName**
+
+Récupération du nom de l'index en fonction du moteur utilisé (vérification de la syspref SearchEngine ('Solr' | 'Zebra)).
+Dans le cas où on utilise Solr, on check :
+  * que le paramètre soit un 'code'
+  * que le paramètre est un index zebra
+  * enfin, on retourne le paramètre tel quel si l'on a rien trouvé de correspondant
+
+**buildQuery**
+
+Construction d'une requête à partir d'un tableau d'index, d'opérandes et d'opérateurs.
+
+**normalSearch**
+
+La requête est directement contenue dans une chaîne. On récupère donc toutes les occurrences de index:valeur afin de remplacer le nom de l'index par celui correspondant au moteur utilisé.
+
+
+=== C4::Search::Query::Solr.pm === 
+
+
+**buildQuery** 
+
+Fonction buildQuery spécifique à Solr. Gestion des opérandes et des index 'all_fields'.
+
+On reconstruit une requête Solr à partir des 3 tableaux d'index, d'opérandes et d'opérateurs.
+
+
+=== C4::Search::Plugins::* ===
+
+- UsedInXBiblios.pm: ComputeValue avec en entrée la notice biblio et retourne un tableau. == getbiblionumber.
+- Audience.pm : Récupération du record. Table de correspondance.
+
+
+== Base de données ==
+
+Les différentes tables modifiées :
+
+- indexes et indexmappings : les champs correponds aux champs de l'interface
+- suppression de zebraqueue et de tout ce qui était relatif à NoZebra
+
+
+== Pertinence des résultats ==
+
+- ++ [Vue d'ensemble du principe du scoring http://lucene.apache.org/java/2_9_1/scoring.htmlVue]
+- ++ [Algorithme par défaut: DefaultSimilarity http://lucene.apache.org/java/3_0_2/api/core/org/apache/lucene/search/Similarity.html] il est possible de surcharger cet algo et de faire le notre (;)
+- ++ [Explication des termes utilisés http://www.lucenetutorial.com/advanced-topics/scoring.html]
+- ++ [Search Application Relevance Issues Grant Ingersoll lucidimagination http://www.lucidimagination.com/Community/Hear-from-the-Experts/Articles/Search-Application-Relevance-IssuesDebugging]
+- [Findability in Lucene and Solr http://www.lucidimagination.com/Community/Hear-from-the-Experts/Articles/Optimizing-Findability-Lucene-and-SolrOptimizing]
+- http://wiki.apache.org/solr/SolrRelevancyFAQ
+- http://wiki.apache.org/solr/SolrRelevancyCookbook
+- http://stackoverflow.com/questions/2099288/solr-searching-numeric-matching-and-relevance
+- http://www.slideshare.net/LucidImagination/an-introduction-to-basics-of-search-and-relevancy-with-apache-solr
+- http://www.docshare.com/doc/239216/An-Introduction-to-Basics-of-Search-and-Relev
+
+Solr - Débugguer la pertinence : rajouter l'option et ce type de résultat s'ajoute à chaque document indexé retrouvé
+``` &fl=*,score 
+``` <float name="score">8.582654</float> 
+Solr - Débugguer la query:
+``` &debugQuery=true
+
+
+== Services web solr ==
+
+Solr met à disposition un certain nombre de [services web http://wiki.apache.org/solr/UpdateXmlMessages] qui sont donc accessibles par une simple url:
+Nettoyer l'index d'une instance (/!\)
+``` /update?stream.body=%3Cdelete%3E%3Cquery%3E*:*%3C/query%3E%3C/delete%3E
+
+``` /update?stream.body=%3Ccommit/%3E
+Optimize
+``` /update?optimize=true&maxSegments=10&waitFlush=false'
+

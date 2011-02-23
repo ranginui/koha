@@ -1,0 +1,61 @@
+Utilisation de Koha avec Solr - Guide de démarrage
+Claire Hernandez <claire.hernandez@biblibre.com>
+30/12/2010 
+
+%!target : doku
+%!encoding: UTF-8
+%!outfile: generated/solr_01_startguide-fr.doku
+
+
+= Guide de démarrage =
+
+__Public__: Tout utilisateur de l'opac.
+
+
+== Apports de Solr ==
+
+Solr est un moteur de recherche et d'indexation. L'objectif est d'intégrer Solr en lieu et place de zebra dans koha pour répondre aux différents manques de ce dernier.
+
+[Article de blog au sujet des avantages du projet http://www.biblibre.com/fr/blog/billet/d%C3%A9veloppements-solr-pour-koha]
+Pour résumer, Zebra ne convient plus pour certaines raisons, entre autres :
+- Pas d'indexation en temps réel
+- Difficultés pour les accès aux données
+- Fichiers de configuration difficile à comprendre
+- Gestion des facettes
+- Manque au niveau de la recherche
+- etc.
+
+Quelques recherches apportées par Solr:
+- Recherche par facettes
+- Recherche floue ('mautid~' retourne 'maudit')
+- Recherche de proximité (“vision lotus”~10)
+- keyword boosting ('Droz rameau^4' ⇒ rajoute de la pertinence à rameau)
+- Recherche par synonymes ('damnés' retournera 'maudit' si définit dans un fichier)
+- Recherche metaphone (phonétique) ('amr' retourne 'amour')
+- spell check (suggestion orthographique)
+
+Solr est donc un moteur d'indexation et de recherche basé sur Lucene. Voir le site de Lucene pour le wiki de la communauté ainsi que les différentes configurations possibles, etc. Lucene est en train de devenir présent un petit peu partout. Il offre des connecteurs de plus en plus nombreux dans de plus en plus de langages.
+
+
+== Requêtes simples ==
+
+Ces exemples sont des requêtes entrées directement dans le moteur de recherche (boîte de texte en haut de l'opac).
+
+- tous les documents ***:***
+- documents contenant le mot "monde": **monde**
+- documents contenant un mot ressemblant à "monde": **monde~**
+- documents contenant exactement l'expression "le meilleur des mondes": **"le meilleur des mondes"**
+
+<todo
+wildcars * et ?
+>
+
+
+== Requêtes avancées ==
+
+Des index sont configurés pour chaque installation de Koha.
+
+<todo
+en lister quelques uns couramment utilisés
+>
+

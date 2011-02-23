@@ -1,0 +1,128 @@
+Utilisation de Koha avec Solr - Guide avancée de l'utilisation du moteur de recherche
+Claire Hernandez <claire.hernandez@biblibre.com>
+30/12/2010 
+
+%!target : doku
+%!encoding: UTF-8
+%!outfile: generated/solr_02_advanceduse-fr.doku
+
+
+= Guide d'utilisation avancé = 
+
+__Public:__ Toute personne abilitée à utiliser l'interface pro de Koha et à configurer les index.
+
+
+== Références==
+
+[Solr Query Syntax http://wiki.apache.org/solr/SolrQuerySyntax]
+
+
+== Sysprefs ==
+
+- **solrApi** à l'adresse du core solr ex: http://flaubert.biblibre.com:8080/solr/migrationstetienne
+- **defaultSortField** à score|txt_title
+- **OPACdefaultSortField** à score|txt_title
+- **SearchEngine** à Solr|Zebra
+
+
+== Configuration des indexes ==
+
+
+=== Les index ===
+
+Voir la page [indexes.pl http://solr.biblibre.com/cgi-bin/koha/solr/indexes.pl] (demo / demo) sur descartes.
+
+2 onglets : authority et biblio, ce sont les mêmes.
+/!\ Il ne doit pas exister d'index ayant le même nom pour une autorié et une notice.
+
+**L'onglet biblio :**
+
+- Des champs grisés sont les champs qui ne peuvent pas être supprimés.
+Les colonnes :
+- Code : code de l'index
+- Label : label qui va s'afficher pour cet index
+- Type : le type de l'index (ne pas se tromper entre string et text)
+- Faceted : le champ sera-t-il faceté ou pas ?
+- Sortable : Le champ doit-il être triable ou pas ?
+- Plugin : On n'a pas envie que les données viennent du Marc
+Les lignes du tableau peuvent être déplace en drag'n drop pour modifier l'ordre (qui sera utilisé dans les listes déroulantes).
+
+**Les mappings**
+
+Voir la page [mappings.pl http://solr.biblibre.com/cgi-bin/koha/solr/mappings.pl]. Par exemple : 7.. * : tous les sous champs des 7XX et va les mettre dans l'index sélectionné.
+
+
+== Utilisation des types d'index ==
+
+Solr permet d'appliquer des filtres pour un type de champs indexé. Un filtre détermine la manière dont va être traité un champs pendant l'indexation ou la recherche. Ces filtres sont disponibles sur toute installation mais un fichier de configuration doit être mis à jour pour les utiliser.
+http://wiki.apache.org/solr/AnalyzersTokenizersTokenFilters
+
+A chaque index correspond un type de champs qui définit quelles sont les recherches possibles sur cet index. Il existe plusieurs types de champs définis:
+
+
+=== String ===
+
+__Caractéristiques:__
+C'est un type de champs brut sur lequel n'est fait aucune transformation.
+__Utilisation:__
+- Il sera définit pour les index de type "identifiant" qui ne doivent pas être découpés (les facettes utilisent également un index de ce type)
+- Lorsqu'on souhaite trouver le document uniquement pas une recherche exacte complète
+- si le champs est un identifiant, il n'est pas utile de faire des traitements faits sur Simple text (accents, découpages etc.)
+__Exemples:__
+- str_upc:9780521406499
+- str_upc:97805214*
+- str_callnumber:"MAG3 3 ELG 24" (ste_callnumber:MAG3 aurait retourné cette même notice)
+- str_callnumber:MAG3*
+
+
+===Simple Text===
+
+__Caractéristiques:__
+- n'est pas case sensitive (une recherche avec des majuscules renverra le même résultat que sans
+- trouve des résultats avec des accents même si l'accent n'est pas spécifié dans la requêtes
+- retire les "." dans les acronymes
+__Utilisation:__
+- pour les champs qui nécessitent un traitement simple, sur lesquels on veut trouver une partie du tout sans utiliser les "wildcards" (* et ?)
+- si les traitements sur le champs ne sont pas nécessaires, préférer le type "String"
+__Exemples:__
+- ste_author:Boris ou ste_author:Vian trouvera les livres de "Boris Vian" (alors que str_author:Boris n'aurait trouvé que les livre de l'auteur "Boris")
+
+
+===Text===
+
+__Caractéristiques:__
+- C'est le Simple Text enrichi de quelques filters supplémentaires
+- Gestion des élisions: (l', d', qu'...) par un fichier texte plat qui liste les patterns à ignorer lors de l'indexation et la recherche
+- Gestion des "stopwords": (du, dans, la, le...) par un fichier texte plat qui liste les patterns à ignorer lors de l'indexation et la recherche
+- Gestion des synonymes: un fichier texte déclare les mots à prendre comme synonyme à la recherche
+- Gestion de la recherche par "racine de mot"
+- Gestion des dupplicats: ils sont retirés à l'indexation si détectés
+- Pour l'instant, les filtres utilisés ne sont utilisables et configurés uniquement par la langue Française mais leur pendant Anglophone existe et ne nécessiterait que de la configuration supplémentaire.
+__Utilisation:__
+- convient aux index qui ont du texte sur lequel on veut faire une recherche complexe
+- /!\ à utiliser avec modération, complexifie l'indexation...
+__Exemples:__
+- **papillonner** trouve les notices contenant "papillon"
+- **peupler** trouve "peuplement", "peuple"
+- **comporte** trouve "comportement"
+- ...
+
+
+__Caractéristiques:__
+__Utilisation:__
+__Exemples:__
+
+
+===Date===
+
+__Caractéristiques:__
+__Utilisation:__
+__Exemples:__
+
+
+== Les plugins ==
+
+
+=== Forme rejetée "Authorities" ===
+
+L'index ciblé contiendra les champs 2..(vedette), 4.. (rejetée) et 7.. (parrallèle) de l'autorité liée.
