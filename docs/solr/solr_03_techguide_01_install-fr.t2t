@@ -89,7 +89,10 @@ chown -R solr:solr $DATA/solr
 
 - pour lancer launch_solr.sh, vous aurez besoin de runit (demande chpst) ainsi que des droits suid pour le groupe solr
 
-- lancer sudo solrconf/launch_solr.sh
+- ce fichier a deux variables d'environnement configurables  SOLR_HOME et SOLRCONF_HOME à changer en fonction de vos préférences
+
+- lancer le service solr
+``` sudo solrconf/launch_solr.sh
 
 
 
