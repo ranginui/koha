@@ -706,12 +706,11 @@ sub get_matches {
         # build query
         my $query = join( " or ", map { "$matchpoint->{'index'}=$_" } @source_keys );
 
-        # FIXME only searching biblio index at the moment
-        my ( $error, $searchresults, $total_hits ) = SimpleSearch( $query, 0, $max_matches );
+        $query = C4::Search::Query->normalSearch($query);
+        my $results = C4::Search::SimpleSearch($query, {}, 1, $max_matches);
 
-        warn "search failed ($query) $error" if $error;
-        foreach my $matched (@$searchresults) {
-            $matches{$matched} += $matchpoint->{'score'};
+        foreach my $matched (@{$results->items}) {
+            $matches{$matched->{values}{recordid}} += $matchpoint->{'score'};
         }
     }
 
@@ -723,14 +722,14 @@ sub get_matches {
       keys %matches;
 
     my @results = ();
-    foreach my $marcblob ( keys %matches ) {
-        my $target_record = MARC::Record->new_from_usmarc($marcblob);
+    foreach my $recordid ( keys %matches ) {
+        my $target_record = GetMarcBiblio($recordid);
         my $result = TransformMarcToKoha( C4::Context->dbh, $target_record, '' );
 
         # FIXME - again, bibliospecific
         # also, can search engine be induced to give just the number in the first place?
         my $record_number = $result->{'biblionumber'};
-        push @results, { 'record_id' => $record_number, 'score' => $matches{$marcblob} };
+        push @results, { 'record_id' => $record_number, 'score' => $matches{$recordid} };
     }
     @results = sort { $b->{'score'} cmp $a->{'score'} } @results;
     if ( scalar(@results) > $max_matches ) {
@@ -776,8 +775,8 @@ sub dump {
 }
 
 sub _passes_required_checks {
-    my ( $source_record, $target_blob, $matchchecks ) = @_;
-    my $target_record = MARC::Record->new_from_usmarc($target_blob);    # FIXME -- need to avoid parsing record twice
+    my ( $source_record, $recordid, $matchchecks ) = @_;
+    my $target_record = GetMarcBiblio($recordid);
 
     # no checks supplied == automatic pass
     return 1 if $#{$matchchecks} == -1;
@@ -836,6 +835,7 @@ sub _get_match_keys {
             } elsif ( $component->{'offset'} ) {
                 $string = substr( $string, $component->{'offset'} );
             }
+
             $key = _normalize($string);
             if ( $i == 0 ) {
                 push @keys, $key if $key;

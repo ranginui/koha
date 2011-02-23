@@ -17,19 +17,19 @@ package C4::AuthoritiesMarc;
 # with Koha; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-use strict;
+use Modern::Perl;
 
-#use warnings; FIXME - Bug 2505
 use C4::Context;
 use C4::Koha;
 use MARC::Record;
 use C4::Biblio;
-use C4::Search;
 use C4::AuthoritiesMarc::MARC21;
 use C4::AuthoritiesMarc::UNIMARC;
 use C4::Charset;
 use List::MoreUtils qw/none first_index/;
 use C4::Debug;
+use C4::Search::Query;
+require C4::Search;
 
 use vars qw($VERSION @ISA @EXPORT);
 
@@ -55,7 +55,6 @@ BEGIN {
 
       &CountUsage
       &CountUsageChildren
-      &SearchAuthorities
 
       &BuildSummary
       &BuildUnimarcHierarchies
@@ -66,6 +65,8 @@ BEGIN {
 
       &GuessAuthTypeCode
       &GuessAuthId
+
+      &GetIndexesBySearchtype
     );
 }
 
@@ -98,272 +99,6 @@ sub GetAuthMARCFromKohaField {
     return ( $tagfield, $tagsubfield );
 }
 
-=head2 SearchAuthorities 
-
-=over 4
-
-(\@finalresult, $nbresults)= &SearchAuthorities($tags, $and_or, $excluding, $operator, $value, $offset,$length,$authtypecode,$sortby)
-returns ref to array result and count of results returned
-
-=back
-
-=cut
-
-sub SearchAuthorities {
-    my ( $tags, $and_or, $excluding, $operator, $value, $offset, $length, $authtypecode, $sortby ) = @_;
-
-    #     warn "CALL : $tags, $and_or, $excluding, $operator, $value, $offset,$length,$authtypecode,$sortby";
-    my $dbh = C4::Context->dbh;
-    if ( C4::Context->preference('NoZebra') ) {
-
-        #
-        # build the query
-        #
-        my $query;
-        my @auths = split / /, $authtypecode;
-        foreach my $auth (@auths) {
-            $query .= "AND auth_type= $auth ";
-        }
-        $query =~ s/^AND //;
-        my $dosearch;
-        for ( my $i = 0 ; $i <= $#{$value} ; $i++ ) {
-            if ( @$value[$i] ) {
-                if ( @$tags[$i] =~ /mainentry|mainmainentry/ ) {
-                    $query .= qq( AND @$tags[$i] );
-                } else {
-                    $query .= " AND ";
-                }
-                if ( @$operator[$i] eq 'is' ) {
-                    $query .= ( @$tags[$i] ? "=" : "" ) . '"' . @$value[$i] . '"';
-                } elsif ( @$operator[$i] eq "=" ) {
-                    $query .= ( @$tags[$i] ? "=" : "" ) . '"' . @$value[$i] . '"';
-                } elsif ( @$operator[$i] eq "start" ) {
-                    $query .= ( @$tags[$i] ? "=" : "" ) . '"' . @$value[$i] . '%"';
-                } else {
-                    $query .= ( @$tags[$i] ? "=" : "" ) . '"' . @$value[$i] . '%"';
-                }
-                $dosearch = 1;
-            }    #if value
-        }
-
-        #
-        # do the query (if we had some search term
-        #
-        if ($dosearch) {
-
-            #             warn "QUERY : $query";
-            my $result = C4::Search::NZanalyse( $query, 'authorityserver' );
-
-            #             warn "result : $result";
-            my %result;
-            foreach ( split /;/, $result ) {
-                my ( $authid, $title ) = split /,/, $_;
-
-                # hint : the result is sorted by title.biblionumber because we can have X biblios with the same title
-                # and we don't want to get only 1 result for each of them !!!
-                # hint & speed improvement : we can order without reading the record
-                # so order, and read records only for the requested page !
-                $result{ $title . $authid } = $authid;
-            }
-
-            # sort the hash and return the same structure as GetRecords (Zebra querying)
-            my @listresult = ();
-            my $numbers    = 0;
-            if ( $sortby eq 'HeadingDsc' ) {    # sort by mainmainentry desc
-                foreach my $key ( sort { $b cmp $a } ( keys %result ) ) {
-                    push @listresult, $result{$key};
-
-                    #                     warn "push..."$#finalresult;
-                    $numbers++;
-                }
-            } else {                            # sort by mainmainentry ASC
-                foreach my $key ( sort ( keys %result ) ) {
-                    push @listresult, $result{$key};
-
-                    #                     warn "push..."$#finalresult;
-                    $numbers++;
-                }
-            }
-
-            # limit the $results_per_page to result size if it's more
-            $length = $numbers - $offset if $numbers < ( $offset + $length );
-
-            # for the requested page, replace authid by the complete record
-            # speed improvement : avoid reading too much things
-            my @finalresult;
-            for ( my $counter = $offset ; $counter <= $offset + $length - 1 ; $counter++ ) {
-
-                #                 $finalresult[$counter] = GetAuthority($finalresult[$counter])->as_usmarc;
-                my $separator      = C4::Context->preference('authoritysep');
-                my $authrecord     = GetAuthority( $listresult[$counter] );
-                my $authid         = $listresult[$counter];
-                my $summary        = BuildSummary( $authrecord, $authid, $authtypecode );
-                my $query_auth_tag = "SELECT auth_tag_to_report FROM auth_types WHERE authtypecode=?";
-                my $sth            = $dbh->prepare($query_auth_tag);
-                $sth->execute($authtypecode);
-                my $auth_tag_to_report = $sth->fetchrow;
-                my %newline;
-                $newline{used}    = CountUsage($authid);
-                $newline{summary} = $summary;
-                $newline{authid}  = $authid;
-                $newline{even}    = $counter % 2;
-                push @finalresult, \%newline;
-            }
-            return ( \@finalresult, $numbers );
-        } else {
-            return;
-        }
-    } else {
-        my $query;
-        my $attr;
-
-        # the marclist may contain "mainentry". In this case, search the tag_to_report, that depends on
-        # the authtypecode. Then, search on $a of this tag_to_report
-        # also store main entry MARC tag, to extract it at end of search
-        my $mainentrytag;
-        ##first set the authtype search and may be multiple authorities
-        my $n = 0;
-        my @authtypecode;
-        my @auths = split / /, $authtypecode;
-        foreach my $auth (@auths) {
-            $query .= " \@attr 1=authtype \@attr 5=100 " . $auth;    ##No truncation on authtype
-            push @authtypecode, $auth;
-            $n++;
-        }
-        if ( $n > 1 ) {
-            while ( $n > 1 ) { $query = "\@or " . $query; $n--; }
-        }
-
-        my $dosearch;
-        my $and = " \@and ";
-        my @q2;
-        for ( my $i = 0 ; $i <= $#{$value} ; $i++ ) {
-            my $querypart;
-            next unless ( @$value[$i] );
-            ##If mainentry search $a tag
-            if ( @$tags[$i] eq "mainmainentry" ) {
-
-                # FIXME: 'Heading-Main' index not yet defined in zebra
-                #                $attr =" \@attr 1=Heading-Main ";
-                $attr = " \@attr 1=Heading-Main ";
-
-            } elsif ( @$tags[$i] eq "mainentry" ) {
-                $attr = " \@attr 1=Heading ";
-            } else {
-                $attr = " \@attr 1=Any ";
-            }
-            if ( @$operator[$i] eq 'is' ) {
-                $attr .= " \@attr 4=1  \@attr 5=100 ";    ##Phrase, No truncation,all of subfield field must match
-            } elsif ( @$operator[$i] eq "=" ) {
-                $attr .= " \@attr 4=107 ";                #Number Exact match
-            } elsif ( @$operator[$i] eq "start" ) {
-                $attr .= " \@attr 3=2 \@attr 4=1 \@attr 5=1 ";    #Firstinfield Phrase, Right truncated
-            } else {
-                $attr .= " \@attr 5=1 \@attr 4=6 ";               ## Word list, right truncated, anywhere
-            }
-            $attr = $attr . "\"" . @$value[$i] . "\"";
-            $querypart .= $attr;
-            $dosearch = 1;
-            push @q2, $querypart;
-        }
-        ##Add how many queries generated
-        while ( my $querypart = shift @q2 ) {
-            if ( $query =~ /\S+/ ) {
-                $query = $and . $query . $querypart;
-            } else {
-                $query = $querypart;
-            }
-        }
-
-        $debug && warn $query;
-        ## Adding order
-        #$query=' @or  @attr 7=2 @attr 1=Heading 0 @or  @attr 7=1 @attr 1=Heading 1'.$query if ($sortby eq "HeadingDsc");
-        my $orderstring = (
-              $sortby eq "HeadingAsc" ? '@attr 7=1 @attr 1=Heading 0'
-            : $sortby eq "HeadingDsc" ? '@attr 7=2 @attr 1=Heading 0'
-            : ''
-        );
-        $query = ( $query ? "\@or $orderstring $query" : "\@or \@attr 1=_ALLRECORDS \@attr 2=103 '' $orderstring " );
-
-        $offset = 0 unless $offset;
-        my $counter = $offset;
-        $length = 10 unless $length;
-        my @oAuth;
-        my $i;
-        $oAuth[0] = C4::Context->Zconn( "authorityserver", 1 );
-        my $Anewq = new ZOOM::Query::PQF( $query, $oAuth[0] );
-        my $oAResult;
-        $oAResult = $oAuth[0]->search($Anewq);
-
-        while ( ( $i = ZOOM::event( \@oAuth ) ) != 0 ) {
-            my $ev = $oAuth[ $i - 1 ]->last_event();
-            last if $ev == ZOOM::Event::ZEND;
-        }
-        my ( $error, $errmsg, $addinfo, $diagset ) = $oAuth[0]->error_x();
-        if ($error) {
-            warn "oAuth error: $errmsg ($error) $addinfo $diagset\n";
-            goto NOLUCK;
-        }
-
-        my $nbresults;
-        $nbresults = $oAResult->size();
-        my $nremains    = $nbresults;
-        my @result      = ();
-        my @finalresult = ();
-
-        if ( $nbresults > 0 ) {
-
-            ##Find authid and linkid fields
-            ##we may be searching multiple authoritytypes.
-            ## FIXME this assumes that all authid and linkid fields are the same for all authority types
-            # my ($authidfield,$authidsubfield)=GetAuthMARCFromKohaField($dbh,"auth_header.authid",$authtypecode[0]);
-            # my ($linkidfield,$linkidsubfield)=GetAuthMARCFromKohaField($dbh,"auth_header.linkid",$authtypecode[0]);
-            while ( ( $counter < $nbresults ) && ( $counter < ( $offset + $length ) ) ) {
-
-                ##Here we have to extract MARC record and $authid from ZEBRA AUTHORITIES
-                my $rec      = $oAResult->record($counter);
-                my $marcdata = $rec->raw();
-                my $authrecord;
-                my $separator = C4::Context->preference('authoritysep');
-                $authrecord = MARC::File::USMARC::decode($marcdata);
-                my $authid         = $authrecord->field('001')->data();
-                my $summary        = BuildSummary( $authrecord, $authid, $authtypecode );
-                my $query_auth_tag = "SELECT auth_tag_to_report FROM auth_types WHERE authtypecode=?";
-                my $sth            = $dbh->prepare($query_auth_tag);
-                $sth->execute($authtypecode);
-                my $auth_tag_to_report = $sth->fetchrow;
-                my $reported_tag;
-                my $mainentry = $authrecord->field($auth_tag_to_report);
-
-                if ($mainentry) {
-                    foreach ( $mainentry->subfields() ) {
-                        $reported_tag .= '$' . $_->[0] . $_->[1];
-                    }
-                }
-                my %newline;
-                $newline{summary}      = $summary;
-                $newline{authid}       = $authid;
-                $newline{even}         = $counter % 2;
-                $newline{reported_tag} = $reported_tag;
-                $counter++;
-                push @finalresult, \%newline;
-            }    ## while counter
-            ###
-            for ( my $z = 0 ; $z < @finalresult ; $z++ ) {
-                my $count = CountUsage( $finalresult[$z]{authid} );
-                $finalresult[$z]{used} = $count;
-            }    # all $z's
-
-        }    ## if nbresult
-      NOLUCK:
-
-        # $oAResult->destroy();
-        # $oAuth[0]->destroy();
-
-        return ( \@finalresult, $nbresults );
-    }
-}
-
 =head2 CountUsage 
 
 =over 4
@@ -376,20 +111,13 @@ counts Usage of Authid in bibliorecords.
 =cut
 
 sub CountUsage {
-    my ($authid) = @_;
-    if ( C4::Context->preference('NoZebra') ) {
 
-        # Read the index Koha-Auth-Number for this authid and count the lines
-        my $result = C4::Search::NZanalyse("an=$authid");
-        my @tab = split /;/, $result;
-        return scalar @tab;
-    } else {
-        ### ZOOM search here
-        my $query;
-        $query = "an=" . $authid;
-        my ( $err, $res, $result ) = C4::Search::SimpleSearch( $query, 0, 10 );
-        return ($result);
-    }
+    my $results = C4::Search::SimpleSearch( "*:*", {
+        recordtype => 'biblio',
+        int_authid     => shift,
+    } );
+
+    return $results->pager->{total_entries};
 }
 
 =head2 CountUsageChildren 
@@ -735,7 +463,7 @@ sub AddAuthority {
         $sth->execute( $authid, $authtypecode, $record->as_usmarc, $record->as_xml_record($format) );
         $sth->finish;
     }
-    ModZebra( $authid, 'specialUpdate', "authorityserver", $oldRecord, $record );
+    C4::Search::IndexRecord("authority", [ $authid ] );
     return ($authid);
 }
 
@@ -754,7 +482,7 @@ sub DelAuthority {
     my ($authid) = @_;
     my $dbh = C4::Context->dbh;
 
-    ModZebra( $authid, "recordDelete", "authorityserver", GetAuthority($authid), undef );
+    C4::Search::Engine::Solr::DeleteRecordIndex( "authority", $authid );
     $dbh->do("delete from auth_header where authid=$authid");
 
 }
@@ -786,6 +514,7 @@ sub ModAuthority {
         print AUTH $authid;
         close AUTH;
     }
+    C4::Search::IndexRecord("authority", [ $authid ] );
     return $authid;
 }
 
@@ -964,8 +693,6 @@ sub FindDuplicateAuthority {
     my ($auth_tag_to_report) = $sth->fetchrow;
     $sth->finish;
 
-    #     warn "record :".$record->as_formatted."  auth_tag_to_report :$auth_tag_to_report";
-    # build a request for SearchAuthorities
     my $query        = 'at=' . $authtypecode . ' ';
     my $filtervalues = qr([\001-\040\!\'\"\`\#\$\%\&\*\+,\-\./:;<=>\?\@\(\)\{\[\]\}_\|\~]);
     if ( $record->field($auth_tag_to_report) ) {
@@ -974,12 +701,16 @@ sub FindDuplicateAuthority {
             $query .= " and he,wrdl=\"" . $_->[1] . "\"" if ( $_->[0] =~ /[A-z]/ );
         }
     }
-    my ( $error, $results, $total_hits ) = SimpleSearch( $query, 0, 1, ["authorityserver"] );
+
+    $query = C4::Search::Query->normalSearch($query);
+    my $results = C4::Search::SimpleSearch($query);
 
     # there is at least 1 result => return the 1st one
-    if ( @$results > 0 ) {
-        my $marcrecord = MARC::File::USMARC::decode( $results->[0] );
-        return $marcrecord->field('001')->data, BuildSummary( $marcrecord, $marcrecord->field('001')->data, $authtypecode );
+    if ( @{$results->items} > 0 ) {
+        my $authid = @{$results->items}[0]->{values}->{recordid};
+        my $authrecord = GetAuthority($authid);
+
+        return $authid, BuildSummary( $authrecord, $authid, $authtypecode);
     }
 
     # no result, returns nothing
@@ -1115,10 +846,10 @@ sub BuildSummary {
                 my $lang = substr( $field->subfield('8'), 3, 3 );
                 $seeheading .= '<span class="langue"> En ' . $language{$lang} . ' : </span><span class="OT"> ' . $field->subfield('a') . "</span><br />\n";
             }
-            $broaderterms  =~ s/-- \n$//;
-            $narrowerterms =~ s/-- \n$//;
-            $seealso       =~ s/-- \n$//;
-            $see           =~ s/-- \n$//;
+            $broaderterms  =~ s/-- \n$// if $broaderterms;
+            $narrowerterms =~ s/-- \n$// if $narrowerterms;
+            $seealso       =~ s/-- \n$// if $seealso;
+            $see           =~ s/-- \n$// if $see;
             $summary = "<b>" . $heading . "</b><br />" . ( $notes ? "$notes <br />" : "" );
             $summary .= '<p><div class="label">TG : ' . $broaderterms . '</div></p>'  if ($broaderterms);
             $summary .= '<p><div class="label">TS : ' . $narrowerterms . '</div></p>' if ($narrowerterms);
@@ -1401,13 +1132,14 @@ sub merge {
             }
         }
     } else {
-        #zebra connection  
- 	my ($err,$res,$result) = C4::Search::SimpleSearch("an=$mergefrom",0,999999);
-        my $z=0;
-	$debug && warn scalar(@$res);
-        foreach my $rawrecord( @$res ) {
-      	    my $marcrecord = MARC::File::USMARC::decode($rawrecord);
-	    SetUTF8Flag($marcrecord);
+        my $query = C4::Search::Query->normalSearch("an=$mergefrom");
+        my $results = C4::Search::SimpleSearch($query);
+
+        $debug && warn scalar(@$results);
+
+        foreach my $rawrecord( @{$results->items} ) {
+            my $marcrecord = GetMarcBiblio($rawrecord->{values}->{recordid});
+            SetUTF8Flag($marcrecord);
             push @reccache, $marcrecord;
         }
     }
@@ -1588,6 +1320,144 @@ sub get_auth_type_location {
         }
     }
 }
+
+
+sub GetIndexesBySearchtype {
+    my ($searchtype, $authtypecode) = @_;
+    my @indexes;
+    given ( $searchtype ) {
+        when ( 'authority_search' ) { # Chercher dans la vedette ($a)
+            given ( $authtypecode ) {
+                when ( 'CO' ) {
+                    push @indexes, 'auth-corporate-name-heading';
+                }
+                when ( 'NP' ) {
+                    push @indexes, 'auth-personal-name-heading';
+                }
+                when ( 'FAM' ) {
+                    push @indexes, 'auth-name-heading';
+                }
+                when ( 'SNG' ) {
+                    push @indexes, 'auth-name-geographic-heading';
+                }
+                when ( 'SAUTTIT' ) {
+                    push @indexes, 'auth-name-title-heading';
+                }
+                when ( 'SNC' ) {
+                    push @indexes, 'auth-subject-heading';
+                }
+                when ( 'EN3S' ) {
+                    push @indexes, 'auth-subject-heading';
+                }
+                when ( 'TU' ) {
+                    push @indexes, 'auth-title-uniform-heading';
+                }
+
+                default {
+                    push @indexes, 'auth-heading-main';
+                }
+            }
+        }
+        when ( 'main_heading' ) { # Recherche vedette
+            given ( $authtypecode ) {
+                when ( 'SNC' ) {
+                    push @indexes, 'auth-subject';
+                }
+                when ( 'ARCHI' ) {
+                    push @indexes, 'auth-subject';
+                }
+                when ( 'EN3S' ) {
+                    push @indexes, 'auth-subject';
+                }
+                when ( 'CO' ) {
+                    push @indexes, 'auth-corporate-name';
+                }
+                when ( 'NP' ) {
+                    push @indexes, 'auth-personal-name';
+                }
+                when ( 'FAM' ) {
+                    push @indexes, 'auth-name';
+                }
+                when ( 'SNG' ) {
+                    push @indexes, 'auth-name-geographic';
+                }
+                when ( 'SAUTTIT' ) {
+                    push @indexes, 'auth-name-title';
+                }
+                when ( 'TU' ) {
+                    push @indexes, 'auth-title-uniform';
+                }
+                default {
+                    push @indexes, 'auth-heading';
+                }
+            }
+        }
+        when ( 'all_headings' ) { # Rechercher toutes les vedettes
+            given ( $authtypecode ) {
+                when ( 'SNC' ) {
+                    push @indexes, 'auth-subject';
+                    push @indexes, 'auth-subject-parallel';
+                    push @indexes, 'auth-subject-see';
+                    push @indexes, 'auth-subject-see-also';
+                }
+                when ( 'ARCHI' ) {
+                    push @indexes, 'auth-subject';
+                    push @indexes, 'auth-subject-parallel';
+                    push @indexes, 'auth-subject-see';
+                    push @indexes, 'auth-subject-see-also';
+                }
+                when ( 'EN3S' ) {
+                    push @indexes, 'auth-subject';
+                    push @indexes, 'auth-subject-parallel';
+                    push @indexes, 'auth-subject-see';
+                    push @indexes, 'auth-subject-see-also';
+                }
+                when ( 'CO' ) {
+                    push @indexes, 'auth-corporate-name';
+                    push @indexes, 'auth-corporate-name-parallel';
+                    push @indexes, 'auth-corporate-name-see';
+                    push @indexes, 'auth-corporate-name-see-also';
+                }
+                when ( 'NP' ) {
+                    push @indexes, 'auth-personal-name';
+                    push @indexes, 'auth-personal-name-parallel';
+                    push @indexes, 'auth-personal-name-see';
+                    push @indexes, 'auth-personal-name-see-also';
+                }
+                when ( 'FAM' ) {
+                    push @indexes, 'auth-name';
+                    push @indexes, 'auth-name-parallel';
+                    push @indexes, 'auth-name-see';
+                    push @indexes, 'auth-name-see-also';
+                }
+                when ( 'SNG' ) {
+                    push @indexes, 'auth-name-geographic';
+                    push @indexes, 'auth-name-geographic-parallel';
+                    push @indexes, 'auth-name-geographic-see';
+                    push @indexes, 'auth-name-geographic-see-also';
+                }
+                when ( 'SAUTTIT' ) {
+                    push @indexes, 'auth-name-title';
+                    push @indexes, 'auth-name-title-parallel';
+                    push @indexes, 'auth-name-title-see';
+                    push @indexes, 'auth-name-title-see-also';
+
+                }
+                when ( 'TU' ) {
+                    push @indexes, 'auth-title-uniform';
+                    push @indexes, 'auth-title-uniform-parallel';
+                    push @indexes, 'auth-title-uniform-see';
+                    push @indexes, 'auth-title-uniform-see-also';
+                }
+                default {
+                    push @indexes, 'all_fields';
+                }
+            }
+        }
+    }
+    \@indexes;
+}
+
 
 END { }    # module clean-up code here (global destructor)
 

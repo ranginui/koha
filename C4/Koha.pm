@@ -52,6 +52,7 @@ BEGIN {
       &getitemtypeimagelocation
       &GetAuthorisedValues
       &GetAuthorisedValueCategories
+      &GetAuthorisedValueLib
       &GetKohaAuthorisedValues
       &GetKohaAuthorisedValuesFromField
       &GetAuthorisedValueByCode
@@ -1128,9 +1129,16 @@ sub GetAuthorisedValues {
         push @results, $data;
     }
 
-    #my $data = $sth->fetchall_arrayref({});
-    return \@results;    #$data;
+    return \@results;
 }
+
+sub GetAuthorisedValueLib {
+    my $dbh = C4::Context->dbh;
+    my $sth = $dbh->prepare("SELECT lib FROM authorised_values WHERE category=? AND authorised_value=?;");
+    $sth->execute( shift, shift );
+    $sth->fetchrow;
+}
+
 
 =head2 GetAuthorisedValueCategories
 

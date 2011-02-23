@@ -125,8 +125,8 @@ sub authorities {
     my $self  = shift;
     my $query = qq(Match-heading,ext="$self->{'search_form'}");
     $query .= $self->_query_limiters();
-    my ( $error, $results, $total_hits ) = SimpleSearch( $query, undef, undef, ["authorityserver"] );
-    return $results;
+    $query = C4::Search::Query->normalSearch($query);
+    return C4::Search::SimpleSearch($query);
 }
 
 =head2 preferred_authorities
@@ -146,8 +146,8 @@ sub preferred_authorities {
     my $self  = shift;
     my $query = "Match-heading-see-from,ext='$self->{'search_form'}'";
     $query .= $self->_query_limiters();
-    my ( $error, $results, $total_hits ) = SimpleSearch( $query, undef, undef, ["authorityserver"] );
-    return $results;
+    $query = C4::Search::Query->normalSearch($query);
+    return C4::Search::SimpleSearch($query);
 }
 
 =head1 INTERNAL METHODS

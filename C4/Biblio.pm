@@ -32,6 +32,7 @@ use C4::Dates qw/format_date/;
 use C4::Log;    # logaction
 use C4::ClassSource;
 use C4::Charset;
+require C4::Search;
 require C4::Heading;
 require C4::Serials;
 
@@ -361,6 +362,8 @@ sub ModBiblio {
     # update the MARC record (that now contains biblio and items) with the new record data
     &ModBiblioMarc( $record, $biblionumber, $frameworkcode );
 
+    C4::Search::IndexRecord( "biblio" , [ $biblionumber ] );
+
     # modify the other koha tables
     _koha_modify_biblio( $dbh, $oldbiblio, $frameworkcode );
     _koha_modify_biblioitem_nonmarc( $dbh, $oldbiblio );
@@ -432,7 +435,7 @@ sub DelBiblio {
         # the previous version of the record
         $oldRecord = GetMarcBiblio($biblionumber);
     }
-    ModZebra( $biblionumber, "recordDelete", "biblioserver", $oldRecord, undef );
+    C4::Search::Engine::Solr::DeleteRecordIndex('biblio', $biblionumber);
 
     # delete biblioitems and items from Koha tables and save in deletedbiblioitems,deleteditems
     $sth = $dbh->prepare("SELECT biblioitemnumber FROM biblioitems WHERE biblionumber=?");
@@ -2502,40 +2505,6 @@ sub PrepareItemrecordDisplay {
     };
 }
 
-#"
-
-#
-# true ModZebra commented until indexdata fixes zebraDB crashes (it seems they occur on multiple updates
-# at the same time
-# replaced by a zebraqueue table, that is filled with ModZebra to run.
-# the table is emptied by misc/cronjobs/zebraqueue_start.pl script
-# =head2 ModZebrafiles
-#
-# &ModZebrafiles( $dbh, $biblionumber, $record, $folder, $server );
-#
-# =cut
-#
-# sub ModZebrafiles {
-#
-#     my ( $dbh, $biblionumber, $record, $folder, $server ) = @_;
-#
-#     my $op;
-#     my $zebradir =
-#       C4::Context->zebraconfig($server)->{directory} . "/" . $folder . "/";
-#     unless ( opendir( DIR, "$zebradir" ) ) {
-#         warn "$zebradir not found";
-#         return;
-#     }
-#     closedir DIR;
-#     my $filename = $zebradir . $biblionumber;
-#
-#     if ($record) {
-#         open( OUTPUT, ">", $filename . ".xml" );
-#         print OUTPUT $record;
-#         close OUTPUT;
-#     }
-# }
-
 =head2 ModZebra
 
 =over 4
@@ -3437,7 +3406,8 @@ sub ModBiblioMarc {
     $sth = $dbh->prepare("UPDATE biblioitems SET marc=?,marcxml=? WHERE biblionumber=?");
     $sth->execute( $record->as_usmarc(), $record->as_xml_record($encoding), $biblionumber );
     $sth->finish;
-    ModZebra( $biblionumber, "specialUpdate", "biblioserver", $oldRecord, $record );
+
+    C4::Search::IndexRecord( "biblio" , [ $biblionumber ] );
     return $biblionumber;
 }
 

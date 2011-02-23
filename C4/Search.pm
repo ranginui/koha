@@ -19,8 +19,10 @@ use strict;
 
 #use warnings; FIXME - Bug 2505
 require Exporter;
+use 5.10.0;
 use C4::Context;
 use C4::Biblio;    # GetMarcFromKohaField, GetBiblioData
+use C4::AuthoritiesMarc;
 use C4::Koha;      # getFacets
 use Lingua::Stem;
 use C4::Search::PazPar2;
@@ -34,6 +36,8 @@ use C4::Debug;
 use C4::Items;
 use YAML;
 use URI::Escape;
+use C4::MarcFramework;
+use C4::Search::Engine;
 
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $DEBUG);
 
@@ -70,6 +74,7 @@ This module provides searching functions for Koha's bibliographic databases
   &AddSearchHistory
   &GetDistinctValues
   &BiblioAddAuthorities
+  &IndexRecord
 );
 
 #FIXME: i had to add BiblioAddAuthorities here because in Biblios.pm it caused circular dependencies (C4::Search uses C4::Biblio, and BiblioAddAuthorities uses SimpleSearch from C4::Search)
@@ -85,194 +90,44 @@ This function attempts to find duplicate records using a hard-coded, fairly simp
 =cut
 
 sub FindDuplicate {
-    my ($record) = @_;
+    my $record = shift;
     my $dbh = C4::Context->dbh;
     my $result = TransformMarcToKoha( $dbh, $record, '' );
-    my $sth;
-    my $query;
-    my $search;
-    my $type;
-    my ( $biblionumber, $title );
+    my ( $query, $search, $type, $biblionumber, $title );
 
     # search duplicate on ISBN, easy and fast..
     # ... normalize first
     if ( $result->{isbn} ) {
-        $result->{isbn} =~ s/\(.*$//;
-        $result->{isbn} =~ s/\s+$//;
-        $query = "isbn=$result->{isbn}";
+        $query = "isbn:\"$result->{isbn}\"";
     } else {
-        $result->{title} =~ s /\\//g;
-        $result->{title} =~ s /\"//g;
-        $result->{title} =~ s /\(//g;
-        $result->{title} =~ s /\)//g;
-
-        # FIXME: instead of removing operators, could just do
-        # quotes around the value
-        $result->{title} =~ s/(and|or|not)//g;
-        $query = "ti,ext=$result->{title}";
-        $query .= " and itemtype=$result->{itemtype}"
+        $query  = "title:\"$result->{title}\"";
+        $query .= " and itype:\"$result->{itemtype}\""
           if ( $result->{itemtype} );
         if ( $result->{author} ) {
-            $result->{author} =~ s /\\//g;
-            $result->{author} =~ s /\"//g;
-            $result->{author} =~ s /\(//g;
-            $result->{author} =~ s /\)//g;
-
-            # remove valid operators
-            $result->{author} =~ s/(and|or|not)//g;
-            $query .= " and au,ext=$result->{author}";
+            $query .= " and author:\"$result->{author}\"";
         }
     }
 
     # If unimarc, then search duplicate on EAN
     if ( C4::Context->preference("marcflavour") eq "UNIMARC" ) {
-	my @fields = $record->field('073');
-	foreach my $field (@fields) {
-	    my $ean = $field->subfield('a');
-	    $query .= " or ean=$ean";
-	}
+        for ( $record->field('073') ) {
+            $query .= ' or ean:"'.$_->subfield('a').'"';
+        }
     }
 
-    # FIXME: add error handling
-    my ( $error, $searchresults ) = SimpleSearch($query);    # FIXME :: hardcoded !
-    my @results;
-    foreach my $possible_duplicate_record (@$searchresults) {
-        my $marcrecord = MARC::Record->new_from_usmarc($possible_duplicate_record);
-        my $result = TransformMarcToKoha( $dbh, $marcrecord, '' );
+    $query = C4::Search::Query->normalSearch($query);
+    my $res = SimpleSearch($query);
 
-        # FIXME :: why 2 $biblionumber ?
-        if ($result) {
+    my @results;
+    for ( @{ $res->items } ) {
+        my $result = GetBiblio( $_->{'values'}->{'recordid'} );
+        if ( $result ) {
             push @results, $result->{'biblionumber'};
             push @results, $result->{'title'};
         }
     }
+
     return @results;
-}
-
-=head2 SimpleSearch
-
-( $error, $results, $total_hits ) = SimpleSearch( $query, $offset, $max_results, [@servers] );
-
-This function provides a simple search API on the bibliographic catalog
-
-=over 2
-
-=item C<input arg:>
-
-    * $query can be a simple keyword or a complete CCL query
-    * @servers is optional. Defaults to biblioserver as found in koha-conf.xml
-    * $offset - If present, represents the number of records at the beggining to omit. Defaults to 0
-    * $max_results - if present, determines the maximum number of records to fetch. undef is All. defaults to undef.
-
-
-=item C<Output:>
-
-    * $error is a empty unless an error is detected
-    * \@results is an array of records.
-    * $total_hits is the number of hits that would have been returned with no limit
-
-=item C<usage in the script:>
-
-=back
-
-my ( $error, $marcresults, $total_hits ) = SimpleSearch($query);
-
-if (defined $error) {
-    $template->param(query_error => $error);
-    warn "error: ".$error;
-    output_html_with_http_headers $input, $cookie, $template->output;
-    exit;
-}
-
-my $hits = scalar @$marcresults;
-my @results;
-
-for my $i (0..$hits) {
-    my %resultsloop;
-    my $marcrecord = MARC::File::USMARC::decode($marcresults->[$i]);
-    my $biblio = TransformMarcToKoha(C4::Context->dbh,$marcrecord,'');
-
-    #build the hash for the template.
-    $resultsloop{title}           = $biblio->{'title'};
-    $resultsloop{subtitle}        = $biblio->{'subtitle'};
-    $resultsloop{biblionumber}    = $biblio->{'biblionumber'};
-    $resultsloop{author}          = $biblio->{'author'};
-    $resultsloop{publishercode}   = $biblio->{'publishercode'};
-    $resultsloop{publicationyear} = $biblio->{'publicationyear'};
-
-    push @results, \%resultsloop;
-}
-
-$template->param(result=>\@results);
-
-=cut
-
-sub SimpleSearch {
-    my ( $query, $offset, $max_results, $servers ) = @_;
-
-    if ( C4::Context->preference('NoZebra') ) {
-        my $result = NZorder( NZanalyse($query) )->{'biblioserver'};
-        my $search_result = ( $result->{hits} && $result->{hits} > 0 ? $result->{'RECORDS'} : [] );
-        return ( undef, $search_result, scalar( $result->{hits} ) );
-    } else {
-
-        # FIXME hardcoded value. See catalog/search.pl & opac-search.pl too.
-        my @servers = defined($servers) ? @$servers : ("biblioserver");
-        my @results;
-        my @zoom_queries;
-        my @tmpresults;
-        my @zconns;
-        my $total_hits;
-        return ( "No query entered", undef, undef ) unless $query;
-
-        # Initialize & Search Zebra
-        for ( my $i = 0 ; $i < @servers ; $i++ ) {
-            eval {
-                $zconns[$i] = C4::Context->Zconn( $servers[$i], 1 );
-                $zoom_queries[$i] = new ZOOM::Query::CCL2RPN( $query, $zconns[$i] );
-                $tmpresults[$i] = $zconns[$i]->search( $zoom_queries[$i] );
-
-                # error handling
-                my $error = $zconns[$i]->errmsg() . " (" . $zconns[$i]->errcode() . ") " . $zconns[$i]->addinfo() . " " . $zconns[$i]->diagset();
-
-                return ( $error, undef, undef ) if $zconns[$i]->errcode();
-            };
-            if ($@) {
-
-                # caught a ZOOM::Exception
-                my $error = $@->message() . " (" . $@->code() . ") " . $@->addinfo() . " " . $@->diagset();
-                warn $error;
-                return ( $error, undef, undef );
-            }
-        }
-        while ( ( my $i = ZOOM::event( \@zconns ) ) != 0 ) {
-            my $event = $zconns[ $i - 1 ]->last_event();
-            if ( $event == ZOOM::Event::ZEND ) {
-
-                my $first_record = defined($offset) ? $offset + 1 : 1;
-                my $hits = $tmpresults[ $i - 1 ]->size();
-                $total_hits += $hits;
-                my $last_record = $hits;
-                if ( defined $max_results && $offset + $max_results < $hits ) {
-                    $last_record = $offset + $max_results;
-                }
-
-                for my $j ( $first_record .. $last_record ) {
-                    my $record = $tmpresults[ $i - 1 ]->record( $j - 1 )->raw();    # 0 indexed
-                    push @results, $record;
-                }
-            }
-        }
-
-        foreach my $result (@tmpresults) {
-            $result->destroy();
-        }
-        foreach my $zoom_query (@zoom_queries) {
-            $zoom_query->destroy();
-        }
-
-        return ( undef, \@results, $total_hits );
-    }
 }
 
 =head2 getRecords
@@ -1460,6 +1315,7 @@ sub searchResults {
             $oldbiblio->{summary} = $newsummary;
         }
 
+        # --------------------------------------------------
         # Pull out the items fields
         my @fields = $marcrecord->field($itemtag);
 
@@ -1631,6 +1487,7 @@ sub searchResults {
             ( ++$availableitemscount > $maxitems ) and last;
             push @available_items_loop, $available_items->{$key};
         }
+        #--------------------------------------------------------------
 
         # XSLT processing of some stuff
         use C4::Charset;
@@ -1686,6 +1543,365 @@ sub searchResults {
     }
 }
     return @newresults;
+}
+
+
+sub getSubfieldsToSearch {
+    ## find column names of items related to MARC
+    my $dbh = C4::Context->dbh;
+    my $sth = $dbh->prepare("SHOW COLUMNS FROM items");
+    $sth->execute;
+    my %subfieldstosearch;
+    while ( ( my $column ) = $sth->fetchrow ) {
+        my ( $tagfield, $tagsubfield ) = &GetMarcFromKohaField( "items." . $column, "" );
+        $subfieldstosearch{$column} = $tagsubfield;
+    }
+    return \%subfieldstosearch;
+}
+
+sub getBranches {
+    #Build branchnames hash
+    #find branchname
+    #get branch information.....
+    my $dbh = C4::Context->dbh;
+    my %branches;
+    my $bsth = $dbh->prepare("SELECT branchcode,branchname FROM branches");    # FIXME : use C4::Branch::GetBranches
+    $bsth->execute();
+    while ( my $bdata = $bsth->fetchrow_hashref ) {
+        $branches{ $bdata->{'branchcode'} } = $bdata->{'branchname'};
+    }
+
+    return \%branches;
+}
+
+sub getItemTypes {
+    #Build itemtype hash
+    #find itemtype & itemtype image
+    my $dbh = C4::Context->dbh;
+    my %itemtypes;
+    my $bsth = $dbh->prepare("SELECT itemtype,description,imageurl,summary,notforloan FROM itemtypes");
+    $bsth->execute();
+    while ( my $bdata = $bsth->fetchrow_hashref ) {
+        foreach (qw(description imageurl summary notforloan)) {
+            $itemtypes{ $bdata->{'itemtype'} }->{$_} = $bdata->{$_};
+        }
+    }
+    return \%itemtypes;
+}
+
+sub getItemTag {
+    #search item field code
+    my $dbh = C4::Context->dbh;
+    my $sth = $dbh->prepare("SELECT tagfield FROM marc_subfield_structure WHERE kohafield LIKE 'items.itemnumber'");
+    $sth->execute;
+    my ($itemtag) = $sth->fetchrow;
+    return $itemtag;
+}
+
+sub getSummary {
+    my ($biblio, $itemtypes, $marcrecord) = @_;
+    my $summary = $itemtypes->{ $biblio->{itemtype} }->{summary};
+    my @fields  = $marcrecord->fields();
+
+    my $newsummary;
+    foreach my $line ( "$summary\n" =~ /(.*)\n/g ) {
+        my $tags = {};
+        foreach my $tag ( $line =~ /\[(\d{3}[\w|\d])\]/ ) {
+            $tag =~ /(.{3})(.)/;
+            if ( $marcrecord->field($1) ) {
+                my @abc = $marcrecord->field($1)->subfield($2);
+                $tags->{$tag} = $#abc + 1;
+            }
+        }
+
+        # We catch how many times to repeat this line
+        my $max = 0;
+        foreach my $tag ( keys(%$tags) ) {
+            $max = $tags->{$tag} if ( $tags->{$tag} > $max );
+        }
+
+        # we replace, and repeat each line
+        for ( my $i = 0 ; $i < $max ; $i++ ) {
+            my $newline = $line;
+
+            foreach my $tag ( $newline =~ /\[(\d{3}[\w|\d])\]/g ) {
+                $tag =~ /(.{3})(.)/;
+
+                if ( $marcrecord->field($1) ) {
+                    my @repl          = $marcrecord->field($1)->subfield($2);
+                    my $subfieldvalue = $repl[$i];
+
+                    if ( !utf8::is_utf8($subfieldvalue) ) {
+                        utf8::decode($subfieldvalue);
+                    }
+
+                    $newline =~ s/\[$tag\]/$subfieldvalue/g;
+                }
+            }
+            $newsummary .= "$newline\n";
+        }
+    }
+
+    $newsummary =~ s/\[(.*?)]//g;
+    $newsummary =~ s/\n/<br\/>/g;
+
+    return $newsummary;
+
+}
+
+sub getItemsInfos {
+    my ($biblionumber, $interface, $itemtypes, $subfieldstosearch, $itemtag, $branches) = @_;
+
+    my $marcrecord = C4::Biblio::GetMarcBiblio($biblionumber);
+    
+    %$subfieldstosearch or $subfieldstosearch = getSubfieldsToSearch;
+
+    $itemtag = getItemTag if not $itemtag;
+
+    %$branches or $branches=getBranches;
+
+    %$itemtypes or $itemtypes=getItemTypes;
+    
+    # FIXME - We build an authorised values hash here, using the default framework
+    # though it is possible to have different authvals for different fws.
+    my $shelflocations = GetKohaAuthorisedValues( 'items.location', '' );
+
+    my $notforloan_authorised_value = GetAuthValCode( 'items.notforloan', '' );
+
+    my @fields = $marcrecord->field($itemtag);
+
+
+    # Setting item statuses for display
+    my @available_items_loop;
+    my @onloan_items_loop;
+    my @other_items_loop;
+
+    my $available_items;
+    my $onloan_items;
+    my $other_items;
+
+    my $ordered_count         = 0;
+    my $available_count       = 0;
+    my $onloan_count          = 0;
+    my $longoverdue_count     = 0;
+    my $other_count           = 0;
+    my $wthdrawn_count        = 0;
+    my $itemlost_count        = 0;
+    my $itembinding_count     = 0;
+    my $itemdamaged_count     = 0;
+    my $item_in_transit_count = 0;
+    my $can_place_holds       = 0;
+    my $item_onhold_count     = 0;
+    my $items_count           = scalar(@fields);
+    my $maxitems =
+      ( C4::Context->preference('maxItemsInSearchResults') )
+      ? C4::Context->preference('maxItemsInSearchResults') - 1
+      : 1;
+
+    # loop through every item
+    foreach my $field (@fields) {
+        my $item;
+
+        # populate the items hash
+        foreach my $code ( keys %$subfieldstosearch ) {
+            $item->{$code} = $field->subfield( $subfieldstosearch->{$code} );
+        }
+
+        # Hidden items
+        my @items = ($item);
+        my (@hiddenitems) = GetHiddenItemnumbers(@items);
+        $item->{'hideatopac'} = 1 if (@hiddenitems); 
+
+        my $hbranch     = C4::Context->preference('HomeOrHoldingBranch') eq 'homebranch' ? 'homebranch'    : 'holdingbranch';
+        my $otherbranch = C4::Context->preference('HomeOrHoldingBranch') eq 'homebranch' ? 'holdingbranch' : 'homebranch';
+
+        # set item's branch name, use HomeOrHoldingBranch syspref first, fall back to the other one
+        if ( $item->{$hbranch} ) {
+            $item->{'branchname'} = $branches->{ $item->{$hbranch} };
+        } elsif ( $item->{$otherbranch} ) {    # Last resort
+            $item->{'branchname'} = $branches->{ $item->{$otherbranch} };
+        }
+
+        my $prefix = $item->{$hbranch} . '--' . $item->{location} . $item->{itype} . $item->{itemcallnumber};
+
+        # For each grouping of items (onloan, available, unavailable), we build a key to store relevant info about that item
+        if ( $item->{onloan} ) {
+            $onloan_count++;
+            my $key = $prefix . $item->{onloan} . $item->{barcode};
+            $onloan_items->{$key}->{due_date} = format_date( $item->{onloan} );
+            $onloan_items->{$key}->{count}++ if $item->{$hbranch};
+            $onloan_items->{$key}->{branchname}     = $item->{branchname};
+            $onloan_items->{$key}->{location}       = $shelflocations->{ $item->{location} };
+            $onloan_items->{$key}->{itemcallnumber} = $item->{itemcallnumber};
+            $onloan_items->{$key}->{imageurl}       = getitemtypeimagelocation( $interface, $itemtypes->{ $item->{itype} }->{imageurl} );
+
+            # if something's checked out and lost, mark it as 'long overdue'
+            if ( $item->{itemlost} ) {
+                $onloan_items->{$prefix}->{longoverdue}++;
+                $longoverdue_count++;
+            } else {    # can place holds as long as item isn't lost
+                $can_place_holds = 1;
+            }
+        }
+
+        # items not on loan, but still unavailable ( lost, withdrawn, damaged )
+        else {
+
+            # item is on order
+            if ( $item->{notforloan} == -1 ) {
+                $ordered_count++;
+            }
+
+            # is item in transit?
+            my $transfertwhen = '';
+            my ( $transfertfrom, $transfertto );
+
+            # is item on the reserve shelf?
+            my $reservestatus = 0;
+            my $reserveitem;
+
+            unless ( $item->{wthdrawn}
+                || $item->{itemlost}
+                || $item->{damaged}
+                || $item->{notforloan}
+                || $items_count > 20 ) {
+
+                # A couple heuristics to limit how many times
+                # we query the database for item transfer information, sacrificing
+                # accuracy in some cases for speed;
+                #
+                # 1. don't query if item has one of the other statuses
+                # 2. don't check transit status if the bib has
+                #    more than 20 items
+                #
+                # FIXME: to avoid having the query the database like this, and to make
+                #        the in transit status count as unavailable for search limiting,
+                #        should map transit status to record indexed in Zebra.
+                #
+                ( $transfertwhen, $transfertfrom, $transfertto ) = C4::Circulation::GetTransfers( $item->{itemnumber} );
+                ( $reservestatus, $reserveitem ) = C4::Reserves::CheckReserves( $item->{itemnumber} );
+            }
+
+            # item is withdrawn, lost or damaged
+            if (   $item->{wthdrawn}
+                || $item->{itemlost}
+                || $item->{damaged}
+                || $item->{notforloan}
+                || $item->{hideatopac}
+                || $reservestatus eq 'Waiting'
+                || ( $transfertwhen ne '' ) ) {
+                $wthdrawn_count++        if $item->{wthdrawn};
+                $itemlost_count++        if $item->{itemlost};
+                $itemdamaged_count++     if $item->{damaged};
+                $item_in_transit_count++ if $transfertwhen ne '';
+                $item_onhold_count++     if $reservestatus eq 'Waiting';
+                $item->{status} = $item->{wthdrawn} . "-" . $item->{itemlost} . "-" . $item->{damaged} . "-" . $item->{notforloan};
+                #if only reserved or/and in transit, item can be hold
+                $can_place_holds = 1 unless ($item->{withdrawn} || $item->{itemlost} || $item->{damaged});
+                $other_count++;
+
+                my $key = $prefix . $item->{status};
+                foreach (qw(wthdrawn itemlost damaged branchname itemcallnumber hideatopac)) {
+                    $other_items->{$key}->{$_} = $item->{$_};
+                }
+                $other_items->{$key}->{intransit} = ( $transfertwhen ne '' ) ? 1 : 0;
+                $other_items->{$key}->{onhold} = ($reservestatus) ? 1 : 0;
+                $other_items->{$key}->{notforloan} = GetAuthorisedValueDesc( '', '', $item->{notforloan}, '', '', $notforloan_authorised_value )
+                  if $notforloan_authorised_value and $item->{notforloan};
+                $other_items->{$key}->{count}++ if $item->{$hbranch};
+                $other_items->{$key}->{location} = $shelflocations->{ $item->{location} };
+                $other_items->{$key}->{imageurl} = getitemtypeimagelocation( $interface, $itemtypes->{ $item->{itype} }->{imageurl} );
+            }
+
+            # item is available
+            else {
+                $can_place_holds = 1;
+                $available_count++;
+                $available_items->{$prefix}->{count}++ if $item->{$hbranch};
+                foreach (qw(branchname itemcallnumber hideatopac)) {
+                    $available_items->{$prefix}->{$_} = $item->{$_};
+                }
+                $available_items->{$prefix}->{location} = $shelflocations->{ $item->{location} };
+                $available_items->{$prefix}->{imageurl} = getitemtypeimagelocation( $interface, $itemtypes->{ $item->{itype} }->{imageurl} );
+            }
+        }
+    }    # notforloan, item level and biblioitem level
+
+    my ( $availableitemscount, $onloanitemscount, $otheritemscount );
+    for my $key ( sort keys %$onloan_items ) {
+        ( ++$onloanitemscount > $maxitems ) and last;
+        push @onloan_items_loop, $onloan_items->{$key};
+    }
+    for my $key ( sort keys %$other_items ) {
+        ( ++$otheritemscount > $maxitems ) and last;
+        push @other_items_loop, $other_items->{$key};
+    }
+    for my $key ( sort keys %$available_items ) {
+        ( ++$availableitemscount > $maxitems ) and last;
+        push @available_items_loop, $available_items->{$key};
+    }
+
+    my $biblio = GetBiblioData($biblionumber);
+
+    my $marcflavour = C4::Context->preference("marcflavour");
+
+    $biblio->{biblionumber} = $biblionumber;
+    my $fw = (defined $biblionumber) ? GetFrameworkCode($biblionumber) : '';
+    $biblio->{subtitle} = GetRecordValue( 'subtitle', $marcrecord, $fw );
+
+    # add imageurl to itemtype if there is one
+    $biblio->{imageurl} = getitemtypeimagelocation( $interface, $itemtypes->{ $biblio->{itemtype} }->{imageurl} );
+
+    $biblio->{'authorised_value_images'} = C4::Items::get_authorised_value_images( C4::Biblio::get_biblio_authorised_values( $biblio->{'biblionumber'}, $marcrecord ) );
+    $biblio->{normalized_upc} = GetNormalizedUPC( $marcrecord, $marcflavour );
+    $biblio->{normalized_ean} = GetNormalizedEAN( $marcrecord, $marcflavour );
+    $biblio->{normalized_oclc} = GetNormalizedOCLCNumber( $marcrecord, $marcflavour );
+    $biblio->{normalized_isbn} = GetNormalizedISBN( undef, $marcrecord, $marcflavour );
+    $biblio->{content_identifier_exists} = 1
+      if ( $biblio->{normalized_isbn} or $biblio->{normalized_oclc} or $biblio->{normalized_ean} or $biblio->{normalized_upc} );
+
+    # edition information, if any
+    $biblio->{edition}     = $biblio->{editionstatement};
+    $biblio->{description} = $itemtypes->{ $biblio->{itemtype} }->{description};
+
+    # Build summary if there is one (the summary is defined in the itemtypes table)
+    # FIXME: is this used anywhere, I think it can be commented out? -- JF
+    if ( $itemtypes->{ $biblio->{itemtype} }->{summary} ) {
+        $biblio->{summary} = getSummary($biblio, $itemtypes, $marcrecord);
+    }
+
+
+    # last check for norequest : if itemtype is notforloan, it can't be reserved either, whatever the items
+    $can_place_holds = 0
+      if $itemtypes->{ $biblio->{itemtype} }->{notforloan};
+    $biblio->{norequests} = 1 unless $can_place_holds;
+    $biblio->{itemsplural}          = 1 if $items_count > 1;
+    $biblio->{items_count}          = $items_count;
+    $biblio->{available_items_loop} = \@available_items_loop;
+    $biblio->{onloan_items_loop}    = \@onloan_items_loop;
+    $biblio->{other_items_loop}     = \@other_items_loop;
+    $biblio->{availablecount}       = $available_count;
+    $biblio->{availableplural}      = 1 if $available_count > 1;
+    $biblio->{onloancount}          = $onloan_count;
+    $biblio->{onloanplural}         = 1 if $onloan_count > 1;
+    $biblio->{othercount}           = $other_count;
+    $biblio->{otherplural}          = 1 if $other_count > 1;
+    $biblio->{wthdrawncount}        = $wthdrawn_count;
+    $biblio->{itemlostcount}        = $itemlost_count;
+    $biblio->{damagedcount}         = $itemdamaged_count;
+    $biblio->{intransitcount}       = $item_in_transit_count;
+    $biblio->{onholdcount}          = $item_onhold_count;
+    $biblio->{orderedcount}         = $ordered_count;
+    $biblio->{isbn} =~ s/-//g;    # deleting - in isbn to enable amazon content
+
+    SetUTF8Flag( $marcrecord ) if $marcrecord;
+
+    if ( C4::Context->preference("OPACXSLTResultsDisplay") ) {
+        $biblio->{'OPACXSLTResultsRecord'} = XSLTParse4Display( $biblionumber, $marcrecord, C4::Context->preference("OPACXSLTResultsDisplay") );
+    }
+
+    return $biblio;
+ 
 }
 
 =head2 SearchAcquisitions
@@ -2615,6 +2831,28 @@ sub GetDistinctValues {
         }
         return \@elements;
     }
+}
+
+
+sub IndexRecord {
+    my $search = C4::Search::Engine->new();
+    $search->find_searchengine;
+    return $search->index(@_);
+}
+
+
+
+
+=head2 SimpleSearch
+
+    This is the default call in Koha for Search C4::Search::Engine is call and will choose wich search engine must be used.
+
+=cut
+
+sub SimpleSearch {
+    my $search = C4::Search::Engine->new();
+    $search->find_searchengine;
+    return $search->search(@_);
 }
 
 END { }    # module clean-up code here (global destructor)
