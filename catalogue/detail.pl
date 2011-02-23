@@ -213,9 +213,10 @@ foreach my $item (@items) {
 $dat->{'myholdingscount'} = scalar @myitemloop;
 $dat->{'otherholdingscount'} = scalar @otheritemloop;
 
-
+$currentbranch = '' if $currentbranch eq "NO_LIBRARY_SET";
 $template->param( norequests => $norequests );
 $template->param(
+    currentbranch       => $currentbranch ,
     MARCNOTES           => $marcnotesarray,
     MARCSUBJCTS         => $marcsubjctsarray,
     MARCAUTHORS         => $marcauthorsarray,

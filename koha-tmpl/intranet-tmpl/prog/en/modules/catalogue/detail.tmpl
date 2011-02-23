@@ -31,10 +31,87 @@ function verify_images() {
 }
      $(document).ready(function() {
         $('#bibliodetails > ul').tabs();
+
+	// Select All My Holdings
+	$('#selectAllMyHoldings').click(function() {
+	  $('.myitemcheck').each(function() {
+	    if (!this.disabled) {
+		this.checked = true;
+	    }
+	  });
+	});
+
+	// unselect All My Holdings
+	$('#unSelectAllMyHoldings').click(function() {
+	  $('.myitemcheck').each(function() {
+		this.checked = false;
+	  });
+	});
+
+	// Editing selecte items (from my holdings)
+	$('#editSelectedMyHoldings').click(function() {
+	    var urlstr = '';
+	    $('.myitemcheck:checked').each(function() {
+		urlstr += '&barcode=' + $(this).val();
+	    });
+	    window.open('/cgi-bin/koha/tools/batchMod.pl?mod=1' + urlstr);
+	});
+
+	// Deleting items items (from my holdings)
+	$('#deleteSelectedMyHoldings').click(function() {
+	    var urlstr = '';
+	    $('.myitemcheck:checked').each(function() {
+		urlstr += '&barcode=' + $(this).val();
+	    });
+	    window.open('/cgi-bin/koha/tools/batchMod.pl?del=1' + urlstr);
+	});
+
+	// Select All Other Holdings
+	$('#selectAllOtherHoldings').click(function() {
+	  $('.otheritemcheck').each(function() {
+	    if (!this.disabled) {
+		this.checked = true;
+	    }
+	  });
+	});
+
+	// unselect All Other Holdings
+	$('#unSelectAllOtherHoldings').click(function() {
+	  $('.otheritemcheck').each(function() {
+		this.checked = false;
+	  });
+	});
+
+	// Editing items (from other holdings)
+	$('#editSelectedOtherHoldings').click(function() {
+	    var urlstr = '';
+	    $('.otheritemcheck:checked').each(function() {
+		urlstr += '&barcode=' + $(this).val();
+	    });
+	    window.open('/cgi-bin/koha/tools/batchMod.pl?mod=1');
+	});
+
+	// Deleting items (from other holdings)
+	$('#deleteSelectedOtherHoldings').click(function() {
+	    var urlstr = '';
+	    $('.otheritemcheck:checked').each(function() {
+		urlstr += '&barcode=' + $(this).val();
+	    });
+	    window.open('/cgi-bin/koha/tools/batchMod.pl?del=1' + urlstr);
+	});
+
+
      });
      <!-- TMPL_IF NAME="AmazonEnabled" -->$(window).load(function() {
         verify_images();
      });<!-- /TMPL_IF -->
+
+function Check(f, del) {
+    var frm = f;
+    return false;
+}
+
+
 //]]>
 </script>
 </head>
@@ -190,7 +267,9 @@ function verify_images() {
  </ul>
 
 <div id="myholdings">
+<!-- TMPL_IF name="currentbranch" -->
 <!-- TMPL_IF name="myholdingscount" -->
+    <form action="/cgi-bin/koha/tools/batchMod.pl">
         <table>
             <tr>
                 <!-- TMPL_IF NAME="item-level_itypes" --><th>Item type</th><!-- /TMPL_IF -->
@@ -204,6 +283,7 @@ function verify_images() {
                 <!-- TMPL_IF NAME="itemdata_uri" --><th>URL</th><!-- /TMPL_IF -->
                 <!-- TMPL_IF NAME="itemdata_copynumber" --><th>Copy No.</th><!-- /TMPL_IF -->
 		<!-- TMPL_IF NAME="SpineLabelShowPrintOnBibDetails" --><th>Spine Label</th><!-- /TMPL_IF -->
+		<th>Check</th>
             </tr>
             <!-- TMPL_LOOP NAME="myitemloop" -->
                 <tr>
@@ -328,10 +408,15 @@ function verify_images() {
 		<!-- TMPL_IF NAME="SpineLabelShowPrintOnBibDetails" -->
 			<td><a href="/cgi-bin/koha/labels/spinelabel-print.pl?barcode=<!-- TMPL_VAR NAME="barcode" -->" >Print Label</a></td>
 		<!-- /TMPL_IF -->
-
+		<td><input class="myitemcheck" value="<!-- TMPL_VAR NAME="barcode" -->" type="checkbox"<!-- TMPL_UNLESS NAME="barcode" --> disabled="disabled"<!-- /TMPL_UNLESS --> /></td>
                 </tr>
             <!-- /TMPL_LOOP -->
         </table>
+	<a href="#" id="selectAllMyHoldings">Select All</a> | <a href="#" id="unSelectAllMyHoldings">Unselect All</a> |
+	<input type="button" id="editSelectedMyHoldings" value="Edit selected items"/>
+	<input type="button" id="deleteSelectedMyHoldings" value="Delete selected items"/>
+
+	</form>
 		<!-- TMPL_IF NAME="debug_display" -->
 		<br /><br />
 		<table>
@@ -343,10 +428,14 @@ function verify_images() {
 <!-- TMPL_ELSE -->
     <p>No physical items for this record</p>
 <!-- /TMPL_IF -->
+<!-- TMPL_ELSE -->
+    <p>There is no library currently selected</p>
+<!-- /TMPL_IF -->
     </div>
     
 <div id="otherholdings">
 <!-- TMPL_IF name="otherholdingscount" -->
+    <form action="/cgi-bin/koha/tools/batchMod.pl">
         <table>
             <tr>
                 <!-- TMPL_IF NAME="item-level_itypes" --><th>Item type</th><!-- /TMPL_IF -->
@@ -360,6 +449,7 @@ function verify_images() {
                 <!-- TMPL_IF NAME="itemdata_uri" --><th>URL</th><!-- /TMPL_IF -->
                 <!-- TMPL_IF NAME="itemdata_copynumber" --><th>Copy No.</th><!-- /TMPL_IF -->
 		<!-- TMPL_IF NAME="SpineLabelShowPrintOnBibDetails" --><th>Spine Label</th><!-- /TMPL_IF -->
+		<th>Check</th>
             </tr>
             <!-- TMPL_LOOP NAME="otheritemloop" -->
                 <tr>
@@ -484,10 +574,16 @@ function verify_images() {
 		<!-- TMPL_IF NAME="SpineLabelShowPrintOnBibDetails" -->
 			<td><a href="/cgi-bin/koha/labels/spinelabel-print.pl?barcode=<!-- TMPL_VAR NAME="barcode" -->" >Print Label</a></td>
 		<!-- /TMPL_IF -->
+		<td><input class="otheritemcheck" value="<!-- TMPL_VAR NAME="barcode" -->" type="checkbox"<!-- TMPL_UNLESS NAME="barcode" --> disabled="disabled"<!-- /TMPL_UNLESS --> /></td>
 
                 </tr>
             <!-- /TMPL_LOOP -->
         </table>
+	<a href="#" id="selectAllOtherHoldings">Select All</a> | <a href="#" id="unSelectAllOtherHoldings">Unselect All</a> |
+	<input type="button" id="editSelectedOtherHoldings" value="Edit selected items"/>
+	<input type="button" id="deleteSelectedOtherHoldings" value="Delete selected items"/>
+	</form>
+
 		<!-- TMPL_IF NAME="debug_display" -->
 		<br /><br />
 		<table>

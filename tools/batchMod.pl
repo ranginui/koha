@@ -48,6 +48,7 @@ my $runinbackground = $input->param('runinbackground');
 
 my $template_name;
 my $template_flag;
+
 if ( !defined $op ) {
     $template_name = "tools/batchMod.tmpl";
     $template_flag = { tools => '*' };
@@ -64,6 +65,15 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
         flagsrequired   => $template_flag,
     }
 );
+
+if ( !defined $op ) {
+
+    # Getting possibly pre-submitted barcode list
+    my @barcodes = $input->param('barcode');
+    my $barcodelist = join("\n", @barcodes);
+    warn $barcodelist;
+    $template->param('barcodelist' => $barcodelist);
+}
 
 my $today_iso = C4::Dates->today('iso');
 $template->param( today_iso => $today_iso );
