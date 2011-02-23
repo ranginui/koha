@@ -9,12 +9,3 @@ from /etc/apache2/sites-enabled
 Specify Koha's IP address with NameVirtualHost
 Set ServerName, etc
 
- * koha-production.xml  
- * koha-testing.xml 
-These are the production and testing configurations for zebrasrv and for Koha.
-The first part of each file specifies Zebra server names, indexing configuration files,
-and query language configurations.  Koha configuration directives follow. 
-
- * zebra-authorities.cfg  
- * zebra-biblios.cfg
-

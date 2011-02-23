@@ -174,21 +174,9 @@ in Perl's default @LIB.
 
 Directory for Koha configuration files.
 
-=item ZEBRA_CONF_DIR
+=item SOLR_CONF_DIR
 
-Directory for Zebra configuration files.
-
-=item ZEBRA_LOCK_DIR
-
-Directory for Zebra's lock files.
-
-=item ZEBRA_DATA_DIR
-
-Directory for Zebra's data files.
-
-=item ZEBRA_RUN_DIR
-
-Directory for Zebra's UNIX-domain sockets.
+Directory for Solr configuration files.
 
 =item MISC_DIR
 
@@ -220,10 +208,6 @@ command-line, e.g., READMEs.
 
 Directory for Apache and Zebra logs produced by Koha.
 
-=item PAZPAR2_CONF_DIR
-
-Directory for PazPar2 configuration files.
-
 =item NONE
 
 This is a dummy target used to explicitly state
@@ -254,8 +238,7 @@ my $target_map = {
   './offline_circ'		=> 'INTRANET_CGI_DIR',
   './edithelp.pl'               => 'INTRANET_CGI_DIR',
   './etc'                       => { target => 'KOHA_CONF_DIR', trimdir => -1 },
-  './etc/zebradb'               => { target => 'ZEBRA_CONF_DIR', trimdir => -1 },
-  './etc/pazpar2'               => { target => 'PAZPAR2_CONF_DIR', trimdir => -1 },
+  './etc/solr'                  => { target => 'SOLR_CONF_DIR', trimdir => -1 },
   './help.pl'                   => 'INTRANET_CGI_DIR',
   './installer-CPAN.pl'         => 'NONE',
   './installer'                 => 'INTRANET_CGI_DIR',
@@ -285,17 +268,6 @@ my $target_map = {
   './serials'                   => 'INTRANET_CGI_DIR',
   './skel'                      => 'NONE',
   './skel/var/log/koha'         => { target => 'LOG_DIR', trimdir => -1 },
-  './skel/var/run/koha/zebradb' => { target => 'ZEBRA_RUN_DIR', trimdir => -1 },
-  './skel/var/lock/koha/zebradb/authorities' => { target => 'ZEBRA_LOCK_DIR', trimdir => 6 },
-  './skel/var/lib/koha/zebradb/authorities/key'  => { target => 'ZEBRA_DATA_DIR', trimdir => 6 },
-  './skel/var/lib/koha/zebradb/authorities/register'  => { target => 'ZEBRA_DATA_DIR', trimdir => 6 },
-  './skel/var/lib/koha/zebradb/authorities/shadow'  => { target => 'ZEBRA_DATA_DIR', trimdir => 6 },
-  './skel/var/lib/koha/zebradb/authorities/tmp'  => { target => 'ZEBRA_DATA_DIR', trimdir => 6 },
-  './skel/var/lock/koha/zebradb/biblios' => { target => 'ZEBRA_LOCK_DIR', trimdir => 6 },
-  './skel/var/lib/koha/zebradb/biblios/key'  => { target => 'ZEBRA_DATA_DIR', trimdir => 6 },
-  './skel/var/lib/koha/zebradb/biblios/register'  => { target => 'ZEBRA_DATA_DIR', trimdir => 6 },
-  './skel/var/lib/koha/zebradb/biblios/shadow'  => { target => 'ZEBRA_DATA_DIR', trimdir => 6 },
-  './skel/var/lib/koha/zebradb/biblios/tmp'  => { target => 'ZEBRA_DATA_DIR', trimdir => 6 },
   './sms'                       => 'INTRANET_CGI_DIR',
   './suggestion'                => 'INTRANET_CGI_DIR',
   './svc'                       => 'INTRANET_CGI_DIR',
@@ -355,28 +327,6 @@ Name of DBMS user account for Koha's database.
 
 Pasword of DMBS user account for Koha's database.
 
-=item INSTALL_ZEBRA
-
-Whether to install Zebra configuration files and data
-directories.
-
-=item ZEBRA_MARC_FORMAT
-
-Specifies format of MARC records to be indexed by Zebra.
-
-=item ZEBRA_LANGUAGE
-
-Specifies primary language of records that will be
-indexed by Zebra.
-
-=item ZEBRA_USER
-
-Internal Zebra user account for the index.
-
-=item ZEBRA_PASS
-
-Internal Zebra user account's password.
-
 =item KOHA_USER
 
 System user account that will own Koha's files.
@@ -396,25 +346,12 @@ my %config_defaults = (
   'DB_NAME'           => 'koha',
   'DB_USER'           => 'kohaadmin',
   'DB_PASS'           => 'katikoan',
-  'INSTALL_ZEBRA'     => 'yes',
-  'INSTALL_SRU'       => 'yes',
-  'INSTALL_PAZPAR2'   => 'no',
   'AUTH_INDEX_MODE'   => 'dom',
-  'ZEBRA_MARC_FORMAT' => 'marc21',
-  'ZEBRA_LANGUAGE'    => 'en',
-  'ZEBRA_USER'        => 'kohauser',
-  'ZEBRA_PASS'        => 'zebrastripes',
-  'ZEBRA_SRU_HOST'    => 'localhost',
-  'ZEBRA_SRU_BIBLIOS_PORT'    => '9998',
-  'ZEBRA_SRU_AUTHORITIES_PORT'    => '9999',
   'KOHA_USER'         => 'koha',
   'KOHA_GROUP'        => 'koha',
   'MERGE_SERVER_HOST' => 'localhost',
   'MERGE_SERVER_PORT' => '11001',
-  'PAZPAR2_HOST' => 'localhost',
-  'PAZPAR2_PORT' => '11002',
   'RUN_DATABASE_TESTS' => 'no',
-  'PATH_TO_ZEBRA' => '',
   'USE_MEMCACHED'     => 'no',
   'MEMCACHED_SERVERS' => '127.0.0.1:11211',
   'MEMCACHED_NAMESPACE' => 'KOHA'
@@ -448,11 +385,7 @@ else {
 my %valid_config_values = (
   'INSTALL_MODE'  => { 'standard' => 1, 'single' => 1, 'dev' => 1 },
   'DB_TYPE' => { 'mysql' => 1, 'Pg' => 1 },
-  'INSTALL_ZEBRA' => { 'yes' => 1, 'no' => 1 },
-  'INSTALL_SRU' => { 'yes' => 1, 'no' => 1 },
   'AUTH_INDEX_MODE' => { 'grs1' => 1, 'dom' => 1 },
-  'ZEBRA_MARC_FORMAT' => { 'marc21' => 1, 'unimarc' => 1 }, # FIXME should generate from contents of distributation
-  'ZEBRA_LANGUAGE'    => { 'en' => 1, 'fr' => 1 }, # FIXME should generate from contents of distribution
   'RUN_DATABASE_TESTS' => { 'yes' => 1, 'no' => 1 },
   'USE_MEMCACHED'      => { 'yes' => 1, 'no' => 1 },
 );
@@ -473,7 +406,7 @@ my %config = get_configuration(\%config_defaults, \%valid_config_values, \%insta
 my ($target_directories, $skip_directories) = get_target_directories(\%config);
 display_configuration(\%config, $target_directories);
 my $file_map = {};
-get_file_map($target_map, $dirtree, $file_map, $config{'INSTALL_ZEBRA'} eq "yes" ? 1: 0);
+get_file_map($target_map, $dirtree, $file_map);
 
 my $pl_files = {
       'rewrite-config.PL' => [
@@ -486,33 +419,6 @@ my $pl_files = {
 		 ]
 };
 
-if ($config{'INSTALL_ZEBRA'} eq "yes") {
-    push @{ $pl_files->{'rewrite-config.PL'} }, (
-        'blib/ZEBRA_CONF_DIR/etc/passwd',
-        'blib/ZEBRA_CONF_DIR/zebra-biblios.cfg',
-        'blib/ZEBRA_CONF_DIR/zebra-authorities.cfg',
-        'blib/ZEBRA_CONF_DIR/zebra-authorities-dom.cfg',
-        'blib/ZEBRA_CONF_DIR/explain-authorities.xml',
-        'blib/ZEBRA_CONF_DIR/explain-biblios.xml',
-        'blib/ZEBRA_CONF_DIR/retrieval-info-auth-grs1.xml',
-        'blib/ZEBRA_CONF_DIR/retrieval-info-auth-dom.xml',
-    );
-    push @{ $pl_files->{'rewrite-config.PL'} }, (
-        'blib/SCRIPT_DIR/koha-zebra-ctl.sh',
-        'blib/SCRIPT_DIR/koha-pazpar2-ctl.sh',
-        'blib/SCRIPT_DIR/koha-zebraqueue-ctl.sh',
-    );
-    if ($config{'INSTALL_PAZPAR2'} eq 'yes') {
-        push @{ $pl_files->{'rewrite-config.PL'} }, (
-            'blib/PAZPAR2_CONF_DIR/koha-biblios.xml',
-            'blib/PAZPAR2_CONF_DIR/pazpar2.xml'
-        );
-    }
-    $config{'ZEBRA_AUTH_CFG'} = $config{'AUTH_INDEX_MODE'} eq 'dom' ? 'zebra-authorities-dom.cfg' : 'zebra-authorities.cfg';
-    $config{'AUTH_RETRIEVAL_CFG'} =
-        $config{'AUTH_INDEX_MODE'} eq 'dom' ? 'retrieval-info-auth-dom.xml' : 'retrieval-info-auth-grs1.xml';
-}
-
 if ($config{'INSTALL_MODE'} ne "dev") {
     push @{ $pl_files->{'rewrite-config.PL'} }, (
         'blib/PERL_MODULE_DIR/C4/Context.pm',
@@ -522,12 +428,9 @@ if ($config{'INSTALL_MODE'} ne "dev") {
 
 my %test_suite_override_dirs = (
     KOHA_CONF_DIR  => ['etc'],
-    ZEBRA_CONF_DIR => ['etc', 'zebradb'],
+    SOLR_CONF_DIR  => ['etc', 'solr'],
     LOG_DIR        => ['var', 'log'],
     SCRIPT_DIR     => ['bin'],
-    ZEBRA_LOCK_DIR => ['var', 'lock', 'zebradb'],
-    ZEBRA_DATA_DIR => ['var', 'lib', 'zebradb'],
-    ZEBRA_RUN_DIR  => ['var', 'run', 'zebradb'],
 );
 
 WriteMakefile(
@@ -627,6 +530,13 @@ WriteMakefile(
                             'XML::Simple'                      => 2.14,
                             'XML::RSS'                         => 1.31,
                             'YAML::Syck'                       => 0.71,
+                            'Data::SearchEngine::Solr'         => 0.09,
+                            'WebService::Solr'                 => 0.10,
+                            'MooseX::Storage'                  => 0.28,
+                            'MooseX::Types'                    => 0.24,
+                            'Data::Paginator'                  => 0.04,
+                            'Data::Pagination'                 => 0.44,
+                            'Module::List'                     => 0.002,
                         },
 
               # File tree mapping
@@ -680,7 +590,6 @@ sub get_file_map {
     my $target_map = shift;
     my $dirtree = shift;
     my $file_map = shift;
-    my $install_zebra = shift;
     my $curr_path = @_ ? shift : ['.'];
 
     # Traverse the directory tree.
@@ -711,7 +620,7 @@ sub get_file_map {
                     }
                 }
                 if (defined $targetdir) {
-                     _add_to_file_map($file_map, $targetdir, $curr_path, $file, $matchlevel, $install_zebra);
+                     _add_to_file_map($file_map, $targetdir, $curr_path, $file, $matchlevel);
                 } else {
                     my $path = join("/", @$curr_path);
                     print "failed to map: $path/$file\n" if $DEBUG;
@@ -720,7 +629,7 @@ sub get_file_map {
         } else {
             # dealing with subdirectory
             push @$curr_path, $dir;
-            get_file_map($target_map, $dirtree->{$dir}, $file_map, $install_zebra, $curr_path);
+            get_file_map($target_map, $dirtree->{$dir}, $file_map, $curr_path);
             pop @$curr_path;
         }
     }
@@ -732,7 +641,6 @@ sub _add_to_file_map {
     my $curr_path = shift;
     my $file = shift;
     my $matchlevel = shift;
-    my $install_zebra = shift;
     my $dest_path = @_ ? shift : $curr_path;
 
     # The target can be one of the following:
@@ -759,12 +667,12 @@ sub _add_to_file_map {
             } else {
                 splice @new_dest_path, 0, $targetdir->{trimdir};
             }
-            _add_to_file_map($file_map, $subtarget, $curr_path, $file, $matchlevel, $install_zebra, \@new_dest_path);
+            _add_to_file_map($file_map, $subtarget, $curr_path, $file, $matchlevel, \@new_dest_path);
         } else {
             # actually getting here means that the
             # target was unnecessarily listed
             # as a hash, but we'll forgive that
-            _add_to_file_map($file_map, $subtarget, $curr_path, $file, $matchlevel, $install_zebra);
+            _add_to_file_map($file_map, $subtarget, $curr_path, $file, $matchlevel);
         }
     } elsif ($targetdir ne 'NONE' and $targetdir ne '') {
         my $source = File::Spec->catfile(@$curr_path, $file);
@@ -778,7 +686,7 @@ sub _add_to_file_map {
         $source =~ s/ /\\ /g;
         $destination =~ s/ /\\ /g;
 
-        $file_map->{$source} = $destination unless (!$install_zebra and $targetdir =~ /ZEBRA/);
+        $file_map->{$source} = $destination;
     }
 }
 
@@ -964,146 +872,6 @@ Please specify the password of the user that owns the
 database to be used by Koha);
     $config{'DB_PASS'} = _get_value('DB_PASS', $msg, $defaults->{'DB_PASS'}, $valid_values, $install_log_values);
 
-    $msg = q(
-Koha can use the Zebra search engine for high-performance
-searching of bibliographic and authority records.  If you
-have installed the Zebra software and would like to use it,
-please answer 'yes' to the following question.  Otherwise,
-Koha will default to using its internal search engine.
-
-Please note that if you choose *NOT* to install Zebra,
-koha-conf.xml will still contain some references to Zebra
-settings.  Those references will be ignored by Koha.
-
-Install the Zebra configuration files?);
-    $msg .= _add_valid_values_disp('INSTALL_ZEBRA', $valid_values);
-    $config{'INSTALL_ZEBRA'} = _get_value('INSTALL_ZEBRA', $msg, $defaults->{'INSTALL_ZEBRA'}, $valid_values, $install_log_values);
-
-    if ($config{'INSTALL_ZEBRA'} eq 'yes') {
-
-        if (defined(my $zebra_path = find_zebra())) {
-            $config{'PATH_TO_ZEBRA'} = $zebra_path;
-            print qq(
-Found 'zebrasrv' and 'zebraidx' in $zebra_path.
-);
-        } else {
-            print q(
-Unable to find the Zebra programs 'zebrasrv' and 'zebraidx'
-in your PATH or in some of the usual places.  If you haven't
-installed Zebra yet, please do so and run Makefile.PL again.
-
-);
-        }
-
-        $msg = q(
-Since you've chosen to use Zebra with Koha,
-you must specify the primary MARC format of the
-records to be indexed by Zebra.
-
-Koha provides Zebra configuration files for MARC 21
-and UNIMARC.
-
-MARC format for Zebra indexing);
-        $msg .= _add_valid_values_disp('ZEBRA_MARC_FORMAT', $valid_values);
-        $config{'ZEBRA_MARC_FORMAT'} = _get_value('ZEBRA_MARC_FORMAT', $msg, $defaults->{'ZEBRA_MARC_FORMAT'}, $valid_values, $install_log_values);
-        $msg = q(
-Koha supplies Zebra configuration files tuned for
-searching either English (en) or French (fr) MARC
-records.
-
-Primary language for Zebra indexing);
-        $msg .= _add_valid_values_disp('ZEBRA_LANGUAGE', $valid_values);
-        $config{'ZEBRA_LANGUAGE'} = _get_value('ZEBRA_LANGUAGE', $msg, $defaults->{'ZEBRA_LANGUAGE'}, $valid_values, $install_log_values);
-
-        $msg = q(
-Koha can use one of  two different indexing modes
-for the MARC authorities records:
-
-grs1 - uses the Zebra GRS-1 filter, available
-       for legacy support
-dom  - uses the DOM XML filter; offers improved
-       functionality.
-
-Authorities indexing mode);
-        $msg .= _add_valid_values_disp('AUTH_INDEX_MODE', $valid_values);
-        $config{'AUTH_INDEX_MODE'} = _get_value('AUTH_INDEX_MODE', $msg, $defaults->{'AUTH_INDEX_MODE'}, $valid_values, $install_log_values);
-
-        $msg = q(
-Please specify Zebra database user);
-        $config{'ZEBRA_USER'} = _get_value('ZEBRA_USER', $msg, $defaults->{'ZEBRA_USER'}, $valid_values, $install_log_values);
-
-        $msg = q(
-Please specify the Zebra database password);
-        $config{'ZEBRA_PASS'} = _get_value('ZEBRA_PASS', $msg, $defaults->{'ZEBRA_PASS'}, $valid_values, $install_log_values);
-
-        $msg = q(
-Since you've chosen to use Zebra, you can enable the SRU/
-Z39.50 Server if you so choose, but you must specify a
-few configuration options for it.
-
-Please note that if you choose *NOT* to configure SRU,
-koha-conf.xml will still contain some references to SRU
-settings.  Those references will be ignored by Koha.
-
-Install the SRU configuration files?);
-        $msg .= _add_valid_values_disp('INSTALL_SRU', $valid_values);
-        $config{'INSTALL_SRU'} = _get_value('INSTALL_SRU', $msg, $defaults->{'INSTALL_SRU'}, $valid_values, $install_log_values);
-
-        if ($config{'INSTALL_SRU'} eq 'yes') {
-            $msg = q(
-Since you've chosen to configure SRU, you must
-specify the host and port(s) that the SRU
-Servers (bibliographic and authority) should run on.
-);
-            $msg = q(
-SRU Database host?);
-            $config{'ZEBRA_SRU_HOST'} = _get_value('ZEBRA_SRU_HOST', $msg, $defaults->{'ZEBRA_SRU_HOST'}, $valid_values, $install_log_values);
-
-            $msg = q(
-SRU port for bibliographic data?);
-            $config{'ZEBRA_SRU_BIBLIOS_PORT'} = _get_value('ZEBRA_SRU_BIBLIOS_PORT', $msg, $defaults->{'ZEBRA_SRU_BIBLIOS_PORT'}, $valid_values, $install_log_values);
-
-            $msg = q(
-SRU port for authority data?);
-            $config{'ZEBRA_SRU_AUTHORITIES_PORT'} = _get_value('ZEBRA_SRU_AUTHORITIES_PORT', $msg, $defaults->{'ZEBRA_SRU_AUTHORITIES_PORT'}, $valid_values, $install_log_values);
-
-        }
-
-        $msg = q(
-Since you've chosen to use Zebra, you can also choose to
-install PazPar2, which is a metasearch tool.  With PazPar2,
-Koha can perform on-the-fly merging of bibliographic
-records during searching, allowing for FRBRization of
-the results list.
-
-Install the PazPar2 configuration files?);
-        $msg .= _add_valid_values_disp('INSTALL_PAZPAR2', $valid_values);
-        $config{'INSTALL_PAZPAR2'} = _get_value('INSTALL_PAZPAR2', $msg, $defaults->{'INSTALL_PAZPAR2'}, $valid_values, $install_log_values);
-
-        if ($config{'INSTALL_PAZPAR2'} eq 'yes') {
-            $msg = q(
-Since you've chosen to configure PazPar2, you must
-specify the host and port(s) that PazPar2
-uses:
-);
-            $msg = q(
-Zebra bibliographic server host?);
-            $config{'MERGE_SERVER_HOST'} = _get_value('MERGE_SERVER_HOST', $msg, $defaults->{'MERGE_SERVER_HOST'}, $valid_values, $install_log_values);
-
-            $msg = q(
-Zebra bibliographic port for PazPar2 to use?);
-            $config{'MERGE_SERVER_PORT'} = _get_value('MERGE_SERVER_PORT', $msg, $defaults->{'MERGE_SERVER_PORT'}, $valid_values, $install_log_values);
-
-            $msg = q(
-PazPar2 host?);
-            $config{'PAZPAR2_HOST'} = _get_value('PAZPAR2_HOST', $msg, $defaults->{'PAZPAR2_HOST'}, $valid_values, $install_log_values);
-
-            $msg = q(
-PazPar2 port?);
-            $config{'PAZPAR2_PORT'} = _get_value('PAZPAR2_PORT', $msg, $defaults->{'PAZPAR2_PORT'}, $valid_values, $install_log_values);
-
-        }
-    }
   $msg = q(
 Use memcached and memoize to cache the results of some function calls?
 This provides a signficant performance improvement.
@@ -1261,17 +1029,13 @@ sub get_target_directories {
         $dirmap{'OPAC_WWW_DIR'} = File::Spec->catdir(@basedir, $package, 'opac', 'htdocs');
         $dirmap{'PERL_MODULE_DIR'} = File::Spec->catdir(@basedir, $package, 'lib');
         $dirmap{'KOHA_CONF_DIR'} = File::Spec->catdir(@basedir, $package, 'etc');
-        $dirmap{'ZEBRA_CONF_DIR'} = File::Spec->catdir(@basedir, $package, 'etc', 'zebradb');
-        $dirmap{'PAZPAR2_CONF_DIR'} = File::Spec->catdir(@basedir, $package, 'etc', 'pazpar2');
+        $dirmap{'SOLR_CONF_DIR'} = File::Spec->catdir(@basedir, $package, 'etc', 'solr');
         $dirmap{'MISC_DIR'} = File::Spec->catdir(@basedir, $package, 'misc');
         $dirmap{'SCRIPT_DIR'} = File::Spec->catdir(@basedir, $package, 'bin');
         $dirmap{'SCRIPT_NONDEV_DIR'} = $dirmap{'SCRIPT_DIR'};
         $dirmap{'MAN_DIR'} = File::Spec->catdir(@basedir, $package, 'man');
         $dirmap{'DOC_DIR'} = File::Spec->catdir(@basedir, $package, 'doc');
-        $dirmap{'ZEBRA_LOCK_DIR'} = File::Spec->catdir(@basedir, $package, 'var', 'lock', 'zebradb');
         $dirmap{'LOG_DIR'} =  File::Spec->catdir(@basedir, $package, 'var', 'log');
-        $dirmap{'ZEBRA_DATA_DIR'} =  File::Spec->catdir(@basedir, $package, 'var', 'lib', 'zebradb');
-        $dirmap{'ZEBRA_RUN_DIR'} =  File::Spec->catdir(@basedir, $package, 'var', 'run', 'zebradb');
     } elsif ($mode eq 'dev') {
         my $curdir = File::Spec->rel2abs(File::Spec->curdir());
         $dirmap{'INTRANET_CGI_DIR'} = File::Spec->catdir($curdir);
@@ -1289,18 +1053,14 @@ sub get_target_directories {
         $dirmap{'PERL_MODULE_DIR'} = File::Spec->catdir($curdir);
         $skipdirs{'PERL_MODULE_DIR'} = 1;
         $dirmap{'KOHA_CONF_DIR'} = File::Spec->catdir(@basedir, $package, 'etc');
-        $dirmap{'ZEBRA_CONF_DIR'} = File::Spec->catdir(@basedir, $package, 'etc', 'zebradb');
-        $dirmap{'PAZPAR2_CONF_DIR'} = File::Spec->catdir(@basedir, $package, 'etc', 'pazpar2');
+        $dirmap{'SOLR_CONF_DIR'} = File::Spec->catdir(@basedir, $package, 'etc', 'solr');
         $dirmap{'MISC_DIR'} = File::Spec->catdir(@basedir, $package, 'misc');
         $dirmap{'SCRIPT_DIR'} = File::Spec->catdir(@basedir, $package, 'bin');
         $dirmap{'SCRIPT_NONDEV_DIR'} = $dirmap{'SCRIPT_DIR'};
         $skipdirs{'SCRIPT_NONDEV_DIR'} = 1;
         $dirmap{'MAN_DIR'} = File::Spec->catdir(@basedir, $package, 'man');
         $dirmap{'DOC_DIR'} = File::Spec->catdir(@basedir, $package, 'doc');
-        $dirmap{'ZEBRA_LOCK_DIR'} = File::Spec->catdir(@basedir, $package, 'var', 'lock', 'zebradb');
         $dirmap{'LOG_DIR'} =  File::Spec->catdir(@basedir, $package, 'var', 'log');
-        $dirmap{'ZEBRA_DATA_DIR'} =  File::Spec->catdir(@basedir, $package, 'var', 'lib', 'zebradb');
-        $dirmap{'ZEBRA_RUN_DIR'} =  File::Spec->catdir(@basedir, $package, 'var', 'run', 'zebradb');
     } else {
         # mode is standard, i.e., 'fhs'
         $dirmap{'INTRANET_CGI_DIR'} = File::Spec->catdir(@basedir, $package, 'intranet', 'cgi-bin');
@@ -1311,17 +1071,13 @@ sub get_target_directories {
         $dirmap{'OPAC_WWW_DIR'} = File::Spec->catdir(@basedir, $package, 'opac', 'htdocs');
         $dirmap{'PERL_MODULE_DIR'} = File::Spec->catdir(@basedir, $package, 'lib');
         $dirmap{'KOHA_CONF_DIR'} = File::Spec->catdir(File::Spec->rootdir(), 'etc', $package);
-        $dirmap{'ZEBRA_CONF_DIR'} = File::Spec->catdir(File::Spec->rootdir(), 'etc', $package, 'zebradb');
-        $dirmap{'PAZPAR2_CONF_DIR'} = File::Spec->catdir(File::Spec->rootdir(), 'etc', $package, 'pazpar2');
+        $dirmap{'SOLR_CONF_DIR'} = File::Spec->catdir(File::Spec->rootdir(), 'etc', $package, 'solr');
         $dirmap{'MISC_DIR'} = File::Spec->catdir(@basedir, $package, 'misc');
         $dirmap{'SCRIPT_DIR'} = File::Spec->catdir(@basedir, $package, 'bin');
         $dirmap{'SCRIPT_NONDEV_DIR'} = $dirmap{'SCRIPT_DIR'};
         $dirmap{'MAN_DIR'} = File::Spec->catdir(@basedir, $package, 'man');
         $dirmap{'DOC_DIR'} = File::Spec->catdir(@basedir, $package, 'doc');
-        $dirmap{'ZEBRA_LOCK_DIR'} = File::Spec->catdir(File::Spec->rootdir(), 'var', 'lock', $package, 'zebradb');
         $dirmap{'LOG_DIR'} =  File::Spec->catdir(File::Spec->rootdir(), 'var', 'log', $package);
-        $dirmap{'ZEBRA_DATA_DIR'} =  File::Spec->catdir(File::Spec->rootdir(), 'var', 'lib', $package, 'zebradb');
-        $dirmap{'ZEBRA_RUN_DIR'} =  File::Spec->catdir(File::Spec->rootdir(), 'var', 'run', $package, 'zebradb');
     }
 
     _get_env_overrides(\%dirmap);
@@ -1416,32 +1172,6 @@ sub display_configuration {
     print "'dmake -x MAXLINELENGTH=300000'\n\n";
 }
 
-=head2 find_zebra
-
-Attempt to find Zebra - check user's PATH and
-a few other directories for zebrasrv and zebraidx.
-
-FIXME: doesn't handle Win32
-
-=cut
-
-sub find_zebra {
-    my @search_dirs = map {
-                            my $abs = File::Spec->rel2abs($_);
-                            my ($toss, $directories);
-                            ($toss, $directories, $toss) = File::Spec->splitpath($abs, 1);
-                            $directories;
-                        }  split /:/, $ENV{PATH};
-    push @search_dirs, qw(/usr/local/bin /opt/local/bin /usr/bin);
-    my @zebrasrv_dirs = grep { -x File::Spec->catpath('', $_, 'zebrasrv') } @search_dirs;
-    return unless @zebrasrv_dirs;
-    # verify that directory that contains zebrasrv also contains zebraidx
-    foreach my $dir (@zebrasrv_dirs) {
-        return $dir if -x File::Spec->catpath('', $dir, 'zebraidx');
-    }
-    return;
-}
-
 package MY;
 
 # This will have to be reworked in order to accommodate Win32...
@@ -1469,7 +1199,7 @@ sub install {
 		    $install .= qq(
 KOHA_INST_$key = blib/$key
 KOHA_DEST_$key = $target_directories->{$key}
-)			unless ($config{'INSTALL_ZEBRA'} ne "yes" and $key =~ /ZEBRA/) or exists $skip_directories->{$key};
+)			unless exists $skip_directories->{$key};
 		}
 		$install .= qq(
 install :: all install_koha set_koha_ownership set_koha_permissions warn_koha_env_vars
@@ -1479,7 +1209,7 @@ install :: all install_koha set_koha_ownership set_koha_permissions warn_koha_en
 			$install .= "\t\$(NOECHO) umask 022; \$(MOD_INSTALL) \\\n";
 			foreach my $key (sort keys %$target_directories) {
 				$install .= "\t\t\$(KOHA_INST_$key) \$(KOHA_DEST_$key) \\\n"
-					unless ($config{'INSTALL_ZEBRA'} ne "yes" and $key =~ /ZEBRA/) or exists $skip_directories->{$key};
+					unless exists $skip_directories->{$key};
 			}
 			$install .= "\t\t\$(INST_MAN1DIR) \$(DESTINSTALLMAN1DIR) \\\n";
 			$install .= "\t\t\$(INST_MAN3DIR) \$(DESTINSTALLMAN3DIR)\n";
@@ -1490,7 +1220,7 @@ install :: all install_koha set_koha_ownership set_koha_permissions warn_koha_en
 			if ($config{'INSTALL_MODE'} eq 'standard' and $config{'KOHA_USER'} ne "root") {
 				foreach my $key (sort keys %$target_directories) {
 					$install .= "\t\$(NOECHO) if test -z \"\$(DESTDIR)\"; then chown -R $config{'KOHA_USER'}:$config{'KOHA_GROUP'} \$(KOHA_DEST_$key); fi\n"
-						unless ($config{'INSTALL_ZEBRA'} ne "yes" and $key =~ /ZEBRA/) or exists $skip_directories->{$key};
+						unless exists $skip_directories->{$key};
 				}
 			} else {
 				$install .= "\t\t\$(NOECHO) \$(NOOP)\n\n";
@@ -1503,8 +1233,9 @@ install :: all install_koha set_koha_ownership set_koha_permissions warn_koha_en
 			# of Koha's files to have write permission by default.
 			foreach my $key (sort keys %$target_directories) {
 				$install .= "\t\$(NOECHO) chmod -R u+w \$(KOHA_DEST_$key)\n"
-					unless ($config{'INSTALL_ZEBRA'} ne "yes" and $key =~ /ZEBRA/) or exists $skip_directories->{$key};
+					unless exists $skip_directories->{$key};
 			}
+            $install .= "\t\$(NOECHO) chmod -R 777 \$(KOHA_DEST_SOLR_CONF_DIR)/data\n"
 	}
 	elsif ($^O eq 'MSWin32' ) {	# On Win32, the install probably needs to be done under the user account koha will be running as...
 								# We can attempt some creative things with command line utils such as CACLS which allows permission
@@ -1513,7 +1244,7 @@ install :: all install_koha set_koha_ownership set_koha_permissions warn_koha_en
 		    $install .= qq(
 KOHA_INST_$key = blib/$key
 KOHA_DEST_$key = $target_directories->{$key}
-)			unless ($config{'INSTALL_ZEBRA'} ne "yes" and $key =~ /ZEBRA/) or exists $skip_directories->{$key};
+)			unless exists $skip_directories->{$key};
 		}
 		$install .= qq(
 install :: all install_koha warn_koha_env_vars
@@ -1523,7 +1254,7 @@ install :: all install_koha warn_koha_env_vars
 		$install .= "\t\$(MOD_INSTALL) \\\n";
 		foreach my $key (sort keys %$target_directories) {
 			$install .= "\t\t\$(KOHA_INST_$key) \$(KOHA_DEST_$key) \\\n"
-				unless ($config{'INSTALL_ZEBRA'} ne "yes" and $key =~ /ZEBRA/) or exists $skip_directories->{$key};
+				unless exists $skip_directories->{$key};
 		}
 	}
 	$install .= "\n";
@@ -1541,33 +1272,9 @@ install :: all install_koha warn_koha_env_vars
     $install .= "\t\$(NOECHO) \$(ECHO) For other post-installation tasks, please consult the README.\n";
     $install .= "\t\$(NOECHO) \$(ECHO)\n";
 
-    if ($config{'INSTALL_ZEBRA'} eq "yes") {
-        $install .= _update_zebra_conf_target();
-    }
-
     $install .= upgrade();
 
     return $install;
-}
-
-=head2 _update_zebra_conf_target
-
-Add an installation target for updating
-Zebra's configuration files.
-
-=cut
-
-sub _update_zebra_conf_target {
-
-    my $target = "\nupdate_zebra_conf ::\n";
-    $target .= "\tumask 022; \$(MOD_INSTALL) \\\n";
-    $target .= "\t\t\$(KOHA_INST_ZEBRA_CONF_DIR) \$(KOHA_DEST_ZEBRA_CONF_DIR) \n";
-    $target .= "\t\$(NOECHO) chmod -R u+w \$(KOHA_DEST_ZEBRA_CONF_DIR)\n" unless $^O eq "MSWin32";
-    $target .= "\tumask 022; \$(MOD_INSTALL) \\\n";
-    $target .= "\t\t\$(KOHA_INST_PAZPAR2_CONF_DIR) \$(KOHA_DEST_PAZPAR2_CONF_DIR) \n";
-    $target .= "\t\$(NOECHO) chmod -R u+w \$(KOHA_DEST_PAZPAR2_CONF_DIR)\n" unless $^O eq "MSWin32";
-
-    return $target;
 }
 
 sub upgrade {
@@ -1590,11 +1297,9 @@ upgrade :: make_upgrade_backup install
 make_upgrade_backup ::
 \t\$(NOECHO) umask 022; \$(MOD_BACKUP) \\
 /;
-    foreach my $key (qw/KOHA_CONF_DIR INTRANET_TMPL_DIR INTRANET_WWW_DIR OPAC_TMPL_DIR OPAC_WWW_DIR
-                     PAZPAR2_CONF_DIR ZEBRA_CONF_DIR/) {
+    foreach my $key (qw/KOHA_CONF_DIR INTRANET_TMPL_DIR INTRANET_WWW_DIR OPAC_TMPL_DIR OPAC_WWW_DIR/) {
     	$upgrade .= "\t\t\$(KOHA_INST_$key) \$(KOHA_DEST_$key) \\\n"
-            unless ($config{'INSTALL_ZEBRA'} ne "yes" and $key =~ /ZEBRA/) or
-                   exists $skip_directories->{$key} or
+            unless exists $skip_directories->{$key} or
                    not exists $target_directories->{$key};
     }
     $upgrade =~ s/\\\n$/\n/;
@@ -1647,7 +1352,6 @@ sub postamble {
     }
     return "$env\n";
 }
-
 
 __END__
 

@@ -1293,20 +1293,6 @@ CREATE TABLE `notifys` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Table structure for table `nozebra`
---
-
-DROP TABLE IF EXISTS `nozebra`;
-CREATE TABLE `nozebra` (
-  `server` varchar(20)     NOT NULL,
-  `indexname` varchar(40)  NOT NULL,
-  `value` varchar(250)     NOT NULL,
-  `biblionumbers` longtext NOT NULL,
-  KEY `indexname` (`server`,`indexname`),
-  KEY `value` (`server`,`value`))
-  ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
 -- Table structure for table `old_issues`
 --
 
@@ -1975,22 +1961,6 @@ CREATE TABLE `z3950servers` (
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Table structure for table `zebraqueue`
---
-
-DROP TABLE IF EXISTS `zebraqueue`;
-CREATE TABLE `zebraqueue` (
-  `id` int(11) NOT NULL auto_increment,
-  `biblio_auth_number` bigint(20) unsigned NOT NULL default '0',
-  `operation` char(20) NOT NULL default '',
-  `server` char(20) NOT NULL default '',
-  `done` int(11) NOT NULL default '0',
-  `time` timestamp NOT NULL default CURRENT_TIMESTAMP,
-  PRIMARY KEY  (`id`),
-  KEY `zebraqueue_lookup` (`server`, `biblio_auth_number`, `operation`, `done`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 DROP TABLE IF EXISTS `services_throttle`;
 CREATE TABLE `services_throttle` (
   `service_type` varchar(10) NOT NULL default '',
@@ -2598,6 +2568,37 @@ CREATE TABLE `pending_offline_operations` (
   `barcode` VARCHAR(20) NOT NULL,
   `cardnumber` VARCHAR(16) NULL,
   PRIMARY KEY (`operationid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `indexes`
+--
+
+DROP TABLE IF EXISTS `indexes`;
+CREATE TABLE `indexes` (
+  `id` bigint unsigned NOT NULL auto_increment,
+  `code` varchar(255) NOT NULL DEFAULT '',
+  `label` varchar(255) DEFAULT NULL,
+  `type` varchar(20) DEFAULT NULL,
+  `faceted` tinyint(4) DEFAULT NULL,
+  `ressource_type` varchar(255) DEFAULT NULL,
+  `mandatory` tinyint(4) DEFAULT NULL,
+  `sortable` tinyint(4) DEFAULT NULL,
+  `plugin` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE (`code`, `type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `indexmappings`
+--
+
+DROP TABLE IF EXISTS `indexmappings`;
+CREATE TABLE `indexmappings` (
+  `field` char(3) DEFAULT NULL,
+  `subfield` char(1) DEFAULT NULL,
+  `index` varchar(15) DEFAULT NULL,
+  `ressource_type` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

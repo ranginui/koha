@@ -67,22 +67,6 @@ INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('noissuescharge', '5', 'Ce paramètre définit le montant maximal des dettes au delà duquel le lecteur ne peut plus emprunter', '', 'Integer');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('NotifyBorrowerDeparture', '0', 'Ce paramètre permet d''être prévenu N jours avant l''expiration de la carte d''un adhérent, à la banque de prêt.', '', 'Integer');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('DebugLevel', '2', 'Définit le niveau d''affichage des erreurs en cas de problème : 0= aucun affichage, 1= un peu, 2=tout (peut être risqué pour la sécurité)', '0|1|2', 'Choice');
-INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('NoZebra','1','Si activé, l''indexation Zebra n''est plus utilisée, la mise en place est plus simple, mais les performances nettement moins bonnes','','YesNo');
-INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('NoZebraIndexes', "'title' => '200a,200c,200d,200e,225a,225d,225e,225f,225h,225i,225v,500*,501*,503*,510*,512*,513*,514*,515*,516*,517*,518*,519*,520*,530*,531*,532*,540*,541*,545*,604t,610t,605a',
-        'author' =>'200f,600a,601a,604a,700a,700b,700c,700d,700a,701b,701c,701d,702a,702b,702c,702d,710a,710b,710c,710d,711a,711b,711c,711d,712a,712b,712c,712d',
-        'isbn' => '010a',
-        'issn' => '011a',
-        'biblionumber' =>'0909',
-        'itemtype' => '200b',
-        'language' => '101a',
-        'publisher' => '210c',
-        'date' => '210d',
-        'note' => '300a,301a,302a,303a,304a,305a,306az,307a,308a,309a,310a,311a,312a,313a,314a,315a,316a,317a,318a,319a,320a,321a,322a,323a,324a,325a,326a,327a,328a,330a,332a,333a,336a,337a,345a',
-        'Koha-Auth-Number' => '6009,6019,6029,6039,6049,6059,6069,6109,7009,7019,7029,7109,7119,7129',
-        'subject' => '600*,601*,606*,610*',
-        'dewey' => '676a',
-        'homebranch' => '995a,995b',
-        'lcn' => '995k'", 'Entrez un tableau pour les index NoZebra. Saisir ''indexname'' => ''100a,245a,500*'',''index2'' => ''...''', '70|10', 'Textarea');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('OpacAuthorities', '1', 'Active ou non la recherche des autorités à l''OPAC', '', 'YesNo');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('opacbookbag', '1', 'Si ce paramètre est activé, les adhérents peuvent créer des paniers à l''OPAC', '', 'YesNo');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES ('intranetbookbag','1','Si ce paramètre est activé, les adhérents peuvent créer des paniers à l''interface professionnelle','','YesNo');
@@ -147,10 +131,10 @@ INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('numSearchResults',20,'Spécifie le nombre maximum de réponses à afficher sur les pages de résultats',NULL,'Integer');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('OPACnumSearchResults',20,'Spécifie le nombre maximum de réponses à afficher sur les pages de résultats',NULL,'Integer');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('maxItemsInSearchResults',20,'Spécifie le nombre maximum d''exemplaires à afficher sur les pages de résultats',NULL,'free');
-INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('defaultSortField','relevance','Spécifie le champ utilisé par défaut pour le tri','relevance|popularity|call_number|pubdate|acqdate|title|author','Choice');
-INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('defaultSortOrder','dsc','Spécifie le sens du tri par défaut','asc|dsc|az|za','Choice');
-INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('OPACdefaultSortField','relevance','Spécifie le champ utilisé par défaut pour le tri','relevance|popularity|call_number|pubdate|acqdate|title|author','Choice');
-INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('OPACdefaultSortOrder','dsc','Spécifie le sens du tri par défaut','asc|dsc|za|az','Choice');
+INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('defaultSortField',NULL,'Spécifie le champ utilisé par défaut pour le tri','score|str_callnumber|date_pubdate|date_acqdate|txt_title|str_author','Choice');
+INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('defaultSortOrder',NULL,'Spécifie le sens du tri par défaut','asc|desc','Choice');
+INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('OPACdefaultSortField',NULL,'Spécifie le champ utilisé par défaut pour le tri','score|str_callnumber|date_pubdate|date_acqdate|txt_title|str_author','Choice');
+INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('OPACdefaultSortOrder',NULL,'Spécifie le sens du tri par défaut','asc|desc','Choice');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('staffClientBaseURL','','Spécifie l''adresse de l''interface professionnelle ',NULL,'free');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('minPasswordLength',3,'Spécifie la longueur minimale des mots de passe',NULL,'free');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('noItemTypeImages',0,'Si activé, n''affiche pas les vignettes de type de document',NULL,'YesNo');
@@ -217,7 +201,7 @@ INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES
 INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('IntranetXSLTDetailsDisplay','','','Activer la feuille XSL pour l''affichage des notices détaillées (Interface professionnelle) Insérer le chemin vers la feuille xslt exemple','Free');
 INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('OPACXSLTDetailsDisplay','','','Activer la feuille XSL pour l''affichage des notices détaillées (Interface OPAC) Insérer le chemin vers la feuille xslt exemple','Free');
 INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('OPACXSLTResultsDisplay','','','Activer la feuille XSL pour l''affichage des listes de résultat Insérer le chemin vers la feuille xslt exemple :../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2IntranetDetail.xsl','Free');
-INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('IntranetXSLTResultsDisplay','','','Activer la feuille XSL pour l''affichage des listes de résultat (Interfaces pro et OPAC) Insérer le chemin vers la feuille xslt exemple :../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl','Free');
+INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('IntranetXSLTResultsDisplay','','','Activer la feuille XSL pour l''affichage des listes de résultat Insérer le chemin vers la feuille xslt exemple :../koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2IntranetDetail.xsl','Free');
 INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('AdvancedSearchTypes','itemtypes','itemtypes|ccode','Définit quel champ est utilisé pour la limitation par type de document dans la recherche avancée','Choice');
 INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('AllowOnShelfHolds', '0', '', 'Autorise les réservations de documents en rayon.', 'YesNo');
 INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('AllowHoldsOnDamagedItems', '1', '', 'Autorise les réservations de documents déclarés endommagés', 'YesNo');
@@ -294,6 +278,9 @@ INSERT INTO systempreferences (variable,value, options, explanation, type) VALUE
 INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('OPACPickUpLocation','1','Permet aux adhérent de choisir leur bibliothèque de retrait pour une réservation','','YesNo');
 INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('CI-3M:AuthorizedIPs','','Liste des IPs autorisées pour la magnétisation 3M','','Free');
 INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('AllowMultipleHoldsPerBib','','','Entrez ici la liste des types de documents (séparés par des espaces) pour lesquelles vous voulez permettre la réservation multiple des exemplaires.','Free');
+<<<<<<< HEAD
 INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('uploadPath','','Le chemin vers le répertoire de stockage pour le plugin upload.pl','','');
 INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('uploadWebPath','','Le chemin vers le répertoire de stockage à partir de la racine de publication du serveur web pour le plugin upload.pl','','');
 INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('BlockRenewWhenOverdue','0','Bloque les renouvellement quand en retard','','YesNo');
+INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('SolrAPI','http://localhost:8080/solr','','URL du service web Solr.','Free');
+INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES('SearchEngine','Solr','Solr|Zebra','Moteur de recherche','Choice');

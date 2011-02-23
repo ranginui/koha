@@ -1,3 +1,6 @@
 [submodule "misc/sudoc"]
 	path = misc/sudoc
 	url = gitosis@git.biblibre.com:sudoc.git
+[submodule "etc/solr"]
+	path = etc/solr
+	url = git://git.biblibre.com/solr_conf.git

@@ -1157,18 +1157,6 @@ method varchar(20) NOT NULL default ''
 );
 
 -- 
--- Table structure for table nozebra
--- 
-CREATE TABLE nozebra (
-server varchar(20) NOT NULL,
-indexname varchar(40) NOT NULL,
-value varchar(250) NOT NULL,
-biblionumbers text NOT NULL
-);
-CREATE INDEX nozebra_indexname_idx ON nozebra (server,indexname);
-CREATE INDEX nozebra_value_idx ON nozebra (server,value);
-
--- 
 -- Table structure for table opac_news
 -- 
 
@@ -1596,20 +1584,6 @@ icon text,
 description text NOT NULL,
 CHECK ( position IN ('primary', 'secondary', '' )),
 CHECK ( type IN ('zed', 'opensearch', '' )),
-PRIMARY KEY (id)
-);
-
--- 
--- Table structure for table zebraqueue
--- 
-
---DROP TABLE zebraqueue;
-
-CREATE TABLE zebraqueue (
-id BIGSERIAL,
-biblio_auth_number int NOT NULL default 0,
-operation varchar(20) NOT NULL default '',
-server varchar(20) NOT NULL default '',
 PRIMARY KEY (id)
 );
 

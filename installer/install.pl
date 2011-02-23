@@ -277,9 +277,6 @@ if ( $step && $step == 1 ) {
         # And we redirect people to mainpage.
         # The installer will have to relogin since we do not pass cookie to redirection.
         $template->param( "$op" => 1 );
-    } elsif ( $op && $op eq 'SetIndexingEngine' ) {
-        $installer->set_indexing_engine( $query->param('NoZebra') );
-        $template->param( "$op" => 1 );
     } elsif ( $op && $op eq 'addframeworks' ) {
 
         #
