@@ -32,6 +32,7 @@ my $query        = new CGI;
 my $op           = $query->param('op');
 my $dbh          = C4::Context->dbh;
 my $authtypecode = $query->param('authtypecode');
+my $searchtype   = $query->param('searchtype');
 
 my ( $template, $loggedinuser, $cookie );
 
@@ -52,7 +53,7 @@ if ( $op eq "do_search" ) {
     $filters->{C4::Search::Query::getIndexName('auth-type')} = $authtypecode if $authtypecode;
 
     my $operands;
-    my $indexes = GetIndexesBySearchtype($query->param('searchtype'), $authtypecode);
+    my $indexes = GetIndexesBySearchtype($searchtype, $authtypecode);
 
     for (@$indexes) {
         push @$operands, $value;
@@ -88,6 +89,7 @@ if ( $op eq "do_search" ) {
         total         => $pager->{total_entries},
         value         => $value,
         orderby       => $orderby,
+        searchtype    => $searchtype
     );
 
     my $authid_index_name = C4::Search::Query::getIndexName('authid');
