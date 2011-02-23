@@ -31,15 +31,17 @@
                         <option value="start">starts with</option>
                         <option value="is">is exactly</option>
                     </select>
-                    <input type="text" name="valuec" id="anywhere_value" value="<!-- TMPL_VAR NAME="value" -->" />
+                    <input type="text" name="value" id="anywhere_value" value="<!-- TMPL_VAR NAME="value" -->" />
                     <input type="hidden" name="marclistc" value="" />
                     <input type="hidden" name="and_ora" value="and" />
                     <input type="hidden" name="excludingc" value="" />
                 </li>
                 <li><label for="orderby">Order by: </label><select name="orderby" id="orderby">
                     <option value="">None</option>
-                        <option value="HeadingAsc" selected="selected">Heading Ascendant</option>
-                        <option value="HeadingDsc">Heading Descendant</option>
+                        <option value="txt_name asc" selected="selected">Heading Ascendant</option>
+                        <option value="txt_name desc">Heading Descendant</option>
+                        <option value="int_usedinxbiblios asc">Less used</option>
+                        <option value="int_usedinxbiblios desc">Most used</option>
                     </select>
                 </li></ol>
         </fieldset>

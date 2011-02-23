@@ -314,14 +314,12 @@ $(document).ready(function(){
 
     <div class="searchresults">
 	<form action="/cgi-bin/koha/opac-search.pl" method="get" name="bookbag_form" id="bookbag_form">
-		<!-- TMPL_IF NAME="searchdesc" -->
-		<!-- TMPL_LOOP NAME="QUERY_INPUTS"-->
-		<input type="hidden" name="<!-- TMPL_VAR ESCAPE=HTML NAME="input_name" -->" value="<!-- TMPL_VAR ESCAPE=HTML NAME="input_value" -->"/>
-		<!-- /TMPL_LOOP -->
-		<!-- TMPL_LOOP NAME="LIMIT_INPUTS"-->
-		<input type="hidden" name="<!-- TMPL_VAR ESCAPE=HTML NAME="input_name" -->" value="<!-- TMPL_VAR ESCAPE=HTML NAME="input_value" -->"/>
-		<!-- /TMPL_LOOP -->
-		<!-- /TMPL_IF -->
+	    <!-- TMPL_IF NAME="searchdesc" -->
+	    <input type="hidden" name="q" value="<!-- TMPL_VAR ESCAPE="HTML" NAME="query" -->" />
+	    <!-- TMPL_LOOP NAME="filters" -->
+	    <input type="hidden" name="filters" value="<!--TMPL_VAR NAME="ind"-->:&quot;<!--TMPL_VAR ESCAPE="HTML" NAME="val"-->&quot;" />
+	    <!-- /TMPL_LOOP -->
+	    <!-- /TMPL_IF -->
 
         <!-- TABLE RESULTS START -->
         <table>
@@ -369,7 +367,7 @@ $(document).ready(function(){
                 <td class="select selectcol"><!--TMPL_IF NAME="opacbookbag" --><input type="checkbox" id="bib<!-- TMPL_VAR NAME="biblionumber" -->" name="biblionumber" value="<!-- TMPL_VAR NAME="biblionumber" -->" title="Click to add to cart" /> <label for="bib<!-- TMPL_VAR NAME="biblionumber" -->"></label><!-- TMPL_ELSE -->
 <!-- TMPL_IF NAME="virtualshelves" --><input type="checkbox" id="bib<!-- TMPL_VAR NAME="biblionumber" -->" name="biblionumber" value="<!-- TMPL_VAR NAME="biblionumber" -->" title="Click to add to cart" /> <label for="bib<!-- TMPL_VAR NAME="biblionumber" -->"></label><!-- TMPL_ELSE -->
 <!-- TMPL_IF NAME="RequestOnOpac" --><!-- TMPL_UNLESS NAME="norequests" --><!-- TMPL_IF NAME="opacuserlogin" --><input type="checkbox" id="bib<!-- TMPL_VAR NAME="biblionumber" -->" name="biblionumber" value="<!-- TMPL_VAR NAME="biblionumber" -->" title="Click to add to cart" /> <label for="bib<!-- TMPL_VAR NAME="biblionumber" -->"></label><!-- /TMPL_IF --><!-- /TMPL_UNLESS --><!-- /TMPL_IF --><!-- /TMPL_IF --><!-- /TMPL_IF --></td>
-                <td class="select selectcol"><!-- TMPL_VAR NAME="result_number" -->.</td>
+                <td class="select selectcol"><!-- TMPL_VAR EXPR="__counter__+((current_page-1)*count)" -->.</td>
 
 				<!-- TMPL_UNLESS NAME="item-level_itypes" -->
 				<td class="itypecol">
