@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://opac.solr.localhost/" />
+<title>Basic Search</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">Basic Search</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>transl1</td>
+	<td>*:*</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchsubmit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>“*:* recordtype:biblio” returned 74 results.</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>transl1</td>
+	<td>alchimie</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchsubmit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>L'alchimiste</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>transl1</td>
+	<td>routard</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchsubmit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Le routard galactique</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>transl1</td>
+	<td>roudart~</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchsubmit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Le routard galactique</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>transl1</td>
+	<td>routa~</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchsubmit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Le routard galactique</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>transl1</td>
+	<td>str_publisher:Den??l</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchsubmit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Le routard galactique</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>transl1</td>
+	<td>str_publisher:&quot;Denoël&quot;</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchsubmit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Le routard galactique</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>transl1</td>
+	<td>str_publisher:Den*</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchsubmit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Le routard galactique</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>transl1</td>
+	<td>&quot;bord assis&quot;~5</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchsubmit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Sur le bord de la rivière Piedra, je me suis assise et j'ai pleuré</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>transl1</td>
+	<td>str_publisher:Den* NOT str_author:Bennett*</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchsubmit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Le routard galactique</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>transl1</td>
+	<td>date_pubdate:1985*</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchsubmit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Sans fin</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>transl1</td>
+	<td>date_pubdate:&quot;1988-01-01T00:00:00Z&quot;</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchsubmit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>La Résurrection de Mozart</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>transl1</td>
+	<td>date_acqdate:&quot;2010-08-31T00:00:00Z&quot;</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchsubmit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Anioutka</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>transl1</td>
+	<td>echelle</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>searchsubmit</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>10 sur l'échelle de Richter</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>

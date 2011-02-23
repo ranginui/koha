@@ -1,0 +1,199 @@
+<!-- TMPL_INCLUDE NAME="doc-head-open.inc" -->
+<title>Koha &rsaquo; Administration &rsaquo; Solr config</title>
+<!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
+<script type="text/javascript" src="/intranet-tmpl/prog/en/lib/jquery/plugins/ui.sortable.js"></script>
+<script type="text/javascript" language="javascript">
+    $(document).ready(function() {
+        $('.delete').click(function() {
+            $(this).parents('tr').remove();
+        });
+        $('#indexes tbody').sortable();
+        $('.add').click(function() {
+            var code            = $('#code').val();
+            var label           = $('#label').val();
+            var type            = $('#type').val();
+            var faceted         = $('#faceted').attr('checked') ? 'checked="checked"' : '';
+            var sortable        = $('#sortable').attr('checked') ? 'checked="checked"' : '';
+            var plugin          = $('#plugin').val();
+            
+            if ( code != '' && label != '' ) {
+            
+                var line  = '<tr>';
+                    line += '<td><input name="mandatory" type="hidden" maxlength="1" value="0" /></td>';
+                    line += '<td><input name="code" maxlength="25" type="text" value="'+code+'" /\></td>';
+                    line += '<input name="rpn_index" maxlength="25" type="hidden" value="0" /\>';
+                    line += '<input name="ccl_index_name" maxlength="25" type="hidden" value="" /\>';
+                    line += '<td><input name="label" maxlength="25" type="text" value="'+label+'" /\></td>';
+                    line += '<td>';
+                    line += '<select name="type">';
+                    line += '<option value="str">String</option>';
+                    line += '<option value="ste">Simple Text</option>';
+                    line += '<option value="txt">Text</option>';
+                    line += '<option value="int">Integer</option>';
+                    line += '<option value="date">Date</option>';
+                    line += '</select>';
+                    line += '</td>';
+                    line += '<td><input name="faceted" type="checkbox" '+faceted+' value="'+code+'" /\></td>';
+                    line += '<td><input name="sortable" type="checkbox" '+sortable+' value="'+code+'" /\></td>';
+                    line += '<td><select name="plugin">';
+                    line += '<option value=""></option>'
+                        <!-- TMPL_LOOP NAME="pluginloop" -->
+                            line += '<option value="<!-- TMPL_VAR NAME="value" -->"';
+                            if ( plugin == '<!-- TMPL_VAR NAME="value" -->' ) { line += 'selected="selected"'; }
+                            line += '>';
+                            line += '<!-- TMPL_VAR NAME="name" -->';
+                            line += '</option>';
+                        <!-- /TMPL_LOOP -->
+                    line += '</select></td>';
+                    line += '<td><a class="delete">Delete</a></td>';
+                    line += '</tr>';
+                
+                $('table#indexes>tbody').append(line);
+                
+                $('#code').val('');
+                $('#label').val('');
+                $('#faceted').attr('checked', false);
+                $('#sortable').attr('checked', false);
+                $('#index').val('');
+                
+                $('.delete').click(function() {
+                    $(this).parents('tr').remove();
+                });
+            
+            }
+        });
+    });
+</script>
+</head>
+<body>
+<!-- TMPL_INCLUDE NAME="header.inc" -->
+<!-- TMPL_INCLUDE NAME="cat-search.inc" -->
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/admin/admin-home.pl">Administration</a> &rsaquo; Search engine configuration</div>
+
+<div id="doc3" class="yui-t1">
+
+<div id="bd">
+    <div id="yui-main">
+    <div class="yui-b">
+    <h1>Search engine configuration</h1>
+    
+    <div class="toptabs">
+        <ul class="ui-tabs-nav">
+            <!-- TMPL_LOOP NAME="ressourcetypeloop" -->
+                <!--TMPL_IF name="selected"-->
+                <li class="ui-tabs-selected">
+                <!--TMPL_ELSE-->
+                <li>
+                <!--/TMPL_IF-->
+                    <a href="/cgi-bin/koha/solr/indexes.pl?ressource_type=<!-- TMPL_VAR NAME="name" -->"><!-- TMPL_VAR NAME="name" --></a>
+                </li>
+            <!-- /TMPL_LOOP -->
+        </ul>
+        <div class="ui-tabs-panel">
+
+            <div class="toptabs">
+                <ul class="ui-tabs-nav">
+                    <li class="ui-tabs-selected"><a href="/cgi-bin/koha/solr/indexes.pl?ressource_type=<!-- TMPL_VAR NAME="ressource_type" -->">Indexes</a></li>
+                    <li><a href="/cgi-bin/koha/solr/mappings.pl?ressource_type=<!-- TMPL_VAR NAME="ressource_type" -->">Index to MARC mappings</a></li>
+                </ul>
+                <div class="ui-tabs-panel">
+                    <form method="POST">
+                        <input type="hidden" name="op" value="edit" />
+                        <input type="hidden" name="ressource_type" value="<!-- TMPL_VAR NAME="ressource_type" -->" />
+                        <table id="indexes" class="zebra">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Code</th>
+                                    <th>Label</th>
+                                    <th>Type</th>
+                                    <th>Faceted</th>
+                                    <th>Sortable</th>
+                                    <th>Plugin</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- TMPL_LOOP NAME="indexloop" -->
+                                    <tr>
+                                        <td></td>
+                                        <td>
+                                            <!--TMPL_IF name="mandatory"-->
+                                                <input name="code" type="text" maxlength="25" value="<!-- TMPL_VAR NAME="code" -->" disabled="disabled" />
+                                                <input name="code" type="hidden" maxlength="25" value="<!-- TMPL_VAR NAME="code" -->" />
+                                            <!--TMPL_ELSE-->
+                                                <input name="code" type="text" maxlength="25" value="<!-- TMPL_VAR NAME="code" -->" />
+                                            <!--/TMPL_IF-->
+                                            <input name="mandatory" type="hidden" maxlength="1" value="<!-- TMPL_VAR NAME="mandatory" -->" />
+                                            <input name="rpn_index" maxlength="25" type="hidden" value="<!-- TMPL_VAR NAME="rpn_index" -->" />
+                                            <input name="ccl_index_name" maxlength="25" type="hidden" value="<!-- TMPL_VAR NAME="ccl_index_name" -->" />
+                                        </td>
+                                        <td><input name="label" type="text" maxlength="25" value="<!-- TMPL_VAR NAME="label" -->" /></td>
+                                        <td>
+                                            <select name="type">
+                                                <option <!-- TMPL_IF EXPR="type eq 'str'" -->selected="selected"<!-- /TMPL_IF --> value="str">String</option>
+                                                <option <!-- TMPL_IF EXPR="type eq 'ste'" -->selected="selected"<!-- /TMPL_IF --> value="ste">Simple Text</option>
+                                                <option <!-- TMPL_IF EXPR="type eq 'txt'" -->selected="selected"<!-- /TMPL_IF --> value="txt">Text</option>
+                                                <option <!-- TMPL_IF EXPR="type eq 'int'" -->selected="selected"<!-- /TMPL_IF --> value="int">Integer</option>
+                                                <option <!-- TMPL_IF EXPR="type eq 'date'" -->selected="selected"<!-- /TMPL_IF --> value="date">Date</option>
+                                            </select>
+                                        </td>
+                                        <td><input name="faceted" type="checkbox" <!-- TMPL_IF NAME="faceted" -->checked="checked"<!-- /TMPL_IF --> value="<!-- TMPL_VAR NAME="code" -->" /></td>
+                                        <td><input name="sortable" type="checkbox" <!-- TMPL_IF NAME="sortable" -->checked="checked"<!-- /TMPL_IF --> value="<!-- TMPL_VAR NAME="code" -->" /></td>
+                                        <td>
+                                            <select name="plugin">
+                                                <option value=""></option>
+                                                <!-- TMPL_LOOP NAME="pluginloop" -->
+                                                    <option value="<!-- TMPL_VAR NAME="value" -->" <!--TMPL_IF name="selected"-->selected="selected"<!--/TMPL_IF-->>
+                                                        <!-- TMPL_VAR NAME="name" -->
+                                                    </option>
+                                                <!-- /TMPL_LOOP -->
+                                            </select>
+                                        </th>
+                                        <td><!--TMPL_UNLESS name="mandatory"--><a class="delete">Delete</a><!--/TMPL_UNLESS--></td>
+                                    </tr>
+                                <!-- /TMPL_LOOP -->
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td></td>
+                                    <td><input id="code" type="text" maxlength="25" /></td>
+                                    <td><input id="label" type="text" maxlength="25" /></td>
+                                    <td>
+                                        <select id="type">
+                                            <option value="str">String</option>
+                                            <option value="ste">Simple Text</option>
+                                            <option value="txt">Text</option>
+                                            <option value="int">Integer</option>
+                                            <option value="date">Date</option>
+                                        </select>
+                                    </td>
+                                    <td><input id="faceted" type="checkbox" /></td>
+                                    <td><input id="sortable" type="checkbox" /></td>
+                                    <td>
+                                        <select id="plugin">
+                                            <option value=""></option>
+                                            <!-- TMPL_LOOP NAME="pluginloop" -->
+                                                <option value="<!-- TMPL_VAR NAME="value" -->"><!-- TMPL_VAR NAME="name" --></option>
+                                            <!-- /TMPL_LOOP -->
+                                        </select>
+                                    </td>
+                                    <td><a class="add">Add</a></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <p><input type="submit" value="Save" /></p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+<div class="yui-b">
+<!-- TMPL_INCLUDE NAME="admin-menu.inc" -->
+</div>
+</div>
+<!-- TMPL_INCLUDE NAME="intranet-bottom.inc" -->
