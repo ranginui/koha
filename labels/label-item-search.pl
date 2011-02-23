@@ -30,7 +30,7 @@ use C4::Output qw(output_html_with_http_headers);
 use C4::Context;
 use C4::Dates;
 use C4::Search qw(SimpleSearch);
-use C4::Biblio qw(TransformMarcToKoha);
+use C4::Biblio qw(TransformMarcToKoha GetMarcBiblio);
 use C4::Items qw(GetItemInfosOf get_itemnumbers_of);
 use C4::Koha qw(GetItemTypes);    # XXX subfield_is_koha_internal_p
 use C4::Creators::Lib qw(html_table);
@@ -86,10 +86,12 @@ if ( $op eq "do_search" ) {
     }
 
     my $offset = $startfrom > 1 ? $startfrom - 1 : 0;
-    ( $error, $marcresults, $total_hits ) = SimpleSearch( $ccl_query, $offset, $resultsperpage );
+    my $query = C4::Search::Query->normalSearch($ccl_query);
+    $marcresults = SimpleSearch( $query, {}, $offset / $resultsperpage + 1, $resultsperpage );
+    $total_hits = $marcresults->{'pager'}->{'total_entries'};
 
-    if ( scalar($marcresults) > 0 ) {
-        $show_results = scalar @$marcresults;
+    if ( scalar($marcresults->items) > 0 ) {
+        $show_results = scalar @{$marcresults->items};
     } else {
         $debug and warn "ERROR label-item-search: no results from SimpleSearch";
 
@@ -108,8 +110,8 @@ if ($show_results) {
     for ( my $i = 0 ; $i < $hits ; $i++ ) {
         my @row_data = ();
 
-        #DEBUG Notes: Decode the MARC record from each resulting MARC record...
-        my $marcrecord = MARC::File::USMARC::decode( $marcresults->[$i] );
+        my $recordid = @{$marcresults->items}[$i]->{values}{recordid};
+        my $marcrecord = GetMarcBiblio($recordid);
 
         #DEBUG Notes: Transform it to Koha form...
         my $biblio = TransformMarcToKoha( C4::Context->dbh, $marcrecord, '' );

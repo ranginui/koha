@@ -1,5 +1,4 @@
 #!/usr/bin/perl
-# WARNING: 4-character tab stops here
 
 # Copyright 2000-2002 Katipo Communications
 #
@@ -56,182 +55,95 @@ use C4::Output;
 use C4::Search;
 use C4::Biblio;
 use C4::Debug;
+use Data::Pagination;
 
-my $input = new CGI;
-
-# my $type=$query->param('type');
-my $op = $input->param('op') || q{};
-my $dbh = C4::Context->dbh;
-
-my $startfrom = $input->param('startfrom');
-$startfrom = 0 unless $startfrom;
-my ( $template, $loggedinuser, $cookie );
-my $resultsperpage;
-
+my $input                 = new CGI;
+my $op                    = $input->param('op');
+my $query                 = $input->param('q') || '*:*';
+my $dbh                   = C4::Context->dbh;
+my $count                 = 20;
+my $page                  = $input->param('page') || 1;
 my $advanced_search_types = C4::Context->preference("AdvancedSearchTypes");
-my $itype_or_itemtype = ( C4::Context->preference("item-level_itypes") ) ? 'itype' : 'itemtype';
+my $itype_or_itemtype     = C4::Context->preference("item-level_itypes") ? 'str_itype' : 'str_itemtype';
 
-my $query = $input->param('q');
+my ( $template, $loggedinuser, $cookie );
 
 # don't run the search if no search term !
 if ( $op eq "do_search" && $query ) {
 
-    ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-        {   template_name   => "serials/result.tmpl",
-            query           => $input,
-            type            => "intranet",
-            authnotrequired => 0,
-            flagsrequired => {catalogue => 1, serials => '*'},
-            debug           => 1,
-        }
-    );
+    my $filters = { recordtype => 'biblio' };
 
     # add the itemtype limit if applicable
     my $itemtypelimit = $input->param('itemtypelimit');
-    if ($itemtypelimit) {
-        if ( !$advanced_search_types or $advanced_search_types eq 'itemtypes' ) {
-            $query .= " AND $itype_or_itemtype=$itemtypelimit";
+    if ( $itemtypelimit ) {
+        if ( ! $advanced_search_types or $advanced_search_types eq 'itemtypes' ) {
+            $filters->{$itype_or_itemtype} = "\"$itemtypelimit\"";
         } else {
-            $query .= " AND $advanced_search_types=$itemtypelimit";
-        }
-    }
-    $debug && warn $query;
-    $resultsperpage = $input->param('resultsperpage');
-    $resultsperpage = 20 if ( !defined $resultsperpage );
-
-    my ( $error, $marcrecords, $total_hits ) = SimpleSearch( $query, $startfrom * $resultsperpage, $resultsperpage );
-    my $total = scalar @$marcrecords if $marcrecords;
-
-    if ( defined $error ) {
-        $template->param( query_error => $error );
-        warn "error: " . $error;
-        output_html_with_http_headers $input, $cookie, $template->output;
-        exit;
-    }
-    my @results;
-
-    for ( my $i = 0 ; $i < $total ; $i++ ) {
-        my %resultsloop;
-        my $marcrecord = MARC::File::USMARC::decode( $marcrecords->[$i] );
-        my $biblio = TransformMarcToKoha( C4::Context->dbh, $marcrecord, '' );
-
-        #build the hash for the template.
-        $resultsloop{highlight}       = ( $i % 2 ) ? (1) : (0);
-        $resultsloop{title}           = $biblio->{'title'};
-        $resultsloop{subtitle}        = $biblio->{'subtitle'};
-        $resultsloop{biblionumber}    = $biblio->{'biblionumber'};
-        $resultsloop{author}          = $biblio->{'author'};
-        $resultsloop{publishercode}   = $biblio->{'publishercode'};
-        $resultsloop{publicationyear} = $biblio->{'publicationyear'};
-
-        push @results, \%resultsloop;
-    }
-
-    # multi page display gestion
-    my $displaynext = 0;
-    my $displayprev = $startfrom;
-    if ( ( $total_hits - ( ( $startfrom + 1 ) * ($resultsperpage) ) ) > 0 ) {
-        $displaynext = 1;
-    }
-
-    my @numbers = ();
-
-    if ( $total_hits > $resultsperpage ) {
-        for ( my $i = 1 ; $i < $total / $resultsperpage + 1 ; $i++ ) {
-            if ( $i < 16 ) {
-                my $highlight = 0;
-                ( $startfrom == ( $i - 1 ) ) && ( $highlight = 1 );
-                push @numbers,
-                  { number     => $i,
-                    highlight  => $highlight,
-                    searchdata => \@results,
-                    startfrom  => ( $i - 1 )
-                  };
-            }
+            $filters->{$advanced_search_types} = "\"$itemtypelimit\"";
         }
     }
 
-    my $from = 0;
-    $from = $startfrom * $resultsperpage + 1 if ( $total_hits > 0 );
-    my $to;
+    my $res = SimpleSearch( $query, $filters, $page, $count);
+    my @results = map { GetBiblio $_->{'values'}->{'recordid'} } @{ $res->items };
 
-    if ( $total_hits < ( ( $startfrom + 1 ) * $resultsperpage ) ) {
-        $to = $total;
-    } else {
-        $to = ( ( $startfrom + 1 ) * $resultsperpage );
-    }
+    my $pager = Data::Pagination->new(
+        $res->{'pager'}->{'total_entries'},
+        $count,
+        20,
+        $page,
+    );
+
+    ( $template, $loggedinuser, $cookie ) = get_template_and_user( {
+        template_name   => "serials/result.tmpl",
+        query           => $input,
+        type            => "intranet",
+        authnotrequired => 0,
+        flagsrequired   => { serials   => 1 },
+        flagsrequired   => { catalogue => 1 },
+        debug           => 1,
+    } );
+
     $template->param(
         query          => $query,
         resultsloop    => \@results,
-        startfrom      => $startfrom,
-        displaynext    => $displaynext,
-        displayprev    => $displayprev,
-        resultsperpage => $resultsperpage,
-        startfromnext  => $startfrom + 1,
-        startfromprev  => $startfrom - 1,
-        total          => $total_hits,
-        from           => $from,
-        to             => $to,
-        numbers        => \@numbers,
+        total          => $res->{'pager'}->{'total_entries'},
+        PAGE_NUMBERS  => [ map { { page => $_, current => $_ == $page } } @{ $pager->{'numbers_of_set'} } ],
+        pager_params  => [ { ind => 'op'           , val => $op            },
+                           { ind => 'q'            , val => $query         },
+                           { ind => 'itemtypelimit', val => $itemtypelimit } ],
     );
-}    # end of if ($op eq "do_search" & $query)
-else {
+
+} else {
     my @itemtypesloop;
+
     if ( !$advanced_search_types or $advanced_search_types eq 'itemtypes' ) {
 
-        # load the itemtypes
         my $itemtypes = GetItemTypes;
-        my $selected  = 1;
-        my $cnt;
-        foreach my $thisitemtype ( sort { $itemtypes->{$a}->{'description'} cmp $itemtypes->{$b}->{'description'} } keys %$itemtypes ) {
-            my %row = (
-                code        => $thisitemtype,
-                selected    => $selected,
-                description => $itemtypes->{$thisitemtype}->{'description'},
-            );
-            $selected = 0 if ($selected);
-            push @itemtypesloop, \%row;
-        }
+        @itemtypesloop = map { {
+            code        => $_,
+            description => $itemtypes->{$_}->{'description'},
+        } } keys %$itemtypes;
 
     } else {
-        my $advsearchtypes = GetAuthorisedValues($advanced_search_types);
-        my $cnt;
-        my $selected = 1;
-        for my $thisitemtype ( sort { $a->{'lib'} cmp $b->{'lib'} } @$advsearchtypes ) {
-            my %row = (
-                number      => $cnt++,
-                ccl         => $advanced_search_types,
-                code        => $thisitemtype->{authorised_value},
-                selected    => $selected,
-                description => $thisitemtype->{'lib'},
-                count5      => $cnt % 4,
-                imageurl    => getitemtypeimagelocation( 'intranet', $thisitemtype->{'imageurl'} ),
-            );
-            push @itemtypesloop, \%row;
-        }
+
+        my $advsearchtypes = GetAuthorisedValues( $advanced_search_types );
+        @itemtypesloop = map { {
+            code        => $_->{authorised_value},
+            description => $_->{'lib'},
+        } } @$advsearchtypes;
+
     }
 
-    ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-        {   template_name   => "serials/subscription-bib-search.tmpl",
-            query           => $input,
-            type            => "intranet",
-            authnotrequired => 0,
-            flagsrequired => {catalogue => 1, serials => '*'},
-            debug           => 1,
-        }
-    );
+    ( $template, $loggedinuser, $cookie ) = get_template_and_user( {
+        template_name   => "serials/subscription-bib-search.tmpl",
+        query           => $input,
+        type            => "intranet",
+        authnotrequired => 0,
+        flagsrequired   => { catalogue => 1, serials => 1 },
+        debug           => 1,
+    } );
 
-    if ( $op eq "do_search" ) {
-        $template->param( "no_query" => 1 );
-    } else {
-        $template->param( "no_query" => 0 );
-    }
     $template->param( itemtypeloop => \@itemtypesloop );
 }
 
-# Print the page
 output_html_with_http_headers $input, $cookie, $template->output;
-
-# Local Variables:
-# tab-width: 4
-# End:
