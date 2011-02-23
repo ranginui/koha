@@ -4,3 +4,6 @@
 [submodule "etc/solr"]
 	path = etc/solr
 	url = git://git.biblibre.com/solr_conf.git
+[submodule "C4/rg-z3950-rpn"]
+	path = C4/rg-z3950-rpn
+	url = git://github.com/eiro/rg-z3950-rpn.git
