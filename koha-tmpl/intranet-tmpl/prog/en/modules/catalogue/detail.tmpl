@@ -1,6 +1,8 @@
 <!-- TMPL_INCLUDE NAME="doc-head-open.inc" -->
 <title>Koha &rsaquo; Catalog &rsaquo; Details for <!-- TMPL_VAR NAME="title" escape="html" --> <!-- TMPL_LOOP NAME="subtitle" --> <!-- TMPL_VAR NAME="subfield" --><!-- /TMPL_LOOP --></title>
-<!-- TMPL_INCLUDE NAME="doc-head-close.inc" --><script type="text/JavaScript" language="JavaScript">
+<!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
+<script type="text/javascript" src="/intranet-tmpl/prog/en/lib/jquery/plugins/picnet.table.filter.min.js"></script>
+<script type="text/JavaScript" language="JavaScript">
 //<![CDATA[
 // http://www.oreillynet.com/pub/a/javascript/2003/10/21/amazonhacks.html
 function verify_images() {
@@ -32,9 +34,14 @@ function verify_images() {
      $(document).ready(function() {
         $('#bibliodetails > ul').tabs();
 
+	// Filters
+	$('#myholdingst').tableFilter();
+	$('#otherholdingst').tableFilter();
+
+	// Checkboxes
 	// Select All My Holdings
 	$('#selectAllMyHoldings').click(function() {
-	  $('.myitemcheck').each(function() {
+	  $('.myitemcheck:visible').each(function() {
 	    if (!this.disabled) {
 		this.checked = true;
 	    }
@@ -68,7 +75,7 @@ function verify_images() {
 
 	// Select All Other Holdings
 	$('#selectAllOtherHoldings').click(function() {
-	  $('.otheritemcheck').each(function() {
+	  $('.otheritemcheck:visible').each(function() {
 	    if (!this.disabled) {
 		this.checked = true;
 	    }
@@ -106,10 +113,6 @@ function verify_images() {
         verify_images();
      });<!-- /TMPL_IF -->
 
-function Check(f, del) {
-    var frm = f;
-    return false;
-}
 
 
 //]]>
@@ -269,22 +272,26 @@ function Check(f, del) {
 <div id="myholdings">
 <!-- TMPL_IF name="currentbranch" -->
 <!-- TMPL_IF name="myholdingscount" -->
+
     <form action="/cgi-bin/koha/tools/batchMod.pl">
-        <table>
+        <table id="myholdingst">
+	    <thead>
             <tr>
-                <!-- TMPL_IF NAME="item-level_itypes" --><th>Item type</th><!-- /TMPL_IF -->
-                <th>Location</th>
-                <!-- TMPL_IF NAME="itemdata_ccode" --><th>Collection</th><!-- /TMPL_IF -->
-                <th>Call Number</th>
-                <th>Status</th>
-                <th>Last seen</th>
-                <th>Barcode</th>
-                <!-- TMPL_IF NAME="volinfo" --><th>Publication Details</th><!-- /TMPL_IF -->
-                <!-- TMPL_IF NAME="itemdata_uri" --><th>URL</th><!-- /TMPL_IF -->
+                <!-- TMPL_IF NAME="item-level_itypes" --><th filter="false">Item type</th><!-- /TMPL_IF -->
+                <th filter="false">Location</th>
+                <!-- TMPL_IF NAME="itemdata_ccode" --><th filter="false">Collection</th><!-- /TMPL_IF -->
+                <th filter="false">Call Number</th>
+                <th filter="false">Status</th>
+                <th filter="false">Last seen</th>
+                <th filter="false">Barcode</th>
+                <!-- TMPL_IF NAME="volinfo" --><th id="volinfo">Publication Details</th><!-- /TMPL_IF -->
+                <!-- TMPL_IF NAME="itemdata_uri" --><th filter="false">URL</th><!-- /TMPL_IF -->
                 <!-- TMPL_IF NAME="itemdata_copynumber" --><th>Copy No.</th><!-- /TMPL_IF -->
-		<!-- TMPL_IF NAME="SpineLabelShowPrintOnBibDetails" --><th>Spine Label</th><!-- /TMPL_IF -->
-		<th>Check</th>
+		<!-- TMPL_IF NAME="SpineLabelShowPrintOnBibDetails" --><th filter="false">Spine Label</th><!-- /TMPL_IF -->
+		<th filter="false">Check</th>
             </tr>
+	    </thead>
+	    <tbody>
             <!-- TMPL_LOOP NAME="myitemloop" -->
                 <tr>
                     <!-- TMPL_IF NAME="item-level_itypes" -->
@@ -411,6 +418,7 @@ function Check(f, del) {
 		<td><input class="myitemcheck" value="<!-- TMPL_VAR NAME="barcode" -->" type="checkbox"<!-- TMPL_UNLESS NAME="barcode" --> disabled="disabled"<!-- /TMPL_UNLESS --> /></td>
                 </tr>
             <!-- /TMPL_LOOP -->
+	    </tbody>
         </table>
 	<a href="#" id="selectAllMyHoldings">Select All</a> | <a href="#" id="unSelectAllMyHoldings">Unselect All</a> |
 	<input type="button" id="editSelectedMyHoldings" value="Edit selected items"/>
@@ -435,22 +443,26 @@ function Check(f, del) {
     
 <div id="otherholdings">
 <!-- TMPL_IF name="otherholdingscount" -->
+
     <form action="/cgi-bin/koha/tools/batchMod.pl">
-        <table>
+        <table id="otherholdingst">
+	    <thead>
             <tr>
-                <!-- TMPL_IF NAME="item-level_itypes" --><th>Item type</th><!-- /TMPL_IF -->
-                <th>Location</th>
-                <!-- TMPL_IF NAME="itemdata_ccode" --><th>Collection</th><!-- /TMPL_IF -->
-                <th>Call Number</th>
-                <th>Status</th>
-                <th>Last seen</th>
-                <th>Barcode</th>
+                <!-- TMPL_IF NAME="item-level_itypes" --><th filter="false">Item type</th><!-- /TMPL_IF -->
+                <th filter="false">Location</th>
+                <!-- TMPL_IF NAME="itemdata_ccode" --><th filter="false">Collection</th><!-- /TMPL_IF -->
+                <th filter="false">Call Number</th>
+                <th filter="false">Status</th>
+                <th filter="false">Last seen</th>
+                <th filter="false">Barcode</th>
                 <!-- TMPL_IF NAME="volinfo" --><th>Publication Details</th><!-- /TMPL_IF -->
-                <!-- TMPL_IF NAME="itemdata_uri" --><th>URL</th><!-- /TMPL_IF -->
+                <!-- TMPL_IF NAME="itemdata_uri" --><th filter="false">URL</th><!-- /TMPL_IF -->
                 <!-- TMPL_IF NAME="itemdata_copynumber" --><th>Copy No.</th><!-- /TMPL_IF -->
-		<!-- TMPL_IF NAME="SpineLabelShowPrintOnBibDetails" --><th>Spine Label</th><!-- /TMPL_IF -->
-		<th>Check</th>
+		<!-- TMPL_IF NAME="SpineLabelShowPrintOnBibDetails" --><th filter="false">Spine Label</th><!-- /TMPL_IF -->
+		<th filter="false">Check</th>
             </tr>
+	    </thead>
+	    <tbody>
             <!-- TMPL_LOOP NAME="otheritemloop" -->
                 <tr>
                     <!-- TMPL_IF NAME="item-level_itypes" -->
@@ -578,6 +590,7 @@ function Check(f, del) {
 
                 </tr>
             <!-- /TMPL_LOOP -->
+	</tbody>
         </table>
 	<a href="#" id="selectAllOtherHoldings">Select All</a> | <a href="#" id="unSelectAllOtherHoldings">Unselect All</a> |
 	<input type="button" id="editSelectedOtherHoldings" value="Edit selected items"/>
