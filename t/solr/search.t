@@ -106,3 +106,12 @@ $got = C4::Search::Query->buildQuery($indexes, $operands, $operators);
 $expected = "maudits OR a OR andre";
 is($got, $expected, "Test call with bad indexes types");
 
+BEGIN { $tests += 1 } # normal search with rpn query
+@$indexes = ();
+@$operators = ();
+# NB: not supported by Z3950 server (rflag=x is replaced by rflag='x')
+@$operands[0] = q{allrecords,alwaysMatches="" not harvestdate,alwaysMatches="" and (rflag=1 or rflag=2)};
+$got = C4::Search::Query->buildQuery($indexes, $operands, $operators);
+$expected = "[* TO * ] NOT date_harvestdate:[* TO * ] AND (int_rflag:1 OR int_rflag:2)";
+is($got, $expected, "Test alwaysMatches modifier and allrecords index in 'normal' search");
+

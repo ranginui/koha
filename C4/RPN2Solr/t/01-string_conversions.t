@@ -37,19 +37,18 @@ test_output
 );
 
 # Atomic query
-BEGIN { $tests += 1 }
+BEGIN { $tests += 2 }
 test_output
 ( q{jean}
 , "all_fields:'jean'"
 , "Atomic query"
 );
 
-# TODO "" is not match by grammar
-# test_output
-# ( q{@attr 1=1016 ""}
-# , "all_fields:[* TO *]"
-# , "Atomic query with *"
-# );
+test_output
+( q{@attr 1=1016 ""}
+, "all_fields:[* TO *]"
+, "Atomic query with *"
+);
 
 # Operators AND, OR, NOT
 BEGIN { $tests += 4 }
@@ -157,8 +156,8 @@ test_output
 
 # We have not yet an integer index
 test_output
-( q{@attr 4=109 @attr 2=5 @attr 1=int_idx 114}
-, "int_idx:[114 TO *]"
+( q{@attr 4=109 @attr 2=5 @attr 1=int_idx 5}
+, "int_idx:[5 TO *]"
 , q{@attr 4=109 : numeric string}
 );
 
@@ -170,4 +169,11 @@ test_output
 , q{@attr 4=1 : Phrase}
 );
 
+# Complex rpn query with _ALLRECORDS "rpn index"
+BEGIN { $tests += 1 }
+test_output
+( q{@not @attr 2=103 @attr 1=_ALLRECORDS "" @attr 1=harvestdate @attr 2=103 ""}
+, "( all_fields:[* TO *] NOT date_harvestdate:[* TO *] )"
+, q{_ALLRECORDS}
+);
 

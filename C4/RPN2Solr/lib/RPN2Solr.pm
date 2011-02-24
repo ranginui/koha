@@ -190,8 +190,13 @@ sub construct_string_from_node {
     }
 
     if (defined $value) {
-        # "" is not match by grammar TODO
-        #$value = "[* TO *]" if $value eq "";
+        # if value eq "", we want to search [* TO *]
+        # and we can not modifier string by structure
+        if ( $value eq '""' ) {
+            $value = "[* TO *]";
+            $structure = -1;
+        }
+
 
         given ( $truncate ) {
             when ( 1 ) { $value = "$value*"; } # Right
@@ -229,7 +234,8 @@ sub construct_string_from_node {
             # >
             when ( 4 ) { push @string, "$index:[$value TO *]"; }
             when ( 5 ) { push @string, "$index:[$value TO *]"; }
-            when ( 6 ) { push @string, "!$index:$value";        }
+            when ( 6 ) { push @string, "!$index:$value";       }
+            when ( 103 ) { push @string, "$index:[* TO *]";    }
         }
     }
 
