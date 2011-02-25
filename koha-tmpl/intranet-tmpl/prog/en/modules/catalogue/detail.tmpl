@@ -37,10 +37,13 @@ function verify_images() {
 	// Filters
 	$('#myholdingst').tableFilter();
 	$('#otherholdingst').tableFilter();
+	// This is an ugly hack to make picnet table filter work with the tab system 
+	// (ie: if not used, field search size would be null in the tabs that are not displayed at first)
+	$('.filter').css("width", "6em");
 
 	// Checkboxes
 	// Select All My Holdings
-	$('#selectAllMyHoldings').click(function() {
+	$('.selectAllMyHoldings').click(function() {
 	  $('.myitemcheck:visible').each(function() {
 	    if (!this.disabled) {
 		this.checked = true;
@@ -49,13 +52,13 @@ function verify_images() {
 	});
 
 	// unselect All My Holdings
-	$('#unSelectAllMyHoldings').click(function() {
+	$('.unSelectAllMyHoldings').click(function() {
 	  $('.myitemcheck').each(function() {
 		this.checked = false;
 	  });
 	});
 
-	// Editing selecte items (from my holdings)
+	// Editing selected items (from my holdings)
 	$('#editSelectedMyHoldings').click(function() {
 	    var urlstr = '';
 	    $('.myitemcheck:checked').each(function() {
@@ -74,7 +77,7 @@ function verify_images() {
 	});
 
 	// Select All Other Holdings
-	$('#selectAllOtherHoldings').click(function() {
+	$('.selectAllOtherHoldings').click(function() {
 	  $('.otheritemcheck:visible').each(function() {
 	    if (!this.disabled) {
 		this.checked = true;
@@ -83,7 +86,7 @@ function verify_images() {
 	});
 
 	// unselect All Other Holdings
-	$('#unSelectAllOtherHoldings').click(function() {
+	$('.unSelectAllOtherHoldings').click(function() {
 	  $('.otheritemcheck').each(function() {
 		this.checked = false;
 	  });
@@ -95,7 +98,7 @@ function verify_images() {
 	    $('.otheritemcheck:checked').each(function() {
 		urlstr += '&barcode=' + $(this).val();
 	    });
-	    window.open('/cgi-bin/koha/tools/batchMod.pl?mod=1');
+	    window.open('/cgi-bin/koha/tools/batchMod.pl?mod=1' + urlstr);
 	});
 
 	// Deleting items (from other holdings)
@@ -262,7 +265,7 @@ function verify_images() {
 
 <ul>   
 <li><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->#myholdings">My Holdings</a></li>
-<li><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->#otherholdings">Other Holdings</a></li>
+<li><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->#otherholdings" id="otherholdingsa">Other Holdings</a></li>
 <li><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->#description">Descriptions</a></li>
 <!-- TMPL_IF name="subscriptionsnumber" --><li><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->#subscriptions">Subscriptions</a></li><!-- /TMPL_IF -->
 <!-- TMPL_IF NAME="FRBRizeEditions" --><!-- TMPL_IF NAME="XISBNS" --><li><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->#editions">Editions</a></li><!-- /TMPL_IF --><!-- /TMPL_IF -->
@@ -288,7 +291,9 @@ function verify_images() {
                 <!-- TMPL_IF NAME="itemdata_uri" --><th filter="false">URL</th><!-- /TMPL_IF -->
                 <!-- TMPL_IF NAME="itemdata_copynumber" --><th>Copy No.</th><!-- /TMPL_IF -->
 		<!-- TMPL_IF NAME="SpineLabelShowPrintOnBibDetails" --><th filter="false">Spine Label</th><!-- /TMPL_IF -->
-		<th filter="false">Check</th>
+		<th filter="false">Check<br />
+		    <a href="#" class="selectAllMyHoldings">Select All</a> | <a href="#" class="unSelectAllMyHoldings">Unselect All</a></span>
+		</th>
             </tr>
 	    </thead>
 	    <tbody>
@@ -420,7 +425,7 @@ function verify_images() {
             <!-- /TMPL_LOOP -->
 	    </tbody>
         </table>
-	<a href="#" id="selectAllMyHoldings">Select All</a> | <a href="#" id="unSelectAllMyHoldings">Unselect All</a> |
+	<a href="#" class="selectAllMyHoldings">Select All</a> | <a href="#" class="unSelectAllMyHoldings">Unselect All</a> |
 	<input type="button" id="editSelectedMyHoldings" value="Edit selected items"/>
 	<input type="button" id="deleteSelectedMyHoldings" value="Delete selected items"/>
 
@@ -459,7 +464,9 @@ function verify_images() {
                 <!-- TMPL_IF NAME="itemdata_uri" --><th filter="false">URL</th><!-- /TMPL_IF -->
                 <!-- TMPL_IF NAME="itemdata_copynumber" --><th>Copy No.</th><!-- /TMPL_IF -->
 		<!-- TMPL_IF NAME="SpineLabelShowPrintOnBibDetails" --><th filter="false">Spine Label</th><!-- /TMPL_IF -->
-		<th filter="false">Check</th>
+		<th filter="false">Check<br />
+		    <a href="#" class="selectAllOtherHoldings">Select All</a> | <a href="#" class="unSelectAllOtherHoldings">Unselect All</a>
+		</th>
             </tr>
 	    </thead>
 	    <tbody>
@@ -592,7 +599,7 @@ function verify_images() {
             <!-- /TMPL_LOOP -->
 	</tbody>
         </table>
-	<a href="#" id="selectAllOtherHoldings">Select All</a> | <a href="#" id="unSelectAllOtherHoldings">Unselect All</a> |
+	<a href="#" class="selectAllOtherHoldings">Select All</a> | <a href="#" class="unSelectAllOtherHoldings">Unselect All</a> |
 	<input type="button" id="editSelectedOtherHoldings" value="Edit selected items"/>
 	<input type="button" id="deleteSelectedOtherHoldings" value="Delete selected items"/>
 	</form>
