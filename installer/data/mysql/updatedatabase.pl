@@ -5140,7 +5140,6 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
         ('001','@','identifier','biblio'),
         ('712','*','corporate-name','biblio'),
         ('8..','9','authid','biblio'),
-        ('9..','9','authid','biblio'),
         ('995','*','item','biblio'),
         ('995','2','lost','biblio'),
         ('995','6','acqdate','biblio'),
