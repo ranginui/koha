@@ -2735,11 +2735,11 @@ AND (authtypecode IS NOT NULL AND authtypecode<>\"\")|
             map { $query .= ' and he,ext="' . $_->[1] . '"' if ( $_->[0] =~ /[A-z]/ ) } $field->subfields();
             $query = C4::Search::Query->normalSearch($query);
             my $results = C4::Search::SimpleSearch($query);
-            my $hits = $results->{'pager'}->{'total_entries'}
+            my $hits = $results->{'pager'}->{'total_entries'};
 
             # there is only 1 result
             if ( $results && $hits == 1 ) {
-                my $recordid = @{$results->items}[$i]->{values}{recordid};
+                my $recordid = @{$results->items}[0]->{values}{recordid};
                 my $marcrecord = GetMarcBiblio($recordid);
                 $field->add_subfields( '9' => $marcrecord->field('001')->data );
                 $countlinked++;
