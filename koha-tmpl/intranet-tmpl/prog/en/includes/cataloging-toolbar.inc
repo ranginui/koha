@@ -46,7 +46,7 @@
     function GetZ3950Terms(){
         var strQuery="&frameworkcode=";
         <!-- TMPL_LOOP NAME='z3950_search_params' -->
-            strQuery += "&" + "<!-- TMPL_VAR NAME="name" -->" + "=" + "<!-- TMPL_VAR NAME="encvalue" -->";
+            strQuery += "&" + "<!-- TMPL_VAR NAME="name" -->" + "=" + "xxxx<!-- TMPL_VAR NAME="encvalue" ESCAPE="HTML" -->";
         <!-- /TMPL_LOOP -->
         return strQuery;
     }
