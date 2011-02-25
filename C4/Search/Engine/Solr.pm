@@ -288,30 +288,31 @@ sub IndexRecord {
             if ( $index->{'plugin'} ) {
                 my $plugin = $index->{'plugin'};
                 $plugin = LoadSearchPlugin( $plugin ) if $plugin;
-                @values = &$plugin( $record );
-            } else {
-                for my $tag ( sort keys %$mapping ) {
-                    for my $field ( $record->field( $tag ) ) {
-                        if ( $field->is_control_field ) {
-                            push @values, $field->data;
-                        } else {
+                @values = &$plugin( $record, $mapping );
+            }
 
-                            for my $code ( @{ $mapping->{$tag} } ) {
+            for my $tag ( sort keys %$mapping ) {
+                for my $field ( $record->field( $tag ) ) {
+                    if ( $field->is_control_field ) {
+                        push @values, $field->data;
+                    } else {
 
-                                my @sfvals = $code eq '*'
-                                           ? map { $_->[1] } $field->subfields
-                                           : map { $_      } $field->subfield( $code );
+                        for my $code ( @{ $mapping->{$tag} } ) {
 
-                                for ( @sfvals ) {
-                                    $_ = NormalizeDate( $_ ) if $index->{'type'} eq 'date';
-                                    $_ = FillSubfieldWithAuthorisedValues( $frameworkcode, $tag, $code, $_ ) if $recordtype eq "biblio";
-                                    push @values, $_ if $_;
-                                }
+                            my @sfvals = $code eq '*'
+                                       ? map { $_->[1] } $field->subfields
+                                       : map { $_      } $field->subfield( $code );
+
+                            for ( @sfvals ) {
+                                $_ = NormalizeDate( $_ ) if $index->{'type'} eq 'date';
+                                $_ = FillSubfieldWithAuthorisedValues( $frameworkcode, $tag, $code, $_ ) if $recordtype eq "biblio";
+                                push @values, $_ if $_;
                             }
                         }
                     }
                 }
             }
+
             $solrrecord->set_value(       $index->{'type'}."_".$index->{'code'},    \@values);
             $solrrecord->set_value("srt_".$index->{'type'}."_".$index->{'code'}, $values[0]) if $index->{'sortable'} and @values > 0;
 
