@@ -105,7 +105,19 @@
 	    </xsl:for-each>
 	</h4>
         </xsl:if>
-
+	
+	<!-- Statement of responsibility -->
+	    <xsl:for-each select="marc:datafield[@tag=245]">
+	        <xsl:if test="marc:subfield[@code='c']">
+		    <span class="results_summary"><span class="label">Statement of Responsibility: 
+		    <xsl:value-of select="marc:subfield[@code='c']"/>
+		    </span>
+		</xsl:if>
+	    </xsl:for-each>
+		    
+        </xsl:if>
+	
+	
         <!-- Author Statement: Alternate Graphic Representation (MARC 880) -->
         <xsl:if test="$display880">
             <h5 class="author">
