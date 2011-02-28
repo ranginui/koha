@@ -31,7 +31,7 @@ use Data::Pagination;
 my $query        = new CGI;
 my $op           = $query->param('op');
 my $dbh          = C4::Context->dbh;
-my $authtypecode = $query->param('authtypecode');
+my $authtypecode = $query->param('authtypecode') || "[* TO *]";
 my $searchtype   = $query->param('searchtype');
 
 my ( $template, $loggedinuser, $cookie );
@@ -49,17 +49,14 @@ if ( $op eq "do_search" ) {
     my $page         = $query->param('page')    || 1;
     my $count        = 20;
 
-    my $filters = { recordtype => 'authority' };
-    $filters->{C4::Search::Query::getIndexName('auth-type')} = $authtypecode if $authtypecode;
+    my $filters = { 
+        recordtype => 'authority',
+        C4::Search::Query::getIndexName('auth-type') => $authtypecode
+    };
 
-    my $operands;
-    my $indexes = GetIndexesBySearchtype($searchtype, $authtypecode);
-
-    for (@$indexes) {
-        push @$operands, $value;
-    }
-    my $q = C4::Search::Query->buildQuery($indexes, $operands, ());
-
+    my $index = GetIndexBySearchtype($query->param('searchtype'));
+    my $q = "$index:$value";
+    $q = C4::Search::Query->normalSearch($q);
     my $results = SimpleSearch($q, $filters, $page, $count, $orderby);
     C4::Context->preference("DebugLevel") eq '2' && warn "AuthSolrSimpleSearch:q=$q:";
 

@@ -63,34 +63,27 @@ if ( $query->param('op') eq 'do_search' ) {
 
     my @searchtypes = ('authority_search', 'main_heading', 'all_headings');
 
+    my $index;
     my $indexes;
     my $value;
     my $operands;
     my $operators;
     for my $searchtype (@searchtypes) {
         if ( $query->param($searchtype) ) {
-            push @$indexes, @{GetIndexesBySearchtype($searchtype, $authtypecode)};
+            push $index, GetIndexBySearchtype($searchtype);
             my $value = $query->param($searchtype) || '[* TO *]';
-            for (@$indexes) {
-                push @$operands, $value;
-                push @$operators, 'AND';
-            }
+            push @$indexes, $index for @values;
+            push @$operands, $_ for @values;
+            push @$operators, 'AND' for @values;
             $template->param($searchtype => $query->param($searchtype));
         }
     }
 
-    if ( not $indexes ) {
-        push @$indexes, @{GetIndexesBySearchtype('all_headings', $authtypecode)};
-        for (@$indexes) {
-            push @$operands, '[* TO *]';
-        }
-    }
-
+    my $authtype_indexname = C4::Search::Query::getIndexName('auth-type');
     my $filters = {
         recordtype => 'authority',
+        $authtype_indexname => $authtypecode
     };
-    my $authtype_index = C4::Search::Query::getIndexName('auth-type');
-    $filters->{$authtype_index} = $authtypecode if $authtypecode;
 
     my $q = C4::Search::Query->buildQuery( $indexes, $operands, $operators );
     my $results = SimpleSearch( $q, $filters, $page, $count, $orderby );
@@ -99,7 +92,7 @@ if ( $query->param('op') eq 'do_search' ) {
         my $record = GetAuthority( $_->{'values'}->{'recordid'} );
         {
             authid  => $_->{'values'}->{'recordid'},
-            summary => BuildSummary( $record, $_->{'values'}->{'recordid'}, $_->{'values'}->{$authtype_index} ),
+            summary => BuildSummary( $record, $_->{'values'}->{'recordid'}, $_->{'values'}->{$authtype_indexname} ),
             used    => CountUsage( $_->{'values'}->{'recordid'} ),
         }
     } @{ $results->{items} };
