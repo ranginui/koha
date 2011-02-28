@@ -100,7 +100,7 @@
         </xsl:if>
 
         <xsl:if test="marc:datafield[@tag=245]">
-        <h1>
+        <h2>
             <xsl:for-each select="marc:datafield[@tag=245]">
                     <xsl:call-template name="subfieldSelect">
                         <xsl:with-param name="codes">a</xsl:with-param>
@@ -121,18 +121,22 @@
                     <xsl:call-template name="subfieldSelect">
                         <xsl:with-param name="codes">fgknps</xsl:with-param>
                     </xsl:call-template>
+	            <xsl:if test="marc:subfield[@code='c']">
+		        <xsl:value-of select="marc:subfield[@code='c']"/>
+		    </xsl:if>
+		    
             </xsl:for-each>
-        </h1>
+        </h2>
         </xsl:if>
-	
-	<xsl:if test="marc:datafield[@tag=773]">
-	<h4>
-	    <xsl:for-each select="marc:datafield[@tag=773]">
-	        <xsl:call-template name="subfieldSelect">
-		    <xsl:with-param name="codes">tg</xsl:with-param>
+
+	    <xsl:if test="marc:datafield[@tag=773]">
+	    <h4>
+	        <xsl:for-each select="marc:datafield[@tag=773]">
+	            <xsl:call-template name="subfieldSelect">
+		            <xsl:with-param name="codes">tg</xsl:with-param>
                 </xsl:call-template>
-	    </xsl:for-each>
-	</h4>
+	        </xsl:for-each>
+	    </h4>
         </xsl:if>
 
         <!-- Author Statement: Alternate Graphic Representation (MARC 880) -->

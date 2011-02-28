@@ -322,6 +322,7 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
         [% XSLTBloc %]
     [% ELSE %]
     <h1 class="title">[% title |html %][% IF ( subtitle ) %] <span class="subtitle">[% FOREACH subtitl IN subtitle %][% subtitl.subfield |html %] [% END %]</span>[% END %]</h1>
+    [% IF ( responsibility ) %]<h5 clases="author">[% FOREACH res IN responsibility %][% res.subfield %] [% END %]</h5>[% END %]
     [% IF ( author ) %]<h5 class="author">by <a href="/cgi-bin/koha/opac-search.pl?q=au:[% author |url %]">[% author |html %]</a></h5>[% END %] 
 
     <span class="results_summary">[% UNLESS ( item_level_itypes ) %]
