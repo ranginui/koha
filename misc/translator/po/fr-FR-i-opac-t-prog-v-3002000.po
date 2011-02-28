@@ -11,31 +11,32 @@
 # Copyright (C) 2008, 2009, 2010 BibLibre, SARL
 #
 #
+#
 # POULAIN <paul@koha-fr.org>, 2006, 2007.
 # paul POULAIN <paul@koha-fr.org>, 2007, 2008.
 # Nicolas Morin <nicolas.morin@biblibre.com>, 2008, 2009, 2010.
-# Paul Poulain <paul.poulain@biblibre.com>, 2010.
-#
+# Paul Poulain <paul.poulain@biblibre.com>, 2010, 2011.
 msgid ""
 msgstr ""
 "Project-Id-Version: nicomo-fr-FR-i-opac-t-prog-v-3000000\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-14 13:34+0200\n"
-"PO-Revision-Date: 2010-11-22 15:43+0100\n"
+"POT-Creation-Date: 2011-02-25 13:18+0100\n"
+"PO-Revision-Date: 2011-02-28 12:30+0100\n"
 "Last-Translator: Paul Poulain <paul.poulain@biblibre.com>\n"
-"Language-Team: Français <kde-i18n-doc@kde.org>\n"
+"Language-Team: American English <kde-i18n-doc@kde.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);X-Generator: Lokalize 1.0\n"
-"X-Generator: Lokalize 1.0\n"
+"X-Generator: Lokalize 1.1\n"
 
 #. SCRIPT
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/doc-head-close.inc:62
 msgid " item(s) added to your cart"
 msgstr "document(s) ajouté(s) à mon panier"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:509
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:510
 msgid "\" alt=\"\" class=\"thumbnail\" />"
 msgstr "\" alt=\"\" class=\"thumbnail\" />"
 
@@ -67,11 +68,11 @@ msgstr "%s %s (%s)"
 #. For the first occurrence,
 #. %1$s: TMPL_VAR name=firstname
 #. %2$s: TMPL_VAR name=surname
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-account.tmpl:14
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-userupdate.tmpl:14
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-readingrecord.tmpl:20
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-messaging.tmpl:28
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-userdetails.tmpl:12
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-readingrecord.tmpl:20
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-account.tmpl:14
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-messaging.tmpl:28
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-passwd.tmpl:12
 #, c-format
 msgid "%s %s's account"
@@ -236,21 +237,21 @@ msgstr "%s."
 
 #. %1$s: TMPL_VAR name=OPACBaseURL
 #. %2$s: TMPL_VAR name=biblionumber
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-opensearch.tmpl:36
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-opensearch.tmpl:37
 #, c-format
 msgid "%s/cgi-bin/koha/opac-ISBDdetail.pl?biblionumber=%s"
 msgstr "%s/cgi-bin/koha/opac-ISBDdetail.pl?biblionumber=%s"
 
 #. %1$s: TMPL_VAR name=OPACBaseURL
 #. %2$s: TMPL_VAR name=biblionumber
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-opensearch.tmpl:36
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-opensearch.tmpl:37
 #, c-format
 msgid "%s/cgi-bin/koha/opac-MARCdetail.pl?biblionumber=%s"
 msgstr "%s/cgi-bin/koha/opac-MARCdetail.pl?biblionumber=%s"
 
 #. %1$s: TMPL_VAR name=OPACBaseURL
 #. %2$s: TMPL_VAR name=biblionumber
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-opensearch.tmpl:36
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-opensearch.tmpl:37
 #, c-format
 msgid "%s/cgi-bin/koha/opac-detail.pl?biblionumber=%s"
 msgstr "%s/cgi-bin/koha/opac-detail.pl?biblionumber=%s"
@@ -258,7 +259,7 @@ msgstr "%s/cgi-bin/koha/opac-detail.pl?biblionumber=%s"
 #. %1$s: TMPL_VAR name=OPACBaseURL
 #. %2$s: TMPL_VAR name=query_cgi
 #. %3$s: TMPL_VAR name=limit_cgi
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-opensearch.tmpl:20
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-opensearch.tmpl:21
 #, c-format
 msgid "%s/cgi-bin/koha/opac-search.pl?%s%s&amp;format=rss2"
 msgstr "%s/cgi-bin/koha/opac-search.pl?%s%s&amp;format=rss2"
@@ -298,13 +299,13 @@ msgid "&copy;%s"
 msgstr "&cop.;%s"
 
 #. IMG
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-account.tmpl:14
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:196
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:319
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-userupdate.tmpl:14
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-readingrecord.tmpl:20
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-messaging.tmpl:28
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-userdetails.tmpl:12
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-readingrecord.tmpl:20
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-account.tmpl:14
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-messaging.tmpl:28
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-passwd.tmpl:12
 msgid "&gt;"
 msgstr "&gt;"
@@ -491,14 +492,13 @@ msgstr ""
 "datelastborrowed&gt; &lt;/loan&gt; &lt;/loans&gt; &lt;/GetPatronInfo&gt;"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/ilsdi.tmpl:549
-#, fuzzy
 msgid ""
 "&lt;?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?&gt; &lt;"
 "GetPatronStatus&gt; &lt;expiry&gt;2010-03-04&lt;/expiry&gt; &lt;"
 "status&gt;0&lt;/status&gt; &lt;type&gt;ADUEXT&lt;/type&gt; &lt;/"
 "GetPatronStatus&gt;"
 msgstr ""
-" &lt;?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?&gt; &lt;"
+"&lt;?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?&gt; &lt;"
 "GetPatronStatus&gt; &lt;expiry&gt;2010-03-04&lt;/expiry&gt; &lt;"
 "status&gt;0&lt;/status&gt; &lt;type&gt;ADUEXT&lt;/type&gt; &lt;/"
 "GetPatronStatus&gt;"
@@ -933,24 +933,24 @@ msgstr "(%s en tout)"
 
 #. For the first occurrence,
 #. %1$s: TMPL_VAR name=itemcallnumber
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:287
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:299
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:371
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-sendshelf.tmpl:38
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:265
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:388
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:644
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:705
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:841
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-sendshelf.tmpl:38
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-sendbasket.tmpl:37
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:287
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:63
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:299
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:371
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/sco/sco-main.tmpl:202
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:463
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-sendbasket.tmpl:37
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-full-serial-issues.tmpl:200
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-alert-subscribe.tmpl:15
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-alert-subscribe.tmpl:29
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:159
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:180
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/sco/sco-main.tmpl:202
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-full-serial-issues.tmpl:200
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:462
 #, c-format
 msgid "(%s)"
 msgstr "(%s)"
@@ -1081,23 +1081,23 @@ msgstr "(modifié le %s)"
 msgid "(published on %s)"
 msgstr "(Publié le %s)"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/opac-facets.inc:7
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:173
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/opac-facets.inc:7
 msgid "(related searches:"
 msgstr "(Recherches apparentées&nbsp;:"
 
 #. For the first occurrence,
-#. %1$s: TMPL_VAR name=location
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:285
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:297
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:369
+#. %1$s: TMPL_VAR name=subfield
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:1
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:224
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:265
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:841
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-opensearch.tmpl:34
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:160
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-opensearch.tmpl:35
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:285
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:297
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:369
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:411
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:160
 #, c-format
 msgid ", %s"
 msgstr ", %s"
@@ -1120,15 +1120,15 @@ msgstr ", par %s"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslimUtils.xsl:106
 msgid ", coauteur"
-msgstr ""
+msgstr ", coauteur"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslimUtils.xsl:107
 msgid ", directeur de publication"
-msgstr ""
+msgstr ", directeur de publication"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslimUtils.xsl:113
 msgid ", directeur de thèse"
-msgstr ""
+msgstr ", directeur de thèse"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslimUtils.xsl:111
 msgid ", illustrateur"
@@ -1140,15 +1140,15 @@ msgstr ", aucne réservation possible sur ces documents."
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslimUtils.xsl:112
 msgid ", organisateur"
-msgstr ""
+msgstr ", organisateur"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslimUtils.xsl:109
 msgid ", préfacier"
-msgstr ""
+msgstr ", préfacier"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslimUtils.xsl:108
 msgid ", traducteur"
-msgstr ""
+msgstr ", traducteur"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-reserve.tmpl:172
 #, c-format
@@ -1175,23 +1175,23 @@ msgstr ""
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslimUtils.xsl:110
 msgid ", éditeur"
-msgstr ""
+msgstr ", éditeur"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslimUtils.xsl:114
 msgid ", établissement de soutenance"
-msgstr ""
+msgstr ", établissement de soutenance"
 
 #. For the first occurrence,
-#. %1$s: TMPL_VAR name=marcnote
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:244
+#. %1$s: TMPL_VAR name=publicationyear
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:62
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:63
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:65
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:158
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:161
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:244
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results-grouped.tmpl:217
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results-grouped.tmpl:218
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results-grouped.tmpl:220
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:158
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:161
 #, c-format
 msgid "- %s"
 msgstr "- %s"
@@ -1212,13 +1212,17 @@ msgstr "- Vous devez nommer la liste\\n"
 msgid "- You must enter a Title"
 msgstr "- Vous devez saisir un titre\\n"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:200
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-downloadshelf.tmpl:17
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:944
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-downloadcart.tmpl:11
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-ISBDdetail.tmpl:81
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-downloadshelf.tmpl:17
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:200
 msgid "-- Choose Format --"
 msgstr "-- Choisir un format --"
+
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:243
+msgid "-- none --"
+msgstr "-- aucun --"
 
 #. For the first occurrence,
 #. %1$s: TMPL_VAR name=volumenum
@@ -1236,8 +1240,8 @@ msgstr "... ou ..."
 msgid ".png"
 msgstr ".png"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:39
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACResults.xsl:53
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:39
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslimUtils.xsl:93
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslimUtils.xsl:199
 msgid "/"
@@ -1249,21 +1253,22 @@ msgstr "/"
 msgid "/%s"
 msgstr "/%s"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:394
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACResults.xsl:28
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slimUtils.xsl:126
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:394
 msgid "/cgi-bin/koha/opac-detail.pl?biblionumber="
 msgstr "/cgi-bin/koha/opac-detail.pl?biblionumber="
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slimUtils.xsl:138
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:445
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:499
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slimUtils.xsl:138
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:519
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:584
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:637
 msgid "/cgi-bin/koha/opac-search.pl?q="
 msgstr "/cgi-bin/koha/opac-search.pl?q="
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slimUtils.xsl:132
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:59
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:81
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:110
@@ -1271,7 +1276,6 @@ msgstr "/cgi-bin/koha/opac-search.pl?q="
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:153
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:189
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:358
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slimUtils.xsl:132
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:119
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:134
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:156
@@ -1304,23 +1308,23 @@ msgstr "/cgi-bin/koha/opac-search.pl?q=su:"
 msgid "/opac-tmpl/prog/famfamfam/"
 msgstr "/opac-tmpl/prog/famfamfam/"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:79
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/opac-topissues.inc:6
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:79
 msgid "10 titles"
 msgstr "10 titres"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:85
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/opac-topissues.inc:12
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:85
 msgid "100 titles"
 msgstr "100 titres"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:104
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:435
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:104
 msgid "100,110,111,700,710,711"
 msgstr "100,110,111,700,710,711"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:116
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/opac-topissues.inc:39
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:116
 msgid "12 months"
 msgstr "12 mois"
 
@@ -1328,8 +1332,8 @@ msgstr "12 mois"
 msgid "130,240"
 msgstr "130,240"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:80
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/opac-topissues.inc:7
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:80
 msgid "15 titles"
 msgstr "15 titres"
 
@@ -1349,14 +1353,14 @@ msgstr "2 semaines"
 msgid "2 years"
 msgstr "2 ans"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:81
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/opac-topissues.inc:8
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:81
 msgid "20 titles"
 msgstr "20 titres"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/opac-topissues.inc:37
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:114
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-serial-issues.tmpl:43
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/opac-topissues.inc:37
 msgid "3 months"
 msgstr "3 mois"
 
@@ -1364,13 +1368,13 @@ msgstr "3 mois"
 msgid "3 weeks"
 msgstr "3 semaines"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:82
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/opac-topissues.inc:9
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:82
 msgid "30 titles"
 msgstr "30 titres"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:83
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/opac-topissues.inc:10
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:83
 msgid "40 titles"
 msgstr "40 titres"
 
@@ -1378,13 +1382,13 @@ msgstr "40 titres"
 msgid "440,490"
 msgstr "440,490"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:84
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/opac-topissues.inc:11
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:84
 msgid "50 titles"
 msgstr "50 titres"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:115
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/opac-topissues.inc:38
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:115
 msgid "6 months"
 msgstr "6 mois"
 
@@ -1394,9 +1398,9 @@ msgstr "6 mois"
 msgid ": %s"
 msgstr ": %s"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:1041
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:514
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:656
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:1041
 msgid ":,;/"
 msgstr ":,;/"
 
@@ -1443,8 +1447,8 @@ msgstr "; Type de matériel visuel :"
 
 #. LINK
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:9
-msgid "<!-- TMPL_VAR NAME=\"LibraryName\" --> Search RSS Feed"
-msgstr "<!-- TMPL_VAR NAME=\"LibraryName\" --> Fil RSS de recherche"
+msgid "<!-- TMPL_VAR NAME=\"LibraryName\" ESCAPE=\"0\"--> Search RSS Feed"
+msgstr "<!-- TMPL_VAR NAME=\"LibraryName\" ESCAPE=\"0\" --> Flux RSS"
 
 #. INPUT type=text
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-userupdate.tmpl:77
@@ -1745,8 +1749,8 @@ msgstr ""
 msgid "Account Frozen"
 msgstr "Compte bloqué"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:113
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/opac-topissues.inc:36
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:113
 msgid "Acquired in the last:"
 msgstr "acquis durant les derniers&nbsp;:"
 
@@ -1760,18 +1764,17 @@ msgstr "Date d'acquisition&nbsp;: décroissante"
 msgid "Acquisition Date: Oldest to Newest"
 msgstr "Date d'acquisition&nbsp;: croissante"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:485
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:486
 msgid "Actions:"
 msgstr "Actions&nbsp;:"
 
-#. INPUT type=submit name=tagsel_button
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:394
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:397
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:211
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:154
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:327
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:394
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:397
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:348
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:471
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:472
 msgid "Add"
 msgstr "Ajouter"
 
@@ -1790,13 +1793,15 @@ msgstr "Ajouter un autre champ"
 msgid "Add to"
 msgstr "Ajouter à"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:503
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:504
 msgid "Add to Cart"
 msgstr "Ajouter à mon panier"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:192
+#. For the first occurrence,
+#. SCRIPT
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:56
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-ISBDdetail.tmpl:73
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:192
 msgid "Add to Your Cart"
 msgstr "Ajouter à mon panier"
 
@@ -1869,13 +1874,13 @@ msgstr "Tous sites"
 msgid "All Tags"
 msgstr "Tous les tags"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:91
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/opac-topissues.inc:18
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:91
 msgid "All branches"
 msgstr "Tous sites"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:103
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/opac-topissues.inc:28
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:103
 msgid "All item types"
 msgstr "Tous types de documents"
 
@@ -1915,13 +1920,13 @@ msgstr "Montant"
 msgid "Amount Outstanding"
 msgstr "Montant à recouvrer"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/403.tmpl:12
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/404.tmpl:12
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/400.tmpl:12
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/402.tmpl:12
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/500.tmpl:12
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/401.tmpl:12
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/kohaerror.tmpl:13
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/500.tmpl:12
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/402.tmpl:12
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/400.tmpl:12
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/404.tmpl:12
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/401.tmpl:12
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/403.tmpl:12
 msgid "An Error has Occurred"
 msgstr "Une erreur s'est produite"
 
@@ -2038,16 +2043,16 @@ msgstr ""
 "Authentifie un adhérent par ses login  /  mot de passe et retourne son "
 "identifiant."
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:77
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:48
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:50
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/resort_form.inc:8
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:247
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:330
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:518
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:336
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:274
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:77
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results-grouped.tmpl:127
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/resort_form.inc:8
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:48
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:50
 msgid "Author"
 msgstr "Auteur"
 
@@ -2136,10 +2141,10 @@ msgstr "Récompenses :"
 msgid "BIBTEX"
 msgstr "BIBTEX"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:31
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:35
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:34
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:38
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:31
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:35
 msgid "BK"
 msgstr "BK"
 
@@ -2147,8 +2152,8 @@ msgstr "BK"
 msgid "Babelthèque"
 msgstr "Babelthèque"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-sendshelfform.tmpl:16
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-downloadshelf.tmpl:31
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-sendshelfform.tmpl:16
 msgid "Back to lists"
 msgstr "Retour aux listes"
 
@@ -2161,9 +2166,9 @@ msgstr "Code-barres"
 msgid "Biannual"
 msgstr "Biannuel"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-downloadshelf.tmpl:20
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-downloadcart.tmpl:14
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-ISBDdetail.tmpl:82
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-downloadshelf.tmpl:20
 msgid "BibTex"
 msgstr "BibTex"
 
@@ -2183,8 +2188,8 @@ msgstr "Bibliographies"
 msgid "Bimonthly"
 msgstr "Bimensuel"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:168
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/subtypes_unimarc.inc:49
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:168
 msgid "Biography"
 msgstr "Biographie"
 
@@ -2192,10 +2197,10 @@ msgstr "Biographie"
 msgid "Biweekly"
 msgstr "Bihebdomadaire"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:48
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:52
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:517
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:521
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:48
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:52
 msgid "Book"
 msgstr "Livre"
 
@@ -2229,8 +2234,8 @@ msgstr "Historique abrégé"
 msgid "Browse by Hierarchy"
 msgstr "Parcourir par hiérarchie"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-authorities-home.tmpl:18
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:110
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-authorities-home.tmpl:18
 msgid "Browse by author or subject"
 msgstr "Feuilleter par auteur ou sujet"
 
@@ -2252,8 +2257,8 @@ msgstr "Logiciel sur CD"
 msgid "CD audio"
 msgstr "CD audio"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:37
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:40
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:37
 msgid "CF"
 msgstr "CF"
 
@@ -2267,25 +2272,25 @@ msgstr "CR"
 
 #. For the first occurrence,
 #. %1$s: TMPL_VAR name=profile
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-downloadcart.tmpl:16
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-downloadshelf.tmpl:22
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-downloadcart.tmpl:16
 #, c-format
 msgid "CSV - %s"
 msgstr "CSV - %s"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-readingrecord.tmpl:44
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/sco/sco-main.tmpl:194
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-readingrecord.tmpl:44
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-user.tmpl:200
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-user.tmpl:282
 msgid "Call No."
 msgstr "Cote"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:74
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:518
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-reserve.tmpl:471
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/resort_form.inc:14
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:68
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:70
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/resort_form.inc:14
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:518
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-reserve.tmpl:471
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:74
 msgid "Call Number"
 msgstr "Cote"
 
@@ -2299,25 +2304,25 @@ msgstr "Cote (Z-A puis 9-0)"
 msgid "Call Number (Non-fiction 0-9 to Fiction A-Z)"
 msgstr "Cote (0-9 puis A-Z)"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:398
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:212
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:343
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:533
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-sendshelfform.tmpl:39
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-userupdate.tmpl:95
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:155
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:328
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:398
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-userupdate.tmpl:95
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-sendbasketform.tmpl:33
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-review.tmpl:75
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:96
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/sco/sco-main.tmpl:132
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:349
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-sendbasketform.tmpl:33
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-messaging.tmpl:103
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-user.tmpl:395
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-addbybiblionumber.tmpl:31
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-addbybiblionumber.tmpl:40
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-addbybiblionumber.tmpl:59
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-messaging.tmpl:103
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/sco/sco-main.tmpl:132
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:349
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-passwd.tmpl:36
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-user.tmpl:395
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:96
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -2354,8 +2359,8 @@ msgstr "N° de carte&nbsp;:"
 
 #. For the first occurrence,
 #. SCRIPT
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:225
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/doc-head-close.inc:62
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:225
 msgid "Cart"
 msgstr "Panier"
 
@@ -2374,11 +2379,11 @@ msgid "Catalog"
 msgstr "Catalogue"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:1
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-showreviews.tmpl:1
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-authoritiessearchresultlist.tmpl:1
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:1
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:2
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-authoritiessearchresultlist.tmpl:1
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results-grouped.tmpl:2
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-showreviews.tmpl:1
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:1
 msgid "Catalog &rsaquo;"
 msgstr "Catalogue &rsaquo;"
 
@@ -2401,13 +2406,13 @@ msgstr "Catalogue &rsaquo; Ajouter à votre liste"
 msgid "Catalog &rsaquo; Advanced Search"
 msgstr "Catalogue &rsaquo; Recherche avancée"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/403.tmpl:1
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/404.tmpl:1
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/400.tmpl:1
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/402.tmpl:1
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/500.tmpl:1
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/401.tmpl:1
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/kohaerror.tmpl:1
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/500.tmpl:1
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/402.tmpl:1
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/400.tmpl:1
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/404.tmpl:1
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/401.tmpl:1
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/403.tmpl:1
 msgid "Catalog &rsaquo; An Error Has Occurred"
 msgstr "Catalogue &rsaquo; Une erreur s'est produite"
 
@@ -2478,8 +2483,8 @@ msgstr "Catalogue &rsaquo; Envoi de mon panier"
 msgid "Catalog &rsaquo; Sending Your List"
 msgstr "Catalogue &rsaquo; Envoi liste"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-alert-subscribe.tmpl:1
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-serial-issues.tmpl:1
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-alert-subscribe.tmpl:1
 msgid "Catalog &rsaquo; Serials"
 msgstr "Catalogue &rsaquo; Périodiques"
 
@@ -2552,14 +2557,14 @@ msgstr "Traité par la bibliothèque"
 msgid "Checked out"
 msgstr "En prêt"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACResults.xsl:152
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:989
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACResults.xsl:152
 msgid "Checked out ("
 msgstr "En prêt ("
 
 #. For the first occurrence,
 #. %1$s: TMPL_VAR name=onloancount
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:445
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:446
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results-grouped.tmpl:242
 #, c-format
 msgid "Checked out (%s),"
@@ -2618,8 +2623,8 @@ msgstr "Effacer tout"
 #. For the first occurrence,
 #. SCRIPT
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:144
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:136
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:225
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:136
 msgid "Clear All"
 msgstr "Effacer tout"
 
@@ -2627,12 +2632,12 @@ msgstr "Effacer tout"
 msgid "Clear Date"
 msgstr "Effacer la date"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:396
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACResults.xsl:88
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:431
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:452
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:914
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:935
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACResults.xsl:88
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:396
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:431
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:452
 msgid "Click here to access online"
 msgstr "Accès en ligne"
 
@@ -2670,8 +2675,8 @@ msgstr "Fermer la fenêtre"
 msgid "Coded Fields"
 msgstr "Champs codés"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:217
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:517
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:217
 msgid "Collection"
 msgstr "Collection"
 
@@ -2715,8 +2720,8 @@ msgstr "Commentaires"
 msgid "Comments on <i>%s %s</i>"
 msgstr "Commentaires sur <i>%s %s</i>"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:54
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:523
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:54
 msgid "Computer File"
 msgstr "Fichier informatique"
 
@@ -2751,7 +2756,7 @@ msgstr "Content Cafe"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:537
 msgid "Content advice:"
-msgstr ""
+msgstr "Conseil de contenu&nbsp;"
 
 #
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:379
@@ -2794,8 +2799,8 @@ msgstr "En partie continué :"
 msgid "Continues:"
 msgstr "Continu :"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:49
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:518
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:49
 msgid "Continuing Resource"
 msgstr "Ressource continue"
 
@@ -2811,8 +2816,8 @@ msgstr "Exemplaires disponibles à&nbsp;:"
 msgid "Copies available for loan:"
 msgstr "Exemplaires disponibles au prêt :"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACResults.xsl:129
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:972
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACResults.xsl:129
 msgid "Copies available for reference:"
 msgstr "Exemplaires disponibles sur place&nbsp;:"
 
@@ -2898,25 +2903,25 @@ msgstr "DVD / vidéo disque"
 msgid "Daily"
 msgstr "Quotidien"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACResults.xsl:173
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:1008
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACResults.xsl:173
 msgid "Damaged ("
 msgstr "Damaged ("
 
 #. For the first occurrence,
 #. %1$s: TMPL_VAR name=damagedcount
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:448
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:449
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results-grouped.tmpl:245
 #, c-format
 msgid "Damaged (%s),"
 msgstr "Endommagé (%s)"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-account.tmpl:21
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:711
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-readingrecord.tmpl:45
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-account.tmpl:21
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-full-serial-issues.tmpl:172
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-search-history.tmpl:43
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-search-history.tmpl:61
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-readingrecord.tmpl:45
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-full-serial-issues.tmpl:172
 msgid "Date"
 msgstr "Date"
 
@@ -3085,9 +3090,9 @@ msgstr "Télécharger le panier :"
 msgid "Download list:"
 msgstr "Télécharger lla liste :"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:202
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:946
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-ISBDdetail.tmpl:83
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:202
 msgid "Dublin Core (XML)"
 msgstr "Dublin Core (XML)"
 
@@ -3189,9 +3194,9 @@ msgstr "Edition"
 msgid "Edition statement:"
 msgstr "Information d'édition&nbsp;:"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:501
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:261
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:266
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:501
 msgid "Edition:"
 msgstr "Edition:"
 
@@ -3321,8 +3326,8 @@ msgstr "Extrait"
 msgid "Excerpt provided by Syndetics"
 msgstr "Extrait fournit par Syndetics"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:32
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-ISBDdetail.tmpl:36
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:32
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:172
 msgid "Expanded MARC View"
 msgstr "Vue MARC complète"
@@ -3440,8 +3445,8 @@ msgstr "Fusion de ... et ..."
 msgid "From %s:"
 msgstr "De %s&nbsp;:"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:89
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/opac-topissues.inc:16
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:89
 msgid "From:"
 msgstr "De&nbsp;:"
 
@@ -3526,21 +3531,25 @@ msgstr ""
 "retourne une liste indiquant la disponibilité des exemplaires associés à "
 "l'identifiant. "
 
-#. INPUT type=submit name=save
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:206
+#. INPUT type=submit
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:96
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-downloadshelf.tmpl:28
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:953
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-downloadcart.tmpl:23
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-ISBDdetail.tmpl:90
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:328
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-downloadshelf.tmpl:28
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-ISBDdetail.tmpl:90
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results-grouped.tmpl:181
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:96
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:206
 msgid "Go"
 msgstr "Allez"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/ilsdi.tmpl:693
 msgid "GoToBibliographicRequestPage"
 msgstr "GoToBibliographicRequestPage"
+
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:242
+msgid "Groups of Libraries"
+msgstr "Groupes de bibliothèques"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-userdetails.tmpl:67
 msgid "Guarantor:"
@@ -3676,21 +3685,27 @@ msgstr "ILS-DI"
 msgid "IP address where the end user request is being placed"
 msgstr "Adresse IP de l'utilisateur final de la requête"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:39
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:210
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-ISBDdetail.tmpl:32
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-ISBDdetail.tmpl:39
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:39
 msgid "ISBD View"
 msgstr "ISBD"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:98
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:177
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:281
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results-grouped.tmpl:134
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:58
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:60
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:177
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:281
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:98
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results-grouped.tmpl:134
 msgid "ISBN"
 msgstr "ISBN"
+
+#. %1$s: TMPL_VAR name=isbn
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-opensearch.tmpl:36
+#, c-format
+msgid "ISBN %s"
+msgstr "ISBN %s"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:272
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:232
@@ -3781,14 +3796,14 @@ msgstr ""
 "Dans le catalogue : %s/cgi-bin/koha/opac-detail.pl?biblionumber=%s "
 "Exemplaires :"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACResults.xsl:187
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:1020
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACResults.xsl:187
 msgid "In transit ("
 msgstr "En transit ("
 
 #. For the first occurrence,
 #. %1$s: TMPL_VAR name=intransitcount
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:451
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:452
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results-grouped.tmpl:247
 #, c-format
 msgid "In transit (%s),"
@@ -3949,54 +3964,54 @@ msgstr "Tous mots"
 msgid "Koha - RSS"
 msgstr "Koha - RSS"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/doc-head-close.inc:3
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/sco/help.tmpl:3
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/sco/sco-main.tmpl:3
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/doc-head-close.inc:3
 msgid "Koha <!-- TMPL_VAR NAME=\"Version\" -->"
 msgstr "Koha <!-- TMPL_VAR NAME=\"Version\" -->"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-account.tmpl:1
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-browser.tmpl:1
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/403.tmpl:1
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/404.tmpl:1
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/400.tmpl:1
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/402.tmpl:1
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/500.tmpl:1
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/401.tmpl:1
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:2
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-downloadshelf.tmpl:1
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:1
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:1
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-sendshelfform.tmpl:1
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-main.tmpl:2
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-downloadcart.tmpl:1
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:1
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-userupdate.tmpl:1
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:2
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/kohaerror.tmpl:1
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:1
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-auth.tmpl:1
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:1
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-main.tmpl:2
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-userupdate.tmpl:1
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-sendbasketform.tmpl:1
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-showreviews.tmpl:1
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-authoritiesdetail.tmpl:1
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-authoritiessearchresultlist.tmpl:1
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:2
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-authorities-home.tmpl:1
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-userdetails.tmpl:1
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-ISBDdetail.tmpl:1
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/maintenance.tmpl:2
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/maintenance.tmpl:24
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:1
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-alert-subscribe.tmpl:1
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:1
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-downloadcart.tmpl:1
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-addbybiblionumber.tmpl:2
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-search-history.tmpl:2
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-ISBDdetail.tmpl:1
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-tags.tmpl:1
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-messaging.tmpl:1
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-auth.tmpl:1
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-browser.tmpl:1
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-serial-issues.tmpl:1
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-userdetails.tmpl:1
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-authoritiessearchresultlist.tmpl:1
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/500.tmpl:1
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/402.tmpl:1
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/400.tmpl:1
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/404.tmpl:1
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/401.tmpl:1
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/403.tmpl:1
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-account.tmpl:1
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-sendbasketform.tmpl:1
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:2
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-full-serial-issues.tmpl:1
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:2
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-downloadshelf.tmpl:1
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-passwd.tmpl:1
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results-grouped.tmpl:2
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-alert-subscribe.tmpl:1
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-messaging.tmpl:1
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-user.tmpl:2
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-addbybiblionumber.tmpl:2
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-authoritiesdetail.tmpl:1
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:1
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-search-history.tmpl:2
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-passwd.tmpl:1
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-showreviews.tmpl:1
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:1
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-tags.tmpl:1
 msgid "Koha Online"
 msgstr "Koha en ligne"
 
@@ -4109,8 +4124,8 @@ msgstr "Seulement les <a1>documents actuellement en rayon</a>"
 msgid "Limit to any of the following:"
 msgstr "Limiter à&nbsp;:"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:101
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/opac-topissues.inc:26
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:101
 msgid "Limit to:"
 msgstr "Limiter à&nbsp;:"
 
@@ -4137,11 +4152,11 @@ msgstr "Liste des noms&nbsp;:"
 msgid "List(s) this item appears in:"
 msgstr "Ce document apparaît dans les listes :"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:99
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:103
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:196
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:319
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:351
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:99
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:103
 msgid "Lists"
 msgstr "Listes"
 
@@ -4149,10 +4164,10 @@ msgstr "Listes"
 msgid "Local Login"
 msgstr "Login local"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:75
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:516
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:249
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:338
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:516
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:75
 msgid "Location"
 msgstr "Localisation"
 
@@ -4165,8 +4180,8 @@ msgid "Location(s)"
 msgstr "Localisation(s)"
 
 #. INPUT type=submit
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-auth.tmpl:86
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-main.tmpl:55
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-auth.tmpl:86
 msgid "Log In"
 msgstr "Se connecter"
 
@@ -4191,7 +4206,7 @@ msgid "Log in to Your Account:"
 msgstr "Me connecter à mon compte&nbsp;:"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:405
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:476
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:477
 msgid "Log in to add tags."
 msgstr "Connectez-vous pour créer des tags."
 
@@ -4218,55 +4233,55 @@ msgstr "Cherche un adhérent par identifiant, et retourne l'identifiant."
 msgid "LookupPatron"
 msgstr "LookupPatron"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACResults.xsl:166
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:1002
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACResults.xsl:166
 msgid "Lost ("
 msgstr "Perdu ("
 
 #. For the first occurrence,
 #. %1$s: TMPL_VAR name=itemlostcount
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:447
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:448
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results-grouped.tmpl:244
 #, c-format
 msgid "Lost (%s),"
 msgstr "Perdu (%s),"
 
 #. A
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:31
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-ISBDdetail.tmpl:35
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:31
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:171
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:172
 msgid "MARC"
 msgstr "MARC"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:205
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:949
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-ISBDdetail.tmpl:86
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:205
 msgid "MARC (Unicode/UTF-8)"
 msgstr "MARC (Unicode/UTF-8)"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:204
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:948
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-ISBDdetail.tmpl:85
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:204
 msgid "MARC (non-Unicode/MARC-8)"
 msgstr "MARC (non-Unicode/MARC-8)"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:203
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-ISBDdetail.tmpl:35
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-ISBDdetail.tmpl:38
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-showmarc.tmpl:1
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:25
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:31
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:34
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:203
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-showmarc.tmpl:1
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-ISBDdetail.tmpl:35
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-ISBDdetail.tmpl:38
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:171
 msgid "MARC View"
 msgstr "Vue MARC"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:203
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:947
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/ilsdi.tmpl:108
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/ilsdi.tmpl:312
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-ISBDdetail.tmpl:84
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:203
 msgid "MARCXML"
 msgstr "MARCXML"
 
@@ -4286,24 +4301,24 @@ msgstr "MESSAGE 15:"
 msgid "MESSAGE 8:"
 msgstr "MESSAGE 8:"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:201
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:950
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-ISBDdetail.tmpl:87
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:201
 msgid "MODS (XML)"
 msgstr "MODS (XML)"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:38
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:41
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:38
 msgid "MP"
 msgstr "MP"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:40
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:43
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:40
 msgid "MU"
 msgstr "MU"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:36
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:39
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:36
 msgid "MX"
 msgstr "MX"
 
@@ -4311,7 +4326,7 @@ msgstr "MX"
 msgid "Mailing Address:"
 msgstr "Adresse électronique&nbsp;:"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:530
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:531
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results-grouped.tmpl:285
 #, c-format
 msgid "Make a <a1>purchase suggestion</a>"
@@ -4330,12 +4345,12 @@ msgstr "Gérer les listes"
 msgid "Managed by"
 msgstr "Traité par"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:55
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:524
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:55
 msgid "Map"
 msgstr "Carte"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:483
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:484
 msgid "Match:"
 msgstr "Votre requête&nbsp;:"
 
@@ -4380,8 +4395,8 @@ msgstr "Manquant"
 msgid "Missing issues: %s"
 msgstr "Manquant : %s"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:53
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:522
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:53
 msgid "Mixed Materials"
 msgstr "Matériel mixte"
 
@@ -4424,8 +4439,8 @@ msgstr "Plus de recherches"
 msgid "Most Popular"
 msgstr "Les plus populaires"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:57
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:528
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:57
 msgid "Music"
 msgstr "Musique"
 
@@ -4484,7 +4499,7 @@ msgstr "Nouveau tag&nbsp;:"
 msgid "New purchase suggestion"
 msgstr "Nouvelle suggestion d'achat"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:469
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:470
 msgid "New tag:"
 msgstr "Nouveau tag&nbsp;:"
 
@@ -4517,9 +4532,9 @@ msgstr "Suivant >>"
 msgid "Next available copy"
 msgstr "prochaine exemplaire disponible"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/sco/sco-main.tmpl:218
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-alert-subscribe.tmpl:21
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-alert-subscribe.tmpl:35
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/sco/sco-main.tmpl:218
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-user.tmpl:252
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-user.tmpl:321
 msgid "No"
@@ -4565,6 +4580,12 @@ msgstr "Pas d'exemplaires disponible."
 msgid "No copies available."
 msgstr "Pas d'exemplaire disponible."
 
+#. For the first occurrence,
+#. SCRIPT
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/doc-head-close.inc:28
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/doc-head-close.inc:35
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/doc-head-close.inc:71
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/doc-head-close.inc:80
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:179
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:561
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:562
@@ -4574,23 +4595,19 @@ msgstr "Pas d'exemplaire disponible."
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:575
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:576
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:578
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:508
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:510
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:511
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:513
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-readingrecord.tmpl:52
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-readingrecord.tmpl:54
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-readingrecord.tmpl:56
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:507
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:509
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:510
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:512
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-user.tmpl:223
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-user.tmpl:225
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-user.tmpl:227
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-user.tmpl:295
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-user.tmpl:297
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-user.tmpl:299
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/doc-head-close.inc:28
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/doc-head-close.inc:35
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/doc-head-close.inc:71
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/doc-head-close.inc:80
 msgid "No cover image available"
 msgstr "Pas d'image disponible"
 
@@ -4605,13 +4622,13 @@ msgstr "Aucun document ajouté dans votre panier"
 msgid "No item was selected"
 msgstr "Aucun document sélectionné"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:442
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:443
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results-grouped.tmpl:239
 msgid "No items available:"
 msgstr "Pas d'exemplaire disponible&nbsp;:"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:117
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/opac-topissues.inc:40
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:117
 msgid "No limit"
 msgstr "Sans limite"
 
@@ -4664,10 +4681,10 @@ msgstr "Enregistrement non-musical"
 msgid "None"
 msgstr "Aucun"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:27
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:198
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-ISBDdetail.tmpl:33
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-serial-issues.tmpl:15
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:27
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:170
 msgid "Normal View"
 msgstr "Vue normale"
@@ -4692,7 +4709,7 @@ msgstr "Pas prêté"
 msgid "Not a biography"
 msgstr "n'est pas une biographie"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:530
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:531
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results-grouped.tmpl:285
 msgid "Not finding what you're looking for?"
 msgstr "Vous n'avez pas trouvé ce que vous cherchiez ?"
@@ -4769,10 +4786,10 @@ msgstr ""
 "Note : votre tag contenait uniquement du texte interdit. Il n'a PAS été "
 "ajouté."
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:241
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:523
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-full-serial-issues.tmpl:174
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:241
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:279
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-full-serial-issues.tmpl:174
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results-grouped.tmpl:132
 msgid "Notes"
 msgstr "Notes"
@@ -4789,8 +4806,8 @@ msgstr "Notes&nbsp;: %s"
 msgid "Notes/Comments"
 msgstr "Notes/commentaires"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:94
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-userdetails.tmpl:65
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:94
 msgid "Notes:"
 msgstr "Notes&nbsp;:"
 
@@ -4799,39 +4816,43 @@ msgid "Number"
 msgstr "N° de parution"
 
 #. INPUT type=submit
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-tags.tmpl:85
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-tags_subject.tmpl:19
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-tags.tmpl:85
 msgid "OK"
 msgstr "OK"
+
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:241
+msgid "OR"
+msgstr "ou"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-user.tmpl:316
 msgid "On Reserve"
 msgstr "Réservé"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-reserve.tmpl:525
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/item-status.inc:11
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-reserve.tmpl:525
 msgid "On hold"
 msgstr "Réservé"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACResults.xsl:194
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:1026
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACResults.xsl:194
 msgid "On hold ("
 msgstr "Réservé ("
 
 #. %1$s: TMPL_VAR name=onholdcount
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:450
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:451
 #, c-format
 msgid "On hold (%s),"
 msgstr "Réservé (%s),"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACResults.xsl:180
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:1014
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACResults.xsl:180
 msgid "On order ("
 msgstr "En commande ("
 
 #. For the first occurrence,
 #. %1$s: TMPL_VAR name=orderedcount
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:449
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:450
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results-grouped.tmpl:246
 #, c-format
 msgid "On order (%s),"
@@ -4843,7 +4864,7 @@ msgstr "En commande (%s),"
 msgid "Online Resources:"
 msgstr "Ressource en ligne"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:241
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:250
 msgid "Only items currently available for loan or reference"
 msgstr "Seulement les documents actuellement en rayon"
 
@@ -4884,9 +4905,9 @@ msgstr "Autres éditions de ce titre"
 msgid "Other Name:"
 msgstr "Autre nom:"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:879
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:332
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:337
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:879
 msgid "Other Title:"
 msgstr "Autre titre :"
 
@@ -4910,8 +4931,8 @@ msgstr "Retard"
 msgid "Overdues"
 msgstr "Retards"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:41
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:44
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:41
 msgid "PR"
 msgstr "PR"
 
@@ -5029,23 +5050,21 @@ msgstr "Lieu de retrait"
 msgid "Picture"
 msgstr "Image"
 
-#. For the first occurrence,
-#. SCRIPT
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:144
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:171
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:174
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:907
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:910
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:144
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:70
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:225
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:491
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:494
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-ISBDdetail.tmpl:54
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-ISBDdetail.tmpl:57
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-reserve.tmpl:546
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-reserve.tmpl:548
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:225
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:490
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:493
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results-grouped.tmpl:256
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results-grouped.tmpl:259
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:171
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:174
 msgid "Place Hold"
 msgstr "Réserver"
 
@@ -5176,11 +5195,11 @@ msgstr "E-mail principal&nbsp;:"
 msgid "Primary;"
 msgstr "Primaire ;"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:131
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:182
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:916
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-ISBDdetail.tmpl:64
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/subtypes_unimarc.inc:18
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:916
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:131
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-ISBDdetail.tmpl:64
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:182
 msgid "Print"
 msgstr "Imprimer"
 
@@ -5221,9 +5240,9 @@ msgstr "Textes de programmes"
 msgid "Public"
 msgstr "Public"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:128
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:359
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:361
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:128
 msgid "Public Lists"
 msgstr "Listes publiques"
 
@@ -5275,9 +5294,9 @@ msgstr "Publié par&nbsp;:"
 msgid "Published by: %s"
 msgstr "Publié par&nbsp;: %s"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:90
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:204
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:278
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:90
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results-grouped.tmpl:131
 msgid "Publisher"
 msgstr "Editeur"
@@ -5287,17 +5306,17 @@ msgid "Publisher Location"
 msgstr "Lieu de publication"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:85
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:236
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:241
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:858
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:864
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:236
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:241
 msgid "Publisher:"
 msgstr "Editeur&nbsp;:"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:3
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:102
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:115
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:116
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:3
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:102
 msgid "Purchase Suggestions"
 msgstr "suggestions d'achat"
 
@@ -5309,10 +5328,10 @@ msgstr "Trimestriel"
 msgid "RECEIPT"
 msgstr "RETOUR"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-downloadshelf.tmpl:19
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:951
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-downloadcart.tmpl:13
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-ISBDdetail.tmpl:88
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-downloadshelf.tmpl:19
 msgid "RIS"
 msgstr "RIS"
 
@@ -5328,9 +5347,9 @@ msgstr "RecallItem"
 msgid "Record not found"
 msgstr "Notice non trouvée"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-full-serial-issues.tmpl:218
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/opac-facets.inc:4
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/opac-topissues.inc:2
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-full-serial-issues.tmpl:218
 msgid "Refine your search"
 msgstr "Affinez votre recherche"
 
@@ -5482,8 +5501,8 @@ msgid "Review:"
 msgstr "Commentaires:"
 
 #
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:203
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:454
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:203
 msgid "Reviews"
 msgstr "Commentaires"
 
@@ -5514,26 +5533,26 @@ msgstr "Numéro de SMS:"
 #. INPUT type=submit
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:343
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:532
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:225
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-addbybiblionumber.tmpl:31
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-addbybiblionumber.tmpl:40
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-addbybiblionumber.tmpl:59
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:225
 msgid "Save"
 msgstr "Enregistrer"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:198
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:942
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-ISBDdetail.tmpl:79
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:198
 msgid "Save Record:"
 msgstr "Enregistrer notice&nbsp;:"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:501
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:502
 msgid "Save to Lists"
 msgstr "Enregistrer dans vos listes"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:187
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:920
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-ISBDdetail.tmpl:68
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-MARCdetail.tmpl:187
 msgid "Save to Your Lists"
 msgstr "Enregistrer dans vos listes"
 
@@ -5573,18 +5592,17 @@ msgstr ""
 msgid "Scope and content:"
 msgstr "Contenu et portée :"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:59
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:526
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:59
 msgid "Score"
 msgstr "Score"
 
-#. INPUT type=submit name=do
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:258
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:128
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:30
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/ilsdi.tmpl:700
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:267
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-search-history.tmpl:43
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-search-history.tmpl:61
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:30
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:128
 msgid "Search"
 msgstr "Rechercher"
 
@@ -5624,8 +5642,8 @@ msgstr "E-mail secondaire&nbsp;: "
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:182
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:565
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:578
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:513
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-readingrecord.tmpl:56
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:512
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-user.tmpl:227
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-user.tmpl:299
 msgid "See Baker &amp; Taylor"
@@ -5638,8 +5656,8 @@ msgstr "Voir les documents les plus populaires"
 #. For the first occurrence,
 #. SCRIPT
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:144
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:135
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:225
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:135
 msgid "Select All"
 msgstr "Tout sélectionner"
 
@@ -5745,11 +5763,11 @@ msgstr "Périodique&nbsp;: %s"
 msgid "Serials"
 msgstr "Périodiques"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:277
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results-grouped.tmpl:130
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/opac-facets.inc:16
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:63
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:65
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/opac-facets.inc:16
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:277
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results-grouped.tmpl:130
 msgid "Series"
 msgstr "Collections"
 
@@ -5757,8 +5775,8 @@ msgstr "Collections"
 msgid "Series Information:"
 msgstr "Information:"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:73
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:280
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:73
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results-grouped.tmpl:133
 msgid "Series Title"
 msgstr "Titre de collections"
@@ -5812,8 +5830,8 @@ msgstr "En voir plus"
 msgid "Show my tags"
 msgstr "Afficher mes tags"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:78
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/opac-topissues.inc:5
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:78
 msgid "Show the top"
 msgstr "Montrer le palmarès"
 
@@ -5917,7 +5935,7 @@ msgstr "Désolé, votre session a expiré. Merci de vous reconnecter."
 msgid "Sort by"
 msgstr "Trié par"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:248
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:257
 msgid "Sort by:"
 msgstr "Tri par&nbsp;:"
 
@@ -5926,8 +5944,8 @@ msgstr "Tri par&nbsp;:"
 msgid "Sort this list by:"
 msgstr "Trier cette liste par&nbsp;:"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:58
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:527
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:58
 msgid "Sound"
 msgstr "Son"
 
@@ -5954,9 +5972,9 @@ msgstr "Statistiques"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:522
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:712
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:145
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-full-serial-issues.tmpl:177
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-user.tmpl:342
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-suggestions.tmpl:145
 msgid "Status"
 msgstr "Situation"
 
@@ -5973,11 +5991,11 @@ msgid "Step Two: Scan the barcode for each item, one at a time"
 msgstr ""
 "Etape 2&nbsp;: scannez le code-barres pour chaque document, un à la fois"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:66
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:275
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results-grouped.tmpl:128
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:53
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:55
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:275
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:66
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results-grouped.tmpl:128
 msgid "Subject"
 msgstr "Sujet"
 
@@ -6016,11 +6034,11 @@ msgid "Subject: %s"
 msgstr "Sujet&nbsp;: %s"
 
 #. INPUT type=submit
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-authorities-home.tmpl:47
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/opac-topissues.inc:45
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:123
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/sco/sco-main.tmpl:184
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/sco/sco-main.tmpl:235
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/opac-topissues.inc:45
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-authorities-home.tmpl:47
 msgid "Submit"
 msgstr "Valider"
 
@@ -6163,11 +6181,11 @@ msgstr "Navigation par tags"
 msgid "Tag Cloud"
 msgstr "Nuage de Tags"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:401
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:272
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:357
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:401
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:352
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:474
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:475
 msgid "Tag status here."
 msgstr "Statut du tag."
 
@@ -6176,7 +6194,7 @@ msgstr "Statut du tag."
 msgid "Tags from this library:"
 msgstr "Tags :"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:461
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:462
 msgid "Tags:"
 msgstr "Tags&nbsp;:"
 
@@ -6324,8 +6342,8 @@ msgstr ""
 "Cette liste est vide. Vous pouvez ajouter des éléments à partir des "
 "résultats de n'importe quelle <a1>recherche</a>!"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/400.tmpl:15
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/402.tmpl:15
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/400.tmpl:15
 msgid "This error means that the Koha is pointed an invalid link."
 msgstr "Cette erreur signifie que Koha a pointé vers une adresse invalide."
 
@@ -6416,26 +6434,26 @@ msgstr "Trois fois par an"
 msgid "Thèse:"
 msgstr "Thèse:"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:70
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:43
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:45
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/resort_form.inc:30
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:246
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:329
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:517
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:335
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:53
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-tags.tmpl:120
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:335
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/sco/sco-main.tmpl:194
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:272
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-readingrecord.tmpl:41
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-readingrecord.tmpl:42
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/sco/sco-main.tmpl:194
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-reserve.tmpl:242
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:272
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:70
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results-grouped.tmpl:125
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-user.tmpl:170
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-user.tmpl:198
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-user.tmpl:280
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-user.tmpl:335
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/resort_form.inc:30
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:43
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:45
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-tags.tmpl:120
 msgid "Title"
 msgstr "Titre"
 
@@ -6476,13 +6494,13 @@ msgstr "Titres"
 msgid "To make changes to your record please contact the library."
 msgstr "Pour modifier vos informations, veuillez contacter la bibliothèque."
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/403.tmpl:16
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/404.tmpl:16
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/400.tmpl:16
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/402.tmpl:16
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/500.tmpl:16
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/401.tmpl:17
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-auth.tmpl:96
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/500.tmpl:16
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/402.tmpl:16
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/400.tmpl:16
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/404.tmpl:16
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/401.tmpl:17
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/403.tmpl:16
 #, c-format
 msgid "To report this error, you can <a1>email the Koha Administrator</a>."
 msgstr ""
@@ -6526,8 +6544,8 @@ msgstr "Type"
 msgid "Type of Heading"
 msgstr "Type de vedette"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:180
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:513
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:180
 msgid "Type:"
 msgstr "Type :"
 
@@ -6595,13 +6613,13 @@ msgid "Use the \"Confirm\" button below to confirm deletion."
 msgstr ""
 "Utilisez le bouton \"Confirmer\" ci-dessous pour confirmer la suppression"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/403.tmpl:18
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/404.tmpl:18
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/400.tmpl:18
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/402.tmpl:18
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/500.tmpl:18
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/401.tmpl:19
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-auth.tmpl:98
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/500.tmpl:18
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/402.tmpl:18
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/400.tmpl:18
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/404.tmpl:18
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/401.tmpl:19
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/errors/403.tmpl:18
 msgid "Use top menu bar to navigate to another part of Koha."
 msgstr "Utilisez le menu en haut pour accéder à une autre partie de Koha."
 
@@ -6626,8 +6644,8 @@ msgstr ""
 msgid "VHS tape / Videocassette"
 msgstr "Vidéocassette /VHS"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:39
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:42
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:39
 msgid "VM"
 msgstr "VM"
 
@@ -6667,8 +6685,8 @@ msgstr "Voir dans Amazon"
 msgid "View details for this title"
 msgstr "Voir ce titre en détail"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:56
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:525
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:56
 msgid "Visual Material"
 msgstr " "
 
@@ -6677,8 +6695,8 @@ msgstr " "
 msgid "Vol Info"
 msgstr "Info vol."
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-full-serial-issues.tmpl:194
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-reserve.tmpl:525
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-full-serial-issues.tmpl:194
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-user.tmpl:127
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-user.tmpl:183
 msgid "Waiting"
@@ -6697,14 +6715,14 @@ msgstr "Hebdomadaire"
 msgid "Welcome, <a1>"
 msgstr "Bienvenue, <a1>"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACResults.xsl:159
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:996
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACResults.xsl:159
 msgid "Withdrawn ("
 msgstr "Retiré ("
 
 #. For the first occurrence,
 #. %1$s: TMPL_VAR name=wthdrawncount
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:446
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:447
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results-grouped.tmpl:243
 #, c-format
 msgid "Withdrawn (%s),"
@@ -6738,10 +6756,9 @@ msgstr "Année"
 msgid "Year :"
 msgstr "Année&nbsp;:"
 
-#. INPUT type=submit
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/sco/sco-main.tmpl:218
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-alert-subscribe.tmpl:20
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-alert-subscribe.tmpl:34
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/sco/sco-main.tmpl:218
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-user.tmpl:252
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-user.tmpl:321
 msgid "Yes"
@@ -6790,9 +6807,9 @@ msgstr "Vous n'avez pas de prêt en cours."
 msgid "You currently owe fines and charges amounting to:"
 msgstr "Vos amendes et frais s'élevent à&nbsp;:&nbsp;:"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:181
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:6
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-results-grouped.tmpl:6
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:181
 msgid "You did not specify any search criteria."
 msgstr "Vous n'avez précisé aucun critère de recherche."
 
@@ -6842,8 +6859,8 @@ msgstr "Vous devez sélectionner un site de retrait."
 msgid "You must select at least one item."
 msgstr "Vous devez sélectionner au moins un document."
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:160
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/subtypes_unimarc.inc:11
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:160
 msgid "Young Adult"
 msgstr "Jeune adulte"
 
@@ -6862,9 +6879,9 @@ msgstr "Votre commentaire"
 msgid "Your List : %s"
 msgstr "Mes listes : %s"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:145
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:354
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:356
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:145
 msgid "Your Lists"
 msgstr "Mes listes"
 
@@ -6919,8 +6936,8 @@ msgstr ""
 "Votre mot de passe actuel a été mal saisi. Si le problème persiste, "
 "contactez un bibliothécaire, qui modifiera votre mot de passe à votre place."
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-downloadcart.tmpl:5
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-downloadshelf.tmpl:11
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-downloadcart.tmpl:5
 msgid "Your download should begin automatically."
 msgstr "Votre téléchargement devrait commencer automatiquement."
 
@@ -6982,15 +6999,15 @@ msgstr "Code postal&nbsp;:"
 msgid "[<a1>%s</a>]"
 msgstr "[<a1>%s</a>]"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:260
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:269
 msgid "[Fewer Options]"
 msgstr "[Moins d'options]"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:262
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:271
 msgid "[More options]"
 msgstr "[Plus d'options]"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:264
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:273
 msgid "[New Search]"
 msgstr "[Nouvelle Recherche]"
 
@@ -6999,16 +7016,16 @@ msgstr "[Nouvelle Recherche]"
 msgid "a list:"
 msgstr "une liste&nbsp;:"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:259
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:271
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:504
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:877
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:888
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:259
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:271
 msgid "ab"
 msgstr "ab"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:105
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:436
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:105
 msgid "abc"
 msgstr "abc"
 
@@ -7026,8 +7043,8 @@ msgstr "abcdvxyz"
 msgid "abceg"
 msgstr "abceg"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:234
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:856
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:234
 msgid "abcg"
 msgstr "abcg"
 
@@ -7055,9 +7072,9 @@ msgstr "résumé"
 msgid "abstract or summary"
 msgstr "résumé ou sommaire"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:1065
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:536
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:680
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:1065
 msgid "acdeq"
 msgstr "acdeq"
 
@@ -7100,9 +7117,9 @@ msgstr "tout"
 msgid "aperture card"
 msgstr "Carte d'accès"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:1037
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:510
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:652
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:1037
 msgid "aq"
 msgstr "aq"
 
@@ -7162,14 +7179,14 @@ msgstr "en rayon"
 msgid "available online"
 msgstr "en ligne"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:1074
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:544
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:688
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:1074
 msgid "bc"
 msgstr "bc"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:246
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:867
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:246
 msgid "bcg"
 msgstr "bcg"
 
@@ -7215,8 +7232,8 @@ msgstr "braille"
 msgid "bristol board"
 msgstr "fiche bristol"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:114
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:443
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:114
 msgid "by"
 msgstr "par"
 
@@ -7261,9 +7278,9 @@ msgstr "catalog"
 msgid "catalogue"
 msgstr "catalogue"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:1058
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:530
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:673
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:1058
 msgid "cdn"
 msgstr "cdn"
 
@@ -7507,8 +7524,8 @@ msgstr "mélanges"
 msgid "fghkdlmor"
 msgstr "fghkdlmor"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:94
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:416
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:94
 msgid "fgknps"
 msgstr "fgknps"
 
@@ -7529,7 +7546,7 @@ msgstr "Cassette film"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:254
 msgid "film reel"
-msgstr ""
+msgstr "film réel"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:611
 msgid "filmography"
@@ -7537,19 +7554,19 @@ msgstr "filmographie"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:293
 msgid "filmslip"
-msgstr ""
+msgstr "rouleau de film"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:771
 msgid "filmstrip"
-msgstr ""
+msgstr "bande de film"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:296
 msgid "filmstrip cartridge"
-msgstr ""
+msgstr "cartouche de film sur bande"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:299
 msgid "filmstrip roll"
-msgstr ""
+msgstr "rouleau de film sur bande"
 
 #. IMG
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:266
@@ -7687,8 +7704,8 @@ msgstr "irrégulier"
 msgid "is exactly"
 msgstr "est exactement"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-downloadcart.tmpl:12
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-downloadshelf.tmpl:18
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-downloadcart.tmpl:12
 msgid "iso2709"
 msgstr "iso2709"
 
@@ -7850,7 +7867,7 @@ msgstr "microfilm réel"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:245
 msgid "microopaque"
-msgstr ""
+msgstr "micro film opaque"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/subtypes_unimarc.inc:25
 msgid "microprint"
@@ -8250,14 +8267,14 @@ msgstr ""
 "attend un niveau de détail particulier en retour de la requête. Valeurs "
 "possibles :"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:857
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:878
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:192
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:235
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:260
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:285
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:331
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:356
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:857
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:878
 msgid "results_summary"
 msgstr "results_summary"
 
@@ -8377,7 +8394,7 @@ msgstr "enregistrement sonore"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:329
 msgid "sound-tape reel"
-msgstr ""
+msgstr "cartouche sonore"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:332
 msgid "sound-track film"
@@ -8478,7 +8495,7 @@ msgstr "cassette audio"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:181
 msgid "tape reel"
-msgstr ""
+msgstr "cassette"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/subtypes_unimarc.inc:178
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:287
@@ -8501,10 +8518,10 @@ msgid "text in looseleaf binder"
 msgstr "texte dans classeur"
 
 #. META http-equiv=Content-Type
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/doc-head-close.inc:2
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:4
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/sco/help.tmpl:2
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/sco/sco-main.tmpl:2
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/doc-head-close.inc:2
 msgid "text/html; charset=utf-8"
 msgstr "text/html; charset=utf-8"
 
@@ -8633,7 +8650,7 @@ msgstr "enregistrement vidéo"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:371
 msgid "videoreel"
-msgstr ""
+msgstr "vidéocassette"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:223
 msgid "view"
@@ -8689,12 +8706,12 @@ msgstr "enregistrement"
 msgid "wood"
 msgstr "bois"
 
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:392
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACResults.xsl:84
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:422
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:443
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:905
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:926
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACResults.xsl:84
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:392
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:422
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:443
 msgid "y3z"
 msgstr "y3z"
 
