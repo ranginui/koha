@@ -40,10 +40,10 @@ function Dopop(link) {
 		<caption>The <!-- TMPL_VAR NAME="limit"--> most checked-out 
         <!-- TMPL_IF name="itemtype" -->
             <!-- TMPL_VAR name="itemtype" -->
-        <!-- TMPL_ELSE --> titles<!-- /TMPL_IF -->
+        <!-- /TMPL_IF -->
         <!-- TMPL_IF name="branch" -->
-        at 
-        <!-- TMPL_VAR name="branch" -->
+            at 
+            <!-- TMPL_VAR name="branch" -->
         <!-- /TMPL_IF -->
         <!-- TMPL_IF name="timeLimitFinite" -->
         in the past <!-- TMPL_VAR name="timeLimitFinite" --> months
@@ -110,7 +110,7 @@ function Dopop(link) {
                         <!-- /TMPL_LOOP -->
                     </select></li>
 			<li>
-            <label for="timeLimit">Acquired in the last:</label> <select name="timeLimit" id="timeLimit">
+            <label for="timeLimit">of the last:</label> <select name="timeLimit" id="timeLimit">
                 <!-- TMPL_IF EXPR="timeLimit == 3" --><option value="3" selected="selected">3 months</option><!-- TMPL_ELSE --><option value="3">3 months</option><!-- /TMPL_IF -->
                  <!-- TMPL_IF EXPR="timeLimit == 6" --><option value="6" selected="selected">6 months</option><!-- TMPL_ELSE --><option value="6">6 months</option><!-- /TMPL_IF -->
                  <!-- TMPL_IF EXPR="timeLimit == 12" --><option value="12" selected="selected">12 months</option><!-- TMPL_ELSE --><option value="12">12 months</option><!-- /TMPL_IF -->
