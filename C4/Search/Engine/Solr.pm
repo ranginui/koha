@@ -203,6 +203,48 @@ sub FillSubfieldWithAuthorisedValues {
 
 =head2 SimpleSearch
 
+Search function for Solr Engine.
+
+params: 
+  $q           = solr's query
+  $filters     = hashref (ex: {recordtype=>'biblio'})
+  $page        = page number for pagination
+  $max_results = max returned results
+  $sort        = field sorting
+
+Before the call: 
+  You must call normalSearch or buildQuery function et call SimpleSearch with the query returned
+
+Examples:
+
+  We have a simple query already constructed. We call normalSearch.
+    my $query = "title=programming and author=knuth";
+    $query = C4::Search::Query->normalSearch($query);
+    my %filters = { recordtype => 'biblio' } # We find in biblios
+    my $results = C4::Search::Engine::SimpleSearch($query, \%filters);
+    
+  We want hits number:
+    my $hits = $$results{pager}{total_entries};
+  
+  print recordids:
+    print $_->{'values'}->{'recordid'} for @{ $results->items };
+
+  If we watn a adv search, we have 3 arrays : indexes, operands and operators
+  We must call buildquery: 
+  my @indexes = ("title", "author");
+  my @operators = ("and");
+  my @operands = ("programming", "knuth");
+  my $query = C4::Search::Query->buildQuery(\@indexes, \@operands, \@operators);
+  # Here $query = "txt_title=programming AND txt_author=knuth"
+  my $results = C4::Search::Engine::SimpleSearch($query);
+
+  If we call buildQuery without indexes, it call normalSearch with first operands (prabably contains the query):
+  my @indexes = ();
+  my @operators = ();
+  my @operands = ("title=programming and author=knuth");
+  my $query = C4::Search::Query->buildQuery(\@indexes, \@operands, \@operators);
+  # Here $query = "txt_title=programming AND txt_author=knuth"
+  my $results = C4::Search::Engine::SimpleSearch($query);
 
 =cut
 
@@ -215,6 +257,7 @@ sub SimpleSearch {
     $max_results ||= 999999999;
     $sort        ||= 'score desc';
 
+    # sort is a srt_* field
     $sort = "srt_$sort" if $sort =~ /^(str|txt|int|date|ste)_/;
 
     my $sc = GetSolrConnection;
@@ -225,6 +268,7 @@ sub SimpleSearch {
     $sc->options->{'facet.field'}    = GetFacetedIndexes($filters->{recordtype});
     $sc->options->{'sort'}           = $sort;
 
+    # Construct filters
     $sc->options->{'fq'} = [ 
         map { 
             utf8::decode($filters->{$_});
@@ -239,13 +283,18 @@ sub SimpleSearch {
         query => $q,
     );
 
+    # Get results
     my $result = eval { $sc->search( $sq ) };
     warn $@ if $@;
 
     return $result if (ref($result) eq "Data::SearchEngine::Solr::Results");
 }
 
+=head2 IndexRecord
 
+Index all records with id in recordsids and recordtype=$recordtype ('biblio' or 'authority').
+
+=cut
 sub IndexRecord {
     my $recordtype = shift;
     my $recordids  = shift;
