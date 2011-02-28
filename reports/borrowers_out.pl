@@ -257,15 +257,12 @@ sub calculate {
     $strcalc .= "WHERE 1 ";
     @$filters[0] =~ s/\*/%/g if ( @$filters[0] );
     $strcalc .= " AND borrowers.categorycode like '" . @$filters[0] . "'" if ( @$filters[0] );
-    my $strqueryfilter = "SELECT DISTINCT borrowernumber FROM old_issues WHERE borrowernumber IS NOT NULL ";
-    if ( @$filters[1] ) {
-        $strqueryfilter .= "AND old_issues.timestamp> @$filters[1] ";
-    }
-    $strqueryfilter.= "UNION DISTINCT SELECT DISTINCT borrowernumber FROM issues WHERE borrowernumber IS NOT NULL ";
-    if ( @$filters[1] ) {
-        $strqueryfilter .= "AND issues.timestamp> @$filters[1] ";
-    }
-    $strcalc .= " AND borrowers.borrowernumber not in ($strqueryfilter)";
+    $strcalc .= " AND NOT EXISTS (SELECT * FROM issues WHERE issues.borrowernumber=borrowers.borrowernumber ";
+    $strcalc .= " AND issues.timestamp> '" . @$filters[1] . "'" if (@$filters[1]);
+    $strcalc .= ") ";
+    $strcalc .= " AND NOT EXISTS (SELECT * FROM old_issues WHERE old_issues.borrowernumber=borrowers.borrowernumber ";
+    $strcalc .= " AND old_issues.timestamp> '" . @$filters[1] . "'" if (@$filters[1]);
+    $strcalc .= ") ";
     $strcalc .= " group by borrowers.borrowernumber";
     $strcalc .= ", $colfield" if ($column);
     $strcalc .= " order by $colfield " if ($colfield);
@@ -279,6 +276,7 @@ sub calculate {
         $strcalc .= " LIMIT 0,$max";
     }
 
+warn $strcalc;
     my $dbcalc = $dbh->prepare($strcalc);
     $dbcalc->execute;
 
