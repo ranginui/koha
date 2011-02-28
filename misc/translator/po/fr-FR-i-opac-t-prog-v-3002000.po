@@ -20,8 +20,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nicomo-fr-FR-i-opac-t-prog-v-3000000\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-25 13:18+0100\n"
-"PO-Revision-Date: 2011-02-28 12:30+0100\n"
+"POT-Creation-Date: 2011-02-28 14:52+0100\n"
+"PO-Revision-Date: 2011-02-28 13:47+0100\n"
 "Last-Translator: Paul Poulain <paul.poulain@biblibre.com>\n"
 "Language-Team: American English <kde-i18n-doc@kde.org>\n"
 "Language: \n"
@@ -1750,9 +1750,8 @@ msgid "Account Frozen"
 msgstr "Compte bloqué"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/opac-topissues.inc:36
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:113
 msgid "Acquired in the last:"
-msgstr "acquis durant les derniers&nbsp;:"
+msgstr "des derniers&nbsp;:"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/resort_form.inc:25
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/includes/resort_form.inc:26
@@ -8011,6 +8010,11 @@ msgstr "tableau de données"
 msgid "of all time"
 msgstr "depuis toujours"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:113
+#, fuzzy
+msgid "of the last:"
+msgstr "des derniers&nbsp;:"
+
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-serial-issues.tmpl:70
 msgid "on Friday"
 msgstr "le vendredi"
@@ -8568,10 +8572,6 @@ msgstr ""
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:599
 msgid "theses"
 msgstr "thèses"
-
-#: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:43
-msgid "titles"
-msgstr "titres"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:814
 msgid "toy"
@@ -9219,6 +9219,9 @@ msgstr "Édition:"
 #, fuzzy
 #~ msgid "term"
 #~ msgstr "Terme"
+
+#~ msgid "titles"
+#~ msgstr "titres"
 
 #~ msgid "with limit(s): '%s'"
 #~ msgstr "limité à&nbsp;: '%s'"

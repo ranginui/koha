@@ -13,8 +13,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nicomo-fr-FR-i-staff-t-prog-v-3000000\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-25 13:19+0100\n"
-"PO-Revision-Date: 2011-02-28 12:33+0100\n"
+"POT-Creation-Date: 2011-02-28 14:56+0100\n"
+"PO-Revision-Date: 2011-02-28 15:25+0100\n"
 "Last-Translator: Paul Poulain <paul.poulain@biblibre.com>\n"
 "Language-Team: American English <kde-i18n-doc@kde.org>\n"
 "Language: \n"
@@ -263,8 +263,10 @@ msgstr "%S (Date du premier abonnement)"
 msgid "%S (use * to do a fuzzy search)"
 msgstr "%S (utiliser * pour une recherche floue)"
 
+#. For the first occurrence,
 #. %1$S: type=text name=other_reason<!-- TMPL_VAR NAME="suggestiontype" -->
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:316
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:542
 #, c-format
 msgid "%S <a1>Cancel</a>"
 msgstr "%S <a1>Annuler</a>"
@@ -724,7 +726,7 @@ msgstr "%s Réservation(s)"
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/waitingreserves.tmpl:72
 #, c-format
 msgid "%s Hold(s) over"
-msgstr "%s Réservation(s) en trop"
+msgstr "%s Réservation(s) à annuler"
 
 #. %1$s: TMPL_VAR name=reservecount
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/waitingreserves.tmpl:71
@@ -1201,6 +1203,7 @@ msgstr "%s. %s"
 #. %1$s: TMPL_VAR name=printer_name
 #. %2$s: TMPL_VAR name=paper_bin
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/edit-template.tmpl:170
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:652
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/labels/label-edit-template.tmpl:151
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:719
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:772
@@ -1237,7 +1240,7 @@ msgstr "%s&nbsp;: %s"
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/admin/branch_transfer_limits.tmpl:86
 #, c-format
 msgid "%ss: <a1>Check All</a>"
-msgstr "%ss: <a1>Sélectionnez tout</a>"
+msgstr "%ss: <a1>Sélectionner tout</a>"
 
 #. %1$s: TMPL_VAR name=unitpricesupplier
 #. %2$s: TMPL_VAR name=quantity
@@ -1360,8 +1363,10 @@ msgstr ""
 msgid "&#x010D;e&#353;tina (Czech)"
 msgstr "&#x010D;e&#353;tina (Tchèque)"
 
+#. For the first occurrence,
 #. %1$s: TMPL_VAR name=copyrightdate
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:276
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:496
 #, c-format
 msgid "&copy; %s"
 msgstr "&copy; %s"
@@ -1742,7 +1747,7 @@ msgstr "&rsaquo; <a1>Documents perdus</a> &rsaquo; Résultats"
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/tools/manage-marc-import.tmpl:37
 #, c-format
 msgid "&rsaquo; <a1>Manage Staged MARC Records</a> &rsaquo; Batch %s"
-msgstr "&rsaquo; <a1>Gérer les Notices MARC préparées</a> &rsaquo; Batch %s"
+msgstr "&rsaquo; <a1>Gestion des Notices MARC préparées</a> &rsaquo; Batch %s"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reports/bor_issues_top.tmpl:10
 #, c-format
@@ -1992,7 +1997,7 @@ msgstr "&rsaquo; Exemplaires perdus"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/tools/manage-marc-import.tmpl:41
 msgid "&rsaquo; Manage Staged MARC Records"
-msgstr "&rsaquo; Gérer les notices MARC préparées"
+msgstr "&rsaquo; Gestion des notices MARC préparées"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/tools/letter.tmpl:2
 msgid "&rsaquo; Modify notice"
@@ -2227,6 +2232,7 @@ msgstr "(%s"
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:225
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:226
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:365
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:518
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reports/guided_reports_start.tmpl:119
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:525
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:529
@@ -2609,6 +2615,11 @@ msgstr "*******"
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:286
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/acqui/basket.tmpl:263
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/acqui/basket.tmpl:264
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:504
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:508
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:509
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:638
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:739
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/member.tmpl:58
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reports/guided_reports_start.tmpl:119
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/view_holdsqueue.tmpl:51
@@ -2765,6 +2776,10 @@ msgstr ", autre"
 #. %1$s: TMPL_VAR name=author
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/moredetail.tmpl:22
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:273
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:493
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:638
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:739
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:774
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:709
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:760
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:838
@@ -3023,11 +3038,13 @@ msgstr "-- Choisir --"
 
 #
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:310
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:536
 msgid "-- Choose a reason --"
 msgstr "-- Choisir un motif --"
 
 #
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:303
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:529
 msgid "-- Choose a status --"
 msgstr "-- Choisir un statut --"
 
@@ -3304,6 +3321,7 @@ msgstr "/"
 #. %1$s: TMPL_VAR name=suggesteddate
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:282
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/acqui/parcel.tmpl:306
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:505
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/merge.tmpl:230
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/merge.tmpl:240
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/merge.tmpl:266
@@ -4749,6 +4767,8 @@ msgstr ":,;/"
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/results.tmpl:450
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/acqui/neworderbiblio.tmpl:56
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/acqui/neworderbiblio.tmpl:61
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:638
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:739
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/addbooks.tmpl:67
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/addbooks.tmpl:69
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_4XX.tmpl:172
@@ -4757,21 +4777,27 @@ msgstr ":,;/"
 msgid "; %s"
 msgstr "; %s"
 
+#. For the first occurrence,
 #. %1$s: TMPL_VAR name=isbn
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:278
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:498
 #, c-format
 msgid "; ISBN:<i>%s</i>"
 msgstr "; ISBN&nbsp;: <i>%s</i>"
 
 #
+#. For the first occurrence,
 #. %1$s: TMPL_VAR name=publishercode
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:278
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:498
 #, c-format
 msgid "; Published by %s"
 msgstr "; Edité par %s"
 
+#. For the first occurrence,
 #. %1$s: TMPL_VAR name=volumedesc
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:277
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:497
 #, c-format
 msgid "; Volume:<i>%s</i>"
 msgstr "; Volume&nbsp;: <i>%s</i>"
@@ -4779,6 +4805,7 @@ msgstr "; Volume&nbsp;: <i>%s</i>"
 #. For the first occurrence,
 #. %1$s: TMPL_VAR name=collectiontitle
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:278
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:498
 #, c-format
 msgid ";%s"
 msgstr ";%s"
@@ -5988,7 +6015,7 @@ msgid ""
 "<a1>Home</a> &rsaquo; <a2>Tools</a> &rsaquo; <a3>Patron Card Creator</a> "
 "&rsaquo; <a4>Manage Patron Card Batches</a> &rsaquo; Manage Batch Number %s"
 msgstr ""
-"<a1> Accueil </a> &rsaquo;<a2>Outils</a> &rsaquo; <a3>Créateur de cartes "
+"<a1> Accueil </a> &rsaquo;<a2>Outils</a> &rsaquo; <a3>Création de cartes "
 "adhérent</a> &rsaquo; <a4>Gérer les lots de cartes</a> &rsaquo; Gérer lot "
 "num. %s"
 
@@ -5998,7 +6025,7 @@ msgid ""
 "<a1>Home</a> &rsaquo; <a2>Tools</a> &rsaquo; <a3>Patron Card Creator</a> "
 "&rsaquo; <a4>Mange Patron Card Layouts</a> &rsaquo;"
 msgstr ""
-"<a1>Accueil</a> &rsaquo; <a2>Outils</a> &rsaquo; <a3>Créateur de cartes "
+"<a1>Accueil</a> &rsaquo; <a2>Outils</a> &rsaquo; <a3>Création de cartes "
 "adhérent</a>&rsaquo; <a4>Gérer les formats</a>"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/edit-template.tmpl:70
@@ -6007,7 +6034,7 @@ msgid ""
 "<a1>Home</a> &rsaquo; <a2>Tools</a> &rsaquo; <a3>Patron Card Creator</a> "
 "&rsaquo; <a4>Patron Card Templates</a> &rsaquo; Edit Patron Card Template"
 msgstr ""
-"<a1> Accueil </a> &rsaquo;<a2>Outils</a> &rsaquo; <a3>Créateur de cartes "
+"<a1> Accueil </a> &rsaquo;<a2>Outils</a> &rsaquo; <a3>Création de cartes "
 "adhérent</a> &rsaquo; <a4>Modèles de cartes</a> &rsaquo; Modifier le modèle "
 "de carte"
 
@@ -6017,7 +6044,7 @@ msgid ""
 "<a1>Home</a> &rsaquo; <a2>Tools</a> &rsaquo; <a3>Patron Card Creator</a> "
 "&rsaquo; <a4>Printer Profiles</a> &rsaquo; Edit Printer Profile"
 msgstr ""
-"<a1> Accueil </a> &rsaquo;<a2>Outils</a> &rsaquo; <a3>Créateur de cartes "
+"<a1> Accueil </a> &rsaquo;<a2>Outils</a> &rsaquo; <a3>Création de cartes "
 "adhérent</a> &rsaquo; <a4>Profils d'imprimante</a> &rsaquo; Modifier un "
 "profil d'imprimante"
 
@@ -6028,7 +6055,7 @@ msgid ""
 "<a1>Home</a> &rsaquo; <a2>Tools</a> &rsaquo; <a3>Patron Card Creator</a> "
 "&rsaquo; Manage Card %s"
 msgstr ""
-"<a1> Accueil </a> &rsaquo;<a2>Outils</a> &rsaquo; <a3>Créateur de cartes "
+"<a1> Accueil </a> &rsaquo;<a2>Outils</a> &rsaquo; <a3>Création de cartes "
 "adhérent</a> &rsaquo; Gérer les cartes %s"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/image-manage.tmpl:96
@@ -6037,7 +6064,7 @@ msgid ""
 "<a1>Home</a> &rsaquo; <a2>Tools</a> &rsaquo; <a3>Patron Card Creator</a> "
 "&rsaquo; Manage Images"
 msgstr ""
-"<a1> Accueil </a> &rsaquo;<a2>Outils</a> &rsaquo; <a3>Créateur de cartes "
+"<a1> Accueil </a> &rsaquo;<a2>Outils</a> &rsaquo; <a3>Création de cartes "
 "adhérent</a> &rsaquo; Gérer les images %s"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/rotating_collections/addItems.tmpl:9
@@ -6100,7 +6127,7 @@ msgstr "<a1> Accueil </a> &rsaquo;<a2>Outils</a> &rsaquo; Envoi du message"
 #, c-format
 msgid "<a1>Home</a> &rsaquo; <a2>Tools</a> &rsaquo; Patron Card Creator"
 msgstr ""
-"<a1> Accueil </a> &rsaquo;<a2>Outils</a> &rsaquo; Créateur de cartes adhérent"
+"<a1> Accueil </a> &rsaquo;<a2>Outils</a> &rsaquo; Création de cartes adhérent"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/labels/spinelabel-home.tmpl:8
 #, c-format
@@ -7345,6 +7372,8 @@ msgstr ""
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:295
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:305
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:361
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:518
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:531
 msgid "Accepted"
 msgstr "Accepté"
 
@@ -8930,7 +8959,7 @@ msgstr "Tous"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reports/serials_stats.tmpl:80
 msgid "Any Branch"
-msgstr "Tout site"
+msgstr "Tous sites"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reports/bor_issues_top.tmpl:201
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reports/cat_issues_top.tmpl:209
@@ -8955,7 +8984,7 @@ msgstr "Toute expression"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reports/serials_stats.tmpl:70
 msgid "Any Vendor"
-msgstr "Tout fournisseur"
+msgstr "Tous fournisseurs"
 
 #
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/results.tmpl:282
@@ -9247,6 +9276,8 @@ msgstr ""
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:295
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:304
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:360
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:518
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:530
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reports/reserves_stats.tmpl:88
 msgid "Asked"
 msgstr "Demandé"
@@ -9900,6 +9931,9 @@ msgstr "code-barres"
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/detailprint.tmpl:35
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/edit-layout.tmpl:386
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/offline_circ/list.tmpl:52
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:578
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:714
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:766
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/readingrec.tmpl:59
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reports/catalogue_out.tmpl:63
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reports/itemslost.tmpl:34
@@ -10036,7 +10070,7 @@ msgid ""
 "to set your system preferences, and then to work through the Basic "
 "Parameters in the order that they appear on this page."
 msgstr ""
-"Les paramètres système sont l'endroit où les politiques de la bibliothèque "
+"Les paramètres système sont l'endroit où les règles de la bibliothèque "
 "sont fixées et administrées. Le mieux c'est de choisir vos préférences "
 "système, et puis de parcourir les Paramètres dans l'ordre dans lequel ils "
 "apparaissent sur cette page."
@@ -10196,7 +10230,7 @@ msgstr "Résultats de la modification par lot"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/tools/tools-home.tmpl:106
 msgid "Batch record modification"
-msgstr "Modification d'exemplaires par lots"
+msgstr "Modification de notices par lots"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/tools/batchedit.tmpl:127
 msgid "Batch records modification"
@@ -10748,6 +10782,7 @@ msgstr ""
 msgid "Borrow books from the library with this staff account"
 msgstr "Empruntez des documents avec ce compte bibliothécaire"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:717
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:824
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/branchoverdues.tmpl:126
 msgid "Borrower"
@@ -10868,6 +10903,7 @@ msgid "Bsort2"
 msgstr "Bsort2"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:262
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:482
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reports/acquisitions_stats.tmpl:255
 msgid "Budget"
 msgstr "Budget"
@@ -11205,6 +11241,7 @@ msgstr "Cote"
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/includes/resort_form.inc:33
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/detail.tmpl:198
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/detailprint.tmpl:35
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:765
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reports/catalogue_out.tmpl:62
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reports/serials_stats.tmpl:38
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/labels/search.tmpl:44
@@ -11240,6 +11277,12 @@ msgstr "Cote&nbsp;: "
 #, c-format
 msgid "Call Numbers <a1>Sort</a>"
 msgstr "Cote <a1>trier</a>"
+
+#
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:581
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:718
+msgid "Call no"
+msgstr "Cote "
 
 #
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reserve/request.tmpl:392
@@ -11455,6 +11498,7 @@ msgid "Cancel Hold"
 msgstr "Annuler réservation"
 
 #. INPUT type=submit name=submit
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:805
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:923
 msgid "Cancel Marked Requests"
 msgstr "Annuler réservations cochées"
@@ -11471,7 +11515,7 @@ msgstr "Annuler réservation"
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/waitingreserves.tmpl:165
 msgid "Cancel hold and return to : <!-- TMPL_VAR NAME=\"homebranch\" -->"
 msgstr ""
-"Annuler réservation et retourner à&nbsp;: <!-- TMPL_VAR NAME=\"homebranch\" "
+"Annuler réservation et retourner à <!-- TMPL_VAR NAME=\"homebranch\" "
 "-->"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/branchoverdues.tmpl:172
@@ -12023,6 +12067,8 @@ msgid "Character of Image:"
 msgstr "type d'image&nbsp;:"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember-print.tmpl:27
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:582
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:719
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:656
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:823
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/admin/itemtypes.tmpl:312
@@ -12045,7 +12091,7 @@ msgstr "Discuter (chat) avec les utilisateurs et les développeurs de Koha"
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/serials/claims.tmpl:147
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/admin/branch_transfer_limits.tmpl:99
 msgid "Check All"
-msgstr "Sélectionnez tout"
+msgstr "Sélectionner tout"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/includes/serials-menu.inc:19
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/serials/checkexpiration.tmpl:3
@@ -12115,6 +12161,7 @@ msgstr "Vérifier les données exemplaires incluses ?"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/includes/mainmenu.inc:15
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/intranet-main.tmpl:25
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:585
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:659
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/errors/405.tmpl:39
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/errors/500.tmpl:39
@@ -12228,6 +12275,8 @@ msgstr "l'historique de prêt sera rendu anonyme pour %s adhérents."
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:295
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:306
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:362
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:518
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:532
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/admin/z3950servers.tmpl:295
 msgid "Checked"
 msgstr "Vérifié"
@@ -12287,6 +12336,8 @@ msgstr "Prêté <a1>%s</a> (%s) à <a2>%s %s</a> (%s): %s"
 msgid "Checked out from"
 msgstr "Emprunté à"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:580
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:716
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/readingrec.tmpl:61
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:655
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:822
@@ -12318,6 +12369,7 @@ msgstr "Actif&nbsp;:"
 msgid "Checkin"
 msgstr "Retour"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:688
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:740
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:792
 msgid "Checkin Failed"
@@ -12840,7 +12892,7 @@ msgid ""
 "when the item was last seen to generate a shelf list that you can then print "
 "to use while walking around the library checking your collection"
 msgstr ""
-"Après avoir sélectionné la bibliothèque, la localisation, une tranche de "
+"Après avoir sélectionné le site, la localisation, une tranche de "
 "cote, le statut d'un document et la date à laquelle vous l'avez vu, vous "
 "pourrez visualiser et imprimer une liste à utiliser lors du récollement dans "
 "les rayons"
@@ -13715,7 +13767,7 @@ msgid ""
 "Clicking the Confirm hold button will mark the item as waiting for pickup "
 "from the library"
 msgstr ""
-"Cliquez sur le bouton 'Confirmer la réservation' va marquer le document "
+"Cliquer sur le bouton 'Confirmer la réservation' va marquer le document "
 "comme en attente de retrait à la bibliothèque"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/circ/returns.tmpl:22
@@ -13854,6 +13906,8 @@ msgstr "Colin Campbell"
 #
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/detail.tmpl:197
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/basket/basket.tmpl:196
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:576
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:712
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reports/reserves_stats.tmpl:466
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reports/issues_stats.tmpl:219
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reports/catalogue_stats.tmpl:178
@@ -15966,6 +16020,7 @@ msgid "Delete record matching rule"
 msgstr "Supprimer la règle de concordance"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:317
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:543
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/tools/koha-news.tmpl:167
 msgid "Delete selected"
 msgstr "Supprimer la sélection"
@@ -16037,6 +16092,7 @@ msgstr "Supprimer ce jour de fermeture"
 msgid "Delete this saved report"
 msgstr "Supprimer ce rapport enregistré"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:768
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reserve/request.tmpl:584
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:893
 msgid "Delete?"
@@ -16632,6 +16688,8 @@ msgid "Due Date desc"
 msgstr "Date de retour desc"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/issuehistory.tmpl:31
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:574
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:710
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:651
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:818
 msgid "Due date"
@@ -17541,7 +17599,7 @@ msgstr "Entrez des informations complémentaires pour le fournisseur"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/branches.tmpl:55
 msgid "Enter all other information related to the library"
-msgstr "Saisissez les autres informations relatives à la bibliothèque"
+msgstr "Saisissez les autres informations relatives au site"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/members/memberentry.tmpl:118
 msgid "Enter an alternate address (if you require one for your library)."
@@ -18002,8 +18060,8 @@ msgid ""
 "Example: \"I want circulation data starting with date XXX up to, but not "
 "including, date XXX.\""
 msgstr ""
-"Exemple : \"je veux les informations de prêt depuisle XX/XX mais excluant "
-"XX/XX\"."
+"Exemple : \"je veux les informations de prêt depuisle XX/XX mais excluant XX/"
+"XX\"."
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/tools/csv-profiles.tmpl:120
 msgid "Example: Personal name=200|Entry element=210$a|300|009"
@@ -18655,14 +18713,14 @@ msgid ""
 "Finally decide if this event should be applied to all libraries or just the "
 "one you have originally selected"
 msgstr ""
-"Enfin, choisissez si cet évènement s'applique à toutes les bibliothèques ou "
-"seulement celle que vous avez choisi au début"
+"Enfin, choisissez si cet évènement s'applique à tous les sites ou "
+"seulement celui que vous avez choisi au début"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/tools/csv-profiles.tmpl:11
 msgid "Finally format your CSV file using the 'Profile marcfields' fields"
 msgstr ""
-"Enfin, formatez votre fichier CSV en utilisant les champs 'champs marc "
-"du profil'"
+"Enfin, formatez votre fichier CSV en utilisant les champs 'champs marc du "
+"profil'"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/patroncards/edit-layout.tmpl:21
 msgid "Finally you can choose up to two images to print on the card."
@@ -18938,7 +18996,7 @@ msgid ""
 "For this library, you can edit rules for given itemtypes, regardless of the "
 "patron's category. Currently, this means hold policies."
 msgstr ""
-"Pour cette bibliothèque, vous pouvez définir les règles pour un type de "
+"Pour ce site, vous pouvez définir les règles pour un type de "
 "document, quelque soit la catégorie d'adhérent. Actuellement, cela concerne "
 "les règles de réservation."
 
@@ -18954,6 +19012,7 @@ msgstr ""
 msgid "For:"
 msgstr "Pour:"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:609
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:686
 msgid "Forgive fines on return:"
 msgstr "Effacer les amendes au retour&nbsp;:"
@@ -19070,8 +19129,7 @@ msgid ""
 "intranet-tmpl/prog/en/css/"
 msgstr ""
 "Formattez l'impression des étiquettes, en modifiant le fichier spinelabel."
-"css qui se trouve dans  koha-tmpl/"
-"intranet-tmpl/prog/en/css/"
+"css qui se trouve dans  koha-tmpl/intranet-tmpl/prog/en/css/"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/basket/downloadcart.tmpl:13
 msgid "Format:"
@@ -19199,8 +19257,8 @@ msgid ""
 "From Any Library: Patrons from any library may put this item on hold. "
 "(default if none is defined)"
 msgstr ""
-"Depuis n'importe quelle bibliothèque : les adhérents de n'importe quelle "
-"bibliothèque peuvent poser une réservation (règle par défaut si rien n'est "
+"Depuis n'importe quel site : les adhérents de n'importe quel "
+"site peuvent poser une réservation (règle par défaut si rien n'est "
 "spécifié)"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/smart-rules.tmpl:55
@@ -20180,6 +20238,7 @@ msgstr ""
 msgid "Hold at"
 msgstr "Réservation à"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:763
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:888
 msgid "Hold date"
 msgstr "Date de réservation"
@@ -20724,8 +20783,7 @@ msgid ""
 "to use this feature."
 msgstr ""
 "IMPORTANT : La préférence système 'patronimages' doit être à ON si vous "
-"voulez utiliser "
-"cette fonctionnalité."
+"voulez utiliser cette fonctionnalité."
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/branches.tmpl:35
 msgid "IMPORTANT: Right now category type is still in development."
@@ -20817,8 +20875,8 @@ msgid ""
 "IMPORTANT: These policies are based on the patron's home branch, not the "
 "branch that the reserving staff member is from."
 msgstr ""
-"IMPORTANT : ces règles sont basées sur la bibliothèque de l'adhérent, pas la "
-"bibliothèque à laquelle est rattachée le bibliothécaire."
+"IMPORTANT : ces règles sont basées sur le site de l'adhérent, pas le "
+"site auquel est rattaché le bibliothécaire."
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/branch_transfer_limits.tmpl:7
 msgid ""
@@ -21073,10 +21131,10 @@ msgid ""
 "weight."
 msgstr ""
 "Si 'RandomizeHoldsQueueWeight' et 'StaticHoldsQueueWeight' sont activés, la "
-"liste des codes de bibliothèques dans la préférence système "
+"liste des codes de sites dans la préférence système "
 "'StaticHoldsQueueWeight' est aléatoire. Si seule la préférence système "
-"'RandomizeHoldsQueueWeight' est activée, la liste des codes des "
-"bibliothèques est utilisée pour rendre le classement aléatoire."
+"'RandomizeHoldsQueueWeight' est activée, la liste des codes des sites est "
+"utilisée pour rendre le classement aléatoire."
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/cataloguing/addbiblio.tmpl:22
 msgid ""
@@ -21110,9 +21168,9 @@ msgid ""
 msgstr ""
 "Si vous avez choisi une formule de numérotation dans la section précédente, "
 "le tableau sera automatiquement rempli et présenté dans cette section. Vous "
-"pouvez modifier le schéma de numérotation mais ne modifiez pas {X}, {Y}, {Z}."
-" Si vous avez choisi \"Autre formule\", alors vous devez remplir ce tableau "
-"manuellement."
+"pouvez modifier le schéma de numérotation mais ne modifiez pas {X}, {Y}, "
+"{Z}. Si vous avez choisi \"Autre formule\", alors vous devez remplir ce "
+"tableau manuellement."
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/circ/selectbranchprinter.tmpl:12
 msgid "If a library is not set you will see a notice to that affect."
@@ -21386,9 +21444,9 @@ msgid ""
 "If you are checking an item in at a library other than the home branch, a "
 "message will appear asking you to transfer the book to the home library"
 msgstr ""
-"Si vous retournez un document dans une autre bibliothèque que la sienne, un "
-"message va apparaître et vous proposer de transférer le document à sa "
-"bibliothèque de rattachement."
+"Si vous retournez un document dans un autre site que le sien, un "
+"message va apparaître et vous proposer de transférer le document à son site "
+"de rattachement."
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/circ/returns.tmpl:6
 msgid ""
@@ -21721,7 +21779,7 @@ msgid ""
 "If you're checking in an item that has a hold on it at another branch you "
 "will be prompted to confirm and transfer the item"
 msgstr ""
-"Si vous faites un retour sur un document réservé pour une autre bibliothèque "
+"Si vous faites un retour sur un document réservé pour un autre site "
 "Koha vous demandera de confirmer et transférer le document"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/patroncards/manage.tmpl:11
@@ -22603,6 +22661,7 @@ msgstr "Italiano (Italien)"
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/acqui/neworderempty.tmpl:248
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/acqui/orderreceive.tmpl:40
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/acqui/addorderiso2709.tmpl:113
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:777
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reports/cat_issues_top.tmpl:44
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/serials/serials-edit.tmpl:270
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/serials/serials-edit.tmpl:374
@@ -22691,6 +22750,8 @@ msgstr "Statut de l'exemplaire"
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:343
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/acqui/orderreceive.tmpl:12
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/basket/basket.tmpl:311
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:579
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:715
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reports/reserves_stats.tmpl:418
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reports/issues_stats.tmpl:195
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reports/acquisitions_stats.tmpl:248
@@ -23699,7 +23760,7 @@ msgstr ""
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/image-manage.tmpl:2
 msgid "Koha &rsaquo; Patron Card Creator &rsaquo; Manage Images"
-msgstr "Koha &rsaquo; Créateur de cartes adhérents  &rsaquo; Gérer les images"
+msgstr "Koha &rsaquo; Création de cartes adhérents  &rsaquo; Gérer les images"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/members-search.tmpl:2
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/member.tmpl:2
@@ -23994,7 +24055,7 @@ msgstr "Koha &rsaquo; Outils &rsaquo; Export MARC"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/tools/manage-marc-import.tmpl:2
 msgid "Koha &rsaquo; Tools &rsaquo; Manage Staged MARC Records"
-msgstr "Koha &rsaquo; Outils &rsaquo; Gérer les notices MARC traitées"
+msgstr "Koha &rsaquo; Outils &rsaquo; Gestion des notices MARC traitées"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/tools/koha-news.tmpl:2
 msgid "Koha &rsaquo; Tools &rsaquo; News"
@@ -24012,14 +24073,14 @@ msgstr "Koha &rsaquo; Outils &rsaquo; Messages"
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/edit-profile.tmpl:2
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/home.tmpl:2
 msgid "Koha &rsaquo; Tools &rsaquo; Patron Card Creator"
-msgstr "Koha &rsaquo; Outils &rsaquo; Créateur de cartes adhérent"
+msgstr "Koha &rsaquo; Outils &rsaquo; Création de cartes adhérent"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/edit-batch.tmpl:2
 msgid ""
 "Koha &rsaquo; Tools &rsaquo; Patron Card Creator &rsaquo; Manage Patron Card "
 "Batches"
 msgstr ""
-"Koha &rsaquo; Outils &rsaquo; Créateur de carte adhérent &rsaquo; Gérer les "
+"Koha &rsaquo; Outils &rsaquo; Création de carte adhérent &rsaquo; Gérer les "
 "lots de cartes adhérent"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/card-print.tmpl:2
@@ -24027,13 +24088,13 @@ msgid ""
 "Koha &rsaquo; Tools &rsaquo; Patron Card Creator &rsaquo; Patron Card "
 "Printing/Exporting"
 msgstr ""
-"Koha &rsaquo; Outils &rsaquo; Créateur de cartes adhérent &rsaquo Impression/"
+"Koha &rsaquo; Outils &rsaquo; Création de cartes adhérent &rsaquo Impression/"
 "Export de cartes"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/edit-template.tmpl:2
 msgid "Koha &rsaquo; Tools &rsaquo; Patron Card Creator &rsaquo; Templates"
 msgstr ""
-"Koha &rsaquo; Outils &rsaquo; Créateur de cartes adhérent &rsaquo; Modèles"
+"Koha &rsaquo; Outils &rsaquo; Création de cartes adhérent &rsaquo; Modèles"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/manage.tmpl:2
 msgid ""
@@ -24228,7 +24289,7 @@ msgid ""
 "when you set up your MARC tag structure."
 msgstr ""
 "Koha installe automatiquement les catégories de valeurs autorisées pour vos "
-"types de document et les codes de bibliothèques, et vous pouvez lier ces "
+"types de document et les codes de sites, et vous pouvez lier ces "
 "valeurs autorisées à des sous-champs MARC quand vous établissez votre "
 "structure MARC."
 
@@ -24534,7 +24595,7 @@ msgstr "Largeur de l'étiquette&nbsp;: "
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/includes/tools-menu.inc:59
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/tools/tools-home.tmpl:120
 msgid "Label creator"
-msgstr "Créateur d'étiquettes"
+msgstr "Création d'étiquettes"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/admin/marctagstructure.tmpl:83
 msgid "Label for lib:"
@@ -24907,6 +24968,7 @@ msgstr "Sites et groupes"
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:261
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:342
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/members-search.tmpl:103
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:481
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/member.tmpl:38
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reports/issues_avg_stats.tmpl:241
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reports/borrowers_stats.tmpl:137
@@ -25042,7 +25104,7 @@ msgid ""
 "Library will be filled in automatically based on the library you chose from "
 "the pull down at the top of the page"
 msgstr ""
-"La bibliothèque sera pré-remplie en fonction de la bibliothèque indiquée en "
+"Le site sera pré-rempli en fonction du site indiqué en "
 "haut de la page"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/admin/branches.tmpl:72
@@ -25136,7 +25198,7 @@ msgstr "Limiter à un type de document spécifique"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/tools/export.tmpl:11
 msgid "Limit to a specific library"
-msgstr "Limiter à une bibliothèque spécifique"
+msgstr "Limiter à un site spécifique"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/tools/export.tmpl:13
 msgid "Limit to an acquisition date range"
@@ -25974,7 +26036,7 @@ msgstr ""
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/tools/stage-marc-import.tmpl:63
 msgid "Manage staged records"
-msgstr "Gérer les notices préparées"
+msgstr "Gestion des notices préparées"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/includes/acquisitions-menu.inc:6
 msgid "Manage suggestions"
@@ -25985,6 +26047,7 @@ msgid "Managed by"
 msgstr "Géré par&nbsp;: "
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:260
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:480
 msgid "Managed by /on"
 msgstr "Géré par / le"
 
@@ -26171,6 +26234,7 @@ msgid "Mark seen"
 msgstr "Cocher vu"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:302
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:528
 msgid "Mark selected as:"
 msgstr "Marquer les éléments sélectionnés comme:"
 
@@ -26244,7 +26308,7 @@ msgstr "Code de la règle de concordance&nbsp;:"
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:657
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:825
 msgid "Material"
-msgstr "Matérial"
+msgstr "Matériel"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_117.tmpl:223
 msgid "Material 1"
@@ -27115,8 +27179,7 @@ msgid ""
 "reports-training/</a>) with a list of reports they have written."
 msgstr ""
 "NEKLS a également une page web intéressante avec des rapports qu'ils ont "
-"écrit : <a1>http://www.nexpresslibrary.org/training/"
-"reports-training/</a>"
+"écrit : <a1>http://www.nexpresslibrary.org/training/reports-training/</a>"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/issuehistory.tmpl:60
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/admin/branches.tmpl:339
@@ -27808,6 +27871,7 @@ msgstr "Nimbus"
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/memberentrygen.tmpl:959
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/memberentrygen.tmpl:978
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/memberentrygen.tmpl:983
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:794
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:913
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/returns.tmpl:195
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/tools/stage-marc-import.tmpl:143
@@ -28085,6 +28149,10 @@ msgstr "Pas de notification"
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_686a.tmpl:64
 msgid "No order"
 msgstr "Pas de commande"
+
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:562
+msgid "No outstanding charges"
+msgstr "Pas de charges à recouvrer"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:392
 msgid "No patron matched"
@@ -28533,6 +28601,7 @@ msgstr "Pas en Prêt"
 msgid "Not Issued"
 msgstr "Pas en prêt"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:673
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:735
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:787
 msgid "Not Renewable"
@@ -28623,6 +28692,7 @@ msgstr "musique annotée"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/detail.tmpl:387
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/pay.tmpl:67
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:478
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/boraccount.tmpl:60
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/returns.tmpl:421
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/serials/checkexpiration.tmpl:90
@@ -29319,6 +29389,7 @@ msgid "OR format your file in CSV format with the following fields:"
 msgstr "OU formatez le fichier au format CSV avec les champs suivant&nbsp;:"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:317
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:543
 msgid "OR:"
 msgstr "OU:"
 
@@ -29386,6 +29457,8 @@ msgstr "Offset&nbsp;:"
 msgid "Olwen Williams (Database design and data extraction for Koha 1.0)"
 msgstr "Olwen Williams (structure de la base et extraction pour Koha 1.0)"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:667
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:691
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:733
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:743
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:785
@@ -29617,8 +29690,8 @@ msgstr ""
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/reports/dictionary.tmpl:32
 msgid "Once you have selected all your desired columns, press Next."
 msgstr ""
-"Lorsque vous avez sélectionné les colonnes souhaitées, cliquez sur "
-"\"Suivant\"."
+"Lorsque vous avez sélectionné les colonnes souhaitées, cliquez sur \"Suivant"
+"\"."
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/tools/manage-marc-import.tmpl:5
 msgid ""
@@ -29653,8 +29726,8 @@ msgid ""
 "collected in the Offline tool."
 msgstr ""
 "Lorsque vous aurez retrouvé l'accès au réseau, vous pourrez télécharger les "
-"données que vous aurez collectionné avec l'outil de gestion des prêts "
-"hors-ligne."
+"données que vous aurez collectionné avec l'outil de gestion des prêts hors-"
+"ligne."
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/tools/manage-marc-import.tmpl:13
 msgid ""
@@ -29883,6 +29956,7 @@ msgstr "Commander celui-ci"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:295
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/acqui/acqui-home.tmpl:90
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:518
 msgid "Ordered"
 msgstr "Commandé"
 
@@ -30093,6 +30167,7 @@ msgid "Other name:"
 msgstr "Autre nom&nbsp;:"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:314
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:540
 msgid "Others..."
 msgstr "Autres..."
 
@@ -30129,6 +30204,7 @@ msgid "Outstanding"
 msgstr "Montant à recouvrer"
 
 #
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:670
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:734
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:786
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/admin/categorie.tmpl:280
@@ -30196,6 +30272,7 @@ msgstr "Retards"
 msgid "Overdues:"
 msgstr "Retards&nbsp;:"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:614
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:691
 msgid "Override Renewal Limit:"
 msgstr "Outrepasser renouvellement&nbsp;:"
@@ -30418,7 +30495,7 @@ msgstr "Attributs adhérent"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/includes/patroncards-menu.inc:2
 msgid "Patron Card Creator Home"
-msgstr "Créateur de cartes adhérent"
+msgstr "Création de cartes adhérent"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/patroncards/edit-layout.tmpl:370
 msgid "Patron Card Graphic Layout"
@@ -30546,7 +30623,7 @@ msgstr "L'adhérent ne peut pas emprunter : a des retards"
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/includes/tools-menu.inc:32
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/tools/tools-home.tmpl:39
 msgid "Patron card creator"
-msgstr "Créateur de cartes adhérent"
+msgstr "Création de cartes adhérent"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/admin/admin-home.tmpl:43
 msgid "Patron categories"
@@ -30632,10 +30709,16 @@ msgstr ""
 msgid "Patron has lost their library card"
 msgstr "L'adhérent a perdu sa carte de bibliothèque"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:555
+msgid "Patron has no suggestions."
+msgstr "Cet adhérent n'a pas de suggestion."
+
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:702
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:809
 msgid "Patron has nothing checked out."
 msgstr "Cet adhérent n'a pas de document en prêt."
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:808
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:926
 msgid "Patron has nothing on hold."
 msgstr "Cet adhérent n'a pas de réservation"
@@ -31631,6 +31714,8 @@ msgid "Previous Borrower:"
 msgstr "Dernier emprunteur&nbsp;:"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember-print.tmpl:28
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:583
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:720
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reports/itemslost.tmpl:36
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reports/itemslost.tmpl:81
 msgid "Price"
@@ -31821,6 +31906,7 @@ msgstr "Imprimantes &rsaquo; Imprimante ajoutée"
 msgid "Printers &rsaquo; Printer Deleted"
 msgstr "Imprimantes &rsaquo; Imprimante supprimée"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:767
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reserve/request.tmpl:487
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reserve/request.tmpl:581
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:892
@@ -32619,6 +32705,8 @@ msgstr "Rejeter"
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/tags/review.tmpl:157
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/tags/review.tmpl:164
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/tags/review.tmpl:227
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:518
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:533
 msgid "Rejected"
 msgstr "Rejetée"
 
@@ -32643,6 +32731,7 @@ msgid "Relationship:"
 msgstr "Relation&nbsp;:"
 
 #
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:706
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:814
 msgid "Relatives issues"
 msgstr "Prêts en relation"
@@ -32757,6 +32846,7 @@ msgstr "Remplacé partiellement par:"
 #. SCRIPT
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/includes/serials-toolbar.inc:57
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/includes/serials-toolbar.inc:81
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:584
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:658
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/serials/serials-collection.tmpl:82
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/serials/serials-collection.tmpl:148
@@ -32783,7 +32873,13 @@ msgstr "Renouveler compte"
 msgid "Renew Patron"
 msgstr "Renouveler adhérent"
 
+#. INPUT type=submit name=renew_all
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:700
+msgid "Renew all"
+msgstr "Tout renouveler"
+
 #. INPUT type=submit name=renew_checked
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:699
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:805
 msgid "Renew or Return checked items"
 msgstr "Renouveler ou retourner le(s) document(s) coché(s)"
@@ -32792,7 +32888,13 @@ msgstr "Renouveler ou retourner le(s) document(s) coché(s)"
 msgid "Renewal"
 msgstr "Renouvellement"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:648
+msgid "Renewal Failed"
+msgstr "Échec du renouvellement"
+
+#. For the first occurrence,
 #. %1$S: type=text name=newduedate
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:595
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:669
 #, c-format
 msgid "Renewal due date: %S"
@@ -33440,7 +33542,7 @@ msgid ""
 "patron surname (% if none)&gt;&gt;"
 msgstr ""
 "SELECT surname,firstname FROM borrowers WHERE branchcode=&lt;&lt;Saisissez "
-"la bibliothèque de l'adhérent&gt;&gt; AND surname like &lt;&lt;Saisissez le "
+"le site de l'adhérent&gt;&gt; AND surname like &lt;&lt;Saisissez le "
 "nom de l'adhérent (% pour rien)&gt;&gt;"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_115b.tmpl:215
@@ -33550,6 +33652,7 @@ msgstr "Samedi"
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/labels/label-edit-layout.tmpl:163
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/labels/label-edit-template.tmpl:165
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:194
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/authorities/authorities.tmpl:572
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/authorities/authorities.tmpl:573
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/authorities/authorities.tmpl:753
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/serials/serials-edit.tmpl:411
@@ -34963,6 +35066,7 @@ msgstr "Notice"
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/memberentrygen.tmpl:831
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/memberentrygen.tmpl:853
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/memberentrygen.tmpl:990
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:596
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reports/issues_avg_stats.tmpl:81
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reports/issues_avg_stats.tmpl:110
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/reports/issues_avg_stats.tmpl:157
@@ -35540,7 +35644,7 @@ msgstr "Gestion des notices MARC traitées"
 #
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/tools/tools-home.tmpl:140
 msgid "Staged MARC record management"
-msgstr "Gérer les notices MARC préparées"
+msgstr "Gestion des notices MARC préparées"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/tools/manage-marc-import.tmpl:109
 msgid "Staged:"
@@ -35741,6 +35845,7 @@ msgstr "Assistant statistiques"
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/tags/review.tmpl:201
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/tags/review.tmpl:307
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember-print.tmpl:29
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:483
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/messaging.tmpl:56
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/notices.tmpl:38
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/serials/serials-edit.tmpl:188
@@ -35928,6 +36033,11 @@ msgstr "Encore %s demandes en cours"
 #, c-format
 msgid "Still %s servers to search"
 msgstr "Encore %s recherches en cours"
+
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:577
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:713
+msgid "Stock number"
+msgstr "Numéro inventaire"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_120.tmpl:860
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_120.tmpl:862
@@ -36132,6 +36242,7 @@ msgstr "Mots-clés&nbsp;: "
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/includes/contracts-admin-search.inc:82
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:326
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/edithelp.tmpl:41
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:552
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/update-child.tmpl:64
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_210c_bis.tmpl:57
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_225a.tmpl:57
@@ -36386,6 +36497,7 @@ msgid "Suggested by"
 msgstr "Suggéré par"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:259
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:479
 msgid "Suggested by /on"
 msgstr "Suggéré par / le"
 
@@ -36395,6 +36507,7 @@ msgstr "Suggéré le:"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:258
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/acqui/newordersuggestion.tmpl:21
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:477
 msgid "Suggestion"
 msgstr "Suggestion"
 
@@ -36893,9 +37006,9 @@ msgid ""
 "characters). This code will be used in Koha's database to identify each "
 "library."
 msgstr ""
-"ASTUCE : donnez à chaque bibliothèque un code unique et facile à mémoriser "
+"ASTUCE : donnez à chaque site un code unique et facile à mémoriser "
 "(sur 10 caractères maximum). Ce code sera utilisé dans la base Koha pour "
-"identifier chaque bibliothèque."
+"identifier chaque site."
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/members/member-flags.tmpl:14
 msgid ""
@@ -36953,7 +37066,7 @@ msgid ""
 "selection to 'default library' or choose your branch name and experience the "
 "same results."
 msgstr ""
-"ASTUCE : si votre système ne possède qu'une bibliothèque, vous pouvez "
+"ASTUCE : si votre système ne possède qu'un site, vous pouvez "
 "laisser la sélection des sites sur 'Par défaut' ou choisir le nom de votre "
 "site, vous aurez les mêmes résultats."
 
@@ -37134,8 +37247,8 @@ msgid ""
 "TIP: Start by adding your Groups/Categories (if you have any) before adding "
 "Libraries."
 msgstr ""
-"ASTUCE : Commencez pas créer les groupes (si vous en avez) avant d'ajouter "
-"les bibliothèques."
+"ASTUCE : Commencez par créer les groupes (si vous en avez) avant d'ajouter "
+"les sites."
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/suggestion/suggestion.tmpl:58
 msgid ""
@@ -37170,7 +37283,9 @@ msgstr ""
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/branches.tmpl:9
 msgid "TIP: The terms 'Library' and 'Branch' are interchangeable in Koha."
 msgstr ""
-"ASTUCE : les termes 'bibliothèque' et 'site' sont interchangeables dans Koha."
+"ASTUCE : Le terme \"site\" fait généralement référence à l'un des site de "
+"votre structure, le terme \"bibliothèque\" fait généralement référence à "
+"l'ensemble de votre structure."
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/members/memberentry.tmpl:25
 msgid ""
@@ -37951,7 +38066,7 @@ msgid ""
 "access.&nbsp; Learn more about the tool here: <a1>http://kylehall.info/index."
 "php/projects/koha-tools/koha-offline-circulation/</a>"
 msgstr ""
-"L'outil de prêt secouru peut-être utilisé quand la bibliothèque perd son "
+"L'outil de prêt secouru peut-être utilisé quand un site perd son "
 "accès à internet."
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/tools/overduerules.tmpl:11
@@ -38292,8 +38407,8 @@ msgid ""
 "The following holds have not been filled. Please retrieve them and check "
 "them in."
 msgstr ""
-"Les réservations suivantes n'ont été mises de coté. Merci de les récupérer "
-"et faire un retour."
+"Les réservations suivantes n'ont pas été mises de coté. Merci de les "
+"récupérer et faire un retour."
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/tools/overduerules.tmpl:35
 msgid "The following item(s) are currently overdue:"
@@ -38796,7 +38911,7 @@ msgid ""
 "There are no records in this batch to import. <a1>Manage staged MARC "
 "records</a>."
 msgstr ""
-"Il n'y a pas de notices à importer dans ce fichier. <a1>Gérer les notices "
+"Il n'y a pas de notices à importer dans ce fichier. <a1>Gestion des notices "
 "MARC traitées</a>."
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/admin/matching-rules.tmpl:573
@@ -39911,6 +40026,9 @@ msgstr "Conique conforme de Tissot"
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/maint/catmaintain.tmpl:50
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember-print.tmpl:23
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember-print.tmpl:60
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:575
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:711
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:764
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/borrowers_details.tmpl:33
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/readingrec.tmpl:53
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/addbooks.tmpl:37
@@ -40132,7 +40250,7 @@ msgstr ""
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/branches.tmpl:44
 msgid "To add a new library or branch click 'New Library'"
-msgstr "Pour ajouter une nouvelle bibliothèque, cliquez 'Ajouter bibliothèque'"
+msgstr "Pour ajouter un nouveau site, cliquez 'Ajouter site'"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/patroncards/edit-profile.tmpl:11
 msgid ""
@@ -40396,8 +40514,8 @@ msgid ""
 "you leave the 'Library' field set to 'All') or to the library you selected "
 "above check the 'Remove non-local items' box"
 msgstr ""
-"Pour limiter l'export aux seuls exemplaires de la bibliothèque sous laquelle "
-"vous êtes connectés, si vous n'avez pas choisi une bibliothèque précise dans "
+"Pour limiter l'export aux seuls exemplaires du site sous lequel "
+"vous êtes connectés, si vous n'avez pas choisi un site précis dans "
 "le champ correspondant, cliquez sur l'option \"enlever les exemplaires non "
 "locaux\""
 
@@ -40426,8 +40544,8 @@ msgid ""
 "To mark an item as back at the home branch, check the item in at the home "
 "branch"
 msgstr ""
-"Pour marquer un exemplaire comme de retour dans la bibliothèque "
-"propriétaire, faites un retour depuis la bibliothèque propriétaire"
+"Pour marquer un exemplaire comme de retour dans le site propriétaire, faites "
+"un retour depuis le site propriétaire"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/tools/tools-home.tmpl:6
 msgid "To move forward, select the task you would like to complete."
@@ -40512,7 +40630,7 @@ msgid ""
 "To save time you can clone rules from one library to another by choosing the "
 "clone option above the rules matrix."
 msgstr ""
-"Pour gagner du temps, vous pouvez cloner les règles d'une bibliothèque à une "
+"Pour gagner du temps, vous pouvez cloner les règles d'un site à un "
 "autre en choisissant l'option \"cloner\" dans la barre d'outils."
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/tools/scheduler.tmpl:4
@@ -40830,6 +40948,12 @@ msgstr "Coût total"
 msgid "Total due"
 msgstr "Total dû"
 
+#. %1$s: TMPL_VAR name=totaldue
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:560
+#, c-format
+msgid "Total due: %s"
+msgstr "Total dû&nbsp;: %s"
+
 #. SCRIPT
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/acqui/neworderempty.tmpl:84
 msgid "Total must be a number"
@@ -40877,6 +41001,7 @@ msgid "Total: %s"
 msgstr "Total : %s"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember-print.tmpl:48
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:590
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:664
 msgid "Totals:"
 msgstr "Total&nbsp;:"
@@ -41418,10 +41543,11 @@ msgid "Uncertain prices"
 msgstr "Prix incertains"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:254
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:473
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/admin/branch_transfer_limits.tmpl:86
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/admin/branch_transfer_limits.tmpl:99
 msgid "Uncheck All"
-msgstr "Désélectionnez tout"
+msgstr "Désélectionner tout"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:414
 msgid "Undefined"
@@ -42026,7 +42152,7 @@ msgid ""
 msgstr ""
 "Vous pouvez définir des règles en fonction de la catégorie d'adhérent et du "
 "type de document en utilisant la matrice des règles de prêt. Pour définir "
-"les règles, sélectionnez la bibliothèque à partir de la liste déroulante :"
+"les règles, sélectionnez le site à partir de la liste déroulante :"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/tools/koha-news.tmpl:11
 msgid ""
@@ -42051,8 +42177,8 @@ msgid ""
 "Using this tool you can tell Koha to print the right field as the subtitle "
 "when viewing the bibliographic record in the OPAC."
 msgstr ""
-"Avec cet outil, vous pouvez définir le champ à afficher en tant que "
-"sous-titre dans la notice bibliographique."
+"Avec cet outil, vous pouvez définir le champ à afficher en tant que sous-"
+"titre dans la notice bibliographique."
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_115a.tmpl:973
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_115a.tmpl:975
@@ -42821,8 +42947,8 @@ msgid ""
 "dates)"
 msgstr ""
 "Lorsque des irrégularités sont détectées, vous pouvez choisir la ou les "
-"dates ou vous ne recevrez pas de bulletin. (utilisez shift+click ou "
-"ctrl+click pour choisir plusieurs dates)"
+"dates ou vous ne recevrez pas de bulletin. (utilisez shift+click ou ctrl"
+"+click pour choisir plusieurs dates)"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/circ/branchtransfers.tmpl:21
 msgid ""
@@ -43185,6 +43311,7 @@ msgstr "Jours de fermeture répétables (tous les ans)"
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/memberentrygen.tmpl:952
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/memberentrygen.tmpl:976
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/memberentrygen.tmpl:981
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:795
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:914
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/returns.tmpl:194
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/tools/stage-marc-import.tmpl:139
@@ -43447,7 +43574,7 @@ msgstr ""
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/branches.tmpl:12
 msgid "You can click the 'Edit' link, next to each library, to make changes."
 msgstr ""
-"Vous pouvez cliquer sur le lien \"modifier\" à coté de chaque bibliothèque, "
+"Vous pouvez cliquer sur le lien \"modifier\" à coté de chaque site, "
 "pour faire des changements."
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/circ/overdue.tmpl:7
@@ -43536,9 +43663,9 @@ msgid ""
 "set a time 'Period,' without needing to select those radio buttons."
 msgstr ""
 "Vous pouvez limiter ou filter les résultats en sélectionnant une valeur à "
-"partir du menu déroulant. Par exemple,vous pouvez sélectionner une "
-"bibliothèque, ou une période, indépendamment des boutons radio de "
-"ligne/colonne."
+"partir du menu déroulant. Par exemple,vous pouvez sélectionner un site, ou "
+"une période, indépendamment des boutons radio de ligne/"
+"colonne."
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/tools/holidays.tmpl:51
 msgid ""
@@ -44030,7 +44157,7 @@ msgstr "Votre site est destinataire du(es) transfert(s) suivant(s)"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/help/admin/branches.tmpl:57
 msgid "Your library will now be added to the list"
-msgstr "Votre bibliothèque sera ajoutée à la liste"
+msgstr "Votre site sera ajouté à la liste"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/serials/claims.tmpl:170
 msgid "Your notification has been sent."
@@ -48641,8 +48768,10 @@ msgstr "De %S"
 msgid "from %S to %S"
 msgstr "de %S à %S"
 
+#. For the first occurrence,
 #. %1$s: TMPL_VAR name=frombranch
 #. %2$s: TMPL_VAR name=datesent
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:784
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:904
 #, c-format
 msgid "from %s since %s"
@@ -49075,7 +49204,9 @@ msgstr "n'a jamais été emprunté."
 msgid "has unrecognized value &quot;%s&quot;"
 msgstr "valuer non connue &quot;%s&quot;"
 
+#. For the first occurrence,
 #. %1$s: TMPL_VAR name=nottransferedby
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:788
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:907
 #, c-format
 msgid "hasn't been transfered yet from %s"
@@ -49547,6 +49678,7 @@ msgstr "Dans le catalogue %s"
 #. %1$s: TMPL_VAR name=publicationyear
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:278
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/acqui/newordersuggestion.tmpl:36
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:498
 #, c-format
 msgid "in <i>%s</i>"
 msgstr "en <i>%s</i>"
@@ -49600,6 +49732,7 @@ msgstr "dans la dernière livraison du volume - page séparée"
 msgid "in parts"
 msgstr "en partie"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:784
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:904
 msgid "in transit"
 msgstr "en transit"
@@ -49800,6 +49933,10 @@ msgstr "Facture,  %s"
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/cataloguing/value_builder/unimarc_field_110.tmpl:188
 msgid "irregular"
 msgstr "Irrégulier"
+
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:781
+msgid "is"
+msgstr "est"
 
 #
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/admin/auth_subfields_structure.tmpl:185
@@ -51799,6 +51936,8 @@ msgstr "non anamorphique (grand écran)"
 msgid "non-photographic image"
 msgstr "image non photographique"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:584
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:585
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:658
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:659
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/admin/categorie.tmpl:329
@@ -54136,6 +54275,8 @@ msgstr "select * from marc_subfield_structure where frameworkcode is NULL"
 msgid "select * from marc_tag_structure where frameworkcode is NULL"
 msgstr "select * from marc_tag_structure where frameworkcode is NULL"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:584
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:585
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:658
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:659
 msgid "select all"
@@ -54700,6 +54841,7 @@ msgstr "liste de circulation de l'abonnement"
 
 #. A
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:272
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:492
 msgid "suggestion"
 msgstr "Suggestion"
 
@@ -55258,7 +55400,7 @@ msgid ""
 "this tab will usually be empty unless your library has a preference just for "
 "your library."
 msgstr ""
-"cet onglet est en général vide, à moins que la bibliothèque ait mis une "
+"cet onglet est en général vide, à moins que la bibliothèque n'ait mis une "
 "préférence juste pour votre site."
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/xslt/MARC21slim2OAIDC.xsl:63
@@ -55748,6 +55890,7 @@ msgstr "non spécifié / inconnu"
 #. For the first occurrence,
 #. %1$s: TMPL_VAR name=userdebarreddate
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:218
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:781
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:533
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:902
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/returns.tmpl:392
@@ -56051,6 +56194,10 @@ msgstr "vxyz"
 msgid "w - Religious text"
 msgstr "w- Texte religieux"
 
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:781
+msgid "waiting"
+msgstr "Mis de coté"
+
 #. %1$s: TMPL_VAR name=waitingat
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/circ/circulation.tmpl:902
 #, c-format
@@ -56153,6 +56300,7 @@ msgstr ""
 "d'autorité donné"
 
 #: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/suggestion/suggestion.tmpl:309
+#: /home/paul/koha.dev/biblibre/master/koha-tmpl/intranet-tmpl/prog/en/modules/members/moremember.tmpl:535
 msgid "with this reason:"
 msgstr "avec cette raison:"
 
@@ -57593,10 +57741,6 @@ msgstr "﻿"
 #~ "Le champ que vous avez défini lors de l'importation est utilisé pour le "
 #~ "dédoublonnage des notices"
 
-#
-#~ msgid "Call no"
-#~ msgstr "Cote "
-
 #~ msgid "Cancel Reserve"
 #~ msgstr "Annuler réservation"
 
@@ -58758,9 +58902,6 @@ msgstr "﻿"
 #~ msgid "No accepted suggestions."
 #~ msgstr "Aucune suggestion acceptée."
 
-#~ msgid "No outstanding charges"
-#~ msgstr "Pas de charges à recouvrer"
-
 #~ msgid "No pending suggestions."
 #~ msgstr "Pas de suggesiton en attente."
 
@@ -58993,9 +59134,6 @@ msgstr "﻿"
 #~ msgid "Patron current holds"
 #~ msgstr "Réservation(s) en cours de l'adhérent"
 
-#~ msgid "Patron has no pending holds."
-#~ msgstr "Cet adhérent n'a pas de réservation en suspens."
-
 #
 #~ msgid "Patron's account is restricted <a1>Lift restriction</a>"
 #~ msgstr "L'adhérent est suspendu <a1>Lever la suspension</a>"
@@ -59162,17 +59300,11 @@ msgstr "﻿"
 #~ msgid "Renew Checked Items"
 #~ msgstr "Renouveler le(s) document(s) coché(s)"
 
-#~ msgid "Renew all"
-#~ msgstr "Tout renouveler"
-
 #~ msgid "Renew?"
 #~ msgstr "Renouvellement ?"
 
 #~ msgid "Renewable"
 #~ msgstr "Renouvelable"
-
-#~ msgid "Renewal Failed"
-#~ msgstr "Échec du renouvellement"
 
 #~ msgid "Renewals"
 #~ msgstr "Renouvellements"
@@ -59484,9 +59616,6 @@ msgstr "﻿"
 
 #~ msgid "Still on order"
 #~ msgstr "Toujours en commande"
-
-#~ msgid "Stock number"
-#~ msgstr "Numéro inventaire"
 
 #~ msgid "Stop words &rsaquo;"
 #~ msgstr "Mots vides &rsaquo;"
@@ -60059,9 +60188,6 @@ msgstr "﻿"
 #~ msgid "Total Renewals:"
 #~ msgstr "Total de renouvellements&nbsp;:"
 
-#~ msgid "Total due: %s"
-#~ msgstr "Total dû&nbsp;: %s"
-
 #
 #~ msgid "Translation Manager"
 #~ msgstr "Resp. traductions"
@@ -60384,9 +60510,6 @@ msgstr "﻿"
 #~ "visibilité possibles, 17 d'entre elles sont implémentées.Ce sont les "
 #~ "suivantes&nbsp;: "
 
-#~ msgid "is"
-#~ msgstr "est"
-
 #~ msgid "issue"
 #~ msgstr "prêt"
 
@@ -60543,9 +60666,6 @@ msgstr "﻿"
 
 #~ msgid "used"
 #~ msgstr "Utilisé"
-
-#~ msgid "waiting"
-#~ msgstr "Mis de coté"
 
 #~ msgid "will result in the following issues numbers :"
 #~ msgstr "donnera les numéros de parution suivants&nbsp;: "
