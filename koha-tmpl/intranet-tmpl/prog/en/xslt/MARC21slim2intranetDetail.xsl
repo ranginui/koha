@@ -109,7 +109,7 @@
 	<!-- Statement of responsibility -->
 	    <xsl:for-each select="marc:datafield[@tag=245]">
 	        <xsl:if test="marc:subfield[@code='c']">
-		    <span class="results_summary"><span class="label">Statement of Responsibility: 
+		    <span class="results_summary"><span class="label">Statement of Responsibility: </span>
 		    <xsl:value-of select="marc:subfield[@code='c']"/>
 		    </span>
 		</xsl:if>

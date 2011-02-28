@@ -212,7 +212,7 @@ my $source_g         = GetRecordValue('source_g', $record, GetFrameworkCode($bib
 # Support newlines in the notes content
 $_->{marcnote} =~ s{\n}{<br />}g foreach (@$marcnotesarray);
 
-
+my $responsibility   = GetRecordValue('responsibility', $record, GetFrameworkCode($biblionumber));
     $template->param(
                      MARCNOTES               => $marcnotesarray,
                      MARCSUBJCTS             => $marcsubjctsarray,
@@ -225,11 +225,12 @@ $_->{marcnote} =~ s{\n}{<br />}g foreach (@$marcnotesarray);
                      itemdata_enumchron      => $itemfields{enumchron},
                      itemdata_uri            => $itemfields{uri},
                      itemdata_copynumber     => $itemfields{copynumber},
-                     itemdata_itemnotes          => $itemfields{itemnotes},
+                     itemdata_itemnotes      => $itemfields{itemnotes},
                      authorised_value_images => $biblio_authorised_value_images,
                      subtitle                => $subtitle,
 	             source_t                => $source_t,
 	             source_g                => $source_g,
+                     responsibility          => $responsibility,
     );
 
 foreach ( keys %{$dat} ) {
