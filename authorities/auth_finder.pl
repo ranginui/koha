@@ -93,7 +93,7 @@ if ( $query->param('op') eq 'do_search' ) {
         {
             authid  => $_->{'values'}->{'recordid'},
             summary => BuildSummary( $record, $_->{'values'}->{'recordid'}, $_->{'values'}->{$authtype_indexname} ),
-            used    => CountUsage( $_->{'values'}->{'recordid'} ),
+            used    => $_->{values}->{C4::Search::Query::getIndexName('usedinxbiblios')},
         }
     } @{ $results->{items} };
 
