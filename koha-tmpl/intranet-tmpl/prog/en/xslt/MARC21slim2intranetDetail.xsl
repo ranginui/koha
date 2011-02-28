@@ -95,29 +95,29 @@
             </xsl:for-each>
         </h1>
         </xsl:if>
-	
-	<xsl:if test="marc:datafield[@tag=773]">
-	<h4>
-	    <xsl:for-each select="marc:datafield[@tag=773]">
-	        <xsl:call-template name="subfieldSelect">
-		    <xsl:with-param name="codes">tg</xsl:with-param>
+
+	    <xsl:if test="marc:datafield[@tag=773]">
+	    <h4>
+	        <xsl:for-each select="marc:datafield[@tag=773]">
+	            <xsl:call-template name="subfieldSelect">
+		            <xsl:with-param name="codes">tg</xsl:with-param>
                 </xsl:call-template>
-	    </xsl:for-each>
-	</h4>
+	        </xsl:for-each>
+	    </h4>
         </xsl:if>
-	
-	<!-- Statement of responsibility -->
-	    <xsl:for-each select="marc:datafield[@tag=245]">
-	        <xsl:if test="marc:subfield[@code='c']">
-		    <span class="results_summary"><span class="label">Statement of Responsibility: </span>
-		    <xsl:value-of select="marc:subfield[@code='c']"/>
-		    </span>
-		</xsl:if>
-	    </xsl:for-each>
-		    
+
+        <xsl:if test="marc:datafield[@tag=245]">
+	    <!-- Statement of responsibility -->
+	        <xsl:for-each select="marc:datafield[@tag=245]">
+	            <xsl:if test="marc:subfield[@code='c']">
+		            <span class="results_summary"><span class="label">Statement of Responsibility: </span>
+		            <xsl:value-of select="marc:subfield[@code='c']"/>
+		            </span>
+		        </xsl:if>
+	        </xsl:for-each>
         </xsl:if>
-	
-	
+
+
         <!-- Author Statement: Alternate Graphic Representation (MARC 880) -->
         <xsl:if test="$display880">
             <h5 class="author">
