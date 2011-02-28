@@ -235,7 +235,7 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
                                 <li><input type="checkbox" name="checkbox" onclick="makeAuthorRequest()" value="<!-- TMPL_IF name="searchbyauthority" --><!-- TMPL_IF name="authoritylink" -->an:<!-- TMPL_VAR name="authoritylink" --><!-- TMPL_ELSE -->au,wrdl:<!-- TMPL_LOOP name="term" --><!-- TMPL_VAR name="value" --><!-- TMPL_UNLESS NAME="__last__" -->+<!-- /TMPL_UNLESS --><!-- /TMPL_LOOP --><!-- /TMPL_IF --><!-- TMPL_ELSE -->au,wrdl:<!-- TMPL_LOOP name="term" --><!-- TMPL_VAR name="value" --><!-- TMPL_UNLESS NAME="__last__" -->+<!-- /TMPL_UNLESS --><!-- /TMPL_LOOP --><!-- /TMPL_IF -->"><!-- TMPL_LOOP name="term" --> <!-- TMPL_VAR name="value" --> <!-- /TMPL_LOOP --></li>
                         <!-- /TMPL_LOOP -->
                     </ul>
-                        <a href="#" onclick="hideMenu('.authorSearch');">Cancel</a>&nbsp;|&nbsp;<a id="validAuthorSearch"href="#">Search</a>
+                        <a href="#" onclick="hideMenu('.authorSearch');">Cancel</a>&nbsp;|&nbsp;<a id="validAuthorSearch" href="#">Search</a>
                 </div>
                 <!-- TMPL_LOOP NAME="bouncemarcauthorsarray" -->
                     <a href="<!-- TMPL_IF name="authoritylink" -->/cgi-bin/koha/opac-authoritiesdetail.pl?authid=<!-- TMPL_VAR name="authoritylink" --><!-- TMPL_ELSE --><!-- /TMPL_IF -->" >
@@ -304,7 +304,7 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
                                 <li><hr id="trait"></li>
                         <!-- /TMPL_LOOP -->
                     </ul>
-                    <a href="#" onclick="hideMenu('.subjectSearch')">Cancel</a>&nbsp;|&nbsp;<a id="validSubjectSearch"href="#">Search</a>
+                    <a href="#" onclick="hideMenu('.subjectSearch')">Cancel</a>&nbsp;|&nbsp;<a id="validSubjectSearch" href="#">Search</a>
                 </div>
                 <!-- TMPL_LOOP NAME="MARCSUBJCTS" -->
                     <!-- TMPL_LOOP NAME="MARCSUBJECT_SUBFIELDS_LOOP" -->
