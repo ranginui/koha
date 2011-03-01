@@ -136,7 +136,7 @@ $template->param(
     index         => $index,
     authtypesloop => \@authtypesloop,
     authtypecode  => $authtypecode,
-    name_index_name => C4::Search::Query::getIndexName('auth-name'),
+    name_index_name => C4::Search::Query::getIndexName('auth-summary'),
     usedinxbiblios_index_name => C4::Search::Query::getIndexName('usedinxbiblios'),
 );
 

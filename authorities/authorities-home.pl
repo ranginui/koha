@@ -132,9 +132,9 @@ if ( $op eq "do_search" ) {
     } );
 }
 
-$template->param( 
+$template->param(
     authtypesloop    => \@authtypesloop,
-    name_index_name  => C4::Search::Query::getIndexName('auth_name'),
+    name_index_name  => C4::Search::Query::getIndexName('auth-summary'),
     usage_index_name => C4::Search::Query::getIndexName('usedinxbiblios')
 );
 

@@ -4982,6 +4982,7 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
         ('auth-see','see','ste',0,'authority',0,0,'','',''),
         ('auth-see-also','see-also','ste',0,'authority',0,0,'','',''),
         ('auth-type','type','str',0,'authority',0,0,'','at',''),
+        ('auth-summary','summary','ste',0,'authority',1,1,'C4::Search::Plugins::Summary','',''),
         ('usedinxbiblios','Used in X biblios','int',0,'authority',1,1,'C4::Search::Plugins::UsedInXBiblios','','');
         });
         $dbh->do(q{

@@ -5,6 +5,7 @@ SET NAMES "UTF8";
 --
 
 LOCK TABLES `indexes` WRITE;
+DELETE FROM `indexes`;
 INSERT INTO `indexes` (`code`,`label`,`type`,`faceted`,`ressource_type`,`mandatory`,`sortable`,`plugin`,`ccl_index_name`, `rpn_index`) VALUES 
         ('upc','UPC','str',0,'biblio',0,0,'','',''),
         ('onloan','En prêt','int',0,'biblio',0,0,'','',''),
@@ -78,6 +79,7 @@ INSERT INTO `indexes` (`code`,`label`,`type`,`faceted`,`ressource_type`,`mandato
         ('auth-see','see','ste',0,'authority',0,0,'','',''),
         ('auth-see-also','see-also','ste',0,'authority',0,0,'','',''),
         ('auth-type','type','str',0,'authority',0,0,'','at',''),
+        ('auth-summary','summary','ste',0,'authority',1,1,'C4::Search::Plugins::Summary','',''),
         ('usedinxbiblios','Used in X biblios','int',0,'authority',1,1,'C4::Search::Plugins::UsedInXBiblios','','');
 UNLOCK TABLES;
 
@@ -86,6 +88,7 @@ UNLOCK TABLES;
 --
 
 LOCK TABLES `indexmappings` WRITE;
+DELETE FROM `indexmappings`;
 INSERT INTO `indexmappings` VALUES 
         ('711','*','corporate-name','biblio'),
         ('710','*','corporate-name','biblio'),
