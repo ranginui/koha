@@ -32,7 +32,7 @@ my $query        = new CGI;
 my $op           = $query->param('op');
 my $dbh          = C4::Context->dbh;
 my $authtypecode = $query->param('authtypecode') || "[* TO *]";
-my $searchtype   = $query->param('searchtype');
+my $searchtype   = $query->param('searchtype') || 'all_headings';
 
 my ( $template, $loggedinuser, $cookie );
 
@@ -54,7 +54,7 @@ if ( $op eq "do_search" ) {
         C4::Search::Query::getIndexName('auth-type') => $authtypecode
     };
 
-    my $index = GetIndexBySearchtype($query->param('searchtype'));
+    my $index = GetIndexBySearchtype( $searchtype );
     my $q = "$index:$value";
     $q = C4::Search::Query->normalSearch($q);
     my $results = SimpleSearch($q, $filters, $page, $count, $orderby);

@@ -32,7 +32,7 @@ use C4::Search::Query;
 use Data::Pagination;
 
 my $query        = new CGI;
-my $authtypecode = $query->param('authtypecode') || '';
+my $authtypecode = $query->param('authtypecode') || '[* TO *]';
 my $index        = $query->param('index');
 my $tagid        = $query->param('tagid');
 my $resultstring = $query->param('result');
@@ -69,14 +69,12 @@ if ( $query->param('op') eq 'do_search' ) {
     my $operands;
     my $operators;
     for my $searchtype (@searchtypes) {
-        if ( $query->param($searchtype) ) {
-            push $index, GetIndexBySearchtype($searchtype);
-            my $value = $query->param($searchtype) || '[* TO *]';
-            push @$indexes, $index for @values;
-            push @$operands, $_ for @values;
-            push @$operators, 'AND' for @values;
-            $template->param($searchtype => $query->param($searchtype));
-        }
+        $index = GetIndexBySearchtype($searchtype);
+        my $value = $query->param($searchtype) || '[* TO *]';
+        push @$indexes, $index;
+        push @$operands, $value;
+        push @$operators, 'AND';
+        $template->param($searchtype => $query->param($searchtype));
     }
 
     my $authtype_indexname = C4::Search::Query::getIndexName('auth-type');
