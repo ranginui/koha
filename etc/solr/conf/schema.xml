@@ -61,7 +61,7 @@
    <dynamicField name="srt_txt_*"  type="string"        indexed="true" stored="true" multiValued="false"/>
    <dynamicField name="srt_int_*"  type="integer"       indexed="true" stored="true" multiValued="false"/>
    <dynamicField name="srt_date_*" type="date"          indexed="true" stored="true" multiValued="false"/>
-   <dynamicField name="srt_ste_*"  type="simple_text"   indexed="true" stored="true" multiValued="false"/>
+   <dynamicField name="srt_ste_*"  type="string"        indexed="true" stored="true" multiValued="false"/>
 
  </fields>
 
