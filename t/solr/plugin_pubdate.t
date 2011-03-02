@@ -20,7 +20,7 @@ sub perform_test {
 }
 
 
-BEGIN { $tests += 9 }
+BEGIN { $tests += 11 }
 my @expected = ("1998-01-01T00:00:00Z");
 perform_test (
     "1998", \@expected
@@ -64,5 +64,15 @@ perform_test (
 @expected = ("1978-01-01T00:00:00Z", "1979-01-01T00:00:00Z");
 perform_test (
     "[1978 or 1979]", \@expected
+);
+
+@expected = ("2004-01-01T00:00:00Z", "2005-01-01T00:00:00Z", "2006-01-01T00:00:00Z");
+perform_test (
+    "2004-2006", \@expected
+);
+
+@expected = ("2004-01-01T00:00:00Z", "2005-01-01T00:00:00Z", "2006-01-01T00:00:00Z");
+perform_test (
+    "[2004-2006]", \@expected
 );
 
