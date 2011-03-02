@@ -164,7 +164,7 @@ if ( !$advanced_search_types or $advanced_search_types eq 'itemtypes' ) {
     foreach my $thisitemtype ( sort { $itemtypes->{$a}->{'description'} cmp $itemtypes->{$b}->{'description'} } keys %$itemtypes ) {
         my %row = (
             number      => $cnt++,
-            index       => $itype_or_itemtype,
+            index       => C4::Search::Query::getIndexName('itype'),
             code        => $thisitemtype,
             selected    => $selected,
             description => $itemtypes->{$thisitemtype}->{'description'},
