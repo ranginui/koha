@@ -180,9 +180,10 @@ sub splitToken {
     my $string = $token;
     my $is_replaced = 0;
     # Foreach couple of index:operand
-    while ( $token =~ m/[^ \(]*:[^ \)]*/g ) {
+    while ( $token =~ m/[^ \(\\]*:[^ \)]*/g ) {
         @values = split ':', $&;
         $idx = (@values)[0];
+        next if not $idx;
         my $old_operand = (@values)[1];
         my $old_idx = $idx;
         $operand = $old_operand;

@@ -86,6 +86,7 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user( {
 
 my $count = C4::Context->preference('OPACnumSearchResults') || 20;
 
+$query = C4::Search::Query->normalSearch($query);
 my $res = SimpleSearch( $query, { recordtype => 'biblio' }, $page, $count );
 
 my @results = map { GetBiblioData $_->{'values'}->{'recordid'} } @{ $res->items };

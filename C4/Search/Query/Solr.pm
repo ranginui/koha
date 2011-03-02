@@ -50,6 +50,7 @@ sub buildQuery {
 
     # Foreach operands
     for my $kw (@$operands){
+        $kw =~ s/:/\\:/g;
         # First element
         if ($i == 0){
             if ( (my @x = eval {@$indexes} ) == 0 ){
@@ -114,6 +115,7 @@ sub normalSearch {
         return $query;
     }
 
+    $query =~ s/ : / \\: /g; # escape colons if " : "
     my $new_query = C4::Search::Query::splitToken($query);
 
     $new_query =~ s/all_fields://g;

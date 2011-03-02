@@ -18,22 +18,26 @@ BEGIN { $tests += 2 }
 use_ok('C4::Search::Query');
 is(C4::Context->preference("SearchEngine"), 'Solr', "Test search engine = Solr");
 
-BEGIN { $tests += 7 } # 'Normal' search
-@$operands[0] = "txt_title:maudits"; # Solr indexes
+my $titleindex = C4::Search::Query::getIndexName("title");
+my $authorindex = C4::Search::Query::getIndexName("author");
+my $eanindex = C4::Search::Query::getIndexName("ean");
+
+BEGIN { $tests += 8 } # 'Normal' search
+@$operands[0] = "title:maudits"; # Solr indexes
 @$indexes = ();
 @$operators = ();
 $got = C4::Search::Query->buildQuery($indexes, $operands, $operators);
-$expected = "txt_title:maudits";
+$expected = "$titleindex:maudits";
 is($got, $expected, "Test Solr indexes in 'normal' search");
 
 @$operands[0] = "title:maudits"; # code indexes
 $got = C4::Search::Query->buildQuery($indexes, $operands, $operators);
-$expected = "txt_title:maudits";
+$expected = "$titleindex:maudits";
 is($got, $expected, "Test Code indexes in 'normal' search");
 
 @$operands[0] = "ti:maudits"; # zebra indexes
 $got = C4::Search::Query->buildQuery($indexes, $operands, $operators);
-$expected = "txt_title:maudits";
+$expected = "$titleindex:maudits";
 is($got, $expected, "Test Zebra indexes in 'normal' search");
 
 @$operands[0] = "*:*"; # all fields search
@@ -41,62 +45,67 @@ $got = C4::Search::Query->buildQuery($indexes, $operands, $operators);
 $expected = "*:*";
 is($got, $expected, "Test *:* in 'normal' search");
 
-@$operands[0] = "txt_title:maudits OR ste_author:andre NOT txt_title:crépuscule"; # long normal search
+@$operands[0] = "title:maudits OR author:andre NOT title:crépuscule"; # long normal search
 $got = C4::Search::Query->buildQuery($indexes, $operands, $operators);
-$expected = "txt_title:maudits OR ste_author:andre NOT txt_title:crépuscule";
+$expected = "$titleindex:maudits OR $authorindex:andre NOT $titleindex:crépuscule";
 is($got, $expected, "Test long 'normal' search");
 
-@$operands[0] = "txt_title:maudits and a or ste_author:andre not txt_title:crépuscule"; # test operators
+@$operands[0] = "title:maudits and a or author:andre not title:crépuscule"; # test operators
 $got = C4::Search::Query->buildQuery($indexes, $operands, $operators);
-$expected = "txt_title:maudits AND a OR ste_author:andre NOT txt_title:crépuscule";
+$expected = "$titleindex:maudits AND a OR $authorindex:andre NOT $titleindex:crépuscule";
 is($got, $expected, "Test operators in 'normal' search");
 
 $q = "title:maudits and a or author:andre not ean:blabla"; # test normal search
 $got = C4::Search::Query->normalSearch($q);
-$expected = "txt_title:maudits AND a OR ste_author:andre NOT str_ean:blabla";
+$expected = "$titleindex:maudits AND a OR $authorindex:andre NOT $eanindex:blabla";
 is($got, $expected, "Test 'normal' search");
 
-BEGIN { $tests += 7 } # Advanced search
+$q = "Mathématiques Analyse L3 : Cours complet"; # escape colon
+$got = C4::Search::Query->normalSearch($q);
+$expected = "Mathématiques Analyse L3 \\: Cours complet";
+is($got, $expected, "Test escape colon");
+
+BEGIN { $tests += 9 } # Advanced search
 @$operands = ("maudits"); # Solr indexes
 @$indexes = ("title", "all_fields", "all_fields");
 @$operators = ();
 $got = C4::Search::Query->buildQuery($indexes, $operands, $operators);
-$expected = "txt_title:maudits";
+$expected = "$titleindex:maudits";
 is($got, $expected, "Test Solr indexes in advanced search");
 
 @$operands = ("maudits"); # Zebra indexes
 @$indexes = ("ti", "kw", "kw");
 @$operators = ();
 $got = C4::Search::Query->buildQuery($indexes, $operands, $operators);
-$expected = "txt_title:maudits";
+$expected = "$titleindex:maudits";
 is($got, $expected, "Test Solr indexes in advanced search");
 
 @$operands = ("maudits"); # Code indexes
 @$indexes = ("title", "all_fields", "kw");
 @$operators = ();
 $got = C4::Search::Query->buildQuery($indexes, $operands, $operators);
-$expected = "txt_title:maudits";
+$expected = "$titleindex:maudits";
 is($got, $expected, "Test Code indexes in advanced search");
 
 @$operands = ("maudits", "a", "andre"); # More elements
 @$indexes = ("title", "all_fields", "ste_author");
 @$operators = ();
 $got = C4::Search::Query->buildQuery($indexes, $operands, $operators);
-$expected = "txt_title:maudits OR a OR ste_author:andre";
+$expected = "$titleindex:maudits OR a OR $authorindex:andre";
 is($got, $expected, "Test Zebra indexes in advanced search");
 
 @$operands = ("maudits", "a", "andre", "Besson"); # With 'More options'
 @$indexes = ("title", "all_fields", "ste_author", "ste_author");
 @$operators = ("AND", "NOT", "OR");
 $got = C4::Search::Query->buildQuery($indexes, $operands, $operators);
-$expected = "txt_title:maudits AND a NOT ste_author:andre OR ste_author:Besson";
+$expected = "$titleindex:maudits AND a NOT $authorindex:andre OR $authorindex:Besson";
 is($got, $expected, "Test 'More options' in advanced search");
 
 @$operands = ("crépuscule", "André"); # Accents
 @$indexes = ("title", "ste_author");
 @$operators = ("AND");
 $got = C4::Search::Query->buildQuery($indexes, $operands, $operators);
-$expected = "txt_title:crépuscule AND ste_author:André";
+$expected = "$titleindex:crépuscule AND $authorindex:André";
 is($got, $expected, "Test Accents in advanced search");
 
 @$operands = ("maudits", "a", "andre"); # Bad indexes types
@@ -105,6 +114,20 @@ is($got, $expected, "Test Accents in advanced search");
 $got = C4::Search::Query->buildQuery($indexes, $operands, $operators);
 $expected = "maudits OR a OR andre";
 is($got, $expected, "Test call with bad indexes types");
+
+@$operands = ("Mathématiques Analyse L3 : Cours complet"); # escape colon
+@$indexes = ();
+@$operators = ();
+$got = C4::Search::Query->buildQuery($indexes, $operands, $operators);
+$expected = "Mathématiques Analyse L3 \\: Cours complet";
+is($got, $expected, "Test escape colon");
+
+@$operands = ("Mathématiques Analyse L3 : Cours complet"); # escape colon
+@$indexes = ("title");
+@$operators = ();
+$got = C4::Search::Query->buildQuery($indexes, $operands, $operators);
+$expected = "$titleindex:Mathématiques Analyse L3 \\: Cours complet";
+is($got, $expected, "Test escape colon");
 
 BEGIN { $tests += 1 } # normal search with rpn query
 @$indexes = ();
