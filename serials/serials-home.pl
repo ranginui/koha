@@ -50,7 +50,6 @@ use C4::Context;
 my $query        = new CGI;
 my $title        = $query->param('title_filter');
 my $ISSN         = $query->param('ISSN_filter');
-my $branch       = $query->param('branch_filter');
 my $routing      = $query->param('routing') || C4::Context->preference("RoutingSerials");
 my $searched     = $query->param('searched');
 my $biblionumber = $query->param('biblionumber');
@@ -91,7 +90,7 @@ if (@serialseqs) {
 }
 my @subscriptions;
 if ($searched) {
-    @subscriptions = GetSubscriptions( $title, $ISSN, $biblionumber, $branch );
+    @subscriptions = GetSubscriptions( $title, $ISSN, $biblionumber );
 }
 
 # to toggle between create or edit routing list options

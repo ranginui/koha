@@ -558,7 +558,7 @@ a table of hashref. Each hash containt the subscription.
 =cut
 
 sub GetSubscriptions {
-    my ( $string, $issn, $biblionumber, $branch ) = @_;
+    my ( $string, $issn, $biblionumber ) = @_;
 
     #return unless $title or $ISSN or $biblionumber;
     my $dbh = C4::Context->dbh;
@@ -602,9 +602,6 @@ sub GetSubscriptions {
         }
         $sqlwhere .= ( $sqlwhere ? " AND " : " WHERE " ) . "(" . join( ") OR (", @sqlstrings ) . ")";
     }
-    if ($branch) {
-        $sqlwhere .= ( $sqlwhere ? " AND " : " WHERE " ) . "subscription.branchcode='$branch'";
-    };
     $sql .= "$sqlwhere ORDER BY title";
     $debug and warn "GetSubscriptions query: $sql params : ", join( " ", @bind_params );
     $sth = $dbh->prepare($sql);
