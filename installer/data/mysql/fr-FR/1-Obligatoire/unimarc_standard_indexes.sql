@@ -64,7 +64,7 @@ INSERT INTO `indexes` (`code`,`label`,`type`,`faceted`,`ressource_type`,`mandato
         ('ean','EAN','str',0,'biblio',1,0,'','',''),
         ('publisher','Éditeur','ste',0,'biblio',0,0,'','pb','1018'),
         ('itemcallnumber','Cote exemplaire','ste',0,'biblio',0,0,'','',''),
-        ('pubdate','Date de publication','date',0,'biblio',0,1,'','',''),
+        ('pubdate','Date de publication','date',0,'biblio',0,1,'C4::Search::Plugins::PubDate','',''),
         ('homebranch','Propriétaire','str',0,'biblio',0,0,'','branch','8011'),
         ('serials','Ressources continues','ste',0,'biblio',0,0,'','',''),
         ('printed-music','Musique imprimée','ste',0,'biblio',0,0,'','',''),
