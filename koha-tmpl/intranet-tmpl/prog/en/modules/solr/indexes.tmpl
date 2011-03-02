@@ -17,6 +17,7 @@
             var faceted         = $('#faceted').attr('checked') ? 'checked="checked"' : '';
             var sortable        = $('#sortable').attr('checked') ? 'checked="checked"' : '';
             var plugin          = $('#plugin option:selected').val();
+            var avlists         = $('#avlists option:selected').val();
             
             if ( code != '' && label != '' ) {
             
@@ -42,6 +43,16 @@
                         <!-- TMPL_LOOP NAME="pluginloop" -->
                             line += '<option value="<!-- TMPL_VAR NAME="value" -->"';
                             if ( plugin == '<!-- TMPL_VAR NAME="value" -->' ) { line += 'selected="selected"'; }
+                            line += '>';
+                            line += '<!-- TMPL_VAR NAME="name" -->';
+                            line += '</option>';
+                        <!-- /TMPL_LOOP -->
+                    line += '</select></td>';
+                    line += '<td><select name="avlists">';
+                    line += '<option value=""></option>'
+                        <!-- TMPL_LOOP NAME="avlistsloop" -->
+                            line += '<option value="<!-- TMPL_VAR NAME="value" -->"';
+                            if ( avlists == '<!-- TMPL_VAR NAME="value" -->' ) { line += 'selected="selected"'; }
                             line += '>';
                             line += '<!-- TMPL_VAR NAME="name" -->';
                             line += '</option>';
@@ -119,6 +130,7 @@
                                     <th>Faceted</th>
                                     <th>Sortable</th>
                                     <th>Plugin</th>
+                                    <th>AV Lists</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -158,7 +170,17 @@
                                                     </option>
                                                 <!-- /TMPL_LOOP -->
                                             </select>
-                                        </th>
+                                        </td>
+                                        <td>
+                                            <select name="avlists">
+                                                <option value=""></option>
+                                                <!-- TMPL_LOOP NAME="avlistsloop" -->
+                                                    <option value="<!-- TMPL_VAR NAME="value" -->" <!--TMPL_IF name="selected"-->selected="selected"<!--/TMPL_IF-->>
+                                                        <!-- TMPL_VAR NAME="name" -->
+                                                    </option>
+                                                <!-- /TMPL_LOOP -->
+                                            </select>
+                                        </td>
                                         <td><!--TMPL_UNLESS name="mandatory"--><a class="delete">Delete</a><!--/TMPL_UNLESS--></td>
                                     </tr>
                                 <!-- /TMPL_LOOP -->
@@ -185,6 +207,14 @@
                                         <select id="plugin">
                                             <option value=""></option>
                                             <!-- TMPL_LOOP NAME="pluginloop" -->
+                                                <option value="<!-- TMPL_VAR NAME="value" -->"><!-- TMPL_VAR NAME="name" --></option>
+                                            <!-- /TMPL_LOOP -->
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select id="avlists">
+                                            <option value=""></option>
+                                            <!-- TMPL_LOOP NAME="avlistsloop" -->
                                                 <option value="<!-- TMPL_VAR NAME="value" -->"><!-- TMPL_VAR NAME="name" --></option>
                                             <!-- /TMPL_LOOP -->
                                         </select>

@@ -30,6 +30,7 @@ use Data::SearchEngine::Item;
 use Data::SearchEngine::Solr::Results;
 use Time::Progress;
 use Moose;
+use List::MoreUtils qw(uniq);
 
 extends 'Data::SearchEngine::Solr';
 
@@ -95,7 +96,7 @@ sub SetIndexes {
     my $sth = $dbh->prepare("DELETE FROM indexes WHERE ressource_type = ?");
     $sth->execute($ressource_type);
 
-    my $query  = "INSERT INTO indexes (`code`,`label`,`type`,`faceted`,`ressource_type`,`mandatory`,`sortable`,`plugin`, `rpn_index`, `ccl_index_name`) VALUES (?,?,?,?,?,?,?,?,?,?)";
+    my $query  = "INSERT INTO indexes (`code`,`label`,`type`,`faceted`,`ressource_type`,`mandatory`,`sortable`,`plugin`, `rpn_index`, `ccl_index_name`, `avlist`) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
     my $sth2 = $dbh->prepare($query);
     for ( @$indexes ) {
         $sth2->execute(
@@ -107,8 +108,9 @@ sub SetIndexes {
 	    $_->{'mandatory'},
 	    $_->{'sortable'},
 	    $_->{'plugin'},
-        $_->{'rpn_index'},
-        $_->{'ccl_index_name'}
+      $_->{'rpn_index'},
+      $_->{'ccl_index_name'},
+      $_->{'avlist'},
 	);
     }
 }
@@ -392,7 +394,7 @@ sub IndexRecord {
 
                                 for ( @sfvals ) {
                                     $_ = NormalizeDate( $_ ) if $index->{'type'} eq 'date';
-                                    $_ = FillSubfieldWithAuthorisedValues( $frameworkcode, $tag, $code, $_ ) if $recordtype eq "biblio";
+                                    #$_ = FillSubfieldWithAuthorisedValues( $frameworkcode, $tag, $code, $_ ) if $recordtype eq "biblio";
                                     push @values, $_ if $_;
                                 }
                             }
@@ -400,6 +402,7 @@ sub IndexRecord {
                     }
                 }
             }
+            @values = uniq (@values); #Removes duplicates
 
             $solrrecord->set_value(       $index->{'type'}."_".$index->{'code'},    \@values);
             $solrrecord->set_value("srt_".$index->{'type'}."_".$index->{'code'}, $values[0]) if $index->{'sortable'} and @values > 0;
