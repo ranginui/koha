@@ -79,6 +79,9 @@ my $results = SimpleSearch( $q, $filters, $page, $count, $orderby );
 
 map {
     my $record = GetAuthority( $_->{'values'}->{'recordid'} );
-    print BuildSummary( $record, $_->{'values'}->{'recordid'}, $_->{'values'}->{$authtype_indexname} ) . "\n";
+    my $summary = BuildSummary( $record, $_->{'values'}->{'recordid'}, $_->{'values'}->{$authtype_indexname} );
+    $summary =~ s/\n/ /g;
+    $summary =~ s/<[^>]*>/ /g;
+    print $summary . "\n" if $summary ne ' ';
 } @{ $results->{items} };
 
