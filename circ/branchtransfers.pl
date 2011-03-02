@@ -166,7 +166,7 @@ foreach ( $query->param ) {
 
 my $itemnumber;
 my $biblionumber;
-
+my $itembranch;
 #####################
 
 if ($found) {
@@ -178,6 +178,8 @@ if ($found) {
     } elsif ( $res->{'ResFound'} eq "Reserved" ) {
         $reserved     = 1;
         $biblionumber = $res->{'biblionumber'};
+        $borrowernumber = $res->{'borrowernumber'};
+        $itembranch = GetBranchName($res->{'branchcode'});
     }
 }
 
@@ -236,6 +238,7 @@ $template->param(
     cancelled        => $cancelled,
     setwaiting       => $setwaiting,
     trsfitemloop     => \@trsfitemloop,
+    branchname       => $itembranch,
     branchoptionloop => GetBranchesLoop($tobranchcd),
     errmsgloop       => \@errmsgloop,
     CircAutocompl    => C4::Context->preference("CircAutocompl")
