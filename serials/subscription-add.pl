@@ -131,10 +131,41 @@ my $shelflocations = GetKohaAuthorisedValues( 'items.location', '' );
 my @locationarg =
   map { { code => $_, value => $shelflocations->{$_}, selected => ( ( $_ eq $subs->{location} ) ? "selected=\"selected\"" : "" ), } } sort keys %{$shelflocations};
 
+
+my $typeloop = GetItemTypes();
+my $supportloop = GetKohaAuthorisedValuesFromField('995', 'r', '');
+my $originloop = GetKohaAuthorisedValuesFromField('995', 's', '');
+my $domainloop = GetKohaAuthorisedValuesFromField('995', 't', '');
+
+my @typearg = 
+    map { { code => $_, value => $typeloop->{$_}{'description'}, selected => ( ( $_ eq $subs->{itemtype} ) ? "selected=\"selected\"" : "" ), } } sort keys %{$typeloop};
+my @supportarg = 
+    map { { code => $_, value => $supportloop->{$_}, selected => ( ( $_ eq $subs->{support} ) ? "selected=\"selected\"" : "" ), } } sort keys %{$supportloop};
+my @originarg =
+    map { { code => $_, value => $originloop->{$_}, selected => ( ( $_ eq $subs->{origin} ) ? "selected=\"selected\"" : "" ), } } sort keys %{$originloop};
+my @domainarg = 
+    map { { code => $_, value => $domainloop->{$_}, selected => ( ( $_ eq $subs->{domain} ) ? "selected=\"selected\"" : "" ), } } sort keys %{$domainloop};
+
+
+warn Data::Dumper::Dumper($typeloop);
+warn Data::Dumper::Dumper($domainloop);
+
+warn $typeloop->{'PR'}{'description'};
+foreach (sort keys %{$typeloop}) {
+warn $_;
+}
+
+
+
+
 $template->param( shelflocations => \@locationarg );
 
 $template->param(
     branchloop               => $branchloop,
+    typeloop               => \@typearg,
+    supportloop               => \@supportarg,
+    originloop               => \@originarg,
+    domainloop               => \@domainarg,
     DHTMLcalendar_dateformat => C4::Dates->DHTMLcalendar(),
 );
 my $count = 0;
@@ -237,6 +268,10 @@ sub redirect_add_subscription {
     my $staffdisplaycount = $query->param('staffdisplaycount');
     my $opacdisplaycount  = $query->param('opacdisplaycount');
     my $location          = $query->param('location');
+    my $itemtype          = $query->param('itemtype');
+    my $support           = $query->param('support');
+    my $origin            = $query->param('origin');
+    my $domain            = $query->param('domain');
     my $startdate = format_date_in_iso( $query->param('startdate') );
     my $enddate = format_date_in_iso( $query->param('enddate') );
     my $firstacquidate  = format_date_in_iso($query->param('firstacquidate'));
@@ -253,7 +288,7 @@ sub redirect_add_subscription {
 					$add3,$every3,$whenmorethan3,$setto3,$lastvalue3,$innerloop3,
 					$numberingmethod, $status, $notes,$letter,$firstacquidate,join(",",@irregularity),
                     $numberpattern, $callnumber, $hemisphere,($manualhistory?$manualhistory:0),$internalnotes,
-                    $serialsadditems,$staffdisplaycount,$opacdisplaycount,$graceperiod,$location,$enddate
+                    $serialsadditems,$staffdisplaycount,$opacdisplaycount,$graceperiod,$location,$enddate, $itemtype, $support, $origin, $domain
 				);
     ModSubscriptionHistory ($subscriptionid,$histstartdate,$histenddate,$recievedlist,$missinglist,$opacnote,$librariannote);
 
@@ -310,6 +345,10 @@ sub redirect_add_subscription {
         my $letter          = $query->param('letter');
         my $manualhistory   = $query->param('manualhist');
         my $serialsadditems = $query->param('serialsadditems');
+	my $itemtype          = $query->param('itemtype');
+	my $support           = $query->param('support');
+	my $origin            = $query->param('origin');
+	my $domain            = $query->param('domain');
 
         # subscription history
         my $histenddate       = format_date_in_iso( $query->param('histenddate') );
@@ -339,7 +378,8 @@ sub redirect_add_subscription {
             $lastvalue2,        $innerloop2,       $add3,            $every3,        $whenmorethan3,  $setto3,
             $lastvalue3,        $innerloop3,       $numberingmethod, $status,        $biblionumber,   $callnumber,
             $notes,             $letter,           $hemisphere,      $manualhistory, $internalnotes,  $serialsadditems,
-            $staffdisplaycount, $opacdisplaycount, $graceperiod,     $location,      $enddate,        $subscriptionid
+            $staffdisplaycount, $opacdisplaycount, $graceperiod,     $location,      $enddate,        $itemtype, 
+	    $support,          $origin,          $domain,            $subscriptionid
         );
         ModSubscriptionHistory( $subscriptionid, $histstartdate, $histenddate, $recievedlist, $missinglist, $opacnote, $librariannote );
         print $query->redirect("/cgi-bin/koha/serials/subscription-detail.pl?subscriptionid=$subscriptionid");

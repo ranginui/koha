@@ -1031,6 +1031,39 @@ $(document).ready(function() {
                 <input type="text" name="location" id="location" value="<!-- TMPL_VAR name="location" -->" size="30" />
             <!-- /TMPL_IF -->
         </li>
+	<li>
+	    <label for="itemtype">Item type:</label>
+	    <select name="itemtype" id="itemtype">
+		<!-- TMPL_LOOP NAME="typeloop" -->
+		    <option value="<!-- TMPL_VAR NAME="code" -->" <!-- TMPL_VAR NAME="selected" -->><!-- TMPL_VAR NAME="value" --></option>
+		<!-- /TMPL_LOOP -->
+	    </select>
+	</li>
+	<li>
+	    <label for="support">Support:</label>
+	    <select name="support" id="support">
+		<!-- TMPL_LOOP NAME="supportloop" -->
+		    <option value="<!-- TMPL_VAR NAME="code" -->" <!-- TMPL_VAR NAME="selected" -->><!-- TMPL_VAR NAME="value" --></option>
+		<!-- /TMPL_LOOP -->
+	    </select>
+	</li>
+	<li>
+	    <label for="origin">Origin:</label>
+	    <select name="origin" id="origin">
+		<!-- TMPL_LOOP NAME="originloop" -->
+		    <option value="<!-- TMPL_VAR NAME="code" -->" <!-- TMPL_VAR NAME="selected" -->><!-- TMPL_VAR NAME="value" --></option>
+		<!-- /TMPL_LOOP -->
+	    </select>
+	</li>
+	<li>
+	    <label for="domain">Domain:</label>
+	    <select name="domain" id="domain">
+		<!-- TMPL_LOOP NAME="domainloop" -->
+		    <option value="<!-- TMPL_VAR NAME="code" -->" <!-- TMPL_VAR NAME="selected" -->><!-- TMPL_VAR NAME="value" --></option>
+		<!-- /TMPL_LOOP -->
+	    </select>
+	</li>
+
          <li>
             <label for="callnumber">Call Number:</label>
             <input type="text" name="callnumber" id="callnumber" value="<!-- TMPL_VAR name="callnumber" -->" size="20" />
@@ -1099,7 +1132,6 @@ $(document).ready(function() {
                 <label for="missinglist">Missing issues</label>
             <textarea name="missinglist" id="missinglist" cols="60" rows="5"><!-- TMPL_VAR name="missinglist" --></textarea>
             </li>
-            <li>
           </ol>
         </fieldset>
     <fieldset class="action"><input type="submit" value="Save subscription history"  /></fieldset>

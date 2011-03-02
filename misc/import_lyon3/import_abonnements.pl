@@ -317,7 +317,9 @@ if ( $file_input && length($file_input) > 0 ) {
                               lastvalue3    innerloop3   numberingmethod status
                               opacnote         letter       firstacquidate  irregularity
                               numberpattern callnumber   hemisphere      manualhistory
-                              internalnotes serialsadditems intranetserial opacserialissue graceperiod location enddate subscriptionid)
+                              internalnotes serialsadditems intranetserial opacserialissue graceperiod location enddate 
+			      itemtype      support      origin          domain
+			      subscriptionid)
                           }
                     );
                 };
