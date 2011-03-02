@@ -27,6 +27,11 @@ our @EXPORT = qw/
     /;
 our $VERSION = 3.0.1;
 
+# We want to concatenate values returned by ComputeValue with others mappings
+sub ConcatMappings {
+    1;
+}
+
 =head2 fonction
     return rejected and parrallel forms
     @see t/solr/plugin_authorities.pl

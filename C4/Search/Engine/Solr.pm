@@ -160,9 +160,15 @@ sub GetSubfieldsForIndex {
     return $subfields;
 }
 
+=head2 LoadSearchPlugin
+Return the ComputeValue fonction associated with the plugin
+=cut
 sub LoadSearchPlugin {
     my $plugin = shift;
-    if ( grep( /^$plugin$/, GetSearchPlugins()) ) {
+    my $list_of_plugins = shift;
+    @$list_of_plugins = GetSearchPlugins() if not $list_of_plugins;
+    my $r = 0;
+    if ( grep( /^$plugin$/, @$list_of_plugins) ) {
         eval "require $plugin";
 
         return do {
@@ -173,6 +179,33 @@ sub LoadSearchPlugin {
     }
 }
 
+=head2 GetConcatMappingsValue
+Return value returned by ConcatMappings function if it exists.
+If it does not exist, return 0
+=cut
+sub GetConcatMappingsValue {
+    my $plugin = shift;
+    my $list_of_plugins = shift;
+    $list_of_plugins = GetSearchPlugins() if not $list_of_plugins;
+    my $r = 0;
+    if ( grep( /^$plugin$/, @$list_of_plugins) ) {
+        eval "require $plugin";
+
+        no strict 'refs';
+        my $symbol = $plugin. "::ConcatMappings";
+        eval {
+            $r = &{"$symbol"};
+        };
+
+        # If ConcatMappings does not exist, return 0
+        if ($@) { return 0 }
+    }
+    $r;
+}
+
+=head2 GetSearchPlugins
+Return list of existing plugins in C4/Search/Plugins
+=cut
 sub GetSearchPlugins {
    use Module::List;
    my $plugins = Module::List::list_modules( "C4::Search::Plugins::", { list_modules => 1 } );
@@ -305,6 +338,8 @@ sub IndexRecord {
 
     my @recordpush;
     my $g;
+
+    my @list_of_plugins = GetSearchPlugins;
     for my $id ( @$recordids ) {
         
         my $record;
@@ -333,29 +368,33 @@ sub IndexRecord {
 
             my @values;
             my $mapping = GetSubfieldsForIndex( $index->{'code'} );
+            my $concatmappings = 1;
 
             if ( $index->{'plugin'} ) {
                 my $plugin = $index->{'plugin'};
-                $plugin = LoadSearchPlugin( $plugin ) if $plugin;
+                $concatmappings = &GetConcatMappingsValue( $plugin, \@list_of_plugins );
+                $plugin = LoadSearchPlugin( $plugin, \@list_of_plugins ) if $plugin;
                 @values = &$plugin( $record, $mapping );
             }
 
-            for my $tag ( sort keys %$mapping ) {
-                for my $field ( $record->field( $tag ) ) {
-                    if ( $field->is_control_field ) {
-                        push @values, $field->data;
-                    } else {
+            if ( $concatmappings ) {
+                for my $tag ( sort keys %$mapping ) {
+                    for my $field ( $record->field( $tag ) ) {
+                        if ( $field->is_control_field ) {
+                            push @values, $field->data;
+                        } else {
 
-                        for my $code ( @{ $mapping->{$tag} } ) {
+                            for my $code ( @{ $mapping->{$tag} } ) {
 
-                            my @sfvals = $code eq '*'
-                                       ? map { $_->[1] } $field->subfields
-                                       : map { $_      } $field->subfield( $code );
+                                my @sfvals = $code eq '*'
+                                           ? map { $_->[1] } $field->subfields
+                                           : map { $_      } $field->subfield( $code );
 
-                            for ( @sfvals ) {
-                                $_ = NormalizeDate( $_ ) if $index->{'type'} eq 'date';
-                                $_ = FillSubfieldWithAuthorisedValues( $frameworkcode, $tag, $code, $_ ) if $recordtype eq "biblio";
-                                push @values, $_ if $_;
+                                for ( @sfvals ) {
+                                    $_ = NormalizeDate( $_ ) if $index->{'type'} eq 'date';
+                                    $_ = FillSubfieldWithAuthorisedValues( $frameworkcode, $tag, $code, $_ ) if $recordtype eq "biblio";
+                                    push @values, $_ if $_;
+                                }
                             }
                         }
                     }
