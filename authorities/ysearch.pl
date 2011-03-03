@@ -59,7 +59,8 @@ my $operands;
 my $operators;
 my @values;
 if ( defined $searchstr ) {
-    $searchstr =~ s/--//g;
+    my $authoritysep = C4::Context->preference('authoritysep');
+    $searchstr =~ s/$authoritysep//g;
     push @values, split(' ', $searchstr);
     $values[-1] = $values[-1] . '*';
 } else {

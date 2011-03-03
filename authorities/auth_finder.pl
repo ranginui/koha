@@ -68,12 +68,25 @@ if ( $query->param('op') eq 'do_search' ) {
     my $value;
     my $operands;
     my $operators;
+    my $authoritysep = C4::Context->preference('authoritysep');
+    # Construct arrays with 3 values
     for my $searchtype (@searchtypes) {
         $index = GetIndexBySearchtype($searchtype);
-        my $value = $query->param($searchtype) || '[* TO *]';
-        push @$indexes, $index;
-        push @$operands, $value;
-        push @$operators, 'AND';
+        my $value = $query->param($searchtype);
+        # if there is a value
+        if ( $value ){
+            $value =~ s/$authoritysep//g; # Supression of the authority separator
+            my @values = split (' ', $value); # Get all words
+            push @$operands, "\"$_\"" for @values; # Each word is an operand
+            push @$indexes, $index for @values; # For each word, push index corresponding
+            push @$operators, 'AND' for @values; # idem for operator
+        # Else, if we have not operand and it's the 'all_headings' fields
+        } elsif ( not $operands and $searchtype eq 'all_headings' ) {
+            # We search all authorities
+            push @$operands, "[* TO *]";
+            push @$indexes, $index;
+            push @$operators, 'AND';
+        }
         $template->param($searchtype => $query->param($searchtype));
     }
 
@@ -83,8 +96,34 @@ if ( $query->param('op') eq 'do_search' ) {
         $authtype_indexname => $authtypecode
     };
 
+    # Construct and Perform the query
     my $q = C4::Search::Query->buildQuery( $indexes, $operands, $operators );
     my $results = SimpleSearch( $q, $filters, $page, $count, $orderby );
+
+    # If no resuls, we search on summary index
+    # In fact, we search string returned by autocompletion
+    if ( not $results->pager->total_entries ){
+        my $indexes = ();
+        my $operands = ();
+        my $operators = ();
+     
+        my $summary_index = C4::Search::Query::getIndexName('auth-summary');
+        for my $searchtype (@searchtypes) {
+            $index = GetIndexBySearchtype($searchtype);
+            my $value = $query->param($searchtype);
+            if ( $value ){
+                $value =~ s/^\s*(.*)\s*$/$1/; # Delete spaces (begin and after string)
+                push @$operands, "\"$value\"";
+                push @$indexes, $summary_index;
+                push @$operators, 'AND';
+            }
+            $template->param($searchtype => $query->param($searchtype));
+        }
+
+        $q = C4::Search::Query->buildQuery( $indexes, $operands, $operators );
+        $results = SimpleSearch( $q, $filters, $page, $count, $orderby );
+
+    }
 
     my @resultdatas = map {
         my $record = GetAuthority( $_->{'values'}->{'recordid'} );
