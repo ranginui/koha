@@ -220,8 +220,10 @@ if ( $op eq "" ) {
                 push @{ $item->{indicator} },    $indicator[0];
                 my $xml = TransformHtmlToXml( \@tags, \@subfields, \@field_values, \@ind_tag, \@indicator );
                 my $record = MARC::Record::new_from_xml( $xml, 'UTF-8' );
-                my ( $biblionumber, $bibitemnum, $itemnumber ) = AddItemFromMarc( $record, $biblionumber );
-                NewOrderItem( $itemnumber, $ordernumber );
+                for (my $qtyloop=1;$qtyloop <=$quantity;$qtyloop++) {
+                    my ( $biblionumber, $bibitemnum, $itemnumber ) = AddItemFromMarc( $record, $biblionumber );
+                    NewOrderItem( $itemnumber, $ordernumber );
+                }
             }
         } else {
             SetImportRecordStatus( $biblio->{'import_record_id'}, 'imported' );
