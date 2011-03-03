@@ -35,6 +35,7 @@ sub ComputeValue {
             my $f = $record->field($field);
             next if not $f;
             my $sf = $f->subfield($subfield);
+            next if not $sf;
             $sf =~ s/-//g;
             push @values, $sf
         }
