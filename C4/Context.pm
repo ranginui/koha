@@ -498,6 +498,7 @@ sub preference {
     my $self = shift;
     my $var  = shift;    # The system preference to return
 
+    $var=lc($var);
     if ( exists $sysprefs{$var} ) {
         return $sysprefs{$var};
     }
@@ -506,7 +507,7 @@ sub preference {
 
     # Look up systempreferences.variable==$var
     my $sql = <<'END_SQL';
-        SELECT    variable, value
+        SELECT    LOWER(variable), value
         FROM    systempreferences
 END_SQL
     my $sysprefs_arrayref;
