@@ -47,10 +47,10 @@ my $fullreportname = "reports/acquisitions_stats.tmpl";
 my $line           = $input->param("Line");
 my $column         = $input->param("Column");
 my @filters        = $input->param("Filter");
-$filters[0] = ( ( $line =~ /closedate/ || $column =~ /closedate/ ) ? format_date_in_iso( $filters[0] ) : undef );
-$filters[1] = ( ( $line =~ /closedate/ || $column =~ /closedate/ ) ? format_date_in_iso( $filters[1] ) : undef );
-$filters[2] = ( ( $line =~ /delivery/  || $column =~ /delivery/ )  ? format_date_in_iso( $filters[2] ) : undef );
-$filters[3] = ( ( $line =~ /delivery/  || $column =~ /delivery/ )  ? format_date_in_iso( $filters[3] ) : undef );
+$filters[0] = format_date_in_iso( $filters[0] );
+$filters[1] = format_date_in_iso( $filters[1] );
+$filters[2] = format_date_in_iso( $filters[2] );
+$filters[3] = format_date_in_iso( $filters[3] );
 my $podsp    = $input->param("PlacedOnDisplay");
 my $rodsp    = $input->param("ReceivedOnDisplay");
 my $aodsp    = $input->param("AcquiredOnDisplay");    ##added by mason.
@@ -59,7 +59,6 @@ my $output   = $input->param("output");
 my $basename = $input->param("basename");
 my $mime     = $input->param("MIME");
 
-#warn "calcul : ".$calc;
 my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
     {   template_name   => $fullreportname,
         query           => $input,
@@ -224,11 +223,6 @@ if ($do_it) {
     );
 
     my @mime = ( C4::Context->preference("MIME") );
-    foreach my $mime (@mime) {
-
-        #               warn "".$mime;
-    }
-
     my $CGIextChoice = CGI::scrolling_list(
         -name     => 'MIME',
         -id       => 'MIME',
@@ -305,18 +299,10 @@ sub calculate {
 
     my @linefilter;
 
-    #       warn "filtres ".@filters[0];
-    #       warn "filtres ".@filters[1];
-    #       warn "filtres ".@filters[2];
-    #       warn "filtres ".@filters[3];
-
     $linefilter[0] = @$filters[0] if ( $line =~ /closedate/ );
     $linefilter[1] = @$filters[1] if ( $line =~ /closedate/ );
     $linefilter[0] = @$filters[2] if ( $line =~ /received/ );
     $linefilter[1] = @$filters[3] if ( $line =~ /received/ );
-
-    #    $linefilter[0] = @$filters[4] if ( $line =~ /acquired/ );
-    #    $linefilter[1] = @$filters[5] if ( $line =~ /acquired/ );
 
     $linefilter[0] = @$filters[4] if ( $line =~ /bookseller/ );
     $linefilter[0] = @$filters[5] if ( $line =~ /itemtype/ );
@@ -324,36 +310,28 @@ sub calculate {
     $linefilter[0] = @$filters[7] if ( $line =~ /sort1/ );
     $linefilter[0] = @$filters[8] if ( $line =~ /sort2/ );
 
-    #warn "filtre lignes".$linefilter[0]." ".$linefilter[1];
-    #
     my @colfilter;
     $colfilter[0] = @$filters[0] if ( $column =~ /closedate/ );
     $colfilter[1] = @$filters[1] if ( $column =~ /closedate/ );
     $colfilter[0] = @$filters[2] if ( $column =~ /received/ );
     $colfilter[1] = @$filters[3] if ( $column =~ /received/ );
 
-    #    $colfilter[0] = @$filters[4] if ( $column =~ /acquired/ );
-    #    $colfilter[1] = @$filters[5] if ( $column =~ /acquired/ );
     $colfilter[0] = @$filters[4] if ( $column =~ /bookseller/ );
     $colfilter[0] = @$filters[5] if ( $column =~ /itemtype/ );
     $colfilter[0] = @$filters[6] if ( $column =~ /budget/ );
     $colfilter[0] = @$filters[7] if ( $column =~ /sort1/ );
     $colfilter[0] = @$filters[8] if ( $column =~ /sort2/ );
 
-    #warn "filtre col ".$colfilter[0]." ".$colfilter[1];
-
-    #    warn "line=$line, podsp=$podsp, rodsp=$rodsp, aodsp=$aodsp\n";
-
     # 1st, loop rows.
     my $linefield;
     if ( ( $line =~ /closedate/ ) and ( $podsp == 1 ) ) {
 
         #Display by day
-        $linefield .= "dayname($line)";
+        $linefield .= "concat(weekday($line),'-',dayname($line))";
     } elsif ( ( $line =~ /closedate/ ) and ( $podsp == 2 ) ) {
 
         #Display by Month
-        $linefield .= "monthname($line)";
+        $linefield .= "concat(hex(month($line)),'-',monthname($line))";
     } elsif ( ( $line =~ /closedate/ ) and ( $podsp == 3 ) ) {
 
         #Display by Year
@@ -362,34 +340,17 @@ sub calculate {
     } elsif ( ( $line =~ /received/ ) and ( $rodsp == 1 ) ) {
 
         #Display by day
-        $linefield .= "dayname($line)";
+        $linefield .= "concat(weekday($line),'-',dayname($line))";
     } elsif ( ( $line =~ /received/ ) and ( $rodsp == 2 ) ) {
 
         #Display by Month
-        $linefield .= "monthname($line)";
+        $linefield .= "concat(hex(month($line)),'-',monthname($line))";
     } elsif ( ( $line =~ /received/ ) and ( $rodsp == 3 ) ) {
 
         #Display by Year
         $linefield .= "Year($line)";
 
     }
-
-    #    elsif ( ( $line =~ /acquired/ ) and ( $aodsp == 1 ) ) {
-    #
-    #        #Display by day
-    #        $linefield .= "dayname($line)";
-    #    }
-    #    elsif ( ( $line =~ /acquired/ ) and ( $aodsp == 2 ) ) {
-    #
-    #        #Display by Month
-    #        $linefield .= "monthname($line)";
-    #    }
-    #    elsif ( ( $line =~ /acquired/ ) and ( $aodsp == 3 ) ) {
-    #
-    #        #Display by Year
-    #        $linefield .= "Year($line)";
-    #
-    #    }
     else {
         $linefield .= $line;
     }
@@ -403,8 +364,6 @@ sub calculate {
                 LEFT JOIN aqbooksellers ON (aqbasket.booksellerid=aqbooksellers.id) WHERE (aqorders.basketno=aqbasket.basketno)
                 AND $line IS NOT NULL AND $line <> '' ";
 
-    #				LEFT JOIN aqorderdelivery ON (aqorders.ordernumber =aqorderdelivery.ordernumber )
-
     if (@linefilter) {
         if ( $linefilter[1] ) {
             if ( $linefilter[0] ) {
@@ -416,8 +375,6 @@ sub calculate {
             ( $linefilter[0] )
             and (  ( $line =~ /closedate/ )
                 or ( $line =~ /received/ ) )
-
-            #                or ( $line =~ /acquired/ ) )
           ) {
             $strsth .= " AND $line >= ? ";
         } elsif ( $linefilter[0] ) {
@@ -427,8 +384,6 @@ sub calculate {
     }
     $strsth .= " GROUP BY $linefield";
     $strsth .= " ORDER BY $linefield";
-
-    #warn "377:strsth= $strsth";
 
     my $sth = $dbh->prepare($strsth);
     if ( (@linefilter) and ( $linefilter[1] ) ) {
@@ -447,18 +402,16 @@ sub calculate {
         $cell{totalrow} = 0;
     }
 
-    #    warn "column=$column, podsp=$podsp, rodsp=$rodsp, aodsp=$aodsp\n";
-
     # 2nd, loop cols.
     my $colfield;
     if ( ( $column =~ /closedate/ ) and ( $podsp == 1 ) ) {
 
         #Display by day
-        $colfield .= "dayname($column)";
+        $colfield .= "concat(weekday($column),'-',dayname($column))";
     } elsif ( ( $column =~ /closedate/ ) and ( $podsp == 2 ) ) {
 
         #Display by Month
-        $colfield .= "monthname($column)";
+        $colfield .= "concat(hex(month($column)),'-',monthname($column))";
     } elsif ( ( $column =~ /closedate/ ) and ( $podsp == 3 ) ) {
 
         #Display by Year
@@ -467,34 +420,17 @@ sub calculate {
     } elsif ( ( $column =~ /received/ ) and ( $rodsp == 1 ) ) {
 
         #Display by day
-        $colfield .= "dayname($column)";
+        $colfield .= "concat(weekday($column),'-',dayname($column))";
     } elsif ( ( $column =~ /received/ ) and ( $rodsp == 2 ) ) {
 
         #Display by Month
-        $colfield .= "monthname($column)";
+        $colfield .= "concat(hex(month($column)),'-',monthname($column))";
     } elsif ( ( $column =~ /received/ ) and ( $rodsp == 3 ) ) {
 
         #Display by Year
         $colfield .= "Year($column)";
 
     }
-
-    #    elsif ( ( $column =~ /dateaccessioned/ ) and ( $aodsp == 1 ) ) {
-    #
-    #        #Display by day
-    #        $colfield .= "dayname($column)";
-    #    }
-    #    elsif ( ( $column =~ /dateaccessioned/ ) and ( $aodsp == 2 ) ) {
-    #
-    #        #Display by Month
-    #        $colfield .= "monthname($column)";
-    #    }
-    #    elsif ( ( $column =~ /dateaccessioned/ ) and ( $aodsp == 3 ) ) {
-    #
-    #        #Display by Year
-    #        $colfield .= "Year($column)";
-    #
-    #    }
     else {
         $colfield .= $column;
     }
@@ -551,9 +487,6 @@ sub calculate {
             push @loopcol, \%cell;
         }
     }
-
-    #       warn "fin des titres colonnes";
-
     my $i = 0;
     my @totalcol;
     my $hilighted = -1;
@@ -561,7 +494,6 @@ sub calculate {
     #Initialization of cell values.....
     my %table;
 
-    #	warn "init table...\n";
     foreach my $row (@loopline) {
         foreach my $col (@loopcol) {
             $table{ $row->{rowtitle} }->{ $col->{coltitle} } = 0;
@@ -583,8 +515,6 @@ sub calculate {
                  LEFT JOIN aqbooksellers ON (aqbasket.booksellerid=aqbooksellers.id) 
                  WHERE (aqorders.basketno=aqbasket.basketno) ";
 
-    #                 LEFT JOIN aqorderdelivery ON (aqorders.ordernumber =aqorderdelivery.ordernumber )
-
     @$filters[0] =~ s/\*/%/g if ( @$filters[0] );
     $strcalc .= " AND aqbasket.closedate >= '" . @$filters[0] . "'"
       if ( @$filters[0] );
@@ -597,13 +527,6 @@ sub calculate {
     @$filters[3] =~ s/\*/%/g if ( @$filters[3] );
     $strcalc .= " AND aqorders.datereceived <= '" . @$filters[3] . "'"
       if ( @$filters[3] );
-
-    #    @$filters[4] =~ s/\*/%/g if ( @$filters[4] );
-    #    $strcalc .= " AND aqbasket.closedate >= '" . @$filters[4] . "'"
-    #      if ( @$filters[4] );
-    #    @$filters[5] =~ s/\*/%/g if ( @$filters[5] );
-    #    $strcalc .= " AND aqbasket.closedate <= '" . @$filters[5] . "'"
-    #      if ( @$filters[5] );
     @$filters[4] =~ s/\*/%/g if ( @$filters[4] );
     $strcalc .= " AND aqbooksellers.name LIKE '" . @$filters[4] . "'"
       if ( @$filters[4] );
@@ -623,18 +546,11 @@ sub calculate {
     $strcalc .= " AND aqorders.datecancellationprinted is NULL ";
 
     $strcalc .= " GROUP BY $linefield, $colfield ORDER BY $linefield,$colfield";
-
-    #	warn $strcalc . "\n";
-
     my $dbcalc = $dbh->prepare($strcalc);
     $dbcalc->execute;
-
-    #       warn "filling table";
     my $emptycol;
     while ( my ( $row, $col, $value ) = $dbcalc->fetchrow ) {
         next if ( $row eq undef || $col eq undef );
-
-        # warn "filling table $row / $col / $value ";
 
         $emptycol = 1         if ( !defined($col) );
         $col      = "zzEMPTY" if ( !defined($col) );
@@ -665,7 +581,6 @@ sub calculate {
         $hilighted = -$hilighted;
     }
 
-    #       warn "footer processing";
     foreach my $col (@loopcol) {
         my $total = 0;
         foreach my $row (@looprow) {
@@ -676,11 +591,7 @@ sub calculate {
                 ( $col->{coltitle} eq "NULL" ) ? "zzEMPTY"
                 : $col->{coltitle}
               };
-
-            #                       warn "value added ".$table{$row->{rowtitle}}->{$col->{coltitle}}. "for line ".$row->{rowtitle};
         }
-
-        #               warn "summ for column ".$col->{coltitle}."  = ".$total;
         push @loopfooter, { 'totalcol' => $total };
     }
 
