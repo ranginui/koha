@@ -139,7 +139,6 @@ my $sort_by = $cgi->param('sort_by') || join(' ', grep { defined } (
         C4::Search::Query::getIndexName(C4::Context->preference('OPACdefaultSortField'))
         , C4::Context->preference('OPACdefaultSortOrder') ) );
 my $sortloop = C4::Search::Engine::Solr::GetSortableIndexes('biblio');
-warn Data::Dumper::Dumper $sortloop;
 for ( @$sortloop ) { # because html template is stupid
     $_->{'asc_selected'}  = $sort_by eq $_->{'type'}.'_'.$_->{'code'}.' asc';
     $_->{'desc_selected'} = $sort_by eq $_->{'type'}.'_'.$_->{'code'}.' desc';

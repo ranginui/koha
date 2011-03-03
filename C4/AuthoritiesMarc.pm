@@ -43,6 +43,7 @@ BEGIN {
     @EXPORT = qw(
       &GetTagsLabels
       &GetAuthType
+      &GetAuthTypeText
       &GetAuthTypeCode
       &GetAuthMARCFromKohaField
       &AUTHhtml2marc
@@ -610,6 +611,15 @@ sub GetAuthType {
         }
     }
     return;
+}
+
+sub GetAuthTypeText {
+    my ($authtypecode) = @_;
+    my $dbh = C4::Context->dbh;
+    my $sth;
+    $sth = $dbh->prepare("select authtypetext from auth_types where authtypecode=?");
+    $sth->execute($authtypecode);
+    return $sth->fetchrow;
 }
 
 sub AUTHhtml2marc {

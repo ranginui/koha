@@ -19,15 +19,14 @@
                     No results found.
                 <!-- /TMPL_IF -->
             </div>
-
-            <!-- TMPL_IF name="total" -->
-                <div class="searchresults">
+            <!-- TMPL_IF NAME="result" -->
+                <div id="resultlist">
                 <table>
                     <tr>
                         <th>Authorized Headings</th>
                         <th>Type of Heading</th>
                         <!-- TMPL_UNLESS name="isEDITORS" -->
-                        <th>Biblio records</th>
+                            <th>Biblio records</th>
                         <!-- /TMPL_UNLESS -->
                         <th>Full Heading</th>
                     </tr>
@@ -36,13 +35,14 @@
                             <td><!-- TMPL_VAR NAME="summary" --></td>
                             <td><!-- TMPL_VAR NAME="authtype" --></td>
                             <!-- TMPL_UNLESS name="isEDITORS" -->
-                            <td><a href="/cgi-bin/koha/opac-search.pl?type=opac&amp;op=do_search&amp;q=*:*&filters=int_authid:<!--TMPL_VAR Name="authid" -->"><!-- TMPL_VAR NAME="used" --> biblios</a></td>
+                            <td><a href="/cgi-bin/koha/opac-search.pl?type=opac&amp;op=do_search&amp;q=*:*&filters=<!-- TMPL_VAR NAME=authid_index_name -->:<!--TMPL_VAR Name="authid" -->"><!-- TMPL_VAR NAME="used" --> biblios</a></td>
                             <!-- /TMPL_UNLESS -->
                             <td><a href="opac-authoritiesdetail.pl?authid=<!-- TMPL_VAR NAME="authid" -->">View Full Heading</a></td>
                         </tr>
                     <!-- /TMPL_LOOP -->
                 </table>
-                </div>
+            </div>
+            <!-- TMPL_INCLUDE NAME="page-numbers.inc" -->
             <!-- /TMPL_IF -->
         </div>
         </div>

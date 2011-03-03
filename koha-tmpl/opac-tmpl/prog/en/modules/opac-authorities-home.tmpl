@@ -10,45 +10,43 @@
 <div class="yui-b">
 <div class="yui-g">
 <div id="authorities" class="container">
-    <form name="f" action="/cgi-bin/koha/opac-authorities-home.pl" method="get">
+    <form action="/cgi-bin/koha/opac-authorities-home.pl" method="get">
         <input type="hidden" name="op" value="do_search" />
-        <input type="hidden" name="type" value="opac" />
-        <input type="hidden" name="nbstatements" value="<!-- TMPL_VAR NAME="nbstatements" -->" />
+        <input type="hidden" name="searchtype" value="all_headings" />
         <fieldset class="rows">
             <legend>Browse by author or subject</legend>
             <ol>
                 <li>
                     <label for="anywhere">Search: </label>
                     <select name="authtypecode" id="authtypecode">
+                        <option value="">All Authority Types</option>
                         <!-- TMPL_LOOP NAME="authtypesloop" -->
-                            <!-- TMPL_IF name="selected" --><option value="<!-- TMPL_VAR NAME="value" -->" selected="selected"><!-- TMPL_VAR NAME="authtypetext" --></option>
-                            <!-- TMPL_ELSE --><option value="<!-- TMPL_VAR NAME="value" -->"> <!-- TMPL_VAR NAME="authtypetext" --></option>
+                            <!-- TMPL_IF name="selected" -->
+                                <option value="<!-- TMPL_VAR NAME="value" -->" selected="selected"><!-- TMPL_VAR NAME="authtypetext" --></option>
+                            <!-- TMPL_ELSE -->
+                                <option value="<!-- TMPL_VAR NAME="value" -->"><!-- TMPL_VAR NAME="authtypetext" --></option>
                             <!-- /TMPL_IF -->
                         <!-- /TMPL_LOOP -->
                     </select>
-                    <select name="operatorc" id="anywhere">
-                        <option value="contains">contains</option>
-                        <option value="start">starts with</option>
-                        <option value="is">is exactly</option>
-                    </select>
-                    <input type="text" name="value" id="anywhere_value" value="<!-- TMPL_VAR NAME="value" -->" />
-                    <input type="hidden" name="marclistc" value="" />
-                    <input type="hidden" name="and_ora" value="and" />
-                    <input type="hidden" name="excludingc" value="" />
+                    <input id="value_anywhere" type="text" name="value" value="<!-- TMPL_VAR NAME="value" -->" />
                 </li>
-                <li><label for="orderby">Order by: </label><select name="orderby" id="orderby">
-                    <option value="">None</option>
-                        <option value="txt_name asc" selected="selected">Heading Ascendant</option>
-                        <option value="txt_name desc">Heading Descendant</option>
-                        <option value="int_usedinxbiblios asc">Less used</option>
-                        <option value="int_usedinxbiblios desc">Most used</option>
-                    </select>
-                </li></ol>
+                <li>
+                    <label for="orderby">Order by: </label>
+                    <select name="orderby">
+                        <option value="score desc" selected="selected">Relevance</option>
+                        <option value="<!-- TMPL_VAR NAME='name_index_name' --> asc">Name asc</option>
+                        <option value="<!-- TMPL_VAR NAME='name_index_name' --> desc">Name desc</option>
+                        <option value="<!-- TMPL_VAR NAME='usage_index_name' --> asc">Usage asc</option>
+                        <option value="<!-- TMPL_VAR NAME='usage_index_name' --> desc">Usage desc</option>
+                     </select>
+                </li>
+            </ol>
         </fieldset>
         <fieldset class="action">
             <input type="submit" value="Submit" class="submit" />
         </fieldset>
     </form>
+
 </div>
 </div>
 </div>

@@ -106,22 +106,13 @@ if ( $op eq "do_search" ) {
 
     $template->param( result => \@resultrecords );
 
-} elsif ( $op eq "delete" ) {
-
-    my $authid = $query->param('authid');
-    DelAuthority( $authid, 1 );
-
-    ( $template, $loggedinuser, $cookie ) = get_template_and_user( {
-        template_name   => "authorities/authorities-home.tmpl",
-        query           => $query,
-        type            => 'intranet',
-        authnotrequired => 0,
-        flagsrequired   => { catalogue => 1 },
-        debug           => 1,
-    } );
-
 } else {
 
+    if ( $op eq "delete" ) {
+        my $authid = $query->param('authid');
+        DelAuthority( $authid, 1 );
+    }
+
     ( $template, $loggedinuser, $cookie ) = get_template_and_user( {
         template_name   => "authorities/authorities-home.tmpl",
         query           => $query,
@@ -130,6 +121,7 @@ if ( $op eq "do_search" ) {
         flagsrequired   => { catalogue => 1 },
         debug           => 1,
     } );
+
 }
 
 $template->param(
