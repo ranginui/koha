@@ -78,9 +78,12 @@ my $filters = {
 my $q = C4::Search::Query->buildQuery( $indexes, $operands, $operators );
 my $results = SimpleSearch( $q, $filters, $page, $count, $orderby );
 
+warn Data::Dumper::Dumper $results;
+
+my $summary_index_name = C4::Search::Query::getIndexName('auth-summary');
 map {
     my $record = GetAuthority( $_->{'values'}->{'recordid'} );
-    my $summary = BuildSummary( $record, $_->{'values'}->{'recordid'}, $_->{'values'}->{$authtype_indexname} );
+    my $summary = $_->{'values'}->{$summary_index_name};
     $summary =~ s/\n/ /g;
     $summary =~ s/<[^>]*>/ /g;
     print $summary . "\n" if $summary ne ' ';
