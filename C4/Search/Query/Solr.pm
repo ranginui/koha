@@ -68,7 +68,7 @@ sub buildQuery {
 
             # Generate index:operand
             if ($index_name ne 'all_fields' && $index_name ne ''){
-                $q .= $index_name . ':' . $kw;
+                $q .= BuildIndexString($index_name, $kw);
             }else{
                 $q .= $kw;
             }
@@ -78,25 +78,25 @@ sub buildQuery {
         # And others
         $index_name = @$indexes[$i] if @$indexes[$i];
         given (uc(@$operators[$i-1])) {
-            when ('AND'){
+            when ('OR'){
                 if ($index_name ne 'all_fields'){
-                    $q .= ' AND ' . $index_name . ':'.$kw;
+                    $q .= ' OR ' . BuildIndexString($index_name, $kw);
                 }else{
-                    $q .= ' AND ' . $kw;
+                    $q .= ' OR ' . $kw;
                 }
             }
             when ('NOT'){
                 if ($index_name ne 'all_fields'){
-                    $q .= ' NOT ' . $index_name . ':'.$kw;
+                    $q .= ' NOT ' . BuildIndexString($index_name, $kw);
                 }else{
                     $q .= ' NOT ' . $kw;
                 }
             }
             default {
                 if ($index_name ne 'all_fields'){
-                    $q .= ' OR ' . $index_name . ':' . $kw;
+                    $q .= ' AND ' . BuildIndexString($index_name, $kw);
                 }else{
-                    $q .= ' OR ' . $kw;
+                    $q .= ' AND ' . $kw;
                 }
             }
         }
@@ -105,6 +105,18 @@ sub buildQuery {
 
     return $q;
 
+}
+
+sub BuildIndexString {
+    my ($index, $string, $operator) = @_;
+    if ( $string =~ / / ) {
+        my @words = split ' ', $string;
+        my $r = join ' AND ' , map {
+            "$index:$_"
+        } @words;
+        return "(" . $r . ")";
+    }
+    return "$index:$string";
 }
 
 sub normalSearch {

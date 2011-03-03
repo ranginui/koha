@@ -65,7 +65,7 @@ $got = C4::Search::Query->normalSearch($q);
 $expected = "Mathématiques Analyse L3 \\: Cours complet";
 is($got, $expected, "Test escape colon");
 
-BEGIN { $tests += 9 } # Advanced search
+BEGIN { $tests += 8 } # Advanced search
 @$operands = ("maudits"); # Solr indexes
 @$indexes = ("title", "all_fields", "all_fields");
 @$operators = ();
@@ -88,21 +88,21 @@ $expected = "$titleindex:maudits";
 is($got, $expected, "Test Code indexes in advanced search");
 
 @$operands = ("maudits", "a", "andre"); # More elements
-@$indexes = ("title", "all_fields", "ste_author");
+@$indexes = ("title", "all_fields", "author");
 @$operators = ();
 $got = C4::Search::Query->buildQuery($indexes, $operands, $operators);
-$expected = "$titleindex:maudits OR a OR $authorindex:andre";
+$expected = "$titleindex:maudits AND a AND $authorindex:andre";
 is($got, $expected, "Test Zebra indexes in advanced search");
 
 @$operands = ("maudits", "a", "andre", "Besson"); # With 'More options'
-@$indexes = ("title", "all_fields", "ste_author", "ste_author");
+@$indexes = ("title", "all_fields", "author", "author");
 @$operators = ("AND", "NOT", "OR");
 $got = C4::Search::Query->buildQuery($indexes, $operands, $operators);
 $expected = "$titleindex:maudits AND a NOT $authorindex:andre OR $authorindex:Besson";
 is($got, $expected, "Test 'More options' in advanced search");
 
 @$operands = ("crépuscule", "André"); # Accents
-@$indexes = ("title", "ste_author");
+@$indexes = ("title", "author");
 @$operators = ("AND");
 $got = C4::Search::Query->buildQuery($indexes, $operands, $operators);
 $expected = "$titleindex:crépuscule AND $authorindex:André";
@@ -112,7 +112,7 @@ is($got, $expected, "Test Accents in advanced search");
 @$indexes = ("", undef, ());
 @$operators = ();
 $got = C4::Search::Query->buildQuery($indexes, $operands, $operators);
-$expected = "maudits OR a OR andre";
+$expected = "maudits AND a AND andre";
 is($got, $expected, "Test call with bad indexes types");
 
 @$operands = ("Mathématiques Analyse L3 : Cours complet"); # escape colon
@@ -120,13 +120,6 @@ is($got, $expected, "Test call with bad indexes types");
 @$operators = ();
 $got = C4::Search::Query->buildQuery($indexes, $operands, $operators);
 $expected = "Mathématiques Analyse L3 \\: Cours complet";
-is($got, $expected, "Test escape colon");
-
-@$operands = ("Mathématiques Analyse L3 : Cours complet"); # escape colon
-@$indexes = ("title");
-@$operators = ();
-$got = C4::Search::Query->buildQuery($indexes, $operands, $operators);
-$expected = "$titleindex:Mathématiques Analyse L3 \\: Cours complet";
 is($got, $expected, "Test escape colon");
 
 BEGIN { $tests += 1 } # normal search with rpn query
@@ -138,3 +131,25 @@ $got = C4::Search::Query->buildQuery($indexes, $operands, $operators);
 $expected = "[* TO * ] NOT date_harvestdate:[* TO * ] AND (int_rflag:1 OR int_rflag:2)";
 is($got, $expected, "Test alwaysMatches modifier and allrecords index in 'normal' search");
 
+
+BEGIN { $tests += 3 } # Test BuildIndexString (of many words in one operand string)
+@$operands = ("le crépuscule des maudits");
+@$indexes = ("title");
+@$operators = ();
+$got = C4::Search::Query->buildQuery($indexes, $operands, $operators);
+$expected = "($titleindex:le AND $titleindex:crépuscule AND $titleindex:des AND $titleindex:maudits)";
+is($got, $expected, "Test BuildIndexString");
+
+@$operands = ("maudits crépuscule");
+@$indexes = ("title");
+@$operators = ();
+$got = C4::Search::Query->buildQuery($indexes, $operands, $operators);
+$expected = "($titleindex:maudits AND $titleindex:crépuscule)";
+is($got, $expected, "Test BuildIndexString");
+
+@$operands = ("les maudits", "a", "andre besson"); # With 'More options'
+@$indexes = ("title", "all_fields", "author");
+@$operators = ("AND", "NOT");
+$got = C4::Search::Query->buildQuery($indexes, $operands, $operators);
+$expected = "($titleindex:les AND $titleindex:maudits) AND a NOT ($authorindex:andre AND $authorindex:besson)";
+is($got, $expected, "Test BuildIndexString");
