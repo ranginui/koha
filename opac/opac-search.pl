@@ -153,7 +153,6 @@ $template->param(
 # load the Type stuff
 my $itemtypes = GetItemTypes;
 
-# the index parameter is different for item-level itemtypes
 my $itype_or_itemtype = C4::Context->preference("item-level_itypes") ? 'itype' : 'itemtype';
 my @itemtypesloop;
 my $selected = 1;

@@ -228,11 +228,8 @@ $template->param( branchloop => \@branch_loop, searchdomainloop => $categories )
 $template->param( holdingbranch_index => C4::Search::Query::getIndexName('holdingbranch') );
 
 # load the Type stuff
-# load the Type stuff
 my $itemtypes = GetItemTypes;
 
-# the index parameter is different for item-level itemtypes
-my $itype_or_itemtype = ( C4::Context->preference("item-level_itypes") ) ? 'itype' : 'itemtype';
 my @itemtypesloop;
 my $selected = 1;
 my $cnt;
