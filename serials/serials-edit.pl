@@ -19,7 +19,7 @@
 
 =head1 NAME
 
-serials-recieve.pl
+serials-edit.pl
 
 =head1 Parameters
 

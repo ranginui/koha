@@ -2430,6 +2430,10 @@ sub PrepareItemrecordDisplay {
                         while ( my ( $itemtype, $description ) = $sth->fetchrow_array ) {
                             push @authorised_values, $itemtype;
                             $authorised_lib{$itemtype} = $description;
+			    
+			    # If we have default value named itemtype or itemtypes, we use it
+			    $defaultvalue = $itemtype if ($defaultvalues->{'itemtypes'} eq $itemtype or $defaultvalues->{'itemtype'} eq $itemtype);
+
                         }
 
                         #---- "true" authorised value
@@ -2440,6 +2444,10 @@ sub PrepareItemrecordDisplay {
                         while ( my ( $value, $lib ) = $authorised_values_sth->fetchrow_array ) {
                             push @authorised_values, $value;
                             $authorised_lib{$value} = $lib;
+
+			    # If we have a default value that has the same name as the authorised value category of the field,
+			    # we use it
+			    $defaultvalue = $value if $defaultvalues->{$tagslib->{$tag}->{$subfield}->{authorised_value}} eq $value;
                         }
                     }
                     $subfield_data{marc_value} = CGI::scrolling_list(

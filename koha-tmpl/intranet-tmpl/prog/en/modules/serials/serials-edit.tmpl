@@ -50,6 +50,9 @@ function unHideItems(index,labelindex, serialId) {
 	subfieldid = "subfield" + itemid.substr(4) + "h";
 	// Setting text field 
 	$("#" + subfieldid + " input[type='text']").val($("#serialseq" + serialId).val());
+	// Also prefilling 995$l
+	subfieldid = "subfield" + itemid.substr(4) + "l";
+	$("#" + subfieldid + " input[type='text']").val($("#serialseq" + serialId).val());
 
 }
 function HideItems(index,labelindex) {

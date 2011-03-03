@@ -1756,7 +1756,7 @@ CREATE TABLE `subscription` (
   `graceperiod` int(11) NOT NULL default '0',
   `enddate` date default NULL,
   `itemtype` VARCHAR( 10 ) NULL,
-  `support` VARCHAR( 80 ) NULL,
+  `ccode` VARCHAR( 10 ) NULL,
   `origin` VARCHAR( 80 ) NULL,
   `domain` VARCHAR( 80 ) NULL,
   PRIMARY KEY  (`subscriptionid`)

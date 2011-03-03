@@ -140,17 +140,13 @@ my $domainloop = GetKohaAuthorisedValuesFromField('995', 't', '');
 my @typearg = 
     map { { code => $_, value => $typeloop->{$_}{'description'}, selected => ( ( $_ eq $subs->{itemtype} ) ? "selected=\"selected\"" : "" ), } } sort keys %{$typeloop};
 my @supportarg = 
-    map { { code => $_, value => $supportloop->{$_}, selected => ( ( $_ eq $subs->{support} ) ? "selected=\"selected\"" : "" ), } } sort keys %{$supportloop};
+    map { { code => $_, value => $supportloop->{$_}, selected => ( ( $_ eq $subs->{ccode} ) ? "selected=\"selected\"" : "" ), } } sort keys %{$supportloop};
 my @originarg =
     map { { code => $_, value => $originloop->{$_}, selected => ( ( $_ eq $subs->{origin} ) ? "selected=\"selected\"" : "" ), } } sort keys %{$originloop};
 my @domainarg = 
     map { { code => $_, value => $domainloop->{$_}, selected => ( ( $_ eq $subs->{domain} ) ? "selected=\"selected\"" : "" ), } } sort keys %{$domainloop};
 
 
-warn Data::Dumper::Dumper($typeloop);
-warn Data::Dumper::Dumper($domainloop);
-
-warn $typeloop->{'PR'}{'description'};
 foreach (sort keys %{$typeloop}) {
 warn $_;
 }
