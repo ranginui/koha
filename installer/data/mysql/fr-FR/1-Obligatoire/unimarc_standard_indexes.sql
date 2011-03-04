@@ -1,8 +1,9 @@
 SET NAMES "UTF8";
 
----
---- Dumping data for table `indexes`
----
+--
+-- Dumping data for table `indexes`
+--
+
 LOCK TABLES `indexes` WRITE;
 DELETE FROM `indexes`;
 INSERT INTO `indexes` (`code`,`label`,`type`,`faceted`,`ressource_type`,`mandatory`,`sortable`,`plugin`,`ccl_index_name`, `rpn_index`, `avlist`) VALUES 
