@@ -41,6 +41,7 @@ BEGIN {
       SetMarcUnicodeFlag
       StripNonXmlChars
       nsb_clean
+      nsb_rm_content
     );
 }
 
@@ -1186,6 +1187,8 @@ sub nsb_clean {
     my $NSE = '\x89' ;        # NSE : Non Sorting Block end
     my $NSB2 = '\x98' ;        # NSB : begin Non Sorting Block
     my $NSE2 = '\x9C' ;        # NSE : Non Sorting Block end
+    my $C2   = '\xC2' ;        # What is this char ? It is sometimes left by the regexp after removing NSB / NSE
+
     # handles non sorting blocks
     my ($string) = @_ ;
     $_ = $string ;
@@ -1193,9 +1196,41 @@ sub nsb_clean {
     s/$NSE//g ;
     s/$NSB2//g ;
     s/$NSE2//g ;
+    s/$C2//g ;
     $string = $_ ;
 
     return($string) ;
+}
+
+=head2 nsb_rm_content
+
+=over 4
+
+nsb_rm_content($string);
+
+=back
+
+Removes Non Sorting Block characters and its content
+
+=cut
+
+sub nsb_rm_content {
+    my $NSB = '\x88' ;        # NSB : begin Non Sorting Block
+    my $NSE = '\x89' ;        # NSE : Non Sorting Block end
+    my $NSB2 = '\x98' ;        # NSB : begin Non Sorting Block
+    my $NSE2 = '\x9C' ;        # NSE : Non Sorting Block end
+    my $C2   = '\xC2' ;        # What is this char ? It is sometimes left by the regexp after removing NSB / NSE
+
+    # handles non sorting blocks
+    my ($string) = @_ ;
+    $_ = $string ;
+    s/$NSB[^$NSE]*$NSE//g ;
+    s/$NSB2[^$NSE2]*$NSE2//g ;
+    s/$C2//g ;
+    $string = $_ ;
+
+    return($string) ;
+
 }
 
 

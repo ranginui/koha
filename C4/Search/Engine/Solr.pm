@@ -196,6 +196,25 @@ sub LoadSearchPlugin {
     }
 }
 
+=head2 LoadSearchPluginSrt
+Return the ComputeSrtValue fonction associated with the plugin
+=cut
+sub LoadSearchPluginSrt {
+    my $plugin = shift;
+    my $list_of_plugins = shift;
+    @$list_of_plugins = GetSearchPlugins() if not $list_of_plugins;
+    my $r = 0;
+    if ( grep( /^$plugin$/, @$list_of_plugins) ) {
+        eval "require $plugin";
+
+        return do {
+            no strict 'refs';
+            my $symbol = $plugin. "::ComputeSrtValue";
+            \&{"$symbol"};
+        };
+    }
+}
+
 =head2 GetConcatMappingsValue
 Return value returned by ConcatMappings function if it exists.
 If it does not exist, return 0
@@ -384,14 +403,24 @@ sub IndexRecord {
         for my $index ( @$indexes ) {
 
             my @values;
+            my @srt_values;
             my $mapping = GetSubfieldsForIndex( $index->{'code'} );
             my $concatmappings = 1;
 
             if ( $index->{'plugin'} ) {
-                my $plugin = $index->{'plugin'};
-                $concatmappings = &GetConcatMappingsValue( $plugin, \@list_of_plugins );
-                $plugin = LoadSearchPlugin( $plugin, \@list_of_plugins ) if $plugin;
+                $concatmappings = &GetConcatMappingsValue( $index->{'plugin'}, \@list_of_plugins );
+                my $plugin = LoadSearchPlugin( $index->{'plugin'}, \@list_of_plugins ) if $index->{'plugin'};
                 @values = &$plugin( $record, $mapping );
+
+                $plugin = LoadSearchPluginSrt( $index->{'plugin'}, \@list_of_plugins ) if $index->{'plugin'};
+                eval {
+                    @srt_values = &$plugin( $record, $mapping );
+                };
+
+                if ($@) {
+                    @srt_values = @values;
+                }
+
             }
 
             if ( $concatmappings ) {
@@ -420,7 +449,7 @@ sub IndexRecord {
             @values = uniq (@values); #Removes duplicates
 
             $solrrecord->set_value(       $index->{'type'}."_".$index->{'code'},    \@values);
-            $solrrecord->set_value("srt_".$index->{'type'}."_".$index->{'code'}, $values[0]) if $index->{'sortable'} and @values > 0;
+            $solrrecord->set_value("srt_".$index->{'type'}."_".$index->{'code'}, $srt_values[0]) if $index->{'sortable'} and @srt_values > 0;
 
             # Add index str for facets if it's not exist
             if ( $index->{'faceted'} and @values > 0 and $index->{'type'} ne 'str' ) {
