@@ -230,6 +230,11 @@ $template->param( holdingbranch_index => C4::Search::Query::getIndexName('holdin
 # load the Type stuff
 my $itemtypes = GetItemTypes;
 
+#Give ability to search in authorised values
+my $indexandavlist = C4::Search::Engine::Solr::GetIndexesWithAvlist;
+
+# the index parameter is different for item-level itemtypes
+my $itype_or_itemtype = ( C4::Context->preference("item-level_itypes") ) ? 'itype' : 'itemtype';
 my @itemtypesloop;
 my $selected = 1;
 my $cnt;
@@ -298,6 +303,7 @@ if ( $template_type eq 'advsearch' ) {
     my @search_boxes_array;
     my $search_boxes_count = C4::Context->preference("OPACAdvSearchInputCount") || 3;    # FIXME: using OPAC sysprefs?
                                                                                          # FIXME: all this junk can be done in TMPL using __first__ and __last__
+
     for ( my $i = 1 ; $i <= $search_boxes_count ; $i++ ) {
 
         # if it's the first one, don't display boolean option, but show scan indexes
@@ -314,11 +320,11 @@ if ( $template_type eq 'advsearch' ) {
         } else {
             push @search_boxes_array, { boolean => 1, };
         }
-
     }
     $template->param(
         uc( C4::Context->preference("marcflavour") ) => 1,
-        search_boxes_loop                            => \@search_boxes_array
+        search_boxes_loop                            => \@search_boxes_array,
+        indexandavlist                               => $indexandavlist
     );
 
     # load the language limits (for search)
@@ -413,7 +419,31 @@ $template->param('filters' => \@tplfilters );
 my @indexes = $cgi->param('idx');
 my @operators = $cgi->param('op');
 my @operands = $cgi->param('q');
+my @avlists = $cgi->param('avlist');
+
 my $q = C4::Search::Query->buildQuery(\@indexes, \@operands, \@operators);
+
+#build search in authorised value list
+if ($params->{'avlist'}) {
+   foreach my $i (@indexes) {
+     my $val = _getAvlist ($i, $indexandavlist);
+     warn ">val:$val";
+     if ($val ne '') {
+       my $indexname = C4::Search::Query::getIndexName($i);
+       my $value = shift (@avlists);
+       $q .= " $indexname:$value ";
+     }
+   }
+
+   sub _getAvlist {
+     my ($index, $indexandavlist) = @_;
+     foreach my $k (@$indexandavlist){
+       if ($k->{'code'} eq $index){
+         return $k->{'avlist'};
+       }
+     }
+   }
+}
 
 # append year limits if they exist
 if ( $params->{'limit-yr'} ) {

@@ -152,6 +152,9 @@ $template->param(
 # load the Type stuff
 my $itemtypes = GetItemTypes;
 
+#Give ability to search in authorised values
+my $indexandavlist = C4::Search::Engine::Solr::GetIndexesWithAvlist;
+
 my $itype_or_itemtype = C4::Context->preference("item-level_itypes") ? 'itype' : 'itemtype';
 my @itemtypesloop;
 my $selected = 1;
@@ -212,6 +215,7 @@ if ( $template_type && $template_type eq 'advsearch' ) {
         uc( C4::Context->preference("marcflavour") ) => 1,                     # we already did this for UNIMARC
         advsearch                                    => 1,
         search_boxes_loop                            => \@search_boxes_array,
+        indexandavlist                               => $indexandavlist
     );
 
     # use the global setting by default
@@ -282,7 +286,31 @@ $template->param('filters' => \@tplfilters );
 my @indexes = $cgi->param('idx');
 my @operators = $cgi->param('op');
 my @operands = $cgi->param('q');
+my @avlists = $cgi->param('avlist');
+
 my $q = C4::Search::Query->buildQuery(\@indexes, \@operands, \@operators);
+
+#build search in authorised value list
+if ($params->{'avlist'}) {
+   foreach my $i (@indexes) {
+     my $val = _getAvlist ($i, $indexandavlist);
+     warn ">val:$val";
+     if ($val ne '') {
+       my $indexname = C4::Search::Query::getIndexName($i);
+       my $value = shift (@avlists);
+       $q .= " $indexname:$value ";
+     }
+   }
+
+   sub _getAvlist {
+     my ($index, $indexandavlist) = @_;
+     foreach my $k (@$indexandavlist){
+       if ($k->{'code'} eq $index){
+         return $k->{'avlist'};
+       }
+     }
+   }
+}
 
 # append year limits if they exist
 if ( $params->{'limit-yr'} ) {

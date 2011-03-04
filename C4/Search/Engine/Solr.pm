@@ -68,6 +68,13 @@ sub GetIndexes {
     return $sth->fetchall_arrayref({});
 }
 
+sub GetIndexesWithAvlist {
+    my $dbh = C4::Context->dbh;
+    my $sth = $dbh->prepare("SELECT code, avlist FROM indexes WHERE avlist<>''");
+    $sth->execute();
+    return $sth->fetchall_arrayref({});
+}
+
 sub GetSortableIndexes {
     my $dbh = C4::Context->dbh;
     my $sth = $dbh->prepare("SELECT * FROM indexes WHERE sortable = 1 AND ressource_type = ? ORDER BY code");
@@ -144,6 +151,14 @@ sub GetIndexLabelFromCode {
     $sth->execute(shift);
     my $result = $sth->fetchrow_hashref;
     return $result->{'label'};
+}
+
+sub GetAvlistFromCode {
+    my $dbh = C4::Context->dbh;
+    my $sth = $dbh->prepare("SELECT avlist FROM indexes WHERE code = ?");
+    $sth->execute(shift);
+    my $result = $sth->fetchrow_hashref;
+    return $result->{'avlist'};
 }
 
 sub GetSubfieldsForIndex {

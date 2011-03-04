@@ -13,10 +13,28 @@
 		dad.appendChild(line.cloneNode(true));
 		line.removeChild(ButtonPlus);
 	}
+
 	$(document).ready(function() {
 		$("input[name=q]:eq(0)").focus();
+    advSearchPrepare();
 	});
+
+  function advSearchPrepare () {
+
+//    $(".advsearch").each( function (this) {getAuthorisedValuesList(this)});
+//    $(".advsearch").load( function () {getAuthorisedValuesList($(this))});
+    $(".advsearch").each( function () {getAuthorisedValuesList($(this))});
+    <!-- TMPL_LOOP NAME="indexandavlist" -->
+    $(".advsearch").find("option").each(function () {
+       if ($(this).val() == '<!-- TMPL_VAR NAME="code" -->' ) {
+         $(this).attr("avlist", '<!-- TMPL_VAR NAME="avlist" -->');
+       }
+    });
+    <!-- /TMPL_LOOP -->
+    $(".advsearch").change( function () {getAuthorisedValuesList($(this))});
+  }
 </script>
+<script type="text/javascript" src="<!-- TMPL_VAR NAME='themelang' -->/js/catalogue.js"></script>
 </head>
 <body>
 
@@ -53,6 +71,7 @@
 <!-- /REMOTE DATABASES -->
 <!-- /TMPL_IF -->
 
+
 <!-- BOOLEAN SEARCH OPTIONS -->
     <fieldset>
     <legend>Search For: </legend>
@@ -68,6 +87,7 @@
             <!-- /TMPL_IF --> 
 			<!-- /TMPL_IF -->
 			 <!-- TMPL_IF NAME="AdvancedSearchContent" --><!--TMPL_VAR Name="AdvancedSearchContent"--><!-- TMPL_ELSE --><!-- TMPL_INCLUDE NAME="search_indexes.inc" --><!-- /TMPL_IF -->
+      <div class="avlist" style="display:inline" value="-"></div>
 			<input type="text" size="30" name="q" title="Enter search terms" value="" />
             <!-- TMPL_IF NAME="expanded_options" -->
                 <!-- TMPL_IF NAME="add_field" -->
