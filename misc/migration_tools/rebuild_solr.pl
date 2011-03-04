@@ -11,6 +11,12 @@ use XML::Simple;
 
 $|=1; # flushes output
 
+if ( C4::Context->preference("SearchEngine") ne 'Solr' ) {
+    warn "System preference 'SearchEngine' not equal 'Solr'.";
+    warn "We can not indexing";
+    exit(1);
+}
+
 #Setup
 
 my ( $reset, $number, $recordtype, $biblionumber, $want_help );
