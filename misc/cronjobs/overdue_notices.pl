@@ -52,7 +52,7 @@ overdue_notices.pl - prepare messages to be sent to patrons for overdue items
 
 =head1 SYNOPSIS
 
-overdue_notices.pl [ -n ] [ -library <branchcode> ] [ -library <branchcode>...] [ -max <number of days> ] [ -csv [ <filename> ] ] [ -itemscontent <field list> ]
+overdue_notices.pl [ -n ] [ -library <branchcode> ] [ -library <branchcode>...] [ -max <number of days> ] [ -csv [ <filename> ] ] [ -itemscontent <field list> ] [ -email <email_type>...]
 
  Options:
    -help                          brief help message
@@ -66,6 +66,7 @@ overdue_notices.pl [ -n ] [ -library <branchcode> ] [ -library <branchcode>...] 
    -itemscontent <list of fields> item information in templates
    -borcat       <categorycode>   category code that must be included
    -borcatout    <categorycode>   category code that must be excluded
+   -email        <email_type>     type of email that will be used. Can be 'email', 'emailpro' or 'B_email'. Repeatable.
 
 =head1 OPTIONS
 
@@ -142,6 +143,10 @@ being generated if the cron fails to run on time.
 Default items.content lists only those items that fall in the 
 range of the currently processing notice.
 Choose list-all to include all overdue items in the list (limited by B<-max> setting).
+
+=item B<-email>
+
+Allows to specify which type of email will be used. Can be email, emailpro or B_email. Repeatable.
 
 =back
 
@@ -253,6 +258,8 @@ my $nomail  = 0;
 my $MAX     = 90;
 my @branchcodes;    # Branch(es) passed as parameter
 my @branchcodesout;   
+my @emails_to_use; # Emails to use for messaging
+my @emails;        # Emails given in command-line parameters
 my $csvfilename;
 my $htmlfilename;
 my $triggered    = 0;
@@ -276,6 +283,7 @@ GetOptions(
     't|triggered'    => \$triggered,
     'borcat=s'       => \@myborcat,
     'borcatout=s'    => \@myborcatout,
+    'email=s'        => \@emails,
 ) or pod2usage(2);
 pod2usage(1) if $help;
 pod2usage( -verbose => 2 ) if $man;
@@ -482,7 +490,17 @@ END_SQL
                     next PERIOD;
                 }
 
-                $email=C4::Members::GetFirstValidEmailAddress($borrowernumber);
+		@emails_to_use = ();
+		if (@emails && !$nomail) {
+		    my $validemails = C4::Members::GetValidEmailAddresses($borrowernumber);
+		    foreach (@emails) {
+			push @emails_to_use, $validemails->{$_} if (defined $validemails->{$_});
+		    }
+		    $email = 1 if (@emails_to_use);
+		} else {
+		    $email=C4::Members::GetFirstValidEmailAddress($borrowernumber);
+		    push @emails_to_use, $email;
+		}
                 $verbose and warn "borrower $firstname, $lastname ($borrowernumber) has $itemcount items triggering level $i.";
 
                 my $letter = C4::Letters::getletter( 'circulation', $overdue_rules->{"letter$i"} );
@@ -571,17 +589,16 @@ END_SQL
                         }
                       );
                 } else {
-                    if ($email) {
+                    if (scalar(@emails_to_use) > 0 ) {
                         C4::Letters::EnqueueLetter(
                             {   letter                 => $letter,
                                 borrowernumber         => $borrowernumber,
                                 message_transport_type => 'email',
                                 from_address           => $admin_email_address,
-                                to_address             => $email,
+                                to_address             => join(',', @emails_to_use),
                             }
                         );
                     } else {
-
                         # If we don't have an email address for this patron, send it to the admin to deal with.
                         push @output_chunks,
                           prepare_letter_for_printing(

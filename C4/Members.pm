@@ -59,6 +59,7 @@ BEGIN {
       &getzipnamecity
       &getidcity
       &GetFirstValidEmailAddress
+      &GetValidEmailAddresses
 
       &GetAge
       &GetCities
@@ -1343,6 +1344,35 @@ sub GetFirstValidEmailAddress {
        return '';
     }
 }
+
+=head2 GetValidEmailAddresses
+
+  $email = GetValidEmailAddresses($borrowernumber);
+
+Return all the valid email address for a borrower, given the borrowernumber. Returns an hash.
+
+=cut
+
+sub GetValidEmailAddresses {
+    my $borrowernumber = shift;
+    my $dbh = C4::Context->dbh;
+    my $sth = $dbh->prepare( "SELECT email, emailpro, B_email FROM borrowers where borrowernumber = ? ");
+    $sth->execute( $borrowernumber );
+    my $data = $sth->fetchrow_hashref;
+    my %mailhash;
+
+    if ($data->{'email'}) {
+       $mailhash{'email'} = $data->{'email'};
+    } 
+    if ($data->{'emailpro'}) {
+       $mailhash{'emailpro'} = $data->{'emailpro'};
+    } 
+    if ($data->{'B_email'}) {
+       $mailhash{'B_email'} = $data->{'B_email'};
+    } 
+    return \%mailhash;
+}
+
 
 =head2 GetExpiryDate 
 
