@@ -141,7 +141,7 @@ if($input->param('field') and not defined $op){
                      query => $input,
                      type => "intranet",
                      authnotrequired => 0,
-                     flagsrequired => "batchedit",
+                     flagsrequired => { tools =>"batchedit" },
                      });
 
     $template->param( inputform => 1, ) unless @biblionumbers;
