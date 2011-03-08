@@ -67,15 +67,22 @@ if ( !$output_directory || !-d $output_directory ) {
 my $today    = C4::Dates->new();
 my @messages = @{ GetPrintMessages() };
 exit unless (@messages);
+foreach my $message (@messages) {
+    $message->{'content'} =~ s#\n#<br/>#g;
+#    print STDOUT $message->{'content'};
+}
 
-open OUTPUT, '>', File::Spec->catdir( $output_directory, "holdnotices-" . $today->output('iso') . ".html" );
+my $file=File::Spec->catdir( $output_directory, "holdnotices-" . $today->output('iso') . ".html");
+open OUTPUT, '>', $file or die "Can't open file $file : $!";
 
 my $template = C4::Output::gettemplate( 'batch/print-notices.tmpl', 'intranet', new CGI );
 my $stylesheet_contents = '';
 
-open STYLESHEET, '<', $stylesheet;
-while (<STYLESHEET>) { $stylesheet_contents .= $_ }
-close STYLESHEET;
+if ($stylesheet) {
+    open STYLESHEET, '<', $stylesheet;
+    while (<STYLESHEET>) { $stylesheet_contents .= $_ }
+    close STYLESHEET;
+}
 
 $template->param(
     stylesheet => $stylesheet_contents,

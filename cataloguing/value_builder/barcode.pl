@@ -102,7 +102,7 @@ sub plugin_javascript {
         $nextnum++;
     } elsif ( $autoBarcodeType eq 'hbyymmincr' ) { # Generates a barcode where hb = home branch Code, yymm = year/month catalogued, incr = incremental number, reset yearly -fbcit
         $year = substr( $year, -2 );
-        $query = "SELECT MAX(CAST(SUBSTRING(barcode,-4,4) AS signed)) FROM items WHERE barcode REGEXP ?";
+        $query = "SELECT MAX(CAST(SUBSTRING(barcode,-4) AS signed)) FROM items WHERE barcode REGEXP ?";
         my $sth = $dbh->prepare($query);
         $sth->execute("^[a-zA-Z]{1,}$year");
         while ( my ($count) = $sth->fetchrow_array ) {
