@@ -324,9 +324,9 @@
 	            <label for="contactname">Organization name: </label>
 	            <!-- TMPL_IF NAME="guarantorid" -->
 	            <span><!-- TMPL_VAR NAME="contactname" --></span>
-	            <input name="contactname" id="contactname" type="hidden" size="20" value="<!-- TMPL_VAR NAME="contactname" -->" />
+	            <input name="contactname" id="contactname" type="hidden" size="20" value="<!-- TMPL_VAR NAME="contactname" -->" class="debarred" />
 	            <!-- TMPL_ELSE -->
-	            <input name="contactname" id="contactname" type="text" size="20" value="<!-- TMPL_VAR NAME="contactname" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> />
+	            <input name="contactname" id="contactname" type="text" size="20" value="<!-- TMPL_VAR NAME="contactname" -->"<!--TMPL_IF NAME="opduplicate"--> onclick="this.value=''"<!-- /TMPL_IF --> class="debarred" />
 	            <!-- /TMPL_IF -->
 	        </li>
 <!-- TMPL_ELSE -->
