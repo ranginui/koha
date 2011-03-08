@@ -30,6 +30,7 @@ use C4::Koha;      # XXX subfield_is_koha_internal_p
 use C4::Branch;    # XXX subfield_is_koha_internal_p
 use C4::ClassSource;
 use C4::Dates;
+use C4::Members;
 use List::MoreUtils qw/any/;
 use Storable qw(thaw freeze);
 use URI::Escape;
@@ -75,7 +76,7 @@ sub set_item_default_location {
 }
 
 sub generate_subfield_form {
-        my ($tag, $subfieldtag, $value, $tagslib,$subfieldlib, $branches, $today_iso, $biblionumber, $temp, $loop_data, $i) = @_;
+        my ($tag, $subfieldtag, $value, $tagslib,$subfieldlib, $branches, $today_iso, $biblionumber, $temp, $loop_data, $i, $limitededition) = @_;
         
         my %subfield_data;
         my $dbh = C4::Context->dbh;        
@@ -121,6 +122,7 @@ sub generate_subfield_form {
         }
         
         my $attributes_no_value = qq(tabindex="1" id="$subfield_data{id}" name="field_value" class="input_marceditor" size="67" maxlength="255" );
+	$attributes_no_value .= 'disabled="disabled" ' if ($limitededition and C4::Context->preference("marcflavour") eq "UNIMARC" and $subfieldtag ne 'f' and $subfieldtag ne 'u');
         my $attributes          = qq($attributes_no_value value="$value" );
         
         if ( $subfieldlib->{authorised_value} ) {
@@ -176,8 +178,7 @@ sub generate_subfield_form {
                       $authorised_lib{$value} = $lib;
                   }
             }
-
-            $subfield_data{marc_value} =CGI::scrolling_list(      # FIXME: factor out scrolling_list
+	    my @scrparam = (
                   -name     => "field_value",
                   -values   => \@authorised_values,
                   -default  => $value,
@@ -188,7 +189,11 @@ sub generate_subfield_form {
                   -tabindex => 1,
                   -id       => "tag_".$tag."_subfield_".$subfieldtag."_".$index_subfield,
                   -class    => "input_marceditor",
-            );
+);
+	    push @scrparam, (-disabled => "disabled") if ($limitededition and C4::Context->preference("marcflavour") eq "UNIMARC"  and $subfieldtag ne 'o');
+            $subfield_data{marc_value} =CGI::scrolling_list(@scrparam);
+
+
 
             # it's a thesaurus / authority field
         }
@@ -280,6 +285,10 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
         debug           => 1,
     }
 );
+
+# Does the user have a limited item edition permission?
+my $uid = GetMember( borrowernumber => $loggedinuser )->{userid} if ($loggedinuser) ;
+my $limitededition = haspermission($uid,  {'editcatalogue' => 'limited_item_edition'}) if ($uid);
 
 my $today_iso = C4::Dates->today('iso');
 $template->param( today_iso => $today_iso );
@@ -652,7 +661,7 @@ foreach my $tag ( keys %{$tagslib}){
         my @values = (undef);
         @values = $itemrecord->field($tag)->subfield($subtag) if ($itemrecord && defined($itemrecord->field($tag)->subfield($subtag)));
         for my $value (@values){
-            my $subfield_data = generate_subfield_form($tag, $subtag, $value, $tagslib, $tagslib->{$tag}->{$subtag}, $branches, $today_iso, $biblionumber, $temp, \@loop_data, $i); 
+            my $subfield_data = generate_subfield_form($tag, $subtag, $value, $tagslib, $tagslib->{$tag}->{$subtag}, $branches, $today_iso, $biblionumber, $temp, \@loop_data, $i, $limitededition); 
             push (@loop_data, $subfield_data);
             $i++;
         }

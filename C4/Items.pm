@@ -1521,7 +1521,7 @@ sub GetItemnumberFromBarcode {
     my ($barcode) = @_;
     my $dbh = C4::Context->dbh;
 
-    my $rq = $dbh->prepare("SELECT itemnumber FROM items WHERE items.barcode=?");
+    my $rq = $dbh->prepare("SELECT itemnumber FROM items WHERE TRIM(items.barcode)=?");
     $rq->execute($barcode);
     my ($result) = $rq->fetchrow;
     return ($result);
