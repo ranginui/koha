@@ -32,6 +32,7 @@ use C4::BackgroundJob;
 use C4::ClassSource;
 use C4::Dates;
 use C4::Debug;
+use C4::Members;
 use YAML;
 use Switch;
 use MARC::File::XML;
@@ -64,6 +65,11 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
         flagsrequired   => $template_flag,
     }
 );
+
+# Does the user have a limited item edition permission?
+my $uid = GetMember( borrowernumber => $loggedinuser )->{userid} if ($loggedinuser) ;
+my $limitededition = haspermission($uid,  {'tools' => 'items_limited_batchmod'}) if ($uid);
+use C4::Members;
 
 my $today_iso = C4::Dates->today('iso');
 $template->param( today_iso => $today_iso );
@@ -284,6 +290,7 @@ if ( $op eq "show" ) {
             next if subfield_is_koha_internal_p($subfield);
 
             #field disabled
+	    next if ($limitededition && C4::Context->preference("marcflavour") eq "UNIMARC" && $subfield ne 'o');
             next if ( !defined( $tagslib->{$tag}->{$subfield}->{'tab'} ) || $tagslib->{$tag}->{$subfield}->{'tab'} eq -1 );
             next if $tagslib->{$tag}->{$subfield}->{'kohafield'} eq 'items.barcode';
             next if $tagslib->{$tag}->{$subfield}->{'kohafield'} eq 'items.stocknumber';
