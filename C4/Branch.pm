@@ -181,6 +181,7 @@ sub GetBranchesLoop (;$$) {    # since this is what most pages want anyway
           { value      => $_,
             selected   => ( $_ eq $branch ) ? 1 : 0,
             branchname => $branches->{$_}->{branchname},
+            branchcode => $branches->{$_}->{branchcode},
           };
     }
     return \@loop;

@@ -218,7 +218,7 @@ for my $branch_hash ( sort { $branches->{$a}->{branchname} cmp $branches->{$b}->
 
     # if independantbranches is activated, set the default branch to the borrower branch
     my $selected = ( C4::Context->preference("independantbranches") and ( $borrowerbranchcode eq $branch_hash ) ) ? 1 : undef;
-    push @branch_loop, { value => "$branch_hash", branchname => $branches->{$branch_hash}->{'branchname'}, selected => $selected };
+    push @branch_loop, { value => "$branch_hash", branchcode =>  $branches->{$branch_hash}->{'branchcode'}, branchname => $branches->{$branch_hash}->{'branchname'}, selected => $selected };
 }
 
 my $categories = GetBranchCategories( undef, 'searchdomain' );

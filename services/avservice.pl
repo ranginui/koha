@@ -8,7 +8,6 @@ use C4::Service;
 my ( $query, $response ) = C4::Service->init( );
 my ($op) = C4::Service->require_params('op');
 
-warn ">>>";
 if ( $op eq 'get_av' ) {
     &LoadAVFromCode;
 } else {

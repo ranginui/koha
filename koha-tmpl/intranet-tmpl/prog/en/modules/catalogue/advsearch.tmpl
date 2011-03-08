@@ -111,7 +111,7 @@
         <tr>
         <!--TMPL_LOOP Name="itemtypeloop"-->
             <td>
-                <input type="checkbox" id="<!-- TMPL_VAR NAME="index" -->-<!--TMPL_VAR NAME="number" -->" name="filters" value='<!-- TMPL_VAR NAME="index" -->:"<!--TMPL_VAR NAME="description" -->"'/>
+                <input type="checkbox" id="<!-- TMPL_VAR NAME="index" -->-<!--TMPL_VAR NAME="number" -->" name="filters" value='<!-- TMPL_VAR NAME="index" -->:"<!--TMPL_VAR NAME="code" -->"'/>
                 <label for="<!-- TMPL_VAR NAME="index" -->-<!--TMPL_VAR NAME="number" -->">
                     <!-- TMPL_IF name="imageurl"-->
                     <img border="0" src="<!--TMPL_VAR Name="imageurl" -->" alt="<!--TMPL_VAR Name="description" -->" /><!-- /TMPL_IF -->&nbsp;
@@ -143,7 +143,7 @@
         <select name="filters">
             <option value="" selected="selected">No Limit</option>
                 <!-- TMPL_LOOP NAME="search_languages_loop" -->
-                    <option value='<!-- TMPL_VAR NAME="lang_index" -->:"<!-- TMPL_VAR NAME="lib" -->"' <!-- TMPL_IF NAME="selected" -->selected="selected"<!-- /TMPL_IF -->>
+                    <option value='<!-- TMPL_VAR NAME="lang_index" -->:"<!-- TMPL_VAR NAME="authorised_value" -->"' <!-- TMPL_IF NAME="selected" -->selected="selected"<!-- /TMPL_IF -->>
                         <!-- TMPL_VAR NAME="lib" -->
                     </option>
                 <!-- /TMPL_LOOP -->
@@ -291,7 +291,7 @@
         <select name="filters" id="branchloop" onchange='if(this.value != ""){document.getElementById("categoryloop").disabled=true;} else {document.getElementById("categoryloop").disabled=false;}'>
             <option value="">All Libraries</option>
             <!-- TMPL_LOOP NAME="branchloop" -->
-            <option value='<!-- TMPL_VAR NAME="holdingbranch_index" -->:"<!-- TMPL_VAR NAME="branchname" -->"' <!--TMPL_IF NAME="selected"-->selected="selected"<!--/TMPL_IF--> >
+            <option value='<!-- TMPL_VAR NAME="holdingbranch_index" -->:"<!-- TMPL_VAR NAME="branchcode" -->"' <!--TMPL_IF NAME="selected"-->selected="selected"<!--/TMPL_IF--> >
                 <!-- TMPL_VAR NAME="branchname" -->
             </option>
         <!-- /TMPL_LOOP -->
