@@ -31,8 +31,8 @@ use Data::Pagination;
 my $query        = new CGI;
 my $op           = $query->param('op');
 my $dbh          = C4::Context->dbh;
-my $authtypecode = $query->param('authtypecode');
-my $searchtype   = $query->param('searchtype');
+my $authtypecode = $query->param('authtypecode') || "[* TO *]";
+my $searchtype   = $query->param('searchtype') || 'all_headings';
 
 my ( $template, $loggedinuser, $cookie );
 
@@ -49,17 +49,14 @@ if ( $op eq "do_search" ) {
     my $page         = $query->param('page')    || 1;
     my $count        = 20;
 
-    my $filters = { recordtype => 'authority' };
-    $filters->{C4::Search::Query::getIndexName('auth-type')} = $authtypecode if $authtypecode;
+    my $filters = { 
+        recordtype => 'authority',
+        C4::Search::Query::getIndexName('auth-type') => $authtypecode
+    };
 
-    my $operands;
-    my $indexes = GetIndexesBySearchtype($searchtype, $authtypecode);
-
-    for (@$indexes) {
-        push @$operands, $value;
-    }
-    my $q = C4::Search::Query->buildQuery($indexes, $operands, ());
-
+    my $index = GetIndexBySearchtype( $searchtype );
+    my $q = "$index:$value";
+    $q = C4::Search::Query->normalSearch($q);
     my $results = SimpleSearch($q, $filters, $page, $count, $orderby);
     C4::Context->preference("DebugLevel") eq '2' && warn "AuthSolrSimpleSearch:q=$q:";
 
@@ -101,7 +98,7 @@ if ( $op eq "do_search" ) {
            authid  => $_->{values}->{recordid},
            authid_index_name => $authid_index_name,
            summary => BuildSummary( $authrecord, $_->{values}->{recordid} ),
-           used    => CountUsage( $_->{values}->{recordid} ),
+           used    => $_->{values}->{C4::Search::Query::getIndexName('usedinxbiblios')},
         };
 
         push @resultrecords, $authority;
@@ -109,22 +106,13 @@ if ( $op eq "do_search" ) {
 
     $template->param( result => \@resultrecords );
 
-} elsif ( $op eq "delete" ) {
-
-    my $authid = $query->param('authid');
-    DelAuthority( $authid, 1 );
-
-    ( $template, $loggedinuser, $cookie ) = get_template_and_user( {
-        template_name   => "authorities/authorities-home.tmpl",
-        query           => $query,
-        type            => 'intranet',
-        authnotrequired => 0,
-        flagsrequired   => { catalogue => 1 },
-        debug           => 1,
-    } );
-
 } else {
 
+    if ( $op eq "delete" ) {
+        my $authid = $query->param('authid');
+        DelAuthority( $authid, 1 );
+    }
+
     ( $template, $loggedinuser, $cookie ) = get_template_and_user( {
         template_name   => "authorities/authorities-home.tmpl",
         query           => $query,
@@ -133,11 +121,12 @@ if ( $op eq "do_search" ) {
         flagsrequired   => { catalogue => 1 },
         debug           => 1,
     } );
+
 }
 
-$template->param( 
+$template->param(
     authtypesloop    => \@authtypesloop,
-    name_index_name  => C4::Search::Query::getIndexName('auth_name'),
+    name_index_name  => C4::Search::Query::getIndexName('auth-summary'),
     usage_index_name => C4::Search::Query::getIndexName('usedinxbiblios')
 );
 

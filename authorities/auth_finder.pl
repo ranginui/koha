@@ -32,7 +32,7 @@ use C4::Search::Query;
 use Data::Pagination;
 
 my $query        = new CGI;
-my $authtypecode = $query->param('authtypecode') || '';
+my $authtypecode = $query->param('authtypecode') || '[* TO *]';
 my $index        = $query->param('index');
 my $tagid        = $query->param('tagid');
 my $resultstring = $query->param('result');
@@ -63,44 +63,74 @@ if ( $query->param('op') eq 'do_search' ) {
 
     my @searchtypes = ('authority_search', 'main_heading', 'all_headings');
 
+    my $index;
     my $indexes;
     my $value;
     my $operands;
     my $operators;
+    my $authoritysep = C4::Context->preference('authoritysep');
+    # Construct arrays with 3 values
     for my $searchtype (@searchtypes) {
-        if ( $query->param($searchtype) ) {
-            push @$indexes, @{GetIndexesBySearchtype($searchtype, $authtypecode)};
-            my $value = $query->param($searchtype) || '[* TO *]';
-            for (@$indexes) {
-                push @$operands, $value;
+        $index = GetIndexBySearchtype($searchtype);
+        my $value = $query->param($searchtype);
+        # if there is a value
+        if ( $value ){
+            $value =~ s/$authoritysep//g; # Supression of the authority separator
+            my @values = split (' ', $value); # Get all words
+            push @$operands, "\"$_\"" for @values; # Each word is an operand
+            push @$indexes, $index for @values; # For each word, push index corresponding
+            push @$operators, 'AND' for @values; # idem for operator
+        # Else, if we have not operand and it's the 'all_headings' fields
+        } elsif ( not $operands and $searchtype eq 'all_headings' ) {
+            # We search all authorities
+            push @$operands, "[* TO *]";
+            push @$indexes, $index;
+            push @$operators, 'AND';
+        }
+        $template->param($searchtype => $query->param($searchtype));
+    }
+
+    my $authtype_indexname = C4::Search::Query::getIndexName('auth-type');
+    my $filters = {
+        recordtype => 'authority',
+        $authtype_indexname => $authtypecode
+    };
+
+    # Construct and Perform the query
+    my $q = C4::Search::Query->buildQuery( $indexes, $operands, $operators );
+    my $results = SimpleSearch( $q, $filters, $page, $count, $orderby );
+
+    # If no resuls, we search on summary index
+    # In fact, we search string returned by autocompletion
+    if ( not $results->pager->total_entries ){
+        my $indexes = ();
+        my $operands = ();
+        my $operators = ();
+     
+        my $summary_index = C4::Search::Query::getIndexName('auth-summary');
+        for my $searchtype (@searchtypes) {
+            $index = GetIndexBySearchtype($searchtype);
+            my $value = $query->param($searchtype);
+            if ( $value ){
+                $value =~ s/^\s*(.*)\s*$/$1/; # Delete spaces (begin and after string)
+                push @$operands, "\"$value\"";
+                push @$indexes, $summary_index;
                 push @$operators, 'AND';
             }
             $template->param($searchtype => $query->param($searchtype));
         }
+
+        $q = C4::Search::Query->buildQuery( $indexes, $operands, $operators );
+        $results = SimpleSearch( $q, $filters, $page, $count, $orderby );
+
     }
-
-    if ( not $indexes ) {
-        push @$indexes, @{GetIndexesBySearchtype('all_headings', $authtypecode)};
-        for (@$indexes) {
-            push @$operands, '[* TO *]';
-        }
-    }
-
-    my $filters = {
-        recordtype => 'authority',
-    };
-    my $authtype_index = C4::Search::Query::getIndexName('auth-type');
-    $filters->{$authtype_index} = $authtypecode if $authtypecode;
-
-    my $q = C4::Search::Query->buildQuery( $indexes, $operands, $operators );
-    my $results = SimpleSearch( $q, $filters, $page, $count, $orderby );
 
     my @resultdatas = map {
         my $record = GetAuthority( $_->{'values'}->{'recordid'} );
         {
             authid  => $_->{'values'}->{'recordid'},
-            summary => BuildSummary( $record, $_->{'values'}->{'recordid'}, $_->{'values'}->{$authtype_index} ),
-            used    => CountUsage( $_->{'values'}->{'recordid'} ),
+            summary => BuildSummary( $record, $_->{'values'}->{'recordid'}, $_->{'values'}->{$authtype_indexname} ),
+            used    => $_->{values}->{C4::Search::Query::getIndexName('usedinxbiblios')},
         }
     } @{ $results->{items} };
 
@@ -145,7 +175,7 @@ $template->param(
     index         => $index,
     authtypesloop => \@authtypesloop,
     authtypecode  => $authtypecode,
-    name_index_name => C4::Search::Query::getIndexName('auth-name'),
+    name_index_name => C4::Search::Query::getIndexName('auth-summary'),
     usedinxbiblios_index_name => C4::Search::Query::getIndexName('usedinxbiblios'),
 );
 

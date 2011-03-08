@@ -46,51 +46,46 @@ if ( $auth_status ne "ok" ) {
     exit 0;
 }
 
-my $authtypecode = $query->param('authtypecode') || '';
-my $searchstr = $query->param('query');
-my $searchtype = $query->param('searchtype') || 'all_headings';
-my $orderby   = $query->param('orderby') || '';
-my $page        = $query->param('page') || 1;
-my $count       = 20;
+my $authtypecode = $query->param('authtypecode') || "[* TO *]";
+my $searchstr    = $query->param('query');
+my $searchtype   = $query->param('searchtype') || 'all_headings';
+my $orderby      = $query->param('orderby') || '';
+my $page         = $query->param('page') || 1;
+my $count        = 20;
 
+my $index = GetIndexBySearchtype($searchtype);
 my $indexes;
 my $operands;
 my $operators;
-
-push @$indexes, @{GetIndexesBySearchtype($searchtype, $authtypecode)};
-
-if ( not $indexes ) {
-    push @$indexes, @{GetIndexesBySearchtype('all_headings', $authtypecode)};
-    for (@$indexes) {
-        push @$operands, '[* TO *]';
-    }
+my @values;
+if ( defined $searchstr ) {
+    my $authoritysep = C4::Context->preference('authoritysep');
+    $searchstr =~ s/$authoritysep//g;
+    push @values, split(' ', $searchstr);
+    $values[-1] = $values[-1] . '*';
 } else {
-    my @values;
-    if ( defined $searchstr ) {
-        $searchstr =~ s/--//g;
-        push @values, split(' ', $searchstr);
-        $values[-1] = $values[-1] . '*';
-    } else {
-        push @values, '[* TO *]';
-    }
-
-    for (@$indexes) {
-        push @$operands, $_ for @values;
-        push @$operators, 'AND';
-    }
+    push @values, '[* TO *]';
 }
+push @$indexes, $index for @values;
+push @$operands, $_ for @values;
+push @$operators, 'AND' for @values;
 
+my $authtype_indexname = C4::Search::Query::getIndexName('auth-type');
 my $filters = {
     recordtype => 'authority',
+    $authtype_indexname => $authtypecode
 };
-my $authtype_index = C4::Search::Query::getIndexName('auth-type');
-$filters->{$authtype_index} = $authtypecode if $authtypecode;
-
 my $q = C4::Search::Query->buildQuery( $indexes, $operands, $operators );
 my $results = SimpleSearch( $q, $filters, $page, $count, $orderby );
 
+warn Data::Dumper::Dumper $results;
+
+my $summary_index_name = C4::Search::Query::getIndexName('auth-summary');
 map {
     my $record = GetAuthority( $_->{'values'}->{'recordid'} );
-    print BuildSummary( $record, $_->{'values'}->{'recordid'}, $_->{'values'}->{$authtype_index} ) . "\n";
+    my $summary = $_->{'values'}->{$summary_index_name};
+    $summary =~ s/\n/ /g;
+    $summary =~ s/<[^>]*>/ /g;
+    print $summary . "\n" if $summary ne ' ';
 } @{ $results->{items} };
 

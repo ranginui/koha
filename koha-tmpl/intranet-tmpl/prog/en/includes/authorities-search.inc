@@ -22,8 +22,10 @@
         <select name="orderby">
             <option value="">None</option>
             <option value="score desc" selected="selected">Relevance</option>
-            <option value="<!-- TMPL_VAR NAME='name_index_name' --> asc">Name</option>
-            <option value="<!-- TMPL_VAR NAME='usage_index_name' --> desc">Usage</option>
+            <option value="<!-- TMPL_VAR NAME='name_index_name' --> asc">Name asc</option>
+            <option value="<!-- TMPL_VAR NAME='name_index_name' --> desc">Name desc</option>
+            <option value="<!-- TMPL_VAR NAME='usage_index_name' --> asc">Usage asc</option>
+            <option value="<!-- TMPL_VAR NAME='usage_index_name' --> desc">Usage desc</option>
          </select>
          <input type="submit" class="submit" value="Submit" />
     </form>
@@ -76,10 +78,11 @@
 
         <input id="value_anywhere" type="text" name="value" value="<!-- TMPL_VAR NAME="value" -->" />
         <select name="orderby">
-            <option value="">None</option>
             <option value="score desc" selected="selected">Relevance</option>
-            <option value="<!-- TMPL_VAR NAME='name_index_name' --> asc">Name</option>
-            <option value="<!-- TMPL_VAR NAME='usage_index_name' --> desc">Usage</option>
+            <option value="<!-- TMPL_VAR NAME='name_index_name' --> asc">Name asc</option>
+            <option value="<!-- TMPL_VAR NAME='name_index_name' --> desc">Name desc</option>
+            <option value="<!-- TMPL_VAR NAME='usage_index_name' --> asc">Usage asc</option>
+            <option value="<!-- TMPL_VAR NAME='usage_index_name' --> desc">Usage desc</option>
          </select>
          <input type="submit" class="submit" value="Submit" />
     </form>
