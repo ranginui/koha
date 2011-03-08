@@ -152,7 +152,7 @@ unless ( C4::Context->preference('ILS-DI') ) {
 }
 
 # If the remote address is not allowed, redirect to 403
-my @AuthorizedIPs = split( /,/, C4::Context->preference('ILS-DI:AuthorizedIPs') );
+my @AuthorizedIPs = split( /,/, C4::Context->preference('ILS-DI:Authorized_IPs') );
 if (@AuthorizedIPs    # If no filter set, allow access to everybody
     and not any { $ENV{'REMOTE_ADDR'} eq $_ } @AuthorizedIPs    # IP Check
   ) {
