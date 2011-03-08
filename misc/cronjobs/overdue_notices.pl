@@ -42,6 +42,7 @@ use C4::Debug;
 use C4::Letters;
 use C4::Overdues qw(GetFine);
 use C4::Reports::Guided;    #_get_column_defs
+use C4::Charset;    #NormalizeString
 use open qw(:std :utf8);
 use YAML;
 
@@ -284,7 +285,8 @@ my $columns_def_hashref = C4::Reports::Guided::_get_column_defs();
 foreach my $key ( keys %$columns_def_hashref ) {
     my $initkey = $key;
     $key =~ s/[^\.]*\.//;
-    encode('utf-8',$columns_def_hashref->{$initkey});
+    $columns_def_hashref->{$initkey}=NormalizeString($columns_def_hashref->{$initkey});
+    $columns_def_hashref->{$initkey}=~s# #<br/>#;
     $columns_def_hashref->{$key} = $columns_def_hashref->{$initkey};
 }
 if ( defined $csvfilename && $csvfilename =~ /^-/ ) {
@@ -387,10 +389,11 @@ foreach my $branchcode (@branches) {
     $verbose and warn sprintf "branchcode : '%s' using %s\n", $branchcode, $admin_email_address;
 
     my $string_sth2 = <<'END_SQL';
-SELECT biblio.*, items.*, issues.*, TO_DAYS(NOW())-TO_DAYS(date_due) AS days_overdue
-  FROM issues,items,biblio
+SELECT biblio.*, items.*, issues.*, biblioitems.itemtype, TO_DAYS(NOW())-TO_DAYS(date_due) AS days_overdue
+  FROM issues,items,biblio, biblioitems
   WHERE items.itemnumber=issues.itemnumber
     AND biblio.biblionumber   = items.biblionumber
+    AND biblio.biblionumber   = biblioitems.biblionumber
     AND issues.borrowernumber = ?
     AND TO_DAYS(NOW())-TO_DAYS(date_due) BETWEEN ? and ?
 END_SQL
