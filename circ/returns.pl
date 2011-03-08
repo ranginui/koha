@@ -224,7 +224,7 @@ if ( $barcode and not $query->param('cancel') ) {
     # save the return
     #
     ( $returned, $messages, $issueinformation, $borrower ) = AddReturn( $barcode, $userenv_branch, $exemptfine, $dropboxmode, $override );    # do the return
-    my @ips = split /,|\|/, C4::Context->preference("CI-3M:AuthorizedIPs");
+    my @ips = split (/,|\|/, C4::Context->preference("CI-3M:AuthorizedIPs"));
 
     #my $pid=fork();
     #unless($pid && $remotehost=~qr(^$ips$)){
@@ -335,6 +335,7 @@ if ( $messages->{'WrongTransfer'} and not $messages->{'WasTransfered'} ) {
     $messages->{'WrongTransfer'} = GetBranchName( $messages->{'WrongTransfer'} );
     $template->param(
         WrongTransfer     => 1,
+        TransferWaitingAtBC => $messages->{'ResFound'}->{'branchcode'},
         TransferWaitingAt => $messages->{'WrongTransfer'},
         WrongTransferItem => $messages->{'WrongTransferItem'},
     );
