@@ -135,8 +135,9 @@ $template->param( search_languages_loop => getAllLanguagesAuthorizedValues() );
 $template->param( lang_index => C4::Search::Query::getIndexName('lang') );
 
 # load the sorting stuff
-my $sort_by = $cgi->param('sort_by') || join(' ', grep { defined } ( C4::Context->preference('OPACdefaultSortField')
-                                                                   , C4::Context->preference('OPACdefaultSortOrder') ) );
+my $sort_by = $cgi->param('sort_by') || join(' ', grep { defined } (
+        C4::Search::Query::getIndexName(C4::Context->preference('OPACdefaultSortField'))
+        , C4::Context->preference('OPACdefaultSortOrder') ) );
 my $sortloop = C4::Search::Engine::Solr::GetSortableIndexes('biblio');
 for ( @$sortloop ) { # because html template is stupid
     $_->{'asc_selected'}  = $sort_by eq $_->{'type'}.'_'.$_->{'code'}.' asc';
@@ -151,7 +152,9 @@ $template->param(
 # load the Type stuff
 my $itemtypes = GetItemTypes;
 
-# the index parameter is different for item-level itemtypes
+#Give ability to search in authorised values
+my $indexandavlist = C4::Search::Engine::Solr::GetIndexesWithAvlist;
+
 my $itype_or_itemtype = C4::Context->preference("item-level_itypes") ? 'itype' : 'itemtype';
 my @itemtypesloop;
 my $selected = 1;
@@ -162,7 +165,7 @@ if ( !$advanced_search_types or $advanced_search_types eq 'itemtypes' ) {
     foreach my $thisitemtype ( sort { $itemtypes->{$a}->{'description'} cmp $itemtypes->{$b}->{'description'} } keys %$itemtypes ) {
         my %row = (
             number      => $cnt++,
-            index       => $itype_or_itemtype,
+            index       => C4::Search::Query::getIndexName('itype'),
             code        => $thisitemtype,
             selected    => $selected,
             description => $itemtypes->{$thisitemtype}->{'description'},
@@ -212,6 +215,7 @@ if ( $template_type && $template_type eq 'advsearch' ) {
         uc( C4::Context->preference("marcflavour") ) => 1,                     # we already did this for UNIMARC
         advsearch                                    => 1,
         search_boxes_loop                            => \@search_boxes_array,
+        indexandavlist                               => $indexandavlist
     );
 
     # use the global setting by default
@@ -282,7 +286,31 @@ $template->param('filters' => \@tplfilters );
 my @indexes = $cgi->param('idx');
 my @operators = $cgi->param('op');
 my @operands = $cgi->param('q');
+my @avlists = $cgi->param('avlist');
+
 my $q = C4::Search::Query->buildQuery(\@indexes, \@operands, \@operators);
+
+#build search in authorised value list
+if ($params->{'avlist'}) {
+   foreach my $i (@indexes) {
+     my $val = _getAvlist ($i, $indexandavlist);
+     warn ">val:$val";
+     if ($val ne '') {
+       my $indexname = C4::Search::Query::getIndexName($i);
+       my $value = shift (@avlists);
+       $q .= " $indexname:$value ";
+     }
+   }
+
+   sub _getAvlist {
+     my ($index, $indexandavlist) = @_;
+     foreach my $k (@$indexandavlist){
+       if ($k->{'code'} eq $index){
+         return $k->{'avlist'};
+       }
+     }
+   }
+}
 
 # append year limits if they exist
 if ( $params->{'limit-yr'} ) {
@@ -438,6 +466,7 @@ $template->param(
     'SEARCH_RESULTS' => \@results,
     'facets_loop'    => \@facets,
     'query'          => $q,
+    'query_desc'     => $q,
     'searchdesc'     => $q || @tplfilters,
     'availability'   => $filters{'int_availability'},
     'count'          => $count,

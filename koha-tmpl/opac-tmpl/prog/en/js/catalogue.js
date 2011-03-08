@@ -1,0 +1,1 @@
+../../../../intranet-tmpl/prog/en/js/catalogue.js

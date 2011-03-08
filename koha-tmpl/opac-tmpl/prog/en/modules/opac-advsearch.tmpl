@@ -2,6 +2,27 @@
 <!-- TMPL_IF NAME="LibraryNameTitle" --><!-- TMPL_VAR NAME="LibraryNameTitle" --><!-- TMPL_ELSE -->Koha Online<!-- /TMPL_IF -->
     Catalog &rsaquo; Advanced Search
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
+<script type="text/JavaScript" language="JavaScript">
+	$(document).ready(function() {
+    advSearchPrepare();
+	});
+
+  function advSearchPrepare () {
+
+//    $(".advsearch").each( function (this) {getAuthorisedValuesList(this)});
+//    $(".advsearch").load( function () {getAuthorisedValuesList($(this))});
+    $(".advsearch").each( function () {getAuthorisedValuesList($(this))});
+    <!-- TMPL_LOOP NAME="indexandavlist" -->
+    $(".advsearch").find("option").each(function () {
+       if ($(this).val() == '<!-- TMPL_VAR NAME="code" -->' ) {
+         $(this).attr("avlist", '<!-- TMPL_VAR NAME="avlist" -->');
+       }
+    });
+    <!-- /TMPL_LOOP -->
+    $(".advsearch").change( function () {getAuthorisedValuesList($(this))});
+  }
+</script>
+<script type="text/javascript" src="<!-- TMPL_VAR NAME='themelang' -->/js/catalogue.js"></script>
 </head>
 <body id="advsearch"><div id="doc3" class="yui-t7">
 <div id="bd">
@@ -14,7 +35,7 @@
             <fieldset>
                 <legend>Search for:</legend>
                 <!-- TMPL_LOOP NAME="search_boxes_loop" -->
-                    <p>
+                    <div>
                         <!-- TMPL_IF NAME="expanded_options" -->
                             <!-- TMPL_UNLESS NAME="__first__" -->
                             <select class="advsearchoperator" name="op">
@@ -36,10 +57,11 @@
                             </select>
                         <!-- /TMPL_IF -->
                         <input type="text" size="30" name="q" title="Enter search terms" value="" />
+                        <div class="avlist" style="display:inline" value="-"></div>
                         <!-- TMPL_IF NAME="expanded_options" -->
                             <!-- TMPL_IF NAME="__last__" --><a href="JavaScript:add_field();" id="ButtonPlus" title="Add another field">[+]</a><!-- /TMPL_IF -->
                         <!-- /TMPL_IF -->
-                    </p>
+                    </div>
                 <!-- /TMPL_LOOP -->
             </fieldset>
         </div>
@@ -62,7 +84,7 @@
                     <tr>
                         <!--TMPL_LOOP Name="itemtypeloop"-->
                             <td>
-                                <input type="checkbox" id="<!-- TMPL_VAR NAME="index" -->-<!--TMPL_VAR NAME="number" -->" name="filters" value='<!-- TMPL_VAR NAME="index" -->:"<!--TMPL_VAR NAME="description" -->"'/>
+                                <input type="checkbox" id="<!-- TMPL_VAR NAME="index" -->-<!--TMPL_VAR NAME="number" -->" name="filters" value='<!-- TMPL_VAR NAME="index" -->:"<!--TMPL_VAR NAME="code" -->"'/>
                                 <label for="<!-- TMPL_VAR NAME="index" -->-<!--TMPL_VAR NAME="number" -->">
                                     <!-- TMPL_IF name="imageurl"-->
                                     <img border="0" src="<!--TMPL_VAR Name="imageurl" -->" alt="<!--TMPL_VAR Name="description" -->" /><!-- /TMPL_IF -->&nbsp;
@@ -83,7 +105,7 @@
                 <select name="filters">
                     <option value="" selected="selected">No Limit</option>
                         <!-- TMPL_LOOP NAME="search_languages_loop" -->
-                            <option value='<!-- TMPL_VAR NAME="lang_index" -->:"<!-- TMPL_VAR NAME="lib" -->"' <!-- TMPL_IF NAME="selected" -->selected="selected"<!-- /TMPL_IF -->>
+                            <option value='<!-- TMPL_VAR NAME="lang_index" -->:"<!-- TMPL_VAR NAME="authorised_value" -->"' <!-- TMPL_IF NAME="selected" -->selected="selected"<!-- /TMPL_IF -->>
                                 <!-- TMPL_VAR NAME="lib" -->
                             </option>
                         <!-- /TMPL_LOOP -->
@@ -167,7 +189,7 @@
                         <select name="filters" id="branchloop">
                             <option value="">All libraries</option>
                             <!-- TMPL_LOOP NAME="branchloop" -->
-                                <option value='<!-- TMPL_VAR NAME="holdingbranch_index" -->:"<!-- TMPL_VAR NAME="branchname" -->"' <!--TMPL_IF NAME="selected"-->selected="selected"<!--/TMPL_IF--> >
+                                <option value='<!-- TMPL_VAR NAME="holdingbranch_index" -->:"<!-- TMPL_VAR NAME="branchcode" -->"' <!--TMPL_IF NAME="selected"-->selected="selected"<!--/TMPL_IF--> >
                                     <!-- TMPL_VAR NAME="branchname" -->
                                 </option>
                             <!-- /TMPL_LOOP -->
