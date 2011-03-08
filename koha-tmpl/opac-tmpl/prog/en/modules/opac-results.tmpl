@@ -134,7 +134,7 @@ $(document).ready(function(){
 	$("span.clearall").html("<a id=\"CheckNone\" href=\"#\">"+_("Clear All")+"<\/a>");
 	$("span.checkall").html("<a id=\"CheckAll\" href=\"#\">"+_("Select All")+"<\/a>");
 <!-- TMPL_IF NAME="opacbookbag" -->$("span.addto").html(param1);<!-- TMPL_ELSE --><!-- TMPL_IF NAME="virtualshelves" --><!-- TMPL_IF NAME="loggedinusername" -->$("span.addto").html(param1);<!-- /TMPL_IF --><!-- /TMPL_IF --><!-- /TMPL_IF -->
-<!-- TMPL_IF NAME="opacbookbag" -->
+
 	<!-- TMPL_IF NAME="virtualshelves" -->
 	$("#addto").change(function(){
 		cartList();
@@ -144,12 +144,13 @@ $(document).ready(function(){
 		return false;
 	});
 	<!-- TMPL_ELSE -->
-	$("#addto").click(function(){
-		cartList();
-		return false;
-	});
+        <!-- TMPL_IF NAME="opacbookbag" -->
+        	$("#addto").click(function(){
+    		cartList();
+    		return false;
+    	});
+        <!-- /TMPL_IF -->
 	<!-- /TMPL_IF -->
-<!-- /TMPL_IF -->
     $("#tagsel_span").html("<input id=\"tagsel_tag\" class=\"submit\" type=\"submit\" value=\"Tag\"/>");
 
 	function cartList(){
