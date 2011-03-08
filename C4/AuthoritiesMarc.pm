@@ -43,6 +43,7 @@ BEGIN {
     @EXPORT = qw(
       &GetTagsLabels
       &GetAuthType
+      &GetAuthTypeText
       &GetAuthTypeCode
       &GetAuthMARCFromKohaField
       &AUTHhtml2marc
@@ -66,7 +67,7 @@ BEGIN {
       &GuessAuthTypeCode
       &GuessAuthId
 
-      &GetIndexesBySearchtype
+      &GetIndexBySearchtype
     );
 }
 
@@ -610,6 +611,15 @@ sub GetAuthType {
         }
     }
     return;
+}
+
+sub GetAuthTypeText {
+    my ($authtypecode) = @_;
+    my $dbh = C4::Context->dbh;
+    my $sth;
+    $sth = $dbh->prepare("select authtypetext from auth_types where authtypecode=?");
+    $sth->execute($authtypecode);
+    return $sth->fetchrow;
 }
 
 sub AUTHhtml2marc {
@@ -1321,141 +1331,21 @@ sub get_auth_type_location {
     }
 }
 
-
-sub GetIndexesBySearchtype {
-    my ($searchtype, $authtypecode) = @_;
-    my @indexes;
+sub GetIndexBySearchtype {
+    my ($searchtype) = @_;
+    my $index;
     given ( $searchtype ) {
         when ( 'authority_search' ) { # Chercher dans la vedette ($a)
-            given ( $authtypecode ) {
-                when ( 'CO' ) {
-                    push @indexes, 'auth-corporate-name-heading';
-                }
-                when ( 'NP' ) {
-                    push @indexes, 'auth-personal-name-heading';
-                }
-                when ( 'FAM' ) {
-                    push @indexes, 'auth-name-heading';
-                }
-                when ( 'SNG' ) {
-                    push @indexes, 'auth-name-geographic-heading';
-                }
-                when ( 'SAUTTIT' ) {
-                    push @indexes, 'auth-name-title-heading';
-                }
-                when ( 'SNC' ) {
-                    push @indexes, 'auth-subject-heading';
-                }
-                when ( 'EN3S' ) {
-                    push @indexes, 'auth-subject-heading';
-                }
-                when ( 'TU' ) {
-                    push @indexes, 'auth-title-uniform-heading';
-                }
-
-                default {
-                    push @indexes, 'auth-heading-main';
-                }
-            }
+            $index = 'auth-heading-main';
         }
         when ( 'main_heading' ) { # Recherche vedette
-            given ( $authtypecode ) {
-                when ( 'SNC' ) {
-                    push @indexes, 'auth-subject';
-                }
-                when ( 'ARCHI' ) {
-                    push @indexes, 'auth-subject';
-                }
-                when ( 'EN3S' ) {
-                    push @indexes, 'auth-subject';
-                }
-                when ( 'CO' ) {
-                    push @indexes, 'auth-corporate-name';
-                }
-                when ( 'NP' ) {
-                    push @indexes, 'auth-personal-name';
-                }
-                when ( 'FAM' ) {
-                    push @indexes, 'auth-name';
-                }
-                when ( 'SNG' ) {
-                    push @indexes, 'auth-name-geographic';
-                }
-                when ( 'SAUTTIT' ) {
-                    push @indexes, 'auth-name-title';
-                }
-                when ( 'TU' ) {
-                    push @indexes, 'auth-title-uniform';
-                }
-                default {
-                    push @indexes, 'auth-heading';
-                }
-            }
+            $index = 'auth-heading';
         }
-        when ( 'all_headings' ) { # Rechercher toutes les vedettes
-            given ( $authtypecode ) {
-                when ( 'SNC' ) {
-                    push @indexes, 'auth-subject';
-                    push @indexes, 'auth-subject-parallel';
-                    push @indexes, 'auth-subject-see';
-                    push @indexes, 'auth-subject-see-also';
-                }
-                when ( 'ARCHI' ) {
-                    push @indexes, 'auth-subject';
-                    push @indexes, 'auth-subject-parallel';
-                    push @indexes, 'auth-subject-see';
-                    push @indexes, 'auth-subject-see-also';
-                }
-                when ( 'EN3S' ) {
-                    push @indexes, 'auth-subject';
-                    push @indexes, 'auth-subject-parallel';
-                    push @indexes, 'auth-subject-see';
-                    push @indexes, 'auth-subject-see-also';
-                }
-                when ( 'CO' ) {
-                    push @indexes, 'auth-corporate-name';
-                    push @indexes, 'auth-corporate-name-parallel';
-                    push @indexes, 'auth-corporate-name-see';
-                    push @indexes, 'auth-corporate-name-see-also';
-                }
-                when ( 'NP' ) {
-                    push @indexes, 'auth-personal-name';
-                    push @indexes, 'auth-personal-name-parallel';
-                    push @indexes, 'auth-personal-name-see';
-                    push @indexes, 'auth-personal-name-see-also';
-                }
-                when ( 'FAM' ) {
-                    push @indexes, 'auth-name';
-                    push @indexes, 'auth-name-parallel';
-                    push @indexes, 'auth-name-see';
-                    push @indexes, 'auth-name-see-also';
-                }
-                when ( 'SNG' ) {
-                    push @indexes, 'auth-name-geographic';
-                    push @indexes, 'auth-name-geographic-parallel';
-                    push @indexes, 'auth-name-geographic-see';
-                    push @indexes, 'auth-name-geographic-see-also';
-                }
-                when ( 'SAUTTIT' ) {
-                    push @indexes, 'auth-name-title';
-                    push @indexes, 'auth-name-title-parallel';
-                    push @indexes, 'auth-name-title-see';
-                    push @indexes, 'auth-name-title-see-also';
-
-                }
-                when ( 'TU' ) {
-                    push @indexes, 'auth-title-uniform';
-                    push @indexes, 'auth-title-uniform-parallel';
-                    push @indexes, 'auth-title-uniform-see';
-                    push @indexes, 'auth-title-uniform-see-also';
-                }
-                default {
-                    push @indexes, 'all_fields';
-                }
-            }
+        default { # Rechercher toutes les vedettes
+            $index = 'all_fields';
         }
     }
-    \@indexes;
+    return C4::Search::Query::getIndexName($index);
 }
 
 

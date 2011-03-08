@@ -2733,18 +2733,17 @@ AND (authtypecode IS NOT NULL AND authtypecode<>\"\")|
             # Search if there is any authorities to link to.
             my $query = 'at=' . $data->{authtypecode} . ' ';
             map { $query .= ' and he,ext="' . $_->[1] . '"' if ( $_->[0] =~ /[A-z]/ ) } $field->subfields();
-            my ( $error, $results, $total_hits ) = SimpleSearch( $query, undef, undef, ["authorityserver"] );
+            $query = C4::Search::Query->normalSearch($query);
+            my $results = C4::Search::SimpleSearch($query);
+            my $hits = $results->{'pager'}->{'total_entries'};
 
             # there is only 1 result
-            if ($error) {
-                warn "BIBLIOADDSAUTHORITIES: $error";
-                return ( 0, 0 );
-            }
-            if ( $results && scalar(@$results) == 1 ) {
-                my $marcrecord = MARC::File::USMARC::decode( $results->[0] );
+            if ( $results && $hits == 1 ) {
+                my $recordid = @{$results->items}[0]->{values}{recordid};
+                my $marcrecord = GetMarcBiblio($recordid);
                 $field->add_subfields( '9' => $marcrecord->field('001')->data );
                 $countlinked++;
-            } elsif ( scalar(@$results) > 1 ) {
+            } elsif ( $hits > 1 ) {
 
                 #More than One result
                 #This can comes out of a lack of a subfield.

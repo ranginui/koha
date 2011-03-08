@@ -52,6 +52,7 @@ BEGIN {
       &getitemtypeimagelocation
       &GetAuthorisedValues
       &GetAuthorisedValueCategories
+      &GetDefaultAuthorisedValueCategories
       &GetAuthorisedValueLib
       &GetKohaAuthorisedValues
       &GetKohaAuthorisedValuesFromField
@@ -1159,6 +1160,10 @@ sub GetAuthorisedValueCategories {
         push @results, $category;
     }
     return \@results;
+}
+
+sub GetDefaultAuthorisedValueCategories {
+    qw(Asort1 Asort2 Bsort1 Bsort2 CN_PART1 CN_PART2 CN_PART3 CN_PART4 SUGGEST DAMAGED LOST)
 }
 
 =head2 GetAuthorisedValueByCode

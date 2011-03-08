@@ -27,25 +27,34 @@ our @EXPORT = qw/
     /;
 our $VERSION = 3.0.1;
 
+# We want to concatenate values returned by ComputeValue with others mappings
+sub ConcatMappings {
+    1;
+}
+
 =head2 fonction
-    return rejected forms
+    return vedette, rejected and parrallel forms
+    @see t/solr/plugin_authorities.pl
 =cut
 
 sub ComputeValue {
-    my $brecord = shift;
-    
-    my @bfieldstoindex = ( '6..', '7..' );
+    my ($brecord, $mapping) = @_;
+
+    return if (!defined $mapping);
+
+    my @bfieldstoindex = keys (%$mapping);
     my @afieldstoindex = ( '2..', '4..', '7..' );
 
     my @values;
-    #for each 6..$9 and 7..$9 take authority linked
+    #for each $9 in field in $mapping take authority linked
     for my $bfieldtoindex ( @bfieldstoindex ) {
+
         for my $bfield ( $brecord->field( $bfieldtoindex ) ) {
             for my $bsubfield ( $bfield->subfield( '9' ) ) {
-                my $arecord = GetAuthority( $bsubfield );
+                my $arecord = C4::AuthoritiesMarc::GetAuthority( $bsubfield );
 
                 next unless $arecord;
-                #for each 2.. and 4.. and 7.. (wich contains vedette, rejected and parralleles forms) of the authority return all subfields
+                #for each 4.. and 7.. (wich contains vedette, rejected and parralleles forms) of the authority return all subfields
                 for my $afieldtoindex ( @afieldstoindex ) {
                     for my $afield ( $arecord->field( $afieldtoindex ) ) {
                         my @asubfields = $afield->subfields;

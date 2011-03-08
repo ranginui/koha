@@ -53,15 +53,25 @@ sub initIndexesMapper {
     %indexes_mapper =
     ( all_fields =>
     { Zebra =>
-        { rpn_index => 1016
+        { rpn_index      => 1016
         , ccl_index_name => 'kw'
         }
 	, Solr =>
-	    { name     => 'all_fields'
-        , sortable => 0
+	    { name           => 'all_fields'
+        , sortable       => 0
 	    }
 	}
-
+    ,
+    all_records =>
+    { Zebra =>
+        { rpn_index      => '_ALLRECORDS'
+        , ccl_index_name => 'allrecords'
+        }
+	, Solr =>
+	    { name           => 'all_fields'
+        , sortable       => 0
+	    }
+	}
     , map {
 	$$_{code} =>
 	    { Zebra =>
@@ -168,11 +178,12 @@ sub splitToken {
     my $attr;
     $token =~ s/=/:/g;
     my $string = $token;
+    my $is_replaced = 0;
     # Foreach couple of index:operand
-    while ( $token =~ m/[^ ]*:[^ ]*/g ) {
+    while ( $token =~ m/[^ \(\\]*:[^ \)]*/g ) {
         @values = split ':', $&;
-        @values = split '=', $& if not @values;
         $idx = (@values)[0];
+        next if not $idx;
         my $old_operand = (@values)[1];
         my $old_idx = $idx;
         $operand = $old_operand;
@@ -199,9 +210,15 @@ sub splitToken {
             when ( 'ext' ) {
                 # not yet implemented ! TODO
             }
+            when ( 'alwaysMatches' ) {
+                $operand = "[* TO * ]";
+            }
         }
+
         # Replace new index in string
-        $string =~ s/(^| )\Q$old_idx:\E/ $idx:/;
+        # \Q : quote (disable) pattern metacharacters till \E
+        $is_replaced = not eval $string =~ s/(^| )\Q$old_idx:\E/ $idx:/;
+        $string =~ s/\(\Q$old_idx:\E/($idx:/ if not $is_replaced; # Case where "($idx"
         $string =~ s/\Q:$old_operand\E/:$operand/;
     }
 

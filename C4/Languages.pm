@@ -217,7 +217,7 @@ Internal function, returns an array of all authorized values for language
 
 sub getAllLanguagesAuthorizedValues {
     my $dbh = C4::Context->dbh;
-    my $sth = $dbh->prepare("SELECT lib FROM authorised_values WHERE category='LANG' ORDER BY lib");
+    my $sth = $dbh->prepare("SELECT lib,authorised_value FROM authorised_values WHERE category='LANG' ORDER BY lib");
     $sth->execute();
     return $sth->fetchall_arrayref({});
 }

@@ -78,6 +78,9 @@ sub index {
         # SimpleSearch( $query, $offset, $max_results, $servers ) 
         warn "Unsupported yet";
         #return C4::Search::Engine::Zebra->IndexRecord(@_);
+    } else {
+        warn "System preference 'SearchEngine' not equal 'Solr' or 'Zebra'.";
+        warn "We can not indexing";
     }
 }
 

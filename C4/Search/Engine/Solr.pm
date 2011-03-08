@@ -30,6 +30,7 @@ use Data::SearchEngine::Item;
 use Data::SearchEngine::Solr::Results;
 use Time::Progress;
 use Moose;
+use List::MoreUtils qw(uniq);
 
 extends 'Data::SearchEngine::Solr';
 
@@ -67,6 +68,13 @@ sub GetIndexes {
     return $sth->fetchall_arrayref({});
 }
 
+sub GetIndexesWithAvlist {
+    my $dbh = C4::Context->dbh;
+    my $sth = $dbh->prepare("SELECT code, avlist FROM indexes WHERE avlist<>''");
+    $sth->execute();
+    return $sth->fetchall_arrayref({});
+}
+
 sub GetSortableIndexes {
     my $dbh = C4::Context->dbh;
     my $sth = $dbh->prepare("SELECT * FROM indexes WHERE sortable = 1 AND ressource_type = ? ORDER BY code");
@@ -95,7 +103,7 @@ sub SetIndexes {
     my $sth = $dbh->prepare("DELETE FROM indexes WHERE ressource_type = ?");
     $sth->execute($ressource_type);
 
-    my $query  = "INSERT INTO indexes (`code`,`label`,`type`,`faceted`,`ressource_type`,`mandatory`,`sortable`,`plugin`, `rpn_index`, `ccl_index_name`) VALUES (?,?,?,?,?,?,?,?,?,?)";
+    my $query  = "INSERT INTO indexes (`code`,`label`,`type`,`faceted`,`ressource_type`,`mandatory`,`sortable`,`plugin`, `rpn_index`, `ccl_index_name`, `avlist`) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
     my $sth2 = $dbh->prepare($query);
     for ( @$indexes ) {
         $sth2->execute(
@@ -107,8 +115,9 @@ sub SetIndexes {
 	    $_->{'mandatory'},
 	    $_->{'sortable'},
 	    $_->{'plugin'},
-        $_->{'rpn_index'},
-        $_->{'ccl_index_name'}
+      $_->{'rpn_index'},
+      $_->{'ccl_index_name'},
+      $_->{'avlist'},
 	);
     }
 }
@@ -144,6 +153,14 @@ sub GetIndexLabelFromCode {
     return $result->{'label'};
 }
 
+sub GetAvlistFromCode {
+    my $dbh = C4::Context->dbh;
+    my $sth = $dbh->prepare("SELECT avlist FROM indexes WHERE code = ?");
+    $sth->execute(shift);
+    my $result = $sth->fetchrow_hashref;
+    return $result->{'avlist'};
+}
+
 sub GetSubfieldsForIndex {
     my $index = shift;
     my $dbh = C4::Context->dbh;
@@ -160,9 +177,15 @@ sub GetSubfieldsForIndex {
     return $subfields;
 }
 
+=head2 LoadSearchPlugin
+Return the ComputeValue fonction associated with the plugin
+=cut
 sub LoadSearchPlugin {
     my $plugin = shift;
-    if ( grep( /^$plugin$/, GetSearchPlugins()) ) {
+    my $list_of_plugins = shift;
+    @$list_of_plugins = GetSearchPlugins() if not $list_of_plugins;
+    my $r = 0;
+    if ( grep( /^$plugin$/, @$list_of_plugins) ) {
         eval "require $plugin";
 
         return do {
@@ -173,6 +196,52 @@ sub LoadSearchPlugin {
     }
 }
 
+=head2 LoadSearchPluginSrt
+Return the ComputeSrtValue fonction associated with the plugin
+=cut
+sub LoadSearchPluginSrt {
+    my $plugin = shift;
+    my $list_of_plugins = shift;
+    @$list_of_plugins = GetSearchPlugins() if not $list_of_plugins;
+    my $r = 0;
+    if ( grep( /^$plugin$/, @$list_of_plugins) ) {
+        eval "require $plugin";
+
+        return do {
+            no strict 'refs';
+            my $symbol = $plugin. "::ComputeSrtValue";
+            \&{"$symbol"};
+        };
+    }
+}
+
+=head2 GetConcatMappingsValue
+Return value returned by ConcatMappings function if it exists.
+If it does not exist, return 0
+=cut
+sub GetConcatMappingsValue {
+    my $plugin = shift;
+    my $list_of_plugins = shift;
+    $list_of_plugins = GetSearchPlugins() if not $list_of_plugins;
+    my $r = 0;
+    if ( grep( /^$plugin$/, @$list_of_plugins) ) {
+        eval "require $plugin";
+
+        no strict 'refs';
+        my $symbol = $plugin. "::ConcatMappings";
+        eval {
+            $r = &{"$symbol"};
+        };
+
+        # If ConcatMappings does not exist, return 0
+        if ($@) { return 0 }
+    }
+    $r;
+}
+
+=head2 GetSearchPlugins
+Return list of existing plugins in C4/Search/Plugins
+=cut
 sub GetSearchPlugins {
    use Module::List;
    my $plugins = Module::List::list_modules( "C4::Search::Plugins::", { list_modules => 1 } );
@@ -203,6 +272,48 @@ sub FillSubfieldWithAuthorisedValues {
 
 =head2 SimpleSearch
 
+Search function for Solr Engine.
+
+params: 
+  $q           = solr's query
+  $filters     = hashref (ex: {recordtype=>'biblio'})
+  $page        = page number for pagination
+  $max_results = max returned results
+  $sort        = field sorting
+
+Before the call: 
+  You must call normalSearch or buildQuery function et call SimpleSearch with the query returned
+
+Examples:
+
+  We have a simple query already constructed. We call normalSearch.
+    my $query = "title=programming and author=knuth";
+    $query = C4::Search::Query->normalSearch($query);
+    my %filters = { recordtype => 'biblio' } # We find in biblios
+    my $results = C4::Search::Engine::SimpleSearch($query, \%filters);
+    
+  We want hits number:
+    my $hits = $$results{pager}{total_entries};
+  
+  print recordids:
+    print $_->{'values'}->{'recordid'} for @{ $results->items };
+
+  If we watn a adv search, we have 3 arrays : indexes, operands and operators
+  We must call buildquery: 
+  my @indexes = ("title", "author");
+  my @operators = ("and");
+  my @operands = ("programming", "knuth");
+  my $query = C4::Search::Query->buildQuery(\@indexes, \@operands, \@operators);
+  # Here $query = "txt_title=programming AND txt_author=knuth"
+  my $results = C4::Search::Engine::SimpleSearch($query);
+
+  If we call buildQuery without indexes, it call normalSearch with first operands (prabably contains the query):
+  my @indexes = ();
+  my @operators = ();
+  my @operands = ("title=programming and author=knuth");
+  my $query = C4::Search::Query->buildQuery(\@indexes, \@operands, \@operators);
+  # Here $query = "txt_title=programming AND txt_author=knuth"
+  my $results = C4::Search::Engine::SimpleSearch($query);
 
 =cut
 
@@ -215,6 +326,7 @@ sub SimpleSearch {
     $max_results ||= 999999999;
     $sort        ||= 'score desc';
 
+    # sort is a srt_* field
     $sort = "srt_$sort" if $sort =~ /^(str|txt|int|date|ste)_/;
 
     my $sc = GetSolrConnection;
@@ -225,6 +337,7 @@ sub SimpleSearch {
     $sc->options->{'facet.field'}    = GetFacetedIndexes($filters->{recordtype});
     $sc->options->{'sort'}           = $sort;
 
+    # Construct filters
     $sc->options->{'fq'} = [ 
         map { 
             utf8::decode($filters->{$_});
@@ -239,13 +352,18 @@ sub SimpleSearch {
         query => $q,
     );
 
+    # Get results
     my $result = eval { $sc->search( $sq ) };
     warn $@ if $@;
 
     return $result if (ref($result) eq "Data::SearchEngine::Solr::Results");
 }
 
+=head2 IndexRecord
 
+Index all records with id in recordsids and recordtype=$recordtype ('biblio' or 'authority').
+
+=cut
 sub IndexRecord {
     my $recordtype = shift;
     my $recordids  = shift;
@@ -256,6 +374,8 @@ sub IndexRecord {
 
     my @recordpush;
     my $g;
+
+    my @list_of_plugins = GetSearchPlugins;
     for my $id ( @$recordids ) {
         
         my $record;
@@ -283,13 +403,27 @@ sub IndexRecord {
         for my $index ( @$indexes ) {
 
             my @values;
+            my @srt_values;
             my $mapping = GetSubfieldsForIndex( $index->{'code'} );
+            my $concatmappings = 1;
 
             if ( $index->{'plugin'} ) {
-                my $plugin = $index->{'plugin'};
-                $plugin = LoadSearchPlugin( $plugin ) if $plugin;
-                @values = &$plugin( $record );
-            } else {
+                $concatmappings = &GetConcatMappingsValue( $index->{'plugin'}, \@list_of_plugins );
+                my $plugin = LoadSearchPlugin( $index->{'plugin'}, \@list_of_plugins ) if $index->{'plugin'};
+                @values = &$plugin( $record, $mapping );
+
+                $plugin = LoadSearchPluginSrt( $index->{'plugin'}, \@list_of_plugins ) if $index->{'plugin'};
+                eval {
+                    @srt_values = &$plugin( $record, $mapping );
+                };
+
+                if ($@) {
+                    @srt_values = @values;
+                }
+
+            }
+
+            if ( $concatmappings ) {
                 for my $tag ( sort keys %$mapping ) {
                     for my $field ( $record->field( $tag ) ) {
                         if ( $field->is_control_field ) {
@@ -304,7 +438,7 @@ sub IndexRecord {
 
                                 for ( @sfvals ) {
                                     $_ = NormalizeDate( $_ ) if $index->{'type'} eq 'date';
-                                    $_ = FillSubfieldWithAuthorisedValues( $frameworkcode, $tag, $code, $_ ) if $recordtype eq "biblio";
+                                    #$_ = FillSubfieldWithAuthorisedValues( $frameworkcode, $tag, $code, $_ ) if $recordtype eq "biblio";
                                     push @values, $_ if $_;
                                 }
                             }
@@ -312,8 +446,10 @@ sub IndexRecord {
                     }
                 }
             }
+            @values = uniq (@values); #Removes duplicates
+
             $solrrecord->set_value(       $index->{'type'}."_".$index->{'code'},    \@values);
-            $solrrecord->set_value("srt_".$index->{'type'}."_".$index->{'code'}, $values[0]) if $index->{'sortable'} and @values > 0;
+            $solrrecord->set_value("srt_".$index->{'type'}."_".$index->{'code'}, $srt_values[0]) if $index->{'sortable'} and @srt_values > 0;
 
             # Add index str for facets if it's not exist
             if ( $index->{'faceted'} and @values > 0 and $index->{'type'} ne 'str' ) {
@@ -343,6 +479,7 @@ sub IndexRecord {
         }
     }
     $sc->add( \@recordpush );
+    $sc->_solr->optimize;
 }
 
     
@@ -386,6 +523,7 @@ sub add {
     }
 
     $self->_solr->add(\@docs, $options);
+
 }
 
 

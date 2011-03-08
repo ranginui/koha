@@ -50,6 +50,7 @@ sub buildQuery {
 
     # Foreach operands
     for my $kw (@$operands){
+        $kw =~ s/:/\\:/g;
         # First element
         if ($i == 0){
             if ( (my @x = eval {@$indexes} ) == 0 ){
@@ -66,37 +67,22 @@ sub buildQuery {
             }
 
             # Generate index:operand
-            if ($index_name ne 'all_fields' && $index_name ne ''){
-                $q .= $index_name . ':' . $kw;
-            }else{
-                $q .= $kw;
-            }
+            $q .= BuildTokenString($index_name, $kw);
             $i = $i + 1;
+            
             next;
         }
         # And others
         $index_name = @$indexes[$i] if @$indexes[$i];
         given (uc(@$operators[$i-1])) {
-            when ('AND'){
-                if ($index_name ne 'all_fields'){
-                    $q .= ' AND ' . $index_name . ':'.$kw;
-                }else{
-                    $q .= ' AND ' . $kw;
-                }
+            when ('OR'){
+                $q .= BuildTokenString($index_name, $kw, 'OR');
             }
             when ('NOT'){
-                if ($index_name ne 'all_fields'){
-                    $q .= ' NOT ' . $index_name . ':'.$kw;
-                }else{
-                    $q .= ' NOT ' . $kw;
-                }
+                $q .= BuildTokenString($index_name, $kw, 'NOT');
             }
             default {
-                if ($index_name ne 'all_fields'){
-                    $q .= ' OR ' . $index_name . ':' . $kw;
-                }else{
-                    $q .= ' OR ' . $kw;
-                }
+                $q .= BuildTokenString($index_name, $kw, 'AND');
             }
         }
         $i = $i + 1;
@@ -104,6 +90,35 @@ sub buildQuery {
 
     return $q;
 
+}
+
+sub BuildTokenString {
+    my ($index, $string, $operator) = @_;
+    my $r = "";
+    if ($index ne 'all_fields' && $index ne ''){
+        if ( $string =~ / / ) {
+            my @words = split ' ', $string;
+            $r = join " AND " , map {
+                "$index:$_"
+            } @words;
+            $r = "(" . $r . ")";
+        } else {
+            $r = "$index:$string";
+        }
+    }else{
+        $r = $string;
+    }
+
+    return " $operator $r" if $operator;
+    return $r;
+#    if ( $string =~ / / ) {
+#        my @words = split ' ', $string;
+#        my $r = join ' AND ' , map {
+#            "$index:$_"
+#        } @words;
+#        return "(" . $r . ")";
+#    }
+#    return "$index:$string";
 }
 
 sub normalSearch {
@@ -114,6 +129,7 @@ sub normalSearch {
         return $query;
     }
 
+    $query =~ s/ : / \\: /g; # escape colons if " : "
     my $new_query = C4::Search::Query::splitToken($query);
 
     $new_query =~ s/all_fields://g;

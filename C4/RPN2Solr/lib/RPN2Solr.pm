@@ -20,6 +20,7 @@
 package RPN2Solr;
 
 use Modern::Perl;
+use Net::Z3950::OID;
 use Net::Z3950::SimpleServer;
 use Net::Z3950::OID;
 use C4::Biblio;
@@ -50,6 +51,15 @@ my %parse_rpn = do {
     , query    => qr{ <nocontext:> <extends: Z3950::RPN> <query> }x
     );
 };
+
+sub init_handler{
+   my $args=shift;
+        my $session = {};
+        $args->{IMP_NAME} = "Zed-Koha-Solr";
+        $args->{IMP_VER} = "1.0.12";
+        $args->{ERR_CODE} = 0;
+        $args->{HANDLE} = $session;
+}
 
 =head2
 search_handler function for SimpleServer
@@ -106,9 +116,9 @@ sub fetch_handler {
         # We must return an usmarc format
         when ( 'usmarc' ) {
             if ( $recordtype && $recordtype eq 'biblio' ) {
-                $record = GetMarcBiblio( $recordid )->as_usmarc;
+                $record = GetMarcBiblio( $recordid )->as_usmarc();
             }elsif ( $recordtype && $recordtype eq 'authority' ) {
-                $record = GetAuthority ( $recordid )->as_usmarc;
+                $record = GetAuthority ( $recordid )->as_usmarc();
             }
         }
         when ( 'xml' ) {
@@ -124,14 +134,16 @@ sub fetch_handler {
     }
     
     $$args{RECORD} = $record if $record;
-    if ($number_of_hits == $args->{OFFSET}) {
-        $$args{LAST} = 1;
-    } else {
-        $$args{LAST} = 0;
-    }
+    $$args{REP_FORM} = $$args{REQ_FORM};
 
+#    if (C4::Context->preference('marcflavour') eq 'UNIMARC'){
+#    $$args{REP_FORM} = Net::Z3950::OID::unimarc;
+#    }
+#    else {
+#    $$args{REP_FORM} = Net::Z3950::OID::usmarc;
+#    }
     $$args{BASENAME} = $recordtype;
-
+    $$args{LAST} = $number_of_hits == $$args{OFFSET};
 }
 
 =head2
@@ -190,8 +202,13 @@ sub construct_string_from_node {
     }
 
     if (defined $value) {
-        # "" is not match by grammar TODO
-        #$value = "[* TO *]" if $value eq "";
+        # if value eq "", we want to search [* TO *]
+        # and we can not modifier string by structure
+        if ( $value eq '""' ) {
+            $value = "[* TO *]";
+            $structure = -1;
+        }
+
 
         given ( $truncate ) {
             when ( 1 ) { $value = "$value*"; } # Right
@@ -229,7 +246,8 @@ sub construct_string_from_node {
             # >
             when ( 4 ) { push @string, "$index:[$value TO *]"; }
             when ( 5 ) { push @string, "$index:[$value TO *]"; }
-            when ( 6 ) { push @string, "!$index:$value";        }
+            when ( 6 ) { push @string, "!$index:$value";       }
+            when ( 103 ) { push @string, "$index:[* TO *]";    }
         }
     }
 
