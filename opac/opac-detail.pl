@@ -37,11 +37,9 @@ use C4::XISBN qw(get_xisbns get_biblionumber_from_isbn);
 use C4::External::Amazon;
 use C4::External::Syndetics qw(get_syndetics_index get_syndetics_summary get_syndetics_toc get_syndetics_excerpt get_syndetics_reviews get_syndetics_anotes );
 use C4::Review;
-use C4::Serials;
 use C4::Members;
 use C4::VirtualShelves;
 use C4::XSLT;
-use Switch;
 use C4::ShelfBrowser;
 
 BEGIN {
@@ -201,6 +199,7 @@ for my $itm (@items) {
 my $dbh              = C4::Context->dbh;
 my $marcflavour      = C4::Context->preference("marcflavour");
 my $marcnotesarray   = GetMarcNotes   ($record,$marcflavour);
+my $marcisbnsarray   = GetMarcISBN   ($record,$marcflavour);
 my $marcauthorsarray = GetMarcAuthors ($record,$marcflavour);
 my $marcsubjctsarray = GetMarcSubjects($record,$marcflavour);
 my $marcseriesarray  = GetMarcSeries  ($record,$marcflavour);
@@ -219,6 +218,7 @@ my $responsibility   = GetRecordValue('responsibility', $record, GetFrameworkCod
                      MARCAUTHORS             => $marcauthorsarray,
                      MARCSERIES              => $marcseriesarray,
                      MARCURLS                => $marcurlsarray,
+                     MARCISBNS               => $marcisbnsarray,
                      norequests              => $norequests,
                      RequestOnOpac           => C4::Context->preference("RequestOnOpac"),
                      itemdata_ccode          => $itemfields{ccode},
@@ -519,44 +519,18 @@ if (my $search_for_title = C4::Context->preference('OPACSearchForTitleIn')){
 
 # We try to select the best default tab to show, according to what
 # the user wants, and what's available for display
-my $defaulttab = '';
-switch (C4::Context->preference('opacSerialDefaultTab')) {
-
-    # If the user wants subscriptions by default
-    case "subscriptions" { 
-	# And there are subscriptions, we display them
-	if ($subscriptionsnumber) {
-	    $defaulttab = 'subscriptions';
-	} else {
-	   # Else, we try next option
-	   next; 
-	}
-    }
-
-    case "serialcollection" {
-	if (scalar(@serialcollections) > 0) {
-	    $defaulttab = 'serialcollection' ;
-	} else {
-	    next;
-	}
-    }
-
-    case "holdings" {
-	if ($dat->{'count'} > 0) {
-	   $defaulttab = 'holdings'; 
-	} else {
-	     # As this is the last option, we try other options if there are no items
-	     if ($subscriptionsnumber) {
-		$defaulttab = 'subscriptions';
-	     } elsif (scalar(@serialcollections) > 0) {
-		$defaulttab = 'serialcollection' ;
-	     }
-	}
-
-    }
-
-}
+my $opac_serial_default = C4::Context->preference('opacSerialDefaultTab');
+my $defaulttab = 
+    $opac_serial_default eq 'subscriptions' && $subscriptionsnumber
+        ? 'subscriptions' :
+    $opac_serial_default eq 'serialcollection' && @serialcollections > 0
+        ? 'serialcollection' :
+    $opac_serial_default eq 'holdings' && $dat->{'count'} > 0
+        ? 'holdings' :
+    $subscriptionsnumber
+        ? 'subscriptions' :
+    @serialcollections > 0 
+        ? 'serialcollection' : 'subscription';
 $template->param('defaulttab' => $defaulttab);
-
 
 output_html_with_http_headers $query, $cookie, $template->output;

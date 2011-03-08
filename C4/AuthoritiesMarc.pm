@@ -264,8 +264,9 @@ sub SearchAuthorities {
                             '@attr 7=2 @attr 1=Heading 0'
                            :''
                         );            
-        $query=($query?"\@or $orderstring $query":"\@or \@attr 1=_ALLRECORDS \@attr 2=103 '' $orderstring ");
-        
+        $query=($query?$query:"\@attr 1=_ALLRECORDS \@attr 2=103 ''");
+        $query="\@or $orderstring $query" if $orderstring;
+
         $offset=0 unless $offset;
         my $counter = $offset;
         $length=10 unless $length;
@@ -610,6 +611,16 @@ sub AddAuthority {
         $format= 'MARC21';
     }
 
+    #update date/time to 005 for marc and unimarc
+    my $time=POSIX::strftime("%Y%m%d%H%M%S",localtime);
+    my $f5=$record->field('005');
+    if (!$f5) {
+      $record->insert_fields_ordered( MARC::Field->new('005',$time.".0") );
+    }
+    else {
+      $f5->update($time.".0");
+    }
+
 	if ($format eq "MARC21") {
 		if (!$record->leader) {
 			$record->leader($leader);
@@ -617,12 +628,6 @@ sub AddAuthority {
 		if (!$record->field('003')) {
 			$record->insert_fields_ordered(
 				MARC::Field->new('003',C4::Context->preference('MARCOrgCode'))
-			);
-		}
-		my $time=POSIX::strftime("%Y%m%d%H%M%S",localtime);
-		if (!$record->field('005')) {
-			$record->insert_fields_ordered(
-				MARC::Field->new('005',$time.".0")
 			);
 		}
 		my $date=POSIX::strftime("%y%m%d",localtime);
@@ -712,8 +717,8 @@ sub DelAuthority {
     my $dbh=C4::Context->dbh;
 
     ModZebra($authid,"recordDelete","authorityserver",GetAuthority($authid),undef);
-    $dbh->do("delete from auth_header where authid=$authid") ;
-
+    my $sth = prepare("DELETE FROM auth_header WHERE authid=?");
+    $sth->execute($authid);
 }
 
 sub ModAuthority {
@@ -901,7 +906,7 @@ sub FindDuplicateAuthority {
         $_->[1]=~s/$filtervalues/ /g; $query.= " and he,wrdl=\"".$_->[1]."\"" if ($_->[0]=~/[A-z]/);
       }
     }
-    my ($error, $results, $total_hits)=SimpleSearch( $query, 0, 1, [ "authorityserver" ] );
+    my ($error, $results, $total_hits) = C4::Search::SimpleSearch( $query, 0, 1, [ "authorityserver" ] );
     # there is at least 1 result => return the 1st one
     if (@$results>0) {
       my $marcrecord = MARC::File::USMARC::decode($results->[0]);

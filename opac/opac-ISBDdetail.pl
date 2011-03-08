@@ -20,8 +20,7 @@
 
 =head1 NAME
 
-opac-ISBDdetail.pl : script to show a biblio in ISBD format
-
+opac-ISBDdetail.pl - script to show a biblio in ISBD format
 
 =head1 DESCRIPTION
 
@@ -36,8 +35,6 @@ The first 10 tabs present the biblio, the 11th one presents
 the items attached to the biblio
 
 =head1 FUNCTIONS
-
-=over 2
 
 =cut
 
@@ -157,6 +154,16 @@ $template->param(
     biblionumber => $biblionumber,
     reviews             => $reviews,
 );
+
+#Search for title in links
+if (my $search_for_title = C4::Context->preference('OPACSearchForTitleIn')){
+    $dat->{author} ? $search_for_title =~ s/{AUTHOR}/$dat->{author}/g : $search_for_title =~ s/{AUTHOR}//g;
+    $dat->{title} =~ s/\/+$//; # remove trailing slash
+    $dat->{title} =~ s/\s+$//; # remove trailing space
+    $dat->{title} ? $search_for_title =~ s/{TITLE}/$dat->{title}/g : $search_for_title =~ s/{TITLE}//g;
+    $isbn ? $search_for_title =~ s/{ISBN}/$isbn/g : $search_for_title =~ s/{ISBN}//g;
+ $template->param('OPACSearchForTitleIn' => $search_for_title);
+}
 
 ## Amazon.com stuff
 #not used unless preference set

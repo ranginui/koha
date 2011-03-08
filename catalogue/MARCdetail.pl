@@ -23,6 +23,7 @@ MARCdetail.pl : script to show a biblio in MARC format
 
 =head1 SYNOPSIS
 
+=cut
 
 =head1 DESCRIPTION
 
@@ -38,8 +39,6 @@ The first 10 tabs present the biblio, the 11th one presents
 the items attached to the biblio
 
 =head1 FUNCTIONS
-
-=over 2
 
 =cut
 
@@ -90,30 +89,21 @@ my $itemcount = GetItemsCount($biblionumber);
 $template->param( count => $itemcount,
 					bibliotitle => $biblio->{title}, );
 
-#Getting the list of all frameworks
-my $queryfwk =
-  $dbh->prepare("select frameworktext, frameworkcode from biblio_framework");
-$queryfwk->execute;
-my %select_fwk;
-my @select_fwk;
-my $curfwk;
-push @select_fwk, "Default";
-$select_fwk{"Default"} = "Default";
-
-while ( my ( $description, $fwk ) = $queryfwk->fetchrow ) {
-    push @select_fwk, $fwk;
-    $select_fwk{$fwk} = $description;
+# Getting the list of all frameworks
+# get framework list
+my $frameworks = getframeworks;
+my @frameworkcodeloop;
+foreach my $thisframeworkcode ( keys %$frameworks ) {
+    my %row = (
+        value         => $thisframeworkcode,
+        frameworktext => $frameworks->{$thisframeworkcode}->{'frameworktext'},
+    );
+    if ($frameworkcode eq $thisframeworkcode){
+        $row{'selected'}= 1;
+        }
+    push @frameworkcodeloop, \%row;
 }
-$curfwk=$frameworkcode;
-my $framework=CGI::scrolling_list( -name     => 'Frameworks',
-            -id => 'Frameworks',
-            -default => $curfwk,
-            -OnChange => 'Changefwk(this);',
-            -values   => \@select_fwk,
-            -labels   => \%select_fwk,
-            -size     => 1,
-            -multiple => 0 );
-$template->param(framework => $framework);
+$template->param( frameworkcodeloop => \@frameworkcodeloop, );
 # fill arrays
 my @loop_data = ();
 my $tag;

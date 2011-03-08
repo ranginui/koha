@@ -157,9 +157,10 @@
 <!-- TMPL_UNLESS name="delete_confirm" --><!-- TMPL_INCLUDE NAME="budgets-admin-toolbar.inc" --><!-- /TMPL_UNLESS -->
 <!-- TMPL_IF name="else" -->
 
-<!-- TMPL_UNLESS NAME="cur" --><div class="dialog alert"><h3>No active currency is defined</h3><p>Please <a href="/cgi-bin/koha/admin/currency.pl">specify an active currency</a>.</p></div><!-- /TMPL_UNLESS -->
-
 <h1>Funds for '<!-- TMPL_VAR name="budget_period_description" -->'</h1>
+
+<!-- TMPL_INCLUDE NAME="budgets-active-currency.inc" -->
+
 <table id="budgeth">
     <thead>
         <tr>
@@ -240,7 +241,6 @@
     </tbody>
 </table>
 
-<!-- TMPL_IF name="cur" --><p><b>Currency = <!-- TMPL_VAR NAME="cur" --> <!-- TMPL_VAR NAME="cur_format" --></b></p><!-- /TMPL_IF -->
 <!-- TMPL_IF NAME="pagination_bar" --><div class="paginationBar"><!-- TMPL_VAR NAME="pagination_bar" --></div><!-- /TMPL_IF -->
 <!-- /TMPL_IF --> <!-- else -->
 
@@ -315,7 +315,11 @@
 
     <li>
     <label for="budget_permission">Restrict access to: </label>
-    <!-- TMPL_VAR name="budget_perm_dropbox" -->
+    <select name="budget_permission" id="budget_permission">
+    <!-- TMPL_IF NAME="budget_perm_0" --><option value="0" selected="selected">None</option><!-- TMPL_ELSE --><option value="0">None</option><!-- /TMPL_IF -->
+    <!-- TMPL_IF NAME="budget_perm_1" --><option value="1" selected="selected">Owner</option><!-- TMPL_ELSE --><option value="1">Owner</option><!-- /TMPL_IF -->
+    <!-- TMPL_IF NAME="budget_perm_2" --><option value="2" selected="selected">Library</option><!-- TMPL_ELSE --><option value="2">Library</option><!-- /TMPL_IF -->
+    </option>
     </li>
 
     <li>
@@ -427,7 +431,7 @@
         <input type="submit" class="submit" name="filter" value="Go" />
     </fieldset>
 </form><!-- /TMPL_IF -->
-
+<!-- TMPL_INCLUDE NAME="acquisitions-menu.inc" -->
 </div>
 </div>
 <!-- TMPL_INCLUDE NAME="intranet-bottom.inc" -->

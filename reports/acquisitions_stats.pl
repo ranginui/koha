@@ -57,7 +57,6 @@ my $aodsp          = $input->param("AcquiredOnDisplay");    ##added by mason.
 my $calc           = $input->param("Cellvalue");
 my $output         = $input->param("output");
 my $basename       = $input->param("basename");
-my $mime           = $input->param("MIME");
 
 #warn "calcul : ".$calc;
 my ($template, $borrowernumber, $cookie)
@@ -229,15 +228,10 @@ else {
         -multiple => 0
     );
 
-    my @mime = ( C4::Context->preference("MIME") );
-    foreach my $mime (@mime) {
-        #               warn "".$mime;
-    }
-
     my $CGIextChoice = CGI::scrolling_list(
         -name     => 'MIME',
         -id       => 'MIME',
-        -values   => \@mime,
+        -values   => ['CSV'], # FIXME translation
         -size     => 1,
         -multiple => 0
     );
@@ -438,7 +432,7 @@ sub calculate {
         }
     }
     $strsth .= " GROUP BY $linefield";
-    $strsth .= " ORDER BY $linefield";
+    $strsth .= " ORDER BY $line";
 
     #warn "377:strsth= $strsth";
 
@@ -555,7 +549,7 @@ sub calculate {
 
 
     $strsth2 .= " GROUP BY $colfield";
-    $strsth2 .= " ORDER BY $colfield";
+    $strsth2 .= " ORDER BY $column";
 
     my $sth2 = $dbh->prepare($strsth2);
 

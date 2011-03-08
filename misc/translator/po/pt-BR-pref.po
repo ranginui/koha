@@ -1,18 +1,3 @@
-msgid ""
-msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-03 23:48+1300\n"
-"PO-Revision-Date: 2010-07-21 15:46+1300\n"
-"Last-Translator: folcklord <folcklord@writeme.com>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: pt_BR\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Pootle 2.0.3\n"
-
 # Acquisitions > Policy
 msgid "acquisitions.pref Policy"
 msgstr "acquisitions.pref Política"
@@ -37,12 +22,9 @@ msgstr "acquisitions.pref#AcqCreateItem#aplicando uma ordem."
 msgid "acquisitions.pref#AcqCreateItem# receiving an order."
 msgstr "acquisitions.pref#AcqCreateItem# recebendo uma ordem."
 
-# hKePVS  <a href="http://xusvrzuyquuk.com/">xusvrzuyquuk</a>, [url=http://aidzujahygya.com/]aidzujahygya[/url], [link=http://xirokgcafuyx.com/]xirokgcafuyx[/link], http://fzmacplcgcwp.com/
+# Acquisitions > Policy
 msgid "acquisitions.pref#CurrencyFormat# 360 000,00 (FR)"
-msgstr ""
-"hKePVS  <a href=\"http://xusvrzuyquuk.com/\">xusvrzuyquuk</a>, "
-"[url=http://aidzujahygya.com/]aidzujahygya[/url], "
-"[link=http://xirokgcafuyx.com/]xirokgcafuyx[/link], http://fzmacplcgcwp.com/"
+msgstr "hKePVS  <a href=\"http://xusvrzuyquuk.com/\">xusvrzuyquuk</a>, [url=http://aidzujahygya.com/]aidzujahygya[/url], [link=http://xirokgcafuyx.com/]xirokgcafuyx[/link], http://fzmacplcgcwp.com/"
 
 # Acquisitions > Policy
 msgid "acquisitions.pref#CurrencyFormat# 360,000.00 (US)"
@@ -50,23 +32,15 @@ msgstr "acquisitions.pref#CurrencyFormat# 360.000,00 (US)"
 
 # Acquisitions > Policy
 msgid "acquisitions.pref#CurrencyFormat# Display currencies using the following format"
-msgstr ""
-"acquisitions.pref#CurrencyFormat# Exibir usando o seguinte formato de moedas"
+msgstr "acquisitions.pref#CurrencyFormat# Exibir usando o seguinte formato de moedas"
 
-# jhTUFG  <a href="http://zkkvwjvgngak.com/">zkkvwjvgngak</a>, [url=http://cuqmdrqxtfon.com/]cuqmdrqxtfon[/url], [link=http://zwggsxfplgmk.com/]zwggsxfplgmk[/link], http://abdsddnldyfe.com/
+# Acquisitions > Printing
 msgid "acquisitions.pref#OrderPdfFormat# Use"
-msgstr ""
-"jhTUFG  <a href=\"http://zkkvwjvgngak.com/\">zkkvwjvgngak</a>, "
-"[url=http://cuqmdrqxtfon.com/]cuqmdrqxtfon[/url], "
-"[link=http://zwggsxfplgmk.com/]zwggsxfplgmk[/link], http://abdsddnldyfe.com/"
+msgstr "jhTUFG  <a href=\"http://zkkvwjvgngak.com/\">zkkvwjvgngak</a>, [url=http://cuqmdrqxtfon.com/]cuqmdrqxtfon[/url], [link=http://zwggsxfplgmk.com/]zwggsxfplgmk[/link], http://abdsddnldyfe.com/"
 
-# MvxTdS  <a href="http://wbpzhpyyalbw.com/">wbpzhpyyalbw</a>, [url=http://tcfeokvsfrhf.com/]tcfeokvsfrhf[/url], [link=http://wpewvssqntbr.com/]wpewvssqntbr[/link], http://hkeihhgoxknj.com/
-#, fuzzy
+# Acquisitions > Printing
 msgid "acquisitions.pref#OrderPdfFormat# when printing basket groups."
-msgstr ""
-"MvxTdS  <a href=\"http://wbpzhpyyalbw.com/\">wbpzhpyyalbw</a>, "
-"[url=http://tcfeokvsfrhf.com/]tcfeokvsfrhf[/url], "
-"[link=http://wpewvssqntbr.com/]wpewvssqntbr[/link], http://hkeihhgoxknj.com/"
+msgstr "MvxTdS  <a href=\"http://wbpzhpyyalbw.com/\">wbpzhpyyalbw</a>, [url=http://tcfeokvsfrhf.com/]tcfeokvsfrhf[/url], [link=http://wpewvssqntbr.com/]wpewvssqntbr[/link], http://hkeihhgoxknj.com/"
 
 # Acquisitions > Policy
 msgid "acquisitions.pref#gist# (enter in numeric form, 0.12 for 12%)"
@@ -99,9 +73,6 @@ msgstr "admin.pref#AutoLocation# Requerido"
 # Administration > Login options
 msgid "admin.pref#AutoLocation# staff to log in from a computer in the IP address range <a href=\"/cgi-bin/koha/admin/branches.pl\">specified by their library</a> (if any)."
 msgstr ""
-"admin.pref#AutoLocation# pessoal para logar em um computador na faixa de "
-"endereço de IP <a href=\"/cgi-bin/koha/admin/branches.pl\">especificado pela "
-"sua biblioteca</a> (se houver)."
 
 # Administration > Interface options
 msgid "admin.pref#DebugLevel# Show"
@@ -109,9 +80,7 @@ msgstr "admin.pref#DebugLevel# Mostrar"
 
 # Administration > Interface options
 msgid "admin.pref#DebugLevel# debugging information in the browser when an internal error occurs."
-msgstr ""
-"admin.pref#DebugLevel# informações de depuração no navegador quando ocorre "
-"um erro interno."
+msgstr "admin.pref#DebugLevel# informações de depuração no navegador quando ocorre um erro interno."
 
 # Administration > Interface options
 msgid "admin.pref#DebugLevel# lots of"
@@ -126,22 +95,6 @@ msgid "admin.pref#DebugLevel# some"
 msgstr "admin.pref#DebugLevel# alguns"
 
 # Administration > Login options
-msgid "admin.pref#GranularPermissions# Control staff access to pages within Koha based on"
-msgstr ""
-"admin.pref#GranularPermissions# Controle de acesso pessoal para páginas "
-"dentro de Koha baseada"
-
-# Administration > Login options
-msgid "admin.pref#GranularPermissions# the general module (such as administration or circulation)."
-msgstr ""
-"admin.pref#GranularPermissions# o módulo geral (como administração ou "
-"circulação)"
-
-# Administration > Login options
-msgid "admin.pref#GranularPermissions# the specific page."
-msgstr "admin.pref#GranularPermissions# página específica"
-
-# Administration > Login options
 msgid "admin.pref#IndependantBranches# Don't prevent"
 msgstr "admin.pref#IndependantBranches# Não impeça"
 
@@ -150,12 +103,8 @@ msgid "admin.pref#IndependantBranches# Prevent"
 msgstr "admin.pref#IndependantBranches# Impedir"
 
 # Administration > Login options
-#, fuzzy
 msgid "admin.pref#IndependantBranches# staff (but not superlibrarians) from modifying objects (holds, items, patrons, etc.) belonging to other libraries."
-msgstr ""
-"admin.pref#IndependantBranches# equipe (bibliotecários, mas não super) de "
-"modificação de objetos (seguro, itens, clientes, etc) pertencentes a outras "
-"bibliotecas."
+msgstr "admin.pref#IndependantBranches# equipe (bibliotecários, mas não super) de modificação de objetos (seguro, itens, clientes, etc) pertencentes a outras bibliotecas."
 
 # Administration > Interface options
 msgid "admin.pref#KohaAdminEmailAddress# Use"
@@ -163,11 +112,7 @@ msgstr "admin.pref#KohaAdminEmailAddress# Use"
 
 # Administration > Interface options
 msgid "admin.pref#KohaAdminEmailAddress# as the email address for the administrator of Koha. (This is the default From: address for emails unless there is one for the particular branch, and is referred to when an internal error occurs.)"
-msgstr ""
-"admin.pref#KohaAdminEmailAddress# como endereço de e-mail para o "
-"administrador do Koha. (Este é o padrão de: endereço de e-mails a menos que "
-"haja uma para o ramo particular, e é referido, quando ocorre um erro "
-"interno.)"
+msgstr "admin.pref#KohaAdminEmailAddress# como endereço de e-mail para o administrador do Koha. (Este é o padrão de: endereço de e-mails a menos que haja uma para o ramo particular, e é referido, quando ocorre um erro interno.)"
 
 # Administration > Login options
 msgid "admin.pref#SessionStorage# Store login session information"
@@ -183,8 +128,7 @@ msgstr "admin.pref#SessionStorage# no banco de dados MySQL."
 
 # Administration > Login options
 msgid "admin.pref#SessionStorage# in the PostgreSQL database (not supported)."
-msgstr ""
-"admin.pref#SessionStorage# no banco de dados PostgreSQL (não suportado)."
+msgstr "admin.pref#SessionStorage# no banco de dados PostgreSQL (não suportado)."
 
 # Administration > CAS Authentication
 msgid "admin.pref#casAuthentication# CAS for login authentication."
@@ -212,9 +156,7 @@ msgstr "admin.pref#casLogout# da CAS, quando sair do Koha."
 
 # Administration > CAS Authentication
 msgid "admin.pref#casServerUrl# The CAS Authentication Server can be found at"
-msgstr ""
-"admin.pref#casServerUrl# O servidor de autenticação CAS pode ser encontrada "
-"em"
+msgstr "admin.pref#casServerUrl# O servidor de autenticação CAS pode ser encontrada em"
 
 # Administration > Interface options
 msgid "admin.pref#delimiter# #'s"
@@ -222,9 +164,7 @@ msgstr "admin.pref#delimiter# de #"
 
 # Administration > Interface options
 msgid "admin.pref#delimiter# Separate columns in an exported report file with"
-msgstr ""
-"admin.pref#delimiter# Separar colunas em um relatório de arquivo exportado "
-"com"
+msgstr "admin.pref#delimiter# Separar colunas em um relatório de arquivo exportado com"
 
 # Administration > Interface options
 msgid "admin.pref#delimiter# backslashes"
@@ -259,12 +199,8 @@ msgid "admin.pref#insecure# Don't allow"
 msgstr "admin.pref#insecure# Não permitir"
 
 # Administration > Login options
-#, fuzzy
 msgid "admin.pref#insecure# staff to access the staff client without logging in. Enabling this is dangerous, and should not be done in production environments."
-msgstr ""
-"admin.pref#insecure# pessoal para acessar o cliente de pessoal sem efetuar "
-"login. Se permitido, isto é perigoso e não deve ser feito em ambientes de "
-"produção."
+msgstr "admin.pref#insecure# pessoal para acessar o cliente de pessoal sem efetuar login. Se permitido, isto é perigoso e não deve ser feito em ambientes de produção."
 
 # Administration > Interface options
 msgid "admin.pref#noItemTypeImages# Don't show"
@@ -296,9 +232,7 @@ msgstr "admin.pref#virtualshelves# Não permitir"
 
 # Administration > Interface options
 msgid "admin.pref#virtualshelves# staff and patrons to create and view saved lists of books."
-msgstr ""
-"admin.pref#virtualshelves# funcionários e clientes para criar e exibir a "
-"lista salva de livros."
+msgstr "admin.pref#virtualshelves# funcionários e clientes para criar e exibir a lista salva de livros."
 
 # Authorities
 msgid "authorities.pref#BiblioAddsAuthorities# When editing records,"
@@ -314,10 +248,7 @@ msgstr "authorities.pref#BiblioAddsAuthorities# não permitir"
 
 # Authorities
 msgid "authorities.pref#BiblioAddsAuthorities# them too automatically create new authority records if needed, rather than having to reference existing authorities."
-msgstr ""
-"authorities.pref#BiblioAddsAuthorities# eles também criam automaticamente "
-"novos registros de autoridade se necessário, em vez de fazer referência a "
-"autoridades existentes."
+msgstr "authorities.pref#BiblioAddsAuthorities# eles também criam automaticamente novos registros de autoridade se necessário, em vez de fazer referência a autoridades existentes."
 
 # Authorities
 msgid "authorities.pref#dontmerge# Do"
@@ -328,13 +259,8 @@ msgid "authorities.pref#dontmerge# Don't"
 msgstr "authorities.pref#dontmerge# Não fazer"
 
 # Authorities
-#, fuzzy
 msgid "authorities.pref#dontmerge# automatically update attached biblios when changing an authority record. If this is off, please ask your administrator to enable the merge_authorities.pl cronjob."
-msgstr ""
-"authorities.pref#dontmerge# atualizar automaticamente biblios inscritos "
-"quando se muda um registo de autoridade. Se este for desligado, por favor, "
-"pergunte ao seu administrador para permitir que o cronjob "
-"merge_authorities.pl."
+msgstr "authorities.pref#dontmerge# atualizar automaticamente biblios inscritos quando se muda um registo de autoridade. Se este for desligado, por favor, pergunte ao seu administrador para permitir que o cronjob merge_authorities.pl."
 
 # Cataloging > Display
 msgid "cataloguing.pref Display"
@@ -358,9 +284,7 @@ msgstr "cataloguing.pref#DefaultClassificationSource# Usar"
 
 # Cataloging > Interface
 msgid "cataloguing.pref#DefaultClassificationSource# as the default classification source."
-msgstr ""
-"cataloguing.pref#DefaultClassificationSource# como fonte de classificação "
-"padrão."
+msgstr "cataloguing.pref#DefaultClassificationSource# como fonte de classificação padrão."
 
 # Cataloging > Display
 msgid "cataloguing.pref#ISBD# Use the following as the ISBD template:"
@@ -368,13 +292,15 @@ msgstr "cataloguing.pref#ISBD# Use o seguinte como modelo de ISBD:"
 
 # Cataloging > Display
 msgid "cataloguing.pref#IntranetBiblioDefaultView# By default, display biblio records in"
-msgstr ""
-"cataloguing.pref#IntranetBiblioDefaultView# Por padrão, mostrar registros da "
-"biblioteca em"
+msgstr "cataloguing.pref#IntranetBiblioDefaultView# Por padrão, mostrar registros da biblioteca em"
 
 # Cataloging > Display
 msgid "cataloguing.pref#IntranetBiblioDefaultView# ISBD form (see below)."
 msgstr "cataloguing.pref#IntranetBiblioDefaultView# forma ISBD (veja abaixo)."
+
+# Cataloging > Display
+msgid "cataloguing.pref#IntranetBiblioDefaultView# Labelled MARC form"
+msgstr ""
 
 # Cataloging > Display
 msgid "cataloguing.pref#IntranetBiblioDefaultView# MARC form."
@@ -394,32 +320,23 @@ msgstr "cataloguing.pref#LabelMARCView# Não fazer"
 
 # Cataloging > Display
 msgid "cataloguing.pref#LabelMARCView# collapse repeated tags of the same type into one tag entry on the display."
-msgstr ""
-"cataloguing.pref#LabelMARCView# recolha tags repetidas do mesmo tipo na "
-"entrada de uma tag na tela."
+msgstr "cataloguing.pref#LabelMARCView# recolha tags repetidas do mesmo tipo na entrada de uma tag na tela."
 
 # Cataloging > Record Structure
 msgid "cataloguing.pref#MARCOrgCode# Fill in the <a href=\"http://www.loc.gov/marc/organizations/orgshome.html\">MARC organization code</a>"
 msgstr ""
-"cataloguing.pref#MARCOrgCode# Preencha o <a "
-"href=\"http://www.loc.gov/marc/organizations/orgshome.html\">código MARC da "
-"organização</a>"
 
 # Cataloging > Record Structure
 msgid "cataloguing.pref#MARCOrgCode# by default in new MARC records (leave blank to disable)."
-msgstr ""
-"cataloguing.pref#MARCOrgCode# por padrão em novos registros MARC (deixe em "
-"branco para desabilitar)."
+msgstr "cataloguing.pref#MARCOrgCode# por padrão em novos registros MARC (deixe em branco para desabilitar)."
 
-# Cataloging > Display
-msgid "cataloguing.pref#OPACSerialIssueDisplayCount# Show the"
-msgstr "cataloguing.pref#OPACSerialIssueDisplayCount# Mostrar"
-
-# Cataloging > Display
-msgid "cataloguing.pref#OPACSerialIssueDisplayCount# previous issues of a serial on the OPAC."
+# Cataloging > Record Structure
+msgid "cataloguing.pref#NewItemsDefaultLocation# (should be a location code, or blank to disable)."
 msgstr ""
-"cataloguing.pref#OPACSerialIssueDisplayCount# números anteriores da série no "
-"OPAC."
+
+# Cataloging > Record Structure
+msgid "cataloguing.pref#NewItemsDefaultLocation# When items are created, give them the temporary location of"
+msgstr ""
 
 # Cataloging > Display
 msgid "cataloguing.pref#OpacSuppression# Don't hide"
@@ -430,25 +347,16 @@ msgid "cataloguing.pref#OpacSuppression# Hide"
 msgstr "cataloguing.pref#OpacSuppression# Ocultar"
 
 # Cataloging > Display
-#, fuzzy
 msgid "cataloguing.pref#OpacSuppression# items marked as suppressed from OPAC search results. Note that you must have the <code>Suppress</code> index set up in Zebra and at least one suppressed item, or your searches will be broken."
-msgstr ""
-"cataloguing.pref#OpacSuppression# itens marcados como suprimido a partir de "
-"resultados de pesquisa OPAC. Observe que você deve ter o índice de "
-"<code>Repressão</code> criado em Zebra e pelo menos um item suprimido, ou as "
-"pesquisas serão interrompidas."
+msgstr "cataloguing.pref#OpacSuppression# itens marcados como suprimido a partir de resultados de pesquisa OPAC. Observe que você deve ter o índice de <code>Repressão</code> criado em Zebra e pelo menos um item suprimido, ou as pesquisas serão interrompidas."
 
 # Cataloging > Spine Labels
 msgid "cataloguing.pref#SpineLabelAutoPrint# When using the quick spine label printer,"
-msgstr ""
-"cataloguing.pref#SpineLabelAutoPrint# Quando usar rapidamente a impressora "
-"de etiquetas de lombada,"
+msgstr "cataloguing.pref#SpineLabelAutoPrint# Quando usar rapidamente a impressora de etiquetas de lombada,"
 
 # Cataloging > Spine Labels
 msgid "cataloguing.pref#SpineLabelAutoPrint# automatically pop up a print dialog."
-msgstr ""
-"cataloguing.pref#SpineLabelAutoPrint# automaticamente aparecer uma janela de "
-"impressão."
+msgstr "cataloguing.pref#SpineLabelAutoPrint# automaticamente aparecer uma janela de impressão."
 
 # Cataloging > Spine Labels
 msgid "cataloguing.pref#SpineLabelAutoPrint# do"
@@ -459,18 +367,12 @@ msgid "cataloguing.pref#SpineLabelAutoPrint# don't"
 msgstr "cataloguing.pref#SpineLabelAutoPrint# não fazer"
 
 # Cataloging > Spine Labels
-#, fuzzy
 msgid "cataloguing.pref#SpineLabelFormat# (Enter in columns from the <code>biblio</code>, <code>biblioitems</code> or <code>items</code> tables, surrounded by &lt; and &gt;.)"
-msgstr ""
-"cataloguing.pref#SpineLabelFormat# (Insira nas colunas de "
-"<code>biblio</code>, <code>biblioitems</code> ou tabelas de "
-"<code>itens</code>, rodeadas de &lt; and &gt;.)"
+msgstr "cataloguing.pref#SpineLabelFormat# (Insira nas colunas de <code>biblio</code>, <code>biblioitems</code> ou tabelas de <code>itens</code>, rodeadas de &lt; and &gt;.)"
 
 # Cataloging > Spine Labels
 msgid "cataloguing.pref#SpineLabelFormat# Include the following fields on a quick-printed spine label:"
-msgstr ""
-"cataloguing.pref#SpineLabelFormat# Incluir os seguintes campos em uma "
-"impressão rápida de etiqueta de lombada:"
+msgstr "cataloguing.pref#SpineLabelFormat# Incluir os seguintes campos em uma impressão rápida de etiqueta de lombada:"
 
 # Cataloging > Spine Labels
 msgid "cataloguing.pref#SpineLabelShowPrintOnBibDetails# Display"
@@ -481,42 +383,8 @@ msgid "cataloguing.pref#SpineLabelShowPrintOnBibDetails# Don't display"
 msgstr "cataloguing.pref#SpineLabelShowPrintOnBibDetails# Não exibir"
 
 # Cataloging > Spine Labels
-#, fuzzy
 msgid "cataloguing.pref#SpineLabelShowPrintOnBibDetails# buttons on the bib details page to print item spine labels."
-msgstr ""
-"cataloguing.pref#SpineLabelShowPrintOnBibDetails# botões na página de "
-"detalhes para imprimir etiquetas de lombada do item."
-
-# Cataloging > Display
-msgid "cataloguing.pref#StaffSerialIssueDisplayCount# Show the"
-msgstr "cataloguing.pref#StaffSerialIssueDisplayCount# Mostrar o(a)"
-
-# Cataloging > Display
-#, fuzzy
-msgid "cataloguing.pref#StaffSerialIssueDisplayCount# previous issues of a serial on the staff client."
-msgstr ""
-"cataloguing.pref#StaffSerialIssueDisplayCount# edições anteriores de uma "
-"série sobre o cliente de pessoal."
-
-# Cataloging > Display
-#, fuzzy
-msgid "cataloguing.pref#SubscriptionHistory# When showing the subscription information for a biblio, show"
-msgstr ""
-"cataloguing.pref#SubscriptionHistory# Ao mostrar as informações de "
-"subscrição para um biblio, mostrar"
-
-# Cataloging > Display
-msgid "cataloguing.pref#SubscriptionHistory# a full list"
-msgstr "cataloguing.pref#SubscriptionHistory# lista completa"
-
-# Cataloging > Display
-msgid "cataloguing.pref#SubscriptionHistory# a summary"
-msgstr "cataloguing.pref#SubscriptionHistory# resumo"
-
-# Cataloging > Display
-#, fuzzy
-msgid "cataloguing.pref#SubscriptionHistory# of the serial issues."
-msgstr "cataloguing.pref#SubscriptionHistory# das questões de ordem."
+msgstr "cataloguing.pref#SpineLabelShowPrintOnBibDetails# botões na página de detalhes para imprimir etiquetas de lombada do item."
 
 # Cataloging > Display
 msgid "cataloguing.pref#URLLinkText# Show"
@@ -524,9 +392,7 @@ msgstr "cataloguing.pref#URLLinkText# Mostrar"
 
 # Cataloging > Display
 msgid "cataloguing.pref#URLLinkText# as the text of links embedded in MARC records."
-msgstr ""
-"cataloguing.pref#URLLinkText# como o texto de links incorporados nos "
-"registros MARC."
+msgstr "cataloguing.pref#URLLinkText# como o texto de links incorporados nos registros MARC."
 
 # Cataloging > Interface
 msgid "cataloguing.pref#advancedMARCeditor# Display"
@@ -538,36 +404,27 @@ msgstr "cataloguing.pref#advancedMARCeditor# Não exibir"
 
 # Cataloging > Interface
 msgid "cataloguing.pref#advancedMARCeditor# descriptions of fields and subfields in the MARC editor."
-msgstr ""
-"cataloguing.pref#advancedMARCeditor# descrições de campos e subcampos no "
-"editor MARC."
+msgstr "cataloguing.pref#advancedMARCeditor# descrições de campos e subcampos no editor MARC."
 
 # Cataloging > Display
 msgid "cataloguing.pref#authoritysep# ."
 msgstr "cataloguing.pref#authoritysep# ."
 
-# n50Zjd  <a href="http://lvxptpgolxpu.com/">lvxptpgolxpu</a>, [url=http://avokssayuksx.com/]avokssayuksx[/url], [link=http://bkrtcvkmngju.com/]bkrtcvkmngju[/link], http://fomlkkuvpwku.com/
+# Cataloging > Display
 msgid "cataloguing.pref#authoritysep# Separate multiple displayed authors, series or subjects with "
-msgstr ""
-"n50Zjd  <a href=\"http://lvxptpgolxpu.com/\">lvxptpgolxpu</a>, "
-"[url=http://avokssayuksx.com/]avokssayuksx[/url], "
-"[link=http://bkrtcvkmngju.com/]bkrtcvkmngju[/link], http://fomlkkuvpwku.com/"
+msgstr "n50Zjd  <a href=\"http://lvxptpgolxpu.com/\">lvxptpgolxpu</a>, [url=http://avokssayuksx.com/]avokssayuksx[/url], [link=http://bkrtcvkmngju.com/]bkrtcvkmngju[/link], http://fomlkkuvpwku.com/"
 
 # Cataloging > Record Structure
-#, fuzzy
 msgid "cataloguing.pref#autoBarcode# Barcodes are"
 msgstr "cataloguing.pref#autoBarcode# Códigos de barras são (estão)"
 
 # Cataloging > Record Structure
 msgid "cataloguing.pref#autoBarcode# generated in the form &lt;branchcode&gt;yymm0001."
-msgstr ""
-"cataloguing.pref#autoBarcode# gerado no formato &lt;branchcode&gt;yymm0001."
+msgstr "cataloguing.pref#autoBarcode# gerado no formato &lt;branchcode&gt;yymm0001."
 
 # Cataloging > Record Structure
 msgid "cataloguing.pref#autoBarcode# generated in the form &lt;year&gt;-0001, &lt;year&gt;-0002."
-msgstr ""
-"cataloguing.pref#autoBarcode# gerado no formato &lt;year&gt;-0001, "
-"&lt;year&gt;-0002."
+msgstr "cataloguing.pref#autoBarcode# gerado no formato &lt;year&gt;-0001, &lt;year&gt;-0002."
 
 # Cataloging > Record Structure
 msgid "cataloguing.pref#autoBarcode# generated in the form 1, 2, 3."
@@ -587,9 +444,7 @@ msgstr "cataloguing.pref#hide_marc# Não exibir"
 
 # Cataloging > Display
 msgid "cataloguing.pref#hide_marc# MARC tag numbers, subfield codes and indicators in MARC views."
-msgstr ""
-"cataloguing.pref#hide_marc# números das etiquetas MARC, códigos de subcampos "
-"e indicadores em exibição MARC."
+msgstr "cataloguing.pref#hide_marc# números das etiquetas MARC, códigos de subcampos e indicadores em exibição MARC."
 
 # Cataloging > Record Structure
 msgid "cataloguing.pref#item-level_itypes# Use the item type of the"
@@ -597,12 +452,9 @@ msgstr "cataloguing.pref#item-level_itypes# Use o tipo de item do"
 
 # Cataloging > Record Structure
 msgid "cataloguing.pref#item-level_itypes# as the authoritative item type (for determining circulation and fines rules, etc)."
-msgstr ""
-"cataloguing.pref#item-level_itypes# como o tipo de item de autoridade (para "
-"determinar regras de circulação e multas, etc.)"
+msgstr "cataloguing.pref#item-level_itypes# como o tipo de item de autoridade (para determinar regras de circulação e multas, etc.)"
 
 # Cataloging > Record Structure
-#, fuzzy
 msgid "cataloguing.pref#item-level_itypes# biblio record"
 msgstr "cataloguing.pref#item-level_itypes# biblio registro"
 
@@ -815,23 +667,35 @@ msgid "circulation.pref#CircControl# the library you are logged in at."
 msgstr ""
 
 # Circulation > Interface
+msgid "circulation.pref#DisplayClearScreenButton# Don't show"
+msgstr ""
+
+# Circulation > Interface
+msgid "circulation.pref#DisplayClearScreenButton# Show"
+msgstr ""
+
+# Circulation > Interface
+msgid "circulation.pref#DisplayClearScreenButton# a button to clear the current patron from the screen on the circulation screen."
+msgstr ""
+
+# Circulation > Holds Policy
+msgid "circulation.pref#DisplayMultiPlaceHold# Don't enable"
+msgstr ""
+
+# Circulation > Holds Policy
+msgid "circulation.pref#DisplayMultiPlaceHold# Enable"
+msgstr ""
+
+# Circulation > Holds Policy
+msgid "circulation.pref#DisplayMultiPlaceHold# the ability to place holds on multiple biblio from the search results"
+msgstr ""
+
+# Circulation > Interface
 msgid "circulation.pref#FilterBeforeOverdueReport# Don't require"
 msgstr ""
 
 # Circulation > Interface
-msgid "circulation.pref#FilterBeforeOverdueReport# Don't show"
-msgstr ""
-
-# Circulation > Interface
 msgid "circulation.pref#FilterBeforeOverdueReport# Require"
-msgstr ""
-
-# Circulation > Interface
-msgid "circulation.pref#FilterBeforeOverdueReport# Show"
-msgstr ""
-
-# Circulation > Interface
-msgid "circulation.pref#FilterBeforeOverdueReport# a button to clear the current patron from the screen on the circulation screen."
 msgstr ""
 
 # Circulation > Interface
@@ -878,14 +742,6 @@ msgstr ""
 msgid "circulation.pref#IssuingInProcess# patrons from checking out an item whose rental charge would take them over the limit."
 msgstr ""
 
-# Circulation > Checkout Policy
-msgid "circulation.pref#NewItemsDefaultLocation# (should be a location code, or blank to disable)."
-msgstr ""
-
-# Circulation > Checkout Policy
-msgid "circulation.pref#NewItemsDefaultLocation# When items are created, give them the temporary location of"
-msgstr ""
-
 # Circulation > Holds Policy
 msgid "circulation.pref#OPACAllowHoldDateInFuture# Allow"
 msgstr ""
@@ -900,6 +756,30 @@ msgstr ""
 
 # Circulation > Checkout Policy
 msgid "circulation.pref#OverdueNoticeBcc# Send all notices as a BCC to this email address"
+msgstr ""
+
+# Circulation > Checkout Policy
+msgid "circulation.pref#OverduesBlockCirc# Ask for confirmation"
+msgstr ""
+
+# Circulation > Checkout Policy
+msgid "circulation.pref#OverduesBlockCirc# Block"
+msgstr ""
+
+# Circulation > Checkout Policy
+msgid "circulation.pref#OverduesBlockCirc# Don't block"
+msgstr ""
+
+# Circulation > Checkout Policy
+msgid "circulation.pref#OverduesBlockCirc# when checking out to a borrower that has overdues outstanding"
+msgstr ""
+
+# Circulation > Checkout Policy
+msgid "circulation.pref#PrintNoticesMaxLines# Include up to"
+msgstr ""
+
+# Circulation > Checkout Policy
+msgid "circulation.pref#PrintNoticesMaxLines# item lines in a printed overdue notice. If the number of items is greater than this number, the notice will end with a warning asking the borrower to check their online account for a full list of overdue items.  Set to 0 to include all overdue items in the notice, no matter how many there are."
 msgstr ""
 
 # Circulation > Checkout Policy
@@ -1044,6 +924,18 @@ msgstr ""
 
 # Circulation > Checkout Policy
 msgid "circulation.pref#UseBranchTransferLimits# item type"
+msgstr ""
+
+# Circulation > Interface
+msgid "circulation.pref#UseTablesortForCirc# Don't enable"
+msgstr ""
+
+# Circulation > Interface
+msgid "circulation.pref#UseTablesortForCirc# Enable"
+msgstr ""
+
+# Circulation > Interface
+msgid "circulation.pref#UseTablesortForCirc# the sorting of current patron checkouts on the circulation screen. <br/>NOTE: Enabling this function may slow down circulation time for patrons with many checkouts."
 msgstr ""
 
 # Circulation > Self Checkout
@@ -1223,15 +1115,19 @@ msgid "circulation.pref#todaysIssuesDefaultSortOrder# latest to earliest"
 msgstr ""
 
 # Circulation > Checkout Policy
-msgid "circulation.pref#useDaysMode# Don't include"
+msgid "circulation.pref#useDaysMode# Calculate the due date using"
 msgstr ""
 
 # Circulation > Checkout Policy
-msgid "circulation.pref#useDaysMode# Include"
+msgid "circulation.pref#useDaysMode# circulation rules only."
 msgstr ""
 
 # Circulation > Checkout Policy
-msgid "circulation.pref#useDaysMode# days when the library in closed when calculating due dates."
+msgid "circulation.pref#useDaysMode# the calendar to push the due date to the next open day"
+msgstr ""
+
+# Circulation > Checkout Policy
+msgid "circulation.pref#useDaysMode# the calendar to skip all days the library is closed."
 msgstr ""
 
 # Creators > Patron Cards
@@ -1499,7 +1395,7 @@ msgid "enhanced-content.pref#OCLCAffiliateID# Use the <a href=\"http://www.world
 msgstr ""
 
 # Enhanced Content > OCLC
-msgid "enhanced-content.pref#OCLCAffiliateID# to access the xISBN service. Note that unless you have signed up for an ID, you are limited to 500 requests per day."
+msgid "enhanced-content.pref#OCLCAffiliateID# to access the xISBN service. Note that unless you have signed up for an ID, you are limited to 1000 requests per day."
 msgstr ""
 
 # Enhanced Content > Amazon
@@ -1803,38 +1699,46 @@ msgid "enhanced-content.pref#XISBNDailyLimit# Only use the xISBN service"
 msgstr ""
 
 # Enhanced Content > OCLC
-msgid "enhanced-content.pref#XISBNDailyLimit# times a day. Unless you are paying for the xISBN service, you should leave this at the default of 499 (as detailed above)."
+msgid "enhanced-content.pref#XISBNDailyLimit# times a day. Unless you are paying for the xISBN service, you should leave this at the default of 999 (as detailed above)."
 msgstr ""
 
-# I18N/L18N
+# I18N/L10N
 msgid "i18n-l10n.pref#dateformat# ."
 msgstr ""
 
-# I18N/L18N
+# I18N/L10N
 msgid "i18n-l10n.pref#dateformat# Format dates like"
 msgstr ""
 
-# I18N/L18N
+# I18N/L10N
 msgid "i18n-l10n.pref#dateformat# dd/mm/yyyy"
 msgstr ""
 
-# I18N/L18N
+# I18N/L10N
 msgid "i18n-l10n.pref#dateformat# mm/dd/yyyy"
 msgstr ""
 
-# I18N/L18N
+# I18N/L10N
 msgid "i18n-l10n.pref#dateformat# yyyy/mm/dd"
 msgstr ""
 
-# I18N/L18N
+# I18N/L10N
+msgid "i18n-l10n.pref#language# Enable the following languages on the staff interface:"
+msgstr ""
+
+# I18N/L10N
+msgid "i18n-l10n.pref#opaclanguages# Enable the following languages on the OPAC:"
+msgstr ""
+
+# I18N/L10N
 msgid "i18n-l10n.pref#opaclanguagesdisplay# Allow"
 msgstr ""
 
-# I18N/L18N
+# I18N/L10N
 msgid "i18n-l10n.pref#opaclanguagesdisplay# Don't allow"
 msgstr ""
 
-# I18N/L18N
+# I18N/L10N
 msgid "i18n-l10n.pref#opaclanguagesdisplay# patrons to change the language they see on the OPAC."
 msgstr ""
 
@@ -2250,18 +2154,6 @@ msgstr ""
 msgid "opac.pref#OpacPasswordChange# patrons to change their own password on the OPAC. Note that this must be off to use LDAP authentication."
 msgstr ""
 
-# OPAC > Privacy
-msgid "opac.pref#OpacPrivacy# Allow"
-msgstr ""
-
-# OPAC > Privacy
-msgid "opac.pref#OpacPrivacy# Don't allow"
-msgstr ""
-
-# OPAC > Privacy
-msgid "opac.pref#OpacPrivacy# patrons to opt-in/opt-out of saving their reading/circulation history."
-msgstr ""
-
 # OPAC > Policy
 msgid "opac.pref#OpacRenewalAllowed# Allow"
 msgstr ""
@@ -2348,22 +2240,6 @@ msgstr ""
 
 # OPAC > Appearance
 msgid "opac.pref#opacheader# Include the following HTML in the header of all pages in the OPAC:"
-msgstr ""
-
-# OPAC > Appearance
-msgid "opac.pref#opaclanguages# Enable the following languages on the OPAC:"
-msgstr ""
-
-# OPAC > Appearance
-msgid "opac.pref#opaclanguagesdisplay# Allow"
-msgstr ""
-
-# OPAC > Appearance
-msgid "opac.pref#opaclanguagesdisplay# Don't allow"
-msgstr ""
-
-# OPAC > Appearance
-msgid "opac.pref#opaclanguagesdisplay# patrons to select their language on the OPAC."
 msgstr ""
 
 # OPAC > Appearance
@@ -2535,7 +2411,7 @@ msgid "patrons.pref#EnhancedMessagingPreferences# Don't allow"
 msgstr ""
 
 # Patrons
-msgid "patrons.pref#EnhancedMessagingPreferences# patrons to choose which notices they recive and when they receive them. Note that this only applies to certain kinds of notices."
+msgid "patrons.pref#EnhancedMessagingPreferences# patrons to choose which notices they receive and when they receive them. Note that this only applies to certain kinds of notices."
 msgstr ""
 
 # Patrons
@@ -2859,30 +2735,6 @@ msgid "searching.pref#QueryWeightFields# ranking of search results by relevance 
 msgstr ""
 
 # Searching > Results Display
-msgid "searching.pref#XSLTDetailsDisplay# Show item details pages in the staff client"
-msgstr ""
-
-# Searching > Results Display
-msgid "searching.pref#XSLTDetailsDisplay# normally."
-msgstr ""
-
-# Searching > Results Display
-msgid "searching.pref#XSLTDetailsDisplay# using XSLT stylesheets."
-msgstr ""
-
-# Searching > Results Display
-msgid "searching.pref#XSLTResultsDisplay# Show biblio records on result page in the staff client"
-msgstr ""
-
-# Searching > Results Display
-msgid "searching.pref#XSLTResultsDisplay# normally."
-msgstr ""
-
-# Searching > Results Display
-msgid "searching.pref#XSLTResultsDisplay# using XSLT stylesheets."
-msgstr ""
-
-# Searching > Results Display
 msgid "searching.pref#defaultSortField# ,"
 msgstr ""
 
@@ -2959,6 +2811,14 @@ msgid "searching.pref#numSearchResults# results per page in the staff client."
 msgstr ""
 
 # Serials
+msgid "serials.pref#OPACSerialIssueDisplayCount# Show the"
+msgstr ""
+
+# Serials
+msgid "serials.pref#OPACSerialIssueDisplayCount# previous issues of a serial on the OPAC."
+msgstr ""
+
+# Serials
 msgid "serials.pref#RenewSerialAddsSuggestion# Add"
 msgstr ""
 
@@ -2994,6 +2854,30 @@ msgstr ""
 msgid "serials.pref#RoutingSerials# received serials to the routing list."
 msgstr ""
 
+# Serials
+msgid "serials.pref#StaffSerialIssueDisplayCount# Show the"
+msgstr ""
+
+# Serials
+msgid "serials.pref#StaffSerialIssueDisplayCount# previous issues of a serial on the staff client."
+msgstr ""
+
+# Serials
+msgid "serials.pref#SubscriptionHistory# When showing the subscription information for a biblio, show"
+msgstr ""
+
+# Serials
+msgid "serials.pref#SubscriptionHistory# a full list"
+msgstr ""
+
+# Serials
+msgid "serials.pref#SubscriptionHistory# a summary"
+msgstr ""
+
+# Serials
+msgid "serials.pref#SubscriptionHistory# of the serial issues."
+msgstr ""
+
 # Staff Client > Appearance
 msgid "staff-client.pref Appearance"
 msgstr ""
@@ -3019,7 +2903,35 @@ msgid "staff-client.pref#IntranetNav# Show the following HTML in the More menu a
 msgstr ""
 
 # Staff Client > Appearance
+msgid "staff-client.pref#IntranetUserCSS# Include the following CSS on all pages in the staff client:"
+msgstr ""
+
+# Staff Client > Appearance
 msgid "staff-client.pref#IntranetmainUserblock# Show the following HTML in its own column on the main page of the staff client:"
+msgstr ""
+
+# Staff Client > Appearance
+msgid "staff-client.pref#XSLTDetailsDisplay# Show item details pages in the staff client"
+msgstr ""
+
+# Staff Client > Appearance
+msgid "staff-client.pref#XSLTDetailsDisplay# normally."
+msgstr ""
+
+# Staff Client > Appearance
+msgid "staff-client.pref#XSLTDetailsDisplay# using XSLT stylesheets."
+msgstr ""
+
+# Staff Client > Appearance
+msgid "staff-client.pref#XSLTResultsDisplay# Show biblio records on result page in the staff client"
+msgstr ""
+
+# Staff Client > Appearance
+msgid "staff-client.pref#XSLTResultsDisplay# normally."
+msgstr ""
+
+# Staff Client > Appearance
+msgid "staff-client.pref#XSLTResultsDisplay# using XSLT stylesheets."
 msgstr ""
 
 # Staff Client > Appearance
@@ -3059,11 +2971,7 @@ msgid "staff-client.pref#intranetstylesheet# on all pages in the staff interface
 msgstr ""
 
 # Staff Client > Appearance
-msgid "staff-client.pref#intranetuserjs# Include the following JavaScript on all pages in the staff interface:"
-msgstr ""
-
-# Staff Client > Appearance
-msgid "staff-client.pref#language# Enable the following languages on the staff interface:"
+msgid "staff-client.pref#intranetuserjs# Include the following JavaScript on all pages in the staff clien:"
 msgstr ""
 
 # Staff Client > Appearance
@@ -3130,12 +3038,32 @@ msgstr ""
 msgid "staff-client.pref#yuipath# included with Koha (faster, will work if internet goes down)."
 msgstr ""
 
+# Web Services > ILS-DI
+msgid "web-services.pref ILS-DI"
+msgstr ""
+
 # Web Services > OAI-PMH
 msgid "web-services.pref OAI-PMH"
 msgstr ""
 
 # Web Services > OAI-PMH
 msgid "web-services.pref## . If empty, Koha OAI Server operates in normal mode, otherwise it operates in extended mode. In extended mode, it's possible to parameter other formats than marcxml or Dublin Core. OAI-PMH:ConfFile specify a YAML configuration file which list available metadata formats and XSL file used to create them from marcxml records."
+msgstr ""
+
+# Web Services > ILS-DI
+msgid "web-services.pref#ILS-DI# Disable"
+msgstr ""
+
+# Web Services > ILS-DI
+msgid "web-services.pref#ILS-DI# Enable"
+msgstr ""
+
+# Web Services > ILS-DI
+msgid "web-services.pref#ILS-DI# ILS-DI services for OPAC users"
+msgstr ""
+
+# Web Services > ILS-DI
+msgid "web-services.pref#ILS-DI:AuthorizedIPs# allowed IPs to use the ILS-DI services"
 msgstr ""
 
 # Web Services > OAI-PMH
@@ -3169,3 +3097,4 @@ msgstr ""
 # Web Services > OAI-PMH
 msgid "web-services.pref#OAI-PMH:archiveID# Identify records at this site with the prefix"
 msgstr ""
+

@@ -68,7 +68,7 @@ INSERT INTO language_subtag_registry( subtag, type, description, added)
 VALUES ( 'hy', 'language', 'Armenian','2005-10-16');
 
 INSERT INTO language_rfc4646_to_iso639(rfc4646_subtag,iso639_2_code)
-VALUES( 'hy','hy');
+VALUES( 'hy','arm');
 
 INSERT INTO language_descriptions(subtag, type, lang, description)
 VALUES ( 'hy', 'language', 'hy', '&#1344;&#1377;&#1397;&#1381;&#1408;&#1383;&#1398;');
@@ -135,7 +135,7 @@ INSERT INTO language_rfc4646_to_iso639(rfc4646_subtag,iso639_2_code)
 VALUES( 'da','dan');
 
 INSERT INTO language_descriptions(subtag, type, lang, description)
-VALUES ( 'da', 'language', 'da', 'D&aelig;nsk');
+VALUES ( 'da', 'language', 'da', 'Dansk');
 
 INSERT INTO language_descriptions(subtag, type, lang, description)
 VALUES( 'da', 'language', 'en', 'Danish');
@@ -151,7 +151,7 @@ INSERT INTO language_rfc4646_to_iso639(rfc4646_subtag,iso639_2_code)
 VALUES( 'nl','dut');
 
 INSERT INTO language_descriptions(subtag, type, lang, description)
-VALUES ( 'nl', 'language', 'nl', 'ned&#601;rl&#593;ns');
+VALUES ( 'nl', 'language', 'nl', 'Nederlands');
 
 INSERT INTO language_descriptions(subtag, type, lang, description)
 VALUES( 'nl', 'language', 'en', 'Dutch');
@@ -164,7 +164,7 @@ INSERT INTO language_subtag_registry( subtag, type, description, added)
 VALUES ( 'en', 'language', 'English','2005-10-16' );
 
 INSERT INTO language_rfc4646_to_iso639(rfc4646_subtag,iso639_2_code)
-VALUES( 'en','en');
+VALUES( 'en','eng');
 
 INSERT INTO language_descriptions(subtag, type, lang, description)
 VALUES( 'en', 'language', 'en', 'English');
@@ -172,9 +172,12 @@ VALUES( 'en', 'language', 'en', 'English');
 INSERT INTO language_descriptions(subtag, type, lang, description)
 VALUES( 'en', 'language', 'fr', 'Anglais');
 
--- English
+-- Finnish
 INSERT INTO language_subtag_registry( subtag, type, description, added)
 VALUES ( 'fi', 'language', 'Finnish','2005-10-16' );
+
+INSERT INTO language_rfc4646_to_iso639(rfc4646_subtag,iso639_2_code)
+VALUES( 'fi','fin');
 
 INSERT INTO language_descriptions(subtag, type, lang, description)
 VALUES( 'fi', 'language', 'fi', 'suomi');
@@ -187,7 +190,7 @@ INSERT INTO language_subtag_registry( subtag, type, description, added)
 VALUES ( 'fr', 'language', 'French','2005-10-16' );
 
 INSERT INTO language_rfc4646_to_iso639(rfc4646_subtag,iso639_2_code)
-VALUES( 'fr','fr');
+VALUES( 'fr','fre');
 
 INSERT INTO language_descriptions(subtag, type, lang, description)
 VALUES( 'fr', 'language', 'en', 'French');
@@ -202,8 +205,8 @@ VALUES( 'fr', 'language', 'fr', 'Fran&ccedil;ais');
 INSERT INTO language_subtag_registry( subtag, type, description, added)
 VALUES ( 'lo', 'language', 'Lao','2005-10-16' );
 
--- INSERT INTO language_rfc4646_to_iso639(rfc4646_subtag,iso639_2_code)
--- VALUES( 'lo','nor'); ???
+INSERT INTO language_rfc4646_to_iso639(rfc4646_subtag,iso639_2_code)
+VALUES( 'lo','lao');
 
 INSERT INTO language_descriptions(subtag, type, lang, description)
 VALUES( 'lo', 'language', 'lo', '&#3742;&#3762;&#3754;&#3762;&#3749;&#3762;&#3751;');
@@ -312,7 +315,7 @@ INSERT INTO language_subtag_registry( subtag, type, description, added)
 VALUES ( 'it', 'language', 'Italian','2005-10-16' );
 
 INSERT INTO language_rfc4646_to_iso639(rfc4646_subtag,iso639_2_code)
-VALUES( 'it','ind');
+VALUES( 'it','ita');
 
 INSERT INTO language_descriptions(subtag, type, lang, description)
 VALUES( 'it', 'language', 'it', 'Italiano');
@@ -371,7 +374,7 @@ VALUES( 'la', 'language', 'en', 'Latin');
 INSERT INTO language_descriptions(subtag, type, lang, description)
 VALUES( 'la', 'language', 'fr', 'Latin');
 
--- Galacian
+-- Galician
 
 INSERT INTO language_subtag_registry( subtag, type, description, added)
 VALUES ( 'gl', 'language', 'Galician','2005-10-16' );
@@ -385,21 +388,43 @@ VALUES( 'gl', 'language', 'gl', 'Galego');
 INSERT INTO language_descriptions(subtag, type, lang, description)
 VALUES( 'gl', 'language', 'en', 'Galician');
 
--- Norwegian
+-- Norwegian (bokmål)
 INSERT INTO language_subtag_registry( subtag, type, description, added)
-VALUES ( 'nb', 'language', 'Norwegian','2005-10-16' );
+VALUES ( 'nb', 'language', 'Norwegian bokm&#229;l','2005-10-16' );
 
 INSERT INTO language_rfc4646_to_iso639(rfc4646_subtag,iso639_2_code)
 VALUES( 'nb','nor');
 
-INSERT INTO language_descriptions(subtag, type, lang, description)
-VALUES( 'nb', 'language', 'nb', 'Norsk');
+INSERT INTO language_rfc4646_to_iso639(rfc4646_subtag,iso639_2_code)
+VALUES( 'nb','nob');
 
 INSERT INTO language_descriptions(subtag, type, lang, description)
-VALUES( 'nb', 'language', 'en', 'Norwegian');
+VALUES( 'nb', 'language', 'nb', 'Norsk bokm&#229;l');
 
 INSERT INTO language_descriptions(subtag, type, lang, description)
-VALUES( 'nb', 'language', 'fr', 'Norvégien');
+VALUES( 'nb', 'language', 'en', 'Norwegian bokm&#229;l');
+
+INSERT INTO language_descriptions(subtag, type, lang, description)
+VALUES( 'nb', 'language', 'fr', 'Norvégien bokm&#229;l');
+
+-- Norwegian (nynorsk)
+INSERT INTO language_subtag_registry( subtag, type, description, added)
+VALUES ( 'nn', 'language', 'Norwegian nynorsk','2011-02-14' );
+
+INSERT INTO language_rfc4646_to_iso639(rfc4646_subtag,iso639_2_code)
+VALUES( 'nn','nno');
+
+INSERT INTO language_descriptions(subtag, type, lang, description)
+VALUES( 'nn', 'language', 'nb', 'Norsk nynorsk');
+
+INSERT INTO language_descriptions(subtag, type, lang, description)
+VALUES( 'nn', 'language', 'nn', 'Norsk nynorsk');
+
+INSERT INTO language_descriptions(subtag, type, lang, description)
+VALUES( 'nn', 'language', 'en', 'Norwegian nynorsk');
+
+INSERT INTO language_descriptions(subtag, type, lang, description)
+VALUES( 'nn', 'language', 'fr', 'Norvégien nynorsk');
 
 -- Persian
 INSERT INTO language_subtag_registry( subtag, type, description, added)
@@ -485,6 +510,9 @@ VALUES( 'ru', 'language', 'fr', 'Russe');
 INSERT INTO language_subtag_registry( subtag, type, description, added)
 VALUES ( 'sr', 'language', 'Serbian','2005-10-16' );
 
+INSERT INTO language_rfc4646_to_iso639(rfc4646_subtag,iso639_2_code)
+VALUES( 'sr','srp');
+
 INSERT INTO language_descriptions(subtag, type, lang, description)
 VALUES( 'sr', 'language', 'sr', '&#1089;&#1088;&#1087;&#1089;&#1082;&#1080;');
 
@@ -526,6 +554,9 @@ VALUES( 'sv', 'language', 'fr', 'Suédois');
 -- Tetum
 INSERT INTO language_subtag_registry( subtag, type, description, added)
 VALUES ( 'tet', 'language', 'Tetum','2005-10-16' );
+
+INSERT INTO language_rfc4646_to_iso639(rfc4646_subtag,iso639_2_code)
+VALUES( 'tet','tet');
 
 INSERT INTO language_descriptions(subtag, type, lang, description)
 VALUES( 'tet', 'language', 'tet', 'tetun');
@@ -582,9 +613,12 @@ VALUES( 'uk', 'language', 'en', 'Ukranian');
 INSERT INTO language_descriptions(subtag, type, lang, description)
 VALUES( 'uk', 'language', 'fr', 'Ukrainien');
 
--- English
+-- Urdu
 INSERT INTO language_subtag_registry( subtag, type, description, added)
 VALUES ( 'ur', 'language', 'Urdu','2005-10-16' );
+
+INSERT INTO language_rfc4646_to_iso639(rfc4646_subtag,iso639_2_code)
+VALUES( 'ur','urd');
 
 INSERT INTO language_descriptions(subtag, type, lang, description)
 VALUES( 'ur', 'language', 'en', 'Urdu');

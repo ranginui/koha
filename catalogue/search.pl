@@ -79,7 +79,7 @@ There are several additional secondary functions performed that I will
 not cover in detail.
 
 =head3 1. Building Query Strings
-    
+
 There are several types of queries needed in the process of search and retrieve:
 
 =over
@@ -499,6 +499,12 @@ if (C4::Context->preference('NoZebra')) {
         ($error, $results_hashref, $facets) = getRecords($query,$simple_query,\@sort_by,\@servers,$results_per_page,$offset,$expanded_facet,$branches,$query_type,$scan);
     };
 }
+# This sorts the facets into alphabetical order
+if ($facets) {
+    foreach my $f (@$facets) {
+        $f->{facets} = [ sort { uc($a->{facet_title_value}) cmp uc($b->{facet_title_value}) } @{ $f->{facets} } ];
+    }
+}
 if ($@ || $error) {
     $template->param(query_error => $error.$@);
     output_html_with_http_headers $cgi, $cookie, $template->output;
@@ -543,6 +549,7 @@ for (my $i=0;$i<@servers;$i++) {
             $template->param(query_cgi => $query_cgi);
             $template->param(query_desc => $query_desc);
             $template->param(limit_desc => $limit_desc);
+            $template->param(offset     => $offset);
             $template->param(DisplayMultiPlaceHold => $DisplayMultiPlaceHold);
 			$template->param (z3950_search_params => C4::Search::z3950_search_args($query_desc));
             if ($query_desc || $limit_desc) {

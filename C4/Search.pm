@@ -1270,7 +1270,7 @@ sub buildQuery {
             $limit_cgi  .= "&limit=available";
             $limit_desc .= "";
         }
-#
+
         # group_OR_limits, prefixed by mc-
         # OR every member of the group
         elsif ( $this_limit =~ /mc/ ) {
@@ -1314,10 +1314,11 @@ sub buildQuery {
     # if user wants to do ccl or cql, start the query with that
 #    $query =~ s/:/=/g;
     $query =~ s/(?<=(ti|au|pb|su|an|kw|mc)):/=/g;
-    $query =~ s/(?<=rtrn):/=/g;
+    $query =~ s/(?<=(wrdl)):/=/g;
+    $query =~ s/(?<=(trn|phr)):/=/g;
     $limit =~ s/:/=/g;
     for ( $query, $query_desc, $limit, $limit_desc ) {
-        s/  / /g;    # remove extra spaces
+        s/  +/ /g;    # remove extra spaces
         s/^ //g;     # remove any beginning spaces
         s/ $//g;     # remove any ending spaces
         s/==/=/g;    # remove double == from query
@@ -1617,7 +1618,7 @@ sub searchResults {
                 if (   $item->{wthdrawn}
                     || $item->{itemlost}
                     || $item->{damaged}
-                    || $item->{notforloan}
+                    || $item->{notforloan} > 0
 		    || $reservestatus eq 'Waiting'
                     || ($transfertwhen ne ''))
                 {

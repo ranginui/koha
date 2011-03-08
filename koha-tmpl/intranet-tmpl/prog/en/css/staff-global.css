@@ -21,6 +21,11 @@ a.overdue,.overdue {
 	color : #cc0000;
 }
 
+a.popup {
+	background : transparent url("../../img/pop-up-link.png") center right no-repeat;
+	padding-right : 15px;
+}
+
 body {
 	text-align : left;
   	padding:0 0 2.5em 0;
@@ -432,6 +437,9 @@ ul.toolbar {
 	padding-left : 0;
 }
 
+ul.toolbar button {
+	padding-bottom : 2px;
+}
 .yui-menu-button  {
 	
 }
@@ -499,7 +507,8 @@ fieldset.brief {
 	border : 1px solid #E8E8E8;
 }
 
-fieldset.brief label {
+fieldset.brief label,
+fieldset.brief span.label {
 	display : block;
 	font-weight : bold;
 	padding : .3em 0;
@@ -535,7 +544,8 @@ div.yui-b fieldset.brief select {
 div.yui-b fieldset.brief li.radio {
 	padding : .7em 0;
 }
-div.yui-b fieldset.brief li.radio label {
+div.yui-b fieldset.brief li.radio label,
+div.yui-b fieldset.brief li.radio span.label {
 	display : inline;
 }
 
@@ -916,7 +926,8 @@ fieldset.rows .inputnote {
 	background-repeat : no-repeat;
 }
 
-#placehold a {
+#placehold a,
+#placehold button {
 	padding-left : 34px;
 	background-image: url("../../img/toolbar-hold.gif");
 	background-position : center left;
@@ -1128,11 +1139,21 @@ td input.approve {
 	color:black;
 	padding: .4em .4em .4em 34px;
 }
- 
+
 .dialog input.edit {
 	background: #fff url(../../img/toolbar-edit.gif) no-repeat 4px center;
 	color:black;
+	max-width : 13em;
 	padding: .4em .4em .4em 34px;
+	white-space: normal;
+}
+
+.dialog input.new {
+	background: #fff url(../../img/toolbar-new.gif) no-repeat 4px center;
+	color:black;
+	max-width : 13em;
+	padding: .4em .4em .4em 34px;
+	white-space: normal;
 }
 
 .dialog input.print {
@@ -1198,6 +1219,12 @@ span.required {
 
 a .term {
 	 text-decoration : underline;
+}
+
+/* style for shelving location in catalogsearch */
+.shelvingloc {
+    display : block;
+    font-style : italic;
 }
 
 a:hover .term {
@@ -1337,9 +1364,10 @@ li.email {
 	font-size : 105%;
 }
 
-.reserve {
+.hold {
 	float : right;
-	font-weight : bold;
+	font-size: 90%;
+	margin: 0;
 }
 
 .thumbnail {
@@ -1883,3 +1911,12 @@ ul.budget_hierarchy li:last-child:after {
 ul.budget_hierarchy li:first-child:after {
     content: "";
 }
+.holdcount { font-size : 105%; line-height : 200%; }
+.holdcount a { border : 1px solid #a4bedd; background-color : #e4ecf5; font-weight : bold; -moz-border-radius: 4px; padding : .1em .4em; text-decoration : none; }
+.holdcount a:hover { background-color : #ebeff7; }
+.container {
+	border : 1px solid #EEE;
+	padding : 1em;
+	margin : 1em 0;
+}
+fieldset.rows+h3 {clear:both;padding-top:.5em;}

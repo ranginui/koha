@@ -563,7 +563,7 @@ CREATE TABLE `currency` (
   `currency` varchar(10) NOT NULL default '',
   `symbol` varchar(5) default NULL,
   `timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  `rate` float(7,5) default NULL,
+  `rate` float(15,5) default NULL,
   `active` tinyint(1) default NULL,
   PRIMARY KEY  (`currency`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -642,7 +642,7 @@ CREATE TABLE `deletedbiblioitems` (
 DROP TABLE IF EXISTS `deletedborrowers`;
 CREATE TABLE `deletedborrowers` (
   `borrowernumber` int(11) NOT NULL default 0,
-  `cardnumber` varchar(9) NOT NULL default '',
+  `cardnumber` varchar(16) NOT NULL default '',
   `surname` mediumtext NOT NULL,
   `firstname` text,
   `title` mediumtext,
@@ -703,6 +703,7 @@ CREATE TABLE `deletedborrowers` (
   `altcontactcountry` text default NULL,
   `altcontactphone` varchar(50) default NULL,
   `smsalertnumber` varchar(50) default NULL,
+  `privacy` integer(11) DEFAULT '1' NOT NULL,
   KEY `borrowernumber` (`borrowernumber`),
   KEY `cardnumber` (`cardnumber`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -1791,10 +1792,15 @@ CREATE TABLE `subscriptionhistory` (
 DROP TABLE IF EXISTS `subscriptionroutinglist`;
 CREATE TABLE `subscriptionroutinglist` (
   `routingid` int(11) NOT NULL auto_increment,
-  `borrowernumber` int(11) default NULL,
+  `borrowernumber` int(11) NOT NULL,
   `ranking` int(11) default NULL,
-  `subscriptionid` int(11) default NULL,
-  PRIMARY KEY  (`routingid`)
+  `subscriptionid` int(11) NOT NULL,
+  PRIMARY KEY  (`routingid`),
+  UNIQUE (`subscriptionid`, `borrowernumber`),
+  CONSTRAINT `subscriptionroutinglist_ibfk_1` FOREIGN KEY (`borrowernumber`) REFERENCES `borrowers` (`borrowernumber`)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `subscriptionroutinglist_ibfk_2` FOREIGN KEY (`subscriptionid`) REFERENCES `subscription` (`subscriptionid`)
+    ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --

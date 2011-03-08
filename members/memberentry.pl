@@ -198,10 +198,7 @@ if (($op eq 'insert') and !$nodouble){
 }
 
   #recover all data from guarantor address phone ,fax... 
-if ( defined($guarantorid) and
-     ( $category_type eq 'C' || $category_type eq 'P' ) and
-     $guarantorid ne ''  and
-     $guarantorid ne '0' ) {
+if ( $guarantorid and ( $category_type eq 'C' || $category_type eq 'P' )) {
     if (my $guarantordata=GetMember(borrowernumber => $guarantorid)) {
         $guarantorinfo=$guarantordata->{'surname'}." , ".$guarantordata->{'firstname'};
         if ( !defined($data{'contactname'}) or $data{'contactname'} eq '' or
@@ -415,9 +412,12 @@ if ($ethnicitycategoriescount>=0) {
 }
 
 my @typeloop;
+my $no_categories = 1;
+my $no_add;
 foreach (qw(C A S P I X)) {
     my $action="WHERE category_type=?";
 	($categories,$labels)=GetborCatFromCatType($_,$action);
+    if(scalar(@$categories) > 0){ $no_categories = 0; }
 	my @categoryloop;
 	foreach my $cat (@$categories){
 		push @categoryloop,{'categorycode' => $cat,
@@ -429,14 +429,19 @@ foreach (qw(C A S P I X)) {
 	}
 	my %typehash;
 	$typehash{'typename'}=$_;
+    my $typedescription = "typename_".$typehash{'typename'};
 	$typehash{'categoryloop'}=\@categoryloop;
 	push @typeloop,{'typename' => $_,
+        $typedescription => 1,
 	  'categoryloop' => \@categoryloop};
-}  
-$template->param('typeloop' => \@typeloop);
-
+}
+$template->param('typeloop' => \@typeloop,
+        no_categories => $no_categories);
+if($no_categories){ $no_add = 1; }
 # test in city
-$select_city=getidcity($data{'city'}) if defined $guarantorid and ($guarantorid ne '0');
+if ( $guarantorid ) {
+    $select_city = getidcity($data{city});
+}
 ($default_city=$select_city) if ($step eq 0);
 if (!defined($select_city) or $select_city eq '' ){
 	$default_city = &getidcity($data{'city'});
@@ -525,17 +530,18 @@ my $onlymine=(C4::Context->preference('IndependantBranches') &&
               
 my $branches=GetBranches($onlymine);
 my $default;
-
+my $CGIbranch;
 for my $branch (sort { $branches->{$a}->{branchname} cmp $branches->{$b}->{branchname} } keys %$branches) {
     push @select_branch,$branch;
     $select_branches{$branch} = $branches->{$branch}->{'branchname'};
     $default = C4::Context->userenv->{'branch'} if (C4::Context->userenv && C4::Context->userenv->{'branch'});
 }
+if(scalar(@select_branch) > 0){
 # --------------------------------------------------------------------------------------------------------
   #in modify mod :default value from $CGIbranch comes from borrowers table
   #in add mod: default value come from branches table (ip correspendence)
 $default=$data{'branchcode'}  if ($op eq 'modify' || ($op eq 'add' && $category_type eq 'C'));
-my $CGIbranch = CGI::scrolling_list(-id    => 'branchcode',
+$CGIbranch = CGI::scrolling_list(-id    => 'branchcode',
             -name   => 'branchcode',
             -values => \@select_branch,
             -labels => \%select_branches,
@@ -544,6 +550,17 @@ my $CGIbranch = CGI::scrolling_list(-id    => 'branchcode',
             -multiple =>0,
             -default => $default,
         );
+}
+
+if(!$CGIbranch){
+    $no_add = 1;
+    $template->param(no_branches => 1);
+}
+if($no_categories){
+    $no_add = 1;
+    $template->param(no_categories => 1);
+}
+$template->param(no_add => $no_add);
 my $CGIorganisations;
 my $member_of_institution;
 if (C4::Context->preference("memberofinstitution")){
@@ -634,10 +651,11 @@ $template->param(
   check_member    => $check_member,#to know if the borrower already exist(=>1) or not (=>0) 
   "op$op"   => 1);
 
+$template->param(CGIbranch=>$CGIbranch) if ($CGIbranch);
 $template->param(
   nodouble  => $nodouble,
   borrowernumber  => $borrowernumber, #register number
-  guarantorid => (defined($borrower_data->{'guarantorid'})) ? $borrower_data->{'guarantorid'} : $guarantorid,
+  guarantorid => (($borrower_data->{'guarantorid'})) ? $borrower_data->{'guarantorid'} : $guarantorid,
   ethcatpopup => $ethcatpopup,
   relshiploop => \@relshipdata,
   city_loop => $city_arrayref,
@@ -648,9 +666,9 @@ $template->param(
   dateformat      => C4::Dates->new()->visual(),
   C4::Context->preference('dateformat') => 1,
   check_categorytype =>$check_categorytype,#to recover the category type with checkcategorytype function
+  category_type =>$category_type,
   modify          => $modify,
   nok     => $nok,#flag to konw if an error 
-  CGIbranch => $CGIbranch,
   memberofinstution => $member_of_institution,
   CGIorganisations => $CGIorganisations,
   NoUpdateLogin =>  $NoUpdateLogin

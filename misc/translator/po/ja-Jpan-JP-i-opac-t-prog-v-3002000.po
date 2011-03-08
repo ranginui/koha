@@ -4,20 +4,20 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: 2010-02-20 22:00+1300\n"
-"PO-Revision-Date: 2008-03-22 21:11+0200\n"
-"Last-Translator: translate.koha.org\n"
+"PO-Revision-Date: 2011-01-20 23:50+0200\n"
+"Last-Translator: jolin3apa <jolin3apa@gmail.com>\n"
 "Language-Team: Koha Translation Team <koha-translate@lists.koha.org>\n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8-bit\n"
-"X-Generator: Kartouche 0.1 - 22 October 2003\n"
-"\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Pootle 2.1.3\n"
 
 #. SCRIPT
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/includes/doc-head-close.inc:63
-#, fuzzy
 msgid " item(s) added to your cart"
-msgstr "送り届けて本を借りる"
+msgstr "カートに追加完了"
 
 #. A
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:163
@@ -34,7 +34,7 @@ msgstr ""
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/includes/opac-bottom.inc:23
 #, c-format
 msgid "%s %s %s %s (%s)"
-msgstr ""
+msgstr "%s %s %s %s (%s)"
 
 #. %1$s: TMPL_VAR name=firstname
 #. %2$s: TMPL_VAR name=surname
@@ -42,7 +42,7 @@ msgstr ""
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/opac-reserve.tmpl:223
 #, c-format
 msgid "%s %s (%s)"
-msgstr ""
+msgstr "%s %s (%s)"
 
 #. For the first occurrence,
 #. %1$s: TMPL_VAR name=firstname
@@ -55,7 +55,7 @@ msgstr ""
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/opac-userdetails.tmpl:12
 #, c-format
 msgid "%s %s's account"
-msgstr ""
+msgstr "%2$s %1$sさんのアカウント"
 
 #. For the first occurrence,
 #. %1$s: TMPL_VAR name=LibraryName
@@ -63,14 +63,14 @@ msgstr ""
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/sco/help.tmpl:1
 #, c-format
 msgid "%s &rsaquo; Self Checkout"
-msgstr ""
+msgstr "%s &rsaquo; セルフチェックアウト"
 
 #. %1$s: TMPL_VAR name=description
 #. %2$s: TMPL_VAR name=categorycode
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/opac-userupdate.tmpl:152
-#, fuzzy, c-format
+#, c-format
 msgid "%s (%s)"
-msgstr "ご光臨を歓迎する %2$s %1$s"
+msgstr "%s (%s)"
 
 #. %1$s: TMPL_VAR name=bibliotitle
 #. %2$s: TMPL_VAR name=biblionumber
@@ -87,9 +87,9 @@ msgstr "%1$s;"
 
 #. %1$s: TMPL_VAR name=review
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:660
-#, fuzzy, c-format
+#, c-format
 msgid "%s <a1>Edit</a>"
-msgstr "作者 <a1>%s</a>"
+msgstr "%s <a1>編集</a>"
 
 #. %1$s: TMPL_VAR name=description
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/opac-browser.tmpl:16
@@ -201,7 +201,7 @@ msgstr "%1$s;"
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/opac-userdetails.tmpl:22
 #, c-format
 msgid "%s, %s"
-msgstr ""
+msgstr "%s, %s"
 
 #. %1$s: TMPL_VAR name=B_address
 #. %2$s: TMPL_VAR name=B_address2
@@ -285,7 +285,7 @@ msgstr "1筆おりる &gt;&gt;"
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:179
 #, c-format
 msgid "&ldquo;%s %s&rdquo;"
-msgstr ""
+msgstr "&ldquo;%s %s&rdquo;"
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/opac-authoritiessearchresultlist.tmpl:16
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/opac-authoritiessearchresultlist.tmpl:70
@@ -294,7 +294,7 @@ msgstr "&lt;&lt;上1筆"
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:381
 msgid "&lt;&lt; Back to Cart"
-msgstr ""
+msgstr "&lt;&lt; カートに戻る"
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/includes/page-numbers.inc:3
 #, fuzzy
@@ -604,11 +604,11 @@ msgstr ""
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:80
 msgid "&nbsp;&nbsp;&nbsp;&nbsp; ISBN"
-msgstr ""
+msgstr "&nbsp;&nbsp;&nbsp;&nbsp; ISBN"
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:81
 msgid "&nbsp;&nbsp;&nbsp;&nbsp; ISSN"
-msgstr ""
+msgstr "&nbsp;&nbsp;&nbsp;&nbsp; ISSN"
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:70
 msgid "&nbsp;&nbsp;&nbsp;&nbsp; Personal Name"
@@ -683,7 +683,7 @@ msgstr "（%1$s 全部で）"
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:287
 #, c-format
 msgid "(%s)"
-msgstr ""
+msgstr "(%s)"
 
 #. For the first occurrence,
 #. %1$s: TMPL_VAR name=count
@@ -691,7 +691,7 @@ msgstr ""
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/opac-results.tmpl:438
 #, c-format
 msgid "(%s),"
-msgstr ""
+msgstr "(%s),"
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:377
 #, c-format
@@ -920,14 +920,14 @@ msgstr "...或いは..."
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:167
 msgid ".png"
-msgstr ""
+msgstr ".png"
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:41
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACResults.xsl:52
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslimUtils.xsl:94
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslimUtils.xsl:177
 msgid "/"
-msgstr ""
+msgstr "/"
 
 #. %1$s: TMPL_VAR name=editionresponsibility
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:124
@@ -990,7 +990,7 @@ msgstr "題名"
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:434
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:100
 msgid "100,110,111,700,710,711"
-msgstr ""
+msgstr "100,110,111,700,710,711"
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:116
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/includes/opac-topissues.inc:39
@@ -1000,7 +1000,7 @@ msgstr "2 ヶ月"
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:340
 msgid "130,240"
-msgstr ""
+msgstr "130,240"
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:80
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/includes/opac-topissues.inc:7
@@ -1054,7 +1054,7 @@ msgstr "題名"
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:176
 msgid "440,490"
-msgstr ""
+msgstr "440,490"
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/opac-topissues.tmpl:84
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/includes/opac-topissues.inc:11
@@ -1072,13 +1072,13 @@ msgstr "2 ヶ月"
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/opac-results-grouped.tmpl:221
 #, c-format
 msgid ": %s"
-msgstr ""
+msgstr ": %s"
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:511
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:1024
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:593
 msgid ":,;/"
-msgstr ""
+msgstr ":,;/"
 
 #. For the first occurrence,
 #. %1$s: TMPL_VAR name=collectionvolume
@@ -1089,7 +1089,7 @@ msgstr ""
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/opac-results-grouped.tmpl:222
 #, c-format
 msgid "; %s"
-msgstr ""
+msgstr "; %s"
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:810
 msgid "; Audience:"
@@ -1248,7 +1248,7 @@ msgstr "<a1>登って入る</a> Koha"
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:11
 #, c-format
 msgid "<a1>Search history</a> [<a2>x</a>]"
-msgstr ""
+msgstr "<a1>検索歴史</a> [<a2>x</a>]"
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:140
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/opac-basket.tmpl:313
@@ -1903,13 +1903,12 @@ msgid "Book Cover Image"
 msgstr "館所蔵の表紙のピクチャー"
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:189
-#, fuzzy
 msgid "Braille"
-msgstr "館内にある"
+msgstr "点字資料"
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/includes/subtypes_unimarc.inc:24
 msgid "Braille or Moon script"
-msgstr ""
+msgstr "点字資料"
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:336
 #, fuzzy
@@ -2622,9 +2621,8 @@ msgstr "金額"
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:73
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/opac-readingrecord.tmpl:52
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/opac-user.tmpl:223
-#, fuzzy
 msgid "Cover Image"
-msgstr "館所蔵の表紙のピクチャー"
+msgstr "本の表紙画像"
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/opac-shelves.tmpl:502
 #, fuzzy
@@ -6476,7 +6474,7 @@ msgstr "題名を検索する："
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:516
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:54
 msgid "Visual Material"
-msgstr ""
+msgstr "映像資料"
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/opac-detail.tmpl:363
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/opac-reserve.tmpl:458
@@ -6503,7 +6501,7 @@ msgstr "週"
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc:7
 #, c-format
 msgid "Welcome, <a1>"
-msgstr ""
+msgstr "ようこそ ，<a1>さん"
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACResults.xsl:159
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:985
@@ -7042,9 +7040,8 @@ msgstr "あなたの図書貸し出し証の番号"
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:79
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:337
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:349
-#, fuzzy
 msgid "braille"
-msgstr "館内にある"
+msgstr "点字資料"
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/includes/subtypes_unimarc.inc:184
 msgid "bristol board"
@@ -7708,7 +7705,7 @@ msgstr ""
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/includes/subtypes_unimarc.inc:64
 msgid "maps"
-msgstr ""
+msgstr "地図"
 
 #. INPUT type=checkbox name=limit
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/opac-advsearch.tmpl:124
@@ -7794,7 +7791,7 @@ msgstr "月"
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:775
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/includes/subtypes_unimarc.inc:112
 msgid "motion picture"
-msgstr ""
+msgstr "映画"
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/includes/subtypes_unimarc.inc:27
 msgid "multimedia"
@@ -7847,7 +7844,7 @@ msgstr "要旨"
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/includes/usermenu.inc:10
 msgid "my tags"
-msgstr ""
+msgstr "マイタグ"
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/ilsdi.tmpl:617
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/modules/ilsdi.tmpl:648
@@ -8489,7 +8486,7 @@ msgstr "題名"
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:803
 msgid "toy"
-msgstr ""
+msgstr "おもちゃ"
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/includes/subtypes_unimarc.inc:76
 msgid "transparencies"
@@ -8573,11 +8570,11 @@ msgstr "続けて借りる"
 #. IMG
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:516
 msgid "visual material"
-msgstr ""
+msgstr "映像資料"
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/includes/subtypes_unimarc.inc:113
 msgid "visual projection"
-msgstr ""
+msgstr "視覚投影"
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:385
 msgid "vxyz"
@@ -8614,9 +8611,8 @@ msgid "whether or not to return patron's contact information in the response"
 msgstr ""
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/xslt/MARC21slim2OPACResults.xsl:334
-#, fuzzy
 msgid "wire recording"
-msgstr "%1$s 図書目録の記録"
+msgstr "%1$s 針金磁気録音"
 
 #. For the first occurrence,
 #. %1$s: TMPL_VAR name=limit_desc
@@ -8628,7 +8624,7 @@ msgstr ""
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/includes/subtypes_unimarc.inc:191
 msgid "wood"
-msgstr ""
+msgstr "木材"
 
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACDetail.xsl:386
 #: /home/chris/git/koha.git/koha-tmpl/opac-tmpl/prog/en/xslt/UNIMARCslim2OPACResults.xsl:84

@@ -55,7 +55,6 @@ foreach ( @filters[0..3] ) {
 }
 my $output   = $input->param("output");
 my $basename = $input->param("basename");
-# my $mime     = $input->param("MIME");
 my ($template, $borrowernumber, $cookie)
     = get_template_and_user({template_name => $fullreportname,
                 query => $input,
@@ -110,7 +109,7 @@ my $dbh = C4::Context->dbh;
 my @values;
 
 # here each element returned by map is a hashref, get it?
-my @mime  = ( map { {type =>$_} } (split /[;:]/,C4::Context->preference("MIME")) );
+my @mime  = ( map { {type =>$_} } (split /[;:]/, 'CSV') ); # FIXME translation
 my $delims = GetDelimiterChoices;
 my $branches = GetBranches;
 my @branchloop;
@@ -297,10 +296,11 @@ sub calculate {
     $strcalc .= "SELECT  CONCAT(borrowers.surname , \",\\t\",borrowers.firstname),  COUNT(*) AS RANK, borrowers.borrowernumber AS ID";
     $strcalc .= " , $colfield " if ($colfield);
     $strcalc .= " FROM `old_issues`
-                  LEFT JOIN  borrowers  ON old_issues.borrowernumber=borrowers.borrowernumber
-                  LEFT JOIN    items    ON items.itemnumber=old_issues.itemnumber
-                  LEFT JOIN biblioitems ON (biblioitems.biblioitemnumber=items.biblioitemnumber)
-                  WHERE 1";
+                  LEFT JOIN  borrowers  USING(borrowernumber)
+                  LEFT JOIN    items    USING(itemnumber)
+                  LEFT JOIN biblioitems USING(biblioitemnumber)
+                  WHERE old_issues.borrowernumber IS NOT NULL
+                  ";
 	my @filterterms = (
 		'old_issues.timestamp  >',
 		'old_issues.timestamp  <',

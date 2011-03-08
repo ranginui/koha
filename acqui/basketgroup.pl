@@ -4,6 +4,7 @@
 #written by john.soros@biblibre.com 01/10/2008
 
 # Copyright 2008 - 2009 BibLibre SARL
+# Parts Copyright Catalyst 2010
 #
 # This file is part of Koha.
 #
@@ -183,8 +184,9 @@ sub printbasketgrouppdf{
     my ($basketgroupid) = @_;
     
     my $pdfformat = C4::Context->preference("OrderPdfFormat");
-    eval "use $pdfformat" ;
-    eval "use C4::Branch";
+    eval "use $pdfformat";
+    # FIXME consider what would happen if $pdfformat does not
+    # contain the name of a valid Perl module.
     
     my $basketgroup = GetBasketgroup($basketgroupid);
     my $bookseller = GetBookSellerFromId($basketgroup->{'booksellerid'});
@@ -244,7 +246,6 @@ sub printbasketgrouppdf{
     );
     my $pdf = printpdf($basketgroup, $bookseller, $baskets, \%orders, $bookseller->{gstrate} // C4::Context->preference("gist")) || die "pdf generation failed";
     print $pdf;
-    exit;
 }
 
 my $op = $input->param('op');
@@ -382,10 +383,12 @@ if ( $op eq "add" ) {
     CloseBasketgroup($basketgroupid);
     
     printbasketgrouppdf($basketgroupid);
+    exit;
 }elsif ($op eq 'print'){
     my $basketgroupid = $input->param('basketgroupid');
     
     printbasketgrouppdf($basketgroupid);
+    exit;
 }elsif( $op eq "delete"){
     my $basketgroupid = $input->param('basketgroupid');
     DelBasketgroup($basketgroupid);

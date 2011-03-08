@@ -340,6 +340,7 @@ sub get_template_and_user {
             XSLTResultsDisplay           => C4::Context->preference("XSLTResultsDisplay"),
             BranchesLoop                 => GetBranchesLoop(),
             using_https                  => $in->{'query'}->https() ? 1 : 0,
+            noItemTypeImages            => C4::Context->preference("noItemTypeImages"),
     );
 
     if ( $in->{'type'} eq "intranet" ) {
@@ -357,15 +358,14 @@ sub get_template_and_user {
             IntranetmainUserblock       => C4::Context->preference("IntranetmainUserblock"),
             LibraryName                 => C4::Context->preference("LibraryName"),
             LoginBranchname             => (C4::Context->userenv?C4::Context->userenv->{"branchname"}:"insecure"),
-            TemplateEncoding            => C4::Context->preference("TemplateEncoding"),
             advancedMARCEditor          => C4::Context->preference("advancedMARCEditor"),
             canreservefromotherbranches => C4::Context->preference('canreservefromotherbranches'),
             intranetcolorstylesheet     => C4::Context->preference("intranetcolorstylesheet"),
             intranetreadinghistory      => C4::Context->preference("intranetreadinghistory"),
             intranetstylesheet          => C4::Context->preference("intranetstylesheet"),
+            IntranetUserCSS             => C4::Context->preference("IntranetUserCSS"),
             intranetuserjs              => C4::Context->preference("intranetuserjs"),
             intranetbookbag             => C4::Context->preference("intranetbookbag"),
-            noItemTypeImages            => C4::Context->preference("noItemTypeImages"),
             suggestion                  => C4::Context->preference("suggestion"),
             virtualshelves              => C4::Context->preference("virtualshelves"),
             StaffSerialIssueDisplayCount => C4::Context->preference("StaffSerialIssueDisplayCount"),
@@ -422,7 +422,6 @@ sub get_template_and_user {
             OPACFinesTab              => C4::Context->preference("OPACFinesTab"),
             OpacTopissue              => C4::Context->preference("OpacTopissue"),
             RequestOnOpac             => C4::Context->preference("RequestOnOpac"),
-            TemplateEncoding          => "". C4::Context->preference("TemplateEncoding"),
             'Version'                 => C4::Context->preference('Version'),
             hidelostitems             => C4::Context->preference("hidelostitems"),
             mylibraryfirst            => (C4::Context->preference("SearchMyLibraryFirst") && C4::Context->userenv) ? C4::Context->userenv->{'branch'} : '',
@@ -722,7 +721,7 @@ sub checkauth {
 		    ( $return, $cardnumber ) = checkpw( $dbh, $userid, $password, $query );
 		}
 		if ($return) {
-            	_session_log(sprintf "%20s from %16s logged in  at %30s.\n", $userid,$ENV{'REMOTE_ADDR'},localtime);
+               _session_log(sprintf "%20s from %16s logged in  at %30s.\n", $userid,$ENV{'REMOTE_ADDR'},(strftime '%c', localtime));
             	if ( $flags = haspermission(  $userid, $flagsrequired ) ) {
 					$loggedin = 1;
             	}
@@ -944,7 +943,6 @@ sub checkauth {
         intranetbookbag    => C4::Context->preference("intranetbookbag"),
         IntranetNav        => C4::Context->preference("IntranetNav"),
         intranetuserjs     => C4::Context->preference("intranetuserjs"),
-        TemplateEncoding   => C4::Context->preference("TemplateEncoding"),
         IndependantBranches=> C4::Context->preference("IndependantBranches"),
         AutoLocation       => C4::Context->preference("AutoLocation"),
 		wrongip            => $info{'wrongip'}

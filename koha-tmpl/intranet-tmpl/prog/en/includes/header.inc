@@ -22,7 +22,9 @@
                             <!-- TMPL_IF NAME="CAN_user_acquisition" -->
                             <li><a href="/cgi-bin/koha/acqui/acqui-home.pl">Acquisitions</a></li>
                             <!-- /TMPL_IF -->
+                            <!-- TMPL_IF NAME="CAN_user_editauthorities" -->
                             <li><a href="/cgi-bin/koha/authorities/authorities-home.pl">Authorities</a></li>
+                            <!-- /TMPL_IF -->
                             <!-- TMPL_IF NAME="CAN_user_serials" -->
                             <li><a href="/cgi-bin/koha/serials/serials-home.pl">Serials</a></li>
                             <!-- /TMPL_IF -->
@@ -62,7 +64,7 @@
             <span class="loggedinusername">
                 <!-- TMPL_VAR NAME="loggedinusername" -->
             </span>
-            (<a href="/cgi-bin/koha/mainpage.pl?logout.x=1">Log Out</a>) |
+            (<a href="/cgi-bin/koha/mainpage.pl?logout.x=1"<!-- TMPL_IF NAME="intranetbookbag" --> onclick="javascript:delBasket(true);"<!-- /TMPL_IF -->>Log Out</a>) |
         <!-- TMPL_ELSE -->
             You are not logged in |
         <!-- /TMPL_IF -->

@@ -26,6 +26,7 @@ use warnings;
 use CGI;
 use C4::Circulation;
 use C4::Auth;
+use URI::Escape;
 use C4::Dates qw/format_date_in_iso/;
 my $input = new CGI;
 
@@ -76,7 +77,7 @@ my $cardnumber = $input->param("cardnumber");
 my $borrowernumber = $input->param("borrowernumber");
 my $exemptfine = $input->param("exemptfine") || 0;
 my $override_limit = $input->param("override_limit") || 0;
-my $failedrenews;
+my $failedrenews = q{};
 foreach my $itemno (@data) {
     # check status before renewing issue
 	my ($renewokay,$error) = CanBookBeRenewed($borrowernumber,$itemno,$override_limit);
@@ -87,7 +88,7 @@ foreach my $itemno (@data) {
 		$failedrenews.="&failedrenew=$itemno";        
 	}
 }
-my $failedreturn;
+my $failedreturn = q{};
 foreach my $barcode (@barcodes) {
     # check status before renewing issue
    my ( $returned, $messages, $issueinformation, $borrower ) = 
@@ -99,6 +100,7 @@ foreach my $barcode (@barcodes) {
 # redirection to the referrer page
 #
 if ($input->param('destination') eq "circ"){
+    $cardnumber = uri_escape($cardnumber);
     print $input->redirect(
         '/cgi-bin/koha/circ/circulation.pl?findborrower='.$cardnumber.$failedrenews.$failedreturn
     );

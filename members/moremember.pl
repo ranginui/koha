@@ -89,6 +89,9 @@ if ($print eq "page") {
     $template_name = "members/moremember-receipt.tmpl";
     $quickslip = 1;
     $flagsrequired =  { circulate => "circulate_remaining_permissions" };
+} elsif ($print eq "brief") {
+    $template_name = "members/moremember-brief.tmpl";
+    $flagsrequired = { borrowers => 1 };
 } else {
     $template_name = "members/moremember.tmpl";
     $flagsrequired = { borrowers => 1 };
@@ -151,7 +154,7 @@ $data->{ "sex_".$data->{'sex'}."_p" } = 1;
 
 my $catcode;
 if ( $category_type eq 'C') {
-	if ($data->{'guarantorid'} ne '0' ) {
+	if ($data->{guarantorid} ) {
     	my $data2 = GetMember( 'borrowernumber' => $data->{'guarantorid'} );
     	foreach (qw(address city B_address B_city phone mobile zipcode country B_country)) {
     	    $data->{$_} = $data2->{$_};
@@ -168,7 +171,7 @@ if ( $category_type eq 'C') {
 if ( $data->{'ethnicity'} || $data->{'ethnotes'} ) {
     $template->param( printethnicityline => 1 );
 }
-if ( $category_type eq 'A' ) {
+if ( $category_type eq 'A' || $category_type eq 'I') {
     $template->param( isguarantee => 1 );
 
     # FIXME
@@ -188,7 +191,7 @@ if ( $category_type eq 'A' ) {
         );
     }
     $template->param( guaranteeloop => \@guaranteedata );
-    ( $template->param( adultborrower => 1 ) ) if ( $category_type eq 'A' );
+    ( $template->param( adultborrower => 1 ) ) if ( $category_type eq 'A' || $category_type eq 'I' );
 }
 else {
     if ($data->{'guarantorid'}){
@@ -218,8 +221,7 @@ if ( C4::Context->preference("IndependantBranches") ) {
     $samebranch = 1;
 }
 my $branchdetail = GetBranchDetail( $data->{'branchcode'});
-$data->{'branchname'} = $branchdetail->{branchname};
-
+@{$data}{keys %$branchdetail} = values %$branchdetail; # merge in all branch columns
 
 my ( $total, $accts, $numaccts) = GetMemberAccountRecords( $borrowernumber );
 my $lib1 = &GetSortDetails( "Bsort1", $data->{'sort1'} );
@@ -423,6 +425,7 @@ $template->param(
     categoryname    => $data->{'description'},
     reregistration  => $reregistration,
     branch          => $branch,
+    todaysdate      => C4::Dates->today(),
     totalprice      => sprintf("%.2f", $totalprice),
     totaldue        => sprintf("%.2f", $total),
     totaldue_raw    => $total,
