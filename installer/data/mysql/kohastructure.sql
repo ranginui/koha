@@ -2585,9 +2585,22 @@ CREATE TABLE `indexes` (
   `mandatory` tinyint(4) DEFAULT NULL,
   `sortable` tinyint(4) DEFAULT NULL,
   `plugin` varchar(255) DEFAULT NULL,
+  `avlist` varchar(255) DEFAULT NULL,
+  `rpn_index` INT  NOT NULL,
+  `ccl_index_name` VARCHAR(255)  NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE (`code`, `type`)
+  UNIQUE (`code`,`type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+T NULL,
+
+
+
+
+
+
+
 
 --
 -- Table structure for table `indexmappings`
