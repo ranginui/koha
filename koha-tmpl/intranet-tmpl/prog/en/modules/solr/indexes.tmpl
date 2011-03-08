@@ -11,19 +11,20 @@
         $('.add').click(function() {
             var code            = $('#code').val();
             var label           = $('#label').val();
-            var type            = $('#type').val();
+            var type            = $('#type option:selected').val();
+            var ccl_index_name  = $('#ccl_index_name').val();
+            var rpn_index       = $('#rpn_index').val();
             var faceted         = $('#faceted').attr('checked') ? 'checked="checked"' : '';
             var sortable        = $('#sortable').attr('checked') ? 'checked="checked"' : '';
-            var plugin          = $('#plugin').val();
+            var plugin          = $('#plugin option:selected').val();
+            var avlists         = $('#avlists option:selected').val();
             
             if ( code != '' && label != '' ) {
             
                 var line  = '<tr>';
                     line += '<td><input name="mandatory" type="hidden" maxlength="1" value="0" /></td>';
-                    line += '<td><input name="code" maxlength="25" type="text" value="'+code+'" /\></td>';
-                    line += '<input name="rpn_index" maxlength="25" type="hidden" value="0" /\>';
-                    line += '<input name="ccl_index_name" maxlength="25" type="hidden" value="" /\>';
-                    line += '<td><input name="label" maxlength="25" type="text" value="'+label+'" /\></td>';
+                    line += '<td><input name="code" maxlength="25" type="text" value="'+code+'" /></td>';
+                    line += '<td><input name="label" maxlength="25" type="text" value="'+label+'" /></td>';
                     line += '<td>';
                     line += '<select name="type">';
                     line += '<option value="str">String</option>';
@@ -33,13 +34,25 @@
                     line += '<option value="date">Date</option>';
                     line += '</select>';
                     line += '</td>';
-                    line += '<td><input name="faceted" type="checkbox" '+faceted+' value="'+code+'" /\></td>';
-                    line += '<td><input name="sortable" type="checkbox" '+sortable+' value="'+code+'" /\></td>';
+                    line += '<td><input name="ccl_index_name" maxlength="25" value="'+ccl_index_name+'" /></td>';
+                    line += '<td><input name="rpn_index" size="10" maxlength="25" value="'+rpn_index+'" /></td>';
+                    line += '<td><input name="faceted" type="checkbox" '+faceted+' value="'+code+'" /></td>';
+                    line += '<td><input name="sortable" type="checkbox" '+sortable+' value="'+code+'" /></td>';
                     line += '<td><select name="plugin">';
                     line += '<option value=""></option>'
                         <!-- TMPL_LOOP NAME="pluginloop" -->
                             line += '<option value="<!-- TMPL_VAR NAME="value" -->"';
                             if ( plugin == '<!-- TMPL_VAR NAME="value" -->' ) { line += 'selected="selected"'; }
+                            line += '>';
+                            line += '<!-- TMPL_VAR NAME="name" -->';
+                            line += '</option>';
+                        <!-- /TMPL_LOOP -->
+                    line += '</select></td>';
+                    line += '<td><select name="avlists">';
+                    line += '<option value=""></option>'
+                        <!-- TMPL_LOOP NAME="avlistsloop" -->
+                            line += '<option value="<!-- TMPL_VAR NAME="value" -->"';
+                            if ( avlists == '<!-- TMPL_VAR NAME="value" -->' ) { line += 'selected="selected"'; }
                             line += '>';
                             line += '<!-- TMPL_VAR NAME="name" -->';
                             line += '</option>';
@@ -52,6 +65,8 @@
                 
                 $('#code').val('');
                 $('#label').val('');
+                $('#ccl_index_name').val('');
+                $('#rpn_index').val('');
                 $('#faceted').attr('checked', false);
                 $('#sortable').attr('checked', false);
                 $('#index').val('');
@@ -59,7 +74,7 @@
                 $('.delete').click(function() {
                     $(this).parents('tr').remove();
                 });
-            
+                $('select[name=type]:last').find('option[value='+type+']').attr("selected", "selected");
             }
         });
     });
@@ -77,7 +92,9 @@
     <div id="yui-main">
     <div class="yui-b">
     <h1>Search engine configuration</h1>
-    
+    <div class="warning">
+        Warning: Any modification in these configurations will need a total reindexation to be fully taken into account !
+    </div>
     <div class="toptabs">
         <ul class="ui-tabs-nav">
             <!-- TMPL_LOOP NAME="ressourcetypeloop" -->
@@ -108,9 +125,12 @@
                                     <th>Code</th>
                                     <th>Label</th>
                                     <th>Type</th>
+                                    <th>CCL</th>
+                                    <th>RPN</th>
                                     <th>Faceted</th>
                                     <th>Sortable</th>
                                     <th>Plugin</th>
+                                    <th>AV Lists</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -126,8 +146,6 @@
                                                 <input name="code" type="text" maxlength="25" value="<!-- TMPL_VAR NAME="code" -->" />
                                             <!--/TMPL_IF-->
                                             <input name="mandatory" type="hidden" maxlength="1" value="<!-- TMPL_VAR NAME="mandatory" -->" />
-                                            <input name="rpn_index" maxlength="25" type="hidden" value="<!-- TMPL_VAR NAME="rpn_index" -->" />
-                                            <input name="ccl_index_name" maxlength="25" type="hidden" value="<!-- TMPL_VAR NAME="ccl_index_name" -->" />
                                         </td>
                                         <td><input name="label" type="text" maxlength="25" value="<!-- TMPL_VAR NAME="label" -->" /></td>
                                         <td>
@@ -139,6 +157,8 @@
                                                 <option <!-- TMPL_IF EXPR="type eq 'date'" -->selected="selected"<!-- /TMPL_IF --> value="date">Date</option>
                                             </select>
                                         </td>
+                                        <td><input name="ccl_index_name" type="text" maxlength="25" value="<!-- TMPL_VAR NAME="ccl_index_name" -->" /></td>
+                                        <td><input name="rpn_index" type="text" size="10" maxlength="25" value="<!-- TMPL_VAR NAME="rpn_index" -->" /></td>
                                         <td><input name="faceted" type="checkbox" <!-- TMPL_IF NAME="faceted" -->checked="checked"<!-- /TMPL_IF --> value="<!-- TMPL_VAR NAME="code" -->" /></td>
                                         <td><input name="sortable" type="checkbox" <!-- TMPL_IF NAME="sortable" -->checked="checked"<!-- /TMPL_IF --> value="<!-- TMPL_VAR NAME="code" -->" /></td>
                                         <td>
@@ -150,7 +170,17 @@
                                                     </option>
                                                 <!-- /TMPL_LOOP -->
                                             </select>
-                                        </th>
+                                        </td>
+                                        <td>
+                                            <select name="avlists">
+                                                <option value=""></option>
+                                                <!-- TMPL_LOOP NAME="avlistsloop" -->
+                                                    <option value="<!-- TMPL_VAR NAME="value" -->" <!--TMPL_IF name="selected"-->selected="selected"<!--/TMPL_IF-->>
+                                                        <!-- TMPL_VAR NAME="name" -->
+                                                    </option>
+                                                <!-- /TMPL_LOOP -->
+                                            </select>
+                                        </td>
                                         <td><!--TMPL_UNLESS name="mandatory"--><a class="delete">Delete</a><!--/TMPL_UNLESS--></td>
                                     </tr>
                                 <!-- /TMPL_LOOP -->
@@ -169,12 +199,22 @@
                                             <option value="date">Date</option>
                                         </select>
                                     </td>
+                                    <td><input id="ccl_index_name" type="text" maxlength="25" /></td>
+                                    <td><input id="rpn_index" type="text" size="10" maxlength="25" /></td>
                                     <td><input id="faceted" type="checkbox" /></td>
                                     <td><input id="sortable" type="checkbox" /></td>
                                     <td>
                                         <select id="plugin">
                                             <option value=""></option>
                                             <!-- TMPL_LOOP NAME="pluginloop" -->
+                                                <option value="<!-- TMPL_VAR NAME="value" -->"><!-- TMPL_VAR NAME="name" --></option>
+                                            <!-- /TMPL_LOOP -->
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select id="avlists">
+                                            <option value=""></option>
+                                            <!-- TMPL_LOOP NAME="avlistsloop" -->
                                                 <option value="<!-- TMPL_VAR NAME="value" -->"><!-- TMPL_VAR NAME="name" --></option>
                                             <!-- /TMPL_LOOP -->
                                         </select>

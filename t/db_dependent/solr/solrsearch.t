@@ -5,7 +5,6 @@ use Modern::Perl;
 use Test::More;
 use C4::Search;
 
-#export PERL5LIB=<src_directory>:<src_directory>/t/lib
 use KohaTest::Search::SolrSearch;
 
 #To launch this test, you can truncate some tables and populate db with these 3 lines

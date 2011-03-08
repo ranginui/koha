@@ -45,6 +45,7 @@ if ( $input->param('op') and $input->param('op') eq 'edit' ) {
     my @faceted         = $input->param('faceted');
     my @sortable        = $input->param('sortable');
     my @plugin          = $input->param('plugin');
+    my @avlists         = $input->param('avlists');
     my @mandatory       = $input->param('mandatory');
     my @rpn_index       = $input->param('rpn_index');
     my @ccl_index_name  = $input->param('ccl_index_name');
@@ -59,6 +60,7 @@ if ( $input->param('op') and $input->param('op') eq 'edit' ) {
             'faceted'        => scalar(grep(/^$icode$/, @faceted)),
             'sortable'       => scalar(grep(/^$icode$/, @sortable)),
             'plugin'         => $plugin[$_],
+            'avlist'        => $avlists[$_],
             'mandatory'      => $mandatory[$_] eq '1' ? '1' : '0',
             'rpn_index'      => $rpn_index[$_],
             'ccl_index_name' => $ccl_index_name[$_],
@@ -76,6 +78,15 @@ my $pluginloop = [ map { {
     'value' => $_,
 } } C4::Search::Engine::Solr::GetSearchPlugins ];
 
+my $categories = GetAuthorisedValueCategories;
+my @avlists = ();
+map {push @avlists, $_} @$categories;
+
+my $avlistsloop = [ map { {
+    'name' => $_,
+    'value' => $_,
+} } @avlists ];
+
 # This block would be useless with template toolkit
 my @ressourcetypeloop = map { {
     name     => $_->{'ressource_type'},
@@ -89,13 +100,21 @@ for my $i ( @$indexloop ) {
         'value'    => $_,
         'selected' => $_ eq $i->{'plugin'},
     } } C4::Search::Engine::Solr::GetSearchPlugins ];
+
+    $i->{'avlistsloop'} = [ map { {
+        'name'     => ( m/([^\:]+)$/ )[0],
+        'value'    => $_,
+        'selected' => $_ eq $i->{'avlist'},
+    } } @avlists ];
 }
+warn Data::Dumper::Dumper($indexloop);
 
 $template->param(
     ressource_type    => $ressource_type,
     ressourcetypeloop => \@ressourcetypeloop,
     indexloop         => $indexloop,
     pluginloop        => $pluginloop,
+    avlistsloop       => $avlistsloop,
 );
 
 output_html_with_http_headers $input, $cookie, $template->output;

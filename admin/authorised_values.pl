@@ -21,6 +21,7 @@ use strict;
 use warnings;
 
 use CGI;
+use JSON;
 use C4::Auth;
 use C4::Context;
 use C4::Koha;
@@ -217,7 +218,7 @@ sub default_form {
     }
 
     # push koha system categories
-    foreach (qw(Asort1 Asort2 Bsort1 Bsort2 CN_PART1 CN_PART2 CN_PART3 CN_PART4 SUGGEST DAMAGED LOST)) {
+    foreach (GetDefaultAuthorisedValueCategories) {
         push @category_list, $_ unless $categories{$_};
     }
 
