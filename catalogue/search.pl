@@ -218,7 +218,7 @@ for my $branch_hash ( sort { $branches->{$a}->{branchname} cmp $branches->{$b}->
 
     # if independantbranches is activated, set the default branch to the borrower branch
     my $selected = ( C4::Context->preference("independantbranches") and ( $borrowerbranchcode eq $branch_hash ) ) ? 1 : undef;
-    push @branch_loop, { value => "$branch_hash", branchname => $branches->{$branch_hash}->{'branchname'}, selected => $selected };
+    push @branch_loop, { value => "$branch_hash", branchcode =>  $branches->{$branch_hash}->{'branchcode'}, branchname => $branches->{$branch_hash}->{'branchname'}, selected => $selected };
 }
 
 my $categories = GetBranchCategories( undef, 'searchdomain' );
@@ -228,8 +228,10 @@ $template->param( branchloop => \@branch_loop, searchdomainloop => $categories )
 $template->param( holdingbranch_index => C4::Search::Query::getIndexName('holdingbranch') );
 
 # load the Type stuff
-# load the Type stuff
 my $itemtypes = GetItemTypes;
+
+#Give ability to search in authorised values
+my $indexandavlist = C4::Search::Engine::Solr::GetIndexesWithAvlist;
 
 # the index parameter is different for item-level itemtypes
 my $itype_or_itemtype = ( C4::Context->preference("item-level_itypes") ) ? 'itype' : 'itemtype';
@@ -242,7 +244,7 @@ if ( !$advanced_search_types or $advanced_search_types eq 'itemtypes' ) {
     foreach my $thisitemtype ( sort { $itemtypes->{$a}->{'description'} cmp $itemtypes->{$b}->{'description'} } keys %$itemtypes ) {
         my %row = (
             number      => $cnt++,
-            index       => $itype_or_itemtype,
+            index       => C4::Search::Query::getIndexName('itype'),
             code        => $thisitemtype,
             selected    => $selected,
             description => $itemtypes->{$thisitemtype}->{'description'},
@@ -280,9 +282,20 @@ if ( $template_type eq 'advsearch' ) {
     $template->param( outer_sup_servers_loop => $secondary_servers_loop, );
 
     # set the default sorting
-    my $default_sort_by = C4::Context->preference('defaultSortField') . "_" . C4::Context->preference('defaultSortOrder')
-      if ( C4::Context->preference('defaultSortField') && C4::Context->preference('defaultSortOrder') );
-    $template->param( $default_sort_by => 1 );
+    my $sort_by = $cgi->param('sort_by') || join(' ', grep { defined } ( 
+            C4::Search::Query::getIndexName(C4::Context->preference('defaultSortField'))
+            , C4::Context->preference('defaultSortOrder') ) );
+    warn $sort_by;
+    my $sortloop = C4::Search::Engine::Solr::GetSortableIndexes('biblio');
+    for ( @$sortloop ) { # because html template is stupid
+        $_->{'asc_selected'}  = $sort_by eq $_->{'type'}.'_'.$_->{'code'}.' asc';
+        $_->{'desc_selected'} = $sort_by eq $_->{'type'}.'_'.$_->{'code'}.' desc';
+    }
+
+    $template->param(
+        'sortloop' => $sortloop,
+        $sort_by => 1
+    );
 
     # determine what to display next to the search boxes (ie, boolean option
     # shouldn't appear on the first one, scan indexes should, adding a new
@@ -290,6 +303,7 @@ if ( $template_type eq 'advsearch' ) {
     my @search_boxes_array;
     my $search_boxes_count = C4::Context->preference("OPACAdvSearchInputCount") || 3;    # FIXME: using OPAC sysprefs?
                                                                                          # FIXME: all this junk can be done in TMPL using __first__ and __last__
+
     for ( my $i = 1 ; $i <= $search_boxes_count ; $i++ ) {
 
         # if it's the first one, don't display boolean option, but show scan indexes
@@ -306,11 +320,11 @@ if ( $template_type eq 'advsearch' ) {
         } else {
             push @search_boxes_array, { boolean => 1, };
         }
-
     }
     $template->param(
         uc( C4::Context->preference("marcflavour") ) => 1,
-        search_boxes_loop                            => \@search_boxes_array
+        search_boxes_loop                            => \@search_boxes_array,
+        indexandavlist                               => $indexandavlist
     );
 
     # load the language limits (for search)
@@ -405,7 +419,31 @@ $template->param('filters' => \@tplfilters );
 my @indexes = $cgi->param('idx');
 my @operators = $cgi->param('op');
 my @operands = $cgi->param('q');
+my @avlists = $cgi->param('avlist');
+
 my $q = C4::Search::Query->buildQuery(\@indexes, \@operands, \@operators);
+
+#build search in authorised value list
+if ($params->{'avlist'}) {
+   foreach my $i (@indexes) {
+     my $val = _getAvlist ($i, $indexandavlist);
+     warn ">val:$val";
+     if ($val ne '') {
+       my $indexname = C4::Search::Query::getIndexName($i);
+       my $value = shift (@avlists);
+       $q .= " $indexname:$value ";
+     }
+   }
+
+   sub _getAvlist {
+     my ($index, $indexandavlist) = @_;
+     foreach my $k (@$indexandavlist){
+       if ($k->{'code'} eq $index){
+         return $k->{'avlist'};
+       }
+     }
+   }
+}
 
 # append year limits if they exist
 if ( $params->{'limit-yr'} ) {

@@ -13,10 +13,28 @@
 		dad.appendChild(line.cloneNode(true));
 		line.removeChild(ButtonPlus);
 	}
+
 	$(document).ready(function() {
 		$("input[name=q]:eq(0)").focus();
+    advSearchPrepare();
 	});
+
+  function advSearchPrepare () {
+
+//    $(".advsearch").each( function (this) {getAuthorisedValuesList(this)});
+//    $(".advsearch").load( function () {getAuthorisedValuesList($(this))});
+    $(".advsearch").each( function () {getAuthorisedValuesList($(this))});
+    <!-- TMPL_LOOP NAME="indexandavlist" -->
+    $(".advsearch").find("option").each(function () {
+       if ($(this).val() == '<!-- TMPL_VAR NAME="code" -->' ) {
+         $(this).attr("avlist", '<!-- TMPL_VAR NAME="avlist" -->');
+       }
+    });
+    <!-- /TMPL_LOOP -->
+    $(".advsearch").change( function () {getAuthorisedValuesList($(this))});
+  }
 </script>
+<script type="text/javascript" src="<!-- TMPL_VAR NAME='themelang' -->/js/catalogue.js"></script>
 </head>
 <body>
 
@@ -53,6 +71,7 @@
 <!-- /REMOTE DATABASES -->
 <!-- /TMPL_IF -->
 
+
 <!-- BOOLEAN SEARCH OPTIONS -->
     <fieldset>
     <legend>Search For: </legend>
@@ -68,6 +87,7 @@
             <!-- /TMPL_IF --> 
 			<!-- /TMPL_IF -->
 			 <!-- TMPL_IF NAME="AdvancedSearchContent" --><!--TMPL_VAR Name="AdvancedSearchContent"--><!-- TMPL_ELSE --><!-- TMPL_INCLUDE NAME="search_indexes.inc" --><!-- /TMPL_IF -->
+      <div class="avlist" style="display:inline" value="-"></div>
 			<input type="text" size="30" name="q" title="Enter search terms" value="" />
             <!-- TMPL_IF NAME="expanded_options" -->
                 <!-- TMPL_IF NAME="add_field" -->
@@ -91,7 +111,7 @@
         <tr>
         <!--TMPL_LOOP Name="itemtypeloop"-->
             <td>
-                <input type="checkbox" id="<!-- TMPL_VAR NAME="index" -->-<!--TMPL_VAR NAME="number" -->" name="filters" value='<!-- TMPL_VAR NAME="index" -->:"<!--TMPL_VAR NAME="description" -->"'/>
+                <input type="checkbox" id="<!-- TMPL_VAR NAME="index" -->-<!--TMPL_VAR NAME="number" -->" name="filters" value='<!-- TMPL_VAR NAME="index" -->:"<!--TMPL_VAR NAME="code" -->"'/>
                 <label for="<!-- TMPL_VAR NAME="index" -->-<!--TMPL_VAR NAME="number" -->">
                     <!-- TMPL_IF name="imageurl"-->
                     <img border="0" src="<!--TMPL_VAR Name="imageurl" -->" alt="<!--TMPL_VAR Name="description" -->" /><!-- /TMPL_IF -->&nbsp;
@@ -123,7 +143,7 @@
         <select name="filters">
             <option value="" selected="selected">No Limit</option>
                 <!-- TMPL_LOOP NAME="search_languages_loop" -->
-                    <option value='<!-- TMPL_VAR NAME="lang_index" -->:"<!-- TMPL_VAR NAME="lib" -->"' <!-- TMPL_IF NAME="selected" -->selected="selected"<!-- /TMPL_IF -->>
+                    <option value='<!-- TMPL_VAR NAME="lang_index" -->:"<!-- TMPL_VAR NAME="authorised_value" -->"' <!-- TMPL_IF NAME="selected" -->selected="selected"<!-- /TMPL_IF -->>
                         <!-- TMPL_VAR NAME="lib" -->
                     </option>
                 <!-- /TMPL_LOOP -->
@@ -271,7 +291,7 @@
         <select name="filters" id="branchloop" onchange='if(this.value != ""){document.getElementById("categoryloop").disabled=true;} else {document.getElementById("categoryloop").disabled=false;}'>
             <option value="">All Libraries</option>
             <!-- TMPL_LOOP NAME="branchloop" -->
-            <option value='<!-- TMPL_VAR NAME="holdingbranch_index" -->:"<!-- TMPL_VAR NAME="branchname" -->"' <!--TMPL_IF NAME="selected"-->selected="selected"<!--/TMPL_IF--> >
+            <option value='<!-- TMPL_VAR NAME="holdingbranch_index" -->:"<!-- TMPL_VAR NAME="branchcode" -->"' <!--TMPL_IF NAME="selected"-->selected="selected"<!--/TMPL_IF--> >
                 <!-- TMPL_VAR NAME="branchname" -->
             </option>
         <!-- /TMPL_LOOP -->
