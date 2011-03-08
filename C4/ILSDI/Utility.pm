@@ -38,7 +38,7 @@ BEGIN {
     require Exporter;
     @ISA    = qw(Exporter);
     @EXPORT = qw(
-      &BorrowerExists &CanBookBeReserved &Availability
+      &BorrowerExists &Availability
     );
 }
 
@@ -77,44 +77,44 @@ Checks if a book (at bibliographic level) can be reserved by a borrower.
 
 =cut
 
-sub CanBookBeReserved {
-    my ( $borrower, $biblionumber ) = @_;
-
-    my $MAXIMUM_NUMBER_OF_RESERVES = C4::Context->preference("maxreserves");
-    my $MAXOUTSTANDING             = C4::Context->preference("maxoutstanding");
-
-    my $out = 1;
-
-    if ( $borrower->{'amountoutstanding'} > $MAXOUTSTANDING ) {
-        $out = undef;
-    }
-    if ( $borrower->{gonenoaddress} eq 1 ) {
-        $out = undef;
-    }
-    if ( $borrower->{lost} eq 1 ) {
-        $out = undef;
-    }
-    if ( $borrower->{debarred} eq 1 ) {
-        $out = undef;
-    }
-    my @reserves = GetReservesFromBorrowernumber( $borrower->{'borrowernumber'} );
-    if ( $MAXIMUM_NUMBER_OF_RESERVES && scalar(@reserves) >= $MAXIMUM_NUMBER_OF_RESERVES ) {
-        $out = undef;
-    }
-    foreach my $res (@reserves) {
-        if ( $res->{'biblionumber'} == $biblionumber ) {
-            $out = undef;
-        }
-    }
-    my $issues = GetPendingIssues( $borrower->{'borrowernumber'} );
-    foreach my $issue (@$issues) {
-        if ( $issue->{'biblionumber'} == $biblionumber ) {
-            $out = undef;
-        }
-    }
-
-    return $out;
-}
+#sub CanBookBeReserved {
+#    my ( $borrower, $biblionumber ) = @_;
+#
+#    my $MAXIMUM_NUMBER_OF_RESERVES = C4::Context->preference("maxreserves");
+#    my $MAXOUTSTANDING             = C4::Context->preference("maxoutstanding");
+#
+#    my $out = 1;
+#
+#    if ( $borrower->{'amountoutstanding'} > $MAXOUTSTANDING ) {
+#        $out = undef;
+#    }
+#    if ( $borrower->{gonenoaddress} eq 1 ) {
+#        $out = undef;
+#    }
+#    if ( $borrower->{lost} eq 1 ) {
+#        $out = undef;
+#    }
+#    if ( $borrower->{debarred} eq 1 ) {
+#        $out = undef;
+#    }
+#    my @reserves = GetReservesFromBorrowernumber( $borrower->{'borrowernumber'} );
+#    if ( $MAXIMUM_NUMBER_OF_RESERVES && scalar(@reserves) >= $MAXIMUM_NUMBER_OF_RESERVES ) {
+#        $out = undef;
+#    }
+#    foreach my $res (@reserves) {
+#        if ( $res->{'biblionumber'} == $biblionumber ) {
+#            $out = undef;
+#        }
+#    }
+#    my $issues = GetPendingIssues( $borrower->{'borrowernumber'} );
+#    foreach my $issue (@$issues) {
+#        if ( $issue->{'biblionumber'} == $biblionumber ) {
+#            $out = undef;
+#        }
+#    }
+#
+#    return $out;
+#}
 
 =head2 Availability
 
