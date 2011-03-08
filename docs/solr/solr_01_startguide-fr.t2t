@@ -20,7 +20,7 @@ Solr est un moteur de recherche et d'indexation. L'objectif est d'intégrer Solr
 Pour résumer, Zebra ne convient plus pour certaines raisons, entre autres :
 - Pas d'indexation en temps réel
 - Difficultés pour les accès aux données
-- Fichiers de configuration difficile à comprendre
+- Fichiers de configuration difficiles à comprendre
 - Gestion des facettes
 - Manque au niveau de la recherche
 - etc.
@@ -32,7 +32,7 @@ Quelques recherches apportées par Solr:
 - keyword boosting ('Droz rameau^4' ⇒ rajoute de la pertinence à rameau)
 - Recherche par synonymes ('damnés' retournera 'maudit' si définit dans un fichier)
 - Recherche metaphone (phonétique) ('amr' retourne 'amour')
-- spell check (suggestion orthographique)
+- Suggestion orthographique
 
 Solr est donc un moteur d'indexation et de recherche basé sur Lucene. Voir le site de Lucene pour le wiki de la communauté ainsi que les différentes configurations possibles, etc. Lucene est en train de devenir présent un petit peu partout. Il offre des connecteurs de plus en plus nombreux dans de plus en plus de langages.
 

@@ -33,7 +33,7 @@ sub ConcatMappings {
 }
 
 =head2 fonction
-    return rejected and parrallel forms
+    return vedette, rejected and parrallel forms
     @see t/solr/plugin_authorities.pl
 =cut
 

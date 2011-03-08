@@ -25,7 +25,7 @@ __Public:__ Développeur, mainteneur, administrateur etc.
 **schema.xml**
 
 - Les champs statiques (id, recordtype, recordid, allfields(=any sous zebra))
-- Les champs dynamiques (str_*, txt_*, int_*, date_*). Les champs dynamiques nous permettent de définir des champs ailleurs que dans ce fichier (pour nous, en bdd).
+- Les champs dynamiques (str_*, txt_*, int_*, date_*, srt_*). Les champs dynamiques nous permettent de définir des champs ailleurs que dans ce fichier (pour nous, en bdd).
 - uniqueKey : id unique
 - defaultSearchField : champ de recherche par défaut
 - copyfield : récupère tous les champs et les place dans allfields
@@ -34,11 +34,12 @@ __Public:__ Développeur, mainteneur, administrateur etc.
 **solrconfig.xml**
 
 - pas de spécificités particulières pour l'instant
+- dataDir contient le dossier qui contiendra les index. S'il n'est pas spécifié, c'est celui contenu dans solr.xml qui est pris en compte.
 
 
 ==== Interface d'administration ====
 
-- http://localhost:8080/solr/core1/admin
+- http://localhost:8983/solr/core1/admin/
 
 
 == Indexation ==
@@ -52,7 +53,7 @@ Indexation de 100 notices biblio puis authority
 Commande pour les tests de temps:
 ``` time ./misc/migration_tools/rebuild_solr.pl -r -t authority 2> /tmp/solrindexation.log
 
-pour indexer toutes les notices, retirer l'option -n (pls heures)
+pour indexer toutes les notices, retirer l'option -n (plusieurs heures)
 ``` rebuild-solr.pl -t biblio && rebuild-solr.pl -t authority
 
 ./rebuild_solr --help
