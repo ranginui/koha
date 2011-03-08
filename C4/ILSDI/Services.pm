@@ -31,6 +31,7 @@ use C4::Context;
 use C4::AuthoritiesMarc;
 use C4::ILSDI::Utility;
 use XML::Simple;
+use List::MoreUtils qw{ any };
 use HTML::Entities;
 use CGI;
 
@@ -721,27 +722,22 @@ sub CancelHold {
     my $borrower       = GetMemberDetails($borrowernumber);
     return { code => 'PatronNotFound' } unless $$borrower{borrowernumber};
 
-    # Get the item or return an error code
-    my $itemnumber = $cgi->param('item_id');
-    my $item       = GetItem($itemnumber);
-    return { code => 'RecordNotFound' } unless $$item{itemnumber};
-
-    # Get borrower's reserves
-    my @reserves = GetReservesFromBorrowernumber( $borrowernumber, undef );
-    my @reserveditems;
+    # Get the reserves or return an error code
+    my $biblionumber = $cgi->param('item_id');
+    my $reserves = GetReservesFromBiblionumber($biblionumber, 1);
+    return { code => 'ReserveNotFound' } unless $reserves;
 
     # ...and loop over it to build an array of reserved itemnumbers
-    foreach my $reserve (@reserves) {
-        push @reserveditems, $reserve->{'itemnumber'};
+    my @to_cancel;
+    foreach my $reserve (@$reserves) {
+        push @to_cancel, $reserve->{'reservenumber'} if $reserve->{'borrowernumber'} eq $$borrower{borrowernumber};
     }
 
     # if the item was not reserved by the borrower, returns an error code
-    return { code => 'NotCanceled' } unless any { $itemnumber eq $_ } @reserveditems;
+    return { code => 'NotCanceled' } unless @to_cancel;
 
     # Cancel the reserve
-    for my $reserve (grep {$_->{itemnumber} eq $itemnumber } @reserveditems){
-        CancelReserve( $reserve->{reservenumber});
-    }
+    CancelReserve($_, $biblionumber ) for @to_cancel;
 
     return { code => 'Canceled' };
 }
