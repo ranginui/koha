@@ -137,7 +137,8 @@ foreach my $num (@getreserves) {
     $getreserv{'itemnumber'}     = $gettitle->{'itemnumber'};
     $getreserv{'biblionumber'}   = $gettitle->{'biblionumber'};
     $getreserv{'barcode'}        = $gettitle->{'barcode'};
-    $getreserv{'homebranch'}     = GetBranchName( $gettitle->{'homebranch'} );
+    $getreserv{'branchname'}     = GetBranchName( $gettitle->{'homebranch'} );
+    $getreserv{'homebranch'}     = $gettitle->{'homebranch'};
     $getreserv{'holdingbranch'}  = $gettitle->{'holdingbranch'};
     $getreserv{'itemcallnumber'} = $gettitle->{'itemcallnumber'};
 
