@@ -186,11 +186,16 @@ if ( $op eq 'add_form' ) {
 
     # Check both categoryitem and biblioitems, see Bug 199
     my $total = 0;
-    for my $table ('biblioitems') {
-        my $sth = $dbh->prepare("select count(*) as total from $table where itemtype=?");
-        $sth->execute($itemtype);
-        $total += $sth->fetchrow_hashref->{total};
+    my $select = '';
+    my $type_col = (C4::Context->preference("AdvancedSearchTypes") || 'itemtype');
+    if ($type_col eq 'ccode') {
+        $select = "select count(*) as total from items where ccode=?";
+    } else {
+        $select = "select count(*) as total from biblioitems where itemtype=?";
     }
+    my $sth = $dbh->prepare($select);
+    $sth->execute($itemtype);
+    $total += $sth->fetchrow_hashref->{total};
 
     my $sth = $dbh->prepare( "select itemtype,description,rentalcharge from itemtypes where itemtype=?" );
     $sth->execute($itemtype);
