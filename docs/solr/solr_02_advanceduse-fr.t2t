@@ -59,6 +59,9 @@ http://wiki.apache.org/solr/AnalyzersTokenizersTokenFilters
 
 A chaque index correspond un type de champs qui définit quelles sont les recherches possibles sur cet index. Il existe plusieurs types de champs définis:
 
+Informations générales sur l'indexation:
+- Gestion des duplicats: si détectables, ils sont retirés à l'indexation
+- Par souci d'intégrité de l'index, maintenant, ce sont les codes et non plus les libellés qui sont indexés (sites, langues, valeurs autorisées etc.)
 
 === String ===
 
@@ -66,8 +69,9 @@ __Caractéristiques:__
 C'est un type de champs brut sur lequel n'est fait aucune transformation.
 __Utilisation:__
 - Il sera définit pour les index de type "identifiant" qui ne doivent pas être découpés (les facettes utilisent également un index de ce type)
-- Lorsqu'on souhaite trouver le document uniquement pas une recherche exacte complète
+- Lorsqu'on souhaite trouver le document uniquement par une recherche exacte complète
 - si le champs est un identifiant, il n'est pas utile de faire des traitements faits sur Simple text (accents, découpages etc.)
+- techniquement, ce type de champs est utilisé pour les tris et les facettes
 __Exemples:__
 - str_upc:9780521406499
 - str_upc:97805214*
@@ -81,6 +85,8 @@ __Caractéristiques:__
 - n'est pas case sensitive (une recherche avec des majuscules renverra le même résultat que sans
 - trouve des résultats avec des accents même si l'accent n'est pas spécifié dans la requêtes
 - retire les "." dans les acronymes
+- Gestion des élisions: (l', d', qu'...) par un fichier texte plat qui liste les patterns à ignorer lors de l'indexation et la recherche
+- Gestion des "stopwords": (du, dans, la, le...) par un fichier texte plat qui liste les patterns à ignorer lors de l'indexation. A la recherche, une requête exacte contenant des mots vides peut aboutir. 
 __Utilisation:__
 - pour les champs qui nécessitent un traitement simple, sur lesquels on veut trouver une partie du tout sans utiliser les "wildcards" (* et ?)
 - si les traitements sur le champs ne sont pas nécessaires, préférer le type "String"
@@ -92,25 +98,18 @@ __Exemples:__
 
 __Caractéristiques:__
 - C'est le Simple Text enrichi de quelques filters supplémentaires
-- Gestion des élisions: (l', d', qu'...) par un fichier texte plat qui liste les patterns à ignorer lors de l'indexation et la recherche
-- Gestion des "stopwords": (du, dans, la, le...) par un fichier texte plat qui liste les patterns à ignorer lors de l'indexation et la recherche
 - Gestion des synonymes: un fichier texte déclare les mots à prendre comme synonyme à la recherche
 - Gestion de la recherche par "racine de mot"
-- Gestion des dupplicats: ils sont retirés à l'indexation si détectés
 - Pour l'instant, les filtres utilisés ne sont utilisables et configurés uniquement par la langue Française mais leur pendant Anglophone existe et ne nécessiterait que de la configuration supplémentaire.
 __Utilisation:__
 - convient aux index qui ont du texte sur lequel on veut faire une recherche complexe
+- ce type d'index peut ne pas être souhaité car les résultats trouvés sont plus larges, il siffit dans ce cas de ne pas utiliser ce type dans votre configuration d'index.
 - /!\ à utiliser avec modération, complexifie l'indexation...
 __Exemples:__
 - **papillonner** trouve les notices contenant "papillon"
 - **peupler** trouve "peuplement", "peuple"
 - **comporte** trouve "comportement"
 - ...
-
-
-__Caractéristiques:__
-__Utilisation:__
-__Exemples:__
 
 
 ===Date===
@@ -125,4 +124,61 @@ __Exemples:__
 
 === Forme rejetée "Authorities" ===
 
-L'index ciblé contiendra les champs 2..(vedette), 4.. (rejetée) et 7.. (parrallèle) de l'autorité liée.
+L'index ciblé contiendra les champs 2..(vedette), 4.. (rejetée) et 7.. (parrallèle) de l'autorité liée. L'autorité liée est définie en prennant tous les "$9" des champs marqués comme à indexer dans cet index.
+
+
+=== Auteur "Author" ===
+
+Renvoit une chaîne contenant 7..$a et 7..$b. Utilisé pour construire la facette auteur.
+
+
+=== Disponibilité "Availability" ===
+
+Le plugin existe mais reste limité. Il prends ce qu'il y a dans le 995$n. S'il n'existe pas, il met la disponibilité à 0. Dans une nouvelle version, la notion des exemplaires pourrait apparaître et ce plugin prendrait tout son sens. Idéalement, le plugin devrait renvoyer 1 si l'ouvrage est disponible en rayon (pas mis de côté, pas retiré, pas en cours de prêt, pas en transit).
+
+
+=== Gestion des tirets  "DeleteDash" ===
+
+A l'indexation, ce plugin retire les tirets. Utilisable pour les champs issn et isbn par exemple.
+
+
+=== Gestion des caractères de non tri "DeleteNsbNse" ===
+
+Ce plugin d'indexation fait 2 traitements différents:
+- retire les #nsb #nse dans le champs pointé par le plugin
+- retire en plus ce qu'il y a entre dans le champs qui sert de tri
+
+Concrêtement si nous avons une notice qui a un titre du type #nsb la petite #nsemaison dans la prairie
+- ste_title contiendra: "la petite maison dans la prairie" (et une recherche exacte sera possible)
+- srt_ste_title contiendra: "maison dans la prairie" (et le tri se fera sur cette valeur)
+
+
+=== Traitement des intervalles de date "PubDate" ===
+
+Dans le cas de la date de publication, certaines valeurs peuvent être de la forme "2001-2004". Le besoin fonctionnel est d'indexer les 4 années: 2001, 2002, 2003 et 2004. C'est ce que permet de faire ce plugin.
+
+
+=== Calcul du nombre de notices liées "UsedInXBiblios" ===
+
+Compte le nombre de notices liées à une autorité. S'appuie sur l'identifiant de l'autorité stocké dans l'index "authid" de la notice.
+
+
+=== Traitement des intervalles de date "Summary" ===
+
+Construit le résumé d'une autorité. Utilisé pour l'auto-complétion dans la recherche d'autorités (plugin).
+
+
+=== Champs codés ===
+
+- "Audience": Extraction des informations du "type de public" en 100$a
+- "Illustration": Extraction des informations du 105$a de la position 0 à 3.
+- 'Lang": LAngue de cataloguage 100$a position 23
+
+
+==== Dans une future version ====
+
+- type-of-serial: 110$a
+- video-mt: 115$a
+- graphics-type: 116$a
+
+
