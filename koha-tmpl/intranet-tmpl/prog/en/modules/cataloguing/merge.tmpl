@@ -229,7 +229,7 @@ $(document).ready(function(){
 			    <input type="hidden" name="tag_<!-- TMPL_VAR name="tag" -->_indicator2_<!-- TMPL_VAR NAME="key" -->" value="<!-- TMPL_VAR NAME="indicator2" -->" />
 			    <!-- TMPL_IF NAME="value" --> / <!-- TMPL_VAR NAME="value" -->
 				<input type="hidden" name="tag_<!-- TMPL_VAR name="tag" -->_code_00_<!-- TMPL_VAR NAME="key" -->" value="00" />
-				<input type="hidden" name="tag_<!-- TMPL_VAR name="tag" -->_subfield_00_<!-- TMPL_VAR NAME="key" -->" value="<!-- TMPL_VAR NAME="value" -->" />
+				<input type="hidden" name="tag_<!-- TMPL_VAR name="tag" -->_subfield_00_<!-- TMPL_VAR NAME="key" -->" value="<!-- TMPL_VAR NAME="value" ESCAPE="HTML" -->" />
 			    <!-- /TMPL_IF -->
 
 			    <!-- TMPL_IF NAME="subfield" -->
@@ -239,7 +239,7 @@ $(document).ready(function(){
 					    <input type="checkbox" checked="checked" class="subfieldpick" id="rec_1_<!-- TMPL_VAR name="subkey" -->" /> 
 					    <span class="subfield"><!-- TMPL_VAR NAME="subtag" --></span> / <!-- TMPL_VAR NAME="value" -->
 				    <input type="hidden" name="tag_<!-- TMPL_VAR name="tag" -->_code_<!-- TMPL_VAR NAME="subtag" -->_<!-- TMPL_VAR NAME="key" -->_<!-- TMPL_VAR NAME="subkey" -->" value="<!-- TMPL_VAR NAME="subtag" -->" />
-				    <input type="hidden" name="tag_<!-- TMPL_VAR name="tag" -->_subfield_<!-- TMPL_VAR NAME="subtag" -->_<!-- TMPL_VAR NAME="key" -->_<!-- TMPL_VAR NAME="subkey" -->" value="<!-- TMPL_VAR NAME="value" -->" />
+				    <input type="hidden" name="tag_<!-- TMPL_VAR name="tag" -->_subfield_<!-- TMPL_VAR NAME="subtag" -->_<!-- TMPL_VAR NAME="key" -->_<!-- TMPL_VAR NAME="subkey" -->" value="<!-- TMPL_VAR NAME="value" ESCAPE="HTML" -->" />
 					</li>
 				    <!-- /TMPL_LOOP -->
 				</ul>
@@ -265,7 +265,7 @@ $(document).ready(function(){
 			<input type="hidden" name="tag_<!-- TMPL_VAR name="tag" -->_indicator2_<!-- TMPL_VAR NAME="key" -->" value="<!-- TMPL_VAR NAME="indicator2" -->" />
 			<!-- TMPL_IF NAME="value" --> / <!-- TMPL_VAR NAME="value" -->
 			<input type="hidden" name="tag_<!-- TMPL_VAR name="tag" -->_code_00_<!-- TMPL_VAR NAME="key" -->" value="00" />
-			<input type="hidden" name="tag_<!-- TMPL_VAR name="tag" -->_subfield_00_<!-- TMPL_VAR NAME="key" -->" value="<!-- TMPL_VAR NAME="value" -->" />
+			<input type="hidden" name="tag_<!-- TMPL_VAR name="tag" -->_subfield_00_<!-- TMPL_VAR NAME="key" -->" value="<!-- TMPL_VAR NAME="value" ESCAPE="HTML" -->" />
 			<!-- /TMPL_IF -->
 
 			<!-- TMPL_IF NAME="subfield" -->
@@ -275,7 +275,7 @@ $(document).ready(function(){
 					<input type="checkbox" class="subfieldpick" id="rec_2_<!-- TMPL_VAR name="subkey" -->" />
 					<span class="subfield"><!-- TMPL_VAR NAME="subtag" --></span> / <!-- TMPL_VAR NAME="value" -->
 				    <input type="hidden" name="tag_<!-- TMPL_VAR name="tag" -->_code_<!-- TMPL_VAR NAME="subtag" -->_<!-- TMPL_VAR NAME="key" -->_<!-- TMPL_VAR NAME="subkey" -->" value="<!-- TMPL_VAR NAME="subtag" -->" />
-				    <input type="hidden" name="tag_<!-- TMPL_VAR name="tag" -->_subfield_<!-- TMPL_VAR NAME="subtag" -->_<!-- TMPL_VAR NAME="key" -->_<!-- TMPL_VAR NAME="subkey" -->" value="<!-- TMPL_VAR NAME="value" -->" />
+				    <input type="hidden" name="tag_<!-- TMPL_VAR name="tag" -->_subfield_<!-- TMPL_VAR NAME="subtag" -->_<!-- TMPL_VAR NAME="key" -->_<!-- TMPL_VAR NAME="subkey" -->" value="<!-- TMPL_VAR NAME="value" ESCAPE="HTML" -->" />
 				    </li>
 				<!-- /TMPL_LOOP -->
 			    </ul>
@@ -305,7 +305,7 @@ $(document).ready(function(){
 		    <!-- TMPL_IF NAME="value" --> /
 			<!-- TMPL_VAR NAME="value" -->
 			<input type="hidden" name="tag_<!-- TMPL_VAR name="tag" -->_code_00_<!-- TMPL_VAR NAME="key" -->" value="00" />
-			<input type="hidden" name="tag_<!-- TMPL_VAR name="tag" -->_subfield_00_<!-- TMPL_VAR NAME="key" -->" value="<!-- TMPL_VAR NAME="value" -->" />
+			<input type="hidden" name="tag_<!-- TMPL_VAR name="tag" -->_subfield_00_<!-- TMPL_VAR NAME="key" -->" value="<!-- TMPL_VAR NAME="value" ESCAPE="HTML" -->" />
 		    <!-- /TMPL_IF -->
 			
 		    <!-- TMPL_IF NAME="subfield" -->
@@ -314,7 +314,7 @@ $(document).ready(function(){
 				<li id="k<!-- TMPL_VAR name="subkey" -->">
 				    <span class="subfield"><!-- TMPL_VAR NAME="subtag" --></span> / <!-- TMPL_VAR NAME="value" -->
 				    <input type="hidden" name="tag_<!-- TMPL_VAR name="tag" -->_code_<!-- TMPL_VAR NAME="subtag" -->_<!-- TMPL_VAR NAME="key" -->_<!-- TMPL_VAR NAME="subkey" -->" value="<!-- TMPL_VAR NAME="subtag" -->" />
-				    <input type="hidden" name="tag_<!-- TMPL_VAR name="tag" -->_subfield_<!-- TMPL_VAR NAME="subtag" -->_<!-- TMPL_VAR NAME="key" -->_<!-- TMPL_VAR NAME="subkey" -->" value="<!-- TMPL_VAR NAME="value" -->" />
+				    <input type="hidden" name="tag_<!-- TMPL_VAR name="tag" -->_subfield_<!-- TMPL_VAR NAME="subtag" -->_<!-- TMPL_VAR NAME="key" -->_<!-- TMPL_VAR NAME="subkey" -->" value="<!-- TMPL_VAR NAME="value" ESCAPE="HTML" -->" />
 				</li>
 			    <!-- /TMPL_LOOP -->
 			</ul>
