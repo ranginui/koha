@@ -49,6 +49,10 @@ sub plugin_javascript {
         }
 
         function Blur$field_number() {
+                return 1;
+        }
+
+        function Clic$field_number() {
                 var code = document.getElementById('$field_number');
                 var url = '../cataloguing/plugin_launcher.pl?plugin_name=stocknumberam123.pl&code=' + code.value;
                 var blurcallbackstocknumber = {
@@ -59,10 +63,6 @@ sub plugin_javascript {
                     }
                 }
                 var transaction = YAHOO.util.Connect.asyncRequest('GET',url, blurcallbackstocknumber, null);
-                return 1;
-        }
-
-        function Clic$field_number() {
             return 1;
         }
     </script>
@@ -88,28 +88,32 @@ sub plugin {
     my $dbh = C4::Context->dbh;
 
     # If the textbox is empty, we return a simple incremented stocknumber
-    if ( $code eq "" ) {
-        my $sth = $dbh->prepare("SELECT MAX(CAST(stocknumber AS SIGNED)) FROM items");
-        $sth->execute;
+    #if ( $code eq "" ) {
+        #my $sth = $dbh->prepare("SELECT MAX(CAST(stocknumber AS SIGNED)) FROM items");
+        #$sth->execute;
 
-        if ( my $max = $sth->fetchrow ) {
-            $template->param( return => $max + 1, );
-        }
+        #if ( my $max = $sth->fetchrow ) {
+            #$template->param( return => $max + 1, );
+        #}
 
         # If a prefix is submited, we look for the highest stocknumber with this prefix, and return it incremented
-    } elsif ( $code =~ m/^[A-Z]+$/ ) {
-        my $sth = $dbh->prepare("SELECT MAX(CAST(SUBSTRING_INDEX(stocknumber,' ',-1) AS SIGNED)) FROM items WHERE stocknumber LIKE ?");
-        $sth->execute( $code . ' %' );
+    if ( $code =~ m/^[A-Z]+$/ ) {
+        my $sth = $dbh->prepare("SELECT lib FROM authorised_values WHERE category='INVENTAIRE' AND authorised_value=?");
+        $sth->execute( $code);
 
-        if ( my $max = $sth->fetchrow ) {
-            $template->param( return => $code . ' ' . sprintf( '%010s', ( $max + 1 ) ), );
-        }
-
+        if ( my $valeur = $sth->fetchrow ) {
+            $template->param( return => $code . ' ' . sprintf( '%010s', ( $valeur + 1 ) ), );
+            my $sth2 = $dbh->prepare("UPDATE authorised_values SET lib=? WHERE category='INVENTAIRE' AND authorised_value=?");
+			$sth2->execute($valeur+1,$code);
+        } else {
+			$template->param( return => "PAS DE VALEUR DEFINIE POUR $code");
+		}
         # The user entered a custom value, we don't touch it, this could be handled in js
     } else {
         $template->param( return => $code, );
     }
-    warn $code;
+    #warn $code;
+    
     output_html_with_http_headers $input, $cookie, $template->output;
 }
 
