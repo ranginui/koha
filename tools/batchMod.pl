@@ -69,7 +69,8 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
 # Does the user have a limited item edition permission?
 my $uid = GetMember( borrowernumber => $loggedinuser )->{userid} if ($loggedinuser) ;
 my $limitededition = haspermission($uid,  {'tools' => 'items_limited_batchmod'}) if ($uid);
-use C4::Members;
+# In case user is a superlibrarian, edition is not limited
+$limitededition = 0 if ($limitededition != 0 && $limitededition->{'superlibrarian'} eq 1);
 
 my $today_iso = C4::Dates->today('iso');
 $template->param( today_iso => $today_iso );
