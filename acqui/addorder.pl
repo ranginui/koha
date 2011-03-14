@@ -146,6 +146,8 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
 # get CGI parameters
 my $orderinfo = $input->Vars;
 $orderinfo->{'list_price'} ||= 0;
+$orderinfo->{'uncertainprice'} ||= 0;
+
 
 #my $ordernumber        = $input->param('ordernumber');
 #my $basketno      = $input->param('basketno');
