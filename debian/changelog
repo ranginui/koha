@@ -1,4 +1,4 @@
-koha (3.3~mykoha20110315133430.2befecff) squeeze-dev; urgency=low
+koha (3.2~mykoha20110315133430.2befecff) squeeze; urgency=low
 
   * Building git snapshot.
 
