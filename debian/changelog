@@ -1,3 +1,9 @@
+koha (3.2.5-1ubuntu1) squeeze; urgency=low
+
+  * New upstream release
+
+ -- Chris Cormack <chrisc@catalyst.net.nz>  Tue, 15 Mar 2011 13:28:26 +1300
+
 koha (3.2.1-1) squeeze; urgency=low
 
   * New upstream release. 
