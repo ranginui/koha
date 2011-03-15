@@ -1,3 +1,9 @@
+koha (3.3~mykoha20110315133430.2befecff) squeeze-dev; urgency=low
+
+  * Building git snapshot.
+
+ -- Chris Cormack <chrisc@catalyst.net.nz>  Tue, 15 Mar 2011 13:34:31 +1300
+
 koha (3.2.5-1ubuntu1) squeeze; urgency=low
 
   * New upstream release
