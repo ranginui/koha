@@ -65,6 +65,7 @@
             <label for="authorised_value">Authorized value</label>
      <!-- TMPL_IF name="action_modify" --><input type="hidden" id="id" name="id" value="<!-- TMPL_VAR name="id" -->" /><!-- /TMPL_IF -->
             <input type="text" id="authorised_value" name="authorised_value" value="<!-- TMPL_VAR name="authorised_value" -->" />
+            <!-- TMPL_IF name="action_modify" --><span class="problem">WARNING: if you change an authorized value, records using it won't be updated. So, be carefull</span><!-- /TMPL_IF -->
         </li>
         <li>
             <label for="lib">Description</label>
@@ -173,10 +174,7 @@
 </ul></div>
 
 <h1>Authorized values</h1>
-<p>These values can be used in many pull down menus throughout the Koha system. You can define as many categories as you want, and as many authorized values as you want in each category.</p>
-
-<p>When you define the MARC subfield structure, you can link a subfield to a authorized-value category. When the user ask for adding of modifying a biblio, the subfield is not entered through a free field, but though a list of authorized values</p>
-
+<p><span class="problem">WARNING: if you change an authorized value, records using it won't be updated. So, be carefull</span></p>
 <!-- TMPL_IF name="duplicate_category" -->
 <div>
 <span class="problem">Could not add value &quot;<!-- TMPL_VAR name="duplicate_value" -->&quot; for category 
