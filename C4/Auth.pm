@@ -951,6 +951,7 @@ sub checkauth {
         opacsmallimage          => C4::Context->preference("opacsmallimage"),
         opaclayoutstylesheet    => C4::Context->preference("opaclayoutstylesheet"),
         opaccolorstylesheet     => C4::Context->preference("opaccolorstylesheet"),
+        opacstylesheet          => C4::Context->preference("opacstylesheet"),
         opaclanguagesdisplay    => C4::Context->preference("opaclanguagesdisplay"),
         opacuserjs              => C4::Context->preference("opacuserjs"),
         opacbookbag             => "" . C4::Context->preference("opacbookbag"),
