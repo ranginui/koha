@@ -185,7 +185,7 @@ function Dopop(link) {
     <!-- transfer: item with no reservation, must be returned to its homebranch -->
 	<div class="dialog message">
 	  <h3>Please return <a href="/cgi-bin/koha/catalogue/detail.pl?type=intra&amp;biblionumber=<!-- TMPL_VAR NAME="itembiblionumber" -->"><!-- TMPL_VAR NAME="title" escape="html" DEFAULT="item" --></a> to <!-- TMPL_VAR NAME="homebranch" DEFAULT="homebranch" --></h3></div><!-- /TMPL_IF -->
-    
+    <!-- TMPL_UNLESS Name="reserved" -->
     <!-- TMPL_IF Name="needstransfer" -->
 	<!-- needstransfer -->
 	<div class="dialog message"><h3> This item needs to be transfered to <!-- TMPL_VAR Name="homebranch" --></h3>
@@ -204,7 +204,7 @@ function Dopop(link) {
 	<!-- /TMPL_LOOP -->                            
 	<input type="hidden" name="barcode" value="0" />    
 	</form>   </div>
-	<!-- /TMPL_IF -->
+	<!-- /TMPL_IF --><!-- /TMPL_UNLESS -->
     	
     <!-- TMPL_IF Name="diffbranch" -->
 	<!-- diffbranch -->
