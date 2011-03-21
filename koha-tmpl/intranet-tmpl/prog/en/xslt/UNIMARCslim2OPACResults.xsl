@@ -25,13 +25,15 @@ select="marc:datafield[@tag=999]/marc:subfield[@code='a']"/>
      	
   <xsl:if test="marc:datafield[@tag=200]">
     <xsl:for-each select="marc:datafield[@tag=200]">
-      	<a><xsl:attribute name="href">
+       <a><xsl:attribute name="class">title</xsl:attribute>
+        <xsl:attribute name="href">
              /cgi-bin/koha/opac-detail.pl?biblionumber=
              <xsl:value-of select="$biblionumber"/>
              <xsl:if test="$leader7='s'">#subscriptions</xsl:if>
            </xsl:attribute>
         <xsl:value-of select="marc:subfield[@code='a']"/>
       </a>
+      <span><xsl:attribute name="class">author</xsl:attribute>
       <xsl:if test="marc:subfield[@code='e']">
         <xsl:text> : </xsl:text>
         <xsl:value-of select="marc:subfield[@code='e']"/>
@@ -57,6 +59,7 @@ select="marc:datafield[@tag=999]/marc:subfield[@code='a']"/>
         <xsl:text> ; </xsl:text>
         <xsl:value-of select="marc:subfield[@code='g']"/>
       </xsl:if>
+      </span>
     </xsl:for-each>
   </xsl:if>
 
