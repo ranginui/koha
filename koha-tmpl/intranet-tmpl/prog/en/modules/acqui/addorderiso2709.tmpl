@@ -39,6 +39,7 @@
                      <table>
                      <tr>
                          <th>Citation</th>
+                         <th>Match?</th>
                          <th>Order</th>
                        </tr>
                        <!-- TMPL_LOOP name="biblio_list" -->
@@ -46,9 +47,15 @@
                              <td>
                                 <!-- TMPL_VAR name="citation"-->
                              </td>
-                             <td><a href="/cgi-bin/koha/acqui/neworderempty.pl?booksellerid=<!--TMPL_VAR name="booksellerid" -->&amp;basketno=<!-- TMPL_VAR name="basketno" -->&amp;booksellerid=<!-- TMPL_VAR name="booksellerid" -->&amp;breedingid=<!-- TMPL_VAR name="import_record_id" -->&amp;import_batch_id=<!-- TMPL_VAR name="import_batch_id" -->">Add order</a></td>
+                             <td><!-- TMPL_VAR name="overlay_status"--></td>
+                             <td><a href="/cgi-bin/koha/acqui/neworderempty.pl?booksellerid=<!--TMPL_VAR name="booksellerid" -->&amp;basketno=<!-- TMPL_VAR name="basketno" -->&amp;booksellerid=<!-- TMPL_VAR name="booksellerid" -->&amp;breedingid=<!-- TMPL_VAR name="import_record_id" -->&amp;import_batch_id=<!-- TMPL_VAR name="import_batch_id" -->&amp;biblionumber=<!-- TMPL_VAR name="match_biblionumber" -->">Add order</a></td>
                          </tr>
-                       <!-- /TMPL_LOOP -->
+     <!-- TMPL_IF name="match_biblionumber" -->
+    <tr>
+      <td class="highlight" colspan="3">&nbsp;&nbsp;&nbsp;Matches biblio <!-- TMPL_VAR name="match_biblionumber" --> (score = <!-- TMPL_VAR name="match_score" -->): <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR name="match_biblionumber" -->"><!-- TMPL_VAR name="match_citation" --></a></td>
+    </tr>
+    <!-- /TMPL_IF -->
+                      <!-- /TMPL_LOOP -->
                      </table>
                    </form>
                </div>
