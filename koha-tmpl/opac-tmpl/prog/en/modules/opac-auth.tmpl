@@ -46,8 +46,8 @@
 <!-- /TMPL_IF -->
 
 <!-- TMPL_IF NAME="casAuthentication" -->
-<h4>Connexion aux services personnalisés</h4>
-<p>Pour consulter vos prêts en cours ou passés, faire des suggestions d'achat ou créer vos propres listes de références, vous devez vous identifier :</p>
+<h4>Connexion aux services personnalisés pour les étudiants et personnels</h4>
+<p>Pour consulter vos prêts en cours ou passés, faire des suggestions d'achat ou créer vos propres listes de références, vous devez vous identifier au moyen de vos codes d'accès ENT si vous faites partie de la communauté universitaire d'Aix-Marseille.</p>
 
 <!-- TMPL_IF NAME="invalidCasLogin" -->
     <!-- This is what is displayed if cas login has failed -->
@@ -55,7 +55,7 @@
 <!-- /TMPL_IF -->
 
 
-<li>au moyen de vos codes d'accès ENT si vous faites partie de la communauté universitaire d'Aix-Marseille </li>
+<br>
 <!-- TMPL_IF name="casServerUrl" -->
     please <a href="<!-- TMPL_VAR NAME="casServerUrl" -->">click here to login</a>.<p>
 <!-- /TMPL_IF -->
@@ -63,12 +63,17 @@
 <!-- TMPL_IF name="casServersLoop" -->
 <ul><ul><ul>
     <!-- TMPL_LOOP name="casServersLoop" -->
-	<li>Connexion pour les étudiants et personnels <a href="<!-- TMPL_VAR name="value" -->"><!-- TMPL_VAR name="name" --></a></li>
+	<li>Connexion pour les étudiants et personnels de l'Université de Provence Aix-Marseille (<a href="<!-- TMPL_VAR name="value" -->"><!-- TMPL_VAR name="name" --></a>)</li>
     <!-- /TMPL_LOOP -->
 <!-- /TMPL_IF -->
 </ul></ul></ul>
 
-<li>au moyen des identifiants qui vous ont été communiqués par la bibliothèque dans laquelle vous vous êtes inscrit si vous n'êtes pas universitaire</li>
+
+
+<br>
+<h4><b>Connexion aux services personnalisés pour les autres lecteurs</b></h4>
+<ul>Merci de vous connecter au moyen des identifiants qui vous ont été communiqués par la bibliothèque dans laquelle vous vous êtes inscrit,
+si vous n'êtes pas universitaire :</ul>
 
 <!-- /TMPL_IF -->
 
