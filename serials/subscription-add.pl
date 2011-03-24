@@ -129,28 +129,23 @@ for my $thisbranch ( sort { $branches->{$a}->{branchname} cmp $branches->{$b}->{
 my $shelflocations = GetKohaAuthorisedValues( 'items.location', '' );
 
 my @locationarg =
-  map { { code => $_, value => $shelflocations->{$_}, selected => ( ( $_ eq $subs->{location} ) ? "selected=\"selected\"" : "" ), } } sort keys %{$shelflocations};
+  map { { code => $_, value => $shelflocations->{$_}, selected => ( ( $subs->{location} and $_ eq $subs->{location} ) ? "selected=\"selected\"" : "" ), } } sort keys %{$shelflocations};
 
 
 my $typeloop = GetItemTypes();
+
 my $supportloop = GetKohaAuthorisedValuesFromField('995', 'r', '');
 my $originloop = GetKohaAuthorisedValuesFromField('995', 's', '');
 my $domainloop = GetKohaAuthorisedValuesFromField('995', 't', '');
 
 my @typearg = 
-    map { { code => $_, value => $typeloop->{$_}{'description'}, selected => ( ( $_ eq $subs->{itemtype} ) ? "selected=\"selected\"" : "" ), } } sort keys %{$typeloop};
+    map { { code => $_, value => $typeloop->{$_}{'description'}, selected => ( ( $subs->{itemtype} and $_ eq $subs->{itemtype} ) ? "selected=\"selected\"" : "" ), } } sort keys %{$typeloop};
 my @supportarg = 
-    map { { code => $_, value => $supportloop->{$_}, selected => ( ( $_ eq $subs->{ccode} ) ? "selected=\"selected\"" : "" ), } } sort keys %{$supportloop};
+    map { { code => $_, value => $supportloop->{$_}, selected => ( ( $subs->{ccode} and $_ eq $subs->{ccode} ) ? "selected=\"selected\"" : "" ), } } sort keys %{$supportloop};
 my @originarg =
-    map { { code => $_, value => $originloop->{$_}, selected => ( ( $_ eq $subs->{origin} ) ? "selected=\"selected\"" : "" ), } } sort keys %{$originloop};
+    map { { code => $_, value => $originloop->{$_}, selected => ( ( $subs->{origin} and $_ eq $subs->{origin} ) ? "selected=\"selected\"" : "" ), } } sort { lc $originloop->{$a} cmp lc $originloop->{$b} } keys %{$originloop};
 my @domainarg = 
-    map { { code => $_, value => $domainloop->{$_}, selected => ( ( $_ eq $subs->{domain} ) ? "selected=\"selected\"" : "" ), } } sort keys %{$domainloop};
-
-
-foreach (sort keys %{$typeloop}) {
-warn $_;
-}
-
+    map { { code => $_, value => $domainloop->{$_}, selected => ( ( $subs->{domain} and $_ eq $subs->{domain} ) ? "selected=\"selected\"" : "" ), } } sort keys %{$domainloop};
 
 
 

@@ -53,6 +53,9 @@ function unHideItems(index,labelindex, serialId) {
 	// Also prefilling 995$l
 	subfieldid = "subfield" + itemid.substr(4) + "l";
 	$("#" + subfieldid + " input[type='text']").val($("#serialseq" + serialId).val());
+	// And prefilling for supplemental issue
+	$("#subfieldNEWl input[type='text']").val($("#serialseqsupplemental").val());
+
 
 }
 function HideItems(index,labelindex) {
@@ -316,7 +319,7 @@ $(document).ready(function() {
             <input type="hidden" name="biblionumber" value="<!-- TMPL_VAR NAME="biblionumber" -->" />
             <input type="hidden" name="itemcount" value="<!-- TMPL_VAR name="issuesatonce" -->" />
             <input type="hidden" name="user" value="<!-- TMPL_VAR name="librarian" -->" />
-            Supplemental Issue <input type="text" name="serialseq" value="" size="20" maxlength="100" onchange="if (this.value!=''){unHideItems('items<!-- TMPL_VAR NAME="subscriptionid" --><!-- TMPL_VAR NAME="serialid" -->','label<!-- TMPL_VAR NAME="subscriptionid" --><!--TMPL_VAR Name="serialid"-->', '<!--TMPL_VAR Name="serialid"-->')} else {HideItems('items<!-- TMPL_VAR NAME="subscriptionid" --><!-- TMPL_VAR NAME="serialid" -->','label<!-- TMPL_VAR NAME="subscriptionid" --><!--TMPL_VAR Name="serialid"-->')}" />
+            Supplemental Issue <input type="text" name="serialseq" id="serialseqsupplemental" value="" size="20" maxlength="100" onchange="if (this.value!=''){unHideItems('items<!-- TMPL_VAR NAME="subscriptionid" --><!-- TMPL_VAR NAME="serialid" -->','label<!-- TMPL_VAR NAME="subscriptionid" --><!--TMPL_VAR Name="serialid"-->', '<!--TMPL_VAR Name="serialid"-->')} else {HideItems('items<!-- TMPL_VAR NAME="subscriptionid" --><!-- TMPL_VAR NAME="serialid" -->','label<!-- TMPL_VAR NAME="subscriptionid" --><!--TMPL_VAR Name="serialid"-->')}" />
         </td>
         <td>
             <input type="text" name="publisheddate" value="<!-- TMPL_VAR name="publisheddate" -->" size="10" maxlength="15" />
