@@ -299,7 +299,7 @@ sub calculate {
     }
 
     my $strsth = "SELECT DISTINCTROW $linefield FROM biblioitems 
-	                INNER JOIN items USING (biblioitemnumber)
+	                LEFT JOIN items USING (biblioitemnumber)
 	              WHERE $line IS NOT NULL ";
     $strsth .= " AND barcode $not LIKE ? " if ($barcodefilter);
     if (@linefilter) {
@@ -351,7 +351,7 @@ sub calculate {
     my $strsth2 = "
 	SELECT distinctrow $colfield
 	FROM   biblioitems
-	INNER JOIN items
+	LEFT JOIN items
 		USING (biblioitemnumber)
 	WHERE $column IS NOT NULL ";
     $strsth2 .= " AND barcode $not LIKE ?" if $barcodefilter;
@@ -407,7 +407,7 @@ sub calculate {
     }
 
     # preparing calculation
-    my $strcalc = "SELECT $linefield, $colfield, count(*) FROM biblioitems INNER JOIN  items ON (items.biblioitemnumber = biblioitems.biblioitemnumber) WHERE 1 ";
+    my $strcalc = "SELECT $linefield, $colfield, count(*) FROM biblioitems LEFT JOIN  items ON (items.biblioitemnumber = biblioitems.biblioitemnumber) WHERE 1 ";
     $strcalc .= "AND barcode $not like ? " if ($barcodefilter);
 
     if ( @$filters[0] ) {
