@@ -262,6 +262,9 @@ sub shelfpage {
                 for my $this_item (@$items) {
                     my $biblionumber = $this_item->{'biblionumber'};
                     my $record = GetMarcBiblio($biblionumber);
+                    if (!$record){
+			            next;
+		            }
                     $this_item->{XSLTBloc} =
                         XSLTParse4Display($biblionumber, $record, "OPACXSLTResultsDisplay")
                             if C4::Context->preference("OPACXSLTResultsDisplay") && $type eq 'opac';
