@@ -2189,6 +2189,7 @@ sub MoveItemFromBiblio {
             $record->insert_fields_ordered($item);
 
             # Saving the modification
+            $frameworkcode = GetFrameworkCode($tobiblio);
             ModBiblioMarc( $record, $tobiblio, $frameworkcode );
 
         } else {
