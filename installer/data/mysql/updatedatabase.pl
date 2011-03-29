@@ -4991,6 +4991,14 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     SetVersion($DBversion);
 }
 
+$DBversion = "3.02.00.062";
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+    $dbh->do(qq{
+    INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('numSearchRSSResults',50,'Specify the maximum number of results to display on a RSS page of results',NULL,'Integer');
+    });
+    print "Upgrade to $DBversion done (Adds New System preference numSearchRSSResults)\n";
+    SetVersion($DBversion);
+}
 
 =item DropAllForeignKeys($table)
 
