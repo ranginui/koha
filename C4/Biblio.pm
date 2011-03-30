@@ -2432,7 +2432,7 @@ sub PrepareItemrecordDisplay {
                             $authorised_lib{$itemtype} = $description;
 			    
 			    # If we have default value named itemtype or itemtypes, we use it
-			    $defaultvalue = $itemtype if ($defaultvalues->{'itemtypes'} eq $itemtype or $defaultvalues->{'itemtype'} eq $itemtype);
+			    $defaultvalue = $itemtype if ($defaultvalues and ($defaultvalues->{'itemtypes'} eq $itemtype or $defaultvalues->{'itemtype'} eq $itemtype));
 
                         }
 
@@ -2447,7 +2447,7 @@ sub PrepareItemrecordDisplay {
 
 			    # If we have a default value that has the same name as the authorised value category of the field,
 			    # we use it
-			    $defaultvalue = $value if $defaultvalues->{$tagslib->{$tag}->{$subfield}->{authorised_value}} eq $value;
+			    $defaultvalue = $value if ($defaultvalues and $defaultvalues->{$tagslib->{$tag}->{$subfield}->{authorised_value}} eq $value);
                         }
                     }
                     $subfield_data{marc_value} = CGI::scrolling_list(
