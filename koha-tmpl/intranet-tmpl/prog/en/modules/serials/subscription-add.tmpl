@@ -1051,6 +1051,7 @@ $(document).ready(function() {
 	<li>
 	    <label for="origin">Origin:</label>
 	    <select name="origin" id="origin">
+		    <option value=""></option>
 		<!-- TMPL_LOOP NAME="originloop" -->
 		    <option value="<!-- TMPL_VAR NAME="code" -->" <!-- TMPL_VAR NAME="selected" -->><!-- TMPL_VAR NAME="value" --></option>
 		<!-- /TMPL_LOOP -->
@@ -1059,6 +1060,7 @@ $(document).ready(function() {
 	<li>
 	    <label for="domain">Domain:</label>
 	    <select name="domain" id="domain">
+		    <option value=""></option>
 		<!-- TMPL_LOOP NAME="domainloop" -->
 		    <option value="<!-- TMPL_VAR NAME="code" -->" <!-- TMPL_VAR NAME="selected" -->><!-- TMPL_VAR NAME="value" --></option>
 		<!-- /TMPL_LOOP -->
