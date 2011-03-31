@@ -183,21 +183,25 @@ sub buildKohaItemsNamespace {
         my ( $transfertwhen, $transfertfrom, $transfertto ) = C4::Circulation::GetTransfers( $item->{itemnumber} );
 
         my ( $reservestatus, $reserveitem ) = C4::Reserves::CheckReserves( $item->{itemnumber} );
-   	   
- #biblibre
+
         if (   $itemtypes->{ $item->{itype} }->{notforloan}
-            || $item->{notforloan} eq "0"
-            || $item->{onloan} ne''
-            || $item->{notforloan} eq "1" # eventuellement remplacer le code 1 par le code valeur autorisée correpondant au statut en commande
-            || $item->{notforloan} ne "0"
+            || $item->{notforloan}
+            || $item->{onloan}
             || $item->{wthdrawn}
             || $item->{itemlost}
             || $item->{damaged}
             || ( defined $transfertwhen && $transfertwhen ne '' )
             || $item->{itemnotforloan}
             || ( defined $reservestatus && $reservestatus eq "Waiting" ) ) {
- 
-
+            if ( $item->{notforloan} < 0 ) {
+                $status = "On order";
+            }
+            if ( $item->{itemnotforloan} > 0 || $item->{notforloan} > 0 || $itemtypes->{ $item->{itype} }->{notforloan} == 1 ) {
+                $status = "reference";
+            }
+            if ( $item->{onloan} ) {
+                $status = "Checked out";
+            }
             if ( $item->{wthdrawn} ) {
                 $status = "Withdrawn";
             }
@@ -207,37 +211,15 @@ sub buildKohaItemsNamespace {
             if ( $item->{damaged} ) {
                 $status = "Damaged";
             }
-		
             if ( defined $transfertwhen && $transfertwhen ne '' ) {
                 $status = 'In transit';
             }
             if ( defined $reservestatus && $reservestatus eq "Waiting" ) {
                 $status = 'Waiting';
             }
-            if ( $item->{notforloan} ne "0") {
-                $status = "reference";
-            }
-
-            #biblibre
-	    if (  $item->{notforloan} eq "0" ) {
-                $status = "availables";
-            }
-
-            if ( $item->{notforloan} eq "8") # eventuellement remplacer le code 8 A consultation par le code valeur autorisée correpondant au statut en commande
-	    {
-               $status = "consultation";
-            }
-	    if ( $item->{notforloan} eq "1") # eventuellement remplacer le code 1  En commande par le code valeur autorisée correpondant au statut en commande
-	    {
-               $status = "On order";
-            }
-
-         if ( $item->{onloan} ne '') {
-              $status = "Checked out";
+        } else {
+            $status = "available";
         }
-
-}
-
         my $homebranch = $branches->{ $item->{homebranch} }->{'branchname'};
         my $itemcallnumber = $item->{itemcallnumber} || '';
         my $itemlocation = GetAuthorisedValueByCode( "LOC", $item->{location}) || '';
@@ -245,14 +227,9 @@ sub buildKohaItemsNamespace {
         $xml .= "<item><homebranch>$homebranch</homebranch><itemlocation>$itemlocation</itemlocation>" . "<status>$status</status>" . "<itemcallnumber>" . $itemcallnumber . "</itemcallnumber>" . "</item>";
 
     }
-
-
-
-$xml = "<items xmlns=\"http://www.koha.org/items\">" . $xml . "</items>";
+    $xml = "<items xmlns=\"http://www.koha.org/items\">" . $xml . "</items>";
     return $xml;
-
-    
-} 
+}
 
 1;
 __END__
