@@ -612,8 +612,9 @@ sub GetSubscriptions {
 
     while ( my $line = $sth->fetchrow_hashref ) {
         if ( $previousbiblio eq $line->{biblionumber} ) {
-            $line->{title} = "";
-            $line->{issn}  = "";
+	    # This is removed on purpose, so that display is compatible with dynamic filter in serials-home.pl
+            #$line->{title} = "";
+            #$line->{issn}  = "";
         } else {
             $previousbiblio = $line->{biblionumber};
             $odd            = -$odd;
