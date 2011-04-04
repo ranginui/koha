@@ -22,11 +22,19 @@
 <xsl:value-of select="marc:subfield[@code='a'][1]" />
 <xsl:if test="marc:subfield[@code='a'][2]"><xsl:text>. </xsl:text><xsl:value-of select="marc:subfield[@code='a'][2]" /></xsl:if>
 <xsl:if test="marc:subfield[@code='a'][3]"><xsl:text>. </xsl:text><xsl:value-of select="marc:subfield[@code='a'][3]" /></xsl:if>
+<xsl:if test="marc:subfield[@code='a'][4]"><xsl:text>. </xsl:text><xsl:value-of select="marc:subfield[@code='a'][4]" /></xsl:if>
 
-          <xsl:if test="marc:subfield[@code='e']">
+          <!--<xsl:if test="marc:subfield[@code='e']">
             <xsl:text> : </xsl:text>
             <xsl:value-of select="marc:subfield[@code='e']"/>
-          </xsl:if>
+          </xsl:if>-->
+
+<xsl:if test="marc:subfield[@code='e'][1]"><xsl:text>: </xsl:text><xsl:value-of select="marc:subfield[@code='e'][1]" /></xsl:if>
+<xsl:if test="marc:subfield[@code='e'][2]"><xsl:text>: </xsl:text><xsl:value-of select="marc:subfield[@code='e'][2]" /></xsl:if>
+<xsl:if test="marc:subfield[@code='e'][3]"><xsl:text>: </xsl:text><xsl:value-of select="marc:subfield[@code='e'][3]" /></xsl:if> 
+<xsl:if test="marc:subfield[@code='e'][4]"><xsl:text>: </xsl:text><xsl:value-of select="marc:subfield[@code='e'][4]" /></xsl:if>
+
+
           <xsl:if test="marc:subfield[@code='b']">
             <xsl:text> [</xsl:text>
             <xsl:value-of select="marc:subfield[@code='b']"/>
