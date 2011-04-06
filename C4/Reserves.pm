@@ -1256,7 +1256,7 @@ sub ModReserveFill {
                   AND   reservenumber  = ?
                   AND   reservedate    = ?";
     my $sth = $dbh->prepare($query);
-    $sth->execute( $resnumber, $borrowernumber, $resdate );
+    $sth->execute( $borrowernumber, $resnumber, $resdate );
     ($priority) = $sth->fetchrow_array;
     $sth->finish;
 
