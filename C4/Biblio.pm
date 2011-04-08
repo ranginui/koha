@@ -1951,8 +1951,7 @@ sub GetMarcSeries {
     my @marcseries;
     my $authoritysep = C4::Context->preference('authoritysep');
 
-    foreach my $field ( $record->field($fields_filter) ) {
-        next unless $field->tag() >= $mintag && $field->tag() <= $maxtag;
+    foreach my $field ( $record->field('830'), $record->field('440'), $record->field('490') ) {
         my @subfields_loop;
         my @subfields = $field->subfields();
         my @link_loop;
