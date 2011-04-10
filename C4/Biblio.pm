@@ -1244,7 +1244,7 @@ sub GetCOinSBiblio {
 
 	# place
 	$place = join(" - ", $record->subfield('210', 'a'));
-	$place = "&amp;rtf.place=$place" if ($place);
+	$place = "&amp;rft.place=$place" if ($place);
 
 	# tpages
 	my $i = 0;
@@ -1255,7 +1255,7 @@ sub GetCOinSBiblio {
 		$tpages .= join(" + ", $field->subfield('e')); 
 		$i++;
 	}
-	$tpages = "&amp;rtf.tpages=$tpages" if ($tpages);
+	$tpages = "&amp;rft.tpages=$tpages" if ($tpages);
 
 	# title
 	my $btitle = join(' ; ', $record->subfield('200', 'a'));
