@@ -5000,6 +5000,15 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     SetVersion($DBversion);
 }
 
+$DBversion = "3.02.00.063";
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+    $dbh->do(
+        "INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('SubfieldsToDiscardWhenPrefill','f u','define a list of subfields to discard when prefill (separated by space)','','Free');"
+    );
+    print "Upgrade to $DBversion done (added new syspref: SubfieldsToDiscardWhenPrefill)\n";
+    SetVersion($DBversion);
+}
+
 =item DropAllForeignKeys($table)
 
   Drop all foreign keys of the table $table
