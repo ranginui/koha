@@ -221,7 +221,8 @@ sub GetLogs {
         $query .= " AND module IN (" . join( ",", map { "?" } @$modules ) . ") ";
         push( @parameters, @$modules );
     }
-    if ( $action && scalar(@$action) ) {
+    #if ( $action && $action ne "" ) {
+    if ( scalar @$action > 1 or @$action[0] ne "" ) {
         $query .= " AND action IN (" . join( ",", map { "?" } @$action ) . ") ";
         push( @parameters, @$action );
     }
