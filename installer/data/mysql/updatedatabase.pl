@@ -4987,7 +4987,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     $dbh->do(qq{
     	ALTER TABLE `deleteditems` ADD `statisticvalue` varchar(80) DEFAULT NULL
     });
-    print "Upgrade to $DBversion done (Adds New System preference BlockRenewWhenOverdue)\n";
+    print "Upgrade to $DBversion done (Adds column statisticvalue in table deleteditems)\n";
     SetVersion($DBversion);
 }
 
