@@ -221,6 +221,8 @@ function placeHold () {
         <!-- TMPL_IF name="manageshelf" -->
             <input type="button" id="placehold" style="display:none" onclick="placeHold(); return false;" value="Place Holds" />
             <input type="submit" value="Remove selected Items" onclick="return confirm(_('Are you sure you want to remove these items from the shelf?'));" />
+        <!-- /TMPL_IF -->
+        <!-- TMPL_IF name="merge_from_shelf" -->
             <input type="submit" value="Merge selected Items" onclick="return MergeItems();" />
         <!-- /TMPL_IF -->
  </fieldset>

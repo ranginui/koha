@@ -9,6 +9,8 @@ INSERT INTO permissions (module_bit, code, description) VALUES
    ( 9, 'edit_items', 'Edit Items'),
    ( 9, 'limited_item_edition', 'Limit item modification to barcode, status and note (please note that edit_item is still required)'),
    ( 9, 'delete_all_items', 'Delete all items'),
+   ('9', 'manage_shelves', 'Allows to manage shelves'), 
+   ('9', 'merge_from_shelves', 'Allows to merge records from shelves'),
    (11, 'vendors_manage', 'Manage vendors'),
    (11, 'contracts_manage', 'Manage contracts'),
    (11, 'period_manage', 'Manage periods'),

@@ -482,7 +482,17 @@ sub ShelfPossibleAction {
     return 1 if ( ( $category >= 2 )
         and defined($action)
         and $action eq 'view' );       # public list, anybody can view
-    return 1 if ( ( $category >= 2 ) and defined($user) and ( $borrower->{authflags}->{superlibrarian} || $user == 0 ) );    # public list, superlibrarian can edit/delete
+
+    return 0 if ( ( $category >= 2 ) 
+	and defined($action)
+	and $action eq 'merge'
+	and not C4::Auth::haspermission($borrower->{'userid'},  {'editcatalogue' => 'merge_from_shelves'}));
+
+    return 1 if ( ( $category >= 2 ) and defined($user) and ( $borrower->{authflags}->{superlibrarian} 
+							    || $user == 0 
+							    || $borrower->{authflags}->{editcatalogue}
+							    || C4::Auth::haspermission($borrower->{'userid'},  {'editcatalogue' => 'manage_shelves'})
+							    ));    # public list, superlibrarian can edit/delete
     return 1 if ( defined($user) and $owner eq $user );                                                                      # user owns this list.  Check last.
     return 0;
 }

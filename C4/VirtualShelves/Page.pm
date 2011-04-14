@@ -208,14 +208,16 @@ sub shelfpage ($$$$$) {
                 $showadd = 1;
                 my $i = 0;
                 my $manageshelf = ShelfPossibleAction( $loggedinuser, $shelfnumber, 'manage' );
+		my $mergefromshelf = ShelfPossibleAction($loggedinuser, $shelfnumber, 'merge' );
                 $template->param(
-                    shelfname => $shelflist->{$shelfnumber}->{'shelfname'} || $privshelflist->{$shelfnumber}->{'shelfname'},
-                    shelfnumber => $shelfnumber,
-                    viewshelf   => $shelfnumber,
-                    authorsort  => $authorsort,
-                    yearsort    => $yearsort,
-                    manageshelf => $manageshelf,
-                    itemsloop   => $items,
+                    shelfname        => $shelflist->{$shelfnumber}->{'shelfname'} || $privshelflist->{$shelfnumber}->{'shelfname'},
+                    shelfnumber      => $shelfnumber,
+                    viewshelf        => $shelfnumber,
+                    authorsort       => $authorsort,
+                    yearsort         => $yearsort,
+                    manageshelf      => $manageshelf,
+                    merge_from_shelf => $mergefromshelf,
+                    itemsloop        => $items,
                 );
             } else {
                 push @paramsloop, { nopermission => $shelfnumber };
