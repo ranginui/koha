@@ -459,7 +459,7 @@ ShelfPossibleAction($loggedinuser, $shelfnumber, $action);
 
 C<$loggedinuser,$shelfnumber,$action>
 
-$action can be "view" or "manage".
+$action can be "view", "manage" or "merge".
 
 Returns 1 if the user can do the $action in the $shelfnumber shelf.
 Returns 0 otherwise.
@@ -483,10 +483,14 @@ sub ShelfPossibleAction {
         and defined($action)
         and $action eq 'view' );       # public list, anybody can view
 
-    return 0 if ( ( $category >= 2 ) 
+    return 0 if ( ( $category >= 1 ) 
 	and defined($action)
 	and $action eq 'merge'
-	and not C4::Auth::haspermission($borrower->{'userid'},  {'editcatalogue' => 'merge_from_shelves'}));
+	and not (C4::Auth::haspermission($borrower->{'userid'},  {'editcatalogue' => 'merge_from_shelves'})
+	|| $borrower->{authflags}->{superlibrarian} 
+	|| $user == 0
+	|| $borrower->{authflags}->{editcatalogue})
+	);
 
     return 1 if ( ( $category >= 2 ) and defined($user) and ( $borrower->{authflags}->{superlibrarian} 
 							    || $user == 0 
