@@ -41,15 +41,17 @@ use C4::Accounts;
 use Getopt::Long;
 
 my $lost;    #  key=lost value,  value=num days.
-my ( $charge, $verbose, $confirm );
-my $endrange = 366;    # FIXME hardcoded - don't deal with anything overdue by more than this num days.
+my ( $charge, $verbose, $confirm, $endrange );
 
 GetOptions(
     'lost=s%'    => \$lost,
-    'c|charge=s' => \$charge,
+    'c|charge:s' => \$charge,
     'confirm'    => \$confirm,
     'verbose'    => \$verbose,
+    'endrange:i'   => \$endrange,
 );
+$endrange = 366 unless $endrange; #default value is one year and one day
+warn "endrange : $endrange";
 
 my $usage = << 'ENDUSAGE';
 longoverdue.pl : This cron script set lost values on overdue items and optionally sets charges the patron's account
@@ -69,6 +71,8 @@ This script takes the following parameters :
 
     --confirm           confirm.  without this option, the script will report the number of affected items and
                         return without modifying any records.
+
+    --endrange          endrange, tells which issues are concerned. Issues older than end are not impacted
 
   examples :
   $PERL5LIB/misc/cronjobs/longoverdue.pl --lost 30=1
