@@ -1302,6 +1302,10 @@ sub check_cookie_auth {
     # is deferred so as to not introduce bugs into the
     # regular authentication code for Koha 3.0.
 
+    # FIXME: check_cookie_auth happens to disconnect the
+    # user when authentication fails. Imho, it should not.
+    # It should just deny authentication.
+
     # see if we have a valid session cookie already
     # however, if a userid parameter is present (i.e., from
     # a form submission, assume that any current cookie
