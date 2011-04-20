@@ -348,21 +348,63 @@
     <li>
       <strong>Etat de collection SUDOC: </strong>
       <xsl:for-each select="marc:datafield[@tag=955]">
-        <xsl:choose>
+        <p><xsl:choose>
           <xsl:when test="marc:subfield[@code='9']">
-            <xsl:value-of select="marc:subfield[@code='9']"/>:
+            <b><xsl:value-of select="marc:subfield[@code='9']"/>:</b>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:call-template name="RCR">
+            <b><xsl:call-template name="RCR">
       		  <xsl:with-param name="code" select="substring-before(marc:subfield[@code='5'], ':')"/>
-      		</xsl:call-template>
+      		</xsl:call-template></b>
           </xsl:otherwise>
-        </xsl:choose>
-        <xsl:value-of select="marc:subfield[@code='r']"/>
-        <xsl:choose><xsl:when test="position()=last()"><xsl:text>.</xsl:text></xsl:when><xsl:otherwise><xsl:text>; </xsl:text></xsl:otherwise></xsl:choose>
+        </xsl:choose></p>
+        <ul><li><xsl:value-of select="marc:subfield[@code='r']"/>
+        <xsl:choose><xsl:when test="position()=last()"><xsl:text>.</xsl:text></xsl:when><xsl:otherwise><xsl:text>; </xsl:text></xsl:otherwise></li></ul></xsl:choose>
       </xsl:for-each>
     </li>
   </xsl:if>
+<p></p>
+<xsl:if test="marc:datafield[@tag=923]">
+			  <strong>Collections disponibles : </strong>
+			  <ul>
+	        <xsl:for-each select="marc:datafield[@tag=923]">
+	        	<li>
+			      	<span class="label">Pour 
+			      	    <strong>
+			          		<xsl:call-template name="RCR">
+			          		  <xsl:with-param name="code" select="marc:subfield[@code='c']"/>
+			          		</xsl:call-template>
+			      		</strong>
+			      		<xsl:if test="marc:subfield[@code='b']">
+			      		, Cote <xsl:value-of select="marc:subfield[@code='b']"/>
+			      		</xsl:if>
+			      		:
+			          </span>
+			        <ul>
+			        	<xsl:if test="marc:subfield[@code='d']">
+			        		<li><span class="label">Etat de collection : </span><xsl:value-of select="marc:subfield[@code='d']"/></li>
+			        	</xsl:if>
+			        	<xsl:if test="marc:subfield[@code='e']">
+			        		<li><span class="label">Index : </span><xsl:value-of select="marc:subfield[@code='e']"/></li>
+			        	</xsl:if>
+			        	<xsl:if test="marc:subfield[@code='a']">
+			        		<li><span class="label">Lacunes : </span><xsl:value-of select="marc:subfield[@code='a']"/></li>
+			        	</xsl:if>
+			        	<xsl:if test="marc:subfield[@code='g']">
+				      		<li><span class="label">Localisation : </span><xsl:value-of select="marc:subfield[@code='g']"/></li>
+				      	</xsl:if>
+				      	<xsl:if test="marc:subfield[@code='m']">
+				      		<li><span class="label">Suppléments : </span><xsl:value-of select="marc:subfield[@code='g']"/></li>
+				      	</xsl:if>
+                                        <xsl:if test="marc:subfield[@code='h']">
+                                                <li><span class="label">Commentaires : </span><xsl:value-of select="marc:subfield[@code='h']"/></li>
+                                        </xsl:if>
+			        </ul>
+	          </li>
+	        </xsl:for-each>
+        </ul>
+		  </xsl:if>
+<p></p>
 
   <xsl:call-template name="tag_subject">
     <xsl:with-param name="tag">600</xsl:with-param>
@@ -540,46 +582,7 @@
         </xsl:for-each>
         </xsl:if>
         
-		  <xsl:if test="marc:datafield[@tag=923]">
-			  <strong>Collections disponibles : </strong>
-			  <ul>
-	        <xsl:for-each select="marc:datafield[@tag=923]">
-	        	<li>
-			      	<span class="label">Pour 
-			      	    <strong>
-			          		<xsl:call-template name="RCR">
-			          		  <xsl:with-param name="code" select="marc:subfield[@code='c']"/>
-			          		</xsl:call-template>
-			      		</strong>
-			      		<xsl:if test="marc:subfield[@code='b']">
-			      		, Cote <xsl:value-of select="marc:subfield[@code='b']"/>
-			      		</xsl:if>
-			      		:
-			          </span>
-			        <ul>
-			        	<xsl:if test="marc:subfield[@code='d']">
-			        		<li><span class="label">Etat de collection : </span><xsl:value-of select="marc:subfield[@code='d']"/></li>
-			        	</xsl:if>
-			        	<xsl:if test="marc:subfield[@code='e']">
-			        		<li><span class="label">Index : </span><xsl:value-of select="marc:subfield[@code='e']"/></li>
-			        	</xsl:if>
-			        	<xsl:if test="marc:subfield[@code='a']">
-			        		<li><span class="label">Lacunes : </span><xsl:value-of select="marc:subfield[@code='a']"/></li>
-			        	</xsl:if>
-			        	<xsl:if test="marc:subfield[@code='g']">
-				      		<li><span class="label">Localisation : </span><xsl:value-of select="marc:subfield[@code='g']"/></li>
-				      	</xsl:if>
-				      	<xsl:if test="marc:subfield[@code='m']">
-				      		<li><span class="label">Suppléments : </span><xsl:value-of select="marc:subfield[@code='g']"/></li>
-				      	</xsl:if>
-                                        <xsl:if test="marc:subfield[@code='h']">
-                                                <li><span class="label">Commentaires : </span><xsl:value-of select="marc:subfield[@code='h']"/></li>
-                                        </xsl:if>
-			        </ul>
-	          </li>
-	        </xsl:for-each>
-        </ul>
-		  </xsl:if>
+		  
 
     </xsl:template>
 
