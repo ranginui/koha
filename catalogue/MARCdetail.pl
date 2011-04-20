@@ -198,7 +198,6 @@ for ( my $tabloop = 0 ; $tabloop <= 10 ; $tabloop++ ) {
                     }
 		    
 		    $subfield_data{marc_value} = GetAuthorisedValueDesc( $fields[$x_i]->tag(), $subf[$i][0], $subf[$i][1], '', $tagslib ) || $subf[$i][1];
-		    warn GetAuthorisedValueDesc( $fields[$x_i]->tag(), $subf[$i][0], $subf[$i][1], '', $tagslib ) ;
 
 		if ($tagslib->{ $fields[$x_i]->tag() }->{ $subf[$i][0] }->{value_builder} eq "upload.pl" and $uploadWebPath) {
 			my $file_uri = qq($uploadWebPath/$subf[$i][1]);
