@@ -1036,7 +1036,7 @@ sub GetItemsForInventory {
     my ( @bind_params, @where_strings );
 
     my $query = <<'END_SQL';
-SELECT items.itemnumber, barcode, itemcallnumber, title, author, biblio.biblionumber, datelastseen
+SELECT items.itemnumber, barcode, itemcallnumber, title, author, biblio.biblionumber, datelastseen, homebranch, location
 FROM items
   LEFT JOIN biblio ON items.biblionumber = biblio.biblionumber
   LEFT JOIN biblioitems on items.biblionumber = biblioitems.biblionumber
