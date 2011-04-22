@@ -122,7 +122,7 @@
   <span class="results_summary">
     <span class="label">Disponibilité: </span>
     <xsl:choose>
-      <xsl:when test="marc:datafield[@tag=856]">
+      <!--<xsl:when test="marc:datafield[@tag=856]">
         <xsl:for-each select="marc:datafield[@tag=856]">
           <xsl:choose>
             <xsl:when test="@ind2=0">
@@ -148,7 +148,7 @@
             </xsl:when> 
           </xsl:choose>
         </xsl:for-each>
-      </xsl:when>
+      </xsl:when>-->
       <xsl:when test="count(key('item-by-status', 'available'))=0 and count(key('item-by-status', 'reference'))=0">
         Pas de copie disponible
       </xsl:when>
