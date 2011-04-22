@@ -196,7 +196,11 @@ $(document).ready(function(){
         <tr>
             <th>Seen</th>
             <th>Barcode</th>
+            <th>Location</th>
             <th>Title</th>
+            <th>Status</th>
+            <th>Lost</th>
+            <th>Damaged</th>
             <th>Unseen since</th>
             <th>Problems</th>
         </tr>
@@ -209,19 +213,29 @@ $(document).ready(function(){
                 <!-- TMPL_VAR NAME="barcode" -->
             </td>
             <td>
-                <p><b><!-- TMPL_VAR NAME="itemcallnumber" --></b> - <a href="#" onclick="window.open('/cgi-bin/koha/catalogue/MARCdetail.pl?biblionumber=<!--TMPL_VAR Name="biblionumber"-->','marcview','width=800,height=600,toolbar=0,scrollbars=1');"><!-- TMPL_VAR NAME="title" escape="html" --></a></p>
+                <!-- TMPL_VAR name="homebranch" --> <!-- TMPL_VAR name="location" --> [<!-- TMPL_VAR NAME="itemcallnumber" -->]
+            </td>
+            <td>
+                <p><a href="#" onclick="window.open('/cgi-bin/koha/catalogue/MARCdetail.pl?biblionumber=<!--TMPL_VAR Name="biblionumber"-->','marcview','width=800,height=600,toolbar=0,scrollbars=1');"><!-- TMPL_VAR NAME="title" escape="html" --></a></p>
                 <p><!-- TMPL_VAR NAME="author" --></p>
+            </td>
+            <td>
+                <!-- TMPL_VAR name="notforloan" -->
+            </td>
+            <td>
+                <!-- TMPL_VAR name="itemlost" -->
+            </td>
+            <td>
+                <!-- TMPL_VAR name="damaged" -->
             </td>
             <td>
                 <p><!-- TMPL_VAR name="datelastseen" --></p>
             </td>
             <td>
-                 <!-- TMPL_IF name="notfoundbarcode" -->
-                     <p style="background: red;">Not found among barcodes in barcodes file.</p>
-                 <!-- TMPL_ELSIF name="notfoundkoha" -->
-                     <p style="background: red;">Not found in koha.</p>
-                 <!-- TMPL_ELSE -->
-                     <p style="background: green;">None</p>
+                 <!-- TMPL_IF name="wrongplace" -->
+                     <p>Item should not have been scanned</p>
+                 <!-- TMPL_ELSIF name="missingitem" -->
+                     <p>Item missing</p>
                  <!-- /TMPL_IF -->
             </td>
         </tr>
