@@ -132,6 +132,7 @@ $template->param(
     is_child     => ( $data->{'category_type'} eq 'C' ),
     branchname   => GetBranchName( $data->{'branchcode'} ),
     showfulllink => ( scalar @loop_reading > 50 ),
+    datefortablesorter => C4::Dates->datefortablesorter,
     loop_reading => \@loop_reading
 );
 output_html_with_http_headers $input, $cookie, $template->output;

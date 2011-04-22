@@ -98,7 +98,8 @@
 $(document).ready(function() {
 	$("#memberresultst").tablesorter({
 		sortList: [[1,0]],
-		widgets:	['zebra']
+		widgets:	['zebra'],
+		<!--TMPL_IF Name="datefortablesorter"-->dateFormat: '<!--TMPL_VAR Name="datefortablesorter" -->'<!--/TMPL_IF-->
 	});
 });
 //]]>

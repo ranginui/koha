@@ -177,6 +177,17 @@ sub visual {
     return $format_map{ eval { $self->{'dateformat'} } || _prefformat() };
 }
 
+sub datefortablesorter {
+    if(_prefformat() eq "metric")
+	{
+		return "uk";
+	}
+	else
+	{
+		return "us";
+	}
+}
+
 # like the functions from the old C4::Date.pm
 sub format_date {
     return __PACKAGE__->new( shift, 'iso' )->output( (@_) ? shift : _prefformat() );

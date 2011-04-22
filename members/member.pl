@@ -158,10 +158,12 @@ $template->param(
     to            => $to,
     multipage => ( $count != $to + 1 || $startfrom != 1 ),
 );
+
 $template->param(
     branchloop   => $branches,
     categoryloop => \@categories,
     showfilter => ( $$patron{branchcode} || $$patron{categorycode}),
+    datefortablesorter => C4::Dates->datefortablesorter,
 );
 
 $template->param(
