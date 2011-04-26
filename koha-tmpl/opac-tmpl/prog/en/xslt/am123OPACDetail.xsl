@@ -35,27 +35,40 @@
 <xsl:if test="marc:subfield[@code='e'][4]"><xsl:text>: </xsl:text><xsl:value-of select="marc:subfield[@code='e'][4]" /></xsl:if>
 
 
+        <xsl:if test="marc:subfield[@code='d']">
+          <xsl:text> =</xsl:text>
+<xsl:if test="marc:subfield[@code='d'][1]"><xsl:text></xsl:text><xsl:value-of select="marc:subfield[@code='d'][1]" /></xsl:if>
+<xsl:if test="marc:subfield[@code='d'][2]"><xsl:text> = </xsl:text><xsl:value-of select="marc:subfield[@code='d'][2]" /></xsl:if>
+<xsl:if test="marc:subfield[@code='d'][3]"><xsl:text> = </xsl:text><xsl:value-of select="marc:subfield[@code='d'][3]" /></xsl:if>
+        </xsl:if>
+
+
           <xsl:if test="marc:subfield[@code='b']">
             <xsl:text> [</xsl:text>
             <xsl:value-of select="marc:subfield[@code='b']"/>
             <xsl:text>]</xsl:text>
           </xsl:if>
-          <xsl:if test="marc:subfield[@code='h']">
-            <xsl:text> ; </xsl:text>
-            <xsl:value-of select="marc:subfield[@code='h']"/>
-          </xsl:if>
-          <xsl:if test="marc:subfield[@code='i']">
-            <xsl:text> : </xsl:text>
-            <xsl:value-of select="marc:subfield[@code='i']"/>
-          </xsl:if>
+
+          <xsl:if test="marc:subfield[@code='h'][1]"><xsl:text> ; </xsl:text><xsl:value-of select="marc:subfield[@code='h'][1]" /></xsl:if>
+<xsl:if test="marc:subfield[@code='h'][2]"><xsl:text> ; </xsl:text><xsl:value-of select="marc:subfield[@code='h'][2]" /></xsl:if>
+<xsl:if test="marc:subfield[@code='h'][3]"><xsl:text> ; </xsl:text><xsl:value-of select="marc:subfield[@code='h'][3]" /></xsl:if>
+          
+<xsl:if test="marc:subfield[@code='i'][1]"><xsl:text> : </xsl:text><xsl:value-of select="marc:subfield[@code='i'][1]" /></xsl:if>
+<xsl:if test="marc:subfield[@code='i'][2]"><xsl:text> : </xsl:text><xsl:value-of select="marc:subfield[@code='i'][2]" /></xsl:if>
+<xsl:if test="marc:subfield[@code='i'][3]"><xsl:text> : </xsl:text><xsl:value-of select="marc:subfield[@code='i'][3]" /></xsl:if>
+
           <xsl:if test="marc:subfield[@code='f']">
             <xsl:text> / </xsl:text>
-            <xsl:value-of select="marc:subfield[@code='f']"/>
+<xsl:if test="marc:subfield[@code='f'][1]"><xsl:text></xsl:text><xsl:value-of select="marc:subfield[@code='f'][1]" /></xsl:if>
+<xsl:if test="marc:subfield[@code='f'][2]"><xsl:text> ; </xsl:text><xsl:value-of select="marc:subfield[@code='f'][2]" /></xsl:if>
+<xsl:if test="marc:subfield[@code='f'][3]"><xsl:text> ; </xsl:text><xsl:value-of select="marc:subfield[@code='f'][3]" /></xsl:if>
           </xsl:if>
-          <xsl:if test="marc:subfield[@code='g']">
-            <xsl:text> ; </xsl:text>
-            <xsl:value-of select="marc:subfield[@code='g']"/>
-          </xsl:if>
+           <xsl:if test="marc:subfield[@code='g']">
+          <xsl:text> ; </xsl:text>
+<xsl:if test="marc:subfield[@code='g'][1]"><xsl:text>  </xsl:text><xsl:value-of select="marc:subfield[@code='g'][1]" /></xsl:if>
+<xsl:if test="marc:subfield[@code='g'][2]"><xsl:text> ; </xsl:text><xsl:value-of select="marc:subfield[@code='g'][2]" /></xsl:if>
+<xsl:if test="marc:subfield[@code='g'][3]"><xsl:text> ; </xsl:text><xsl:value-of select="marc:subfield[@code='g'][3]" /></xsl:if>
+         </xsl:if>
         </h1>
       </xsl:for-each>
     </xsl:if>
