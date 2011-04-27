@@ -468,7 +468,7 @@ sub CanItemBeReserved {
                 );
 
     # we check if it's ok or not
-    if( $reservecount <= $issuingrule->{reservesallowed} ){
+    if( $reservecount < $issuingrule->{reservesallowed} ){
         return 1;
     } else {
         return 0;
