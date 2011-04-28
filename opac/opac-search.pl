@@ -688,7 +688,7 @@ foreach my $shelf (@$pubshelves) {
 if(defined $template->param( 'OPACBaseURL')) 
 {
 	$OPACRssURL = $template->param( 'OPACBaseURL');
-	$OPACRssURL=~s/^https:/^http:/;
+	$OPACRssURL=~s/https:/http:/;
 	$template->param( OPACRssURL     => $OPACRssURL );
 }
 
