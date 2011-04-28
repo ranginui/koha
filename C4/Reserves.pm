@@ -1023,35 +1023,8 @@ sub CancelReserve {
         my $sth = $dbh->prepare($query);
         $sth->execute( $reservenumber );
 
-        # get reserve information to place into old_reserves
-        $query = "
-            INSERT INTO old_reserves
-            SELECT * FROM reserves
-            WHERE reservenumber     = ?
-        ";
-        $sth = $dbh->prepare($query);
-        $sth->execute( $reservenumber );
-        my $holditem = $sth->fetchrow_hashref;
-        my $insert_fields = '';
-        my $value_fields = '';
-        foreach my $column ('borrowernumber','reservedate','biblionumber','constrainttype','branchcode','notificationdate','reminderdate','cancellationdate','reservenotes','priority','found','itemnumber','waitingdate','expirationdate') {
-          if (defined($holditem->{$column})) {
-            if (length($insert_fields)) {
-              $insert_fields .= ",$column";
-              $value_fields .= ",\'$holditem->{$column}\'";
-            }
-            else {
-              $insert_fields .= "$column";
-              $value_fields .= "\'$holditem->{$column}\'";
-            }
-          }
-        }
-        $query = qq/
-            INSERT INTO old_reserves ($insert_fields)
-            VALUES ($value_fields)
-        /;
-        $sth = $dbh->prepare($query);
-        $sth->execute();
+        _SaveInOld( $reservenumber );
+
         $query = "
             DELETE FROM reserves
             WHERE  reservenumber   = ?
@@ -1086,35 +1059,7 @@ sub CancelReserve {
         $sth = $dbh->prepare($query);
         $sth->execute( $reservenumber );
 
-        $query = qq/
-            INSERT INTO old_reserves
-            SELECT * FROM reserves
-            WHERE reservenumber   = ?
-        /;
-        $sth = $dbh->prepare($query);
-        $sth->execute( $reservenumber );
-        my $holditem = $sth->fetchrow_hashref;
-
-        my $insert_fields = '';
-        my $value_fields = '';
-        foreach my $column ('borrowernumber','reservedate','biblionumber','constrainttype','branchcode','notificationdate','reminderdate','cancellationdate','reservenotes','priority','found','itemnumber','waitingdate','expirationdate') {
-          if (defined($holditem->{$column})) {
-            if (length($insert_fields)) {
-              $insert_fields .= ",$column";
-              $value_fields .= ",\'$holditem->{$column}\'";
-            }
-            else {
-              $insert_fields .= "$column";
-              $value_fields .= "\'$holditem->{$column}\'";
-            }
-          }
-        }
-        $query = qq/
-            INSERT INTO old_reserves ($insert_fields)
-            VALUES ($value_fields)
-        /;
-        $sth = $dbh->prepare($query);
-        $sth->execute();
+        _SaveInOld( $reservenumber );
 
         $query = qq/
             DELETE FROM reserves
@@ -1199,13 +1144,8 @@ sub ModReserve {
         my $sth = $dbh->prepare($query);
         $sth->execute( $reservenumber );
         $sth->finish;
-        $query = qq/
-            INSERT INTO old_reserves
-            SELECT * FROM reserves
-            WHERE  reservenumber   = ?
-        /;
-        $sth = $dbh->prepare($query);
-        $sth->execute( $reservenumber );
+
+        _SaveInOld( $reservenumber );
         $query = qq/
             DELETE FROM reserves 
             WHERE  reservenumber   = ?
@@ -1272,15 +1212,8 @@ sub ModReserveFill {
     $sth->execute( $resnumber, $resdate, $borrowernumber );
     $sth->finish;
 
-    # move to old_reserves
-    $query = "INSERT INTO old_reserves
-                 SELECT * FROM reserves
-                 WHERE  reservenumber    = ?
-                    AND reservedate      = ?
-                    AND borrowernumber   = ?
-                ";
-    $sth = $dbh->prepare($query);
-    $sth->execute( $resnumber, $resdate, $borrowernumber );
+    _SaveInOld( $resnumber );
+
     $query = "DELETE FROM reserves
                  WHERE  reservenumber    = ?
                     AND reservedate      = ?
@@ -2046,6 +1979,40 @@ sub _ShiftPriorityByDateAndPriority {
     }
 
     return $new_priority;    # so the caller knows what priority they wind up receiving
+}
+
+=item _SaveInOld
+
+=over 4
+
+_SaveInOld( $reservenumber );
+
+=back
+
+Save the given reserve into old_reserves table.
+A new reservenumber is calculated to avoid primary key conflict
+
+=cut
+
+sub _SaveInOld {
+    my ( $reservenumber ) = @_;
+
+    my $dbh   = C4::Context->dbh;
+    # get columns list
+    my $query = "SHOW COLUMNS FROM reserves";
+    my $sth = $dbh->selectcol_arrayref($query);
+    my @columnname;
+    foreach my $column (@$sth) {
+        push (@columnname, $column) unless ($column eq 'reservenumber'); # every column unless reservenumber
+    }
+    my $columns = join (', ', @columnname);
+    $query = " INSERT INTO old_reserves ($columns) 
+               SELECT $columns FROM reserves
+                   WHERE reservenumber  = ?
+             ";
+    $sth = $dbh->prepare($query);
+    $sth->execute( $reservenumber );
+    $sth->finish;
 }
 
 =back
