@@ -679,9 +679,17 @@ my $session = get_session( $cgi->cookie("CGISESSID") );
 my @addpubshelves;
 my $pubshelves = $session->param('pubshelves');
 my $barshelves = $session->param('barshelves');
+my $OPACRssURL;
 foreach my $shelf (@$pubshelves) {
     next if ( ( $shelf->{'owner'} != ( $borrowernumber ? $borrowernumber : -1 ) ) && ( $shelf->{'category'} < 3 ) );
     push( @addpubshelves, $shelf );
+}
+
+if(defined $template->param( 'OPACBaseURL')) 
+{
+	$OPACRssURL = $template->param( 'OPACBaseURL');
+	$OPACRssURL=~s/^https:/^http:/;
+	$template->param( OPACRssURL     => $OPACRssURL );
 }
 
 if (@addpubshelves) {
