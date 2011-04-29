@@ -93,6 +93,13 @@ if ( C4::Context->preference("marcflavour") eq "UNIMARC" ) {
     $template->param( 'usmarc' => 1 );
 }
 $template->param( 'AllowOnShelfHolds' => C4::Context->preference('AllowOnShelfHolds') );
+#Electre stuff
+if(C4::Context->preference("OpacElectreSearchResulstImage")){
+	$template->param( 'OpacElectreSearchResulstImage' => 1 );
+}
+else{
+	$template->param( 'OpacElectreSearchResulstImage' => 0 );
+}
 
 if ( C4::Context->preference('BakerTaylorEnabled') ) {
     $template->param(
