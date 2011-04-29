@@ -8,7 +8,12 @@
 
             <!-- /TMPL_IF -->
             <!-- TMPL_IF NAME="ShowOpacRecentSearchLink" -->
-                <li><a href="/cgi-bin/koha/opac-search-history.pl" title="View your search history">Search history</a> [<a class="logout" href="/cgi-bin/koha/opac-search-history.pl?action=delete" title="Delete your search history" onclick="return confirm(_('Are you sure you want to delete your search history?'));">x</a>]</li>
+                <script type="text/javascript">
+                    function ConfirmHistoryDeletion() {
+                        return confirm(_('Are you sure you want to delete your search history?'));
+                    }
+                </script>
+                <li><a href="/cgi-bin/koha/opac-search-history.pl" title="View your search history">Search history</a> [<a class="logout" href="/cgi-bin/koha/opac-search-history.pl?action=delete" title="Delete your search history" onclick="return ConfirmHistoryDeletion();">x</a>]</li>
             <!-- /TMPL_IF -->
 			<!-- TMPL_IF NAME="loggedinusername" --><li><a class="logout" id="logout" href="/cgi-bin/koha/opac-main.pl?logout.x=1">Log Out</a></li><!-- /TMPL_IF -->
    	</ul>	
