@@ -101,7 +101,7 @@ $.tablesorter.addParser({
 		<div class="dialog alert">
         <ul>
             <!-- TMPL_IF NAME="debarred" -->
-                <li><strong>Please note:</strong> Your account has been frozen. Usually the reason for freezing an account is old overdues or damage fees.If <a href="/cgi-bin/koha/opac-user.pl">your account page</a> shows your account to be clear, please consult a librarian.</li>
+                <li><strong>Please note:</strong> Your account has been frozen until <!-- TMPL_VAR name="debarred" --> - <!-- TMPL_VAR name="debarredcomment" -->. Usually the reason for freezing an account is old overdues or damage fees.If <a href="/cgi-bin/koha/opac-user.pl">your account page</a> shows your account to be clear, please consult a librarian.</li>
             <!-- /TMPL_IF -->
             <!-- TMPL_IF NAME="gonenoaddress" -->
                 <li><strong>Please note:</strong> According to our records, we don't have up-to-date <a href="/cgi-bin/koha/opac-userdetails.pl">contact information</a> on file.  Please contact your librarian<!-- TMPL_IF NAME="OPACPatronDetails" --> or use the <a href="/cgi-bin/koha/opac-userupdate.pl">online update form</a> to submit current information (<em>Please note:</em> there may be a delay in restoring your account if you submit online)<!-- /TMPL_IF -->.</li>
