@@ -83,7 +83,7 @@
       <select name="limit" id="masthead_search" class="left" style="max-width:10em;width:10em;">
          <option value="">All Libraries</option>
          <!-- TMPL_LOOP NAME="BranchesLoop" -->
-            <option <!-- TMPL_IF NAME="selected" -->SELECTED<!-- /TMPL_IF --> value="branch:<!-- TMPL_VAR NAME='value' -->"><!-- TMPL_VAR NAME='branchname' --></option>
+            <option <!-- TMPL_IF name="mylibraryfirst" --><!-- TMPL_IF NAME="selected" -->SELECTED<!-- /TMPL_IF --><!-- /TMPL_IF --> value="branch:<!-- TMPL_VAR NAME='value' -->"><!-- TMPL_VAR NAME='branchname' --></option>
          <!-- /TMPL_LOOP -->
       </select>
    <!-- TMPL_ELSE -->
