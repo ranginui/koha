@@ -537,7 +537,7 @@ END_SQL
                         }
                     }
                 );
-                $letter->{'content-type'}="text/".($htmlfilename?"html":"plain");
+                $letter->{'content-type'}="text/".($htmlfilename?"html":"plain")."; charset=UTF8";
 
                 if ($exceededPrintNoticesMaxLines) {
                     $letter->{'content'} .= "List too long for form; please check your account online for a complete list of your overdue items.";
