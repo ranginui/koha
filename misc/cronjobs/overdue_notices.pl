@@ -462,7 +462,7 @@ END_SQL
                 push @borrower_parameters, $mindays;
             } else {
                 $borrower_sql .= ' HAVING TO_DAYS(NOW())-TO_DAYS(longest_issue) BETWEEN ? and ? ';
-                push @borrower_parameters, $mindays, $maxdays;
+                push @borrower_parameters, $mindays, $maxdays-1;
             }
 
             # $sth gets borrower info iff at least one overdue item has triggered the overdue action.
