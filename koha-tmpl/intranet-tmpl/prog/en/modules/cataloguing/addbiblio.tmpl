@@ -111,15 +111,6 @@ function AreMandatoriesNotOk(){
             tabflag[tag+subfield+tagnumber][0] = 1;
         }    
     }
-    for (var tagsubfieldid in tabflag){
-      if (tabflag[tagsubfieldid][0]==0){
-        var tag=tagsubfieldid.substr(0,3);
-        var subfield=tagsubfieldid.substr(3,1);    
-        StrAlert += "\t* "+_("tag ")+tag+_(" subfield ")+subfield+" "+tabflag[tagsubfieldid][1]+_(" in tab ")+tabflag[tagsubfieldid][2]+"\n";
-        //StrAlert += "\t* "+label[i]+_(" in tab ")+tab[i]+"\n"; 
-        //flag=1;    
-      }   
-    }   
     
     /* Check for mandatories field(not subfields) */
     for(var i=0,len=mandatoriesfields.length; i<len; i++){
@@ -162,6 +153,16 @@ function AreMandatoriesNotOk(){
     	
     }
     
+    for (var tagsubfieldid in tabflag){
+      if (tabflag[tagsubfieldid][0]==0){
+        var tag=tagsubfieldid.substr(0,3);
+        var subfield=tagsubfieldid.substr(3,1);
+        StrAlert += "\t* "+_("tag ")+tag+_(" subfield ")+subfield+" "+tabflag[tagsubfieldid][1]+_(" in tab ")+tabflag[tagsubfieldid][2]+"\n";
+        //StrAlert += "\t* "+label[i]+_(" in tab ")+tab[i]+"\n";
+        //flag=1;
+      }
+    }
+
     if(flag){
 	    return StrAlert;
 	} else {
