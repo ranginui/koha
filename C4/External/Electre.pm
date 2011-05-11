@@ -151,11 +151,18 @@ sub GetElectreTdm{
 	my $search=InitElectreSearch();
 	my %result_getTdmXml = $search->getTdmXml($sessionToken, $ean);
 	my $xslt = XML::LibXSLT->new();
-	my $source = XML::LibXML->load_xml(string => encode('utf8', $result_getTdmXml{'getTdmXmlResult'}));
-	my $style_doc = XML::LibXML->load_xml(location=>'../koha-tmpl/opac-tmpl/prog/en/xslt/ElectreTdm.xsl', no_cdata=>1);
-	my $stylesheet = $xslt->parse_stylesheet($style_doc);
-	my $results = $stylesheet->transform($source);
-	return $stylesheet->output_as_bytes($results);
+	if ($result_getTdmXml{'getTdmXmlResult'})
+	{
+		my $source = XML::LibXML->load_xml(string => encode('utf8', $result_getTdmXml{'getTdmXmlResult'}));
+		my $style_doc = XML::LibXML->load_xml(location=>'../koha-tmpl/opac-tmpl/prog/en/xslt/ElectreTdm.xsl', no_cdata=>1);
+		my $stylesheet = $xslt->parse_stylesheet($style_doc);
+		my $results = $stylesheet->transform($source);
+		return $stylesheet->output_as_bytes($results);
+	}
+	else
+	{
+		return 0;
+	}
 }
 
 1;
