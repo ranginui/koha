@@ -459,7 +459,7 @@ ShelfPossibleAction($loggedinuser, $shelfnumber, $action);
 
 C<$loggedinuser,$shelfnumber,$action>
 
-$action can be "view" or "manage".
+$action can be "view", "manage" or "merge".
 
 Returns 1 if the user can do the $action in the $shelfnumber shelf.
 Returns 0 otherwise.
@@ -482,7 +482,21 @@ sub ShelfPossibleAction {
     return 1 if ( ( $category >= 2 )
         and defined($action)
         and $action eq 'view' );       # public list, anybody can view
-    return 1 if ( ( $category >= 2 ) and defined($user) and ( $borrower->{authflags}->{superlibrarian} || $user == 0 ) );    # public list, superlibrarian can edit/delete
+
+    return 0 if ( ( $category >= 1 ) 
+	and defined($action)
+	and $action eq 'merge'
+	and not (C4::Auth::haspermission($borrower->{'userid'},  {'editcatalogue' => 'merge_from_shelves'})
+	|| $borrower->{authflags}->{superlibrarian} 
+	|| $user == 0
+	|| $borrower->{authflags}->{editcatalogue})
+	);
+
+    return 1 if ( ( $category >= 2 ) and defined($user) and ( $borrower->{authflags}->{superlibrarian} 
+							    || $user == 0 
+							    || $borrower->{authflags}->{editcatalogue}
+							    || C4::Auth::haspermission($borrower->{'userid'},  {'editcatalogue' => 'manage_shelves'})
+							    ));    # public list, superlibrarian can edit/delete
     return 1 if ( defined($user) and $owner eq $user );                                                                      # user owns this list.  Check last.
     return 0;
 }

@@ -39,7 +39,11 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
         query           => $input,
         type            => "intranet",
         authnotrequired => 0,
-        flagsrequired   => { editcatalogue => 'edit_catalogue' },
+
+	# Important: if you plan to change this permission, do not forget
+	# to change the matching permission in merge_ajax.pl, otherwise
+	# you'll end up disconnected without knowing why...
+        flagsrequired   => { editcatalogue => 'merge_from_shelves' }
     }
 );
 

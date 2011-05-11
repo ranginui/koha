@@ -289,8 +289,12 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
 # Does the user have a limited item edition permission?
 my $uid = GetMember( borrowernumber => $loggedinuser )->{userid} if ($loggedinuser) ;
 my $limitededition = haspermission($uid,  {'editcatalogue' => 'limited_item_edition'}) if ($uid);
+
 # In case user is a superlibrarian, edition is not limited
 $limitededition = 0 if ($limitededition != 0 && $limitededition->{'superlibrarian'} eq 1);
+
+# In case user has fast cataloging permission (and we're in fast cataloging), edition is not limited
+$limitededition = 0 if ($limitededition != 0 && $frameworkcode eq 'FA' && haspermission($uid, {'editcatalogue' => 'fast_cataloging'}));
 
 my $today_iso = C4::Dates->today('iso');
 $template->param( today_iso => $today_iso );

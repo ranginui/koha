@@ -5040,6 +5040,20 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     SetVersion($DBversion);
 }
 
+$DBversion = "3.02.00.066";
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+    $dbh->do(qq{
+	INSERT INTO `permissions` (`module_bit`, `code`, `description`) VALUES (
+	'9', 'manage_shelves', 'Allows to manage shelves'), (
+	'9', 'merge_from_shelves', 'Allows to merge records from shelves'
+	);
+    });
+    
+    print "Upgrade to $DBversion done (Adds new permissions for shelves)\n";
+
+    SetVersion($DBversion);
+}
+
 
 =item DropAllForeignKeys($table)
 
