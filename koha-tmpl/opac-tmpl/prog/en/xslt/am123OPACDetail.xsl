@@ -655,6 +655,8 @@
       <xsl:when test="$code='130012226'">Bibliothèque René Cassin : Centre de droit social </xsl:when>
       <xsl:when test="$code='130012228'">Bibliothèque René Cassin : Centre d'études fiscales et financières</xsl:when>
       <xsl:when test="$code='130012227'">Bibliothèque René Cassin : Espace périodiques </xsl:when>
+      <xsl:when test="$code='130012234'">Bibliothèque Poncet</xsl:when>
+      <xsl:when test="$code='130012303'">Bibliothèque du CEREGE</xsl:when>
       <xsl:when test="$code='à venir'">Bibliothèque de l'IEP – Espace Philippe Seguin</xsl:when>
       <xsl:otherwise><xsl:value-of select="$code"/></xsl:otherwise>
     </xsl:choose>
