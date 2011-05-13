@@ -15,9 +15,8 @@
   <xsl:variable name="leader" select="marc:leader"/>
   <xsl:variable name="leader6" select="substring($leader,7,1)"/>
   <xsl:variable name="leader7" select="substring($leader,8,1)"/>
-  <xsl:variable name="biblionumber" select="marc:datafield[@tag=999]/marc:subfield[@code='9']"/>
+ <xsl:variable name="biblionumber" select="marc:controlfield[@tag=001]"/>
   
-
   <xsl:if test="marc:datafield[@tag=200]">
     <xsl:for-each select="marc:datafield[@tag=200]">
       <h1>
@@ -486,6 +485,10 @@
         </xsl:for-each>
       </span>
     </xsl:if>
+<p>
+<strong>Voir la notice à l'OPAC:</strong>
+ 
+<a><xsl:attribute name="href">http://catalogue.univ-aix-marseille.fr/cgi-bin/koha/opac-detail.pl?biblionumber=<xsl:value-of select="$biblionumber"/></xsl:attribute>Clic droit-Ouvrir le lien dans un nouvel onglet</a></p>
 
         <!-- 780 -->
         <xsl:if test="marc:datafield[@tag=780]">
