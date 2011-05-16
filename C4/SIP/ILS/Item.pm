@@ -12,6 +12,7 @@ use warnings;
 use DateTime;
 use Sys::Syslog qw(syslog);
 use Carp;
+use Encode;
 
 use ILS::Transaction;
 
@@ -118,7 +119,7 @@ sub new {
     $self                  = $item;
     bless $self, $type;
 
-    syslog( "LOG_DEBUG", "new ILS::Item('%s'): found with title '%s'", $item_id, $self->{title} );
+    syslog( "LOG_DEBUG", "new ILS::Item('%s'): found with title '%s'", $item_id, encode_utf8($self->{title}) );
 
     return $self;
 }
