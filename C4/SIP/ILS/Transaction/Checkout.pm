@@ -73,22 +73,22 @@ sub do_checkout {
     } else {
         foreach my $confirmation ( keys %$needsconfirmation ) {
             if ( $confirmation eq 'RENEW_ISSUE' ) {
-                $self->screen_msg("Item already checked out to you: renewing item.");
+                $self->screen_msg("Document déjà prété : Renouvelé.");
             } elsif ( $confirmation eq 'RESERVED' or $confirmation eq 'RESERVE_WAITING' ) {
                 my $x = $self->{item}->available($patron_barcode);
                 if ($x) {
-                    $self->screen_msg("Item was reserved for you.");
+                    $self->screen_msg("Ce document vous était reservé.");
                 } else {
-                    $self->screen_msg("Item is reserved for another patron upon return.");
+                    $self->screen_msg("Document réservé pour un autre lecteur.");
 
                     # $noerror = 0;
                 }
             } elsif ( $confirmation eq 'ISSUED_TO_ANOTHER' ) {
-                $self->screen_msg("Item already checked out to another patron.  Please return item for check-in.");
+                $self->screen_msg("Ce document rencontre un problème. Merci de passer à la banque de prêt.");
                 $noerror = 0;
             } elsif ( $confirmation eq 'DEBT' ) {    # don't do anything, it's the minor debt, and alarms fire elsewhere
             } else {
-                $self->screen_msg( $needsconfirmation->{$confirmation} );
+                $self->screen_msg( "Quota atteint : ". $needsconfirmation->{$confirmation} );
                 $noerror = 0;
             }
         }
