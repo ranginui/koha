@@ -217,7 +217,6 @@ sub GetBranchesLoop (;$$) {    # since this is what most pages want anyway
 			}
 		}
 		@loop = grep { $$_{'filter'} == 1 } @loop;
-		print ERROR "\n loop = ".Data::Dumper::Dumper @loop;
 	}
     return \@loop;
 }
