@@ -465,7 +465,7 @@
         <xsl:for-each select="marc:datafield[@tag=856]">
           <a>
             <xsl:attribute name="href">
-             <!--BIBLIBRE AJOUT http:// pour le lien--> http://<xsl:value-of select="marc:subfield[@code='u']"/>
+             <!--BIBLIBRE AJOUT http:// pour le lien--> <xsl:value-of select="marc:subfield[@code='u']"/>
             </xsl:attribute>
             <xsl:choose>
               <xsl:when test="marc:subfield[@code='y' or @code='3' or @code='z']">
