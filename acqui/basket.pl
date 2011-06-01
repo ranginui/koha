@@ -28,12 +28,12 @@ use C4::Output;
 use CGI;
 use C4::Acquisition;
 use C4::Budgets;
-
 use C4::Bookseller;
 use C4::Dates qw/format_date/;
 use C4::Debug;
-
+use C4::Biblio;
 use C4::Members qw/GetMember/;    #needed for permissions checking for changing basketgroup of a basket
+use C4::Items;
 
 =head1 NAME
 
@@ -267,6 +267,12 @@ if ( $op eq 'delete_confirm' ) {
         $qty_total += $qty;
         my %line = %{ $results[$i] };
         ( $i % 2 ) and $line{toggle} = 1;
+
+        my $biblionumber = $results[$i]->{'biblionumber'};
+        my $countbiblio = CountBiblioInOrders($biblionumber);
+        my $ordernumber = $results[$i]->{'ordernumber'};
+        # if the biblio is not in other orders and if there is no items elsewhere we can show the link "Delete order and Biblio" see bug 5680
+        $line{can_del_bib} = 1 if $countbiblio <= 1 && GetItemsCount($biblionumber) == scalar GetItemnumbersFromOrder( $ordernumber );
 
         $line{order_received} = ( $qty == $results[$i]->{'quantityreceived'} );
         $line{basketno}       = $basketno;

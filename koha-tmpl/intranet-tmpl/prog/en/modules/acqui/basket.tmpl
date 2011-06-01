@@ -40,6 +40,13 @@
                     window.location = "addorder.pl?ordernumber="+ordernumber+"&basketno=<!-- TMPL_VAR NAME="basketno" -->&quantity=0&biblionumber="+biblionumber;
                     }
             }
+
+            function confirm_delete_biblio(ordernumber, biblionumber) {
+                var is_confirmed = confirm(_('Are you sure you want to delete this order with his biblio ?'));
+                if (is_confirmed) {
+                    window.location = "addorder.pl?ordernumber="+ordernumber+"&basketno=<!-- TMPL_VAR NAME="basketno" -->&quantity=0&biblionumber="+biblionumber+"&delbiblio=1";
+                    }
+            }
 //]]>
 </script>
 <!-- TMPL_ELSE -->
@@ -275,8 +282,12 @@
                                 <a href="neworderempty.pl?ordernumber=<!-- TMPL_VAR NAME="ordernumber" -->&amp;booksellerid=<!-- TMPL_VAR NAME="booksellerid" -->&amp;basketno=<!-- TMPL_VAR NAME="basketno" -->">Modify</a>
                             </td>
                             <td>
-                            <a href="javascript:confirm_delete_item(<!-- TMPL_VAR NAME="ordernumber" -->,<!-- TMPL_VAR NAME="biblionumber" -->)" class="button">Delete</a>
+                            <a href="javascript:confirm_delete_item(<!-- TMPL_VAR NAME="ordernumber" -->,<!-- TMPL_VAR NAME="biblionumber" -->)" class="button">Delete order</a><br>
+
+                            <!-- TMPL_IF name="can_del_bib" -->
+                            <a href="javascript:confirm_delete_biblio(<!-- TMPL_VAR NAME="ordernumber" -->,<!-- TMPL_VAR NAME="biblionumber" -->)" class="button">Delete order and Biblio</a>
                             </td>
+                            <!-- /TMPL_IF -->
                             <!-- /TMPL_UNLESS -->
                         <!-- /TMPL_IF -->
                     </tr>

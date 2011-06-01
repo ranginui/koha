@@ -85,8 +85,8 @@ BEGIN {
       &GetFrameworkCode
       &GetPublisherNameFromIsbn
       &TransformKohaToMarc
-
       &CountItemsIssued
+      &CountBiblioInOrders
     );
 
     # To modify something
@@ -3763,6 +3763,28 @@ sub GetMarcQuantity {
     return 0; # no price found
 }
 
+=head2 CountBiblioInOrders
+
+=over 4
+$count = &CountBiblioInOrders( $biblionumber);
+
+=back
+
+This function returns count of biblios in orders with $biblionumber
+
+=cut
+
+sub CountBiblioInOrders {
+    my ($biblionumber) = @_;
+    my $dbh            = C4::Context->dbh;
+    my $query          = "SELECT count(*)
+          FROM  aqorders
+          WHERE biblionumber=? AND (datecancellationprinted IS NULL OR datecancellationprinted='0000-00-00')";
+    my $sth = $dbh->prepare($query);
+    $sth->execute($biblionumber);
+    my $count = $sth->fetchrow;
+    return ($count);
+}
 
 1;
 
