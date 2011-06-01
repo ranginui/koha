@@ -26,6 +26,7 @@ use CGI;
 my $input          = CGI->new;
 my $uploadbarcodes = $input->param('uploadbarcodes');
 
+use List::MoreUtils qw /none/;
 use C4::Auth;
 use C4::Context;
 use C4::Output;
@@ -110,8 +111,8 @@ my $staton = {};    #authorized values that are ticked
 for my $authvfield (@$statuses) {
     $staton->{ $authvfield->{fieldname} } = [];
     for my $authval ( @{ $authvfield->{values} } ) {
-        if ( $input->param( 'status-' . $authvfield->{fieldname} . '-' . $authval->{id} ) eq 'on' ) {
-            push @{ $staton->{ $authvfield->{fieldname} } }, $authval->{id};
+        if ( $input->param( 'status-' . $authvfield->{fieldname} . '-' . $authval->{authorised_value} ) && $input->param( 'status-' . $authvfield->{fieldname} . '-' . $authval->{authorised_value} ) eq 'on' ) {
+            push @{ $staton->{ $authvfield->{fieldname} } }, $authval->{authorised_value};
         }
     }
 }
@@ -185,41 +186,39 @@ if ( $uploadbarcodes && length($uploadbarcodes) > 0 ) {
     $template->param( errorloop => \@errorloop ) if (@errorloop);
 }
 
-#if we want to compare the results to a list of barcodes, or we have no barcode file
-if ( !( $uploadbarcodes && length($uploadbarcodes) > 0 ) || ( $input->param('compareinv2barcd') eq 'on' && length($uploadbarcodes) > 0 ) ) {
-    if ($markseen) {
-        foreach ( $input->param ) {
-            /SEEN-(.+)/ and &ModDateLastSeen($1);
-        }
-    }
-    if ( $markseen or $op ) {
-	$res = GetItemsForInventory($minlocation, $maxlocation, $location, $itemtype, $ignoreissued, $datelastseen, $branchcode, $branch, $offset, $pagesize, $staton);
-        $template->param(
-            loop       => $res,
-            nextoffset => ( $offset + $pagesize ),
-            prevoffset => ( $offset ? $offset - $pagesize : 0 ),
-        );
-    }
-    if ( ( ( $input->param('compareinv2barcd') eq 'on' ) && ( scalar @brcditems != scalar @$res ) ) && length($uploadbarcodes) > 0 ) {
-        if ( scalar @brcditems > scalar @$res ) {
-            for my $brcditem (@brcditems) {
-                if ( !grep( /$brcditem->{barcode}/, @$res ) ) {
-                    $brcditem->{notfoundkoha} = 1;
-                    push @$res, $brcditem;
-                }
-            }
-        } else {
-            my @notfound;
-            for my $item (@$res) {
-                if ( !grep( /$item->{barcode}/, @brcditems ) ) {
-                    $item->{notfoundbarcode} = 1;
-                    push @notfound, $item;
-                }
-            }
-            $res = [ @$res, @notfound ];
-        }
+# mark seen if applicable (ie: coming form mark seen checkboxes)
+if ($markseen) {
+    foreach ( $input->param ) {
+        /SEEN-(.+)/ and &ModDateLastSeen($1);
     }
 }
+# now build the result list: inventoried items if requested, and mis-placed items -always-
+my $inventorylist;
+if ( $markseen or $op ) {
+    # retrieve all items in this range.
+    $inventorylist = GetItemsForInventory($minlocation, $maxlocation, $location, $itemtype, $ignoreissued, '', $branchcode, $branch, $offset, $pagesize, $staton);
+    # if comparison is requested, then display all the result (otherwise, we'll use the inventorylist to find missplaced items, later
+    $res = $inventorylist if $input->param('compareinv2barcd');
+}
+# set "missing" flags for all items with a datelastseen before the choosen datelastseen
+foreach (@$res) {$_->{missingitem}=1 if C4::Dates->new($_->{datelastseen})->output('iso') lt C4::Dates->new($datelastseen)->output('iso')}
+# insert "wrongplace" to all scanned items that are not supposed to be in this range
+# note this list is always displayed, whatever the librarian has choosen for comparison
+foreach my $temp (@brcditems) {
+    next if $temp->{onloan}; # skip checked out items
+    if (none { $temp->{barcode} eq $_->{barcode} && !$_->{onloan} } @$inventorylist) {
+        $temp->{wrongplace}=1;
+        my $biblio = C4::Biblio::GetBiblioData($temp->{biblionumber});
+        $temp->{title} = $biblio->{title};
+        $temp->{author} = $biblio->{author};
+        push @$res, $temp;
+    }
+}
+$template->param(
+    loop       => $res,
+    nextoffset => ( $offset + $pagesize ),
+    prevoffset => ( $offset ? $offset - $pagesize : 0 ),
+);
 
 if ( $input->param('CSVexport') eq 'on' ) {
     eval { use Text::CSV };
@@ -229,11 +228,15 @@ if ( $input->param('CSVexport') eq 'on' ) {
         -type       => 'text/csv',
         -attachment => 'inventory.csv',
     );
+    $csv->combine(qw / title author barcode itemnumber homebranch location itemcallnumber notforloan lost damaged/);
+    print $csv->string, "\n";
     for my $re (@$res) {
         my @line;
-        for my $key ( keys %$re ) {
+        for my $key ( qw / title author barcode itemnumber homebranch location itemcallnumber notforloan lost damaged / ) {
             push @line, $re->{$key};
         }
+        push @line, "wrong place" if $re->{wrongplace};
+        push @line, "missing item" if $re->{missingitem};
         $csv->combine(@line);
         print $csv->string, "\n";
     }
