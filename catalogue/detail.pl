@@ -99,6 +99,7 @@ my $subtitle = GetRecordValue( 'subtitle', $record, $fw );
 my $branches  = GetBranches();
 my $itemtypes = GetItemTypes();
 my $dbh       = C4::Context->dbh;
+my $currentbranch = C4::Context->userenv()->{'branch'};
 
 # change back when ive fixed request.pl
 my @items = &GetItemsInfo( $biblionumber, 'intra' );
@@ -129,10 +130,9 @@ foreach my $subscription (@subscriptions) {
 if ( defined $dat->{'itemtype'} ) {
     $dat->{imageurl} = getitemtypeimagelocation( 'intranet', $itemtypes->{ $dat->{itemtype} }{imageurl} );
 }
-$dat->{'count'} = scalar @items;
 my $shelflocations = GetKohaAuthorisedValues( 'items.location', $fw );
 my $collections    = GetKohaAuthorisedValues( 'items.ccode',    $fw );
-my ( @itemloop, %itemfields );
+my ( @myitemloop, @otheritemloop, %itemfields );
 my $norequests                 = 1;
 my $authvalcode_items_itemlost = GetAuthValCode( 'items.itemlost', $fw );
 my $authvalcode_items_damaged  = GetAuthValCode( 'items.damaged', $fw );
@@ -203,11 +203,20 @@ foreach my $item (@items) {
         $item->{waitingdate} = format_date( $wait_hashref->{waitingdate} );
     }
 
-    push @itemloop, $item;
+    if ($item->{'holdingbranch'} eq $currentbranch) {
+	push @myitemloop, $item;
+    } else {
+	push @otheritemloop, $item;
+    }
 }
 
+$dat->{'myholdingscount'} = scalar @myitemloop;
+$dat->{'otherholdingscount'} = scalar @otheritemloop;
+
+$currentbranch = '' if $currentbranch eq "NO_LIBRARY_SET";
 $template->param( norequests => $norequests );
 $template->param(
+    currentbranch       => $currentbranch ,
     MARCNOTES           => $marcnotesarray,
     MARCSUBJCTS         => $marcsubjctsarray,
     MARCAUTHORS         => $marcauthorsarray,
@@ -232,7 +241,8 @@ foreach ( keys %{$dat} ) {
 # method query not found?!?!
 
 $template->param(
-    itemloop            => \@itemloop,
+    myitemloop          => \@myitemloop,
+    otheritemloop       => \@otheritemloop,
     biblionumber        => $biblionumber,
     detailview          => 1,
     subscriptions       => \@subs,

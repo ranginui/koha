@@ -1,6 +1,8 @@
 <!-- TMPL_INCLUDE NAME="doc-head-open.inc" -->
 <title>Koha &rsaquo; Catalog &rsaquo; Details for <!-- TMPL_VAR NAME="title" escape="html" --> <!-- TMPL_LOOP NAME="subtitle" --> <!-- TMPL_VAR NAME="subfield" --><!-- /TMPL_LOOP --></title>
-<!-- TMPL_INCLUDE NAME="doc-head-close.inc" --><script type="text/JavaScript" language="JavaScript">
+<!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
+<script type="text/javascript" src="/intranet-tmpl/prog/en/lib/jquery/plugins/picnet.table.filter.min.js"></script>
+<script type="text/JavaScript" language="JavaScript">
 //<![CDATA[
 // http://www.oreillynet.com/pub/a/javascript/2003/10/21/amazonhacks.html
 function verify_images() {
@@ -31,10 +33,91 @@ function verify_images() {
 }
      $(document).ready(function() {
         $('#bibliodetails > ul').tabs();
+
+	// Filters
+	$('#myholdingst').tableFilter();
+	$('#otherholdingst').tableFilter();
+	// This is an ugly hack to make picnet table filter work with the tab system 
+	// (ie: if not used, field search size would be null in the tabs that are not displayed at first)
+	$('.filter').css("width", "6em");
+
+	// Checkboxes
+	// Select All My Holdings
+	$('.selectAllMyHoldings').click(function() {
+	  $('.myitemcheck:visible').each(function() {
+	    if (!this.disabled) {
+		this.checked = true;
+	    }
+	  });
+	});
+
+	// unselect All My Holdings
+	$('.unSelectAllMyHoldings').click(function() {
+	  $('.myitemcheck').each(function() {
+		this.checked = false;
+	  });
+	});
+
+	// Editing selected items (from my holdings)
+	$('#editSelectedMyHoldings').click(function() {
+	    var urlstr = '';
+	    $('.myitemcheck:checked').each(function() {
+		urlstr += '&barcode=' + $(this).val();
+	    });
+	    window.open('/cgi-bin/koha/tools/batchMod.pl?mod=1' + urlstr);
+	});
+
+	// Deleting items items (from my holdings)
+	$('#deleteSelectedMyHoldings').click(function() {
+	    var urlstr = '';
+	    $('.myitemcheck:checked').each(function() {
+		urlstr += '&barcode=' + $(this).val();
+	    });
+	    window.open('/cgi-bin/koha/tools/batchMod.pl?del=1' + urlstr);
+	});
+
+	// Select All Other Holdings
+	$('.selectAllOtherHoldings').click(function() {
+	  $('.otheritemcheck:visible').each(function() {
+	    if (!this.disabled) {
+		this.checked = true;
+	    }
+	  });
+	});
+
+	// unselect All Other Holdings
+	$('.unSelectAllOtherHoldings').click(function() {
+	  $('.otheritemcheck').each(function() {
+		this.checked = false;
+	  });
+	});
+
+	// Editing items (from other holdings)
+	$('#editSelectedOtherHoldings').click(function() {
+	    var urlstr = '';
+	    $('.otheritemcheck:checked').each(function() {
+		urlstr += '&barcode=' + $(this).val();
+	    });
+	    window.open('/cgi-bin/koha/tools/batchMod.pl?mod=1' + urlstr);
+	});
+
+	// Deleting items (from other holdings)
+	$('#deleteSelectedOtherHoldings').click(function() {
+	    var urlstr = '';
+	    $('.otheritemcheck:checked').each(function() {
+		urlstr += '&barcode=' + $(this).val();
+	    });
+	    window.open('/cgi-bin/koha/tools/batchMod.pl?del=1' + urlstr);
+	});
+
+
      });
      <!-- TMPL_IF NAME="AmazonEnabled" -->$(window).load(function() {
         verify_images();
      });<!-- /TMPL_IF -->
+
+
+
 //]]>
 </script>
 </head>
@@ -181,30 +264,213 @@ function verify_images() {
 <div id="bibliodetails" class="toptabs">
 
 <ul>   
-<li><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->#holdings">Holdings</a></li>
+<li><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->#myholdings">My Holdings</a></li>
+<li><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->#otherholdings" id="otherholdingsa">Other Holdings</a></li>
 <li><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->#description">Descriptions</a></li>
 <!-- TMPL_IF name="subscriptionsnumber" --><li><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->#subscriptions">Subscriptions</a></li><!-- /TMPL_IF -->
 <!-- TMPL_IF NAME="FRBRizeEditions" --><!-- TMPL_IF NAME="XISBNS" --><li><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->#editions">Editions</a></li><!-- /TMPL_IF --><!-- /TMPL_IF -->
 <!-- TMPL_IF NAME="AmazonSimilarItems" --><li><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->#related">Related Titles</a></li><!-- /TMPL_IF -->
  </ul>
 
-<div id="holdings">
-<!-- TMPL_IF name="count" -->
-        <table>
+<div id="myholdings">
+<!-- TMPL_IF name="currentbranch" -->
+<!-- TMPL_IF name="myholdingscount" -->
+
+    <form action="/cgi-bin/koha/tools/batchMod.pl">
+        <table id="myholdingst">
+	    <thead>
             <tr>
-                <!-- TMPL_IF NAME="item-level_itypes" --><th>Item type</th><!-- /TMPL_IF -->
-                <th>Location</th>
-                <!-- TMPL_IF NAME="itemdata_ccode" --><th>Collection</th><!-- /TMPL_IF -->
-                <th>Call Number</th>
-                <th>Status</th>
-                <th>Last seen</th>
-                <th>Barcode</th>
-                <!-- TMPL_IF NAME="volinfo" --><th>Publication Details</th><!-- /TMPL_IF -->
-                <!-- TMPL_IF NAME="itemdata_uri" --><th>URL</th><!-- /TMPL_IF -->
+                <!-- TMPL_IF NAME="item-level_itypes" --><th filter="false">Item type</th><!-- /TMPL_IF -->
+                <th filter="false">Location</th>
+                <!-- TMPL_IF NAME="itemdata_ccode" --><th filter="false">Collection</th><!-- /TMPL_IF -->
+                <th filter="false">Call Number</th>
+                <th filter="false">Status</th>
+                <th filter="false">Last seen</th>
+                <th filter="false">Barcode</th>
+                <!-- TMPL_IF NAME="volinfo" --><th id="volinfo">Publication Details</th><!-- /TMPL_IF -->
+                <!-- TMPL_IF NAME="itemdata_uri" --><th filter="false">URL</th><!-- /TMPL_IF -->
                 <!-- TMPL_IF NAME="itemdata_copynumber" --><th>Copy No.</th><!-- /TMPL_IF -->
-		<!-- TMPL_IF NAME="SpineLabelShowPrintOnBibDetails" --><th>Spine Label</th><!-- /TMPL_IF -->
+		<!-- TMPL_IF NAME="SpineLabelShowPrintOnBibDetails" --><th filter="false">Spine Label</th><!-- /TMPL_IF -->
+		<th filter="false">Check<br />
+		    <a href="#" class="selectAllMyHoldings">Select All</a> | <a href="#" class="unSelectAllMyHoldings">Unselect All</a></span>
+		</th>
             </tr>
-            <!-- TMPL_LOOP NAME="itemloop" -->
+	    </thead>
+	    <tbody>
+            <!-- TMPL_LOOP NAME="myitemloop" -->
+                <tr>
+                    <!-- TMPL_IF NAME="item-level_itypes" -->
+                      <td class="itype">
+                        <!-- TMPL_IF NAME="noItemTypeImages" -->
+                          <!-- TMPL_VAR NAME="description" -->
+                        <!-- TMPL_ELSE -->
+                          <!-- TMPL_IF NAME="imageurl" -->
+                            <img src="<!-- TMPL_VAR NAME="imageurl" -->" alt="<!-- TMPL_VAR NAME="description" -->" title="<!-- TMPL_VAR NAME="description" -->" />
+                          <!-- TMPL_ELSE -->
+                            <!-- TMPL_VAR NAME="description" -->
+                          <!-- /TMPL_IF -->
+                        <!-- /TMPL_IF --></td>
+                    <!-- /TMPL_IF -->
+                    <td class="location"><!-- TMPL_UNLESS NAME="singlebranchmode" --><!-- TMPL_VAR NAME="branchname" --><!-- /TMPL_UNLESS --> <!-- TMPL_VAR NAME="location" --> </td>
+                    <!-- TMPL_IF NAME="itemdata_ccode" --><td><!-- TMPL_VAR name="ccode" --></td><!-- /TMPL_IF -->
+                    <td class="itemcallnumber"><!-- TMPL_IF NAME="itemcallnumber" --> <!-- TMPL_VAR NAME="itemcallnumber" --><!-- /TMPL_IF --></td>
+                    <td class="status">
+
+                <!-- TMPL_IF name="datedue" -->
+						<span class="datedue">Checked out
+                    <!-- TMPL_UNLESS  NAME="NOTSAMEBRANCH" -->
+                          to <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->">
+			  <!-- TMPL_IF NAME='hidepatronname' -->
+			      <!-- TMPL_VAR NAME="cardnumber" -->
+			  <!-- TMPL_ELSE -->
+			      <!-- TMPL_VAR NAME="firstname" --> <!-- TMPL_VAR NAME="surname" -->
+			  <!-- /TMPL_IF -->
+			  </a>
+                    <!-- /TMPL_UNLESS -->
+						: due <!-- TMPL_VAR NAME="datedue" -->
+						</span>
+                <!-- TMPL_ELSIF Name="transfertwhen" -->
+                           In transit from <!-- TMPL_VAR NAME="transfertfrom" -->,
+                           to <!-- TMPL_VAR NAME="transfertto" -->, since <!-- TMPL_VAR NAME="transfertwhen" -->
+							<!-- FIXME: the "since" clause is redundant w/ lastseen field -->
+                <!-- /TMPL_IF -->
+
+                <!-- TMPL_IF NAME="itemlost" -->
+                    <!-- TMPL_IF NAME="itemlostloop" -->
+                    <!-- TMPL_LOOP NAME="itemlostloop" -->
+                        <!-- TMPL_IF NAME="selected" -->
+                                        <span class="lost"><!-- TMPL_VAR NAME="lib" --></span>
+                        <!-- /TMPL_IF -->
+                    <!-- /TMPL_LOOP -->
+                    <!-- TMPL_ELSE -->
+                                        <span class="lost">Unavailable (lost or missing)</span>
+                    <!-- /TMPL_IF -->
+                <!-- /TMPL_IF -->
+
+                <!-- TMPL_IF NAME="wthdrawn" -->
+                                        <span class="wdn">Withdrawn</span>
+                <!-- /TMPL_IF -->
+
+                <!-- TMPL_IF NAME="damaged" -->
+                    <!-- TMPL_IF NAME="itemdamagedloop" -->
+                        <!-- TMPL_LOOP NAME="itemdamagedloop" -->
+                        <!-- TMPL_IF NAME="selected" -->
+                                        <span class="dmg"><!-- TMPL_VAR NAME="lib" --></span>
+                        <!-- /TMPL_IF -->
+                        <!-- /TMPL_LOOP -->
+                    <!-- TMPL_ELSE -->
+                                        <span class="dmg">Damaged</span>
+                    <!-- /TMPL_IF -->
+                <!-- /TMPL_IF -->
+
+                <!-- TMPL_IF Name="itemnotforloan" -->
+                    Not for loan 
+                    <!-- TMPL_IF Name="notforloanvalue" -->
+                        (<!-- TMPL_VAR NAME="notforloanvalue" -->)
+                    <!-- /TMPL_IF -->
+                <!-- /TMPL_IF -->
+
+                            
+                <!-- TMPL_IF NAME="reservedate"-->
+                    <!-- TMPL_IF NAME="waitingdate" -->
+                        Waiting
+                    <!-- TMPL_ELSE -->
+                        On hold
+                    <!-- /TMPL_IF -->
+                    <!-- TMPL_IF NAME="canreservefromotherbranches" -->for <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=<!-- TMPL_VAR NAME="ReservedForBorrowernumber" -->">
+		        <!-- TMPL_IF NAME="hidepatronname" -->
+		            <!-- TMPL_VAR NAME="cardnumber" -->
+		        <!-- TMPL_ELSE -->
+		            <!-- TMPL_VAR NAME="ReservedForFirstname" --> <!-- TMPL_VAR NAME="ReservedForSurname" -->
+			<!-- /TMPL_IF -->
+		    </a><!-- /TMPL_IF -->
+                    <!-- TMPL_IF NAME="waitingdate" -->
+                        at<!-- TMPL_ELSE -->expected at
+                    <!-- /TMPL_IF -->   <!-- TMPL_VAR NAME="ExpectedAtLibrary" -->
+                    since
+                    <!-- TMPL_IF NAME="waitingdate" --><!-- TMPL_VAR NAME="waitingdate" -->
+                    <!-- TMPL_ELSE -->
+                        <!-- TMPL_IF name="reservedate" --><!-- TMPL_VAR NAME="reservedate" --><!-- /TMPL_IF -->
+                    <!-- /TMPL_IF -->
+                <!-- /TMPL_IF -->
+                <!-- TMPL_UNLESS name="itemnotforloan" --><!-- TMPL_UNLESS NAME="onloan" --><!-- TMPL_UNLESS NAME="itemlost" --><!-- TMPL_UNLESS NAME="wthdrawn" --><!-- TMPL_UNLESS NAME="damaged" --><!-- TMPL_UNLESS NAME="transfertwhen" --><!-- TMPL_UNLESS NAME="reservedate" -->
+                                        Available
+                <!-- /TMPL_UNLESS --><!-- /TMPL_UNLESS --><!-- /TMPL_UNLESS --><!-- /TMPL_UNLESS --><!-- /TMPL_UNLESS --><!-- /TMPL_UNLESS --><!-- /TMPL_UNLESS -->
+                        
+                    </td>
+                    <td class="datelastseen"><!-- TMPL_VAR NAME="datelastseen" --></td>
+                    <td><a href="/cgi-bin/koha/catalogue/moredetail.pl?type=<!-- TMPL_VAR NAME="type" -->&amp;itemnumber=<!-- TMPL_VAR NAME="itemnumber" -->&amp;biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->&amp;bi=<!-- TMPL_VAR NAME="biblioitemnumber" -->#item<!-- TMPL_VAR NAME="itemnumber">"><!-- TMPL_VAR NAME="barcode" --></a></td>
+				<!-- TMPL_IF NAME="volinfo" -->	<td class="enumchron">
+					<!-- TMPL_IF NAME="itemdata_enumchron" -->
+						<!-- TMPL_IF NAME="enumchron" -->
+						<!-- TMPL_VAR NAME="enumchron" --><!-- TMPL_IF NAME="serialseq" --> -- <!-- /TMPL_IF -->
+						<!-- /TMPL_IF -->
+					<!-- /TMPL_IF -->
+					<!-- TMPL_VAR NAME="serialseq" --><!-- TMPL_IF NAME="publisheddate" --> (<!-- TMPL_VAR NAME="publisheddate" -->)<!-- /TMPL_IF -->
+				</td><!-- /TMPL_IF -->
+				<!-- TMPL_IF NAME="itemdata_uri" -->
+					<td class="uri"><a href="<!-- TMPL_VAR NAME="uri" -->"><!-- TMPL_VAR NAME="uri" --></a></td>
+				<!-- /TMPL_IF -->
+				<!-- TMPL_IF NAME="itemdata_copynumber" -->
+					<td class="copynumber"><!-- TMPL_VAR NAME="copynumber" --></td>
+				<!-- /TMPL_IF -->
+                <!-- TMPL_IF NAME="type" -->
+                    <td><a href="/cgi-bin/koha/maint/catmaintain.pl?type=fixitemtype&amp;bi=<!-- TMPL_VAR NAME="biblioitemnumber" -->&amp;item=<!-- TMPL_VAR NAME="itemtype" -->">Fix Itemtype</a></td>
+                <!-- /TMPL_IF -->
+		<!-- TMPL_IF NAME="SpineLabelShowPrintOnBibDetails" -->
+			<td><a href="/cgi-bin/koha/labels/spinelabel-print.pl?barcode=<!-- TMPL_VAR NAME="barcode" -->" >Print Label</a></td>
+		<!-- /TMPL_IF -->
+		<td><input class="myitemcheck" value="<!-- TMPL_VAR NAME="barcode" -->" type="checkbox"<!-- TMPL_UNLESS NAME="barcode" --> disabled="disabled"<!-- /TMPL_UNLESS --> /></td>
+                </tr>
+            <!-- /TMPL_LOOP -->
+	    </tbody>
+        </table>
+	<a href="#" class="selectAllMyHoldings">Select All</a> | <a href="#" class="unSelectAllMyHoldings">Unselect All</a> |
+	<input type="button" id="editSelectedMyHoldings" value="Edit selected items"/>
+	<input type="button" id="deleteSelectedMyHoldings" value="Delete selected items"/>
+
+	</form>
+		<!-- TMPL_IF NAME="debug_display" -->
+		<br /><br />
+		<table>
+			<tr><td>itemdata_enumchron</td><td><!-- TMPL_VAR NAME="itemdata_enumchron" --></td></tr>
+			<tr><td>itemdata_copynumber</td><td><!-- TMPL_VAR NAME="itemdata_copynumber" --></td></tr>
+			<tr><td>serial</td><td><!-- TMPL_VAR NAME="serial" --></td></tr>
+		</table>
+		<!-- /TMPL_IF -->
+<!-- TMPL_ELSE -->
+    <p>No physical items for this record</p>
+<!-- /TMPL_IF -->
+<!-- TMPL_ELSE -->
+    <p>There is no library currently selected</p>
+<!-- /TMPL_IF -->
+    </div>
+    
+<div id="otherholdings">
+<!-- TMPL_IF name="otherholdingscount" -->
+
+    <form action="/cgi-bin/koha/tools/batchMod.pl">
+        <table id="otherholdingst">
+	    <thead>
+            <tr>
+                <!-- TMPL_IF NAME="item-level_itypes" --><th filter="false">Item type</th><!-- /TMPL_IF -->
+                <th filter="false">Location</th>
+                <!-- TMPL_IF NAME="itemdata_ccode" --><th filter="false">Collection</th><!-- /TMPL_IF -->
+                <th filter="false">Call Number</th>
+                <th filter="false">Status</th>
+                <th filter="false">Last seen</th>
+                <th filter="false">Barcode</th>
+                <!-- TMPL_IF NAME="volinfo" --><th>Publication Details</th><!-- /TMPL_IF -->
+                <!-- TMPL_IF NAME="itemdata_uri" --><th filter="false">URL</th><!-- /TMPL_IF -->
+                <!-- TMPL_IF NAME="itemdata_copynumber" --><th>Copy No.</th><!-- /TMPL_IF -->
+		<!-- TMPL_IF NAME="SpineLabelShowPrintOnBibDetails" --><th filter="false">Spine Label</th><!-- /TMPL_IF -->
+		<th filter="false">Check<br />
+		    <a href="#" class="selectAllOtherHoldings">Select All</a> | <a href="#" class="unSelectAllOtherHoldings">Unselect All</a>
+		</th>
+            </tr>
+	    </thead>
+	    <tbody>
+            <!-- TMPL_LOOP NAME="otheritemloop" -->
                 <tr>
                     <!-- TMPL_IF NAME="item-level_itypes" -->
                       <td class="itype">
@@ -327,10 +593,17 @@ function verify_images() {
 		<!-- TMPL_IF NAME="SpineLabelShowPrintOnBibDetails" -->
 			<td><a href="/cgi-bin/koha/labels/spinelabel-print.pl?barcode=<!-- TMPL_VAR NAME="barcode" -->" >Print Label</a></td>
 		<!-- /TMPL_IF -->
+		<td><input class="otheritemcheck" value="<!-- TMPL_VAR NAME="barcode" -->" type="checkbox"<!-- TMPL_UNLESS NAME="barcode" --> disabled="disabled"<!-- /TMPL_UNLESS --> /></td>
 
                 </tr>
             <!-- /TMPL_LOOP -->
+	</tbody>
         </table>
+	<a href="#" class="selectAllOtherHoldings">Select All</a> | <a href="#" class="unSelectAllOtherHoldings">Unselect All</a> |
+	<input type="button" id="editSelectedOtherHoldings" value="Edit selected items"/>
+	<input type="button" id="deleteSelectedOtherHoldings" value="Delete selected items"/>
+	</form>
+
 		<!-- TMPL_IF NAME="debug_display" -->
 		<br /><br />
 		<table>
