@@ -104,7 +104,7 @@ sub plugin_javascript {
         $year = substr( $year, -2 );
         $query = "SELECT MAX(CAST(SUBSTRING(barcode,-4) AS signed)) FROM items WHERE barcode REGEXP ?";
         my $sth = $dbh->prepare($query);
-        $sth->execute("^[a-zA-Z]{1,}$year");
+        $sth->execute("^[-a-zA-Z]{1,}$year");
         while ( my ($count) = $sth->fetchrow_array ) {
             $nextnum = $count if $count;
             warn "Existing incremental number = $nextnum" if $DEBUG;
