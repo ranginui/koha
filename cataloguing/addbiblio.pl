@@ -183,7 +183,7 @@ sub build_authorized_values_list ($$$$$$$) {
             push @authorised_values, $itemtype;
             $authorised_lib{$itemtype} = $description;
         }
-        $value = $itemtype unless ($value);
+        $value = $itemtype unless (defined $value);
 
         #---- class_sources
     } elsif ( $tagslib->{$tag}->{$subfield}->{authorised_value} eq "cn_source" ) {
@@ -287,7 +287,7 @@ sub create_input {
     }
 
     # if there is no value provided but a default value in parameters, get it
-    unless ($value) {
+    unless ( defined $value) {
         $value = $tagslib->{$tag}->{$subfield}->{defaultvalue};
 
         # get today date & replace YYYY, MM, DD if provided in the default value

@@ -121,7 +121,7 @@ if ($issues) {
         foreach my $ac (@$accts) {
             if ( $ac->{'itemnumber'} == $issue->{'itemnumber'} ) {
                 $charges += $ac->{'amountoutstanding'}
-                  if $ac->{'accounttype'} eq 'F';
+                  if $ac->{'accounttype'} =~/F/;
                 $charges += $ac->{'amountoutstanding'}
                   if $ac->{'accounttype'} eq 'L';
             }

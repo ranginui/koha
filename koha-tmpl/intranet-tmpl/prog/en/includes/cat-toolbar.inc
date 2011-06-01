@@ -26,7 +26,12 @@
 	function printBiblio() {window.open('/cgi-bin/koha/catalogue/detailprint.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->','Print_Biblio','width=700,height=500,toolbar=false,scrollbars=yes');
 	}
 function confirm_deletion() {
-		var count = <!-- TMPL_VAR NAME="count" -->;
+        <!-- TMPL_IF NAME="count" -->
+            var count = <!-- TMPL_VAR NAME="count" -->;
+        <!-- TMPL_ELSE -->
+            var count = 0;
+        <!-- /TMPL_IF -->
+
         var is_confirmed;
 	if (count>0){
 		    is_confirmed= alert(_('There are [ '+ count +' ] item(s) attached to this record \n You must delete all items before deleting this record.'));
@@ -45,7 +50,11 @@ function confirm_deletion() {
 	}
 }
 function confirm_items_deletion() {
-        var count = <!-- TMPL_VAR NAME="count" -->;
+        <!-- TMPL_IF NAME="count" -->
+            var count = <!-- TMPL_VAR NAME="count" -->;
+        <!-- TMPL_ELSE -->
+            var count = 0;
+        <!-- /TMPL_IF -->
         if(count > 0){
             if(confirm(_('Are you sure you want to delete the ' + count + ' attached items? '))){
                 window.location="/cgi-bin/koha/cataloguing/additem.pl?op=delallitems&amp;biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->";

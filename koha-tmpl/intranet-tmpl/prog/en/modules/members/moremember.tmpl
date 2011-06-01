@@ -350,6 +350,7 @@ $(document).ready(function() {
 <!-- TMPL_UNLESS NAME="no_patron_attribute_types" -->
 <div id="patron-extended-attributes">
 <h3>Additional attributes and identifiers</h3>
+<!-- TMPL_IF NAME="patron_attributes" -->
 <table id="table_additionalattributes">
     <thead>
         <th>Type</th>
@@ -368,6 +369,7 @@ $(document).ready(function() {
     </tr>
     <!-- /TMPL_LOOP -->
 </table>
+<!-- /TMPL_IF -->
 <div class="action"><a href="memberentry.pl?op=modify&amp;borrowernumber=<!-- TMPL_VAR NAME="borrowernumber" -->&amp;step=4">Edit</a></div>
 </div>
 <!-- /TMPL_UNLESS -->

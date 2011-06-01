@@ -1048,7 +1048,10 @@ sub buildQuery {
 
             # COMBINE OPERANDS, INDEXES AND OPERATORS
             if ( $operands[$i] ) {
+                # remove starting blanks
                 $operands[$i] =~ s/^\s+//;
+                # remove multiple blanks that breaks the resulting query
+                $operands[$i] =~ s/\s+/ /g;
                 next unless $operands[$i];
 
                 # A flag to determine whether or not to add the index to the query

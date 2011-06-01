@@ -111,8 +111,8 @@ my $staton = {};    #authorized values that are ticked
 for my $authvfield (@$statuses) {
     $staton->{ $authvfield->{fieldname} } = [];
     for my $authval ( @{ $authvfield->{values} } ) {
-        if ( $input->param( 'status-' . $authvfield->{fieldname} . '-' . $authval->{id} ) && $input->param( 'status-' . $authvfield->{fieldname} . '-' . $authval->{id} ) eq 'on' ) {
-            push @{ $staton->{ $authvfield->{fieldname} } }, $authval->{id};
+        if ( $input->param( 'status-' . $authvfield->{fieldname} . '-' . $authval->{authorised_value} ) && $input->param( 'status-' . $authvfield->{fieldname} . '-' . $authval->{authorised_value} ) eq 'on' ) {
+            push @{ $staton->{ $authvfield->{fieldname} } }, $authval->{authorised_value};
         }
     }
 }
