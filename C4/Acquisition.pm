@@ -891,11 +891,6 @@ sub NewOrder {
 #### ------------------------------
     my $dbh = C4::Context->dbh;
     my @params;
-
-    if ($orderinfo->{'period'}){
-        # the user has chosen to use the next budget
-        warn "next budget";
-    }
     # if these parameters are missing, we can't continue
     for my $key (qw/basketno quantity biblionumber budget_id/) {
         croak "Mandatory parameter $key missing" unless $orderinfo->{$key};
