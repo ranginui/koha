@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: nicomo-fr-FR-i-staff-t-prog-v-3000000\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-06-01 16:59+0200\n"
-"PO-Revision-Date: 2011-06-01 17:27+0100\n"
+"PO-Revision-Date: 2011-06-03 11:44+0100\n"
 "Last-Translator: Delaye <stephane.delaye@biblibre.com>\n"
 "Language-Team: American English <kde-i18n-doc@kde.org>\n"
 "Language: \n"
@@ -13166,7 +13166,7 @@ msgstr "Copie / Vol.&nbsp;:"
 #: /home/users/koha/versions/devam123/koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/detail.tmpl:292
 #: /home/users/koha/versions/devam123/koha-tmpl/intranet-tmpl/prog/en/modules/catalogue/detail.tmpl:465
 msgid "Copy No."
-msgstr "Copie n°"
+msgstr "Volumaison"
 
 #: /home/users/koha/versions/devam123/koha-tmpl/intranet-tmpl/prog/en/modules/help/cataloguing/addbiblio.tmpl:45
 msgid "Copy cataloging using the Koha's Z39.50 search"
