@@ -54,15 +54,15 @@ getmysqlhost() {
 }
 
 getinstancemysqlpassword() {
-    xmlstarlet sel -t -v 'yazgfs/config/pass' $kohaconfig
+    xmlstarlet sel -t -v 'yazgfs/config/pass' "/etc/koha/sites/$1/koha-conf.xml"
 }
 
 getinstancemysqluser() {
-    xmlstarlet sel -t -v 'yazgfs/config/user' $kohaconfig
+    xmlstarlet sel -t -v 'yazgfs/config/user' "/etc/koha/sites/$1/koha-conf.xml"
 }
 
 getinstancemysqldatabase() {
-    xmlstarlet sel -t -v 'yazgfs/config/database' $kohaconfig 
+    xmlstarlet sel -t -v 'yazgfs/config/database' "/etc/koha/sites/$1/koha-conf.xml"
 }
 
 # Set defaults and read config file, if it exists.
