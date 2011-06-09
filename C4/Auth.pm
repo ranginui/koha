@@ -643,7 +643,7 @@ sub checkauth {
         );
         $loggedin = 1;
     }
-    elsif ( C4::Context->prefernce('AllowPKIAuth')){  # If using certificates get user from that
+    elsif ( C4::Context->preference('AllowPKIAuth')){  # If using certificates get user from that
 	if ($userid = $ENV{'SSL_CLIENT_S_DN_CN'}){
 	    $cookie = $query->cookie(
 		-name    => 'CGISESSID',

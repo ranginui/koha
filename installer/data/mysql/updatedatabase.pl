@@ -4329,7 +4329,7 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     SetVersion ($DBversion);
 }
 
-$DBversion = "3.05.00.XXX";
+$DBversion = "3.04.01.001";
 if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     $dbh->do(qq{
     INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('AllowPKIAuth',0,'This allows the user to authenticate via client side certificates',NULL,'YesNo');
