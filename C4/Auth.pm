@@ -643,6 +643,16 @@ sub checkauth {
         );
         $loggedin = 1;
     }
+    elsif ( C4::Context->prefernce('AllowPKIAuth')){  # If using certificates get user from that
+	if ($userid = $ENV{'SSL_CLIENT_S_DN_CN'}){
+	    $cookie = $query->cookie(
+		-name    => 'CGISESSID',
+		-value   => '',
+		-expires => ''
+	    );
+	    $loggedin = 1;
+	}
+    }
     elsif ( $sessionID = $query->cookie("CGISESSID")) {     # assignment, not comparison
         my $session = get_session($sessionID);
         C4::Context->_new_userenv($sessionID);
