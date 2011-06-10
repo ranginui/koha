@@ -96,7 +96,7 @@ Administration:
             - The CAS Authentication Server can be found at
             - pref: casServerUrl   
         -   
-            - pref AllowPkiAuth
+            - pref: AllowPkiAuth
               default: 0
                   yes: Use
                   no: "Don't use"
