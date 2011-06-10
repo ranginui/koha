@@ -98,6 +98,7 @@ Administration:
         -   
             - pref: AllowPkiAuth
               default: 0
+              choices:
                   yes: Use
                   no: "Don't use"
             - PKI for authentication        
