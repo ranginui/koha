@@ -93,9 +93,6 @@
           <!-- /TMPL_IF -->
        <!-- /TMPL_UNLESS -->
    <!-- /TMPL_IF -->
-   <!-- TMPL_IF NAME="opac_search_limit" -->
-      <input name="limit" value="<!-- TMPL_VAR name="opac_search_limit" -->" type="hidden" />
-   <!-- /TMPL_IF -->
 
 
     <input type="submit" value="Go" id="searchsubmit" class="left" />

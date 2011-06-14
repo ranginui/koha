@@ -181,8 +181,43 @@ sub GetBranchesLoop (;$$) {    # since this is what most pages want anyway
           { value      => $_,
             selected   => ( $_ eq $branch ) ? 1 : 0,
             branchname => $branches->{$_}->{branchname},
+            filter     => 0,
           };
     }
+    if($ENV{'OPAC_SEARCH_LIMIT'} and $ENV{'OPAC_SEARCH_LIMIT'} ne "")
+    {
+		my $filtre=$ENV{'OPAC_SEARCH_LIMIT'};
+		$filtre=~s/^\(//g;
+		$filtre=~s/\)$//g;
+		$filtre=~s/branch,rtrn:/#lk%/g;
+		$filtre=~s/branch:/#eq%/g;
+		$filtre=~s/ or //g;
+		$filtre=~s/ //g;
+		$filtre=~s/^#//g;
+		my @filtereq = map( {substr($_,3)} grep ({ $_=~/^eq%/ } split(/#/,$filtre)));
+		my @filterlk = map( {substr($_,3)} grep ({ $_=~/^lk%/ } split(/#/,$filtre)));
+		foreach my $fil(@filtereq)
+		{
+			foreach my $filoop(@loop)
+			{
+				if($$filoop{'value'} eq $fil)
+				{
+					$$filoop{'filter'}=1;
+				}
+			}
+		}
+		foreach my $fil(@filterlk)
+		{
+			foreach my $filoop(@loop)
+			{
+				if($$filoop{'value'}=~/$fil/)
+				{
+					$$filoop{'filter'}=1;
+				}
+			}
+		}
+		@loop = grep { $$_{'filter'} == 1 } @loop;
+	}
     return \@loop;
 }
 
