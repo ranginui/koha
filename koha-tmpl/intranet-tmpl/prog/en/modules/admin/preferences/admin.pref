@@ -94,11 +94,13 @@ Administration:
             - of CAS when logging out of Koha.
         -
             - The CAS Authentication Server can be found at
-            - pref: casServerUrl   
-        -   
+            - pref: casServerUrl
+        -
+            - Use
             - pref: AllowPkiAuth
-              default: 0
+              default: None
               choices:
-                  yes: Use
-                  no: "Don't use"
-            - PKI for authentication        
+                  None: "no"
+                  Common Name: the Common Name
+                  emailAddress: the emailAddress
+            - field for SSL client certificate authentication

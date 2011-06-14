@@ -147,6 +147,19 @@ sub get_template_and_user {
     my $borrowernumber;
     my $insecure = C4::Context->preference('insecure');
     if ($user or $insecure) {
+        # It's possible for $user to be the borrowernumber if they don't have a
+        # userid defined (and are logging in through some other method, such
+        # as SSL certs against an email address)
+        $borrowernumber = getborrowernumber($user) if defined($user);
+        if (!defined($borrowernumber) && defined($user)) {
+        	my $borrower = GetMember(borrowernumber => $user);
+        	if ($borrower) {
+            	$borrowernumber = $user;
+                # A bit of a hack, but I don't know there's a nicer way
+                # to do it.
+                $user = $borrower->{firstname} . ' ' . $borrower->{surname};
+            }
+        }
 
         # load the template variables for stylesheets and JavaScript
         $template->param( css_libs => $in->{'css_libs'} );
@@ -176,8 +189,6 @@ sub get_template_and_user {
             );
             $template->param( bartotal  => $total->{'bartotal'}, ) if ($total->{'bartotal'} > scalar @{$barshelves});
         }
-
-        $borrowernumber = getborrowernumber($user) if defined($user);
 
         my ( $borr ) = GetMemberDetails( $borrowernumber );
         my @bordat;
@@ -643,16 +654,6 @@ sub checkauth {
         );
         $loggedin = 1;
     }
-    elsif ( C4::Context->preference('AllowPKIAuth')){  # If using certificates get user from that
-	if ($userid = $ENV{'SSL_CLIENT_S_DN_CN'}){
-	    $cookie = $query->cookie(
-		-name    => 'CGISESSID',
-		-value   => '',
-		-expires => ''
-	    );
-	    $loggedin = 1;
-	}
-    }
     elsif ( $sessionID = $query->cookie("CGISESSID")) {     # assignment, not comparison
         my $session = get_session($sessionID);
         C4::Context->_new_userenv($sessionID);
@@ -728,6 +729,33 @@ sub checkauth {
                     $info{'nopermission'} = 1;
                 }
             }
+        }
+    }
+    elsif ( (my $pki_field = C4::Context->preference('AllowPKIAuth')) ne 'None'){  # If using certificates get user from that
+        my $value;
+        if ($pki_field eq 'Common Name') {
+            $value = $ENV{'SSL_CLIENT_S_DN_CN'};
+        } else {
+            $value = $ENV{'SSL_CLIENT_S_DN_Email'};
+            # If we're looking up the email, there's a chance that the person
+            # doesn't have a userid. So if there is none, we pass along the
+            # borrower number, and the bits of code that need to know the user
+            # ID will have to be smart enough to handle that.
+            my @users_info = GetBorrowersWithEmail($value);
+            if (@users_info) {
+                # First the userid, then the borrowernum
+            	$value = $users_info[1] || $users_info[0];
+            } else {
+            	undef $value;
+            }
+        }
+        if ($userid = $ENV{'SSL_CLIENT_S_DN_CN'}){
+            $cookie = $query->cookie(
+                -name    => 'CGISESSID',
+                -value   => '',
+                -expires => ''
+            );
+            $loggedin = 1;
         }
     }
     unless ($userid || $sessionID) {
