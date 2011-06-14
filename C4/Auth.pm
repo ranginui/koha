@@ -761,7 +761,7 @@ sub checkauth {
                     my @users_info = GetBorrowersWithEmail($value);
                     if (@users_info) {
                         # First the userid, then the borrowernum
-                        $value = $users_info[1] || $users_info[0];
+                        $value = $users_info[0][1] || $users_info[0][0];
                     } else {
                         undef $value;
                     }
