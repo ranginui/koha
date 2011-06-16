@@ -8,7 +8,7 @@ $(document).ready(function() {
 	$("#newst").tablesorter({<!-- TMPL_IF EXPR="dateformat eq 'metric'" -->
 		dateFormat: 'uk',<!-- /TMPL_IF -->
 		sortList: [[2,0]],
-		headers: { 0: {sorter:false},6: { sorter: false },7: { sorter: false }}
+		headers: { 0: {sorter:false},6: { sorter: false },8: { sorter: false }}
 	}); 
 }); 
 //]]>
@@ -102,6 +102,10 @@ Edit News Item<!-- TMPL_ELSE -->Add News Item<!-- /TMPL_IF --><!-- TMPL_ELSE -->
                     <input id="number" size="3" name="number" type="text" />
                 <!-- /TMPL_IF -->
             </li>
+            <li>
+                <label for="servername">Servername</label>Be careful, complete this variable only if you use multiple opac (enter the value of your virtualhost's SERVER_NAME)
+                <input id="servername" size="30" type="text" name="servername" value="<!-- TMPL_VAR NAME="servername" -->" />
+            </li>
             <li><label for="new">News</label>
             <textarea name="new" id="new"  cols="75" rows="10"><!-- TMPL_VAR NAME="new" --></textarea></li>
             </ol>
@@ -140,6 +144,7 @@ Edit News Item<!-- TMPL_ELSE -->Add News Item<!-- /TMPL_IF --><!-- TMPL_ELSE -->
                         <th>Expiration&nbsp;Date</th>
                         <th>Title</th>
                         <th>News</th>
+                        <th>servername</th>
                         <th>&nbsp;</th>
                     </tr></thead>
                     <tbody><!-- TMPL_LOOP NAME="opac_news" -->
@@ -159,6 +164,7 @@ Edit News Item<!-- TMPL_ELSE -->Add News Item<!-- /TMPL_IF --><!-- TMPL_ELSE -->
                            <td>
                                 <!-- TMPL_VAR NAME="new" -->
                             </td>
+                            <td><!-- TMPL_VAR NAME="servername" --></td>
                             <td><a href="/cgi-bin/koha/tools/koha-news.pl?op=add_form&amp;id=<!-- TMPL_VAR NAME="idnew" -->">Edit</a></td>
                         </tr>
                     <!-- /TMPL_LOOP --></tbody>

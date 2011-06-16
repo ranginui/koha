@@ -391,7 +391,16 @@ sub get_template_and_user {
         warn "template type should be OPAC, here it is=[" . $in->{'type'} . "]" unless ( $in->{'type'} eq 'opac' );
 
         #TODO : replace LibraryName syspref with 'system name', and remove this html processing
-        my $LibraryNameTitle = C4::Context->preference("LibraryName");
+        my $LibraryName = "";
+        if($ENV{'OPAC_LIBRARYNAME_OVERRIDE'})
+        {
+			$LibraryName = $ENV{'OPAC_LIBRARYNAME_OVERRIDE'};
+		}
+		else
+		{
+			$LibraryName = C4::Context->preference("LibraryName");
+		}
+        my $LibraryNameTitle = $LibraryName;
         $LibraryNameTitle =~ s/<(?:\/?)(?:br|p)\s*(?:\/?)>/ /sgi;
         $LibraryNameTitle =~ s/<(?:[^<>'"]|'(?:[^']*)'|"(?:[^"]*)")*>//sg;
 
@@ -410,7 +419,7 @@ sub get_template_and_user {
             AmazonContent             => "" . C4::Context->preference("AmazonContent"),
             AnonSuggestions           => "" . C4::Context->preference("AnonSuggestions"),
             AuthorisedValueImages     => C4::Context->preference("AuthorisedValueImages"),
-            LibraryName               => "" . C4::Context->preference("LibraryName"),
+            LibraryName               => "" . $LibraryName,
             LibraryNameTitle          => "" . $LibraryNameTitle,
             LoginBranchname           => C4::Context->userenv ? C4::Context->userenv->{"branchname"} : "",
             OPACAmazonEnabled         => C4::Context->preference("OPACAmazonEnabled"),
@@ -430,6 +439,9 @@ sub get_template_and_user {
               . ( $ENV{'SERVER_PORT'} eq ( $in->{'query'}->https() ? "443" : "80" ) ? '' : ":$ENV{'SERVER_PORT'}" ),
             opac_name                      => $opac_name,
             opac_css_override              => $ENV{'OPAC_CSS_OVERRIDE'},
+            opac_css_absolute_override     => $ENV{'OPAC_CSS_ABSOLUTE_OVERRIDE'},
+            opac_user_css                  => $ENV{'OPAC_USER_CSS'},
+            opac_libraryname_override      => $ENV{'OPAC_LIBRARYNAME_OVERRIDE'},
             opac_search_limit              => $opac_search_limit,
             opac_limit_override            => $opac_limit_override,
             OpacBrowser                    => C4::Context->preference("OpacBrowser"),

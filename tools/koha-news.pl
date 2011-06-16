@@ -42,6 +42,7 @@ my $new            = $cgi->param('new');
 my $expirationdate = format_date_in_iso( $cgi->param('expirationdate') );
 my $timestamp      = format_date_in_iso( $cgi->param('timestamp') );
 my $number         = $cgi->param('number');
+my $servername     = $cgi->param('servername');
 my $lang           = $cgi->param('lang');
 
 my $new_detail = get_opac_new($id);
@@ -82,10 +83,10 @@ if ( $op eq 'add_form' ) {
         $template->param( op => 'add' );
     }
 } elsif ( $op eq 'add' ) {
-    add_opac_new( $title, $new, $lang, $expirationdate, $timestamp, $number );
+    add_opac_new( $title, $new, $lang, $expirationdate, $timestamp, $number, $servername );
     print $cgi->redirect("/cgi-bin/koha/tools/koha-news.pl");
 } elsif ( $op eq 'edit' ) {
-    upd_opac_new( $id, $title, $new, $lang, $expirationdate, $timestamp, $number );
+    upd_opac_new( $id, $title, $new, $lang, $expirationdate, $timestamp, $number, $servername );
     print $cgi->redirect("/cgi-bin/koha/tools/koha-news.pl");
 } elsif ( $op eq 'del' ) {
     my @ids = $cgi->param('ids');

@@ -47,16 +47,16 @@ This module provides the functions needed to mange OPAC and intranet news.
 =cut
 
 sub add_opac_new {
-    my ( $title, $new, $lang, $expirationdate, $timestamp, $number ) = @_;
+    my ( $title, $new, $lang, $expirationdate, $timestamp, $number, $servername ) = @_;
     my $dbh = C4::Context->dbh;
-    my $sth = $dbh->prepare("INSERT INTO opac_news (title, new, lang, expirationdate, timestamp, number) VALUES (?,?,?,?,?,?)");
-    $sth->execute( $title, $new, $lang, $expirationdate, $timestamp, $number );
+    my $sth = $dbh->prepare("INSERT INTO opac_news (title, new, lang, expirationdate, timestamp, number, servername) VALUES (?,?,?,?,?,?,?)");
+    $sth->execute( $title, $new, $lang, $expirationdate, $timestamp, $number, $servername );
     $sth->finish;
     return 1;
 }
 
 sub upd_opac_new {
-    my ( $idnew, $title, $new, $lang, $expirationdate, $timestamp, $number ) = @_;
+    my ( $idnew, $title, $new, $lang, $expirationdate, $timestamp, $number, $servername ) = @_;
     my $dbh = C4::Context->dbh;
     my $sth = $dbh->prepare( "
         UPDATE opac_news SET 
@@ -65,10 +65,11 @@ sub upd_opac_new {
             lang = ?,
             expirationdate = ?,
             timestamp = ?,
-            number = ?
+            number = ?,
+            servername = ?
         WHERE idnew = ?
     " );
-    $sth->execute( $title, $new, $lang, $expirationdate, $timestamp, $number, $idnew );
+    $sth->execute( $title, $new, $lang, $expirationdate, $timestamp, $number, $servername, $idnew );
     $sth->finish;
     return 1;
 }
@@ -149,10 +150,18 @@ sub GetNewsToDisplay {
       )
       AND   `timestamp` <= CURRENT_DATE()
       AND   lang = ?
-      ORDER BY number
     ";    # expirationdate field is NOT in ISO format?
+    $query .= " AND servername=? " if $ENV{'OPAC_LIMIT_NEWS_TO_SERVERNAME'};
+    $query .= " ORDER BY number";
     my $sth = $dbh->prepare($query);
-    $sth->execute($lang);
+    if($ENV{'OPAC_LIMIT_NEWS_TO_SERVERNAME'})
+    {
+        $sth->execute($lang,$ENV{'SERVER_NAME'});
+    }
+    else
+    {
+        $sth->execute($lang);
+    }
     my @results;
     while ( my $row = $sth->fetchrow_hashref ) {
         $row->{newdate} = format_date( $row->{newdate} );
