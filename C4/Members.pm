@@ -125,6 +125,10 @@ BEGIN {
         &fixup_cardnumber
         &checkcardnumber
     );
+
+    push @EXPORT_OK, qw(
+        FindByPartialName
+    );
 }
 
 =head1 NAME
@@ -286,10 +290,14 @@ C<&search_on_fields> is an array ref to the fieldnames you want to limit search 
 
 C<&searchtype> is a string telling the type of search you want todo : start_with, exact or contains are allowed
 
+C<skipExtendedAttributes> is a boolean that tells us to avoid searching the
+extended attributes even if we otherwise would.
+
 =cut
 
 sub Search {
-    my ( $filter, $orderby, $limit, $columns_out, $search_on_fields, $searchtype ) = @_;
+    my ( $filter, $orderby, $limit, $columns_out, $search_on_fields,
+        $searchtype, $skipExtendedAttributes ) = @_;
     my @filters;
     my %filtersmatching_record;
     my @finalfilter;
@@ -298,7 +306,8 @@ sub Search {
     } else {
         push @filters, $filter;
     }
-    if ( C4::Context->preference('ExtendedPatronAttributes') ) {
+    if (!$skipExtendedAttributes &&
+    	C4::Context->preference('ExtendedPatronAttributes') ) {
         my $matching_records = C4::Members::Attributes::SearchIdMatchingAttribute($filter);
         if(scalar(@$matching_records)>0) {
 			foreach my $matching_record (@$matching_records) {
@@ -313,6 +322,64 @@ sub Search {
 	push @finalfilter, \@filters;
 	my $data = SearchInTable( "borrowers", \@finalfilter, $orderby, $limit, $columns_out, $search_on_fields, $searchtype );
     return ($data);
+}
+
+=head2 FindByPartialName
+
+  @result = FindByPartialName('string', categorycode => 'C', branchcode => 'L' );
+
+This is a simplified version of the "Search" function above. It compares what
+has been entered against the surname, firstname, othernames, and email as 
+a prefix, a literal match against the barcode, and allows filtering by the
+user's library and category.
+
+=head3 RETURNS
+
+An array of hashrefs that contain the values from the borrowers table of things
+that match.
+
+=head3 NOTES
+
+Supplying all fields as blank or C<undef> will return all users. Searches that
+have no result will end up in an empty list. If you get undef, there was
+an error of some sort.
+
+=cut
+
+sub FindByPartialName {
+    my ($prefix, %options) = @_;
+
+    my $qry_start = 'SELECT * FROM borrowers';
+    my ($qry_end, @params);
+    if ($prefix) {
+    	$qry_end .= <<EOH;
+(surname LIKE ? OR
+firstname LIKE ? OR
+othernames  LIKE ? OR
+email LIKE ? OR
+cardnumber=?)
+EOH
+        push @params, ("$prefix%","$prefix%","$prefix%","$prefix%", $prefix);
+    }
+    foreach my $field ("categorycode", "branchcode") {
+    	next if !$options{$field};
+    	my $val = $options{$field};
+        my $q = "($field=?)";
+        push @params, $val;
+        $qry_end .= ($qry_end ? " AND $q" : $q) . "\n";
+    }
+    my $qry_sort = " ORDER BY surname,firstname DESC";
+    my $query = "$qry_start " . ($qry_end ? "WHERE $qry_end" : '') . " $qry_sort";
+
+    my $dbh = C4::Context->dbh;
+    my $sth = $dbh->prepare($query);
+    eval { $sth->execute(@params) };
+	if ($@) {
+    	warn $@;
+    	return undef;
+    }
+    my $result = $sth->fetchall_arrayref( {} );
+    return @$result;
 }
 
 =head2 GetMemberDetails

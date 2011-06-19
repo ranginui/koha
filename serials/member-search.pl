@@ -28,7 +28,7 @@ use warnings;
 use CGI;
 use C4::Auth;       # get_template_and_user
 use C4::Output;
-use C4::Members;    # BornameSearch
+use C4::Members qw/ FindByPartialName /;
 use C4::Branch;
 use C4::Category;
 use File::Basename;
@@ -38,19 +38,17 @@ my $theme = $cgi->param('theme') || "default";
 my $resultsperpage = $cgi->param('resultsperpage')||C4::Context->preference("PatronsPerPage")||20;
 my $startfrom = $cgi->param('startfrom')||1;
 
-my $patron = $cgi->Vars;
-foreach (keys %$patron){
-    delete $$patron{$_} unless($$patron{$_});
-}
+my $member=$cgi->param('member');
+my $branchcode = $cgi->param('branchcode');
+my $categorycode = $cgi->param('categorycode');
 
 my @categories=C4::Category->all;
-my $branches=(defined $$patron{branchcode}?GetBranchesLoop($$patron{branchcode}):GetBranchesLoop());
-my $subscriptionid = $cgi->param('subscriptionid');
-my $searchstring   = $cgi->param('member');
+my @branches=@{ GetBranchesLoop(
+    $branchcode || undef
+) };
 
-my %categories_dislay;
-my ($template, $loggedinuser, $cookie);
-    ($template, $loggedinuser, $cookie)
+my %categories_display;
+my ($template, $loggedinuser, $cookie)
     = get_template_and_user({template_name => "serials/member-search.tmpl",
                  query => $cgi,
                  type => "intranet",
@@ -63,84 +61,69 @@ foreach my $category (@categories){
 			category_description=>$$category{description},
 			category_type=>$$category{category_type}
 			 };
-	$categories_dislay{$$category{categorycode}} = $hash;
+	$categories_display{$$category{categorycode}} = $hash;
 }
-$template->param(
-        "AddPatronLists_".C4::Context->preference("AddPatronLists")=> "1",
-            );
 if (C4::Context->preference("AddPatronLists")=~/code/){
     $categories[0]->{'first'}=1;
 }
 
-my $member=$cgi->param('member');
-my $orderby=$cgi->param('orderby');
-$orderby = "surname,firstname" unless $orderby;
-if (defined $member) {
-    $member =~ s/,//g;   #remove any commas from search string
-    $member =~ s/\*/%/g;
-}
 
-my ($count,$results);
+my ($count,@results) = (0);
+
+my $shouldsearch = $branchcode || $categorycode || $member;
 
 if (C4::Context->preference("IndependantBranches")){
    if (C4::Context->userenv && C4::Context->userenv->{flags} % 2 !=1 && C4::Context->userenv->{'branch'}){
-        $$patron{branchcode}=C4::Context->userenv->{'branch'} unless (C4::Context->userenv->{'branch'} eq "insecure");
+        $branchcode = C4::Context->userenv->{'branch'} unless (C4::Context->userenv->{'branch'} eq "insecure");
    }
 }
-$$patron{firstname}.="\%" if ($$patron{firstname});
-$$patron{surname}.="\%" if ($$patron{surname});
 
-my @searchpatron;
-push @searchpatron, $member if ($member);
-push @searchpatron, $patron if ( keys %$patron );
+
 my $from = ( $startfrom - 1 ) * $resultsperpage;
 my $to   = $from + $resultsperpage;
-if (@searchpatron) {
-    ($results) = Search(
-        \@searchpatron,
-        [ { surname => 0 }, { firstname => 0 } ],
-        undef,
-        undef,
-        [ "firstname", "surname", "email", "othernames", "cardnumber" ],
-        "start_with"
+if ($shouldsearch) {
+    @results = FindByPartialName(
+        $member,
+        categorycode    => $categorycode,
+        branchcode      => $branchcode,
     );
 }
-if ($results) {
-    $count = scalar(@$results);
+if (@results) {
+    $count = @results;
 }
 my @resultsdata;
 $to=($count>$to?$to:$count);
 my $index=$from;
-foreach my $borrower(@$results[$from..$to-1]){
+foreach my $borrower (@results[$from..$to-1]){
     # find out stats
-    $borrower->{'dateexpiry'}= C4::Dates->new($borrower->{'dateexpiry'},'iso')->output('syspref');
-    if ($categories_dislay{$borrower->{'categorycode'}}){
+    if ($categories_display{$borrower->{'categorycode'}}){
         my %row = (
-	    count => $index++,
-	    %$borrower,
-	    %{$categories_dislay{$$borrower{categorycode}}},
-	);
-	push(@resultsdata, \%row);
-    }
-    else {
-	 warn $borrower->{'cardnumber'} ." has a bad category code of " . $borrower->{'categorycode'} ."\n";
+            count => $index++,
+            %$borrower,
+            %{$categories_display{$$borrower{categorycode}}},
+        );
+        push(@resultsdata, \%row);
+    } else {
+        warn $borrower->{'cardnumber'} ." has a bad category code of " . $borrower->{'categorycode'} ."\n";
     }
 }
-if ($$patron{branchcode}){
-	foreach my $branch (grep{$_->{value} eq $$patron{branchcode}}@$branches){
+if ($branchcode){
+	foreach my $branch (grep {$_->{value} eq $branchcode} @branches){
 		$$branch{selected}=1;
 	}
 }
-if ($$patron{categorycode}){
-	foreach my $category (grep{$_->{categorycode} eq $$patron{categorycode}}@categories){
+if ($categorycode){
+	foreach my $category (grep {$_->{categorycode} eq $categorycode} @categories){
 		$$category{selected}=1;
 	}
 }
-my %parameters=
-(  %{$patron},
-    'orderby' => $orderby,
-    'resultsperpage' => $resultsperpage,
-    'type'=> 'intranet');
+my %parameters=(
+    member          => $member,
+    categorycode    => $categorycode,
+    branchcode      => $branchcode,
+    resultsperpage  => $resultsperpage,
+    type            => 'intranet'
+);
 my $base_url =
     'member-search.pl?&amp;'
   . join(
@@ -158,18 +141,18 @@ $template->param(
     to        => $to,
     multipage => ($count != $to+1 || $startfrom!=1),
 );
+
 $template->param(
-    branchloop=>$branches,
+    branchloop=>\@branches,
 	categoryloop=>\@categories,
 );
 
-
 $template->param(
-        searching       => "1",
+        searching       => $shouldsearch,
 		actionname		=> basename($0),
-		%$patron,
+		%parameters,
         numresults      => $count,
         resultsloop     => \@resultsdata,
-            );
+);
 
 output_html_with_http_headers $cgi, $cookie, $template->output;
