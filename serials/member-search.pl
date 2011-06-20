@@ -41,6 +41,7 @@ my $startfrom = $cgi->param('startfrom')||1;
 my $member=$cgi->param('member');
 my $branchcode = $cgi->param('branchcode');
 my $categorycode = $cgi->param('categorycode');
+my $subscriptionid = $cgi->param('subscriptionid');
 
 my @categories=C4::Category->all;
 my @branches=@{ GetBranchesLoop(
@@ -122,6 +123,7 @@ my %parameters=(
     categorycode    => $categorycode,
     branchcode      => $branchcode,
     resultsperpage  => $resultsperpage,
+    subscriptionid  => $subscriptionid,
     type            => 'intranet'
 );
 my $base_url =
