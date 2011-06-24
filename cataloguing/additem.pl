@@ -122,7 +122,7 @@ sub generate_subfield_form {
         }
         
         my $attributes_no_value = qq(tabindex="1" id="$subfield_data{id}" name="field_value" class="input_marceditor" size="67" maxlength="255" );
-	$attributes_no_value .= 'disabled="disabled" ' if ($limitededition and C4::Context->preference("marcflavour") eq "UNIMARC" and $subfieldtag ne 'f' and $subfieldtag ne 'u');
+	$attributes_no_value .= 'readonly="readonly" ' if ($limitededition and C4::Context->preference("marcflavour") eq "UNIMARC" and $subfieldtag ne 'f' and $subfieldtag ne 'u');
         my $attributes          = qq($attributes_no_value value="$value" );
         
         if ( $subfieldlib->{authorised_value} ) {
@@ -191,6 +191,7 @@ sub generate_subfield_form {
                   -class    => "input_marceditor",
 );
 	    push @scrparam, (-disabled => "disabled") if ($limitededition and C4::Context->preference("marcflavour") eq "UNIMARC"  and $subfieldtag ne 'o');
+	    push @scrparam, (-readonly => "readonly") if ($limitededition and C4::Context->preference("marcflavour") eq "UNIMARC"  and $subfieldtag ne 'o');
             $subfield_data{marc_value} =CGI::scrolling_list(@scrparam);
 
 
