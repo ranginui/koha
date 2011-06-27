@@ -51,15 +51,8 @@ if ( $input->param('borrowernumber') ) {
 }
 
 my $order = $input->param('order') || 'date_due desc';
-my $limit = $input->param('limit');
+my $limit = 0;
 
-if ($limit) {
-    if ( $limit eq 'full' ) {
-        $limit = 0;
-    }
-} else {
-    $limit = 50;
-}
 my ($issues) = GetAllIssues( $borrowernumber, $order, $limit );
 
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
@@ -99,9 +92,6 @@ if ( $data->{'category_type'} eq 'C' ) {
 }
 
 $template->param( adultborrower => 1 ) if ( $data->{'category_type'} eq 'A' );
-if ( !$limit ) {
-    $limit = 'full';
-}
 
 my ( $picture, $dberror ) = GetPatronImage( $data->{'cardnumber'} );
 $template->param( picture => 1 ) if $picture;
