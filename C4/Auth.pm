@@ -391,7 +391,16 @@ sub get_template_and_user {
         warn "template type should be OPAC, here it is=[" . $in->{'type'} . "]" unless ( $in->{'type'} eq 'opac' );
 
         #TODO : replace LibraryName syspref with 'system name', and remove this html processing
-        my $LibraryNameTitle = C4::Context->preference("LibraryName");
+        my $LibraryName = "";
+        if($ENV{'OPAC_LIBRARYNAME_OVERRIDE'})
+        {
+			$LibraryName = $ENV{'OPAC_LIBRARYNAME_OVERRIDE'};
+		}
+		else
+		{
+			$LibraryName = C4::Context->preference("LibraryName");
+		}
+        my $LibraryNameTitle = $LibraryName;
         $LibraryNameTitle =~ s/<(?:\/?)(?:br|p)\s*(?:\/?)>/ /sgi;
         $LibraryNameTitle =~ s/<(?:[^<>'"]|'(?:[^']*)'|"(?:[^"]*)")*>//sg;
 
@@ -410,7 +419,7 @@ sub get_template_and_user {
             AmazonContent             => "" . C4::Context->preference("AmazonContent"),
             AnonSuggestions           => "" . C4::Context->preference("AnonSuggestions"),
             AuthorisedValueImages     => C4::Context->preference("AuthorisedValueImages"),
-            LibraryName               => "" . C4::Context->preference("LibraryName"),
+            LibraryName               => "" . $LibraryName,
             LibraryNameTitle          => "" . $LibraryNameTitle,
             LoginBranchname           => C4::Context->userenv ? C4::Context->userenv->{"branchname"} : "",
             OPACAmazonEnabled         => C4::Context->preference("OPACAmazonEnabled"),
@@ -430,6 +439,9 @@ sub get_template_and_user {
               . ( $ENV{'SERVER_PORT'} eq ( $in->{'query'}->https() ? "443" : "80" ) ? '' : ":$ENV{'SERVER_PORT'}" ),
             opac_name                      => $opac_name,
             opac_css_override              => $ENV{'OPAC_CSS_OVERRIDE'},
+            opac_css_absolute_override     => $ENV{'OPAC_CSS_ABSOLUTE_OVERRIDE'},
+            opac_user_css                  => $ENV{'OPAC_USER_CSS'},
+            opac_libraryname_override      => $ENV{'OPAC_LIBRARYNAME_OVERRIDE'},
             opac_search_limit              => $opac_search_limit,
             opac_limit_override            => $opac_limit_override,
             OpacBrowser                    => C4::Context->preference("OpacBrowser"),
@@ -933,7 +945,28 @@ sub checkauth {
     for my $branch_hash ( sort keys %$branches ) {
         push @branch_loop, { branchcode => "$branch_hash", branchname => $branches->{$branch_hash}->{'branchname'}, };
     }
-
+    my $LibraryName = "";
+    if($ENV{'OPAC_LIBRARYNAME_OVERRIDE'})
+    {
+        $LibraryName = $ENV{'OPAC_LIBRARYNAME_OVERRIDE'};
+    }
+    else
+    {
+        $LibraryName = C4::Context->preference("LibraryName");
+    }
+    my $LibraryNameTitle = $LibraryName;
+    $LibraryNameTitle =~ s/<(?:\/?)(?:br|p)\s*(?:\/?)>/ /sgi;
+    $LibraryNameTitle =~ s/<(?:[^<>'"]|'(?:[^']*)'|"(?:[^"]*)")*>//sg;
+    # variables passed from CGI: opac_css_override and opac_search_limits.
+    my $opac_search_limit   = $ENV{'OPAC_SEARCH_LIMIT'};
+    my $opac_limit_override = $ENV{'OPAC_LIMIT_OVERRIDE'};
+    my $mylibraryfirst      = C4::Context->preference("SearchMyLibraryFirst");
+    my $opac_name;
+    if ( $opac_limit_override && ( $opac_search_limit =~ /branch:(\w+)/ ) ) {
+        $opac_name = C4::Branch::GetBranchName($1)    # opac_search_limit is a branch, so we use it.
+    } elsif ($mylibraryfirst) {
+        $opac_name = C4::Branch::GetBranchName($mylibraryfirst);
+    }
     my $template_name = ( $type eq 'opac' ) ? 'opac-auth.tmpl' : 'auth.tmpl';
     my $template = gettemplate( $template_name, $type, $query );
     $template->param( branchloop => \@branch_loop, );
@@ -943,7 +976,15 @@ sub checkauth {
         casAuthentication       => C4::Context->preference("casAuthentication"),
         suggestion              => C4::Context->preference("suggestion"),
         virtualshelves          => C4::Context->preference("virtualshelves"),
-        LibraryName             => C4::Context->preference("LibraryName"),
+        LibraryName             => "" . $LibraryName,
+        LibraryNameTitle        => "" . $LibraryNameTitle,
+        opac_name               => $opac_name,
+        opac_css_override       => $ENV{'OPAC_CSS_OVERRIDE'},
+        opac_css_absolute_override => $ENV{'OPAC_CSS_ABSOLUTE_OVERRIDE'},
+        opac_user_css           => $ENV{'OPAC_USER_CSS'},
+        opac_libraryname_override => $ENV{'OPAC_LIBRARYNAME_OVERRIDE'},
+        opac_search_limit       => $opac_search_limit,
+        opac_limit_override     => $opac_limit_override,
         opacuserlogin           => C4::Context->preference("opacuserlogin"),
         OpacNav                 => C4::Context->preference("OpacNav"),
         opaccredits             => C4::Context->preference("opaccredits"),
@@ -1000,7 +1041,7 @@ sub checkauth {
     my $self_url = $query->url( -absolute => 1 );
     $template->param(
         url         => $self_url,
-        LibraryName => C4::Context->preference("LibraryName"),
+        LibraryName => "" . $LibraryName,
     );
     $template->param( \%info );
 

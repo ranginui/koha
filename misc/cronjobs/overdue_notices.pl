@@ -557,6 +557,10 @@ END_SQL
                 );
                 $letter->{'content-type'}="text/".($htmlfilename?"html":"plain")."; charset=UTF8";
 
+                # Adds the ability to display the current date
+                my $today = C4::Dates->new()->output();
+                $letter->{'content'} =~ s/<<today>>/$today/g;
+
                 if ($exceededPrintNoticesMaxLines) {
                     $letter->{'content'} .= "List too long for form; please check your account online for a complete list of your overdue items.";
                 }

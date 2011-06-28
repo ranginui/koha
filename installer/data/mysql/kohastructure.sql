@@ -1380,6 +1380,7 @@ CREATE TABLE `opac_news` (
   `timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP,
   `expirationdate` date default NULL,
   `number` int(11) default NULL,
+  `servername` text default NULL,
   PRIMARY KEY  (`idnew`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

@@ -5070,6 +5070,13 @@ $dbh->do("INSERT IGNORE INTO systempreferences (variable,value,explanation,optio
     SetVersion($DBversion);
 }
 
+$DBversion = "3.02.00.068";
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+    $dbh->do("ALTER TABLE `opac_news` ADD `servername` text default NULL;");
+    print "Upgrade to $DBversion done (add servername field on opac_news)\n";
+    SetVersion($DBversion);
+}
+
 =item DropAllForeignKeys($table)
 
   Drop all foreign keys of the table $table
