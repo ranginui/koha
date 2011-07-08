@@ -1013,7 +1013,7 @@ sub GetLostItems {
 
 =over 4
 
-$itemlist = GetItemsForInventory($minlocation, $maxlocation, $location, $itemtype, $ignoreissued, $datelastseen, $branchcode, $offset, $size, $statushash);
+($itemlist, $iTotalRecords)  = GetItemsForInventory($minlocation, $maxlocation, $location, $itemtype, $ignoreissued, $datelastseen, $branchcode, $offset, $size, $statushash);
 
 =back
 
@@ -1028,6 +1028,8 @@ the datelastseen can be used to specify that you want to see items not seen sinc
 offset & size can be used to retrieve only a part of the whole listing (defaut behaviour)
 $statushash requires a hashref that has the authorized values fieldname (intems.notforloan, etc...) as keys, and an arrayref of statuscodes we are searching for as values.
 
+$iTotalRecords is the number of rows that would have been returned without the $offset, $size limit clause
+
 =cut
 
 sub GetItemsForInventory {
@@ -1036,7 +1038,7 @@ sub GetItemsForInventory {
     my ( @bind_params, @where_strings );
 
     my $query = <<'END_SQL';
-SELECT items.itemnumber, barcode, itemcallnumber, title, author, biblio.biblionumber, datelastseen, homebranch, location
+SELECT SQL_CALC_FOUND_ROWS items.itemnumber, barcode, itemcallnumber, title, author, biblio.biblionumber, biblio.frameworkcode, datelastseen, homebranch, location, notforloan, damaged, itemlost
 FROM items
   LEFT JOIN biblio ON items.biblionumber = biblio.biblionumber
   LEFT JOIN biblioitems on items.biblionumber = biblioitems.biblionumber
@@ -1095,20 +1097,33 @@ END_SQL
         $query .= join ' AND ', @where_strings;
     }
     $query .= ' ORDER BY items.cn_sort, itemcallnumber, title';
+    $query .= " LIMIT $offset, $size" if ($offset and $size);
     my $sth = $dbh->prepare($query);
     $sth->execute(@bind_params);
 
     my @results;
-    $size--;
-    while ( my $row = $sth->fetchrow_hashref ) {
-        $offset-- if ($offset);
+    my $tmpresults = $sth->fetchall_arrayref({});
+    $sth = $dbh->prepare("SELECT FOUND_ROWS()");
+    $sth->execute();
+    my ($iTotalRecords) = $sth->fetchrow_array();
+ 
+    foreach my $row (@$tmpresults) {
         $row->{datelastseen} = format_date( $row->{datelastseen} );
-        if ( ( !$offset ) && $size ) {
-            push @results, $row;
-            $size--;
+
+        # Auth values
+        foreach (keys %$row) {
+            # If the koha field is mapped to a marc field
+            my ($f, $sf) = GetMarcFromKohaField("items.$_", $row->{'frameworkcode'});
+            if ($f and $sf) {
+                # We replace the code with it's description
+                my $authvals = C4::Koha::GetKohaAuthorisedValuesFromField($f, $sf, $row->{'frameworkcode'});
+                $row->{$_} = $authvals->{$row->{$_}} if $authvals->{$row->{$_}};
+            }
         }
+        push @results, $row;
     }
-    return \@results;
+   
+    return (\@results, $iTotalRecords);
 }
 
 =head2 GetItemsCount

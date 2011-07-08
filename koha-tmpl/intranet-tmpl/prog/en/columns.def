@@ -68,7 +68,7 @@ items.onloan	Date de retour prévue
 items.notforloan	Exclu du prêt
 items.itemlost	Perdu
 items.wthdrawn	Pilon
-tems.itemcallnumber	Cote
+items.itemcallnumber	Cote
 items.issues	Nombre de prêt
 items.renewals	Nombre de renouvellement
 items.reserves	Nombre de réservation
@@ -87,6 +87,7 @@ items.spystatus
 items.spydescr
 items.itemlog
 items.spycopydata
+items.damaged	Endommagé
 statistics.datetime	Date et heure (statistique)
 statistics.branch	Bibliothèque (code)
 statistics.proccode	Type de procédure
