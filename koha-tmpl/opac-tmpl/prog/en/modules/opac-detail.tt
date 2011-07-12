@@ -296,7 +296,7 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
 
     <div id="bookcover">
     [% IF ( OPACLocalCoverImages ) %]<div style="block" title="[% biblionumber |url %]" class="[% biblionumber %]" id="local-thumbnail-preview"></div>[% END %]
-    [% IF ( OPACAmazonEnabled ) %][% IF ( OPACAmazonCoverImages ) %][% IF ( OPACurlOpenInNewWindow ) %]<a href="http://www.amazon[% AmazonTld %]/gp/reader/[% normalized_isbn %]/ref=sib_dp_pt/002-7879865-0184864#reader-link" target="_blank"><img border="0" src="http://images.amazon.com/images/P/[% normalized_isbn %].01.MZZZZZZZ.jpg" alt="Cover image" /></a>[% ELSE %]<a href="http://www.amazon[% AmazonTld %]/gp/reader/[% normalized_isbn %]/ref=sib_dp_pt/002-7879865-0184864#reader-link"><img border="0" src="http://images.amazon.com/images/P/[% normalized_isbn %].01.MZZZZZZZ.jpg" alt="Cover image" /></a>[% END %][% END %][% END %]
+    [% IF ( OPACAmazonEnabled ) %][% IF ( OPACAmazonCoverImages ) %][% IF ( OPACurlOpenInNewWindow ) %]<a href="http://www.amazon[% AmazonTld %]/gp/reader/[% normalized_isbn %]/ref=sib_dp_pt/002-7879865-0184864#reader-link" target="_blank"><img border="0" src="/cgi-bin/koha/image_fetch.pl?id=[% normalized_isbn %]&type=amazon&size=medium" alt="Cover Image" /></a>[% ELSE %]<a href="http://www.amazon[% AmazonTld %]/gp/reader/[% normalized_isbn %]/ref=sib_dp_pt/002-7879865-0184864#reader-link"><img border="0" src="/cgi-bin/koha/image_fetch.pl?id=[% normalized_isbn %]&type=amazon&size=medium" alt="Cover Image" /></a>[% END %][% END %][% END %]
 
     [% IF ( SyndeticsEnabled ) %][% IF ( SyndeticsCoverImages ) %][% IF ( content_identifier_exists ) %][% IF ( using_https ) %]
     <img src="https://secure.syndetics.com/index.aspx?isbn=[% normalized_isbn %]/[% SyndeticsCoverImageSize %].GIF&amp;client=[% SyndeticsClientCode %]&amp;type=xw10&amp;upc=[% normalized_upc %]&amp;oclc=[% normalized_oclc %]" alt="" class="thumbnail" />
@@ -765,7 +765,7 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
         <td rowspan="2" style="width:20px;"><a style="height: 10em;" href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% IF ( shelfbrowser_prev_biblionumber ) %][% shelfbrowser_prev_biblionumber %][% ELSE %][% biblionumber %][% END %]&amp;shelfbrowse_itemnumber=[% shelfbrowser_prev_itemnumber %]#shelfbrowser"><img src="/opac-tmpl/prog/images/browse-prev.gif" alt="Previous" border="0" /></a></td>
 [% FOREACH PREVIOUS_SHELF_BROWS IN PREVIOUS_SHELF_BROWSE %]
         <td><a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% PREVIOUS_SHELF_BROWS.biblionumber %]&amp;shelfbrowse_itemnumber=[% PREVIOUS_SHELF_BROWS.itemnumber %]#shelfbrowser">
-    [% IF ( OPACAmazonEnabled ) %][% IF ( OPACAmazonCoverImages ) %][% IF ( PREVIOUS_SHELF_BROWS.browser_normalized_isbn ) %]<img border="0" src="http://images.amazon.com/images/P/[% PREVIOUS_SHELF_BROWS.browser_normalized_isbn %].01._AA75_PU_PU-5_.jpg" alt="" />[% ELSE %]<span class="no-image">No cover image available</span>[% END %][% END %][% END %]
+    [% IF ( OPACAmazonEnabled ) %][% IF ( OPACAmazonCoverImages ) %][% IF ( PREVIOUS_SHELF_BROWS.browser_normalized_isbn ) %]<img border="0" src="/cgi-bin/koha/image_fetch.pl?id=[% PREVIOUS_SHELF_BROWS.browser_normalized_isbn %]&type=amazon&size=shelfbrowse" alt="" />[% ELSE %]<span class="no-image">No cover image available</span>[% END %][% END %][% END %]
     [% IF ( SyndeticsEnabled ) %][% IF ( SyndeticsCoverImages ) %][% IF ( content_identifier_exists ) %]
     [% IF ( using_https ) %]
     <img border="0" src="https://secure.syndetics.com/index.aspx?isbn=[% PREVIOUS_SHELF_BROWS.browser_normalized_isbn %]/SC.GIF&amp;client=[% SyndeticsClientCode %][% IF ( PREVIOUS_SHELF_BROWS.browser_normalized_upc ) %]&amp;upc=[% PREVIOUS_SHELF_BROWS.browser_normalized_upc %][% END %][% IF ( PREVIOUS_SHELF_BROWS.browser_normalized_oclc ) %]&amp;oclc=[% PREVIOUS_SHELF_BROWS.browser_normalized_oclc %][% END %]&amp;type=xw10" alt="" />
@@ -782,7 +782,7 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
        <td><a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% NEXT_SHELF_BROWS.biblionumber %]&amp;shelfbrowse_itemnumber=[% NEXT_SHELF_BROWS.itemnumber %]#shelfbrowser">
 
     [% IF ( OPACAmazonEnabled ) %][% IF ( OPACAmazonCoverImages ) %][% IF ( NEXT_SHELF_BROWS.browser_normalized_isbn ) %]
-    <img border="0" src="http://images.amazon.com/images/P/[% NEXT_SHELF_BROWS.browser_normalized_isbn %].01._AA75_PU_PU-5_.jpg" alt="" />[% ELSE %]<span class="no-image">No cover image available</span>[% END %][% END %][% END %]
+    <img border="0" src="/cgi-bin/koha/image_fetch.pl?id=[% NEXT_SHELF_BROWS.browser_normalized_isbn %]&type=amazon&size=shelfbrowse" alt="" />[% ELSE %]<span class="no-image">No cover image available</span>[% END %][% END %][% END %]
 
 	[% IF ( SyndeticsEnabled ) %][% IF ( SyndeticsCoverImages ) %][% IF ( content_identifier_exists ) %]
     [% IF ( using_https ) %]
@@ -1067,7 +1067,7 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
 [% FOREACH XISBN IN XISBNS %]
 <tr>
 <td>
-[% IF ( OPACAmazonEnabled ) %][% IF ( OPACAmazonCoverImages ) %]<img src="http://images.amazon.com/images/P/[% XISBN.normalized_isbn %].01._AA75_PU_PU-5_.jpg" alt="" />[% END %][% END %]
+[% IF ( OPACAmazonEnabled ) %][% IF ( OPACAmazonCoverImages ) %]<img src="/cgi-bin/koha/image_fetch.pl?id=[% XISBN.normalized_isbn %]&type=amazon&size=shelfbrowser" alt="" />[% END %][% END %]
 
 [% IF ( SyndeticsEnabled ) %][% IF ( SyndeticsCoverImages ) %][% IF ( XISBN.content_identifier_exists ) %]
 [% IF ( using_https ) %]
