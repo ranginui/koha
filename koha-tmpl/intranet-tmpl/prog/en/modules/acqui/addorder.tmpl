@@ -6,7 +6,7 @@
 <body>
 <!-- TMPL_INCLUDE NAME="header.inc" -->
 
-<div id="doc3" class="yui-t2">
+<div id="doc3" class="yui-t7">
 
 <div id="bd">
   <div id="yui-main">
@@ -36,7 +36,16 @@
           <!-- /TMPL_LOOP -->
           <input type="hidden" name="confirm_budget_exceeding" value="1" />
           <div class="dialog">
-            <p>Order total amount exceeds allowed budget. Do you want to confirm this order?</p>
+            <!-- TMPL_IF NAME='budget_exceeded' -->
+              <p>Warning! Order total amount exceeds allowed budget.</p>
+            <!-- /TMPL_IF -->
+            <!-- TMPL_IF NAME='encumbrance_exceeded' -->
+              <p>Warning! You will exceed <!-- TMPL_VAR NAME='encumbrance' -->% of your fund.</p>
+            <!-- /TMPL_IF -->
+            <!-- TMPL_IF NAME='expenditure_exceeded' -->
+              <p>Warning! You will exceed maximum limit (<!-- TMPL_VAR NAME='expenditure' --><!-- TMPL_IF NAME='currency' --> <!-- TMPL_VAR NAME='currency' --><!-- /TMPL_IF -->) for your fund.</p>
+            <!-- /TMPL_IF -->
+            <p>Do you want to confirm this order?</p>
             <input type="submit" class="approve" value="Yes, I confirm" />
             <input type="button" class="deny" value="No, I don't confirm" onclick="window.location.href = '<!-- TMPL_VAR NAME='referer' -->'" />
           </div>

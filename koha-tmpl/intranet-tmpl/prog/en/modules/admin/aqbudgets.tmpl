@@ -283,13 +283,15 @@
     </li>
 
     <li>
-    <label for="budget_encumb">Encumbrance: </label>
-    <input type="text" name="budget_encumb" id="budget_encumb" value="<!-- TMPL_VAR NAME="budget_encumb" -->" size="8" />
+    <label for="budget_encumb">Warning at (%): </label>
+    <input type="text" name="budget_encumb" id="budget_encumb" value="<!-- TMPL_VAR NAME="budget_encumb" -->" size="10" />
+    <span style="color:grey">0 to disable</span>
     </li>
 
     <li>
-    <label for="budget_expend">Expenditure: </label>
-    <input type="text" name="budget_expend" id="budget_expend" value="<!-- TMPL_VAR NAME="budget_expend" -->" size="8" /><input type="hidden" name="budget_owner_id" id="budget_owner_id" value="<!-- TMPL_VAR NAME="budget_owner_id" -->" />
+    <label for="budget_expend">Warning at (amount): </label>
+    <input type="text" name="budget_expend" id="budget_expend" value="<!-- TMPL_VAR NAME="budget_expend" -->" size="10" /><input type="hidden" name="budget_owner_id" id="budget_owner_id" value="<!-- TMPL_VAR NAME="budget_owner_id" -->" />
+    <span style="color:grey">0 to disable</span>
     </li>
 
     <li>
