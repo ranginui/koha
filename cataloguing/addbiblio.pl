@@ -878,7 +878,7 @@ if ( $op eq "addbiblio" ) {
             ( $biblionumber, $oldbibitemnum ) = AddBiblio( $record, $frameworkcode );
         }
 
-        if ( ( $mode ne "popup" && !$is_a_modif ) || $redirect eq "items" ) {
+        if ( ( $mode ne "popup" && !$is_a_modif  && $redirect ne "view") || $redirect eq "items" ) {
             print $input->redirect( "/cgi-bin/koha/cataloguing/additem.pl?biblionumber=$biblionumber&frameworkcode=$frameworkcode" );
             exit;
         } elsif ( $is_a_modif || $redirect eq "view" ) {
