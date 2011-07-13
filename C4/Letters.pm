@@ -821,13 +821,14 @@ sub _send_message_by_email ($;$$$) {
     my $content = encode('utf8', $message->{'content'});
     my %sendmail_params = (
         To   => $to_address,
-        From => $message->{'from_address'} || C4::Context->preference('KohaAdminEmailAddress'),
+        From => C4::Context->preference('KohaAdminEmailAddress'),
         Subject => encode('utf8', $message->{'subject'}),
         charset => 'utf8',
         Message => $content,
         'content-type' => $message->{'content_type'} || 'text/plain; charset="UTF-8"',
     );
     $sendmail_params{'Auth'} = {user => $username, pass => $password, method => $method} if $username;
+    $sendmail_params{'Reply-To'} = $message->{'from_address'} if $message->{'from_address'};
     if ( my $bcc = C4::Context->preference('OverdueNoticeBcc') ) {
        $sendmail_params{ Bcc } = $bcc;
     }
