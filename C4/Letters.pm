@@ -503,9 +503,9 @@ sub parseletter {
     # Get roadtype name instead of code
     if ( $table eq 'borrowers' && $values->{'streettype'} ) {
         my (undef, $roadtypes_hashref) = &C4::Members::GetRoadTypes();
-warn Data::Dumper::Dumper $roadtypes_hashref;
+#warn Data::Dumper::Dumper $roadtypes_hashref;
         $values->{'streettype'} = $roadtypes_hashref->{ $values->{'streettype'} };
-warn $values->{'streettype'};
+#warn $values->{'streettype'};
     }
     for my $datefield (grep {$_ =~/date/} keys %$values){
         # Format all date field in order to display date according to system 
@@ -526,7 +526,7 @@ warn $values->{'streettype'};
         my $replacedby = $values->{$field} || '';
         ( $letter->{title} )   and $letter->{title}   =~ s/$replacefield/$replacedby/g;
         ( $letter->{content} ) and $letter->{content} =~ s/$replacefield/$replacedby/g;
-warn "<<$table.$field>> $replacefield $replacedby" if ($field eq "streettype" && $replacedby) ;
+#warn "<<$table.$field>> $replacefield $replacedby" if ($field eq "streettype" && $replacedby) ;
     }
     return $letter;
 }
