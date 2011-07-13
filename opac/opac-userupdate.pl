@@ -49,11 +49,24 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
 my ($borr) = GetMemberDetails($borrowernumber);
 my $lib = GetBranchDetail( $borr->{'branchcode'} );
 
+my $default_roadtype;
+$default_roadtype = $borr->{'streettype'};
+my ( $roadtypeid, $road_type ) = GetRoadTypes();
+$template->param( road_cgipopup => 1 ) if ($roadtypeid);
+my $roadpopup = CGI::popup_menu(
+    -name     => 'streettype',
+    -id       => 'streettype',
+    -values   => $roadtypeid,
+    -labels   => $road_type,
+    -override => 1,
+    -default  => $default_roadtype
+);
+
 # handle the new information....
 # collect the form values and send an email.
 my @fields = (
-    'surname',   'firstname', 'othernames', 'streetnumber', 'address',  'address2',       'city',      'zipcode',    'country', 'phone',
-    'mobile',    'fax',       'phonepro',   'emailaddress', 'emailpro', 'B_streetnumber', 'B_address', 'B_address2', 'B_city',  'B_zipcode',
+    'surname',   'firstname', 'othernames', 'streetnumber', 'streettype', 'address',  'address2',       'city',      'zipcode',    'country', 'phone',
+    'mobile',    'fax',       'phonepro',   'email', 'emailpro', 'B_streetnumber', 'B_address', 'B_address2', 'B_city',  'B_zipcode',
     'B_country', 'B_phone',   'B_email',    'dateofbirth',  'sex'
 );
 my $update;
@@ -101,25 +114,36 @@ EOF
             $borrowerfield = $borr->{$field};
         }
 
-        # reconstruct the address
-        if ( $field eq "address" ) {
-            $borrowerfield = "$streetnumber $address, $address2";
-        }
+        # reconstruct the address (seems not necessary)
+        #if ( $field eq "address" ) {
+        #    $borrowerfield = "$streetnumber, $address, $address2";
+        #}
 
-        # reconstruct the alternate address
-        if ( $field eq "B_address" ) {
-            $borrowerfield = "$B_streetnumber $B_address, $B_address2";
-        }
+        # reconstruct the alternate address (seems not necessary)
+        #if ( $field eq "B_address" ) {
+        #    $borrowerfield = "$B_streetnumber, $B_address, $B_address2";
+        #}
 
         if ( $field eq "dateofbirth" ) {
             $borrowerfield = format_date( $borr->{'dateofbirth'} ) || '';
         }
 
+        
         if ( $borrowerfield eq $newfield ) {
+            if ( $field eq "streettype" ) {
+            $message .= "$field : $road_type->{$borrowerfield}  -->  $road_type->{$newfield}\n";
+            }
+        else {
             $message .= "$field : $borrowerfield  -->  $newfield\n";
-        } else {
-            $message .= uc($field) . " : $borrowerfield  -->  $newfield\n";
-        }
+            } 
+        }else {
+            if ( $field eq "streettype" ) {
+            $message .= "*".uc($field) . " : $road_type->{$borrowerfield}  -->  $road_type->{$newfield}\n";
+            }
+            else {
+            $message .= "*".uc($field) . " : $borrowerfield  -->  $newfield\n";
+            }
+            }
     }
     $message .= "\n\nThanks,\nKoha\n\n";
     my %mail = (
@@ -179,6 +203,7 @@ $bordat[0] = $borr;
 $template->param(
     BORROWER_INFO  => \@bordat,
     userupdateview => 1,
+    roadpopup      => $roadpopup,
 );
 
 output_html_with_http_headers $query, $cookie, $template->output;
