@@ -933,13 +933,13 @@ sub _send_message_by_email ($;$$$) {
     my $is_html = $content_type =~ m/html/io;
     my %sendmail_params = (
         To   => $to_address,
-        From => $message->{'from_address'} || C4::Context->preference('KohaAdminEmailAddress'),
-        Subject => $subject,
+        From => C4::Context->preference('KohaAdminEmailAddress'),
         charset => 'utf8',
         Message => $is_html ? _wrap_html($content, $subject) : $content,
         'content-type' => $content_type,
     );
     $sendmail_params{'Auth'} = {user => $username, pass => $password, method => $method} if $username;
+    $sendmail_params{'Reply-To'} = $message->{'from_address'} if $message->{'from_address'};
     if ( my $bcc = C4::Context->preference('OverdueNoticeBcc') ) {
        $sendmail_params{ Bcc } = $bcc;
     }
