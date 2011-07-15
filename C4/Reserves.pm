@@ -460,7 +460,6 @@ sub CanItemBeReserved {
     return 0 if( defined $issuingrule->{reservesallowed} && not $issuingrule->{reservesallowed} ); 
     
     # We retrieve the count of reserves allowed for this category code
-    $issuingrule  = GetIssuingRule ($borrower->{categorycode}, "*", "*");
     $reservecount = GetReserveCount($borrowernumber);
 
     return 0 if ($issuingrule->{reservesallowed}==0 || 
