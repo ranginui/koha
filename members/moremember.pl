@@ -461,7 +461,9 @@ sub GetCriteriumDesc {
     my $countsuggestions=0;
     my $reasonsloop = GetAuthorisedValues("SUGGEST");
     foreach my $criteriumvalue ( map { $$_{'value'} } @$criteria_list ) {
-        my $suggestions = &SearchSuggestion($suggestion_ref);
+        my %searchrefs=%$suggestion_ref;
+        $searchrefs{'STATUS'}=$criteriumvalue;
+        my $suggestions = &SearchSuggestion(\%searchrefs);
         foreach my $suggestion (@$suggestions) {
             $suggestion->{budget_name} = GetBudget( $suggestion->{budgetid} )->{budget_name} if $suggestion->{budgetid};
             foreach my $date qw(suggesteddate manageddate accepteddate) {
