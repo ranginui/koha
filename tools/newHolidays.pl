@@ -9,6 +9,7 @@ use C4::Auth;
 use C4::Output;
 
 use C4::Calendar;
+use DateTime;
 
 my $input = new CGI;
 my $dbh   = C4::Context->dbh();
@@ -19,6 +20,9 @@ my $weekday            = $input->param('newWeekday');
 my $day                = $input->param('newDay');
 my $month              = $input->param('newMonth');
 my $year               = $input->param('newYear');
+my $day1                = $input->param('newDay1');
+my $month1              = $input->param('newMonth1');
+my $year1               = $input->param('newYear1');
 my $title              = $input->param('newTitle');
 my $description        = $input->param('newDescription');
 my $newoperation       = $input->param('newOperation');
@@ -40,16 +44,16 @@ if ($allbranches) {
     my $branch;
     my @branchcodes = split( /\|/, $input->param('branchCodes') );
     foreach $branch (@branchcodes) {
-        add_holiday( $newoperation, $branch, $weekday, $day, $month, $year, $title, $description );
+        add_holiday( $newoperation, $branch, $weekday, $day, $month, $year, $day1, $month1, $year1, $title, $description );
     }
 } else {
-    add_holiday( $newoperation, $branchcode, $weekday, $day, $month, $year, $title, $description );
+    add_holiday( $newoperation, $branchcode, $weekday, $day, $month, $year, $day1, $month1, $year1, $title, $description );
 }
 
 print $input->redirect("/cgi-bin/koha/tools/holidays.pl?branch=$originalbranchcode&calendardate=$calendardate");
 
 sub add_holiday {
-    ( $newoperation, $branchcode, $weekday, $day, $month, $year, $title, $description ) = @_;
+    ( $newoperation, $branchcode, $weekday, $day, $month, $year, $day1, $month1, $year1, $title, $description ) = @_;
     my $calendar = C4::Calendar->new( branchcode => $branchcode );
 
     if ( $newoperation eq 'weekday' ) {
@@ -86,5 +90,52 @@ sub add_holiday {
             );
         }
 
+    } elsif ( $newoperation eq 'holidayrange' ) {
+        #Make an array with holiday's days
+        my $first_dt = DateTime->new(year => $year, month  => $month,  day => $day);
+        my $end_dt   = DateTime->new(year => $year1, month  => $month1,  day => $day1);
+        my @holiday_list = ();
+
+        for (my $dt = $first_dt->clone();
+            $dt <= $end_dt;
+            $dt->add(days => 1) )
+            {
+            push @holiday_list, $dt->clone();
+            }
+
+        foreach my $date (@holiday_list){
+            unless ( $calendar->isHoliday( $date->{local_c}->{day}, $date->{local_c}->{month}, $date->{local_c}->{year} ) ) {
+            $calendar->insert_single_holiday(
+                day         => $date->{local_c}->{day},
+                month       => $date->{local_c}->{month},
+                year        => $date->{local_c}->{year},
+                title       => $title,
+                description => $description
+                );
+            }
+        }
+    } elsif ( $newoperation eq 'holidayrangerepeat' ) {
+        #Make an array with holiday's days
+        my $first_dt = DateTime->new(year => $year, month  => $month,  day => $day);
+        my $end_dt   = DateTime->new(year => $year1, month  => $month1,  day => $day1);
+        my @holiday_list = ();
+
+        for (my $dt = $first_dt->clone();
+            $dt <= $end_dt;
+            $dt->add(days => 1) )
+            {
+            push @holiday_list, $dt->clone();
+            }
+
+        foreach my $date (@holiday_list){
+            unless ( $calendar->isHoliday( $date->{local_c}->{day}, $date->{local_c}->{month}, $date->{local_c}->{year} ) ) {
+            $calendar->insert_day_month_holiday(
+                day         => $date->{local_c}->{day},
+                month       => $date->{local_c}->{month},
+                title       => $title,
+                description => $description
+                );
+            }
+        }
     }
 }

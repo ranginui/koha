@@ -261,6 +261,12 @@ h1 select { width: 20em; }
 				<label for="newMonth">Month</label> <input type="text" size="2" id="newMonth" name="newMonth"  readonly="readonly" />
 				<label for="newYear">Year</label> <input type="text" size="4" id="newYear" name="newYear" readonly="readonly" />
 			</div>
+            <br />
+            <div class="dmy">
+                <label for="newDay1">To Day</label> <input type="text" size="2" id="newDay1" name="newDay1" />
+                <label for="newMonth1">Month</label> <input type="text" size="2" id="newMonth1" name="newMonth1"/>
+                <label for="newYear1">Year</label> <input type="text" size="4" id="newYear1" name="newYear1"/>
+            </div>
 			<p><label for="newDescription">Description:</label>
 				<br />
 				<textarea rows="2" cols="40" id="newDescription" name="newDescription"></textarea>
@@ -276,7 +282,15 @@ h1 select { width: 20em; }
 				<input type="radio" name="newOperation" id="newOperationYear" value="repeatable" />
 				<label for="newOperationYear">Holiday repeated yearly on the same date</label>.
 				<a href="#" onclick=" additionalInformation('This will take this day and month as a reference to make it holiday. Through this option, you can repeat this rule for every year. For example, selecting August 1st will make August 1st a holiday every year.')"><img src="<!-- TMPL_VAR NAME="themelang" -->/../img/more.gif" border="0" alt="More information" /></a>
-				<p>
+				<br />
+                <input type="radio" name="newOperation" id="newOperationField" value="holidayrange" />
+                <label for="newOperationField">Holidays on a range</label>.
+                <a href="#" onclick=" additionalInformation('Make a single holiday on a range. For example, selecting August 1st, 2012  and August 10st, 2012 will make all days between 1st and 10st holiday, but will not affect August 1st-10st in other years.')"><img src="<!-- TMPL_VAR NAME="themelang" -->/../img/more.gif" border="0" alt="More information"></a>
+                <br />
+                <input type="radio" name="newOperation" id="newOperationFieldYear" value="holidayrangerepeat" />
+                <label for="newOperationFieldYear">Holidays repeated yearly on a range</label>.
+                <a href="#" onclick=" additionalInformation('Make a single holiday on a range. For example, selecting August 1st, 2012  and August 10st, 2012 will make all days between 1st and 10st holiday, and will affect August 1st-10st in other years.')"><img src="<!-- TMPL_VAR NAME="themelang" -->/../img/more.gif" border="0" alt="More information"></a>
+                <p>
 				<input type="checkbox" name="allBranches" id="allBranches" />
 				<label for="allBranches">Copy to all libraries</label>.
 				<a href="#" onclick=" additionalInformation('If checked, this holiday will be copied to all libraries. If the holiday already exists for a library, no change is made.')"><img src="<!-- TMPL_VAR NAME="themelang" -->/../img/more.gif" border="0" alt="More information" /></a>
