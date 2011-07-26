@@ -326,6 +326,9 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
     ( [% count %] )</a>
    </li>
  <li> <a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]#descriptions">Title Notes</a></li>
+[% IF OpenLibrarySubjects %]
+<li> <a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]#openlibrary">Open Library</a></li>
+[% END %]
 [% IF ( SYNDETICS_TOC ) %]
  <li> <a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]#toc">TOC</a></li>
 [% END %]
@@ -390,7 +393,23 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
     </table>
 </div>
 [% END %]
-
+[% IF OpenLibrarySubjects %]
+<div id="openlibrary"></div>
+    <script type="text/javascript">
+       var json_results;
+       json_results = "http://openlibrary.org/api/volumes/brief/isbn/[% normalized_isbn %].json?callback=?"
+       $.getJSON(json_results, function(data){
+	   $.each(data.items, function(i,item){
+	       $('#openlibrary').append("<b>Online copy</b><br />");
+	       $('#openlibrary').append('<ul><li>Status: '+ item.status + '</li>');	       
+	       $('#openlibrary').append('<li><a href="'+ item.itemURL + '"><img src="'+item.cover.small+'">Read Online</a></li></ul>');
+	   });
+	   $.each(data.records, function(i,item){
+	       $('#openlibrary').append('<p><a href="'+item.recordURL + '">Catalogue Record at Openlibrary</a></p>');
+	   });
+       });		   
+   </script>
+[% END %]
 <div id="holdings">
 [% IF ( count ) %]
     [% IF ( lotsofitems ) %]
