@@ -52,6 +52,12 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
 my $biblionumber = $query->param('biblionumber');
 my $fw           = GetFrameworkCode($biblionumber);
 
+#count of item linked
+my $itemcount = GetItemsCount($biblionumber);
+$template->param(
+    count       => $itemcount
+);
+
 ## get notes and subjects from MARC record
 my $marcflavour = C4::Context->preference("marcflavour");
 my $record      = GetMarcBiblio($biblionumber);
