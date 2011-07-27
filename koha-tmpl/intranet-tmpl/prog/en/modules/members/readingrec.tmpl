@@ -3,10 +3,39 @@
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
 <script type="text/javascript" src="<!-- TMPL_VAR name="themelang" -->/lib/jquery/plugins/jquery.tablesorter.min.js"></script>
 <script type="text/javascript" src="<!-- TMPL_VAR name="themelang" -->/lib/jquery/plugins/jquery.tablesorter.pager.js"></script>
-<script type="text/javascript" id="js">$(document).ready(function() {
+<script type="text/javascript" id="js">
+//add parser through the tablesorter addParser method
+$.tablesorter.addParser({
+    // set a unique id
+    id: 'links',
+    is: function(s)
+    {
+        // return false so this parser is not auto detected
+        return false;
+    },
+    format: function(s)
+    {
+        // format your data for normalization
+        return s.replace(new RegExp(/<.*?>/),"");
+    },
+    // set type, either numeric or text
+    type: 'text'
+});
+
+
+// Apply "links" parser to the appropriate column
+
+$(document).ready(function() {
 	$("#table_readingrec").tablesorter({
-		sortList: [[1,0]],
+		sortList: [[0,1]],
+		headers: {
+        1: {
+            sorter: 'links'
+            }
+        },<!--TMPL_IF Name="datefortablesorter"-->dateFormat: '<!--TMPL_VAR Name="datefortablesorter" -->'<!--/TMPL_IF-->
+
 	}).tablesorterPager({container: $("#pagertable_readingrec"),positionFixed: false,size: 20});
+
 }); </script>
 </head>
 <body>
@@ -23,9 +52,7 @@
 <!-- TMPL_INCLUDE NAME="circ-toolbar.inc" -->
 <h1>Reading Record</h1>
 <form action="/cgi-bin/koha/members/readingrec.pl" method="get"><input type="hidden" name="borrowernumber" id="borrowernumber" value="<!-- TMPL_VAR NAME="borrowernumber" -->" /></form>
-<p><!-- TMPL_IF NAME="showfulllink" -->Showing All Items |
-	<a href="readingrec.pl?borrowernumber=<!-- TMPL_VAR name="borrowernumber" -->&amp;limit=50">Show Last 50 Items Only</a> <!-- TMPL_ELSE -->	Showing Last 50 Items | 
-	<a href="readingrec.pl?borrowernumber=<!-- TMPL_VAR name="borrowernumber" -->&amp;limit=full">Show All Items</a><!-- /TMPL_IF --></p>
+
 <span id="pagertable_readingrec" class="pager">
 	<form class="formpager">&nbsp;<strong>page(s)</strong>&nbsp;:
 		<img src="<!-- TMPL_VAR name="interface" -->/prog/img/first.png" class="first"/>
@@ -33,7 +60,7 @@
 		<input type="text" size="5" class="pagedisplay"/>
 		<img src="<!-- TMPL_VAR name="interface" -->/prog/img/next.png" class="next"/>
 		<img src="<!-- TMPL_VAR name="interface" -->/prog/img/last.png" class="last"/>
-		, entries/page : 
+		 entries/page : 
 		<select class="pagesize">
         	<option value="10">10</option>
 			<option selected="selected" value="20">20</option>
@@ -41,29 +68,24 @@
 			<option value="40">40</option>
 			<option value="50">50</option>
 			<option value="100">100</option>
+            <option value="200">200</option>
+            <option value="500">500</option>
+            <option value="1000">1000</option>
 		</select>
 	</form>
 </span>
 <table id="table_readingrec">
 <thead>
-    <th>
-        <a href="readingrec.pl?borrowernumber=<!-- TMPL_VAR name="borrowernumber" -->&amp;order=issuestimestamp&amp;limit=<!-- TMPL_VAR name="limit" -->">Date</a>
-    </th>
-	<th>
-		<a href="readingrec.pl?borrowernumber=<!-- TMPL_VAR name="borrowernumber" -->&amp;order=title&amp;limit=<!-- TMPL_VAR name="limit" -->">Title</a>
-	</th>
-	<th>
-		<a href="readingrec.pl?borrowernumber=<!-- TMPL_VAR name="borrowernumber" -->&amp;order=author&amp;limit=<!-- TMPL_VAR name="limit" -->">Author</a>
-	</th>
+    <th>Date</th>
+	<th>Title</th>
+	<th>Author</th>
 	<th>Call No.</th>
 	<th>Barcode</th>
 	<th>Number of Renewals</th>
 	<th>Checked out on</th>
 	<th>Checked out from</th>
 	<th>Date Due</th>
-	<th>
-		<a href="readingrec.pl?borrowernumber=<!-- TMPL_VAR name="borrowernumber" -->&amp;order=returndate%20DESC&amp;limit=<!-- TMPL_VAR name="limit" -->">Return Date</a>
-	</th>
+	<th>Return Date</th>
 </thead>
 <!-- TMPL_LOOP name="loop_reading" -->
 <!-- TMPL_UNLESS NAME="__odd__" -->

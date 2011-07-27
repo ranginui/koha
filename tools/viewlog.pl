@@ -185,11 +185,11 @@ if ($do_it) {
         );
         my $sep = C4::Context->preference("delimiter");
         foreach my $line (@data) {
-
             #next unless $modules[0] eq "catalogue";
-            foreach (qw(timestamp firstname surname action info title author)) {
+            foreach (qw(timestamp user module action object info )) {
                 print $line->{$_} . $sep;
             }
+            print "\n";
         }
     }
     exit;

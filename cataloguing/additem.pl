@@ -246,14 +246,12 @@ sub generate_subfield_form {
 sub removeFieldsForPrefill {
     #FIXME: this is not generic enough
     my $item = shift;
+    my $subfieldsToDiscardWhenPrefill = C4::Context->preference('SubfieldsToDiscardWhenPrefill') || "f u";
+    my @subfieldsToDiscard= split(/ /,$subfieldsToDiscardWhenPrefill);
     my $field = $item->field('995');
-    $field->delete_subfield(code => 'f');
-    $field->delete_subfield(code => 'k');
-    $field->delete_subfield(code => 'u');
-    $field->delete_subfield(code => 'v');
-    $field->delete_subfield(code => 'x');
-    $field->delete_subfield(code => 'z');
-
+    foreach my $subfieldsDiscard(@subfieldsToDiscard) {
+		$field->delete_subfield(code => $subfieldsDiscard);
+	}
     return $item;
 
 }

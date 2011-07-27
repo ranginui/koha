@@ -4987,7 +4987,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     $dbh->do(qq{
     	ALTER TABLE `deleteditems` ADD `statisticvalue` varchar(80) DEFAULT NULL
     });
-    print "Upgrade to $DBversion done (Adds New System preference BlockRenewWhenOverdue)\n";
+    print "Upgrade to $DBversion done (Adds column statisticvalue in table deleteditems)\n";
     SetVersion($DBversion);
 }
 
@@ -5074,6 +5074,15 @@ $DBversion = "3.02.00.068";
 if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     $dbh->do("ALTER TABLE `opac_news` ADD `servername` text default NULL;");
     print "Upgrade to $DBversion done (add servername field on opac_news)\n";
+    SetVersion($DBversion);
+}
+
+$DBversion = "3.02.00.069";
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+    $dbh->do(
+        "INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('SubfieldsToDiscardWhenPrefill','f u','define a list of subfields to discard when prefill (separated by space)','','Free');"
+    );
+    print "Upgrade to $DBversion done (added new syspref: SubfieldsToDiscardWhenPrefill)\n";
     SetVersion($DBversion);
 }
 
