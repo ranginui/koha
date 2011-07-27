@@ -121,6 +121,8 @@ use C4::Auth;           # get_template_and_user
 use C4::Acquisition;    # NewOrder DelOrder ModOrder
 use C4::Suggestions;    # ModStatus
 use C4::Biblio;         # AddBiblio TransformKohaToMarc
+use C4::Bookseller;     # GetBookSellerFromId
+use C4::Budgets;
 use C4::Items;
 use C4::Output;
 
@@ -131,6 +133,75 @@ use C4::Output;
 
 my $input = new CGI;
 ### $input
+
+# Check if order total amount exceed allowed budget
+my $confirm_budget_exceeding = $input->param('confirm_budget_exceeding');
+unless($confirm_budget_exceeding) {
+    my $budget_id = $input->param('budget_id');
+    my $total = $input->param('total');
+    my $budget = GetBudget($budget_id);
+    my $budget_spent = GetBudgetSpent($budget_id);
+    my $budget_ordered = GetBudgetOrdered($budget_id);
+    my $budget_remaining = $budget->{'budget_amount'} - ($budget_spent + $budget_ordered);
+    if($total > $budget_remaining) {
+        my ($template, $loggedinuser, $cookie) = get_template_and_user({
+            template_name   => "acqui/addorder.tmpl",
+            query           => $input,
+            type            => "intranet",
+            authnotrequired => 0,
+            flagsrequired   => {acquisition => 'order_manage'},
+        });
+
+        my $url = $input->referer();
+        if(!defined $url) {
+            my $basketno = $input->param('basketno');
+            $url = "/cgi-bin/koha/acqui/basket.pl?basketno=$basketno";
+        }
+
+        my $vars = $input->Vars;
+        my @vars_loop;
+        foreach (keys %$vars) {
+            unless($_ eq "field_value" || $_ eq "itemid" || $_ eq "kohafield" || $_ eq "tag" || $_ eq "subfield" || $_ eq "mandatory") {
+                push @vars_loop, {
+                    name => $_,
+                    value => $vars->{$_},
+                };
+            }
+        }
+
+        my @field_value_loop;
+        push @field_value_loop, {value => $_} for $input->param('field_value');
+
+        my @itemid_loop;
+        push @itemid_loop, {value => $_} for $input->param('itemid');
+
+        my @kohafield_loop;
+        push @kohafield_loop, {value => $_} for $input->param('kohafield');
+
+        my @tag_loop;
+        push @tag_loop, {value => $_} for $input->param('tag');
+
+        my @subfield_loop;
+        push @subfield_loop, {value => $_} for $input->param('subfield');
+
+        my @mandatory_loop;
+        push @mandatory_loop, {value => $_} for $input->param('mandatory');
+
+        $template->param(
+            not_enough_budget => 1,
+            referer => $url,
+            vars_loop => \@vars_loop,
+            field_value => \@field_value_loop,
+            itemid => \@itemid_loop,
+            kohafield => \@kohafield_loop,
+            tag => \@tag_loop,
+            subfield => \@subfield_loop,
+            mandatory => \@mandatory_loop,
+        );
+        output_html_with_http_headers $input, $cookie, $template->output;
+        exit;
+    }
+}
 
 # get_template_and_user used only to check auth & get user id
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
