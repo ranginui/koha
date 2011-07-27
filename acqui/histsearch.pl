@@ -60,6 +60,7 @@ my $input          = new CGI;
 my $title          = $input->param('title');
 my $author         = $input->param('author');
 my $name           = $input->param('name');
+my $groupname      = $input->param('groupname');
 my $from_placed_on = C4::Dates->new( $input->param('from') );
 my $to_placed_on   = C4::Dates->new( $input->param('to') );
 
@@ -75,8 +76,10 @@ my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
 );
 
 my $from_iso = C4::Dates->new( $input->param('from') )->output('iso') if $input->param('from');
-my $to_iso   = C4::Dates->new( $input->param('to') )->output('iso')   if $input->param('iso');
-my ( $order_loop, $total_qty, $total_price, $total_qtyreceived ) = &GetHistory( $title, $author, $name, $from_iso, $to_iso );
+my $to_iso   = C4::Dates->new( $input->param('to') )->output('iso')   if $input->param('to');
+my ( $order_loop, $total_qty, $total_price, $total_qtyreceived ) = &GetHistory( $title, $author, $name, $groupname, $from_iso, $to_iso );
+
+my $budgetperiods = C4::Budgets::GetBudgetPeriods;
 
 $template->param(
     suggestions_loop         => $order_loop,

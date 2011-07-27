@@ -1654,14 +1654,14 @@ returns:
 =cut
 
 sub GetHistory {
-    my ( $title, $author, $name, $from_placed_on, $to_placed_on ) = @_;
+    my ( $title, $author, $name, $groupname, $from_placed_on, $to_placed_on ) = @_;
     my @order_loop;
     my $total_qty         = 0;
     my $total_qtyreceived = 0;
     my $total_price       = 0;
 
     # don't run the query if there are no parameters (list would be too long for sure !)
-    if ( $title || $author || $name || $from_placed_on || $to_placed_on ) {
+    if ( $title || $author || $name || $groupname || $from_placed_on || $to_placed_on ) {
         my $dbh   = C4::Context->dbh;
         my $query = "
             SELECT
@@ -1710,6 +1710,11 @@ sub GetHistory {
             push @query_params, "%$name%";
         }
 
+        if ( $groupname ) {
+            $query .= "AND aqbasketgroups.name LIKE ? ";
+            push @query_params, "%$groupname%";
+        }
+
         if ( defined $from_placed_on ) {
             $query .= " AND creationdate >= ? ";
             push @query_params, $from_placed_on;
@@ -1728,7 +1733,6 @@ sub GetHistory {
             }
         }
         $query .= " ORDER BY id";
-        warn $query;
         my $sth = $dbh->prepare($query);
         $sth->execute(@query_params);
         my $cnt = 1;
