@@ -283,7 +283,7 @@ sub SendAlerts {
             if ( $borinfo->{email} ) {
                 my %mail = (
                     To      => $borinfo->{email},
-                    From    => $borinfo->{email},
+		    From => C4::Context->preference('KohaAdminEmailAddress'),                    
                     Subject => "" . $innerletter->{title},
                     Message => "" . $innerletter->{content},
                     'Content-Type' => 'text/plain; charset="utf8"',
