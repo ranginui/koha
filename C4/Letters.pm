@@ -295,7 +295,7 @@ sub SendAlerts {
             # ... then send mail
             my %mail = (
                 To      => $email,
-                From    => $email,
+		        From => C4::Context->preference('KohaAdminEmailAddress'),
                 Subject => Encode::encode( "utf8", "" . $letter->{title} ),
                 Message => Encode::encode( "utf8", "" . $letter->{content} ),
                 'Content-Type' => 'text/plain; charset="utf8"',
