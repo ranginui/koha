@@ -1304,6 +1304,30 @@ sub GetItemsInfo {
             my ($lib) = $stackstatus->fetchrow;
             $data->{stack} = $lib;
         }
+
+        # Collection Codes
+        my $collectioncode = $dbh->prepare(
+            'SELECT authorised_value
+             FROM   marc_subfield_structure
+             WHERE  kohafield="items.ccode"
+        '
+        );
+        $collectioncode->execute;
+
+        ($authorised_valuecode) = $collectioncode->fetchrow;
+        if ($authorised_valuecode) {
+            $collectioncode = $dbh->prepare(
+                "SELECT lib
+                 FROM   authorised_values
+                 WHERE  category=?
+                 AND    authorised_value=?
+            "
+            );
+            $collectioncode->execute( $authorised_valuecode, $data->{ccode} );
+            my ($lib) = $collectioncode->fetchrow;
+            $data->{ccode} = $lib if $lib;
+        }
+        
         # Find the last 3 people who borrowed this item.
         my $sth2 = $dbh->prepare("SELECT * FROM old_issues,borrowers
                                     WHERE itemnumber = ?
