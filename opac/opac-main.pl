@@ -81,8 +81,9 @@ if($input->cookie('KohaOpacLanguage')){
 }
 
 $news_lang = $news_lang ? $news_lang : 'en' ;
+my @newslang= split(/\-/,$news_lang);
+my $all_koha_news   = &GetNewsToDisplay($newslang[0]);
 
-my $all_koha_news   = &GetNewsToDisplay($news_lang);
 my $koha_news_count = scalar @$all_koha_news;
 
 $template->param(
