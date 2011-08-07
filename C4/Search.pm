@@ -764,16 +764,23 @@ sub _build_weighted_query {
     my $fuzzy_enabled = C4::Context->preference("QueryFuzzy")        || 0;
 
     my $weighted_query .= "(rk=(";    # Specifies that we're applying rank
-
+    
     # Keyword, or, no index specified
     if ( ( $index eq 'kw' ) || ( !$index ) ) {
         $weighted_query .=
           "Title-cover,ext,r1=\"$operand\"";    # exact title-cover
         $weighted_query .= " or ti,ext,r2=\"$operand\"";    # exact title
-        $weighted_query .= " or ti,phr,r3=\"$operand\"";    # phrase title
-          #$weighted_query .= " or any,ext,r4=$operand";               # exact any
-          #$weighted_query .=" or kw,wrdl,r5=\"$operand\"";            # word list any
-        $weighted_query .= " or wrdl,fuzzy,r8=\"$operand\""
+	$weighted_query .= " or au,ext,r3=\"$operand\"";    # exact author
+        $weighted_query .= " or ti,phr,r4=\"$operand\"";    # phrase title
+	$weighted_query .= " or au,phr,r5=\"$operand\"";    # phrase author
+	$weighted_query .= " or su,phr,r6=\"$operand\"";    # phrase subject
+	
+
+        
+        #$weighted_query .= " or any,ext,r4=$operand";               # exact any
+        #$weighted_query .=" or kw,wrdl,r5=\"$operand\"";            # word list any
+        
+	$weighted_query .= " or wrdl,fuzzy,r8=\"$operand\"" # anything else	
           if $fuzzy_enabled;    # add fuzzy, word list
         $weighted_query .= " or wrdl,right-Truncation,r9=\"$stemmed_operand\""
           if ( $stemming and $stemmed_operand )
