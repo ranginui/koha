@@ -103,9 +103,9 @@ function confirm_items_deletion() {
 	        <!-- TMPL_IF NAME="CAN_user_editcatalogue_edit_catalogue" -->
 	            { text: _("Edit as New (Duplicate)"), url: "/cgi-bin/koha/cataloguing/addbiblio.pl?biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->&amp;frameworkcode=&amp;op=duplicate" },
 			    { text: _("Delete Record"), onclick: {fn: confirm_deletion }<!-- TMPL_IF NAME="count" -->,id:'disabled'<!-- /TMPL_IF --> },
-	        <!-- TMPL_IF NAME="CAN_user_editcatalogue_delete_all_items" -->
-		    { text: _("Delete all Items"), onclick: {fn: confirm_items_deletion } }
-		<!-- /TMPL_IF -->
+            <!-- /TMPL_IF -->
+            <!-- TMPL_IF NAME="CAN_user_editcatalogue_delete_all_items" -->
+                { text: _("Delete all Items"), onclick: {fn: confirm_items_deletion } }
             <!-- /TMPL_IF -->
 	    ];
 		
