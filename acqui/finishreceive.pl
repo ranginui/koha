@@ -76,6 +76,11 @@ if ( any { $order->{$_} ne $tplorder{$_} } qw(quantity quantityreceived notes rr
 
 #need old recievedate if we update the order, parcel.pl only shows the right parcel this way FIXME
 if ( $quantityrec > $origquantityrec ) {
+    my $new_ordernumber;
+    # save the quantity received.
+    if ( $quantityrec > 0 ) {
+        ($datereceived, $new_ordernumber) = ModReceiveOrder( $biblionumber, $ordernumber, $quantityrec, $user, $unitprice, $invoiceno, $freight, $replacement, undef, $datereceived );
+    }
 
     # now, add items if applicable
     if ( C4::Context->preference('AcqCreateItem') eq 'receiving' ) {
@@ -112,12 +117,9 @@ if ( $quantityrec > $origquantityrec ) {
             );
             my $record = MARC::Record::new_from_xml( $xml, 'UTF-8' );
             my ( $biblionumber, $bibitemnum, $itemnumber ) = AddItemFromMarc( $record, $biblionumber );
+            NewOrderItem($itemnumber, $new_ordernumber);
         }
     }
 
-    # save the quantity received.
-    if ( $quantityrec > 0 ) {
-        $datereceived = ModReceiveOrder( $biblionumber, $ordernumber, $quantityrec, $user, $unitprice, $invoiceno, $freight, $replacement, undef, $datereceived );
-    }
 }
 print $input->redirect("/cgi-bin/koha/acqui/parcel.pl?invoice=$invoiceno&supplierid=$supplierid&freight=$freight&gst=$gst&datereceived=$datereceived$error_url_str");

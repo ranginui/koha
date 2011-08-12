@@ -68,6 +68,7 @@ use JSON;
 my $input      = new CGI;
 my $supplierid = $input->param('supplierid');
 my $bookseller = GetBookSellerFromId($supplierid);
+my $op = $input->param('op');
 
 my $invoice = $input->param('invoice') || '';
 my $freight = $input->param('freight');
@@ -178,6 +179,13 @@ if ( $action eq "cancelorder" ) {
         if ($error_delbiblio) { $template->param( error_delbiblio => 1 ); }
     } else {
         $template->param( success_delorder => 1 );
+    }
+}
+if($op eq 'cancelreceipt') {
+    my $ordernumber = $input->param('ordernumber');
+    my $parent_ordernumber = CancelReceipt($ordernumber);
+    unless($parent_ordernumber) {
+        $template->param(error_cancelling_receipt => 1);
     }
 }
 
@@ -327,4 +335,4 @@ $template->param(
     resultsperpage        => $resultsperpage,
 );
 output_html_with_http_headers $input, $cookie, $template->output;
- 
+

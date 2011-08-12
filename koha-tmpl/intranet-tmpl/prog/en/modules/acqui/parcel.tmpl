@@ -242,6 +242,21 @@
 </div>
 <div id="acqui_receive_receivelist">
     <h3>Already Received</h3>
+    <!-- TMPL_IF NAME='error_cancelling_receipt' -->
+    <div class="dialog" style="text-align:left">
+      <p>Cannot cancel receipt. Possible reasons :
+      <ul>
+        <li>
+          You tried to cancel the receipt of an order line whose parent
+          order line is already received. Cancel this parent order line and
+          retry.
+        </li>
+        <li>Parent order line has been deleted.</li>
+      </ul>
+      Please consult logs for more details.
+      </p>
+    </div>
+    <!-- /TMPL_IF -->
 
    <!-- TMPL_IF NAME="loop_received" -->
    <form action="/cgi-bin/koha/acqui/parcel.pl" method="get" name="orderform">
@@ -250,12 +265,14 @@
 	    <tr>
 		<th>Basket</th>
 		<th>Order</th>
+    <th>Order line</th>
 		<th>Summary</th>
 		<th>View Record</th>
 		<th>Quantity</th>  
 		<th>Est cost</th>
 		<th>Actual cost</th>
 		<th>TOTAL</th>
+    <th></th>
 	    </tr>
 	</thead>
 <tfoot>
@@ -264,6 +281,8 @@
 		<td colspan="2">&nbsp;</td>
 		<td><!-- TMPL_VAR NAME="totalprice" --></td>
 		<td><!-- TMPL_VAR NAME="tototal" --></td>
+    <td></td>
+    <td></td>
 	    </tr>
 	      
 	    <!-- TMPL_IF NAME="totalfreight" -->
@@ -291,6 +310,8 @@
 		<td><!-- TMPL_VAR NAME="totalquantity" --></td>
 		<td colspan="2">&nbsp;</td>
 		<td><!-- TMPL_VAR NAME="grandtot" --></td>
+    <td></td>
+    <td></td>
 	    </tr>
     </tfoot>
 	<tbody class="filterclass">
@@ -302,6 +323,7 @@
         <!-- /TMPL_UNLESS -->
                 <td><a href="/cgi-bin/koha/acqui/basket.pl?basketno=<!-- TMPL_VAR NAME="basketno" -->"><!-- TMPL_VAR NAME="basketno" --></a></td>
                 <td><a href="neworderempty.pl?ordernumber=<!-- TMPL_VAR NAME="ordernumber" -->&amp;booksellerid=<!-- TMPL_VAR NAME="supplierid" -->"><!-- TMPL_VAR NAME="ordernumber" --></a></td>
+                <td><!-- TMPL_VAR NAME='parent_ordernumber' --></td>
                 <td><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR name="biblionumber" -->"><!-- TMPL_VAR NAME="title" ESCAPE="html" --></a>
                 <!-- TMPL_IF NAME="author" --> / <!-- TMPL_VAR NAME="author" --><!--/TMPL_IF-->
                 <!-- TMPL_IF NAME="isbn" --> - <!-- TMPL_VAR NAME="isbn" --><!--/TMPL_IF-->
@@ -312,6 +334,7 @@
                 <td><!-- TMPL_VAR NAME="ecost" --></td>
                 <td><!-- TMPL_VAR NAME="unitprice" --></td>
                 <td><!-- TMPL_VAR NAME="total" --></td>
+                <td><a href="/cgi-bin/koha/acqui/parcel.pl?invoice=<!-- TMPL_VAR NAME='invoice' -->&supplierid=<!-- TMPL_VAR NAME='supplierid' -->&datereceived=<!-- TMPL_VAR NAME='datereceived' -->&op=cancelreceipt&ordernumber=<!-- TMPL_VAR NAME='ordernumber' -->">Cancel receipt</a></td>
             </tr>
 	    <!-- /TMPL_LOOP -->
 	</tbody>
@@ -357,4 +380,4 @@
 </div>
 </div>
 <!-- TMPL_INCLUDE NAME="intranet-bottom.inc" -->
- 
+

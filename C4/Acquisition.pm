@@ -53,7 +53,7 @@ BEGIN {
       &NewOrder &DelOrder &ModOrder &GetPendingOrders &GetOrder &GetOrders
       &GetOrderNumber &GetLateOrders &GetOrderFromItemnumber
       &SearchOrder &GetHistory &GetRecentAcqui
-      &ModReceiveOrder &ModOrderBiblioitemNumber
+      &ModReceiveOrder &CancelReceipt &ModOrderBiblioitemNumber
 
       &NewOrderItem &ModOrderItem
 
@@ -1194,9 +1194,6 @@ sub ModReceiveOrder {
     my ( $biblionumber, $ordernumber, $quantrec, $user, $cost, $invoiceno, $freight, $rrp, $budget_id, $datereceived ) = @_;
     my $dbh = C4::Context->dbh;
 
-    #     warn "DATE BEFORE : $daterecieved";
-    #    $daterecieved=POSIX::strftime("%Y-%m-%d",CORE::localtime) unless $daterecieved;
-    #     warn "DATE REC : $daterecieved";
     $datereceived = C4::Dates->output('iso') unless $datereceived;
     my $suggestionid = GetSuggestionFromBiblionumber( $dbh, $biblionumber );
     if ($suggestionid) {
@@ -1215,29 +1212,30 @@ sub ModReceiveOrder {
     $sth->execute( $biblionumber, $ordernumber );
     my $order = $sth->fetchrow_hashref();
     $sth->finish();
-
+    my $newOrder = $ordernumber;
     if ( $order->{quantity} > $quantrec ) {
+        # Split order line in two parts: the first is the original order line
+        # without received items (the quantity is decreased),
+        # the second part is a new order line with quantity=quantityrec
+        # (entirely received)
         $sth = $dbh->prepare( "
             UPDATE aqorders
-            SET quantityreceived=?
-                , datereceived=?
-                , booksellerinvoicenumber=?
-                , unitprice=?
-                , freight=?
-                , rrp=?
-                , quantity=?
+            SET quantity=?,
+                quantityreceived=?
             WHERE biblionumber=? AND ordernumber=?" );
 
-        $sth->execute( $quantrec, $datereceived, $invoiceno, $cost, $freight, $rrp, $quantrec, $biblionumber, $ordernumber );
+        $sth->execute( $order->{'quantity'} - $quantrec, 0, $biblionumber, $ordernumber );
         $sth->finish;
 
-        # create a new order for the remaining items, and set its bookfund.
-        foreach my $orderkey ( "linenumber", "allocation" ) {
-            delete( $order->{'$orderkey'} );
-        }
-        $order->{'quantity'} -= $quantrec;
-        $order->{'quantityreceived'} = 0;
-        my $newOrder = NewOrder($order, $$order{parent_ordernumber});
+        delete $order->{'ordernumber'};
+        $order->{'quantity'} = $quantrec;
+        $order->{'quantityreceived'} = $quantrec;
+        $order->{'datereceived'} = $datereceived;
+        $order->{'booksellerinvoicenumber'} = $invoiceno;
+        $order->{'unitprice'} = $cost;
+        $order->{'freight'} = $freight;
+        $order->{'rrp'} = $rrp;
+        $newOrder = NewOrder($order, $$order{parent_ordernumber});
     } else {
         $sth = $dbh->prepare(
             "update aqorders
@@ -1248,7 +1246,116 @@ sub ModReceiveOrder {
         $sth->execute( $quantrec, $datereceived, $invoiceno, $cost, $freight, $rrp, $biblionumber, $ordernumber );
         $sth->finish;
     }
-    return $datereceived;
+    return ($datereceived, $newOrder);
+}
+
+=head3 CancelReceipt
+
+    my $parent_ordernumber = CancelReceipt($ordernumber);
+
+    Cancel an order line receipt and update the parent order line, as if no
+    receipt was made.
+    If items are created at receipt (AcqCreateItem = receiving) then delete
+    these items.
+
+=cut
+
+sub CancelReceipt {
+    my $ordernumber = shift;
+
+    return unless $ordernumber;
+
+    my $dbh = C4::Context->dbh;
+    my $query = qq{
+        SELECT datereceived, parent_ordernumber, quantity
+        FROM aqorders
+        WHERE ordernumber = ?
+    };
+    my $sth = $dbh->prepare($query);
+    $sth->execute($ordernumber);
+    my $order = $sth->fetchrow_hashref;
+    unless($order) {
+        warn "CancelReceipt: order $ordernumber does not exist";
+        return;
+    }
+    unless($order->{'datereceived'}) {
+        warn "CancelReceipt: order $ordernumber is not received";
+        return;
+    }
+
+    my $parent_ordernumber = $order->{'parent_ordernumber'};
+
+    if($parent_ordernumber == $ordernumber || not $parent_ordernumber) {
+        # The order line has no parent, just mark it as not received
+        $query = qq{
+            UPDATE aqorders
+            SET quantityreceived = ?,
+                datereceived = ?,
+                booksellerinvoicenumber = ?
+            WHERE ordernumber = ?
+        };
+        $sth = $dbh->prepare($query);
+        $sth->execute(0, undef, undef, $ordernumber);
+    } else {
+        # The order line has a parent, increase parent quantity and delete
+        # the order line. We do not have to update aqorders_items because
+        # these items already refer to the parent order line (except if items
+        # are created at receipt, in which case we suppress them).
+        $query = qq{
+            SELECT quantity, datereceived
+            FROM aqorders
+            WHERE ordernumber = ?
+        };
+        $sth = $dbh->prepare($query);
+        $sth->execute($parent_ordernumber);
+        my $parent_order = $sth->fetchrow_hashref;
+        unless($parent_order) {
+            warn "Parent order $parent_ordernumber does not exist.";
+            return;
+        }
+        if($parent_order->{'datereceived'}) {
+            warn "CancelReceipt: parent order is received.".
+                " Can't cancel receipt.";
+            return;
+        }
+        $query = qq{
+            UPDATE aqorders
+            SET quantity = ?
+            WHERE ordernumber = ?
+        };
+        $sth = $dbh->prepare($query);
+        my $rv = $sth->execute(
+            $order->{'quantity'} + $parent_order->{'quantity'},
+            $parent_ordernumber
+        );
+        unless($rv) {
+            warn "Cannot update parent order line, so do not cancel".
+                " receipt";
+            return;
+        }
+        $query = qq{
+            DELETE FROM aqorders
+            WHERE ordernumber = ?
+        };
+        $sth = $dbh->prepare($query);
+        $sth->execute($ordernumber);
+
+    }
+    if(C4::Context->preference('AcqCreateItem') eq 'receiving') {
+        # Remove items that were created at receipt
+        $query = qq{
+            DELETE FROM items, aqorders_items
+            USING items, aqorders_items
+            WHERE items.itemnumber = ? AND aqorders_items.itemnumber = ?
+        };
+        $sth = $dbh->prepare($query);
+        my @itemnumbers = GetItemnumbersFromOrder($ordernumber);
+        foreach(@itemnumbers) {
+            $sth->execute($_, $_);
+        }
+    }
+
+    return $parent_ordernumber;
 }
 
 #------------------------------------------------------------#
@@ -1396,6 +1503,7 @@ sub GetParcel {
                 firstname,
                 aqorders.biblionumber,
                 aqorders.ordernumber,
+                aqorders.parent_ordernumber,
                 aqorders.quantity,
                 aqorders.quantityreceived,
                 aqorders.unitprice,
