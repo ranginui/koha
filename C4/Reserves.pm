@@ -596,82 +596,83 @@ sub GetReserveFee {
     my $data = $sth->fetchrow_hashref;
     $sth->finish();
     my $fee      = $data->{'reservefee'};
-    my $cntitems = @- > $bibitems;
+    
+#    my $cntitems = @- > $bibitems;
 
-    if ( $fee > 0 ) {
+#    if ( $fee > 0 ) {
 
         # check for items on issue
         # first find biblioitem records
-        my @biblioitems;
-        my $sth1 = $dbh->prepare(
-            "SELECT * FROM biblio LEFT JOIN biblioitems on biblio.biblionumber = biblioitems.biblionumber
-                   WHERE (biblio.biblionumber = ?)"
-        );
-        $sth1->execute($biblionumber);
-        while ( my $data1 = $sth1->fetchrow_hashref ) {
-            if ( $const eq "a" ) {
-                push @biblioitems, $data1;
-            }
-            else {
-                my $found = 0;
-                my $x     = 0;
-                while ( $x < $cntitems ) {
-                    if ( @$bibitems->{'biblioitemnumber'} ==
-                        $data->{'biblioitemnumber'} )
-                    {
-                        $found = 1;
-                    }
-                    $x++;
-                }
-                if ( $const eq 'o' ) {
-                    if ( $found == 1 ) {
-                        push @biblioitems, $data1;
-                    }
-                }
-                else {
-                    if ( $found == 0 ) {
-                        push @biblioitems, $data1;
-                    }
-                }
-            }
-        }
-        $sth1->finish;
-        my $cntitemsfound = @biblioitems;
-        my $issues        = 0;
-        my $x             = 0;
-        my $allissued     = 1;
-        while ( $x < $cntitemsfound ) {
-            my $bitdata = $biblioitems[$x];
-            my $sth2    = $dbh->prepare(
-                "SELECT * FROM items
-                     WHERE biblioitemnumber = ?"
-            );
-            $sth2->execute( $bitdata->{'biblioitemnumber'} );
-            while ( my $itdata = $sth2->fetchrow_hashref ) {
-                my $sth3 = $dbh->prepare(
-                    "SELECT * FROM issues
-                       WHERE itemnumber = ?"
-                );
-                $sth3->execute( $itdata->{'itemnumber'} );
-                if ( my $isdata = $sth3->fetchrow_hashref ) {
-                }
-                else {
-                    $allissued = 0;
-                }
-            }
-            $x++;
-        }
-        if ( $allissued == 0 ) {
-            my $rsth =
-              $dbh->prepare("SELECT * FROM reserves WHERE biblionumber = ?");
-            $rsth->execute($biblionumber);
-            if ( my $rdata = $rsth->fetchrow_hashref ) {
-            }
-            else {
-                $fee = 0;
-            }
-        }
-    }
+#        my @biblioitems;
+#        my $sth1 = $dbh->prepare(
+#            "SELECT * FROM biblio LEFT JOIN biblioitems on biblio.biblionumber = biblioitems.biblionumber
+#                   WHERE (biblio.biblionumber = ?)"
+#        );
+#        $sth1->execute($biblionumber);
+#        while ( my $data1 = $sth1->fetchrow_hashref ) {
+#            if ( $const eq "a" ) {
+#                push @biblioitems, $data1;
+#            }
+#            else {
+#                my $found = 0;
+#                my $x     = 0;
+#                while ( $x < $cntitems ) {
+#                    if ( @$bibitems->{'biblioitemnumber'} ==
+#                        $data->{'biblioitemnumber'} )
+#                    {
+#                        $found = 1;
+#                    }
+#                    $x++;
+#                }
+#                if ( $const eq 'o' ) {
+#                    if ( $found == 1 ) {
+#                        push @biblioitems, $data1;
+#                    }
+#                }
+#                else {
+#                    if ( $found == 0 ) {
+#                        push @biblioitems, $data1;
+#                    }
+#                }
+#            }
+#        }
+#        $sth1->finish;
+#        my $cntitemsfound = @biblioitems;
+#        my $issues        = 0;
+#        my $x             = 0;
+#        my $allissued     = 1;
+#        while ( $x < $cntitemsfound ) {
+#            my $bitdata = $biblioitems[$x];
+#            my $sth2    = $dbh->prepare(
+#                "SELECT * FROM items
+#                     WHERE biblioitemnumber = ?"
+#            );
+#            $sth2->execute( $bitdata->{'biblioitemnumber'} );
+#            while ( my $itdata = $sth2->fetchrow_hashref ) {
+#                my $sth3 = $dbh->prepare(
+#                    "SELECT * FROM issues
+#                       WHERE itemnumber = ?"
+#                );
+#                $sth3->execute( $itdata->{'itemnumber'} );
+#                if ( my $isdata = $sth3->fetchrow_hashref ) {
+#                }
+#                else {
+#                    $allissued = 0;
+#                }
+#            }
+#            $x++;
+#        }
+#        if ( $allissued == 0 ) {
+#            my $rsth =
+#              $dbh->prepare("SELECT * FROM reserves WHERE biblionumber = ?");
+#            $rsth->execute($biblionumber);
+#            if ( my $rdata = $rsth->fetchrow_hashref ) {
+#            }
+#           else {
+#                $fee = 0;
+#            }
+#        }
+#    }
     return $fee;
 }
 
