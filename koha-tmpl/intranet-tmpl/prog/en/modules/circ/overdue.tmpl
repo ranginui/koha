@@ -222,7 +222,26 @@
       <!-- /TMPL_LOOP -->
       </select>
     </li>
-
+    <li>
+    <label>homebranch of the item:</label><select name="homebranch" id="homebranch">
+        <option value="">Any</option>
+      <!-- TMPL_LOOP name="homebranchloop" -->
+        <!-- TMPL_IF NAME="selected" -->
+        <option value="<!-- TMPL_VAR name="value" escape="html" -->" selected="selected"><!-- TMPL_VAR name="branchname" --></option><!-- TMPL_ELSE -->
+        <option value="<!-- TMPL_VAR name="value" escape="html" -->"><!-- TMPL_VAR name="branchname" --></option><!-- /TMPL_IF -->
+      <!-- /TMPL_LOOP -->
+      </select>
+    </li>
+    <li>
+    <label>holdingbranch of the item:</label><select name="holdingbranch" id="holdingbranch">
+        <option value="">Any</option>
+      <!-- TMPL_LOOP name="holdingbranchloop" -->
+        <!-- TMPL_IF NAME="selected" -->
+        <option value="<!-- TMPL_VAR name="value" escape="html" -->" selected="selected"><!-- TMPL_VAR name="branchname" --></option><!-- TMPL_ELSE -->
+        <option value="<!-- TMPL_VAR name="value" escape="html" -->"><!-- TMPL_VAR name="branchname" --></option><!-- /TMPL_IF -->
+      <!-- /TMPL_LOOP -->
+      </select>
+    </li>
     <li>
     <label>Library of the patron:</label><select name="branch" id="branch">
         <option value="">Any</option>
