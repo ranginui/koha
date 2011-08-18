@@ -313,7 +313,7 @@ sub Search {
 		}
     }
     $searchtype ||= "start_with";
-	push @finalfilter, \@filters;
+	push @finalfilter, @filters;
 	my $data = SearchInTable( "borrowers", \@finalfilter, $orderby, $limit, $columns_out, $search_on_fields, $searchtype );
     return ($data);
 }
