@@ -100,7 +100,7 @@ sub plugin {
 
             $len = 5;
             if ( substr( $isbn, 0, 1 ) <= 7 ) {
-                $len = 0;
+                $len = 1;
             } elsif ( substr( $isbn, 0, 2 ) <= 94 ) {
                 $len = 2;
             } elsif ( substr( $isbn, 0, 3 ) <= 995 ) {
