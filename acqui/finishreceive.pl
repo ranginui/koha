@@ -50,7 +50,6 @@ my $gst              = $input->param('gst');
 my $freight          = $input->param('freight');
 my $supplierid       = $input->param('supplierid');
 my $cnt              = 0;
-my $error_url_str;
 my $ecost = $input->param('ecost');
 my $note  = $input->param("note");
 
@@ -122,4 +121,4 @@ if ( $quantityrec > $origquantityrec ) {
     }
 
 }
-print $input->redirect("/cgi-bin/koha/acqui/parcel.pl?invoice=$invoiceno&supplierid=$supplierid&freight=$freight&gst=$gst&datereceived=$datereceived$error_url_str");
+print $input->redirect("/cgi-bin/koha/acqui/parcel.pl?invoice=$invoiceno&supplierid=$supplierid&freight=$freight&gst=$gst&datereceived=$datereceived&sticky_filters=1");

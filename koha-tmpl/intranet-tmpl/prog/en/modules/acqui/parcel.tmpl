@@ -4,10 +4,14 @@
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
 <!-- TMPL_INCLUDE NAME="greybox.inc" -->
 <script type="text/javascript" src="<!-- TMPL_VAR NAME="yuipath" -->/json/json-min.js"></script>
+<script type="text/javascript" src="<!-- TMPL_VAR NAME='themelang' -->/lib/jquery/plugins/jquery.json.js"></script>
+<script type="text/javascript" src="<!-- TMPL_VAR NAME='themelang' -->/lib/jquery/plugins/jquery.session.js"></script>
 <script type="text/JavaScript">
 //<![CDATA[
 
     var rowsToCollapse = 5;
+    var sticky_filters = <!-- TMPL_VAR NAME='sticky_filters' -->;
+
 
     $(document).ready(function(){
 
@@ -15,6 +19,19 @@
 	rowCountReceived = $("#receivedt tbody.filterclass tr").length;
 	if (rowCountPending  > rowsToCollapse) { pendingCollapse(); }
 	if (rowCountReceived > rowsToCollapse) { receivedCollapse(); }
+
+        if(sticky_filters) {
+            $("#summaryfilter").val($.session("parcel_summary"));
+            $("#basketfilter").val($.session("parcel_basket"));
+            $("#orderfilter").val($.session("parcel_order"));
+            $("#basketgroupnamefilter").val($.session("parcel_basketgroupname"));
+            filter();
+        } else {
+            $.session("parcel_summary", []);
+            $.session("parcel_basket", []);
+            $.session("parcel_order", []);
+            $.session("parcel_basketgroupname", []);
+        }
     });
 
      // Case-insensitive version of jquery's contains function
@@ -63,10 +80,20 @@
     function filter() {
 
     var summaryStatus = jQuery.trim($("#summaryfilter").val());
-	var basketStatus  = $("#basketfilter").val();
-	var orderStatus   = $("#orderfilter").val();
+    var basketStatus  = $("#basketfilter").val();
+    var orderStatus   = $("#orderfilter").val();
+    var basketgroupnameStatus = $("#basketgroupnamefilter").val();
 
-	if (summaryStatus == '' && basketStatus == '' && orderStatus == '') { clearFilters(); return false; }
+    $.session('parcel_summary', summaryStatus);
+    $.session('parcel_basket', basketStatus);
+    $.session('parcel_order', orderStatus);
+    $.session('parcel_basketgroupname', basketgroupnameStatus);
+
+    if (summaryStatus == '' && basketStatus == ''
+    && orderStatus == '' && basketgroupnameStatus == '') {
+        clearFilters();
+        return false;
+    }
 
 	var filtered = "table#pendingt tbody.filterclass tr";
 
@@ -107,17 +134,27 @@
 			}catch(e){alert(e);}
 		}
 	}
-	var transaction = YAHOO.util.Connect.asyncRequest('GET', '/cgi-bin/koha/acqui/parcel.pl?supplierid=<!-- TMPL_VAR NAME="supplierid" -->&search='+summaryStatus+'&basketno='+basketStatus+'&orderno='+orderStatus+'&format=json', callback, null);
+	var transaction = YAHOO.util.Connect.asyncRequest('GET', '/cgi-bin/koha/acqui/parcel.pl?supplierid=<!-- TMPL_VAR NAME="supplierid" -->&search='+summaryStatus+'&basketno='+basketStatus+'&orderno='+orderStatus+'&basketgroupname='+basketgroupnameStatus+'&format=json', callback, null);
 
 	return false;
     }
 
     // Clear already applied filters
     function clearFilters() {
+        $("#summaryfilter").val('');
+        $("#basketfilter").val('');
+        $("#orderfilter").val('');
+        $("#basketgroupnamefilter").val('');
+
 	$("#nothingfoundrow").remove();
         $("#pendingt tbody.filterclass tr").show();
         //$("#pendingt tbody.filterclass tr.orderfound").remove();
 	pendingExpand();
+
+        $.session("parcel_summary", []);
+        $.session("parcel_basket", []);
+        $.session("parcel_order", []);
+        $.session("parcel_basketgroupname", []);
     }
 
 //]]>
@@ -367,6 +404,10 @@
 		    <label for="orderfilter">Order :</label>
 		    <input type="text" name="orderfilter" id="orderfilter" />
 		</li>
+    <li>
+        <label for="basketgroupnamefilter">Basket group name :</label>
+        <input type="text" name="basketgroupnamefilter" id="basketgroupnamefilter" />
+    </li>
 	    </ol>
 		<fieldset class="action">
 		    <input type="submit" value="Filter" />

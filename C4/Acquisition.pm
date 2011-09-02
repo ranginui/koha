@@ -1396,15 +1396,16 @@ C<@results> is an array of references-to-hash with the following keys:
 
 sub SearchOrder {
 #### -------- SearchOrder-------------------------------
-    my ( $ordernumber, $search, $supplierid, $basket ) = @_;
+    my ( $ordernumber, $search, $supplierid, $basket, $basketgroupname ) = @_;
 
     my $dbh   = C4::Context->dbh;
     my @args  = ();
-    my $query = "SELECT *
+    my $query = "SELECT aqorders.*, biblio.*, biblioitems.*, aqbasket.*
             FROM aqorders
             LEFT JOIN biblio ON aqorders.biblionumber=biblio.biblionumber
             LEFT JOIN biblioitems ON biblioitems.biblionumber=biblio.biblionumber
             LEFT JOIN aqbasket ON aqorders.basketno = aqbasket.basketno
+            LEFT JOIN aqbasketgroups ON aqbasket.basketgroupid = aqbasketgroups.id
                 WHERE  (datecancellationprinted is NULL)";
 
     if ($ordernumber) {
@@ -1422,6 +1423,10 @@ sub SearchOrder {
     if ($basket) {
         $query .= "AND aqorders.basketno = ?";
         push @args, $basket;
+    }
+    if($basketgroupname) {
+        $query .= " AND aqbasketgroups.name LIKE ?";
+        push @args, "%$basketgroupname%";
     }
 
     my $sth = $dbh->prepare($query);

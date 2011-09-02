@@ -103,8 +103,9 @@ if ( $input->param('format') eq "json" ) {
     my $supplier = $input->param('supplierid') || '';
     my $basketno = $input->param('basketno')   || '';
     my $orderno  = $input->param('orderno')    || '';
+    my $basketgroupname = $input->param('basketgroupname') || '';
 
-    my $orders = SearchOrder( $orderno, $search, $supplier, $basketno );
+    my $orders = SearchOrder( $orderno, $search, $supplier, $basketno, $basketgroupname );
     foreach my $order (@$orders) {
         if ( $order->{quantityreceived} < $order->{quantity} ) {
             my $data = {};
@@ -333,6 +334,7 @@ $template->param(
     totalPqtyrcvd         => $totalPqtyrcvd,
     totalPecost           => sprintf( "%.2f", $totalPecost ),
     resultsperpage        => $resultsperpage,
+    sticky_filters        => $input->param('sticky_filters') || 0,
 );
 output_html_with_http_headers $input, $cookie, $template->output;
 
