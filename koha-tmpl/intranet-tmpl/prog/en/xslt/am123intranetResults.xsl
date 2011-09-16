@@ -279,7 +279,8 @@
             <xsl:when test="$code='130552105'">BU Pharmacie</xsl:when>
             <xsl:when test="$code='130552103'">BU Médecine</xsl:when>
             <xsl:when test="$code='130552101'">BU Médecine Nord</xsl:when>
-            <xsl:when test="$code='130012104'">BU Sc. Éco.</xsl:when>
+            <xsl:when test="$code='130012104'">BU Sc. Éco. Aix</xsl:when>
+            <xsl:when test="$code='130552109'">BU. Sc. Éco. Mrs</xsl:when>
             <xsl:when test="$code='130012229'">Centre de documentation et d'information du Département Carrières Sociales option Gestion urbaine</xsl:when>
             <xsl:when test="$code='130012230'">Centre de documentation du Département Gestion Logistique et Transport</xsl:when>
             <xsl:when test="$code='130012231'">Centre de documentation du Département Techniques de commercialisation</xsl:when>
