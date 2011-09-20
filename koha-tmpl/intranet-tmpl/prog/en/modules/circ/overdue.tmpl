@@ -234,6 +234,17 @@
       </select>
     </li>
 
+    <li>
+    <label>Library of the document:</label><select name="docbranch" id="docbranch">
+        <option value="">Any</option>
+      <!-- TMPL_LOOP name="branchloop" -->
+        <!-- TMPL_IF NAME="selected" -->
+        <option value="<!-- TMPL_VAR name="value" escape="html" -->" selected="selected"><!-- TMPL_VAR name="branchname" --></option><!-- TMPL_ELSE -->
+        <option value="<!-- TMPL_VAR name="value" escape="html" -->"><!-- TMPL_VAR name="branchname" --></option><!-- /TMPL_IF -->
+      <!-- /TMPL_LOOP -->
+      </select>
+    </li>
+
     <li><label for="order">Sort By:</label> <select name="order" id="order">
 <!-- TMPL_LOOP NAME="ORDER_LOOP" -->
     <!-- TMPL_IF NAME="selected" -->
