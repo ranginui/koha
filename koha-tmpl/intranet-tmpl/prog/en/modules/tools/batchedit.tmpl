@@ -1,5 +1,5 @@
 <!-- TMPL_INCLUDE NAME="doc-head-open.inc" -->
-<title>Koha &rsaquo; Tools &rsaquo; Batch Deletion of Items</title>
+<title>Koha &rsaquo; Tools &rsaquo; Batch Record Modification</title>
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
 
 <!-- TMPL_UNLESS NAME="modsuccess" -->
@@ -172,7 +172,7 @@
     <div class="dialog alert">All operations processed</div>
 <!-- TMPL_ELSE -->
 
-<fieldset>
+<fieldset class="rows">
 <h2>Modification rules:</h2>
 <input type="submit" value="Submit" />
 <input type="hidden" name="op" value="do" />
@@ -206,7 +206,7 @@
             </td>
             <td id="condvaltd">
                 <input type="text" name="condvalchoice" id="condvalchoice" />
-                <input type="checkbox" id="nocond" name="nocond" value="nocond" onClick="$('#condvalchoice').attr('disabled', ! $('#condvalchoice').attr('disabled') ) ">All</input> 
+                <input type="checkbox" id="nocond" name="nocond" value="nocond" onClick="$('#condvalchoice').attr('disabled', ! $('#condvalchoice').attr('disabled') )" />&nbsp;All
             </td>
             <td id="repvaltd">
                 <input type="text" name="repvalchoice" id="repvalchoice" />
@@ -214,10 +214,6 @@
             <td><input type="button" value="Add" onclick="addRule();" /></td>
         </tr>
     </thead>
-    
-<!-- TMPL_LOOP NAME="marcfields" -->
-    
-<!-- /TMPL_LOOP -->
 </table>
 <input type="submit" value="Submit" />
 </fieldset>
