@@ -1,0 +1,34 @@
+{
+    "sEcho": "<!-- TMPL_VAR NAME='sEcho' -->",
+    "iTotalRecords": "<!-- TMPL_VAR NAME='iTotalRecords' -->",
+    "iTotalDisplayRecords": "<!-- TMPL_VAR NAME='iTotalDisplayRecords' -->",
+    "aaData": [
+        <!-- TMPL_LOOP NAME='aaData' -->
+            {
+                "basketno":
+                    "<a href=\"/cgi-bin/koha/acqui/basket.pl?basketno=<!-- TMPL_VAR NAME='basketno' -->\"><!-- TMPL_VAR NAME="basketno" --></a>",
+
+                "ordernumber":
+                    "<a href=\"neworderempty.pl?ordernumber=<!-- TMPL_VAR NAME='ordernumber' -->&amp;booksellerid=<!-- TMPL_VAR NAME="booksellerid" -->\"><!-- TMPL_VAR NAME="ordernumber" --></a>",
+
+                "summary":
+                    "<a href=\"/cgi-bin/koha/catalogue/detail.pl?biblionumber=<!-- TMPL_VAR name="biblionumber" -->\"><!-- TMPL_VAR NAME="title" ESCAPE="html" --></a><!-- TMPL_IF NAME="author" --> by <!-- TMPL_VAR NAME="author" ESCAPE="html" --><!-- /TMPL_IF --><!-- TMPL_IF NAME="isbn" --> &ndash; <!-- TMPL_VAR NAME="isbn" ESCAPE="html" --><!-- /TMPL_IF -->",
+
+                "viewrecord":
+                    "<a href=\"/cgi-bin/koha/catalogue/showmarc.pl?id=<!-- TMPL_VAR NAME="biblionumber" -->\" title=\"MARC\" rel=\"gb_page_center[600,500]\">MARC</a> | <a href=\"/cgi-bin/koha/catalogue/showmarc.pl?viewas=card&amp;id=<!-- TMPL_VAR NAME="biblionumber" -->\" title=\"MARC\" rel=\"gb_page_center[600,500]\">Card</a>",
+
+                "quantity":
+                    "<!-- TMPL_VAR NAME='quantity' -->",
+
+                "ecost":
+                    "<!-- TMPL_VAR NAME='ecost' -->",
+
+                "ordertotal":
+                    "<!-- TMPL_VAR NAME='ordertotal' -->",
+
+                "action":
+                    "<a href=\"orderreceive.pl?ordernumber=<!-- TMPL_VAR NAME="ordernumber" -->&amp;datereceived=<!-- TMPL_VAR NAME="invoicedatereceived" ESCAPE="html" -->&amp;invoice=<!-- TMPL_VAR NAME="invoice" ESCAPE="html"-->&amp;gst=<!-- TMPL_VAR NAME="gst" -->&amp;freight=<!-- TMPL_VAR NAME="freight" -->&amp;booksellerid=<!-- TMPL_VAR NAME="booksellerid" -->\">Receive</a> / <a href=\"parcel.pl?type=intra&amp;ordernumber=<!-- TMPL_VAR NAME="ordernumber" -->&amp;biblionumber=<!-- TMPL_VAR NAME="biblionumber" -->&amp;action=cancelorder&amp;booksellerid=<!-- TMPL_VAR NAME="booksellerid" -->&amp;datereceived=<!-- TMPL_VAR NAME="invoicedatereceived" ESCAPE="html" -->&amp;invoice=<!-- TMPL_VAR NAME="invoice" ESCAPE="html" -->\" onclick=\"return confirm(_('Are you sure you want to cancel this order?'));\">Cancel</a>"
+            }<!-- TMPL_UNLESS NAME='__last__' -->,<!-- /TMPL_UNLESS -->
+        <!-- /TMPL_LOOP -->
+    ]
+}

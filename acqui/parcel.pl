@@ -82,55 +82,6 @@ my $code            = $input->param('code');
 my @rcv_err         = $input->param('error');
 my @rcv_err_barcode = $input->param('error_bc');
 
-my $startfrom      = $input->param('startfrom');
-my $resultsperpage = $input->param('resultsperpage');
-$resultsperpage = 20 unless ($resultsperpage);
-$startfrom      = 0  unless ($startfrom);
-
-if ( $input->param('format') eq "json" ) {
-    my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
-        {   template_name   => "acqui/ajax.tmpl",
-            query           => $input,
-            type            => "intranet",
-            authnotrequired => 0,
-            flagsrequired   => { acquisition => 'order_receive' },
-            debug           => 1,
-        }
-    );
-
-    my @datas;
-    my $search   = $input->param('search')     || '';
-    my $supplier = $input->param('supplierid') || '';
-    my $basketno = $input->param('basketno')   || '';
-    my $orderno  = $input->param('orderno')    || '';
-    my $basketgroupname = $input->param('basketgroupname') || '';
-
-    my $orders = SearchOrder( $orderno, $search, $supplier, $basketno, $basketgroupname );
-    foreach my $order (@$orders) {
-        if ( $order->{quantityreceived} < $order->{quantity} ) {
-            my $data = {};
-
-            $data->{basketno}     = $order->{basketno};
-            $data->{ordernumber}  = $order->{ordernumber};
-            $data->{title}        = $order->{title};
-            $data->{author}       = $order->{author};
-            $data->{isbn}         = $order->{isbn};
-            $data->{booksellerid} = $order->{booksellerid};
-            $data->{biblionumber} = $order->{biblionumber};
-            $data->{freight}      = $order->{freight};
-            $data->{quantity}     = $order->{quantity};
-            $data->{ecost}        = $order->{ecost};
-            $data->{ordertotal}   = sprintf( "%.2f", $order->{ecost} * $order->{quantity} );
-            push @datas, $data;
-        }
-    }
-
-    my $json_text = to_json( \@datas );
-    $template->param( return => $json_text );
-    output_html_with_http_headers $input, $cookie, $template->output;
-    exit;
-}
-
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
     {   template_name   => "acqui/parcel.tmpl",
         query           => $input,
@@ -240,72 +191,6 @@ for ( my $i = 0 ; $i < $countlines ; $i++ ) {
     $tototal += $total;
 }
 
-my $pendingorders = GetPendingOrders($supplierid);
-my $countpendings = scalar @$pendingorders;
-
-# pending orders totals
-my ( $totalPunitprice, $totalPquantity, $totalPecost, $totalPqtyrcvd );
-my $ordergrandtotal;
-my @loop_orders = ();
-for ( my $i = 0 ; $i < $countpendings ; $i++ ) {
-    my %line;
-    %line = %{ $pendingorders->[$i] };
-    $line{quantity}         += 0;
-    $line{quantityreceived} += 0;
-    $line{unitprice}        += 0;
-    $totalPunitprice        += $line{unitprice};
-    $totalPquantity         += $line{quantity};
-    $totalPqtyrcvd          += $line{quantityreceived};
-    $totalPecost            += $line{ecost};
-    $line{ecost}      = sprintf( "%.2f", $line{ecost} );
-    $line{ordertotal} = sprintf( "%.2f", $line{ecost} * $line{quantity} );
-    $line{unitprice}  = sprintf( "%.2f", $line{unitprice} );
-    $line{invoice}    = $invoice;
-    $line{gst}        = $gst;
-    $line{total}      = $total;
-    $line{supplierid} = $supplierid;
-    $ordergrandtotal += $line{ecost} * $line{quantity};
-    push @loop_orders, \%line if ( $i >= $startfrom and $i < $startfrom + $resultsperpage );
-}
-$freight = $totalfreight unless $freight;
-
-my $count = $countpendings;
-
-if ( $count > $resultsperpage ) {
-    my $displaynext = 0;
-    my $displayprev = $startfrom;
-    if ( ( $count - ( $startfrom + $resultsperpage ) ) > 0 ) {
-        $displaynext = 1;
-    }
-
-    my @numbers = ();
-    for ( my $i = 1 ; $i < $count / $resultsperpage + 1 ; $i++ ) {
-        my $highlight = 0;
-        ( $startfrom / $resultsperpage == ( $i - 1 ) ) && ( $highlight = 1 );
-        push @numbers,
-          { number    => $i,
-            highlight => $highlight,
-            startfrom => ( $i - 1 ) * $resultsperpage
-          };
-    }
-
-    my $from = $startfrom * $resultsperpage + 1;
-    my $to;
-    if ( $count < ( ( $startfrom + 1 ) * $resultsperpage ) ) {
-        $to = $count;
-    } else {
-        $to = ( ( $startfrom + 1 ) * $resultsperpage );
-    }
-    $template->param(
-        numbers       => \@numbers,
-        displaynext   => $displaynext,
-        displayprev   => $displayprev,
-        nextstartfrom => ( ( $startfrom + $resultsperpage < $count ) ? $startfrom + $resultsperpage : $count ),
-        prevstartfrom => ( ( $startfrom - $resultsperpage > 0 ) ? $startfrom - $resultsperpage : 0 )
-    );
-}
-
-#$totalfreight=$freight;
 $tototal = $tototal + $freight;
 
 $template->param(
@@ -320,20 +205,11 @@ $template->param(
     invoice               => $invoice,
     countreceived         => $countlines,
     loop_received         => \@loop_received,
-    countpending          => $countpendings,
-    loop_orders           => \@loop_orders,
     totalprice            => sprintf( $cfstr, $totalprice ),
     totalfreight          => $totalfreight,
     totalquantity         => $totalquantity,
     tototal               => sprintf( $cfstr, $tototal ),
-    ordergrandtotal       => sprintf( $cfstr, $ordergrandtotal ),
-    gst                   => $gst,
     grandtot              => sprintf( $cfstr, $tototal + $gst ),
-    totalPunitprice       => sprintf( "%.2f", $totalPunitprice ),
-    totalPquantity        => $totalPquantity,
-    totalPqtyrcvd         => $totalPqtyrcvd,
-    totalPecost           => sprintf( "%.2f", $totalPecost ),
-    resultsperpage        => $resultsperpage,
     sticky_filters        => $input->param('sticky_filters') || 0,
 );
 output_html_with_http_headers $input, $cookie, $template->output;
