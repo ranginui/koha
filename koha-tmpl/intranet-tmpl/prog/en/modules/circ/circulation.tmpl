@@ -5,23 +5,23 @@
 (<!-- TMPL_VAR NAME="cardnumber" -->)
 <!-- /TMPL_IF --></title>
 <!-- TMPL_INCLUDE NAME="doc-head-close.inc" -->
-<script type="text/javascript" src="<!-- TMPL_VAR name="themelang" -->/lib/jquery/plugins/jquery.tablesorter.min.js"></script>
+<!-- TMPL_IF NAME="UseTablesortForCirc" --><script type="text/javascript" src="<!-- TMPL_VAR name="themelang" -->/lib/jquery/plugins/jquery.tablesorter.min.js"></script><!-- /TMPL_IF -->
 <script type="text/javascript" src="<!-- TMPL_VAR name="themelang" -->/lib/jquery/plugins/jquery.checkboxes.min.js"></script>
 <script type="text/javascript">
 //<![CDATA[
 function Dopop(link) {
     var newin=window.open(link,'popup','width=600,height=400,resizable=1,toolbar=0,scrollbars=1,top');
 }
-$.tablesorter.addParser({
+<!-- TMPL_IF NAME="UseTablesortForCirc" -->$.tablesorter.addParser({
     id: 'articles',
     is: function(s) {return false;  },
     format: function(s) { return s.toLowerCase().replace(/^(the|an|a) /,''); },
     type: 'text'
-});
+});<!-- /TMPL_IF -->
 <!-- TMPL_UNLESS NAME="borrowernumber" --><!-- TMPL_UNLESS NAME="CGIselectborrower" -->window.onload=function(){ $('#findborrower').focus(); };<!-- /TMPL_UNLESS --><!-- /TMPL_UNLESS -->
 	 $(document).ready(function() {
  		$('#patronlists > ul').tabs();
-		$.tablesorter.defaults.widgets = ['zebra'];
+		<!-- TMPL_IF NAME="UseTablesortForCirc" -->$.tablesorter.defaults.widgets = ['zebra'];
 
 		$("#issuest").tablesorter({<!-- TMPL_IF NAME="dateformat_metric" -->
 		dateFormat: 'uk',<!-- /TMPL_IF -->
@@ -45,7 +45,7 @@ $.tablesorter.addParser({
 		dateFormat: 'uk',<!-- /TMPL_IF -->
 			sortList: [[0,0]],
 			headers: { 1: { sorter: 'articles' }}
-		});
+		});<!-- /TMPL_IF -->
 
 var allcheckboxes = $(".checkboxed");
 	$("#renew_all"      ).click(function(){ $(".checkboxed").checkCheckboxes(":input[name*=items]"   ); $(".checkboxed").unCheckCheckboxes("issuest:input[name*=barcodes]"); });

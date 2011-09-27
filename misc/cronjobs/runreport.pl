@@ -150,13 +150,20 @@ unless ( scalar(@ARGV) ) {
 ($verbose) and print scalar(@ARGV), " argument(s) after options: " . join( " ", @ARGV ) . "\n";
 
 foreach my $report (@ARGV) {
-    my ( $sql, $type ) = get_saved_report($report);
+    my ( $sql, $type, $report_name) = get_saved_report($report);
     unless ($sql) {
         warn "ERROR: No saved report $report found";
         next;
     }
     $verbose and print "SQL: $sql\n\n";
-
+    if (defined($report_name) and $report_name ne "")
+    {
+        $subject = $report_name ;
+    }
+    else
+    {
+        $subject = 'Koha Saved Report';
+    }
     # my $results = execute_query($sql, undef, 0, 99999, $format, $report);
     my ($sth) = execute_query($sql);
 

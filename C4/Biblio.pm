@@ -980,7 +980,7 @@ our $marc_structure_cache;
 sub GetMarcStructure {
     my ( $forlibrarian, $frameworkcode ) = @_;
     my $dbh = C4::Context->dbh;
-    $frameworkcode = "" unless $frameworkcode;
+    $frameworkcode = "" unless ($frameworkcode && $frameworkcode ne 'Default');
 
     if ( defined $marc_structure_cache and exists $marc_structure_cache->{$forlibrarian}->{$frameworkcode} ) {
         return $marc_structure_cache->{$forlibrarian}->{$frameworkcode};

@@ -435,7 +435,7 @@ END_SQL
             my $mindays = $overdue_rules->{"delay$i"};    # the notice will be sent after mindays days (grace period)
             my $maxdays = (
                   $overdue_rules->{ "delay" . ( $i + 1 ) }
-                ? $overdue_rules->{ "delay" . ( $i + 1 ) }
+                ? $overdue_rules->{ "delay" . ( $i + 1 ) } - 1
                 : ($MAX)
             );                                            # issues being more than maxdays late are managed somewhere else. (borrower probably suspended)
 
@@ -446,7 +446,7 @@ END_SQL
             # <date> <itemcount> <firstname> <lastname> <address1> <address2> <address3> <city> <postcode>
 
             my $borrower_sql = <<'END_SQL';
-SELECT COUNT(*), issues.borrowernumber, firstname, surname, address, address2, city, zipcode, country, email, MIN(date_due) as longest_issue
+SELECT DISTINCT(issues.borrowernumber), firstname, surname, address, address2, city, zipcode, country, email, date_due
 FROM   issues,borrowers,categories
 WHERE  issues.borrowernumber=borrowers.borrowernumber
 AND    borrowers.categorycode=categories.categorycode
@@ -463,14 +463,13 @@ END_SQL
                 $borrower_sql .= ' AND borrowers.categorycode=? ';
                 push @borrower_parameters, $overdue_rules->{categorycode};
             }
-            $borrower_sql .= '  AND categories.overduenoticerequired=1
-                                GROUP BY issues.borrowernumber ';
+            $borrower_sql .= '  AND categories.overduenoticerequired=1';
             if ($triggered) {
-                $borrower_sql .= ' HAVING TO_DAYS(NOW())-TO_DAYS(longest_issue) = ?';
+                $borrower_sql .= ' HAVING TO_DAYS(NOW())-TO_DAYS(date_due) = ?';
                 push @borrower_parameters, $mindays;
             } else {
-                $borrower_sql .= ' HAVING TO_DAYS(NOW())-TO_DAYS(longest_issue) BETWEEN ? and ? ';
-                push @borrower_parameters, $mindays, $maxdays-1;
+                $borrower_sql .= ' HAVING TO_DAYS(NOW())-TO_DAYS(date_due) BETWEEN ? and ? ';
+                push @borrower_parameters, $mindays, $maxdays;
             }
 
             # $sth gets borrower info iff at least one overdue item has triggered the overdue action.
@@ -478,7 +477,7 @@ END_SQL
             $sth->execute(@borrower_parameters);
             $verbose and warn $borrower_sql . "\n $branchcode | " . $overdue_rules->{'categorycode'} . "\n ($mindays, $maxdays)\nreturns " . $sth->rows . " rows";
 
-            while ( my ( $itemcount, $borrowernumber, $firstname, $lastname, $address1, $address2, $city, $postcode, $country, $email, $longest_issue ) = $sth->fetchrow ) {
+            while ( my ( $borrowernumber, $firstname, $lastname, $address1, $address2, $city, $postcode, $country, $email, $date_due ) = $sth->fetchrow ) {
                 if ( $overdue_rules->{"debarred$i"} ) {
 
                     #action taken is debarring
@@ -501,7 +500,7 @@ END_SQL
 		    $email=C4::Members::GetFirstValidEmailAddress($borrowernumber);
 		    push @emails_to_use, $email;
 		}
-                $verbose and warn "borrower $firstname, $lastname ($borrowernumber) has $itemcount items triggering level $i.";
+                $verbose and warn "borrower $firstname, $lastname ($borrowernumber) has itemcount items triggering level $i.";
 
                 my $letter = C4::Letters::getletter( 'circulation', $overdue_rules->{"letter$i"} );
 
