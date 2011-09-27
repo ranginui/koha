@@ -4348,6 +4348,24 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     SetVersion ($DBversion);
 }
 
+$DBversion = "3.04.05.002";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do(qq/
+        CREATE TABLE `recommendations` (
+          `id` int(11) NOT NULL auto_increment,
+          `biblio_one` int(11),
+          `biblio_two` int(11),
+          `hit_count` int(11),
+          PRIMARY KEY  (`id`),
+          KEY `biblio_one_idx` (`biblio_one`),
+          KEY `biblio_two_idx` (`biblio_two`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8
+    /);
+    $dbh->do("INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES('ShowRecommendations',0,'If ON recommendation information will be generated and displayed',NULL,'YesNo');");
+    print "Add table and syspref track the recommended reading data.\n";
+    SetVersion($DBversion);
+}
+
 $DBversion = "3.05.00.001";
 if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     $dbh->do(qq{

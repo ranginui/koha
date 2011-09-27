@@ -44,6 +44,7 @@ use C4::XSLT;
 use C4::ShelfBrowser;
 use C4::Reserves;
 use C4::Charset;
+use C4::Recommendations qw/ get_recommendations /;
 use MARC::Record;
 use MARC::Field;
 use List::MoreUtils qw/any none/;
@@ -70,6 +71,13 @@ my ( $template, $borrowernumber, $cookie ) = get_template_and_user(
 
 my $biblionumber = $query->param('biblionumber') || $query->param('bib');
 $biblionumber = int($biblionumber);
+
+if ( C4::Context->preference('ShowRecommendations')){
+    my $recommendations = get_recommendations($biblionumber);
+    $template->param('Recommendations' => 1,
+	'recommendation_loop' => $recommendations
+	);
+}
 
 my $record       = GetMarcBiblio($biblionumber);
 if ( ! $record ) {

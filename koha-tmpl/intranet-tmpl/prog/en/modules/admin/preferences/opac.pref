@@ -337,6 +337,18 @@ OPAC:
                   no: Disable
             - browsing and paging search results from the OPAC detail page.
 
+        -
+            - pref: RatingsEnabled
+              choices:
+                  yes: Show
+                  no: "Don't show"
+            - star ratings
+        -
+            - pref: ShowRecommendations
+              choices:
+                  yes: Do
+                  no: "Don't"
+            - "generate and display reading recommendations in the OPAC. <i>(Notes: this requires the <tt>recommendations.pl</tt> cron job to be configured to run regularly. This cron job will take a long time to run on catalogs with a sizable circulation history.)</i>"
     Policy:
         -
             - pref: singleBranchMode
