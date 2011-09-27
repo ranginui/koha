@@ -532,7 +532,8 @@ END_SQL
                         biblionumber   => \@items,
                         substitute     => {                  # this appears to be a hack to overcome incomplete features in this code.
                             bib             => $branch_details->{'branchname'},    # maybe 'bib' is a typo for 'lib<rary>'?
-                            'items.content' => $titles
+                            'items.content' => $titles,
+                            'count'         => $itemcount,
                         }
                     }
                 );
