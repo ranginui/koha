@@ -298,3 +298,5 @@ INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES (
 INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('uploadWebPath','','Le chemin vers le répertoire de stockage à partir de la racine de publication du serveur web pour le plugin upload.pl','','');
 INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('BlockRenewWhenOverdue','0','Bloque les renouvellement quand en retard','','YesNo');
 INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('numSearchRSSResults',50,'Nombre de résultats à afficher par défaut sur un fil RSS',NULL,'Integer');
+INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('makePreviousSerialAvailable','0','Lors du bulletinage d\'un périodique, le précédent numéro est automatiquement rendu disponible si cette préférence système est activée.','','YesNo');
+

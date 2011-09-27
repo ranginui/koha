@@ -140,6 +140,8 @@ my $domainloop = GetKohaAuthorisedValuesFromField('995', 't', '');
 
 my @typearg = 
     map { { code => $_, value => $typeloop->{$_}{'description'}, selected => ( ( $subs->{itemtype} and $_ eq $subs->{itemtype} ) ? "selected=\"selected\"" : "" ), } } sort keys %{$typeloop};
+my @previoustypearg = 
+    map { { code => $_, value => $typeloop->{$_}{'description'}, selected => ( ( $subs->{previousitemtype} and $_ eq $subs->{previousitemtype} ) ? "selected=\"selected\"" : "" ), } } sort keys %{$typeloop};
 my @supportarg = 
     map { { code => $_, value => $supportloop->{$_}, selected => ( ( $subs->{ccode} and $_ eq $subs->{ccode} ) ? "selected=\"selected\"" : "" ), } } sort keys %{$supportloop};
 my @originarg =
@@ -153,8 +155,9 @@ $template->param( shelflocations => \@locationarg );
 
 $template->param(
     branchloop               => $branchloop,
-    typeloop               => \@typearg,
-    supportloop               => \@supportarg,
+    typeloop                 => \@typearg,
+    previoustypeloop         => \@previoustypearg,
+    supportloop              => \@supportarg,
     originloop               => \@originarg,
     domainloop               => \@domainarg,
     DHTMLcalendar_dateformat => C4::Dates->DHTMLcalendar(),
@@ -163,6 +166,8 @@ my $count = 0;
 
 # prepare template variables common to all $op conditions:
 $template->param( 'dateformat_' . C4::Context->preference('dateformat') => 1, );
+$template->param('makePreviousSerialAvailable' => 1) if (C4::Context->preference('makePreviousSerialAvailable'));
+
 
 if ( $op eq 'addsubscription' ) {
     redirect_add_subscription();
@@ -263,6 +268,7 @@ sub redirect_add_subscription {
     my $support           = $query->param('support');
     my $origin            = $query->param('origin');
     my $domain            = $query->param('domain');
+    my $previousitemtype  = $query->param('previousitemtype');
     my $startdate = format_date_in_iso( $query->param('startdate') );
     my $enddate = format_date_in_iso( $query->param('enddate') );
     my $firstacquidate  = format_date_in_iso($query->param('firstacquidate'));
@@ -279,7 +285,7 @@ sub redirect_add_subscription {
 					$add3,$every3,$whenmorethan3,$setto3,$lastvalue3,$innerloop3,
 					$numberingmethod, $status, $notes,$letter,$firstacquidate,join(",",@irregularity),
                     $numberpattern, $callnumber, $hemisphere,($manualhistory?$manualhistory:0),$internalnotes,
-                    $serialsadditems,$staffdisplaycount,$opacdisplaycount,$graceperiod,$location,$enddate, $itemtype, $support, $origin, $domain
+                    $serialsadditems,$staffdisplaycount,$opacdisplaycount,$graceperiod,$location,$enddate, $itemtype, $support, $origin, $domain, $previousitemtype
 				);
     ModSubscriptionHistory ($subscriptionid,$histstartdate,$histenddate,$recievedlist,$missinglist,$opacnote,$librariannote);
 
@@ -340,6 +346,7 @@ sub redirect_add_subscription {
 	my $support           = $query->param('support');
 	my $origin            = $query->param('origin');
 	my $domain            = $query->param('domain');
+	my $previousitemtype  = $query->param('previousitemtype');
 
         # subscription history
         my $histenddate       = format_date_in_iso( $query->param('histenddate') );
@@ -370,7 +377,7 @@ sub redirect_add_subscription {
             $lastvalue3,        $innerloop3,       $numberingmethod, $status,        $biblionumber,   $callnumber,
             $notes,             $letter,           $hemisphere,      $manualhistory, $internalnotes,  $serialsadditems,
             $staffdisplaycount, $opacdisplaycount, $graceperiod,     $location,      $enddate,        $itemtype, 
-	    $support,          $origin,          $domain,            $subscriptionid
+	    $support,          $origin,          $domain,            $previousitemtype, $subscriptionid
         );
         ModSubscriptionHistory( $subscriptionid, $histstartdate, $histenddate, $recievedlist, $missinglist, $opacnote, $librariannote );
         print $query->redirect("/cgi-bin/koha/serials/subscription-detail.pl?subscriptionid=$subscriptionid");

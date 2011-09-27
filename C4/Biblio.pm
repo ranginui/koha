@@ -2447,7 +2447,7 @@ sub PrepareItemrecordDisplay {
 
 			    # If we have a default value that has the same name as the authorised value category of the field,
 			    # we use it
-			    $defaultvalue = $value if ($defaultvalues and $defaultvalues->{$tagslib->{$tag}->{$subfield}->{authorised_value}} eq $value);
+			    $defaultvalue = $value if ($defaultvalues and $defaultvalues->{$tagslib->{$tag}->{$subfield}->{authorised_value}} and $defaultvalues->{$tagslib->{$tag}->{$subfield}->{authorised_value}} eq $value);
                         }
                     }
                     $subfield_data{marc_value} = CGI::scrolling_list(

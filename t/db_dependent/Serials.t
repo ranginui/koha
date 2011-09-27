@@ -35,7 +35,7 @@ if ($subscriptioninformation->{periodicity} % 16==0){
         lastvalue2,      innerloop2,      add3,              every3,           whenmorethan3, setto3,      lastvalue3,    innerloop3,
         numberingmethod, status,          biblionumber,      callnumber,       notes,         letter,      hemisphere,    manualhistory,
         internalnotes,   serialsadditems, staffdisplaycount, opacdisplaycount, graceperiod,   location,    enddate,       
-	itemtype,        support,         origin,            domain,
+	itemtype,        support,         origin,            domain,           previousitemtype,
 	subscriptionid
 )});
 }
