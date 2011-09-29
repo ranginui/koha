@@ -92,11 +92,11 @@ sub drop_hold {
     my @reserves=GetReservesFromBiblionumber($bib);
 
     # FIXME: figure out if it is a item or title hold.  Till then, cancel both.
-    for my $reserve grep {$_->{'borrowernumber'} eq $borrower->{'borrowernumber'} 
-                          and ($_->{'itemnumber'} eq $self->{item}->id 
+    for my $reserve (grep { ($_->{'borrowernumber'} eq $borrower->{'borrowernumber'})
+                          and ($_->{'itemnumber'} eq $self->{item}->id
                                or !defined($_->{'itemnumber'})
                           )
-                         } @reserves {
+                         } @reserves) {
         CancelReserve( $reserve->{reservenumber} );
     }
     # unfortunately no meaningful return value here either
