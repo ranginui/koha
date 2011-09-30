@@ -41,6 +41,7 @@ sub do_renew_for ($$) {
 
         my $datedue = AddIssue( $borrower, $self->{item}->id, undef, 0 );
         $self->{due} = $datedue;
+        $self->{item}->due_date($datedue);
         $self->renewal_ok(1);
     } else {
         $self->screen_msg( ( $self->screen_msg || '' ) . " " . $renewerror );

@@ -7,6 +7,7 @@ package ILS;
 use warnings;
 use strict;
 use Sys::Syslog qw(syslog);
+use Encode;
 
 use ILS::Item;
 use ILS::Patron;
@@ -149,7 +150,7 @@ sub checkout {
     } elsif ( $item->{patron} && ( $item->{patron} ne $patron_id ) ) {
 
         # I can't deal with this right now
-        $circ->screen_msg("Item checked out to another patron");
+        $circ->screen_msg("Ce document rencontre un probleme, veuillez vous presenter a la banque d'accueil. Merci.");
     } else {
         $circ->do_checkout();
         if ( $circ->ok ) {
@@ -164,7 +165,8 @@ sub checkout {
             push( @{ $patron->{items} }, $item_id );
             $circ->desensitize( !$item->magnetic_media );
 
-            syslog( "LOG_DEBUG", "ILS::Checkout: patron %s has checked out %s", $patron_id, join( ', ', @{ $patron->{items} } ) );
+            syslog( "LOG_DEBUG", "ILS::Checkout: patron %s has checked out %s",
+                    $patron_id, join(', ', encode_utf8(@{$patron->{items}})));
         } else {
             syslog( "LOG_ERR", "ILS::Checkout Issue failed" );
         }
@@ -213,7 +215,7 @@ sub end_patron_session {
     my ( $self, $patron_id ) = @_;
 
     # success?, screen_msg, print_line
-    return ( 1, 'Thank you !', '' );
+    return ( 1, 'Merci !', '' );
 }
 
 sub pay_fee {
@@ -387,10 +389,10 @@ sub renew {
     $trans->patron( $patron = new ILS::Patron $patron_id);
 
     if ( !$patron ) {
-        $trans->screen_msg("Invalid patron barcode.");
+        $trans->screen_msg("Carte invalide");
         return $trans;
     } elsif ( !$patron->renew_ok ) {
-        $trans->screen_msg("Renewals not allowed.");
+        $trans->screen_msg("Renouvellement non autorisé.");
         return $trans;
     }
 
@@ -428,7 +430,7 @@ sub renew {
         $trans->screen_msg( "Item not checked out to " . $patron->name );    # not checked out to $patron_id
         $trans->ok(0);
     } elsif ( !$item->available($patron_id) ) {
-        $trans->screen_msg("Item unavailable due to outstanding holds");
+        $trans->screen_msg("Document non empruntable. Voir la banque de prêt");
         $trans->ok(0);
     } else {
         $trans->renewal_ok(1);

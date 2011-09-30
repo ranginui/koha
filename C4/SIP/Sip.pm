@@ -8,6 +8,7 @@ use strict;
 use warnings;
 use English;
 use Exporter;
+use Encode;
 
 use DateTime;
 use Sys::Syslog qw(syslog);
@@ -209,6 +210,7 @@ sub write_msg {
     my ( $self, $msg, $file ) = @_;
     my $cksum;
 
+    $msg=encode_utf8($msg);
     if ($error_detection) {
         if ( defined( $self->{seqno} ) ) {
             $msg .= 'AY' . $self->{seqno};

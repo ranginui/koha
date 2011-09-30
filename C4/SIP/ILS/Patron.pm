@@ -99,7 +99,7 @@ sub new {
             fees                    => 0,                                                           # currently not distinct from fines
             recall_overdue          => 0,
             items_billed            => 0,
-            screen_msg              => 'Greetings from Koha. ' . $kp->{opacnote},
+            screen_msg              => 'Bienvenue. ' . $kp->{opacnote},
             print_line              => '',
             items                   => [],
             hold_items              => $flags->{WAITING}{itemlist},
