@@ -70,7 +70,7 @@
                 var iPageQty = 0;
                 var iPageCost = 0;
 
-                for(var i=iStart; i<iEnd; i++) {
+                for(var i in aiDisplay) {
                     iPageQty += aoData[i].quantity*1;
                     iPageCost += aoData[i].ordertotal*1;
                 }
