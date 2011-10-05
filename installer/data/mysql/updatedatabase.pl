@@ -5002,6 +5002,31 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 
 $DBversion = "3.02.00.063";
 if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+    $dbh->do("ALTER TABLE `opac_news` ADD `servername` text default NULL;");
+    print "Upgrade to $DBversion done (add servername field on opac_news)\n";
+    SetVersion($DBversion);
+}
+
+$DBversion = "3.02.00.064";
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+    $dbh->do(
+        "INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('SubfieldsToDiscardWhenPrefill','f u','define a list of subfields to discard when prefill (separated by space)','','Free');"
+    );
+    print "Upgrade to $DBversion done (added new syspref: SubfieldsToDiscardWhenPrefill)\n";
+    SetVersion($DBversion);
+}
+
+$DBversion = "3.02.00.065";
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+    $dbh->do(
+        "INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('UseTablesortForCirc','0','If on, use the JQuery tablesort function on the list of current borrower checkouts on the circulation page. Note that the use of this function may slow down circ for patrons with many checkouts.','','YesNo');"
+    );
+    print "Upgrade to $DBversion done (added new syspref: UseTablesortForCirc)\n";
+    SetVersion($DBversion);
+}
+
+$DBversion = "3.02.00.066";
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     $dbh->do(qq{
     ALTER TABLE `subscription` ADD `itemtype` VARCHAR( 10 ) NULL ,
     ADD `support` VARCHAR( 80 ) NULL ,
@@ -5012,7 +5037,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     SetVersion($DBversion);
 }
 
-$DBversion = "3.02.00.064";
+$DBversion = "3.02.00.067";
 if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     $dbh->do(qq{
     ALTER TABLE `subscription` CHANGE `support` `ccode` VARCHAR( 10 ) 
@@ -5021,7 +5046,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     SetVersion($DBversion);
 }
 
-$DBversion = "3.02.00.065";
+$DBversion = "3.02.00.068";
 if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     $dbh->do(qq{
 	INSERT INTO `permissions` (`module_bit`, `code`, `description`) VALUES ('9', 'limited_item_edition', 'Limit item modification to barcode, status and note (please note that edit_item is still required)');
@@ -5040,7 +5065,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     SetVersion($DBversion);
 }
 
-$DBversion = "3.02.00.066";
+$DBversion = "3.02.00.069";
 if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     $dbh->do(qq{
 	INSERT INTO `permissions` (`module_bit`, `code`, `description`) VALUES (
@@ -5054,8 +5079,15 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     SetVersion($DBversion);
 }
 
+$DBversion = "3.02.00.070";
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+    $dbh->do("ALTER TABLE `aqorders` ADD `parent_ordernumber` int(11)  NULL");
+    $dbh->do("UPDATE aqorders SET parent_ordernumber=ordernumber;");
+    print "Upgrade to $DBversion done (Adding parent_ordernumber in aqorders)\n";
+    SetVersion($DBversion);
+}
 
-$DBversion = "3.02.00.067";
+$DBversion = "3.02.00.071";
 if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     $dbh->do("DELETE FROM systempreferences WHERE variable='OpacElectreResume'");
     $dbh->do("INSERT IGNORE INTO systempreferences (variable,value,explanation,options,type) VALUES('ElectreLogin', '', 'Login for Electre ws',NULL,'free')");
@@ -5067,39 +5099,6 @@ $dbh->do("INSERT IGNORE INTO systempreferences (variable,value,explanation,optio
 $dbh->do("INSERT IGNORE INTO systempreferences (variable,value,explanation,options,type) VALUES('OpacElectreSearchResulstImage', '0', 'if ON, enable cover displaying from Electre ws on OPAC search results',NULL,'YesNo')");
 $dbh->do("INSERT IGNORE INTO systempreferences (variable,value,explanation,options,type) VALUES('OpacElectreDisplayOnTab', '0', 'if ON, Electre informations (outside back cover) are displayed in a dedicated Tab instead of being in the header',NULL,'YesNo')");
     print "Upgrade to $DBversion done (Adding OpacElectre sysprefs)\n";
-    SetVersion($DBversion);
-}
-
-$DBversion = "3.02.00.068";
-if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
-    $dbh->do("ALTER TABLE `opac_news` ADD `servername` text default NULL;");
-    print "Upgrade to $DBversion done (add servername field on opac_news)\n";
-    SetVersion($DBversion);
-}
-
-$DBversion = "3.02.00.069";
-if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
-    $dbh->do(
-        "INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('SubfieldsToDiscardWhenPrefill','f u','define a list of subfields to discard when prefill (separated by space)','','Free');"
-    );
-    print "Upgrade to $DBversion done (added new syspref: SubfieldsToDiscardWhenPrefill)\n";
-    SetVersion($DBversion);
-}
-
-$DBversion = "3.02.00.070";
-if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
-    $dbh->do("ALTER TABLE `aqorders` ADD `parent_ordernumber` int(11)  NULL");
-    $dbh->do("UPDATE aqorders SET parent_ordernumber=ordernumber;");
-    print "Upgrade to $DBversion done (Adding parent_ordernumber in aqorders)\n";
-    SetVersion($DBversion);
-}
-
-$DBversion = "3.02.00.071";
-if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
-    $dbh->do(
-        "INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('UseTablesortForCirc','0','If on, use the JQuery tablesort function on the list of current borrower checkouts on the circulation page. Note that the use of this function may slow down circ for patrons with many checkouts.','','YesNo');"
-    );
-    print "Upgrade to $DBversion done (added new syspref: UseTablesortForCirc)\n";
     SetVersion($DBversion);
 }
 
