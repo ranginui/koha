@@ -34,6 +34,11 @@ Patrons:
            class: multi
          - (separate columns with |)
      -
+         - "The following database columns will not appear on the patron entry screen:"
+         - pref: BorrowerUnwantedField
+           class: multi
+         - (separate columns with |)
+     -
          - "Guarantors can be the following of those they guarantee:"
          - pref: borrowerRelationship
            class: multi
