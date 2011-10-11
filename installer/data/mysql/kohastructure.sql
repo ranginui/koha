@@ -2783,7 +2783,6 @@ CREATE TABLE `fieldmapping` ( -- koha to keyword mapping
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-<<<<<<< HEAD
 --
 -- Table structure for table `biblioimages`
 --
