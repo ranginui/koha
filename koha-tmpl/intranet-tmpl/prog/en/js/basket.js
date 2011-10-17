@@ -303,20 +303,22 @@ function delRecord (n, s) {
 
 // Empty the basket
 // If no_confirmation is set, no dialog message asking the user to confirm will be shown
-function delBasket(no_confirmation) {
+function delBasket(context,rep) {
 
-    var rep = false;
-
-    if (no_confirmation) {
-	rep = true;
-    } else {
-	rep = confirm(MSG_CONFIRM_DEL_BASKET);
+	if (rep == undefined){
+        rep = confirm(MSG_CONFIRM_DEL_BASKET);
     }
+
     if (rep) {
+    	if(context == "popup"){
         delCookie(nameCookie);
         document.location = "about:blank";
         updateBasket(0,top.opener);
         window.close();
+    	}else {
+    		delCookie(nameCookie);
+    		updateBasket(0,top.opener);
+    		}
     }
 }
 
