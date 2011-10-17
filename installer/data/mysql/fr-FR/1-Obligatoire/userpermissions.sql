@@ -1,3 +1,5 @@
+SET NAMES utf8;
+
 INSERT INTO permissions (module_bit, code, description) VALUES
    ( 1, 'circulate_remaining_permissions', 'Permissions de circulation basiques (toutes les permissions du mode circulation, sans avoir le droit d''outrepasser les règles'),
    ( 1, 'override_renewals', 'Outrepasser les limites de renouvellement'),
