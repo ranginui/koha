@@ -103,9 +103,7 @@ Serials updated :
                 <!-- TMPL_IF name="issn" --><!-- TMPL_VAR name="issn" -->
                 <!-- /TMPL_IF -->
                 </td>
-                <td><a href="/cgi-bin/koha/serials/subscription-detail.pl?subscriptionid=<!-- TMPL_VAR name="subscriptionid" -->" class="button" title="subscription detail"><!-- TMPL_IF name="title" --><!-- TMPL_VAR name="title" escape="html" --><!-- TMPL_ELSE -->
-                    ---
-                <!-- /TMPL_IF --><!--TMPL_IF name="unititle" -->, <!-- TMPL_VAR name="unititle" --><!-- /TMPL_IF --></a>
+                <td><a href="/cgi-bin/koha/serials/subscription-detail.pl?subscriptionid=<!-- TMPL_VAR name="subscriptionid" -->" class="button" title="subscription detail"><!-- TMPL_VAR name="title" escape="html" --><!--TMPL_IF name="unititle" -->, <!-- TMPL_VAR name="unititle" --><!-- /TMPL_IF --></a>
                 </td>
                 <td><!-- TMPL_IF name="notes" --><!-- TMPL_VAR name="notes" --><!-- /TMPL_IF -->
                 <!-- TMPL_IF name="internalnotes" -->(<!-- TMPL_VAR name="internalnotes" -->)<!-- /TMPL_IF -->
