@@ -537,8 +537,14 @@ for ( my $i = 0 ; $i <= @servers ; $i++ ) {
                 }
             }
         }
+        ## If there's just one result, if it is hidden, say there is no result
+        if ( $total == 1 && scalar(@newresults) == 0 ) {
+            $total = 0;
+            $facets = [];
+        }
         ## If there's just one result, redirect to the detail page
         if (   $total == 1
+            && scalar(@newresults) == 1
             && $format ne 'rss2'
             && $format ne 'opensearchdescription'
             && $format ne 'atom' ) {
@@ -552,7 +558,7 @@ for ( my $i = 0 ; $i <= @servers ; $i++ ) {
             }
             exit;
         }
-        if ($hits) {
+        if ( $total != 0 ) {
             $template->param( total => $hits );
             my $limit_cgi_not_availablity = $limit_cgi;
             $limit_cgi_not_availablity =~ s/&limit=available//g if defined $limit_cgi_not_availablity;
