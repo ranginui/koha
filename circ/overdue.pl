@@ -37,7 +37,6 @@ my $borcatfilter   = $input->param('borcat') || '';
 my $itemtypefilter = $input->param('itemtype') || '';
 my $borflagsfilter = $input->param('borflag') || '';
 my $branchfilter   = $input->param('branch') || '';
-my $docbranchfilter= $input->param('docbranch') || '';
 my $homebranchfilter = $input->param('homebranch') || '';
 my $holdingbranchfilter = $input->param('holdingbranch') || '';
 my $op             = $input->param('op') || '';
@@ -89,8 +88,6 @@ my $onlymine =
   && C4::Context->userenv->{branch};
 
 $branchfilter = C4::Context->userenv->{'branch'} if ( $onlymine && !$branchfilter );
-
-my $homeorholdingbranch = C4::Context->preference('HomeOrHoldingBranch');
 
 # Filtering by Patron Attributes
 #  @patron_attr_filter_loop        is non empty if there are any patron attribute filters
@@ -289,7 +286,6 @@ if ($noreport) {
     $strsth .= " AND biblioitems.itemtype   = '" . $itemtypefilter . "' "   if $itemtypefilter;
     $strsth .= " AND borrowers.flags        = '" . $borflagsfilter . "' "   if $borflagsfilter;
     $strsth .= " AND borrowers.branchcode   = '" . $branchfilter . "' "     if $branchfilter;
-    $strsth .= " AND items.$homeorholdingbranch = '" . $docbranchfilter . "' " if $docbranchfilter; 
     $strsth .= " AND items.homebranch       = '" . $homebranchfilter . "' " if $homebranchfilter;
     $strsth .= " AND items.holdingbranch    = '" . $holdingbranchfilter . "' " if $holdingbranchfilter;
     $strsth .= " AND date_due < '" . $datedueto . "' "  if $datedueto;
