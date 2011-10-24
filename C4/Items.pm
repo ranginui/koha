@@ -1362,13 +1362,21 @@ sub GetItemsInfo {
         my ($authorised_valuecode) = $sthnflstatus->fetchrow;
         if ($authorised_valuecode) {
             $sthnflstatus = $dbh->prepare(
-                "SELECT lib FROM authorised_values
+                "SELECT lib, lib_opac FROM authorised_values
                  WHERE  category=?
                  AND authorised_value=?"
             );
             $sthnflstatus->execute( $authorised_valuecode, $data->{itemnotforloan} );
-            my ($lib) = $sthnflstatus->fetchrow;
-            $data->{notforloanvalue} = $lib;
+            my $datalib = $sthnflstatus->fetchrow_hashref;
+            $data->{notforloanvalue} = $datalib->{'lib'};
+            if ($datalib->{'lib_opac'})
+            {
+                $data->{notforloanvalueopac} = $datalib->{'lib_opac'};
+            }
+            else
+            {
+                $data->{notforloanvalueopac} = $datalib->{'lib'};
+            }
         }
 
         # my stack procedures

@@ -18,8 +18,8 @@
         Item lost
     <!-- /TMPL_IF -->
 <!-- TMPL_ELSIF name="itemnotforloan" -->
-    <!-- TMPL_IF NAME="notforloanvalue" -->
-        <!-- TMPL_VAR NAME="notforloanvalue" -->
+    <!-- TMPL_IF NAME="notforloanvalueopac" -->
+        <!-- TMPL_VAR NAME="notforloanvalueopac" -->
     <!-- TMPL_ELSE -->
         Not for loan
     <!-- /TMPL_IF -->
