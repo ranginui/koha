@@ -40,6 +40,10 @@
         <xsl:value-of select="marc:subfield[@code='b']"/>
         <xsl:text>]</xsl:text>
       </xsl:if>
+      <xsl:if test="marc:subfield[@code='c']">
+        <xsl:text> . </xsl:text>
+        <xsl:value-of select="marc:subfield[@code='c']"/>
+      </xsl:if>
       <xsl:if test="marc:subfield[@code='h']">
         <xsl:text> : </xsl:text>
         <xsl:value-of select="marc:subfield[@code='h']"/>
@@ -61,11 +65,11 @@
   </xsl:if>
 
   <xsl:call-template name="tag_4xx" />
-
   <xsl:call-template name="tag_205" />
   <xsl:call-template name="tag_210" />
-
   <xsl:call-template name="tag_215" />
+   <xsl:call-template name="tag_325" />
+
 
   <xsl:if test="marc:datafield[@tag=955]">
     <span class="results_summary">
@@ -117,6 +121,9 @@
         </xsl:for-each>
       </span>
     </xsl:if>
+
+
+   
 
   <span class="results_summary">
     <span class="label">Disponibilité: </span>
@@ -200,49 +207,49 @@
     </xsl:choose>
     <xsl:if test="count(key('item-by-status', 'Checked out'))>0">
       <span class="unavailable">
-        <xsl:text>Checked out (</xsl:text>
+        <xsl:text>Emprunté (</xsl:text>
         <xsl:value-of select="count(key('item-by-status', 'Checked out'))"/>
         <xsl:text>). </xsl:text>
       </span>
     </xsl:if>
     <xsl:if test="count(key('item-by-status', 'Withdrawn'))>0">
       <span class="unavailable">
-        <xsl:text>Withdrawn (</xsl:text>
+        <xsl:text>Retiré (</xsl:text>
         <xsl:value-of select="count(key('item-by-status', 'Withdrawn'))"/>
         <xsl:text>). </xsl:text>
       </span>
     </xsl:if>
     <xsl:if test="count(key('item-by-status', 'Lost'))>0">
       <span class="unavailable">
-        <xsl:text>Lost (</xsl:text>
+        <xsl:text>Perdu (</xsl:text>
         <xsl:value-of select="count(key('item-by-status', 'Lost'))"/>
         <xsl:text>). </xsl:text>
       </span>
     </xsl:if>
     <xsl:if test="count(key('item-by-status', 'Damaged'))>0">
       <span class="unavailable">
-        <xsl:text>Damaged (</xsl:text>
+        <xsl:text>Abîmé (</xsl:text>
         <xsl:value-of select="count(key('item-by-status', 'Damaged'))"/>
         <xsl:text>). </xsl:text>
       </span>
     </xsl:if>
     <xsl:if test="count(key('item-by-status', 'On Orangemanr'))>0">
       <span class="unavailable">
-        <xsl:text>On order (</xsl:text>
+        <xsl:text>En commande (</xsl:text>
         <xsl:value-of select="count(key('item-by-status', 'On order'))"/>
         <xsl:text>). </xsl:text>
       </span>
     </xsl:if>
     <xsl:if test="count(key('item-by-status', 'In transit'))>0">
       <span class="unavailable">
-        <xsl:text>In transit (</xsl:text>
+        <xsl:text>En transit (</xsl:text>
         <xsl:value-of select="count(key('item-by-status', 'In transit'))"/>
         <xsl:text>). </xsl:text>
       </span>
     </xsl:if>
     <xsl:if test="count(key('item-by-status', 'Waiting'))>0">
       <span class="unavailable">
-        <xsl:text>On hold (</xsl:text>
+        <xsl:text>Réservé (</xsl:text>
         <xsl:value-of select="count(key('item-by-status', 'Waiting'))"/>
         <xsl:text>). </xsl:text>
       </span>
@@ -314,6 +321,7 @@
             <xsl:when test="$code='130012227'">Bibliothèque René Cassin : Espace périodiques </xsl:when>
             <xsl:when test="$code='130012234'">Bibliothèque Poncet</xsl:when>
             <xsl:when test="$code='130012303'">Bibliothèque du CEREGE</xsl:when>
+            <xsl:when test="$code='130012235'">Saporta-IMPGT</xsl:when>
             <xsl:when test="$code='à venir'">Bibliothèque de l'IEP – Espace Philippe Seguin</xsl:when>
             <xsl:otherwise><xsl:value-of select="$code"/></xsl:otherwise>
         </xsl:choose>

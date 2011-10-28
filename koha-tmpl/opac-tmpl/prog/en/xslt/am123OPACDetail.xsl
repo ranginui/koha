@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- $Id: MARC21slim2DC.xsl,v 1.1 2003/01/06 08:20:27 adam Exp $ -->
 <xsl:stylesheet xmlns:marc="http://www.loc.gov/MARC21/slim" xmlns:items="http://www.koha.org/items" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" exclude-result-prefixes="marc items">
-  <xsl:import href="UNIMARCslimUtils.xsl"/>
+  <xsl:import href="opacUNIMARCslimUtils.xsl"/>
   <xsl:output method="xml" indent="yes" omit-xml-declaration="yes"/>
   <xsl:template match="/">
     <xsl:apply-templates/>
@@ -33,6 +33,11 @@
 <xsl:if test="marc:subfield[@code='e'][2]"><xsl:text>: </xsl:text><xsl:value-of select="marc:subfield[@code='e'][2]" /></xsl:if>
 <xsl:if test="marc:subfield[@code='e'][3]"><xsl:text>: </xsl:text><xsl:value-of select="marc:subfield[@code='e'][3]" /></xsl:if> 
 <xsl:if test="marc:subfield[@code='e'][4]"><xsl:text>: </xsl:text><xsl:value-of select="marc:subfield[@code='e'][4]" /></xsl:if>
+
+<xsl:if test="marc:subfield[@code='c'][1]"><xsl:text>. </xsl:text><xsl:value-of select="marc:subfield[@code='c'][1]" /></xsl:if>
+<xsl:if test="marc:subfield[@code='c'][2]"><xsl:text>. </xsl:text><xsl:value-of select="marc:subfield[@code='c'][2]" /></xsl:if>
+<xsl:if test="marc:subfield[@code='c'][3]"><xsl:text>. </xsl:text><xsl:value-of select="marc:subfield[@code='c'][3]" /></xsl:if> 
+<xsl:if test="marc:subfield[@code='c'][4]"><xsl:text>. </xsl:text><xsl:value-of select="marc:subfield[@code='c'][4]" /></xsl:if>
 
 
         <xsl:if test="marc:subfield[@code='d']">
@@ -73,6 +78,8 @@
       </xsl:for-each>
     </xsl:if>
 <br/>
+   <xsl:call-template name="tag_41X" />
+   <xsl:call-template name="tag_412" />
    <xsl:call-template name="tag_413" />
    <xsl:call-template name="tag_421" />
    <xsl:call-template name="tag_422" />
@@ -105,6 +112,7 @@
    <xsl:call-template name="tag_462" />
    <xsl:call-template name="tag_463" />
     <xsl:call-template name="tag_4xx"/>
+   <xsl:call-template name="tag_488"/>
 <br/>
 
     <xsl:if test="marc:datafield[@tag=700] or marc:datafield[@tag=701] or marc:datafield[@tag=702] or marc:datafield[@tag=710] or marc:datafield[@tag=711] or marc:datafield[@tag=712]">
@@ -287,6 +295,7 @@
     <abbr class="unapi-id" title="koha:biblionumber:{marc:datafield[@tag=090]/marc:subfield[@code='a']}">
       <!-- unAPI -->
     </abbr>
+ 
     <xsl:if test="marc:datafield[@tag=010]/marc:subfield[@code='a']">
       <span class="results_summary">
         <span class="label">ISBN: </span>
@@ -381,6 +390,9 @@
         </xsl:for-each>
       </span>
     </xsl:if>
+
+
+
     <xsl:if test="marc:datafield[@tag=320]">
       <span class="results_summary">
         <span class="label">Bibliographie: </span>
@@ -454,13 +466,49 @@
         </xsl:for-each>
       </span>
     </xsl:if>
-    <xsl:if test="marc:datafield[@tag=856]">
+<xsl:if test="marc:datafield[@tag=604]">
       <span class="results_summary">
-        <span class="label"><strong>URL: </strong></span>
-        <xsl:for-each select="marc:datafield[@tag=856]">
+        <span class="label">Auteur/titre </span>
+        <xsl:for-each select="marc:datafield[@tag=604]">
+          <a>
+            <xsl:choose>
+              <xsl:when test="marc:subfield[@code=9]">
+                <xsl:attribute name="href">/cgi-bin/koha/opac-search.pl?q=an:<xsl:value-of select="marc:subfield[@code=9]"/></xsl:attribute>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:attribute name="href">/cgi-bin/koha/opac-search.pl?q=su:<xsl:value-of select="marc:subfield[@code='a']"/></xsl:attribute>
+              </xsl:otherwise>
+            </xsl:choose>
+            <xsl:call-template name="chopPunctuation">
+              <xsl:with-param name="chopString">
+                <xsl:call-template name="subfieldSelect">
+                  <xsl:with-param name="codes">abcdjiptvxyz</xsl:with-param>
+                  <xsl:with-param name="subdivCodes">jpxyz</xsl:with-param>
+                  <xsl:with-param name="subdivDelimiter">-- </xsl:with-param>
+                </xsl:call-template>
+              </xsl:with-param>
+            </xsl:call-template>
+          </a>
+          <xsl:choose>
+            <xsl:when test="position()=last()"/>
+            <xsl:otherwise> | </xsl:otherwise>
+          </xsl:choose>
+        </xsl:for-each>
+      </span>
+    </xsl:if>
+
+    <xsl:if test="marc:datafield[@tag=325]/marc:subfield[@code='u']">
+      
+         <span class="results_summary">
+        <span class="label">Ressource électronique: </span>
+        <xsl:for-each select="marc:datafield[@tag=325]">
+
+ <xsl:variable name="url" select="substring-before(marc:subfield[@code='u'], '//')"/>
+<xsl:if test="contains($url,'http:')">
+   
           <a>
             <xsl:attribute name="href">
-             <!--BIBLIBRE AJOUT http:// pour le lien--> <xsl:value-of select="marc:subfield[@code='u']"/>
+              <xsl:value-of select="marc:subfield[@code='u']"/>
             </xsl:attribute>
             <xsl:choose>
               <xsl:when test="marc:subfield[@code='y' or @code='3' or @code='z']">
@@ -469,17 +517,92 @@
                 </xsl:call-template>
               </xsl:when>
               <xsl:when test="not(marc:subfield[@code='y']) and not(marc:subfield[@code='3']) and not(marc:subfield[@code='z'])">
-         <li><xsl:value-of select="marc:subfield[@code='u']"/> </li><!-- BIBLIBRE -->
+              Cliquer ici
             </xsl:when>
             </xsl:choose>
           </a>
+</xsl:if>
+
+<xsl:if test="not(contains($url,'http:'))">
+   
+          <a>
+            <xsl:attribute name="href">
+              http://<xsl:value-of select="marc:subfield[@code='u']"/>
+            </xsl:attribute>
+            <xsl:choose>
+              <xsl:when test="marc:subfield[@code='y' or @code='3' or @code='z']">
+                <xsl:call-template name="subfieldSelect">
+                  <xsl:with-param name="codes">y3z</xsl:with-param>
+                </xsl:call-template>
+              </xsl:when>
+              <xsl:when test="not(marc:subfield[@code='y']) and not(marc:subfield[@code='3']) and not(marc:subfield[@code='z'])">
+              Cliquer ici
+            </xsl:when>
+            </xsl:choose>
+          </a>
+</xsl:if>
+
           <xsl:choose>
             <xsl:when test="position()=last()"/>
-            <xsl:otherwise>  </xsl:otherwise>
+            <xsl:otherwise> | </xsl:otherwise>
           </xsl:choose>
         </xsl:for-each>
       </span>
     </xsl:if>
+<br>
+
+  <xsl:if test="marc:datafield[@tag=856]/marc:subfield[@code='u']">
+      
+         <span class="results_summary">
+        <span class="label">Ressource en ligne: </span>
+        <xsl:for-each select="marc:datafield[@tag=856]">
+
+ <xsl:variable name="url" select="substring-before(marc:subfield[@code='u'], '//')"/>
+<xsl:if test="contains($url,'http:')">
+   
+          <a>
+            <xsl:attribute name="href">
+              <xsl:value-of select="marc:subfield[@code='u']"/>
+            </xsl:attribute>
+            <xsl:choose>
+              <xsl:when test="marc:subfield[@code='y' or @code='3' or @code='z']">
+                <xsl:call-template name="subfieldSelect">
+                  <xsl:with-param name="codes">y3z</xsl:with-param>
+                </xsl:call-template>
+              </xsl:when>
+              <xsl:when test="not(marc:subfield[@code='y']) and not(marc:subfield[@code='3']) and not(marc:subfield[@code='z'])">
+              Cliquer ici
+            </xsl:when>
+            </xsl:choose>
+          </a>
+</xsl:if>
+
+<xsl:if test="not(contains($url,'http:'))">
+   
+          <a>
+            <xsl:attribute name="href">
+              http://<xsl:value-of select="marc:subfield[@code='u']"/>
+            </xsl:attribute>
+            <xsl:choose>
+              <xsl:when test="marc:subfield[@code='y' or @code='3' or @code='z']">
+                <xsl:call-template name="subfieldSelect">
+                  <xsl:with-param name="codes">y3z</xsl:with-param>
+                </xsl:call-template>
+              </xsl:when>
+              <xsl:when test="not(marc:subfield[@code='y']) and not(marc:subfield[@code='3']) and not(marc:subfield[@code='z'])">
+              Cliquer ici
+            </xsl:when>
+            </xsl:choose>
+          </a>
+</xsl:if>
+
+          <xsl:choose>
+            <xsl:when test="position()=last()"/>
+            <xsl:otherwise> | </xsl:otherwise>
+          </xsl:choose>
+        </xsl:for-each>
+      </span>
+    </xsl:if></br>
     <!-- 780 -->
     <xsl:if test="marc:datafield[@tag=780]">
       <xsl:for-each select="marc:datafield[@tag=780]">
@@ -679,6 +802,7 @@
       <xsl:when test="$code='130012227'">Bibliothèque René Cassin : Espace périodiques </xsl:when>
       <xsl:when test="$code='130012234'">Bibliothèque Poncet</xsl:when>
       <xsl:when test="$code='130012303'">Bibliothèque du CEREGE</xsl:when>
+      <xsl:when test="$code='130012235'">Saporta-IMPGT</xsl:when>
       <xsl:when test="$code='à venir'">Bibliothèque de l'IEP – Espace Philippe Seguin</xsl:when>
       <xsl:otherwise><xsl:value-of select="$code"/></xsl:otherwise>
     </xsl:choose>
