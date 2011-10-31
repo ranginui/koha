@@ -209,10 +209,10 @@ foreach my $item (@items) {
         $item->{waitingdate} = format_date( $wait_hashref->{waitingdate} );
     }
 
-    if ($item->{'holdingbranch'} eq $currentbranch) {
-	push @myitemloop, $item;
+    if ($item->{'homebranch'} eq $currentbranch) {
+        push @myitemloop, $item;
     } else {
-	push @otheritemloop, $item;
+        push @otheritemloop, $item;
     }
 }
 
