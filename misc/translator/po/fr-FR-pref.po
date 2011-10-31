@@ -962,6 +962,18 @@ msgstr ""
 msgid "circulation.pref#UseBranchTransferLimits# item type"
 msgstr ""
 
+# Circulation > Interface
+msgid "circulation.pref#UseTablesortForCirc# Dont't enable"
+msgstr ""
+
+# Circulation > Interface
+msgid "circulation.pref#UseTablesortForCirc# Enable"
+msgstr ""
+
+# Circulation > Interface
+msgid "circulation.pref#UseTablesortForCirc# the sorting of current patron checkouts on the circulation screen. <br/>NOTE: Enabling this function may slow down circulation time for patrons with many checkouts."
+msgstr ""
+
 # Circulation > Self Checkout
 msgid "circulation.pref#WebBasedSelfCheck# Don't enable"
 msgstr "Désactive"
