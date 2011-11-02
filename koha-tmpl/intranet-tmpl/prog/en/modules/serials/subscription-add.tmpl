@@ -1040,6 +1040,17 @@ $(document).ready(function() {
 		<!-- /TMPL_LOOP -->
 	    </select>
 	</li>
+        <!-- TMPL_IF NAME="makePreviousSerialAvailable" -->
+        <li>
+	    <label for="previousitemtype">Previous serial Item type:</label>
+	    <select name="previousitemtype" id="previousitemtype">
+		    <option value=""></option>
+		<!-- TMPL_LOOP NAME="previoustypeloop" -->
+		    <option value="<!-- TMPL_VAR NAME="code" -->" <!-- TMPL_VAR NAME="selected" -->><!-- TMPL_VAR NAME="value" --></option>
+		<!-- /TMPL_LOOP -->
+	    </select>
+	</li>
+        <!-- /TMPL_IF -->
 	<li>
 	    <label for="support">Support:</label>
 	    <select name="support" id="support">

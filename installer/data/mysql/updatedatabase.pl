@@ -5102,6 +5102,26 @@ $dbh->do("INSERT IGNORE INTO systempreferences (variable,value,explanation,optio
     SetVersion($DBversion);
 }
 
+$DBversion = "3.02.00.072";
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+    $dbh->do(
+        "INSERT IGNORE INTO systempreferences (variable,value,explanation,options,type) VALUES ('makePreviousSerialAvailable','0','make previous serial automatically available when collecting a new serial','','YesNo');"
+    );
+    print "Upgrade to $DBversion done (added new syspref: makePreviousSerialAvailable)\n";
+    SetVersion($DBversion);
+}
+
+$DBversion = "3.02.00.074";
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+    $dbh->do(
+        "ALTER TABLE `subscription` ADD `previousitemtype` VARCHAR( 10 ) NULL"
+    );
+    print "Upgrade to $DBversion done (adds field previousitemtype to subscription)\n";
+    SetVersion($DBversion);
+}
+
+
+
 =item DropAllForeignKeys($table)
 
   Drop all foreign keys of the table $table

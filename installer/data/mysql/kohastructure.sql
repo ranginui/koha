@@ -1760,6 +1760,7 @@ CREATE TABLE `subscription` (
   `ccode` VARCHAR( 10 ) NULL,
   `origin` VARCHAR( 80 ) NULL,
   `domain` VARCHAR( 80 ) NULL,
+  `previousitemtype` VARCHAR( 10 ) NULL,
   PRIMARY KEY  (`subscriptionid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

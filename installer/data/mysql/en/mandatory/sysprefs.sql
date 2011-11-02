@@ -311,3 +311,4 @@ INSERT IGNORE INTO systempreferences (variable,value,explanation,options,type) V
 INSERT IGNORE INTO systempreferences (variable,value,explanation,options,type) VALUES('OpacElectreSearchResulstImage', '0', 'if ON, enable cover displaying from Electre ws on OPAC search results',NULL,'YesNo');
 INSERT IGNORE INTO systempreferences (variable,value,explanation,options,type) VALUES('OpacElectreDisplayOnTab', '0', 'if ON, Electre informations (outside back cover and resume) are displayed in a dedicated Tab instead of being in the header',NULL,'YesNo');
 INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('SubfieldsToDiscardWhenPrefill','f u','define a list of subfields to discard when prefill (separated by space)','','Free');
+INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('makePreviousSerialAvailable','0','make previous serial automatically available when collecting a new serial','','YesNo');

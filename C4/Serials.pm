@@ -49,6 +49,7 @@ BEGIN {
       &ReNewSubscription  &GetLateIssues      &GetLateOrMissingIssues
       &GetSerialInformation                   &AddItem2Serial
       &PrepareSerialsData &GetNextExpected    &ModNextExpected
+      &GetPreviousSerialid
 
       &UpdateClaimdateIssues
       &GetSuppliersWithLateIssues             &getsupplierbyserialid
@@ -753,6 +754,38 @@ sub GetLatestSerials {
     return \@serials;
 }
 
+=head2 GetPreviousSerialid
+
+$serialid = GetPreviousSerialid($subscriptionid, $nth)
+get the $nth's previous serial for the given subscriptionid
+return :
+the serialid
+
+=cut
+
+sub GetPreviousSerialid {
+    my ( $subscriptionid, $nth ) = @_;
+    $nth ||= 1;
+    my $dbh = C4::Context->dbh;
+    my $return = undef;
+
+    my $strsth = "SELECT   serialid
+                        FROM     serial
+                        WHERE    subscriptionid = ?
+                        ORDER BY planneddate DESC, publisheddate DESC, serialseq DESC LIMIT $nth,1 
+                ";
+    my $sth = $dbh->prepare($strsth);
+    $sth->execute($subscriptionid);
+    my @serials;
+    my $line = $sth->fetchrow_hashref;
+    warn Data::Dumper::Dumper($line);
+    $return = $line->{'serialid'} if ($line);
+
+    return $return;
+}
+
+
+
 =head2 GetDistributedTo
 
 $distributedto=GetDistributedTo($subscriptionid)
@@ -1150,7 +1183,7 @@ sub ModSubscription {
         $lastvalue2,      $innerloop2,      $add3,              $every3,           $whenmorethan3, $setto3,      $lastvalue3,    $innerloop3,
         $numberingmethod, $status,          $biblionumber,      $callnumber,       $notes,         $letter,      $hemisphere,    $manualhistory,
         $internalnotes,   $serialsadditems, $staffdisplaycount, $opacdisplaycount, $graceperiod,   $location,    $enddate,       $itemtype,
-	$ccode,           $origin,          $domain,            $subscriptionid
+	$ccode,           $origin,          $domain,            $previousitemtype, $subscriptionid
     ) = @_;
 
     #     warn $irregularity;
@@ -1164,7 +1197,7 @@ sub ModSubscription {
                         numberingmethod=?, status=?, biblionumber=?, callnumber=?, notes=?, 
 						letter=?, hemisphere=?,manualhistory=?,internalnotes=?,serialsadditems=?,
 						staffdisplaycount = ?,opacdisplaycount = ?, graceperiod = ?, location = ?
-						,enddate=?, itemtype=?, ccode=?, origin=?, domain=?
+						,enddate=?, itemtype=?, ccode=?, origin=?, domain=?, previousitemtype = ?
                     WHERE subscriptionid = ?";
 
     #warn "query :".$query;
@@ -1182,7 +1215,7 @@ sub ModSubscription {
         $notes, $letter, $hemisphere, ( $manualhistory ? $manualhistory : 0 ),
         $internalnotes, $serialsadditems, $staffdisplaycount, $opacdisplaycount,
         $graceperiod,   $location,        $enddate,         $itemtype,
-	$ccode,         $origin,          $domain,
+	$ccode,         $origin,          $domain,          $previousitemtype,
 	$subscriptionid
     );
     my $rows = $sth->rows;
@@ -1215,7 +1248,7 @@ sub NewSubscription {
         $add3,          $every3,          $whenmorethan3,     $setto3,           $lastvalue3,    $innerloop3,   $numberingmethod, $status,
         $notes,         $letter,          $firstacquidate,    $irregularity,     $numberpattern, $callnumber,   $hemisphere,      $manualhistory,
         $internalnotes, $serialsadditems, $staffdisplaycount, $opacdisplaycount, $graceperiod,   $location,     $enddate,         $itemtype,
-	$ccode,       $origin,          $domain
+        $ccode,         $origin,          $domain,            $previousitemtype
     ) = @_;
     my $dbh = C4::Context->dbh;
 
@@ -1229,8 +1262,8 @@ sub NewSubscription {
             add3,every3,whenmorethan3,setto3,lastvalue3,innerloop3,
             numberingmethod, status, notes, letter,firstacquidate,irregularity,
             numberpattern, callnumber, hemisphere,manualhistory,internalnotes,serialsadditems,
-            staffdisplaycount,opacdisplaycount,graceperiod,location,enddate, itemtype, ccode, origin, domain)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+            staffdisplaycount,opacdisplaycount,graceperiod,location,enddate, itemtype, ccode, origin, domain, previousitemtype)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
         |;
     my $sth = $dbh->prepare($query);
     $sth->execute(
@@ -1240,7 +1273,7 @@ sub NewSubscription {
         $add3,          $every3,          $whenmorethan3,     $setto3,           $lastvalue3,    $innerloop3,   $numberingmethod, "$status",
         $notes,         $letter,          $firstacquidate,    $irregularity,     $numberpattern, $callnumber,   $hemisphere,      $manualhistory,
         $internalnotes, $serialsadditems, $staffdisplaycount, $opacdisplaycount, $graceperiod,   $location,     $enddate, 	  $itemtype,
-	$ccode,         $origin,          $domain
+	$ccode,         $origin,          $domain, $previousitemtype
     );
 
     my $subscriptionid = $dbh->{'mysql_insertid'};
