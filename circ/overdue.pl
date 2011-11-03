@@ -249,6 +249,7 @@ if ($noreport) {
     $bornamefilter =~ s/\?/\_/g;
 
     my $strsth = "SELECT date_due,
+		issuedate,
         borrowers.title as borrowertitle,
         concat(surname,' ', firstname) as borrower, 
         borrowers.streetnumber,
@@ -325,6 +326,7 @@ if ($noreport) {
         $data->{email}=C4::Members::GetFirstValidEmailAddress($data->{borrowernumber});
         push @overduedata,
           { duedate                => format_date( $data->{date_due} ),
+            issuedate              => format_date( $data->{issuedate} ),
             borrowernumber         => $data->{borrowernumber},
             barcode                => $data->{barcode},
             itemnum                => $data->{itemnumber},
@@ -416,7 +418,7 @@ sub build_csv {
     my @lines = ();
 
     # build header ...
-    my @keys = qw /duedate title author borrowertitle name phone barcode email address address2 zipcode city country
+    my @keys = qw /duedate issuedate title author borrowertitle name phone barcode email address address2 zipcode city country
                 branchcode itemcallnumber biblionumber borrowernumber itemnum replacementprice streetnumber streettype/;
     my $csv = Text::CSV_XS->new();
     $csv->combine(@keys);
