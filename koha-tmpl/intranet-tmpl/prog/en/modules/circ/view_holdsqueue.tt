@@ -36,6 +36,7 @@
         <th class="hq-title">Title</th>
         <th class="hq-collection">Collection</th>
         <th class="hq-callnumber">Call Number</th>
+        <th class="hq-copynumber">Copy Number</th>
         <th class="hq-barcode">Barcode</th>
         <th class="hq-patron">Patron</th>
         <th class="hq-sendto">Send To</th>
@@ -55,6 +56,7 @@
 			</td>
             <td class="hq-collection">[% itemsloo.ccode %]</td>
             <td class="hq-callnumber">[% itemsloo.location %] [% itemsloo.itemcallnumber %] [% itemsloo.enumchron %]</td>
+            <td class="hq-copynumber">[% itemsloo.copynumber %]</td>
             <td class="hq-barcode">
                 [% IF ( itemsloo.item_level_request ) %]
 			<em>Only Item:</em> <strong>[% itemsloo.barcode %]</strong>
