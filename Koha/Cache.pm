@@ -1,4 +1,4 @@
-package C4::Cache;
+package Koha::Cache;
 
 # Copyright 2009 Chris Cormack and The Koha Dev Team
 #
@@ -19,7 +19,7 @@ package C4::Cache;
 
 =head1 NAME
 
-C4::Cache - Handling caching of html and Objects for Koha
+Koha::Cache - Handling caching of html and Objects for Koha
 
 =head1 SYNOPSIS
 
@@ -49,17 +49,16 @@ use Carp;
 
 use base qw(Class::Accessor);
 
-use C4::Cache::Memcached;
+use Koha::Cache::Memcached;
 
 __PACKAGE__->mk_ro_accessors( qw( cache ) );
 
 sub new {
     my $class = shift;                                                          
-    my %param = @_;                                                             
-    
-    my $cache_type = $param{cache_type} || 'memcached';
+    my $param = shift;                                                             
+    my $cache_type = $param->{cache_type} || 'memcached';
     my $subclass = __PACKAGE__."::".ucfirst($cache_type);
-    my $cache    = $subclass->_cache_handle(\%param)
+    my $cache    = $subclass->_cache_handle($param)
       or croak "Cannot create cache handle for '$cache_type'";
     return bless $class->SUPER::new({cache => $cache}), $subclass;              
 }

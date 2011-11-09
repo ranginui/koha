@@ -28,6 +28,27 @@ use CGI;
 my $query = CGI->new();
 my $report=$query->param('id');
 
+my $cache;
+my $usecache=C4::Context->preference('usecache');
+
+if ($usecache){
+    require Koha::Cache;
+    Koha::Cache->import();
+    $cache = Koha::Cache->new ( {'cache_type' => 'memcached',
+				 'cache_servers' => C4::Context->config("memcached_servers")
+				});
+    my $namespace = C4::Context->config("memcached_namespace");
+    my $page = $cache->get_from_cache("$namespace:opac:report:$report");
+    if ($page){
+	print $query->header;
+	print $page;
+	exit;
+    }
+}    
+
+
+
+
 print $query->header;
 my ($sql,$type,$name,$notes) = get_saved_report($report);
 my $offset=0;
@@ -36,3 +57,8 @@ my ($sth, $errors) = execute_query($sql, $offset, $limit);
 my $lines = $sth->fetchall_arrayref;
 my $json_text   = to_json($lines);
 print $json_text;
+
+if ($usecache){
+    my $namespace = C4::Context->config("memcached_namespace");
+    $cache->set_in_cache("$namespace:opac:report:$report", $json_text, 300);
+}
