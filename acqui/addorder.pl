@@ -211,7 +211,7 @@ if ( $orderinfo->{quantity} ne '0' ) {
 
         # change suggestion status if applicable
         if ( $$orderinfo{suggestionid} ) {
-            ModSuggestion( { suggestionid => $$orderinfo{suggestionid}, status => 'ORDERED', biblionumber => $biblionumber } );
+            ModSuggestion( { suggestionid => $$orderinfo{suggestionid}, STATUS => 'ORDERED', biblionumber => $biblionumber } );
         }
         $orderinfo->{biblioitemnumber} = $bibitemnum;
         $orderinfo->{biblionumber}     = $biblionumber;
