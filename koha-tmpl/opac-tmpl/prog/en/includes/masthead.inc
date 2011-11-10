@@ -23,11 +23,14 @@
 	<!-- TMPL_VAR NAME="opacheader" -->
   <!-- /TMPL_IF -->
 <div id="opac-main-search" class="yui-g">
+   <div id="logo">
    <!-- TMPL_IF NAME="opacsmallimage" -->
-   <h1 id="libraryname" style="background-image: url('<!-- TMPL_VAR NAME="opacsmallimage" -->');">
+   <a href="/cgi-bin/koha/opac-main.pl"><h1 id="specific-logo" style="background: url('<!-- TMPL_VAR NAME="opacsmallimage" -->');">
    <!-- TMPL_ELSE -->
-   <h1 id="libraryname">
-   <!-- /TMPL_IF --><a href="/cgi-bin/koha/opac-main.pl"><!-- TMPL_IF NAME="LibraryName" --><!-- TMPL_VAR NAME="LibraryName" --><!-- TMPL_ELSE -->Koha Online Catalog<!-- /TMPL_IF --></a></h1>
+   <a href="/cgi-bin/koha/opac-main.pl"><h1 id="koha-logo"><!-- /TMPL_IF -->
+   </a></h1>
+   <div id="title"><!-- TMPL_IF NAME="LibraryName" --><!-- TMPL_VAR NAME="LibraryName" --><!-- TMPL_ELSE -->Koha Online Catalog<!-- /TMPL_IF --></div></div>
+   
 
 <div id="fluid">
 <div id="fluid-offset">
