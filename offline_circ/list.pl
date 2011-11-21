@@ -48,7 +48,7 @@ for (@$operations) {
 	my $biblio             = GetBiblioFromItemNumber(undef, $_->{'barcode'});
 	$_->{'bibliotitle'}    = $biblio->{'title'};
 	$_->{'biblionumber'}   = $biblio->{'biblionumber'};
-	my $borrower           = GetMemberDetails(undef,$cardnumber);
+	my $borrower           = GetMemberDetails(undef,$_->{'cardnumber'});
 	$_->{'borrowernumber'} = $borrower->{'borrowernumber'};
 	$_->{'borrower'}       = join(' ', $borrower->{'firstname'}, $borrower->{'surname'});
 	$_->{'actionissue'}    = $_->{'action'} eq 'issue';
