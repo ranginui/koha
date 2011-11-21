@@ -41,10 +41,14 @@ my ($template, $loggedinuser, $cookie) = get_template_and_user({
 my $operations = GetOfflineOperations;
 
 for (@$operations) {
+	$_->{'cardnumber'} = 0 . $_->{'cardnumber'} if length($_->{'cardnumber'}) == 15;
+	$_->{'cardnumber'} = 00 . $_->{'cardnumber'} if length($_->{'cardnumber'}) == 14;
+	$_->{'cardnumber'} =~ s/00000000([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})/00000000$4$3$2$1/i;
+
 	my $biblio             = GetBiblioFromItemNumber(undef, $_->{'barcode'});
 	$_->{'bibliotitle'}    = $biblio->{'title'};
 	$_->{'biblionumber'}   = $biblio->{'biblionumber'};
-	my $borrower           = GetMemberDetails(undef,$_->{'cardnumber'});
+	my $borrower           = GetMemberDetails(undef,$cardnumber);
 	$_->{'borrowernumber'} = $borrower->{'borrowernumber'};
 	$_->{'borrower'}       = join(' ', $borrower->{'firstname'}, $borrower->{'surname'});
 	$_->{'actionissue'}    = $_->{'action'} eq 'issue';
@@ -54,4 +58,3 @@ for (@$operations) {
 $template->param(operations => $operations);
 
 output_html_with_http_headers $query, $cookie, $template->output;
-
