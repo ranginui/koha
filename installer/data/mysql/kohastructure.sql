@@ -534,6 +534,29 @@ CREATE TABLE `class_sources` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
+-- Table structure for table `collections`
+--
+
+CREATE TABLE IF NOT EXISTS `collections` (
+  `colId` int(11) NOT NULL auto_increment,
+  `colTitle` varchar(100) NOT NULL default '',
+  `colDesc` text NOT NULL,
+  `colBranchcode` varchar(4) default NULL COMMENT 'branchcode for branch where item should be held.',
+  PRIMARY KEY  (`colId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `collections_tracking`
+--
+
+CREATE TABLE IF NOT EXISTS `collections_tracking` (
+  `ctId` int(11) NOT NULL auto_increment,
+  `colId` int(11) NOT NULL default '0' COMMENT 'collections.colId',
+  `itemnumber` int(11) NOT NULL default '0' COMMENT 'items.itemnumber',
+  PRIMARY KEY  (`ctId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
 -- Table structure for table `currency`
 --
 
