@@ -74,7 +74,11 @@ sub _get_label_item {
 
     # Replaced item's itemtype with the more user-friendly description...
     my $sth1 = $dbh->prepare("SELECT itemtype,description FROM itemtypes WHERE itemtype = ?");
-    $sth1->execute( $data->{'itemtype'} );
+    if ( C4::Context->preference('item-level_itypes') ) {
+        $sth1->execute($data->{'itype'});
+    } else {
+        $sth1->execute($data->{'itemtype'});
+    }
     if ( $sth1->err ) {
         warn sprintf( 'Database returned the following error: %s', $sth1->errstr );
     }
@@ -88,7 +92,9 @@ sub _get_text_fields {
     my $format_string = shift;
     my $csv           = Text::CSV_XS->new( { allow_whitespace => 1 } );
     my $status        = $csv->parse($format_string);
-    my @sorted_fields = map { { 'code' => $_, desc => $_ } } $csv->fields();
+    my @sorted_fields = map {{ 'code' => $_, desc => $_ }}
+                        map { $_ eq 'callnumber' ? 'itemcallnumber' : $_ } # see bug 5653
+                        $csv->fields();
     my $error         = $csv->error_input();
     warn sprintf( 'Text field sort failed with this error: %s', $error ) if $error;
     return \@sorted_fields;
