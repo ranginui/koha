@@ -6,6 +6,8 @@
         #jobpanel,#jobstatus,#jobfailed { display : none; }
         #jobstatus { margin:.4em; }
         #jobprogress{ width:200px;height:10px;border:1px solid #666;background:url('/intranet-tmpl/prog/img/progress.png') -300px 0px no-repeat; }
+        #delbiblio{ color:red;font-weight:bold; }
+        #checkbiblio{ position:relative;left:10px;top:4px; }
 </style>
 <script type="text/javascript" src="<!-- TMPL_VAR name="themelang" -->/lib/jquery/plugins/jquery.tablesorter.min.js"></script>
 <script type="text/JavaScript" language="JavaScript">
@@ -77,7 +79,7 @@
      <input type="hidden" name="completedJobID" id="completedJobID" value="" />
 
 <!-- TMPL_IF name="item_loop" -->
-	<!-- TMPL_IF NAME="show" --><div id="toolbar"><a id="selectallbutton" href="#">Select All</a> | <a id="clearallbutton" href="#">Clear All</a></div><!-- TMPL_ELSE --><!-- /TMPL_IF -->
+    <!-- TMPL_IF NAME="show" --><div id="toolbar"><a id="selectallbutton" href="#">Select All</a> | <a id="clearallbutton" href="#">Clear All</a></div><!-- TMPL_ELSE --><!-- /TMPL_IF --></br>
 	<div id="cataloguing_additem_itemlist">
 		<div style="overflow:auto">
 		<table id="itemst">
@@ -126,6 +128,7 @@
 	     <input type="hidden" name="op" value="<!-- TMPL_VAR NAME="op" -->" />
 	     <p>This will delete <!-- TMPL_IF NAME="too_many_items" -->all the<!-- TMPL_ELSE -->the selected<!-- /TMPL_IF --> items.</p>
 	     <input type="hidden" name="del" value="1" />
+	     <div id="delbiblio" >Delete Biblio record(s) if no more items left <span id="checkbiblio" ><input type="checkbox" name="delbiblio" checked="checked" /></span></div>
 	     <fieldset class="action">    
 		<div id="jobpanel">
 		    <div id="jobstatus">Job progress: <div id="jobprogress"></div> <span id="jobprogresspercent">0</span>%</div>
