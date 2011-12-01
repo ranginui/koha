@@ -46,6 +46,7 @@ my $op              = $input->param('op');
 my $del             = $input->param('del');
 my $completedJobID  = $input->param('completedJobID');
 my $runinbackground = $input->param('runinbackground');
+my $del_biblio      = $input->param('delbiblio');
 
 my $template_name;
 my $template_flag;
@@ -198,12 +199,14 @@ if ( $op eq "action" ) {
                       };
                 }
 
-		# If there are no items left, we delete the biblio
-		my $icount = GetItemsCount($itemdata->{'biblionumber'});
-		if ($icount == 0) {
-		    DelBiblio($itemdata->{'biblionumber'});
-		    $deleted_biblios++;
-		}
+            # If there are no items left, we delete the biblio if delbiblio is checked
+            my $icount = GetItemsCount($itemdata->{'biblionumber'});
+            if ($icount == 0) {
+                if ($del_biblio){
+                    DelBiblio($itemdata->{'biblionumber'});
+                    $deleted_biblios++;
+                }
+            }
 
             } else {
                 if ( $values_to_modify || $values_to_blank ) {
