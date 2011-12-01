@@ -38,6 +38,10 @@ my $result;
 
 if ( $action eq 'process' ) {
     my $operation = GetOfflineOperation( $operationid );
+    $operation->{'cardnumber'} = 0 . $operation->{'cardnumber'} if length($operation->{'cardnumber'}) == 15;
+    $operation->{'cardnumber'} = 00 . $operation->{'cardnumber'} if length($operation->{'cardnumber'}) == 14;
+    $operation->{'cardnumber'} =~ s/00000000([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})/00000000$4$3$2$1/i;
+
     $result = ProcessOfflineOperation( $operation );
 } elsif ( $action eq 'delete' ) {
     $result = DeleteOfflineOperation( $operationid );
