@@ -24,6 +24,8 @@ use C4::Context;
 use C4::Dates qw(format_date_in_iso);
 use Digest::MD5 qw(md5_base64);
 use Date::Calc qw/Today Add_Delta_YM check_date Date_to_Days/;
+use Text::Undiacritic qw(undiacritic);
+use Encode;
 use C4::Log;    # logaction
 use C4::Branch;
 use C4::Overdues;
@@ -861,7 +863,7 @@ sub Generate_Userid {
         $offset++;
 
     } while ( !Check_Userid( $newuid, $borrowernumber ) );
-
+    $newuid = undiacritic( decode_utf8( $newuid ) );
     return $newuid;
 }
 

@@ -170,16 +170,23 @@ h1#library {
 } 
 
 
-h1#libraryname {
+h1#koha-logo {
 	background:transparent url(../../images/koha-logo.gif) no-repeat scroll 0%;
 	border: 0;
-	float : left !important;
 	margin:0;
 	padding:0;
 	width:120px;
 }
 
-h1#libraryname a {
+h1#specific-logo {
+    border: 0;
+    margin:0;
+    padding:0;
+    width:122px;
+    height:51px;
+}
+
+h1#koha-logo a {
 	border:0;
 	cursor:pointer;
 	display:block;
@@ -189,6 +196,27 @@ h1#libraryname a {
 	padding:40px 0 0;
 	text-decoration:none;
 	width:120px;
+}
+
+h1#specific-logo a {
+    border:0;
+    cursor:pointer;
+    display:block;
+    height:0px !important;
+    margin:0;
+    overflow:hidden;
+    padding:50px 0 0;
+    text-decoration:none;
+    width:120px;
+}
+
+div#title {
+	width:170px;
+}
+
+div#logo {
+    width:190px;
+    float:left;
 }
 
 h1,h2,h3,h4,h5,h6 {
@@ -1037,11 +1065,6 @@ td.resultscontrol img {
 	color: #990033;
 }
 
-#libraryname {
-	float : left;
-	line-height : 2em;
-}
-
 #corner {
 	float : right;
 	line-height : 2em;
@@ -1228,7 +1251,7 @@ padding-left : 1em;
 
 #fluid-offset {
 float : right;
-width: 100%;
+width: 90%;
 }
 
 #translControl{

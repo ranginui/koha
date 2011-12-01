@@ -645,6 +645,7 @@ sub CanBookBeIssued {
     my $issue      = GetItemIssue( $item->{itemnumber} );
     my $biblioitem = GetBiblioItemData( $item->{biblioitemnumber} );
     $item->{'itemtype'} = $item->{'itype'};
+    my $itype = ( C4::Context->preference('item-level_itypes') ) ? $item->{'itype'} : $biblioitem->{'itemtype'};
     my $dbh = C4::Context->dbh;
 
     # MANDATORY CHECKS - unless item exists, nothing else matters
@@ -660,7 +661,6 @@ sub CanBookBeIssued {
         my $issuedate = strftime( "%Y-%m-%d", localtime );
 
         my $branch = _GetCircControlBranch( $item, $borrower );
-        my $itype = ( C4::Context->preference('item-level_itypes') ) ? $item->{'itype'} : $biblioitem->{'itemtype'};
         my $loanlength = GetLoanLength( $borrower->{'categorycode'}, $itype, $branch );
         unless ($loanlength or C4::Context->preference("AllowNotForLoanOverride")) {
             $issuingimpossible{LOAN_LENGTH_UNDEFINED} = "$borrower->{'categorycode'}, $itype, $branch";
@@ -678,7 +678,7 @@ sub CanBookBeIssued {
     if ( $borrower->{'category_type'} eq 'X' && ( $item->{barcode} ) ) {
 
         # stats only borrower -- add entry to statistics table, and return issuingimpossible{STATS} = 1  .
-        &UpdateStats( C4::Context->userenv->{'branch'}, 'localuse', '', '', $item->{'itemnumber'}, $item->{'itemtype'}, $borrower->{'borrowernumber'} );
+        &UpdateStats( C4::Context->userenv->{'branch'}, 'localuse', '', '', $item->{'itemnumber'}, $itype, $borrower->{'borrowernumber'} );
         ModDateLastSeen( $item->{'itemnumber'} );
         return ( { STATS => 1 }, {} );
     }
@@ -1038,10 +1038,11 @@ sub AddIssue {
             }
 
             # Record the fact that this book was issued.
+            my $itype = ( C4::Context->preference('item-level_itypes') ) ? $biblio->{'itype'} : $biblio->{'itemtype'};
             &UpdateStats(
                 C4::Context->userenv->{'branch'},
                 'issue', $charge, ( $sipmode ? "SIP-$sipmode" : '' ),
-                $item->{'itemnumber'}, $item->{'itype'}, $borrower->{'borrowernumber'}
+                $item->{'itemnumber'}, $itype, $borrower->{'borrowernumber'}
             );
 
             # Send a checkout slip.
@@ -1193,6 +1194,9 @@ sub AddReturn {
     }
 
     my $item = GetItem($itemnumber) or die "GetItem($itemnumber) failed";
+    # get biblioinformation for this item
+    my $biblio = GetBiblioFromItemNumber( $itemnumber );
+    my $itype = ( C4::Context->preference('item-level_itypes') ) ? $biblio->{'itype'} : $biblio->{'itemtype'};
 
     # full item data, but no borrowernumber or checkout info (no issue)
     # we know GetItem should work because GetItemnumberFromBarcode worked
@@ -1323,7 +1327,7 @@ sub AddReturn {
 
     # update stats?
     # Record the fact that this book was returned.
-    UpdateStats( $branch, 'return', '0', '', $item->{'itemnumber'}, $biblio->{'itemtype'}, $borrowernumber );
+    UpdateStats( $branch, 'return', '0', '', $item->{'itemnumber'}, $itype, $borrowernumber );
 
     # Send a check-in slip. # NOTE: borrower may be undef.  probably shouldn't try to send messages then.
     my $circulation_alert = 'C4::ItemCirculationAlertPreference';
@@ -1952,6 +1956,7 @@ sub AddRenewal {
     my $lastreneweddate = shift || C4::Dates->new()->output('iso');
     my $item = GetItem($itemnumber) or return undef;
     my $biblio = GetBiblioFromItemNumber($itemnumber) or return undef;
+    my $itype = ( C4::Context->preference('item-level_itypes') ) ? $biblio->{'itype'} : $biblio->{'itemtype'};
 
     my $dbh = C4::Context->dbh;
 
@@ -2025,7 +2030,7 @@ sub AddRenewal {
     }
 
     # Log the renewal
-    UpdateStats( $branch, 'renew', $charge, '', $itemnumber, $item->{itype}, $borrowernumber );
+    UpdateStats( $branch, 'renew', $charge, '', $itemnumber, $itype, $borrowernumber );
     return $datedue;
 }
 

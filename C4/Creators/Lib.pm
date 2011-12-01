@@ -319,7 +319,7 @@ sub get_label_summary {
     my %params          = @_;
     my $label_number    = 0;
     my @label_summaries = ();
-    my $query           = "     SELECT b.title, b.author, bi.itemtype, i.barcode, i.biblionumber
+    my $query           = "     SELECT b.title, b.author, bi.itemtype, i.barcode, i.itype, i.biblionumber
                       FROM creator_batches AS c LEFT JOIN items AS i ON (c.item_number=i.itemnumber)
                       LEFT JOIN biblioitems AS bi ON (i.biblioitemnumber=bi.biblioitemnumber)
                       LEFT JOIN biblio AS b ON (bi.biblionumber=b.biblionumber)
@@ -342,7 +342,11 @@ sub get_label_summary {
                                            # should not know that it's part of a web app
         $record->{'title'}               = '<a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=' . $record->{'biblionumber'} . '"> ' . $record->{'title'} . '</a>';
         $label_summary->{'_summary'}     = $record->{'title'} . " | " . ( $record->{'author'} ? $record->{'author'} : 'N/A' );
-        $label_summary->{'_item_type'}   = $record->{'itemtype'};
+        if ( C4::Context->preference('item-level_itypes') ) {
+            $label_summary->{'_item_type'}   = $record->{'itype'};
+        } else {
+            $label_summary->{'_item_type'}   = $record->{'itemtype'};
+        }
         $label_summary->{'_barcode'}     = $record->{'barcode'};
         $label_summary->{'_item_number'} = $item->{'item_number'};
         $label_summary->{'_label_id'}    = $item->{'label_id'};
