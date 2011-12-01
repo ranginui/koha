@@ -1,0 +1,20 @@
+{
+    "sEcho": "<!-- TMPL_VAR NAME='sEcho' -->",
+    "iTotalRecords": "<!-- TMPL_VAR NAME='iTotalRecords' -->",
+    "iTotalDisplayRecords": "<!-- TMPL_VAR NAME='iTotalDisplayRecords' -->",
+    "aaData": [
+        <!-- TMPL_LOOP NAME="aaData" -->
+        {
+        "dt_seen": "<input type=\"checkbox\" name=\"SEEN-<!-- TMPL_VAR NAME="itemnumber" -->\" value=\"1\" />",
+        "dt_barcode": "<!-- TMPL_VAR NAME="barcode" ESCAPE="HTML" -->",
+        "dt_location": "<!-- TMPL_VAR name="homebranch" ESCAPE="HTML" --> <!-- TMPL_VAR name="location" ESCAPE="HTML" --> \[<!-- TMPL_VAR NAME="itemcallnumber" ESCAPE="HTML" -->\]",
+        "dt_title": "<p><a href=\"#\" onclick=\"window.open('/cgi-bin/koha/catalogue/MARCdetail.pl?biblionumber=<!--TMPL_VAR Name="biblionumber"-->','marcview','width=800,height=600,toolbar=0,scrollbars=1');\"><!-- TMPL_VAR NAME="title" ESCAPE="HTML" --></a></p><p><!-- TMPL_VAR NAME="author" ESCAPE="HTML" --></p>",
+        "dt_status": "<!-- TMPL_VAR name="notforloan" ESCAPE="HTML" -->",
+        "dt_lost": "<!-- TMPL_VAR name="itemlost" ESCAPE="HTML" -->",
+        "dt_damaged": "<!-- TMPL_VAR name="damaged" ESCAPE="HTML" -->",
+        "dt_unseen": "<p><!-- TMPL_VAR name="datelastseen" ESCAPE="HTML" --></p>",
+        "dt_problems": "<!-- TMPL_IF name="wrongplace" --><p>Item should not have been scanned</p><!-- TMPL_ELSIF name="missingitem" --><p>Item missing</p><!-- TMPL_ELSIF name="changestatus" --><p>Change item status</p><!-- /TMPL_IF -->"
+        }<!-- TMPL_UNLESS NAME='__last__' -->,<!-- /TMPL_UNLESS -->
+        <!-- /TMPL_LOOP -->
+    ]
+}
