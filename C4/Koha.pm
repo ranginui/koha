@@ -1119,8 +1119,11 @@ sub GetAuthorisedValues {
     $sth->execute;
 
     while ( my $data = $sth->fetchrow_hashref ) {
-        if ( $selected && $selected eq $data->{'authorised_value'} ) {
+        if ( (defined($selected)) && ($selected eq $data->{'authorised_value'}) ) {
             $data->{'selected'} = 1;
+        }
+        else {
+            $data->{'selected'} = 0;
         }
         if ( $opac && $data->{'lib_opac'} ) {
             $data->{'lib'} = $data->{'lib_opac'};
