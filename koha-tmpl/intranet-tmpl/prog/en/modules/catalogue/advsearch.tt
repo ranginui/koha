@@ -144,6 +144,7 @@
 [% END %]
 
 
+[% IF ( subtypes ) %]
 [% IF ( UNIMARC ) %]
 [% INCLUDE 'subtypes_unimarc.inc' %]
 [% ELSE %]
@@ -215,6 +216,7 @@
        </p>
 
 </fieldset>
+[% END %]
 [% END %]
 
 <!-- AVAILABILITY LIMITS -->
