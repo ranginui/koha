@@ -118,7 +118,7 @@ sub do_checkout {
         # TODO: adjust representation in $self->item
     }
 	# can issue
-	$debug and warn "do_checkout: calling AddIssue(\$borrower,$barcode, undef, 0)\n"
+	$debug and warn "do_checkout: calling AddIssue(\$borrower,$itemnumber, undef, 0)\n"
 		# . "w/ \$borrower: " . Dumper($borrower)
 		. "w/ C4::Context->userenv: " . Dumper(C4::Context->userenv);
 	my $due_dt  = AddIssue($borrower, $barcode, undef, 0);

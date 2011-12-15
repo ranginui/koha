@@ -49,7 +49,7 @@ sub basic_usage : Test( 13 ) {
     my $dbh = C4::Context->dbh;
     $dbh->do("UPDATE systempreferences SET value = 1 WHERE variable = 'IssuingInProcess'");
     C4::Context->clear_syspref_cache(); # FIXME not needed after a syspref mutator is written
-    ( $issuingimpossible, $needsconfirmation ) = C4::Circulation::CanBookBeIssued( $borrower, $barcode );
+    ( $issuingimpossible, $needsconfirmation, $itemnumber ) = C4::Circulation::CanBookBeIssued( $borrower, $barcode );
     is( scalar keys %$issuingimpossible, 0, 'the item CanBookBeIssued with IssuingInProcess ON (bug 2758)' )
       or diag( Data::Dumper->Dump( [ $issuingimpossible, $needsconfirmation ], [ qw( issuingimpossible needsconfirmation ) ] ) );
     is( scalar keys %$needsconfirmation, 0, 
@@ -58,7 +58,7 @@ sub basic_usage : Test( 13 ) {
     $dbh->do("UPDATE systempreferences SET value = ? WHERE variable = 'IssuingInProcess'", {}, $orig_issuing_in_process);
     C4::Context->clear_syspref_cache(); # FIXME not needed after a syspref mutator is written
 
-    my $datedue = C4::Circulation::AddIssue( $borrower, $barcode );
+    my $datedue = C4::Circulation::AddIssue( $borrower, $itemnumber );
     ok( $datedue, "the item has been issued and it is due: $datedue" );
     
     my $after_issues = C4::Circulation::GetItemIssue( $self->{'items'}[0]{'itemnumber'} );

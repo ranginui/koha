@@ -103,6 +103,12 @@ Circulation:
             - pref: NoticeCSS
               class: url
             - on Notices. (This should be a complete URL, starting with <code>http://</code>)
+        -
+            - pref: CircFallbackItemnumber
+              choices:
+                  yes: Do
+                  no: "Don't"
+            - fall back to search by itemnumber if a matching barcode isn't found.
     Checkout Policy:
         -
             - pref: AllowNotForLoanOverride

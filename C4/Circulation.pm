@@ -2,6 +2,7 @@ package C4::Circulation;
 
 # Copyright 2000-2002 Katipo Communications
 # copyright 2010 BibLibre
+# Copyright 2011 Catalyst IT
 #
 # This file is part of Koha.
 #
@@ -572,8 +573,8 @@ sub itemissues {
 
 =head2 CanBookBeIssued
 
-  ( $issuingimpossible, $needsconfirmation ) =  CanBookBeIssued( $borrower, 
-                      $barcode, $duedatespec, $inprocess, $ignore_reserves );
+  ( $issuingimpossible, $needsconfirmation, $itemnumber ) =
+        CanBookBeIssued( $borrower, $barcode, $duedatespec, $inprocess, $ignore_reserves, $itemnumber );
 
 Check if a book can be issued.
 
@@ -589,6 +590,10 @@ C<$issuingimpossible> and C<$needsconfirmation> are some hashref.
 
 =item C<$inprocess> boolean switch
 =item C<$ignore_reserves> boolean switch
+
+=item C<$itemnumber> is used to look up the record by item number if the barcode
+doesn't match, based on the C<CircFallbackItemnumber> syspref. If C<$itemnumber>
+is unset, then C<$barcode> will be tried as an item number instead.
 
 =back
 
@@ -662,23 +667,34 @@ sticky due date is invalid or due date in the past
 
 if the borrower borrows to much things
 
+C<$itemnumber> if the itemnumber was found.
+
 =cut
 
 sub CanBookBeIssued {
-    my ( $borrower, $barcode, $duedate, $inprocess, $ignore_reserves ) = @_;
+    my ( $borrower, $barcode, $duedate, $inprocess, $ignore_reserves, $itemnumber ) = @_;
     my %needsconfirmation;    # filled with problems that needs confirmations
     my %issuingimpossible;    # filled with problems that causes the issue to be IMPOSSIBLE
-    my $item = GetItem(GetItemnumberFromBarcode( $barcode ));
-    my $issue = GetItemIssue($item->{itemnumber});
-	my $biblioitem = GetBiblioItemData($item->{biblioitemnumber});
-	$item->{'itemtype'}=$item->{'itype'}; 
-    my $dbh             = C4::Context->dbh;
 
+    my $item = GetItem( GetItemnumberFromBarcode($barcode) );
+    # If we should fall back to searching by item number...
+    my $fallback_itemnumber = C4::Context->preference('CircFallbackItemnumber');
+    if ( !defined( $item->{biblioitemnumber} )
+        && $fallback_itemnumber)
+    {
+        $item = GetItem( $itemnumber // $barcode );
+    }
     # MANDATORY CHECKS - unless item exists, nothing else matters
-    unless ( $item->{barcode} ) {
+    unless ( defined($item->{biblioitemnumber}) ) {
         $issuingimpossible{UNKNOWN_BARCODE} = 1;
     }
-	return ( \%issuingimpossible, \%needsconfirmation ) if %issuingimpossible;
+    return ( \%issuingimpossible, \%needsconfirmation, undef )
+      if %issuingimpossible;
+
+    my $issue      = GetItemIssue( $item->{itemnumber} );
+    my $biblioitem = GetBiblioItemData( $item->{biblioitemnumber} );
+    $item->{'itemtype'} = $item->{'itype'};
+    my $dbh = C4::Context->dbh;
 
     #
     # DUE DATE is OK ? -- should already have checked.
@@ -714,7 +730,7 @@ sub CanBookBeIssued {
     	# stats only borrower -- add entry to statistics table, and return issuingimpossible{STATS} = 1  .
         &UpdateStats(C4::Context->userenv->{'branch'},'localuse','','',$item->{'itemnumber'},$item->{'itemtype'},$borrower->{'borrowernumber'});
         ModDateLastSeen( $item->{'itemnumber'} );
-        return( { STATS => 1 }, {});
+        return ( { STATS => 1 }, {}, $item->{itemnumber} );
     }
     if ( $borrower->{flags}->{GNA} ) {
         $issuingimpossible{GNA} = 1;
@@ -927,12 +943,106 @@ sub CanBookBeIssued {
             }
         }
     }
-    return ( \%issuingimpossible, \%needsconfirmation );
+    return ( \%issuingimpossible, \%needsconfirmation, $item->{'itemnumber'} );
+}
+
+=head2 CanBookBeReturned
+
+  ($returnallowed, $message) = CanBookBeReturned($item, $branch)
+
+Check whether the item can be returned to the provided branch
+
+=over 4
+
+=item C<$item> is a hash of item information as returned from GetItem
+
+=item C<$branch> is the branchcode where the return is taking place
+
+=back
+
+Returns:
+
+=over 4
+
+=item C<$returnallowed> is 0 or 1, corresponding to whether the return is allowed (1) or not (0)
+
+=item C<$message> is the branchcode where the item SHOULD be returned, if the return is not allowed
+
+=back
+
+=cut
+
+sub CanBookBeReturned {
+  my ($item, $branch) = @_;
+  my $allowreturntobranch = C4::Context->preference("AllowReturnToBranch") || 'anywhere';
+
+  # assume return is allowed to start
+  my $allowed = 1;
+  my $message;
+
+  # identify all cases where return is forbidden
+  if ($allowreturntobranch eq 'homebranch' && $branch ne $item->{'homebranch'}) {
+     $allowed = 0;
+     $message = $item->{'homebranch'};
+  } elsif ($allowreturntobranch eq 'holdingbranch' && $branch ne $item->{'holdingbranch'}) {
+     $allowed = 0;
+     $message = $item->{'holdingbranch'};
+  } elsif ($allowreturntobranch eq 'homeorholdingbranch' && $branch ne $item->{'homebranch'} && $branch ne $item->{'holdingbranch'}) {
+     $allowed = 0;
+     $message = $item->{'homebranch'}; # FIXME: choice of homebranch is arbitrary
+  }
+
+  return ($allowed, $message);
+}
+
+=head2 CheckHighHolds
+
+    used when syspref decreaseLoanHighHolds is active. Returns 1 or 0 to define whether the minimum value held in
+    decreaseLoanHighHoldsValue is exceeded, the total number of outstanding holds, the number of days the loan
+    has been decreased to (held in syspref decreaseLoanHighHoldsValue), and the new due date
+
+=cut
+
+sub checkHighHolds {
+    my ( $item, $borrower ) = @_;
+    my $biblio = GetBiblioFromItemNumber( $item->{itemnumber} );
+    my $branch = _GetCircControlBranch( $item, $borrower );
+    my $dbh    = C4::Context->dbh;
+    my $sth    = $dbh->prepare(
+'select count(borrowernumber) as num_holds from reserves where biblionumber=?'
+    );
+    $sth->execute( $item->{'biblionumber'} );
+    my ($holds) = $sth->fetchrow_array;
+    if ($holds) {
+        my $issuedate = DateTime->now( time_zone => C4::Context->tz() );
+
+        my $calendar = Koha::Calendar->new( branchcode => $branch );
+
+        my $itype =
+          ( C4::Context->preference('item-level_itypes') )
+          ? $biblio->{'itype'}
+          : $biblio->{'itemtype'};
+        my $orig_due =
+          C4::Circulation::CalcDateDue( $issuedate, $itype, $branch,
+            $borrower );
+
+        my $reduced_datedue =
+          $calendar->addDate( $issuedate,
+            C4::Context->preference('decreaseLoanHighHoldsDuration') );
+
+        if ( DateTime->compare( $reduced_datedue, $orig_due ) == -1 ) {
+            return ( 1, $holds,
+                C4::Context->preference('decreaseLoanHighHoldsDuration'),
+                $reduced_datedue );
+        }
+    }
+    return ( 0, 0, 0, undef );
+>>>>>>> be008ef... Bug 7362 - allow checkout by item number
 }
 
 =head2 AddIssue
 
-  &AddIssue($borrower, $barcode, [$datedue], [$cancelreserve], [$issuedate])
+  &AddIssue($borrower, $itemnumber, [$datedue], [$cancelreserve], [$issuedate])
 
 Issue a book. Does no check, they are done in CanBookBeIssued. If we reach this sub, it means the user confirmed if needed.
 
@@ -940,7 +1050,7 @@ Issue a book. Does no check, they are done in CanBookBeIssued. If we reach this 
 
 =item C<$borrower> is a hash with borrower informations (from GetMember or GetMemberDetails).
 
-=item C<$barcode> is the barcode of the item being issued.
+=item C<$itemnumber> is the itemnumber of the item being issued.
 
 =item C<$datedue> is a C4::Dates object for the max date of return, i.e. the date due (optional).
 Calculated if empty.
@@ -952,7 +1062,7 @@ Defaults to today.  Unlike C<$datedue>, NOT a C4::Dates object, unfortunately.
 
 AddIssue does the following things :
 
-  - step 01: check that there is a borrowernumber & a barcode provided
+  - step 01: check that there is a borrowernumber & an itemnumber provided
   - check for RENEWAL (book issued & being issued to the same patron)
       - renewal YES = Calculate Charge & renew
       - renewal NO  =
@@ -969,9 +1079,8 @@ AddIssue does the following things :
 =cut
 
 sub AddIssue {
-    my ( $borrower, $barcode, $datedue, $cancelreserve, $issuedate, $sipmode) = @_;
+    my ( $borrower, $itemnumber, $datedue, $cancelreserve, $issuedate, $sipmode) = @_;
     my $dbh = C4::Context->dbh;
-	my $barcodecheck=CheckValidBarcode($barcode);
     if ($datedue && ref $datedue ne 'DateTime') {
         $datedue = dt_from_string($datedue);
     }
@@ -985,17 +1094,18 @@ sub AddIssue {
 
         }
     }
-	if ($borrower and $barcode and $barcodecheck ne '0'){#??? wtf
+	if (defined($borrower) and defined($itemnumber)){
+
 		# find which item we issue
-		my $item = GetItem('', $barcode) or return undef;	# if we don't get an Item, abort.
+		my $item = GetItem($itemnumber) or return undef;	# if we don't get an Item, abort.
 		my $branch = _GetCircControlBranch($item,$borrower);
-		
+
 		# get actual issuing if there is one
 		my $actualissue = GetItemIssue( $item->{itemnumber});
-		
+
 		# get biblioinformation for this item
 		my $biblio = GetBiblioFromItemNumber($item->{itemnumber});
-		
+
 		#
 		# check if we just renew the issue.
 		#

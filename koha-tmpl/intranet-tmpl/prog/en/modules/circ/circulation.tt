@@ -360,7 +360,7 @@ function refocus(calendar) {
         [% END %]
 
         [% IF ( UNKNOWN_BARCODE ) %]
-            <li>The barcode was not found [% barcode %]</li>
+            <li>The barcode [% IF (can_be_itemnumber) %]or item number [% END %]was not found: [% barcode %]</li>
 	    [% IF ( fast_cataloging ) %]
 	        [% IF ( CAN_user_editcatalogue_fast_cataloging ) %]
                     <a href="/cgi-bin/koha/cataloguing/addbiblio.pl?frameworkcode=FA&amp;barcode=[% barcode %]&amp;borrowernumber=[% borrowernumber %]&amp;branch=[% branch %]&amp;duedatespec=[% duedatespec %]&amp;stickyduedate=[% stickyduedate %]">Fast cataloging</a>
@@ -475,7 +475,7 @@ No patron matched <span class="ex">[% message %]</span>
 
     <label for="barcode">Checking out to [% INCLUDE 'patron-title.inc' %]</label>
 
-	<div class="hint">Enter item barcode:</div>
+	<div class="hint">Enter item [% IF (can_be_itemnumber) %]number or [% END %]barcode:</div>
 
     [% IF ( NEEDSCONFIRMATION ) %]
 	    <input type="text" name="barcode" id="barcode" class="barcode focus" size="14" disabled="disabled" />

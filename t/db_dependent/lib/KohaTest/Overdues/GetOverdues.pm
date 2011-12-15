@@ -52,7 +52,7 @@ sub startup_60_create_overdue_item : Test( startup => 17 ) {
     is( keys %$issuingimpossible, 0, 'issuing is not impossible' );
     is( keys %$needsconfirmation, 0, 'issuing needs no confirmation' );
 
-    C4::Circulation::AddIssue( $borrower, $item->{'barcode'}, $duedate );
+    C4::Circulation::AddIssue( $borrower, $item->{'itemnumber'}, $duedate );
 }
 
 sub basic_usage : Test( 2 ) {

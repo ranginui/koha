@@ -5,6 +5,7 @@
 # Copyright 2000-2002 Katipo Communications
 # copyright 2010 BibLibre
 # Copyright 2011 PTFS-Europe Ltd.
+# Copyright 2011 Catalyst IT
 #
 # This file is part of Koha.
 #
@@ -118,10 +119,10 @@ if (C4::Context->preference("UseTablesortForCirc")) {
     $template->param(UseTablesortForCirc => 1);
 }
 
-my $barcode        = $query->param('barcode') || '';
-$barcode =~  s/^\s*|\s*$//g; # remove leading/trailing whitespace
-
-$barcode = barcodedecode($barcode) if( $barcode && C4::Context->preference('itemBarcodeInputFilter'));
+my $orig_barcode        = $query->param('barcode') || '';
+$orig_barcode =~  s/^\s*|\s*$//g; # remove leading/trailing whitespace
+my $barcode = $orig_barcode;
+$barcode = barcodedecode($orig_barcode) if( $orig_barcode && C4::Context->preference('itemBarcodeInputFilter'));
 my $stickyduedate  = $query->param('stickyduedate') || $session->param('stickyduedate');
 my $duedatespec    = $query->param('duedatespec')   || $session->param('stickyduedate');
 my $issueconfirmed = $query->param('issueconfirmed');
@@ -278,22 +279,24 @@ if ($borrowernumber) {
 #
 #
 if ($barcode) {
+
     # always check for blockers on issuing
-    my ( $error, $question ) =
-    CanBookBeIssued( $borrower, $barcode, $datedue , $inprocess );
+    my ( $error, $question, $itemnumber ) =
+      CanBookBeIssued( $borrower, $barcode, $datedue, $inprocess,0,
+        $orig_barcode ); # we set 0 so we don't ignore reserves
     my $blocker = $invalidduedate ? 1 : 0;
 
     delete $question->{'DEBT'} if ($debt_confirmed);
     foreach my $impossible ( keys %$error ) {
         $template->param(
-            $impossible => $$error{$impossible},
-            IMPOSSIBLE  => 1
+            $impossible => $error->{$impossible},
+            IMPOSSIBLE  => 1,
         );
         $blocker = 1;
     }
     if( !$blocker ){
         my $confirm_required = 0;
-        unless($issueconfirmed){
+        unless ($issueconfirmed) {
             #  Get the item title for more information
             my $getmessageiteminfo  = GetBiblioFromItemNumber(undef,$barcode);
 	    $template->{VARS}->{'additional_materials'} = $getmessageiteminfo->{'materials'};
@@ -302,7 +305,7 @@ if ($barcode) {
             # pass needsconfirmation to template if issuing is possible and user hasn't yet confirmed.
             foreach my $needsconfirmation ( keys %$question ) {
                 $template->param(
-                    $needsconfirmation => $$question{$needsconfirmation},
+                    $needsconfirmation => $question->{$needsconfirmation},
                     getTitleMessageIteminfo => $getmessageiteminfo->{'title'},
                     getBarcodeMessageIteminfo => $getmessageiteminfo->{'barcode'},
                     NEEDSCONFIRMATION  => 1
@@ -311,11 +314,11 @@ if ($barcode) {
             }
         }
         unless($confirm_required) {
-            AddIssue( $borrower, $barcode, $datedue, $cancelreserve );
+            AddIssue( $borrower, $itemnumber, $datedue, $cancelreserve );
             $inprocess = 1;
         }
     }
-    
+
     # FIXME If the issue is confirmed, we launch another time GetMemberIssuesAndFines, now display the issue count after issue 
     my ( $od, $issue, $fines ) = GetMemberIssuesAndFines( $borrowernumber );
     $template->param( issuecount   => $issue );
@@ -660,6 +663,7 @@ $template->param(
     lib_messages_loop => $lib_messages_loop,
     bor_messages_loop => $bor_messages_loop,
     all_messages_del  => C4::Context->preference('AllowAllMessageDeletion'),
+    can_be_itemnumber => C4::Context->preference('CircFallbackItemnumber'),
     findborrower      => $findborrower,
     borrower          => $borrower,
     borrowernumber    => $borrowernumber,

@@ -97,6 +97,7 @@ sub checkout_first_item {
         $barcode = $self->get_barcode_from_itemnumber( $self->{'items'}[0]{'itemnumber'} );
     }
 
+    my $itemnumber = $self->{'items'}[0]{'itemnumber'};
     # get issuedate from parameters. Default to undef, which will be interpreted as today
     my $issuedate = $params->{'issuedate'};
 
@@ -104,7 +105,7 @@ sub checkout_first_item {
 
     my $datedue = C4::Circulation::AddIssue(
         $borrower,    # borrower
-        $barcode,     # barcode
+        $itemnumber,     # itemnumber
         undef,        # datedue
         undef,        # cancelreserve
         $issuedate    # issuedate

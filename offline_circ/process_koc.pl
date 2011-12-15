@@ -282,7 +282,7 @@ sub kocIssueItem {
             my ( $c_y, $c_m, $c_d ) = split( /-/, $circ->{'date'} );
 
             if ( Date_to_Days( $i_y, $i_m, $i_d ) < Date_to_Days( $c_y, $c_m, $c_d ) ) { ## Current issue to a different persion is older than this issue, return and issue.
-                C4::Circulation::AddIssue( $borrower, $circ->{'barcode'}, undef, undef, $circ->{'date'} ) unless ( DEBUG );
+                C4::Circulation::AddIssue( $borrower, $item->{itemnumber}, undef, undef, $circ->{'date'} ) unless ( DEBUG );
                 push @output, {
                     issue => 1,
                     title => $item->{ 'title' },
@@ -302,7 +302,7 @@ sub kocIssueItem {
             }
         }
     } else { ## Item is not checked out to anyone at the moment, go ahead and issue it
-        C4::Circulation::AddIssue( $borrower, $circ->{'barcode'}, undef, undef, $circ->{'date'} ) unless ( DEBUG );
+        C4::Circulation::AddIssue( $borrower, $item->{itemnumber}, undef, undef, $circ->{'date'} ) unless ( DEBUG );
         push @output, {
             issue => 1,
             title => $item->{ 'title' },
