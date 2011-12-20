@@ -2,6 +2,7 @@
 
 # Copyright 2000-2002 Katipo Communications
 # Copyright 2010 BibLibre
+# Copyright 2011 Catalyst IT
 #
 # This file is part of Koha.
 #

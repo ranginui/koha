@@ -161,7 +161,7 @@ if ($uploadbarcodes && length($uploadbarcodes)>0){
                 $qonloan->execute($barcode);
                 if ($qonloan->rows){
                     my $data = $qonloan->fetchrow_hashref;
-                    my ($doreturn, $messages, $iteminformation, $borrower) =AddReturn($barcode, $data->{homebranch});
+                    my ($doreturn, $messages, $iteminformation, $borrower) =AddReturn($item->{itemnumber}, $data->{homebranch});
                     if ($doreturn){
                         push @errorloop, {'barcode'=>$barcode,'ERR_ONLOAN_RET'=>1}
                     } else {

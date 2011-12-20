@@ -51,8 +51,9 @@ sub do_checkin {
         $branch = 'SIP2';
     }
     my $barcode = $self->{item}->id;
-    $debug and warn "do_checkin() calling AddReturn($barcode, $branch)";
-    my ($return, $messages, $iteminformation, $borrower) = AddReturn($barcode, $branch);
+    my $itemnumber = $self->{item}->{'itemnumber'};
+    $debug and warn "do_checkin() calling AddReturn($itemnumber, $branch)";
+    my ($return, $messages, $iteminformation, $borrower) = AddReturn($itemnumber, $branch);
     $self->alert(!$return);
     # ignoring messages: NotIssued, IsPermanent, WasLost, WasTransfered
 

@@ -3,8 +3,8 @@
 # Copyright 2000-2002 Katipo Communications
 #           2006 SAN-OP
 #           2007-2010 BibLibre, Paul POULAIN
-#           2010 Catalyst IT
 #           2011 PTFS-Europe Ltd.
+#           2010-2011 Catalyst IT
 #
 # This file is part of Koha.
 #
@@ -87,6 +87,7 @@ my $userenv_branch = C4::Context->userenv->{'branch'} || '';
 my %returneditems;
 my %riduedate;
 my %riborrowernumber;
+my %ribarcode;
 my @inputloop;
 foreach ( $query->param ) {
     my $counter;
@@ -100,24 +101,22 @@ foreach ( $query->param ) {
         next;
     }
 
+    # These "slide up" the list of returned items, to make room for the one
+    # being processed now.
     my %input;
-    my $barcode        = $query->param("ri-$counter");
+    my $itemnumber     = $query->param("ri-$counter");
+    my $barcode        = $query->param("bc-$counter");
     my $duedate        = $query->param("dd-$counter");
     my $borrowernumber = $query->param("bn-$counter");
     $counter++;
 
-    # decode barcode    ## Didn't we already decode them before passing them back last time??
-    $barcode =~ s/^\s*|\s*$//g; # remove leading/trailing whitespace
-    $barcode = barcodedecode($barcode) if(C4::Context->preference('itemBarcodeInputFilter'));
-
-    ######################
-    #Are these lines still useful ?
-    $returneditems{$counter}    = $barcode;
+    $returneditems{$counter}    = $itemnumber;
     $riduedate{$counter}        = $duedate;
     $riborrowernumber{$counter} = $borrowernumber;
+    $ribarcode{$counter}        = $barcode;
 
-    #######################
     $input{counter}        = $counter;
+    $input{itemnumber}     = $itemnumber;
     $input{barcode}        = $barcode;
     $input{duedate}        = $duedate;
     $input{borrowernumber} = $borrowernumber;
@@ -170,6 +169,8 @@ my $returned = 0;
 my $messages;
 my $issueinformation;
 my $itemnumber;
+# Depending on the setting of CircItemnumberFallback, this may also contain
+# the itemnumber.
 my $barcode     = $query->param('barcode');
 my $exemptfine  = $query->param('exemptfine');
 my $dropboxmode = $query->param('dropboxmode');
@@ -199,13 +200,23 @@ if ($canceltransfer){
 }
 
 # actually return book and prepare item table.....
+my $item;
 if ($barcode) {
     $barcode =~ s/^\s*|\s*$//g; # remove leading/trailing whitespace
+    my $orig_barcode = $barcode;
     $barcode = barcodedecode($barcode) if C4::Context->preference('itemBarcodeInputFilter');
     $itemnumber = GetItemnumberFromBarcode($barcode);
-
-    if ( C4::Context->preference("InProcessingToShelvingCart") ) {
-        my $item = GetItem( $itemnumber );
+    if (!$itemnumber && C4::Context->preference('CircFallbackItemnumber')) {
+        # See if we have a real item number instead of a barcode
+        $item = GetItem($orig_barcode);
+        $itemnumber = $item->{itemnumber} if $item;
+    }
+    else {
+        $item = GetItem($itemnumber);
+    }
+    # If the provided item doesn't exist, then we will fall through and
+    # this problem is picked up by AddReturn.
+    if ( C4::Context->preference("InProcessingToShelvingCart") && $item ) {
         if ( $item->{'location'} eq 'PROC' ) {
             $item->{'location'} = 'CART';
             ModItem( $item, $item->{'biblionumber'}, $item->{'itemnumber'} );
@@ -216,7 +227,7 @@ if ($barcode) {
 # save the return
 #
     ( $returned, $messages, $issueinformation, $borrower ) =
-      AddReturn( $barcode, $userenv_branch, $exemptfine, $dropboxmode);     # do the return
+      AddReturn( $itemnumber, $userenv_branch, $exemptfine, $dropboxmode);     # do the return
     my $homeorholdingbranchreturn = C4::Context->preference('HomeOrHoldingBranchReturn');
     $homeorholdingbranchreturn ||= 'homebranch';
 
@@ -235,20 +246,23 @@ if ($barcode) {
         ccode            => $biblio->{'ccode'},
         itembiblionumber => $biblio->{'biblionumber'},    
 	additional_materials => $biblio->{'materials'}
+        itemnumber       => $itemnumber,
     );
 
     my %input = (
-        counter => 0,
-        first   => 1,
-        barcode => $barcode,
+        counter    => 0,
+        first      => 1,
+        barcode    => $biblio->{barcode},
+        itemnumber => $itemnumber,
     );
 
     if ($returned) {
         my $time_now = DateTime->now( time_zone => C4::Context->tz )->truncate( to => 'minute');
         my $duedate = $issueinformation->{date_due}->strftime('%Y-%m-%d %H:%M');
-        $returneditems{0}      = $barcode;
+        $returneditems{0}      = $itemnumber;
         $riborrowernumber{0}   = $borrower->{'borrowernumber'};
         $riduedate{0}          = $duedate;
+        $ribarcode{0}          = $biblio->{barcode};
         $input{borrowernumber} = $borrower->{'borrowernumber'};
         $input{duedate}        = $duedate;
         $input{return_overdue} = 1 if (DateTime->compare($issueinformation->{date_due}, $time_now) == -1);
@@ -281,9 +295,9 @@ if ($barcode) {
             }
         }
     }
-    elsif ( !$messages->{'BadBarcode'} ) {
+    elsif ( !$messages->{'BadItemnumber'} ) {
         $input{duedate}   = 0;
-        $returneditems{0} = $barcode;
+        $returneditems{0} = $itemnumber;
         $riduedate{0}     = 0;
         if ( $messages->{'wthdrawn'} ) {
             $input{withdrawn}      = 1;
@@ -375,10 +389,13 @@ if ( $messages->{'ResFound'}) {
             );
         } elsif ( $reserve->{'ResFound'} eq "Reserved" ) {
             $template->param(
-                intransit    => ($userenv_branch eq $reserve->{'branchcode'} ? 0 : 1 ),
-                transfertodo => ($userenv_branch eq $reserve->{'branchcode'} ? 0 : 1 ),
-                resbarcode   => $barcode,
-                reserved     => 1,
+                intransit =>
+                  ( $userenv_branch eq $reserve->{'branchcode'} ? 0 : 1 ),
+                transfertodo =>
+                  ( $userenv_branch eq $reserve->{'branchcode'} ? 0 : 1 ),
+                resbarcode    => $item->{barcode},
+                resitemnumber => $item->{itemnumber},
+                reserved      => 1,
             );
         }
 
@@ -400,7 +417,7 @@ if ( $messages->{'ResFound'}) {
             borcnum        => $borr->{'cardnumber'},
             debarred       => $borr->{'debarred'},
             gonenoaddress  => $borr->{'gonenoaddress'},
-            barcode        => $barcode,
+            barcode        => $reserve->{'barcode'},
             destbranch     => $reserve->{'branchcode'},
             borrowernumber => $reserve->{'borrowernumber'},
             itemnumber     => $reserve->{'itemnumber'},
@@ -414,9 +431,9 @@ my @errmsgloop;
 foreach my $code ( keys %$messages ) {
     my %err;
     my $exit_required_p = 0;
-    if ( $code eq 'BadBarcode' ) {
+    if ( $code eq 'BadItemnumber' ) {
         $err{badbarcode} = 1;
-        $err{msg}        = $messages->{'BadBarcode'};
+        $err{msg}        = $messages->{'BadItemnumber'} || $barcode;
     }
     elsif ( $code eq 'NotIssued' ) {
         $err{notissued} = 1;
@@ -498,12 +515,15 @@ if ($borrower) {
             my $items = $flags->{$flag}->{'itemlist'};
             foreach my $item (@$items) {
                 my $biblio = GetBiblioFromItemNumber( $item->{'itemnumber'});
-                push @waitingitemloop, {
-                    biblionum => $biblio->{'biblionumber'},
-                    barcode   => $biblio->{'barcode'},
-                    title     => $biblio->{'title'},
-                    brname    => $branches->{ $biblio->{'holdingbranch'} }->{'branchname'},
-                };
+                push @waitingitemloop,
+                  {
+                    biblionum  => $biblio->{'biblionumber'},
+                    barcode    => $biblio->{'barcode'},
+                    itemnumber => $item->{'itemnumber'},
+                    title      => $biblio->{'title'},
+                    brname =>
+                      $branches->{ $biblio->{'holdingbranch'} }->{'branchname'},
+                  };
             }
             $flaginfo{itemloop} = \@waitingitemloop;
         }
@@ -549,7 +569,7 @@ my $shelflocations = GetKohaAuthorisedValues('items.location','');
 foreach ( sort { $a <=> $b } keys %returneditems ) {
     my %ri;
     if ( $count++ < $returned_counter ) {
-        my $bar_code = $returneditems{$_};
+	my $returned_item = $returneditems{$_};
         if ($riduedate{$_}) {
             my $duedate = dt_from_string( $riduedate{$_}, 'sql');
             $ri{year}  = $duedate->year();
@@ -573,9 +593,15 @@ foreach ( sort { $a <=> $b } keys %returneditems ) {
         }
 
         #        my %ri;
-        my $biblio = GetBiblioFromItemNumber(GetItemnumberFromBarcode($bar_code));
+
+        my $biblio = GetBiblioFromItemNumber($returned_item);
+	my $item   = GetItem($returned_item);
+
         # fix up item type for display
-        $biblio->{'itemtype'} = C4::Context->preference('item-level_itypes') ? $biblio->{'itype'} : $biblio->{'itemtype'};
+        $biblio->{'itemtype'} =
+          C4::Context->preference('item-level_itypes')
+          ? $biblio->{'itype'}
+          : $biblio->{'itemtype'};
         $ri{itembiblionumber} = $biblio->{'biblionumber'};
         $ri{itemtitle}        = $biblio->{'title'};
         $ri{itemauthor}       = $biblio->{'author'};
@@ -583,12 +609,18 @@ foreach ( sort { $a <=> $b } keys %returneditems ) {
         $ri{itemtype}         = $biblio->{'itemtype'};
         $ri{itemnote}         = $biblio->{'itemnotes'};
         $ri{ccode}            = $biblio->{'ccode'};
-        $ri{itemnumber}       = $biblio->{'itemnumber'};
-        $ri{barcode}          = $bar_code;
+        $ri{barcode}          = $biblio->{'barcode'};
+        $ri{itemnumber}       = $returned_item;
+        $ri{barcode}          = $item->{'barcode'};
+        $ri{homebranch}       = $item->{'homebranch'};
+        $ri{holdingbranch}    = $item->{'holdingbranch'};
 
         $ri{location}         = $biblio->{'location'};
         my $shelfcode = $ri{'location'};
-        $ri{'location'} = $shelflocations->{$shelfcode} if ( defined( $shelfcode ) && defined($shelflocations) && exists( $shelflocations->{$shelfcode} ) );
+        $ri{'location'} = $shelflocations->{$shelfcode}
+          if ( defined($shelfcode)
+            && defined($shelflocations)
+            && exists( $shelflocations->{$shelfcode} ) );
 
     }
     else {
@@ -608,6 +640,7 @@ $template->param(
     dropboxdate    => output_pref($dropboxdate),
     overduecharges => $overduecharges,
     soundon        => C4::Context->preference("SoundOn"),
+    can_be_itemnumber => C4::Context->preference('CircFallbackItemnumber'),
 );
 
 ### Comment out rotating collections for now to allow it a little more time to bake

@@ -122,7 +122,7 @@ if ($op eq "logout") {
     $query->param( patronid => undef, patronlogin => undef, patronpw => undef );
 }
 elsif ( $op eq "returnbook" && $allowselfcheckreturns ) {
-    my ($doreturn) = AddReturn( $barcode, $branch );
+    my ($doreturn) = AddReturn( $item->{itemnumber}, $branch );
     #warn "returnbook: " . $doreturn;
     $borrower = GetMemberDetails(undef,$patronid);
 }

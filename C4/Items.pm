@@ -2,6 +2,7 @@ package C4::Items;
 
 # Copyright 2007 LibLime, Inc.
 # Parts Copyright Biblibre 2010
+# Copyright 2011 Catalyst IT
 #
 # This file is part of Koha.
 #
@@ -138,6 +139,8 @@ Return item information, for a given itemnumber or barcode.
 The return value is a hashref mapping item column
 names to values.  If C<$serial> is true, include serial publication data.
 
+If the requested item doesn't exist, C<undef> is returned.
+
 =cut
 
 sub GetItem {
@@ -164,7 +167,7 @@ sub GetItem {
         ($data->{'serialseq'} , $data->{'publisheddate'}) = $ssth->fetchrow_array();
     }
 	#if we don't have an items.itype, use biblioitems.itemtype.
-	if( ! $data->{'itype'} ) {
+	if( $data && ! $data->{'itype'} ) {
 		my $sth = $dbh->prepare("SELECT itemtype FROM biblioitems  WHERE biblionumber = ?");
 		$sth->execute($data->{'biblionumber'});
 		($data->{'itype'}) = $sth->fetchrow_array;

@@ -6,6 +6,7 @@
 
 
 # Copyright 2000-2002 Katipo Communications
+# Copyright 2011 Catalyst IT
 #
 # This file is part of Koha.
 #
@@ -58,11 +59,11 @@ else {
     @data = $input->param('items[]');
 }
 
-my @barcodes;
+my @itemnumbers;
 if ($input->param('return_all')) {
-    @barcodes = $input->param('all_barcodes[]');
+    @itemnumbers = $input->param('all_itemnumbers[]');
 } else {
-    @barcodes = $input->param('barcodes[]');
+    @itemnumbers = $input->param('itemnumbers[]');
 }
 
 my $branch=$input->param('branch');
@@ -73,7 +74,6 @@ if ( $input->param('newduedate') ) {
     $datedue->set_minute(59);
 }
 
-# warn "barcodes : @barcodes";
 #
 # renew items
 #
@@ -93,12 +93,10 @@ foreach my $itemno (@data) {
 	}
 }
 my $failedreturn = q{};
-foreach my $barcode (@barcodes) {
+foreach my $itemnumber (@itemnumbers) {
     # check status before renewing issue
 
     #System Preference Handling During Check-in In Patron Module
-    my $itemnumber;
-    $itemnumber = GetItemnumberFromBarcode($barcode);
     if ($itemnumber) {
         if ( C4::Context->preference("InProcessingToShelvingCart") ) {
             my $item = GetItem( $itemnumber );
@@ -115,10 +113,11 @@ foreach my $barcode (@barcodes) {
         }
     }
 
-   my ( $returned, $messages, $issueinformation, $borrower ) = 
-    AddReturn($barcode, $branch, $exemptfine);
-   $failedreturn.="&failedreturn=$barcode" unless ($returned);
+    my ( $returned, $messages, $issueinformation, $borrower ) =
+      AddReturn( $itemnumber, $branch, $exemptfine );
+    $failedreturn .= "&failedreturn=$barcode" unless ($returned);
 }
+
 
 #
 # redirection to the referrer page

@@ -317,7 +317,7 @@ sub transferbook {
 
     # check if it is still issued to someone, return it...
     if ($issue->{borrowernumber}) {
-        AddReturn( $barcode, $fbr );
+        AddReturn( $itemnumber, $fbr );
         $messages->{'WasReturned'} = $issue->{borrowernumber};
     }
 
@@ -1037,7 +1037,6 @@ sub checkHighHolds {
         }
     }
     return ( 0, 0, 0, undef );
->>>>>>> be008ef... Bug 7362 - allow checkout by item number
 }
 
 =head2 AddIssue
@@ -1124,7 +1123,7 @@ sub AddIssue {
 				# This book is currently on loan, but not to the person
 				# who wants to borrow it now. mark it returned before issuing to the new borrower
 				AddReturn(
-					$item->{'barcode'},
+					$item->{'itemnumber'},
 					C4::Context->userenv->{'branch'}
 				);
 			}
@@ -1525,13 +1524,13 @@ sub GetBranchItemRule {
 =head2 AddReturn
 
   ($doreturn, $messages, $iteminformation, $borrower) =
-      &AddReturn($barcode, $branch, $exemptfine, $dropbox);
+      &AddReturn($itemnumber, $branch, $exemptfine, $dropbox);
 
 Returns a book.
 
 =over 4
 
-=item C<$barcode> is the bar code of the book being returned.
+=item C<$itemnumber> is the item number of the book being returned.
 
 =item C<$branch> is the code of the branch where the book is being returned.
 
@@ -1555,13 +1554,13 @@ The keys of the hash are:
 
 =over 4
 
-=item C<BadBarcode>
+=item C<BadItemnumber>
 
-No item with this barcode exists. The value is C<$barcode>.
+No item with this itemnumber exists. The value is C<$itemnumber>.
 
 =item C<NotIssued>
 
-The book is not currently on loan. The value is C<$barcode>.
+The book is not currently on loan. The value is C<$itemnumber>.
 
 =item C<IsPermanent>
 
@@ -1571,7 +1570,8 @@ the book's home branch.
 
 =item C<wthdrawn>
 
-This book has been withdrawn/cancelled. The value should be ignored.
+This book has been withdrawn/cancelled. The value should be ignored. The
+spelling is not a typo.
 
 =item C<Wrongbranch>
 
@@ -1597,8 +1597,7 @@ patron who last borrowed the book.
 =cut
 
 sub AddReturn {
-    my ( $barcode, $branch, $exemptfine, $dropbox ) = @_;
-
+    my ( $itemnumber, $branch, $exemptfine, $dropbox ) = @_;
     if ($branch and not GetBranchDetail($branch)) {
         warn "AddReturn error: branch '$branch' not found.  Reverting to " . C4::Context->userenv->{'branch'};
         undef $branch;
@@ -1609,21 +1608,21 @@ sub AddReturn {
     my $biblio;
     my $doreturn       = 1;
     my $validTransfert = 0;
-    my $stat_type = 'return';    
+    my $stat_type = 'return';
 
     # get information on item
-    my $itemnumber = GetItemnumberFromBarcode( $barcode );
-    unless ($itemnumber) {
-        return (0, { BadBarcode => $barcode }); # no barcode means no item or borrower.  bail out.
+    my $item = GetItem($itemnumber);
+    unless ($item) {
+        return (0, { BadItemnumber => $itemnumber });
     }
     my $issue  = GetItemIssue($itemnumber);
 #   warn Dumper($iteminformation);
     if ($issue and $issue->{borrowernumber}) {
         $borrower = C4::Members::GetMemberDetails($issue->{borrowernumber})
-            or die "Data inconsistency: barcode $barcode (itemnumber:$itemnumber) claims to be issued to non-existant borrowernumber '$issue->{borrowernumber}'\n"
+            or die "Data inconsistency: itemnumber:$itemnumber claims to be issued to non-existant borrowernumber '$issue->{borrowernumber}'\n"
                 . Dumper($issue) . "\n";
     } else {
-        $messages->{'NotIssued'} = $barcode;
+        $messages->{'NotIssued'} = $itemnumber;
         # even though item is not on loan, it may still be transferred;  therefore, get current branch info
         $doreturn = 0;
         # No issue, no borrowernumber.  ONLY if $doreturn, *might* you have a $borrower later.
@@ -1737,7 +1736,7 @@ sub AddReturn {
 
     # fix up the accounts.....
     if ($item->{'itemlost'}) {
-        _FixAccountForLostAndReturned($item->{'itemnumber'}, $borrowernumber, $barcode);    # can tolerate undef $borrowernumber
+        _FixAccountForLostAndReturned($item->{'itemnumber'}, $borrowernumber, $item->{'barcode'});    # can tolerate undef $borrowernumber
         $messages->{'WasLost'} = 1;
     }
 

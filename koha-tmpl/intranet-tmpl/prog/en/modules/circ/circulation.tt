@@ -62,40 +62,40 @@
 var allcheckboxes = $(".checkboxed");
 	$("#renew_all").click(function(){
 		$(allcheckboxes).checkCheckboxes(":input[name*=items]"); 
-		$(allcheckboxes).unCheckCheckboxes(":input[name*=barcodes]");
+		$(allcheckboxes).unCheckCheckboxes(":input[name*=itemnumbers]");
 	});
 	$("#CheckAllitems").click(function(){
 		$(allcheckboxes).checkCheckboxes(":input[name*=items]");
-		$(allcheckboxes).unCheckCheckboxes(":input[name*=barcodes]"); return false;
+		$(allcheckboxes).unCheckCheckboxes(":input[name*=itemnumbers]"); return false;
 	});
     $("#CheckNoitems").click(function(){
 		$(allcheckboxes).unCheckCheckboxes(":input[name*=items]"); return false;
 	});
 	$("#CheckAllreturns").click(function(){
-		$(allcheckboxes).checkCheckboxes(":input[name*=barcodes]");
+		$(allcheckboxes).checkCheckboxes(":input[name*=itemnumbers]");
 		$(allcheckboxes).unCheckCheckboxes(":input[name*=items]"); return false;
 	});
     $("#CheckNoreturns" ).click(function(){
-		$(allcheckboxes).unCheckCheckboxes(":input[name*=barcodes]"); return false;
+		$(allcheckboxes).unCheckCheckboxes(":input[name*=itemnumbers]"); return false;
 	});
 
     $("#relrenew_all").click(function(){
         $(allcheckboxes).checkCheckboxes(":input[name*=items]");
-        $(allcheckboxes).unCheckCheckboxes(":input[name*=barcodes]");
+        $(allcheckboxes).unCheckCheckboxes(":input[name*=itemnumbers]");
     });
     $("#relCheckAllitems").click(function(){
         $(allcheckboxes).checkCheckboxes(":input[name*=items]");
-        $(allcheckboxes).unCheckCheckboxes(":input[name*=barcodes]"); return false;
+        $(allcheckboxes).unCheckCheckboxes(":input[name*=itemnumbers]"); return false;
     });
     $("#relCheckNoitems").click(function(){
         $(allcheckboxes).unCheckCheckboxes(":input[name*=items]"); return false;
     });
     $("#relCheckAllreturns").click(function(){
-        $(allcheckboxes).checkCheckboxes(":input[name*=barcodes]");
+        $(allcheckboxes).checkCheckboxes(":input[name*=itemnumbers]");
         $(allcheckboxes).unCheckCheckboxes(":input[name*=items]"); return false;
     });
     $("#relCheckNoreturns").click(function(){
-        $(allcheckboxes).unCheckCheckboxes(":input[name*=barcodes]"); return false;
+        $(allcheckboxes).unCheckCheckboxes(":input[name*=itemnumbers]"); return false;
     });
 
     [% IF ( CAN_user_circulate_override_renewals ) %]
@@ -359,7 +359,7 @@ function refocus(calendar) {
             <li>The due date &quot;[% INVALID_DATE %]&quot; is invalid</li>
         [% END %]
 
-        [% IF ( UNKNOWN_BARCODE ) %]
+        [% IF ( UNKNOWN_ITEMNUMBER ) %]
             <li>The barcode [% IF (can_be_itemnumber) %]or item number [% END %]was not found: [% barcode %]</li>
 	    [% IF ( fast_cataloging ) %]
 	        [% IF ( CAN_user_editcatalogue_fast_cataloging ) %]
@@ -772,12 +772,12 @@ No patron matched <span class="ex">[% message %]</span>
             <td class="problem">Checkin failed</td>
       [% ELSE %]
             [% IF ( todayissue.renew_error_on_reserve ) %]
-               <td><a href="/cgi-bin/koha/reserve/request.pl?biblionumber=[% todayissue.biblionumber %]">On hold</a>
-                <input type="checkbox" name="all_barcodes[]" value="[% todayissue.barcode %]" checked="checked" style="display: none;" />
+               <td><a href="/cgi-bin/koha/reserve/request.pl?biblionumber=[% todayissue.biblionumber %]">On Hold</a>
+                <input type="checkbox" name="all_itemnumbers[]" value="[% todayissue.itemnumber %]" checked="checked" style="display: none;" />
                 </td>
             [% ELSE %]
-            <td><input type="checkbox" class="radio" name="barcodes[]"  value="[% todayissue.barcode %]" />
-                <input type="checkbox" name="all_barcodes[]" value="[% todayissue.barcode %]" checked="checked" style="display: none;" />
+            <td><input type="checkbox" class="radio" name="itemnumbers[]"  value="[% todayissue.itemnumber %]" />
+                <input type="checkbox" name="all_itemnumbers[]" value="[% todayissue.itemnumber %]" checked="checked" style="display: none;" />
             </td>
             [% END %]
       [% END %]
@@ -847,12 +847,12 @@ No patron matched <span class="ex">[% message %]</span>
             <td class="problem">Checkin failed</td>
         [% ELSE %]
             [% IF ( previssue.renew_error_on_reserve ) %]
-               <td><a href="/cgi-bin/koha/reserve/request.pl?biblionumber=[% previssue.biblionumber %]">On hold</a>
-                <input type="checkbox" name="all_barcodes[]" value="[% previssue.barcode %]" checked="checked" style="display: none;" />
+               <td><a href="/cgi-bin/koha/reserve/request.pl?biblionumber=[% previssue.biblionumber %]">On Hold</a>
+                <input type="checkbox" name="all_itemnumbers[]" value="[% previssue.itemnumber %]" checked="checked" style="display: none;" />
                 </td>
             [% ELSE %]
-            <td><input type="checkbox" class="radio" name="barcodes[]"  value="[% previssue.barcode %]" />
-                <input type="checkbox" name="all_barcodes[]" value="[% previssue.barcode %]" checked="checked" style="display: none;" />
+            <td><input type="checkbox" class="radio" name="itemnumbers[]"  value="[% previssue.itemnumber %]" />
+                <input type="checkbox" name="all_itemnumbers[]" value="[% previssue.itemnumber %]" checked="checked" style="display: none;" />
             </td>
             [% END %]
       [% END %]

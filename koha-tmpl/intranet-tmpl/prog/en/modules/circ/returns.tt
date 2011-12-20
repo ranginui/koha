@@ -51,8 +51,11 @@ $(document).ready(function () {
 
 <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/circ/circulation-home.pl">Circulation</a> &rsaquo; Check in</div>
 
+[% IF (can_be_itemnumber) %]
+<div id="doc" class="yui-t7" style="width: 66.69em;">
+[% ELSE %]
 <div id="doc" class="yui-t7">
-
+[% END %]
    <div id="bd">
 	<div id="yui-main">
 
@@ -144,7 +147,8 @@ $(document).ready(function () {
 
             <input type="submit" value="Print and confirm" class="print" onclick="Dopop('hold-transfer-slip.pl?borrowernumber=[% borrowernumber %]&amp;biblionumber=[% itembiblionumber %]&amp;op=slip'); this.form.submit();" />
             [% FOREACH inputloo IN inputloop %]
-                <input type="hidden" name="ri-[% inputloo.counter %]" value="[% inputloo.barcode %]" />
+                <input type="hidden" name="ri-[% inputloo.counter %]" value="[% inputloo.itemnumber %]" />
+                <input type="hidden" name="bc-[% inputloo.counter %]" value="[% inputloo.barcode %]" />
                 <input type="hidden" name="dd-[% inputloo.counter %]" value="[% inputloo.duedate %]" />
                 <input type="hidden" name="bn-[% inputloo.counter %]" value="[% inputloo.borrowernumber %]" />
             [% END %]
@@ -186,7 +190,8 @@ $(document).ready(function () {
             <input type="submit" class="approve" value="Confirm" />
             <input type="submit" value="Print slip and confirm" class="print" onclick="Dopop('hold-transfer-slip.pl?transfer=1&amp;borrowernumber=[% borrowernumber %]&amp;biblionumber=[% itembiblionumber %]&amp;op=slip'); this.form.submit();" />
             [% FOREACH inputloo IN inputloop %]
-                <input type="hidden" name="ri-[% inputloo.counter %]" value="[% inputloo.barcode %]" />
+                <input type="hidden" name="ri-[% inputloo.counter %]" value="[% inputloo.itemnumber %]" />
+                <input type="hidden" name="bc-[% inputloo.counter %]" value="[% inputloo.barcode %]" />
                 <input type="hidden" name="dd-[% inputloo.counter %]" value="[% inputloo.duedate %]" />
                 <input type="hidden" name="bn-[% inputloo.counter %]" value="[% inputloo.borrowernumber %]" />
             [% END %]
@@ -226,7 +231,8 @@ $(document).ready(function () {
         <input type="hidden" name="exemptfine" value="[% exemptfine %]" />
         <input type="hidden" name="dropboxmode" value="[% dropboxmode %]" />
 	[% FOREACH inputloo IN inputloop %]
-	<input type="hidden" name="ri-[% inputloo.counter %]" value="[% inputloo.barcode %]" />
+	<input type="hidden" name="ri-[% inputloo.counter %]" value="[% inputloo.itemnumber %]" />
+	<input type="hidden" name="bc-[% inputloo.counter %]" value="[% inputloo.barcode %]" />
 	<input type="hidden" name="dd-[% inputloo.counter %]" value="[% inputloo.duedate %]" />
 	<input type="hidden" name="bn-[% inputloo.counter %]" value="[% inputloo.borrowernumber %]" />
 	[% END %]
@@ -250,7 +256,8 @@ $(document).ready(function () {
         <form method="post" action="returns.pl"><input type="submit" value="OK" />
             [% FOREACH inputloo IN inputloop %]
                 [% UNLESS ( inputloo.first ) %]
-                    <input type="hidden" name="ri-[% inputloo.counter %]" value="[% inputloo.barcode %]" />
+                    <input type="hidden" name="ri-[% inputloo.counter %]" value="[% inputloo.itemnumber %]" />
+                    <input type="hidden" name="bc-[% inputloo.counter %]" value="[% inputloo.barcode %]" />
                     <input type="hidden" name="dd-[% inputloo.counter %]" value="[% inputloo.duedate %]" />
                     <input type="hidden" name="bn-[% inputloo.counter %]" value="[% inputloo.borrowernumber %]" />
                 [% END %]
@@ -299,7 +306,8 @@ $(document).ready(function () {
             [% END %]
                 <input type="submit" class="deny" value="Ignore" onclick="$('.dialog:visible').hide('slow'); $('#barcode').focus(); return false;" />
             [% FOREACH inputloo IN inputloop %]
-	<input type="hidden" name="ri-[% inputloo.counter %]" value="[% inputloo.barcode %]" />
+	<input type="hidden" name="ri-[% inputloo.counter %]" value="[% inputloo.itemnumber %]" />
+	<input type="hidden" name="bc-[% inputloo.counter %]" value="[% inputloo.barcode %]" />
 	<input type="hidden" name="dd-[% inputloo.counter %]" value="[% inputloo.duedate %]" />
 	<input type="hidden" name="bn-[% inputloo.counter %]" value="[% inputloo.borrowernumber %]" />[% END %]
             <input type="hidden" name="itemnumber" value="[% itemnumber %]" />
@@ -361,7 +369,7 @@ $(document).ready(function () {
     <div class="yui-u first">
             <fieldset>
 	<legend>Check In</legend>
-            <label for="barcode">Enter item barcode: </label>
+            <label for="barcode">Enter item barcode[% IF (can_be_itemnumber) %] or itemnumber[% END %]: </label>
 			[% IF ( exemptfine ) %]
 			<input name="barcode" id="barcode" size="14" class="focus alert"/>
 			[% ELSIF ( dropboxmode ) %]
@@ -371,7 +379,8 @@ $(document).ready(function () {
 			[% END %]
             <input type="submit" class="submit" value="Submit" />
             [% FOREACH inputloo IN inputloop %]
-                <input type="hidden" name="ri-[% inputloo.counter %]" value="[% inputloo.barcode %]" />
+                <input type="hidden" name="ri-[% inputloo.counter %]" value="[% inputloo.itemnumber %]" />
+                <input type="hidden" name="bc-[% inputloo.counter %]" value="[% inputloo.barcode %]" />
                 <input type="hidden" name="dd-[% inputloo.counter %]" value="[% inputloo.duedate %]" />
                 <input type="hidden" name="bn-[% inputloo.counter %]" value="[% inputloo.borrowernumber %]" />
             [% END %]

@@ -70,8 +70,8 @@ YAHOO.util.Event.onContentReady("header_search", function() {
 	[% END %]
 	
 [% IF ( CAN_user_circulate ) %]
-<div id="checkin_search" class="residentsearch" style="display:none;">
-    <p class="tip">Scan a barcode to check in:</p>
+<div id="checkin_search" class="residentsearch">
+    <p class="tip">Scan a barcode [% IF (can_be_itemnumber) %]or enter an itemnumber [% END %]to check in:</p>
     <form method="post" action="/cgi-bin/koha/circ/returns.pl" autocomplete="off">
         <input name="barcode" id="ret_barcode" size="40" />
         <input value="Submit" class="submit" type="submit" />
