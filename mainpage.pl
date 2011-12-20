@@ -14,10 +14,9 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
-#
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
 use warnings;
@@ -27,6 +26,9 @@ use C4::Auth;
 use C4::AuthoritiesMarc;
 use C4::Koha;
 use C4::NewsChannels;
+use C4::Review qw/numberofreviews/;
+use C4::Suggestions qw/CountSuggestion/;
+use C4::Tags qw/get_count_by_tag_status/;
 my $query     = new CGI;
 my $authtypes = getauthtypes;
 my @authtypesloop;
@@ -65,6 +67,16 @@ my $koha_news_count = scalar @$all_koha_news;
 $template->param(
     koha_news       => $all_koha_news,
     koha_news_count => $koha_news_count
+);
+
+my $pendingcomments = numberofreviews(0);
+my $pendingtags = get_count_by_tag_status(0);
+my $pendingsuggestions       = CountSuggestion("ASKED");
+
+$template->param(
+    pendingcomments    => $pendingcomments,
+    pendingtags        => $pendingtags,
+    pendingsuggestions => $pendingsuggestions
 );
 
 output_html_with_http_headers $query, $cookie, $template->output;

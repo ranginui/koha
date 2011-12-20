@@ -16,9 +16,9 @@
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 # A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along with
-# Koha; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
-# Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 use strict;
 use warnings;
@@ -32,6 +32,8 @@ use C4::Output;
 use C4::Auth;
 use C4::Context;
 use C4::Installer;
+
+#use Smart::Comments '####';
 
 my $query = new CGI;
 my ( $template, $loggedinuser, $cookie ) = get_template_and_user(
@@ -106,7 +108,46 @@ foreach (@components) {
         $row = [];
     }
 }
+## ## $table
 
 $template->param( table => $table );
+
+
+## ------------------------------------------
+## Koha time line code
+
+#get file location
+my $dir = C4::Context->config('intranetdir');
+open( my $file, "<", "$dir" . "/docs/history.txt" );
+my $i = 0;
+
+my @rows2 = ();
+my $row2  = [];
+
+my @lines = <$file>;
+close($file);
+
+shift @lines; #remove header row
+
+foreach (@lines) {
+    my ( $date, $desc, $tag ) = split(/\t/);
+    push(
+        @rows2,
+        {
+            date => $date,
+            desc => $desc,
+        }
+    );
+}
+
+my $table2 = [];
+#foreach my $row2 (@rows2) {
+foreach  (@rows2) {
+    push (@$row2, $_);
+    push( @$table2, { row2 => $row2 } );
+    $row2 = [];
+}
+
+$template->param( table2 => $table2 );
 
 output_html_with_http_headers $query, $cookie, $template->output;

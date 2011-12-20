@@ -587,6 +587,7 @@ sub DelItem {
     # backup the record
     my $copy2deleted = $dbh->prepare("UPDATE deleteditems SET marc=? WHERE itemnumber=?");
     $copy2deleted->execute( $record->as_usmarc(), $itemnumber );
+    # This last update statement makes that the timestamp column in deleteditems is updated too. If you remove these lines, please add a line to update the timestamp separately. See Bugzilla report 7146 and Biblio.pm (DelBiblio).
 
     #search item field code
     logaction("CATALOGUING", "DELETE", $itemnumber, "item") if C4::Context->preference("CataloguingLog");
@@ -1213,6 +1214,7 @@ sub GetItemsInfo {
             $data->{cardnumber}     = $idata->{cardnumber};
             $data->{surname}     = $idata->{surname};
             $data->{firstname}     = $idata->{firstname};
+            $data->{lastreneweddate} = $idata->{lastreneweddate};
             $datedue                = $idata->{'date_due'};
         if (C4::Context->preference("IndependantBranches")){
         my $userenv = C4::Context->userenv;
@@ -2139,10 +2141,15 @@ sub _koha_new_item {
             $item->{'copynumber'},
             $item->{'stocknumber'},
     );
-    my $itemnumber = $dbh->{'mysql_insertid'};
+
+    my $itemnumber;
     if ( defined $sth->errstr ) {
         $error.="ERROR in _koha_new_item $query".$sth->errstr;
     }
+    else {
+        $itemnumber = $dbh->{'mysql_insertid'};
+    }
+
     return ( $itemnumber, $error );
 }
 

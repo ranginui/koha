@@ -69,7 +69,7 @@ my $title=$query->param('title');
 my $bi=$query->param('bi');
 $bi = $biblionumber unless $bi;
 my $itemnumber = $query->param('itemnumber');
-my $data=GetBiblioData($biblionumber);
+my $data = &GetBiblioData($biblionumber);
 my $dewey = $data->{'dewey'};
 my $showallitems = $query->param('showallitems');
 
@@ -87,7 +87,6 @@ my $subscriptionsnumber = CountSubscriptionFromBiblionumber($biblionumber);
 # $dewey=~ s/\.$//;
 # $data->{'dewey'}=$dewey;
 
-my @results;
 my $fw = GetFrameworkCode($biblionumber);
 my @all_items= GetItemsInfo($biblionumber);
 my @items;
@@ -108,7 +107,7 @@ if (@hostitems){
         push (@items,@hostitems);
 }
 
-
+my $subtitle = GetRecordValue('subtitle', $record, $fw);
 
 my $totalcount=@all_items;
 my $showncount=@items;
@@ -121,7 +120,11 @@ my $ccodes= GetKohaAuthorisedValues('items.ccode',$fw);
 my $itemtypes = GetItemTypes;
 
 $data->{'itemtypename'} = $itemtypes->{$data->{'itemtype'}}->{'description'};
-$results[0]=$data;
+
+foreach ( keys %{$data} ) {
+    $template->param( "$_" => defined $data->{$_} ? $data->{$_} : '' );
+}
+
 ($itemnumber) and @items = (grep {$_->{'itemnumber'} == $itemnumber} @items);
 foreach my $item (@items){
     $item->{itemlostloop}= GetAuthorisedValues(GetAuthValCode('items.itemlost',$fw),$item->{itemlost}) if GetAuthValCode('items.itemlost',$fw);
@@ -129,9 +132,7 @@ foreach my $item (@items){
     $item->{'collection'}              = $ccodes->{ $item->{ccode} } if ($ccodes);
     $item->{'itype'}                   = $itemtypes->{ $item->{'itype'} }->{'description'};
     $item->{'replacementprice'}        = sprintf( "%.2f", $item->{'replacementprice'} );
-    $item->{'datelastborrowed'}        = format_date( $item->{'datelastborrowed'} );
-    $item->{'dateaccessioned'}         = format_date( $item->{'dateaccessioned'} );
-    $item->{'datelastseen'}            = format_date( $item->{'datelastseen'} );
+    $item->{$_}                        = format_date( $item->{$_} ) foreach qw/datelastborrowed dateaccessioned datelastseen lastreneweddate/;
     $item->{'copyvol'}                 = $item->{'copynumber'};
 
     # item has a host number if its biblio number does not match the current bib
@@ -175,15 +176,18 @@ $template->param(count => $data->{'count'},
     subscriptiontitle   => $data->{title},
 	C4::Search::enabled_staff_search_views,
 );
-$template->param(BIBITEM_DATA => \@results);
-$template->param(ITEM_DATA => \@items);
-$template->param(moredetailview => 1);
-$template->param(loggedinuser => $loggedinuser);
-$template->param(biblionumber => $biblionumber);
-$template->param(biblioitemnumber => $bi);
-$template->param(itemnumber => $itemnumber);
+
+$template->param(
+    ITEM_DATA           => \@items,
+    moredetailview      => 1,
+    loggedinuser        => $loggedinuser,
+    biblionumber        => $biblionumber,
+    biblioitemnumber    => $bi,
+    itemnumber          => $itemnumber,
+    z3950_search_params => C4::Search::z3950_search_args(GetBiblioData($biblionumber)),
+    subtitle            => $subtitle,
+);
 $template->param(ONLY_ONE => 1) if ( $itemnumber && $showncount != @items );
-$template->param(z3950_search_params => C4::Search::z3950_search_args(GetBiblioData($biblionumber)));
 
 output_html_with_http_headers $query, $cookie, $template->output;
 

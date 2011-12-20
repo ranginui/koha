@@ -313,11 +313,11 @@ sub GetMemberDetails {
     my $query;
     my $sth;
     if ($borrowernumber) {
-        $sth = $dbh->prepare("SELECT borrowers.*,category_type,categories.description,reservefee FROM borrowers LEFT JOIN categories ON borrowers.categorycode=categories.categorycode WHERE  borrowernumber=?");
+        $sth = $dbh->prepare("SELECT borrowers.*,category_type,categories.description,reservefee,enrolmentperiod FROM borrowers LEFT JOIN categories ON borrowers.categorycode=categories.categorycode WHERE  borrowernumber=?");
         $sth->execute($borrowernumber);
     }
     elsif ($cardnumber) {
-        $sth = $dbh->prepare("SELECT borrowers.*,category_type,categories.description,reservefee FROM borrowers LEFT JOIN categories ON borrowers.categorycode=categories.categorycode WHERE cardnumber=?");
+        $sth = $dbh->prepare("SELECT borrowers.*,category_type,categories.description,reservefee,enrolmentperiod FROM borrowers LEFT JOIN categories ON borrowers.categorycode=categories.categorycode WHERE cardnumber=?");
         $sth->execute($cardnumber);
     }
     else {
@@ -340,14 +340,16 @@ sub GetMemberDetails {
     $borrower->{'flags'}     = $flags;
     $borrower->{'authflags'} = $accessflagshash;
 
-    # find out how long the membership lasts
-    $sth =
-      $dbh->prepare(
-        "select enrolmentperiod from categories where categorycode = ?");
-    $sth->execute( $borrower->{'categorycode'} );
-    my $enrolment = $sth->fetchrow;
-    $borrower->{'enrolmentperiod'} = $enrolment;
-    
+    # For the purposes of making templates easier, we'll define a
+    # 'showname' which is the alternate form the user's first name if 
+    # 'other name' is defined.
+    if ($borrower->{category_type} eq 'I') {
+        $borrower->{'showname'} = $borrower->{'othernames'};
+        $borrower->{'showname'} .= " $borrower->{'firstname'}" if $borrower->{'firstname'};
+    } else {
+        $borrower->{'showname'} = $borrower->{'firstname'};
+    }
+
     return ($borrower);    #, $flags, $accessflagshash);
 }
 
@@ -2146,7 +2148,7 @@ sub AddMessage {
     my $query = "INSERT INTO messages ( borrowernumber, branchcode, message_type, message ) VALUES ( ?, ?, ?, ? )";
     my $sth = $dbh->prepare($query);
     $sth->execute( $borrowernumber, $branchcode, $message_type, $message );
-
+    logaction("MEMBERS", "ADDCIRCMESSAGE", $borrowernumber, $message) if C4::Context->preference("BorrowersLog");
     return 1;
 }
 
@@ -2236,11 +2238,15 @@ sub DeleteMessage {
     my ( $message_id ) = @_;
 
     my $dbh = C4::Context->dbh;
-
-    my $query = "DELETE FROM messages WHERE message_id = ?";
+    my $query = "SELECT * FROM messages WHERE message_id = ?";
     my $sth = $dbh->prepare($query);
     $sth->execute( $message_id );
+    my $message = $sth->fetchrow_hashref();
 
+    $query = "DELETE FROM messages WHERE message_id = ?";
+    $sth = $dbh->prepare($query);
+    $sth->execute( $message_id );
+    logaction("MEMBERS", "DELCIRCMESSAGE", $message->{'borrowernumber'}, $message->{'message'}) if C4::Context->preference("BorrowersLog");
 }
 
 END { }    # module clean-up code here (global destructor)

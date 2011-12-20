@@ -72,7 +72,6 @@ BEGIN {
 		&GetRenewCount
 		&GetItemIssue
 		&GetItemIssues
-		&GetBorrowerIssues
 		&GetIssuingCharges
 		&GetIssuingRule
         &GetBranchBorrowerCircRule
@@ -2962,7 +2961,7 @@ sub ReturnLostItem{
 
 
 sub LostItem{
-    my ($itemnumber, $mark_returned) = @_;
+    my ($itemnumber, $mark_returned, $charge_fee) = @_;
 
     my $dbh = C4::Context->dbh();
     my $sth=$dbh->prepare("SELECT issues.*,items.*,biblio.title 
@@ -2977,7 +2976,8 @@ sub LostItem{
     # if a borrower lost the item, add a replacement cost to the their record
     if ( my $borrowernumber = $issues->{borrowernumber} ){
 
-        C4::Accounts::chargelostitem($borrowernumber, $itemnumber, $issues->{'replacementprice'}, "Lost Item $issues->{'title'} $issues->{'barcode'}");
+        C4::Accounts::chargelostitem($borrowernumber, $itemnumber, $issues->{'replacementprice'}, "Lost Item $issues->{'title'} $issues->{'barcode'}")
+          if $charge_fee;
         #FIXME : Should probably have a way to distinguish this from an item that really was returned.
         #warn " $issues->{'borrowernumber'}  /  $itemnumber ";
         MarkIssueReturned($borrowernumber,$itemnumber) if $mark_returned;

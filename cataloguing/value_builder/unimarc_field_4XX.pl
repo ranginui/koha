@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Copyright 2000-2002 Katipo Communications
+# Copyright Biblibre 2007
 #
 # This file is part of Koha.
 #
@@ -204,12 +204,14 @@ sub plugin {
         elsif ( $marcrecord->field('200') ) {
             $subfield_value_a = $marcrecord->subfield( '200', 'f' );
         }
-        my $subfield_value_c = $marcrecord->field('210')->subfield("a")
+	my $subfield_value_c;
+	my $subfield_value_d;
+	my $subfield_value_e;
+        $subfield_value_c = $marcrecord->field('210')->subfield("a")
           if ( $marcrecord->field('210') );
-        my $subfield_value_d = $marcrecord->field('210')->subfield("d")
+        $subfield_value_d = $marcrecord->field('210')->subfield("d")
           if ( $marcrecord->field('210') );
-
-        my $subfield_value_e = $marcrecord->field('205')->subfield("a")
+	$subfield_value_e = $marcrecord->field('205')->subfield("a")
           if ( $marcrecord->field('205') );
 
         my $subfield_value_h;
@@ -246,7 +248,8 @@ sub plugin {
             $subfield_value_i = $marcrecord->field('500')->subfield("i");
         }
 
-        my $subfield_value_p = $marcrecord->field('215')->subfield("a")
+        my $subfield_value_p;
+	$subfield_value_p = $marcrecord->field('215')->subfield("a")
           if ( $marcrecord->field('215') );
 
         my $subfield_value_t;
@@ -266,8 +269,10 @@ sub plugin {
             $subfield_value_t = $marcrecord->field('500')->subfield("a");
         }
 
-        my $subfield_value_u = $marcrecord->field('856')->subfield("u")
-          if ( $marcrecord->field('856') );
+        my $subfield_value_u;
+        if ( $marcrecord->field('856') ) {
+            $subfield_value_u = $marcrecord->field('856')->subfield("u");
+        }
 
         my $subfield_value_v;
         if (   ( $marcrecord->field('225') )
@@ -280,14 +285,17 @@ sub plugin {
         {
             $subfield_value_v = $marcrecord->field('200')->subfield("h");
         }
-        my $subfield_value_x = $marcrecord->field('011')->subfield("a")
-          if (
+        my $subfield_value_x;
+        if (
             $marcrecord->field('011')
             and not( ( $marcrecord->field('011')->subfield("y") )
-                or ( $marcrecord->field('011')->subfield("z") ) )
-          );
-        my $subfield_value_y = $marcrecord->field('013')->subfield("a")
-          if ( $marcrecord->field('013') );
+                or ( $marcrecord->field('011')->subfield("z") ) ) ) {
+             $subfield_value_x = $marcrecord->field('011')->subfield("a");
+        }
+        my $subfield_value_y;
+          if ( $marcrecord->field('013') ) {
+             $subfield_value_y = $marcrecord->field('013')->subfield("a");
+        }
         if   ( $marcrecord->field('010') ) {
             $subfield_value_y = $marcrecord->field('010')->subfield("a");
         }
@@ -371,7 +379,10 @@ sub plugin {
             my $record = MARC::Record::new_from_usmarc( $results->[$i] );
             my $rechash = TransformMarcToKoha( $dbh, $record );
             my $pos;
-            my $countitems = 1 if ( $rechash->{itemnumber} );
+            my $countitems;
+            if ( $rechash->{itemnumber} ) {
+                $countitems=1;
+            }
             while ( index( $rechash->{itemnumber}, '|', $pos ) > 0 ) {
                 $countitems += 1;
                 $pos = index( $rechash->{itemnumber}, '|', $pos ) + 1;

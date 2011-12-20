@@ -720,10 +720,7 @@ sub GetPendingOrders {
         LEFT JOIN biblioitems ON biblioitems.biblionumber=biblio.biblionumber
         WHERE booksellerid=?
             AND (quantity > quantityreceived OR quantityreceived is NULL)
-            AND datecancellationprinted IS NULL
-            AND (to_days(now())-to_days(closedate) < 180 OR closedate IS NULL)
-    ";
-    ## FIXME  Why 180 days ???
+            AND datecancellationprinted IS NULL";
     my @query_params = ( $supplierid );
     my $userenv = C4::Context->userenv;
     if ( C4::Context->preference("IndependantBranches") ) {
@@ -1581,33 +1578,33 @@ sub GetHistory {
 
     my @query_params  = ();
 
-    if ( defined $title ) {
+    if ( $title ) {
         $query .= " AND biblio.title LIKE ? ";
         $title =~ s/\s+/%/g;
         push @query_params, "%$title%";
     }
 
-    if ( defined $author ) {
+    if ( $author ) {
         $query .= " AND biblio.author LIKE ? ";
         push @query_params, "%$author%";
     }
 
-    if ( defined $isbn ) {
+    if ( $isbn ) {
         $query .= " AND biblioitems.isbn LIKE ? ";
         push @query_params, "%$isbn%";
     }
 
-    if ( defined $name ) {
+    if ( $name ) {
         $query .= " AND aqbooksellers.name LIKE ? ";
         push @query_params, "%$name%";
     }
 
-    if ( defined $from_placed_on ) {
+    if ( $from_placed_on ) {
         $query .= " AND creationdate >= ? ";
         push @query_params, $from_placed_on;
     }
 
-    if ( defined $to_placed_on ) {
+    if ( $to_placed_on ) {
         $query .= " AND creationdate <= ? ";
         push @query_params, $to_placed_on;
     }

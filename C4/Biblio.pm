@@ -389,7 +389,7 @@ sub ModBiblioframework {
 
 =head2 DelBiblio
 
-  my $error = &DelBiblio($dbh,$biblionumber);
+  my $error = &DelBiblio($biblionumber);
 
 Exported function (core API) for deleting a biblio in koha.
 Deletes biblio record from Zebra and Koha tables (biblio,biblioitems,items)
@@ -1104,20 +1104,17 @@ sub GetXmlBiblio {
 
 =head2 GetCOinSBiblio
 
-  my $coins = GetCOinSBiblio($biblionumber);
+  my $coins = GetCOinSBiblio($record);
 
-Returns the COinS(a span) which can be included in a biblio record
+Returns the COinS (a span) which can be included in a biblio record
 
 =cut
 
 sub GetCOinSBiblio {
-    my ($biblionumber) = @_;
-    my $record = GetMarcBiblio($biblionumber);
+    my $record = shift;
 
     # get the coin format
     if ( ! $record ) {
-	# can't get a valid MARC::Record object, bail out at this point
-	warn "We called GetMarcBiblio with a biblionumber that doesn't exist biblionumber=$biblionumber";
 	return;
     }
     my $pos7 = substr $record->leader(), 7, 1;
@@ -2080,7 +2077,7 @@ sub TransformHtmlToXml {
         }
         $prevtag = @$tags[$i];
     }
-    $xml .= "</datafield>\n" if @$tags > 0;
+    $xml .= "</datafield>\n" if $xml =~ m/<datafield/;
     if ( C4::Context->preference('marcflavour') eq 'UNIMARC' and !$unimarc_and_100_exist ) {
 
         #     warn "SETTING 100 for $auth_type";
@@ -3522,9 +3519,12 @@ sub _koha_delete_biblio {
         $bkup_sth->finish;
 
         # delete the biblio
-        my $del_sth = $dbh->prepare("DELETE FROM biblio WHERE biblionumber=?");
-        $del_sth->execute($biblionumber);
-        $del_sth->finish;
+        my $sth2 = $dbh->prepare("DELETE FROM biblio WHERE biblionumber=?");
+        $sth2->execute($biblionumber);
+        # update the timestamp (Bugzilla 7146)
+        $sth2= $dbh->prepare("UPDATE deletedbiblio SET timestamp=NOW() WHERE biblionumber=?");
+        $sth2->execute($biblionumber);
+        $sth2->finish;
     }
     $sth->finish;
     return undef;
@@ -3568,9 +3568,12 @@ sub _koha_delete_biblioitems {
         $bkup_sth->finish;
 
         # delete the biblioitem
-        my $del_sth = $dbh->prepare("DELETE FROM biblioitems WHERE biblioitemnumber=?");
-        $del_sth->execute($biblioitemnumber);
-        $del_sth->finish;
+        my $sth2 = $dbh->prepare("DELETE FROM biblioitems WHERE biblioitemnumber=?");
+        $sth2->execute($biblioitemnumber);
+        # update the timestamp (Bugzilla 7146)
+        $sth2= $dbh->prepare("UPDATE deletedbiblioitems SET timestamp=NOW() WHERE biblioitemnumber=?");
+        $sth2->execute($biblioitemnumber);
+        $sth2->finish;
     }
     $sth->finish;
     return undef;
