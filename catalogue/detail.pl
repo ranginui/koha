@@ -106,13 +106,20 @@ $template->param(
     normalized_isbn => $isbn,
 );
 
+unless (defined($record)) {
+    print $query->redirect("/cgi-bin/koha/errors/404.pl");
+	exit;
+}
+
+my $dat = &GetBiblioData($biblionumber);
+
 my $marcnotesarray   = GetMarcNotes( $record, $marcflavour );
 my $marcisbnsarray   = GetMarcISBN( $record, $marcflavour );
 my $marcauthorsarray = GetMarcAuthors( $record, $marcflavour );
 my $marcsubjctsarray = GetMarcSubjects( $record, $marcflavour );
 my $marcseriesarray  = GetMarcSeries($record,$marcflavour);
-my $marcurlsarray    = GetMarcUrls    ($record,$marcflavour);
-my $marchostsarray  = GetMarcHosts($record,$marcflavour);
+my $marcurlsarray    = GetMarcUrls    ($record,$marcflavour,$dat->{issn});
+my $marchostsarray   = GetMarcHosts($record,$marcflavour);
 my $subtitle         = GetRecordValue('subtitle', $record, $fw);
 
 # Turn newlines into HTML-y newlines
