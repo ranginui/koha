@@ -1,0 +1,314 @@
+@import url(reset-fonts-grids.css);
+@import url(skin.css);
+@import url(opac.css);
+
+h1#libraryname {
+	background:none;
+	border: 0;
+	float : right !important;
+	margin: 12px 10px 12px 10px;
+	padding:0;
+	width:auto;
+	color: #014568;
+	font-size: 28px;
+	text-align: right;
+	text-transform: uppercase;
+	line-height : 1em;
+}
+h1#libraryname a {
+	border:0;
+	cursor:pointer;
+	display:inherit;
+	height:auto !important;
+	margin:0;
+	overflow: none;
+	padding:0;
+	text-decoration:none;
+	width:auto;
+	color: #014568;
+}
+h1#libraryname a:hover {
+	color: #135f87;
+}
+/* facets bloc */
+#header-wrapper {
+	background-color: #f4f1ec;
+	background-image: url(../../images/header.png);
+	background-repeat: no-repeat;
+	background-position: left top;
+	height: 156px;
+	border-bottom: 3px solid #ede8e0;
+	margin-left: -10px;
+	margin-right: -10px;
+}
+#members {
+	background: none;
+	font-size : 10px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	margin-left : 10px;
+	margin-right : 10px;
+	padding : 10px 0 10px 0;
+	color : #666666;
+}
+#members a {
+	text-decoration : none;
+	font-weight : normal;
+	color : #49a2c3;
+}
+#members a.logout {
+	color : #49a2c3;
+	font-weight : normal;
+	padding : 0 ;
+	text-decoration : none;
+}
+#members a:hover {
+	text-dorection: underline;
+	color : #49a2c3;
+}
+#members li:last-child {
+	border-right : 0;
+}
+#members li {
+	border-right : 1px solid #dacfbd;
+	display : inline;
+	list-style : none;
+	margin : 0;
+	padding : 0 5px;
+}
+#members ul {
+	margin : 0;
+	padding : 0;
+	text-align : right;
+}
+#opac-main-search {
+	background: none;
+	border-top : 0;
+	border-bottom : 0;
+	margin: 0;
+	padding : 0;
+	font-size : 100%;
+	line-height : 116%;
+	float: right;
+	clear: right;
+	display: block;
+	text-align: right;
+	filter: none;
+}
+#opac-main-search form {
+	display : inline;
+	padding-right : 0;
+}
+#opac-main-search label {
+	color : #014568;
+	font-weight : bold;
+	font-size: 12px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	margin : 3px 3px 0 0;
+}
+#masthead_search, #select_library {
+	max-width: 10em;
+	width: 10em;
+}
+.cartlist {
+	margin-top : 5px;
+}
+.cartlist input.submit, #tagsel_button {
+	background-color : #d8deb8;
+	background-image : none;
+	border-color : #bebf84;
+	color : #333;
+	font-size : 87%;
+	padding : 2px 0;
+	margin : 0 0 0 0;
+}
+#masthead {
+	float: left;
+	width: 120px;
+}
+#fluid {
+	margin-left: 0;
+	margin-top : 0;
+	padding-left : 0;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+#fluid-offset {
+	clear: both;
+	float : right;
+	width: 100%;
+	background-image : url( ../../images/search.png);
+	background-repeat : no-repeat;
+	background-color : transparent;
+	background-position : left top;
+	padding: 10px 0 0 10px;
+}
+body#advsearch #fluid-offset {
+	background: none;
+}
+body#advsearch #fluid-offset div {
+	width: auto !important;
+	margin-right: 10px;
+}
+#masthead_search {
+	font-size: 100% !important;
+	font-family: Verdana, Arial, Helvetica, sans-serif !important;
+}
+#transl1 {
+	width: 155px !important;
+	font-family: Verdana, Arial, Helvetica, sans-serif !important;
+	margin-left: 3px;
+}
+#translControl {
+	float : left;
+	padding-left : .4em;
+}
+#searchsubmit {
+    cursor: default;
+    font-size: 11px;
+    font-weight: normal;
+    margin-left: 0;
+    margin-top: 0;
+		margin-right: 15px;
+    padding: 2px 2px 1px;
+		background: transparent url(../../images/btn-go.png) no-repeat right top;
+		border: 0;
+		height: 20px;
+		color: #FFFFFF;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	text-transform: uppercase;
+}
+#moresearches {
+	clear : both;
+	color : #dacfbd;
+	font-size : 13px;
+	line-height : 110%;
+	text-align: right;
+	margin : 15px 10px 10px 10px;
+}
+#moresearches a:link, #moresearches a:visited {
+	color : #014568;
+	font-weight : normal;
+	text-decoration : none;
+}
+#moresearches a:hover{
+	text-decoration: underline;
+}
+#opac-main-search #listsmenu a, #opac-main-search #listsmenu h4 {
+	color : #000;
+	font-weight : normal;
+}
+#opac-main-search #listsmenu h4 {
+	font-size : 1em;
+	font-weight : bold;
+	color: #FFFFFF;
+	margin : 5px 5px 3px 5px;
+}
+#opac-main-search #listsmenu .yuimenuitemlabel {
+	cursor : pointer;
+	padding: 0 5px;
+	color: #FFFFFF;
+}
+#opac-main-search #listsmenu .bd {
+	background : #49a2c3;
+	border: 1px solid #014568;
+	padding : 0 3px;
+}
+#opac-main-search #listsmenu .yuimenuitemlabel-selected {
+	background-color : #014568;
+}
+#opac-main-search #listsmenu ul {
+	border-color : #b8d0e6;
+}
+#cartmenulink, #listsmenulink {
+	display : block;
+	position : relative;
+	top: -10px;
+	background : #aaa;
+	padding : 5px;
+	float : left;
+	color : #333;
+	text-decoration : none;
+	cursor : pointer;
+}
+#cartmenulink *, #listsmenulink * {
+	font-style : normal;
+	background-image : url(../../images/button-background.gif);
+	background-repeat : no-repeat;
+	display : block;
+	position : relative;
+}
+#cartmenulink i, #listsmenulink i {
+	background-position : top left;
+	position : absolute;
+	margin-bottom : -5px;
+	top : 0;
+	left : 0;
+	width : 5px;
+	height : 5px;
+}
+#cartmenulink span, #listsmenulink span {
+	background-position : bottom left;
+	left : -5px;
+	padding : 0 0 5px 10px;
+	margin-bottom : -5px;
+}
+#cartmenulink span#carticon {
+	background: transparent url("../../images/cart.gif") top left no-repeat;
+	position: static;
+	width : 14px;
+	height:14px;
+	margin: 10px 0.45em 0 0.2em;
+	padding:0;
+	float: left;
+}
+#listsmenulink {
+	background : #9FBFFF;
+}
+#cartmenulink {
+	background : #98CB58;
+	color : #336600;
+	font-size : 105%;
+}
+#cartmenulink[class], #listsmenulink[class] {
+	background-image : url(../../images/button-background-gradient.png);
+	background-position : left top;
+}
+#listsmenulink:hover {
+	background-color : #b8d0e6;
+}
+#cartmenulink:hover {
+	background-color : #BFDE96;
+}
+#cartmenulink span#basketcount span {
+	background-image : none;
+	background-color : #004767;
+	color : #FFF;
+	display : inline;
+	float : none;
+	font-size : 80%;
+	font-weight : normal;
+	margin : 0 0 0 .9em;
+	padding : 0 .3em 0 .3em;
+	position : relative;
+	left : auto;
+	right : auto;
+	top : auto;
+}
+a#listsmenulink, a#listsmenulink:hover {
+	color : #FFFFFF;
+	font-size : 100%;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-weight : bold;
+	line-height : 30px;
+	margin-left : 5px;
+}
+a#cartmenulink, a#cartmenulink:hover {
+	color : #FFFFFF;
+	font-size : 100%;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-weight : bold;
+	line-height : 30px;
+	margin-left : 5px;
+}
+#opac-login-page #opac-auth h3 {
+	margin-top: 6em;
+}
