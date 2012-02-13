@@ -37,6 +37,7 @@ use C4::XISBN qw(get_xisbns get_biblionumber_from_isbn);
 use C4::External::Amazon;
 use C4::External::Syndetics qw(get_syndetics_index get_syndetics_summary get_syndetics_toc get_syndetics_excerpt get_syndetics_reviews get_syndetics_anotes );
 use C4::Review;
+use C4::Ratings;
 use C4::Members;
 use C4::VirtualShelves;
 use C4::XSLT;
@@ -45,6 +46,8 @@ use C4::Charset;
 use MARC::Record;
 use MARC::Field;
 use List::MoreUtils qw/any none/;
+
+#use Smart::Comments '####';
 
 BEGIN {
 	if (C4::Context->preference('BakerTaylorEnabled')) {
@@ -631,6 +634,20 @@ foreach ( @$reviews ) {
     $_->{userid}    = $borrowerData->{'userid'};
     $_->{cardnumber}    = $borrowerData->{'cardnumber'};
     $_->{datereviewed} = format_date($_->{datereviewed});
+
+
+
+
+#    my $value =  get_rating_by_review($_->{reviewid});
+    my $rating =  get_rating(  $biblionumber ,  $_->{borrowernumber});
+
+    $_->{"borr_rating_val_".$rating->{value}} = 1;
+    $_->{rating} = $rating->{value} ;
+
+    ####  $rating
+#### $_
+
+
     if ($borrowerData->{'borrowernumber'} eq $borrowernumber) {
 		$_->{your_comment} = 1;
 		$loggedincommenter = 1;
@@ -883,6 +900,21 @@ if (C4::Context->preference("OPACURLOpenInNewWindow")) {
     $template->param(covernewwindow => 'true');
 } else {
     $template->param(covernewwindow => 'false');
+}
+
+if (C4::Context->preference('RatingsEnabled') ) {
+my $rating = get_rating( $biblionumber, $borrowernumber );
+$template->param(
+  RatingsShowOnDetail => 1,
+  RatingsEnabled => 1,
+  rating_value        => $rating->{'value'},
+  rating_total        => $rating->{'total'},
+  rating_avg          => $rating->{'avg'},
+  rating_avgint       => $rating->{'avgint'},
+  rating_readonly     => ( $borrowernumber ? 0 : 1 ),
+  borrowernumber      => $borrowernumber,
+  "rating_val_" . "$rating->{'avgint'}" => $rating->{'avgint'},
+  );
 }
 
 #Search for title in links

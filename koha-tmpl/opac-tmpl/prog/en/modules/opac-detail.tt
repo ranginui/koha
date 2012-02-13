@@ -1,6 +1,8 @@
 [% INCLUDE 'doc-head-open.inc' %][% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha Online[% END %] Catalog &rsaquo; Details for: [% title |html %][% FOREACH subtitl IN subtitle %], [% subtitl.subfield |html %][% END %]
 [% INCLUDE 'doc-head-close.inc' %]
 <script type="text/javascript" src="[% themelang %]/lib/jquery/plugins/jquery.tablesorter.min.js"></script>
+<script type="text/javascript" src="[% themelang %]/lib/jquery/plugins/jquery.rating.pack.js"></script>
+<link rel="stylesheet" type="text/css" href="[% themelang %]/css/jquery.rating.css" />
 <script type="text/JavaScript" language="JavaScript">
 //<![CDATA[
     [% IF ( busc ) %]
@@ -203,7 +205,30 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
 		YAHOO.util.Event.addListener("furthersearches", "click", furthersearchesMenu.show, null, furthersearchesMenu);
 		YAHOO.widget.Overlay.windowResizeEvent.subscribe(positionfurthersearchesMenu);
  });
-	
+
+[% IF (RatingsEnabled) %]
+$(document).ready(function() {
+
+$(".auto-submit-star").rating({
+    callback: function(value, link){
+        $.post("/cgi-bin/koha/opac-ratings.pl",
+        {   rating: value,
+            biblionumber: "[% biblionumber %]"
+        },
+        function(data){
+            $("#rating_total").html('&nbsp;('+data.total+' '+ (data.total==1 ? _('vote') : _('votes'))+')');
+            if (data.value) {
+                $("#rating_user").text(_('your rating added: ')+data.value);
+            } else {
+                $("#rating_user").text('');
+            }
+        }
+        , "json");
+    }
+});
+
+});
+[% END %]
 //]]>
 </script>
 [% IF ( opacuserlogin ) %][% IF ( loggedinusername ) %][% IF ( TagsEnabled ) %]<style type="text/css">
@@ -466,6 +491,29 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
         [% END %]
         </span>
         [% END %][% END %][% END %]
+
+ [% IF (RatingsEnabled) %]
+ <div class="results_summary">
+    <input class="auto-submit-star" type="radio"  name="rating[% biblionumber %]"  value="1" [% IF (rating_val_1) %]checked="1"[% END %] [% IF (rating_readonly) %]disabled="disabled"[% END %]   />
+    <input class="auto-submit-star" type="radio"  name="rating[% biblionumber %]"  value="2" [% IF (rating_val_2) %]checked="1"[% END %] [% IF (rating_readonly) %]disabled="disabled"[% END %]   />
+    <input class="auto-submit-star" type="radio"  name="rating[% biblionumber %]"  value="3" [% IF (rating_val_3) %]checked="1"[% END %] [% IF (rating_readonly) %]disabled="disabled"[% END %]   />
+    <input class="auto-submit-star" type="radio"  name="rating[% biblionumber %]"  value="4" [% IF (rating_val_4) %]checked="1"[% END %] [% IF (rating_readonly) %]disabled="disabled"[% END %]   />
+    <input class="auto-submit-star" type="radio"  name="rating[% biblionumber %]"  value="5" [% IF (rating_val_5) %]checked="1"[% END %] [% IF (rating_readonly) %]disabled="disabled"[% END %]   />
+
+    <input  type="hidden" name='biblionumber'  value="[% biblionumber %]" />
+
+   <span  id="rating_total"  >
+[% IF(rating_total) %]&nbsp;([% rating_total %] [% IF (rating_total==1) %]vote[% ELSE %]votes[% END %])[% END %]
+</span>
+
+   <span id="rating_user">[% IF (rating_value) %]your rating: [% rating_value %][% END %]</span>
+    [% IF (rating_readonly) %]
+        <span id="rating_login">Log in to add your rating.</span>
+    [% END %]
+</div>
+
+[% END %]
+
 
     [% IF ( BakerTaylorContentURL ) %]
         <span class="results_summary">

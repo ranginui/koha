@@ -36,9 +36,13 @@ use C4::Biblio;  # GetBiblioData
 use C4::Koha;
 use C4::Tags qw(get_tags);
 use C4::Branch; # GetBranches
+use C4::Ratings;
+
 use POSIX qw(ceil floor strftime);
 use URI::Escape;
 use Storable qw(thaw freeze);
+
+#use Smart::Comments '####';
 
 
 my $DisplayMultiPlaceHold = C4::Context->preference("DisplayMultiPlaceHold");
@@ -111,12 +115,22 @@ if (C4::Context->preference('BakerTaylorEnabled')) {
         BakerTaylorBookstoreURL => C4::Context->preference('BakerTaylorBookstoreURL'),
     );
 }
+
 if (C4::Context->preference('TagsEnabled')) {
     $template->param(TagsEnabled => 1);
     foreach (qw(TagsShowOnList TagsInputOnList)) {
         C4::Context->preference($_) and $template->param($_ => 1);
     }
 }
+
+if (C4::Context->preference('RatingsEnabled')) {
+####  $borrowernumber
+	$template->param(RatingsEnabled => 1);
+	$template->param(rating_readonly => 1)  unless $borrowernumber ;
+	$template->param(borrowernumber =>  $borrowernumber );
+}
+
+
 
 ## URI Re-Writing
 # Deprecated, but preserved because it's interesting :-)
@@ -516,6 +530,20 @@ for (my $i=0;$i<@servers;$i++) {
             }
         }
       
+        if (C4::Context->preference('RatingsEnabled')) {
+            foreach (@newresults) {
+                my $rating = get_rating( $_->{'biblionumber'}, $borrowernumber );
+
+                my $bib = $_->{'biblionumber'};
+                $_->{'rating_user'}                         = $rating->{'user'};
+                $_->{'rating_total'}                        = $rating->{'total'};
+                $_->{'rating_avg'}                          = $rating->{'avg'};
+                $_->{'rating_avgint'}                       = $rating->{'avgint'};
+                $_->{ 'rating_val_' . $rating->{'avgint'} } = $rating->{'avgint'};
+                $_->{'rating_value'}                        = $rating->{'value'};
+            }
+        }
+
         if ($results_hashref->{$server}->{"hits"}){
             $total = $total + $results_hashref->{$server}->{"hits"};
         }
@@ -651,7 +679,6 @@ for (my $i=0;$i<@servers;$i++) {
                       };
 
                 }
-                        
             }
             # now, show twenty pages, with the current one smack in the middle
             else {

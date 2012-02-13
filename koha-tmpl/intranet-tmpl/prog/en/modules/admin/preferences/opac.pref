@@ -292,6 +292,12 @@ OPAC:
             - pref: numSearchRSSResults
               class: long
             -  search results in the RSS feed.
+        -
+            - pref: RatingsEnabled
+              choices:
+                  yes: Show
+                  no: "Don't show"
+            - star ratings
     Policy:
         -
             - pref: singleBranchMode
