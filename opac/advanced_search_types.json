@@ -1,0 +1,62 @@
+#!/usr/bin/perl
+
+# Copyright 2012 CatalystIT Ltd
+#
+# This file is part of Koha.
+#
+# Koha is free software; you can redistribute it and/or modify it under the
+# terms of the GNU General Public License as published by the Free Software
+# Foundation; either version 2 of the License, or (at your option) any later
+# version.
+#
+# Koha is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+# A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with Koha; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+=head1 opac/itemtypes.json
+
+Returns json list of itemtype, description. Suitable for building drop down lists.
+
+=cut
+
+use strict;
+use warnings;
+
+use CGI;
+use JSON;
+
+use C4::Koha;
+use C4::Context;
+use C4::Auth;
+
+my $input       = new CGI;
+checkauth($input, C4::Context->preference("OpacPublic"), {}, "opac");
+
+my $dbh = C4::Context->dbh;
+my $advanced_search_types = C4::Context->preference("AdvancedSearchTypes");
+my ($ccl, @typesloop);
+if (!$advanced_search_types or $advanced_search_types eq 'itemtypes') {
+    my $itemtypes = GetItemTypes;
+    my $itype_or_itemtype = (C4::Context->preference("item-level_itypes"))?'itype':'itemtype';
+    @typesloop = map {
+        code        => $_,
+        description => $itemtypes->{$_}->{'description'},
+        imageurl    => getitemtypeimagelocation( 'opac', $itemtypes->{$_}->{'imageurl'} ),
+    }, sort {$itemtypes->{$a}->{'description'} cmp $itemtypes->{$b}->{'description'} } keys %$itemtypes;
+    $ccl = "$itype_or_itemtype,phr";
+} else {
+    my $advsearchtypes = GetAuthorisedValues($advanced_search_types);
+    @typesloop = map {
+        code        => $_->{authorised_value},
+        description => $_->{'lib'},
+        imageurl    => getitemtypeimagelocation( 'opac', $_->{'imageurl'} ),
+    }, @$advsearchtypes;
+    $ccl = $advanced_search_types;
+}
+
+print $input->header('application/json');
+print to_json({ ccl => $advanced_search_types, types => \@typesloop });
