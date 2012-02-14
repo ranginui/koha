@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Koha 3.2.0\n"
 "POT-Creation-Date: 2012-01-18 17:15+0100\n"
-"PO-Revision-Date: 2012-01-24 16:03+1200\n"
-"Last-Translator: Chris Cormack <chris@bigballofwax.co.nz>\n"
+"PO-Revision-Date: 2012-02-14 15:13+1200\n"
+"Last-Translator: Robin Sheat <robin@catalyst.net.nz>\n"
 "Language-Team: Koha-translate <koha-translate@lists.koha.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -12191,7 +12191,7 @@ msgstr "The %s most circulated %s %s %s titles%s %s at %s %s %s in the past %s m
 #: opac-tmpl/prog/en/modules/maintenance.tt:24
 #, c-format
 msgid "The %s%s%sKoha Online%s Catalog is offline for system maintenance. We'll be back soon! If you have any questions, please contact the "
-msgstr "The %s%s%sKoha Online%s Catalog is offline for system maintenance. We'll be back soon! If you have any questions, please contact the <a1>Site Administrator</a>"
+msgstr "The %s%s%sKoha Online%s Catalogue is offline for system maintenance. We'll be back soon! If you have any questions, please contact the "
 
 #: opac-tmpl/prog/en/modules/opac-tags_subject.tt:30
 #, c-format
@@ -12201,7 +12201,7 @@ msgstr "The ISBD cloud is not enabled."
 #: opac-tmpl/prog/en/modules/opac-browser.tt:44
 #, c-format
 msgid "The browser table is empty. this feature is not fully set-up. See the "
-msgstr "The browser table is empty. This feature is not fully set-up. See the <a1>Koha Wiki</a> for more information on what it does and how to configure it."
+msgstr "The browser table is empty. This feature is not fully set-up. See the "
 
 #. %1$s:  email_add
 #: opac-tmpl/prog/en/modules/opac-sendbasketform.tt:9
@@ -12441,7 +12441,7 @@ msgstr "This item is reserved for another borrower. %s"
 #: opac-tmpl/prog/en/modules/opac-detail.tt:1098
 #, c-format
 msgid "This page contains enriched content visible when JavaScript is enabled or by clicking "
-msgstr "This page contains enriched content visible when JavaScript is enabled or by clicking <a1>here</a>."
+msgstr "This page contains enriched content visible when JavaScript is enabled or by clicking "
 
 #: opac-tmpl/prog/en/modules/opac-detail.tt:572
 #, c-format
@@ -12570,7 +12570,7 @@ msgstr "To make changes to your record please contact the library."
 #: opac-tmpl/prog/en/modules/errors/404.tt:16
 #, c-format
 msgid "To report this error, you can "
-msgstr "To report this error, you can <a1>email the Koha Administrator</a>."
+msgstr "To report this error, you can"
 
 #. SCRIPT
 #: opac-tmpl/prog/en/includes/calendar.inc:3
@@ -12761,7 +12761,7 @@ msgstr "Username:"
 #: opac-tmpl/prog/en/modules/opac-reserve.tt:180
 #, c-format
 msgid "Usually the reason for freezing an account is old overdues or damage fees. If "
-msgstr "Usually the reason for freezing an account is old overdues or damage fees. If <a1>your account page</a> shows your account to be clear, please consult a librarian."
+msgstr "Usually the reason for freezing an account is old overdues or damage fees. If "
 
 #: opac-tmpl/prog/en/xslt/NORMARCslim2OPACDetail.xsl:208
 #: opac-tmpl/prog/en/xslt/NORMARCslim2OPACResults.xsl:363
@@ -13165,7 +13165,7 @@ msgstr "Your Personal Details"
 #: opac-tmpl/prog/en/modules/opac-user.tt:96
 #, c-format
 msgid "Your account has been frozen. Usually the reason for freezing an account is old overdues or damage fees.If "
-msgstr "Your account has been frozen. Usually the reason for freezing an account is old overdues or damage fees.If <a1>your account page</a> shows your account to be clear, please consult a librarian."
+msgstr "Your account has been frozen. Usually the reason for freezing an account is old overdues or damage fees.If "
 
 #. %1$s:  ELSIF ( circ_error_CARD_LOST )
 #: opac-tmpl/prog/en/modules/sco/sco-main.tt:99
