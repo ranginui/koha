@@ -4605,6 +4605,7 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     $dbh->do("INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('RatingsEnabled','','Enabled or disables ratings feature in the OPAC',NULL,'YesNo')");
 
     print "Upgrade to $DBversion done (Added 'ratings' table, and 'RatingsEnabled' syspref\n";
+}
 
 $DBversion = "3.06.02.005";
 if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
