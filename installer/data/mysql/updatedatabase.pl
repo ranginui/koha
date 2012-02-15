@@ -4609,7 +4609,7 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
 
 $DBversion = "3.06.02.005";
 if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
-    $dbh->do("INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('BorrowerUnwantedField','','Name the fields you don\'t need to store for a patron\'s account',NULL,'free')");
+    $dbh->do("INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES('BorrowerUnwantedField','','Name the fields you don''t need to store for a patron''s account',NULL,'free')");
     print "Upgrade to $DBversion done (BorrowerUnwantedField syspref)\n";
     SetVersion ($DBversion);
 }
