@@ -155,6 +155,12 @@ $data->{ "sex_".$data->{'sex'}."_p" } = 1;
 
 my $catcode;
 if ( $category_type eq 'C') {
+	if ($data->{'guarantorid'} ne '0' ) {
+    	my $data2 = GetMember( 'borrowernumber' => $data->{'guarantorid'} );
+    	foreach (qw(address city B_address B_city phone mobile email zipcode country B_country)) {
+    	    $data->{$_} ||= $data2->{$_};
+    	}
+   }
    my  ( $catcodes, $labels ) =  GetborCatFromCatType( 'A', 'WHERE category_type = ?' );
    my $cnt = scalar(@$catcodes);
 

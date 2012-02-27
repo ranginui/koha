@@ -163,6 +163,7 @@
     </fieldset>
     </div>
 [% IF ( expanded_options ) %]
+  [% IF ( subtypes ) %]
     [% IF ( usmarc ) %]
         <!-- SUBTYPE LIMITS -->
             <div id="subtypes" class="container"><fieldset>
@@ -226,10 +227,13 @@
     
     </fieldset></div>
     [% END %]
+
     [% IF ( UNIMARC ) %]
         <div id="subtypes_unimarc" class="container"><!-- SUBTYPE LIMITS -->
     [% INCLUDE 'subtypes_unimarc.inc' %]</div>
     [% END %]
+
+  [% END %]
 [% END %]
         
 </div>

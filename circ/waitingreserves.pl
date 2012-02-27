@@ -129,6 +129,7 @@ foreach my $num (@getreserves) {
     $getreserv{'homebranch'}     = $gettitle->{'homebranch'};
     $getreserv{'holdingbranch'}  = $gettitle->{'holdingbranch'};
     $getreserv{'itemcallnumber'} = $gettitle->{'itemcallnumber'};
+    $getreserv{'copynumber'}     = $gettitle->{'copynumber'};
     if ( $gettitle->{'homebranch'} ne $gettitle->{'holdingbranch'} ) {
         $getreserv{'dotransfer'} = 1;
     }

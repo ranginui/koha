@@ -623,7 +623,7 @@ $(".auto-submit-star").rating({
 	    <thead><tr>
 		[% IF ( item_level_itypes ) %]<th>Item type</th>[% END %]
 		<th>Location</th>
-	    [% IF ( itemdata_ccode ) %]<th>Collection</th>[% END %]
+	    <th>Collection</th>
 	    <th>Call Number</th>
 	    [% IF ( itemdata_enumchron ) %]<th>Vol Info</th>[% END %]
 	    [% IF ( itemdata_uri ) %]<th>url</th>[% END %]
@@ -633,9 +633,9 @@ $(".auto-submit-star").rating({
 		<th>Date Due</th>
 	    </tr></thead>
 	    <tbody>[% FOREACH ITEM_RESULT IN ITEM_RESULTS %]
-	    <tr>[% IF ( item_level_itypes ) %]<td>[% UNLESS ( noItemTypeImages ) %][% IF ( ITEM_RESULT.imageurl ) %]<img src="[% ITEM_RESULT.imageurl %]" title="[% ITEM_RESULT.description %]" alt="[% ITEM_RESULT.description %]" />[% END %][% END %] [% ITEM_RESULT.description %]</td>[% END %]
+	    <tr>[% IF ( item_level_itypes ) %]<td>[% UNLESS ( noItemTypeImages ) %][% IF ( ITEM_RESULT.imageurl ) %]<img src="[% ITEM_RESULT.imageurl %]" title="[% ITEM_RESULT.description %]" alt="[% ITEM_RESULT.description %]" />[% END %][% END %]</td>[% END %]
 		<td>[% UNLESS ( singleBranchMode ) %][% IF ( ITEM_RESULT.branchurl ) %]<a href="[% ITEM_RESULT.branchurl %]">[% ITEM_RESULT.branchname %]</a>[% ELSE %][% ITEM_RESULT.branchname %][% END %][% END %] <span class="shelvingloc">[% ITEM_RESULT.location_description %]</span> </td>
-		[% IF ( itemdata_ccode ) %]<td>[% ITEM_RESULT.ccode %]</td>[% END %]
+		<td>[% ITEM_RESULT.description %]</td>
 		<td>[% IF ( ITEM_RESULT.itemcallnumber ) %] [% ITEM_RESULT.itemcallnumber %][% IF ( OPACShelfBrowser ) %] (<a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% ITEM_RESULT.biblionumber %]&amp;shelfbrowse_itemnumber=[% ITEM_RESULT.itemnumber %]#shelfbrowser">Browse Shelf</a>)[% END %][% END %]</td>
 		[% IF ( itemdata_enumchron ) %]<td>[% ITEM_RESULT.enumchron %]</td>[% END %]
 		[% IF ( itemdata_uri ) %]<td><a href="[% ITEM_RESULT.uri %]">[% ITEM_RESULT.uri %]</a></td>[% END %]
