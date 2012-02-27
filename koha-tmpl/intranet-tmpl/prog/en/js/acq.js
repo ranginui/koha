@@ -660,15 +660,17 @@ function calcNeworderTotal(){
         var currcode = new String(document.getElementById('currency').value);
 	var exchangerate =  new Number(document.getElementById(currcode).value);
 
-    var gst_on=(!listinc && invoiceingst);
-
     //do real stuff
     var rrp   = new Number(listprice*exchangerate);
     var ecost = new Number(Math.floor(rrp * (100 - discount ))/100);
     var GST   = new Number(0);
-    if (gst_on) {
-            rrp=rrp * (1+f.gstrate.value / 100);
-        GST=ecost * f.gstrate.value / 100;
+
+    rrp *= (100-discount) / 100;
+    if (listinc==0){
+        rrp *= 1 + new Number(f.gstrate.value);
+        if(invoiceingst!=0) {
+            GST=ecost * f.gstrate.value / 100;
+        }
     }
 
     var total =  new Number( (ecost + GST) * quantity);
