@@ -6,7 +6,7 @@ use Net::FTP;
 use C4::Context;
 
 my $FTP_HOST = "io.wheelers.co";
-my $FTP_PASSIVE = 1;
+my $FTP_PASSIVE = exists $ENV{FTP_PASSIVE} ? $ENV{FTP_PASSIVE} : 1;
 
 my $DEBUG = $ENV{FTP_DEBUG};
 my $ftp_user = $ENV{FTP_USERNAME} or die "Mo FTP_USERNAME env";
@@ -19,7 +19,7 @@ EOT
 
 my $save_dir = shift @ARGV;
 
-my $t = strftime "%FT%T", localtime;
+my $t = strftime "%F %T", localtime;
 
 my $patrons = C4::Context->dbh->selectall_arrayref("SELECT cardnumber, password FROM borrowers WHERE cardnumber IS NOT NULL AND password IS NOT NULL");
 
@@ -63,7 +63,9 @@ $out .= $_->[0] . ("\t" x 11) . $_->[1] . ("\t" x 10) . "EOL\n" foreach @$patron
 
 $out .= "# -- eof --";
 
-my $fname = "patrons.$t.txt";
+(my $tf = $t) =~ tr/ /-/;
+$tf =~ s/://g;
+my $fname = "patrons-$tf.txt";
 
 my $path = ($save_dir || "/tmp") . "/$fname";
 open my $fh, ">$path";
