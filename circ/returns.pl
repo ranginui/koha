@@ -582,6 +582,7 @@ foreach ( sort { $a <=> $b } keys %returneditems ) {
         $ri{itemcallnumber}   = $biblio->{'itemcallnumber'};
         $ri{itemtype}         = $biblio->{'itemtype'};
         $ri{itemnote}         = $biblio->{'itemnotes'};
+        $ri{nonpublicnote}    = $biblio->{'nonpublicnote'};
         $ri{ccode}            = $biblio->{'ccode'};
         $ri{itemnumber}       = $biblio->{'itemnumber'};
         $ri{barcode}          = $bar_code;

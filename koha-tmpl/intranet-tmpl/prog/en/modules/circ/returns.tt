@@ -452,6 +452,7 @@ $(document).ready(function () {
             [% ELSE %]Not checked out[% END %]</td>
             <td>[% IF ( riloo.bornote ) %]<span class="circ-hlt">[% riloo.bornote %]<br /></span>[% END %]
             [% IF ( riloo.itemnote ) %]<span class="circ-hlt">[% riloo.itemnote %]</span>[% END %]
+            [% IF ( riloo.nonpublicnote ) %]<span class="circ-hlt">[% riloo.nonpublicnote %]</span>[% END %]
             </td>
            </tr>
         [% END %]

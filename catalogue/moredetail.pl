@@ -183,6 +183,7 @@ foreach my $item (@items){
         }
     }
 
+    $item->{nonpublicnote} =~ s|\n|<br />|g if $item->{nonpublicnote};
 }
 $template->param(count => $data->{'count'},
 	subscriptionsnumber => $subscriptionsnumber,

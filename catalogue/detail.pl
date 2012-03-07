@@ -245,6 +245,13 @@ foreach my $item (@items) {
         $item->{waitingdate} = format_date($wait_hashref->{waitingdate});
     }
 
+    foreach my $f (qw( itemnotes nonpublicnote )) {
+        if ($item->{$f}) {
+            $item->{$f} =~ s|\n|<br />|g;
+            $itemfields{$f} = 1;
+        }
+    }
+
     # item has a host number if its biblio number does not match the current bib
     if ($item->{biblionumber} ne $biblionumber){
         $item->{hostbiblionumber} = $item->{biblionumber};
@@ -260,6 +267,7 @@ foreach my $item (@items) {
     if (defined($item->{'materials'}) && $item->{'materials'} =~ /\S/){
 	$materials_flag = 1;
     }
+
     push @itemloop, $item;
 }
 
@@ -278,7 +286,8 @@ $template->param(
 	itemdata_uri        => $itemfields{uri},
 	itemdata_copynumber => $itemfields{copynumber},
 	volinfo				=> $itemfields{enumchron},
-    itemdata_itemnotes  => $itemfields{itemnotes},
+      itemdata_itemnotes  => $itemfields{itemnotes},
+ itemdata_nonpublicnote  => $itemfields{nonpublicnote},
 	z3950_search_params	=> C4::Search::z3950_search_args($dat),
     holdcount           => $holdcount,
         hostrecords         => $hostrecords,

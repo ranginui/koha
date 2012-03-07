@@ -282,6 +282,7 @@ function verify_images() {
                 [% IF ( itemdata_copynumber ) %]<th>Copy no.</th>[% END %]
                 [% IF materials %]<th>Materials specified</th>[% END %]
                 [% IF ( itemdata_itemnotes ) %]<th>Public notes</th>[% END %]
+                [% IF itemdata_nonpublicnote %]<th>Non-public note</th>[% END %]
         [% IF ( SpineLabelShowPrintOnBibDetails ) %]<th>Spine label</th>[% END %]
         [% IF ( hostrecords ) %]<th>Host records</th>[% END %]
 		[% IF ( analyze ) %]<th>Used in</th><th></th>[% END %]
@@ -406,6 +407,7 @@ function verify_images() {
 		    <td class="materials"> [% itemloo.materials %] </td>
 		[% END %]
                 [% IF ( itemdata_itemnotes ) %]<td><div class="itemnotes">[% itemloo.itemnotes %]</div></td>[% END %]
+                [% IF itemdata_nonpublicnote %]<td class="nonpublicnote">[% itemloo.nonpublicnote %]</td>[% END %]
 		[% IF ( SpineLabelShowPrintOnBibDetails ) %]
             <td><a href="/cgi-bin/koha/labels/spinelabel-print.pl?barcode=[% itemloo.barcode %]" >Print label</a></td>
 		[% END %]
