@@ -108,6 +108,7 @@ td {
 	border-right : 1px solid #CCCCCC;
 	padding : 5px 5px 5px 5px;
 	vertical-align : top;
+	height : 100%;
 }
 
 td:last-child {
