@@ -656,33 +656,37 @@ function calcNeworderTotal(){
     var applygst = new Number (f.applygst.value);
     var listprice   =  new Number(f.listprice.value);
     var invoiceingst =  new Number (f.invoiceincgst.value);
-//    var exchangerate =  new Number(f.elements[currency].value);      //get exchange rate
-        var currcode = new String(document.getElementById('currency').value);
-	var exchangerate =  new Number(document.getElementById(currcode).value);
+    var currcode = new String(document.getElementById('currency').value);
+    var exchangerate =  new Number(document.getElementById(currcode).value);
+    var gstrate = new Number(f.gstrate.value);
 
     //do real stuff
+    // rrp (replacement cost) should be inclusive of gst and should not take a discount into account
     var rrp   = new Number(listprice*exchangerate);
+    // ecost (budgeted cost) should be gst exclusive and should take a discount into account
     var ecost = new Number(Math.floor(rrp * (100 - discount ))/100);
+    // the value of the gst, the rate is in f.gstrate.value
     var GST   = new Number(0);
 
-    rrp *= (100-discount) / 100;
+    //rrp *= (100-discount) / 100;
     if (listinc==0){
-        rrp *= 1 + new Number(f.gstrate.value);
-        if(invoiceingst!=0) {
-            GST=ecost * f.gstrate.value / 100;
-        }
+        // list price is gst exclusive so can calc gst easily
+        GST = rrp * gstrate;
+        // list price is gst exclusive, rrp must include gst
+        rrp *= 1 + gstrate;
+    } else {
+        // list price is gst inclusive
+        GST = (rrp/1.15)*0.15;
+        ecost /= 1 + gstrate;
     }
 
-    var total =  new Number( (ecost + GST) * quantity);
+    var total =  new Number(ecost * quantity);
 
     f.rrp.value = rrp.toFixed(2);
-
-//	f.rrp.value = rrp
-//	f.rrp.value = 'moo'
-
     f.ecost.value = ecost.toFixed(2);
     f.total.value = total.toFixed(2);
     f.listprice.value =  listprice.toFixed(2);
+    f.unitprice.value = ecost.toFixed(2);
 
 //  gst-stuff needs verifing, mason.
     if (f.GST) {
