@@ -1,6 +1,9 @@
 [% INCLUDE 'doc-head-open.inc' %][% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha Online[% END %] Catalog &rsaquo; Details for: [% title |html %][% FOREACH subtitl IN subtitle %], [% subtitl.subfield |html %][% END %]
 [% INCLUDE 'doc-head-close.inc' %]
 <script type="text/javascript" src="[% themelang %]/lib/jquery/plugins/jquery.tablesorter.min.js"></script>
+<style>
+th.header { text-align: left; background-position: left; padding-left: 18px;}
+</style>
 <script type="text/javascript" src="[% themelang %]/lib/jquery/plugins/jquery.rating.pack.js"></script>
 <link rel="stylesheet" type="text/css" href="[% themelang %]/css/jquery.rating.css" />
 <script type="text/JavaScript" language="JavaScript">
