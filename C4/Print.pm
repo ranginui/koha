@@ -20,6 +20,7 @@ package C4::Print;
 use strict;
 #use warnings; FIXME - Bug 2505
 use C4::Context;
+use C4::Circulation;
 use C4::Members;
 use C4::Dates qw(format_date);
 
@@ -69,7 +70,7 @@ sub remoteprint ($$) {
 
     (return)
       unless ( C4::Context->boolean_preference('printcirculationslips') );
-    my $queue = '';
+    my $queue = C4::Context->userenv->{'branchprinter'};
 
     # FIXME - If 'queue' is undefined or empty, then presumably it should
     # mean "use the default queue", whatever the default is. Presumably
@@ -79,8 +80,7 @@ sub remoteprint ($$) {
     # to have spaces in them). Or perhaps if $queue eq "" and
     # $env->{file} ne "", then that should mean "print to $env->{file}".
     if ( $queue eq "" || $queue eq 'nulllp' ) {
-        return;
-	#open( PRINTER, ">/tmp/kohaiss" );
+        open( PRINTER, ">/tmp/kohaiss" );
     }
     else {
 
@@ -97,6 +97,7 @@ sub remoteprint ($$) {
     my $i      = 0;
     # FIXME - This is HLT-specific. Put this stuff in a customizable
     # site-specific file somewhere.
+
     print PRINTER "Horowhenua Library Trust\r\n";
     print PRINTER "Phone: 368-1953\r\n";
     print PRINTER "Fax:    367-9218\r\n";
@@ -120,16 +121,13 @@ sub remoteprint ($$) {
         $i++;
     }
     print PRINTER "\r\n" x 7 ;
+    print PRINTER chr(27).chr(105);
     close PRINTER;
 
     #system("lpr /tmp/$file");
 }
 
 sub printreserve {
-
-    # FIXME - make useful
-    return;
-
     my ( $branchname, $bordata, $itemdata ) = @_;
     my $printer = '';
     (return) unless ( C4::Context->boolean_preference('printreserveslips') );
@@ -180,9 +178,6 @@ print a slip for the given $borrowernumber
 
 #'
 sub printslip ($) {
-
-    #FIXME - make useful
-
     my $borrowernumber = shift;
     my $borrower   = GetMemberDetails($borrowernumber);
 	my $issueslist = GetPendingIssues($borrowernumber); 
