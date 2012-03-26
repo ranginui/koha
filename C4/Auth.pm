@@ -377,6 +377,7 @@ sub get_template_and_user {
             IntranetmainUserblock       => C4::Context->preference("IntranetmainUserblock"),
             LibraryName                 => C4::Context->preference("LibraryName"),
             LoginBranchname             => (C4::Context->userenv?C4::Context->userenv->{"branchname"}:"insecure"),
+	    PrinterName             => (C4::Context->userenv?C4::Context->userenv->{"branchprinter"}:"None"),
             advancedMARCEditor          => C4::Context->preference("advancedMARCEditor"),
             canreservefromotherbranches => C4::Context->preference('canreservefromotherbranches'),
             intranetcolorstylesheet     => C4::Context->preference("intranetcolorstylesheet"),
