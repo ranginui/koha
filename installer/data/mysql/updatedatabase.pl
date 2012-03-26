@@ -4614,6 +4614,24 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     SetVersion ($DBversion);
 }
 
+$DBversion = "3.06.03.000";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    print "Upgrade to $DBversion done (Incrementing version for 3.6.3 release. See release notes for details.) \n";
+    SetVersion ($DBversion);
+}
+
+$DBversion = "3.06.03.001";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+	$dbh->do("INSERT INTO `systempreferences` (variable,value,options,explanation,type) VALUES ('AllowItemsOnHoldCheckout',0,'Do not generate RESERVE_WAITING and RESERVED warning when checking out items reserved to someone else. This allows self checkouts for those items.','','YesNo')");
+    print "Upgrade to $DBversion add 'AllowItemsOnHoldCheckout' syspref \n";
+    SetVersion ($DBversion);
+}
+$DBversion = "3.06.04.000";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    print "Upgrade to $DBversion done (Incrementing version for 3.6.4 release. See release notes for details.) \n";
+    SetVersion ($DBversion);
+}
+
 =head1 FUNCTIONS
 
 =head2 DropAllForeignKeys($table)

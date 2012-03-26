@@ -34,6 +34,8 @@ use C4::Debug;
 use C4::Biblio;
 use C4::Members qw/GetMember/;  #needed for permissions checking for changing basketgroup of a basket
 use C4::Items;
+use C4::Suggestions;
+
 =head1 NAME
 
 basket.pl
@@ -229,14 +231,15 @@ if ( $op eq 'delete_confirm' ) {
 	my $gist = $bookseller->{gstrate} // C4::Context->preference("gist") // 0;
 	$gist = 0 if $gist == 0.0000;
 	my $discount = $bookseller->{'discount'} / 100;
-    my $total_rrp;      # RRP Total, its value will be assigned to $total_rrp_gsti or $total_rrp_gste depending of $bookseller->{'listincgst'}
-	my $total_rrp_gsti; # RRP Total, GST included
-	my $total_rrp_gste; # RRP Total, GST excluded
-	my $gist_rrp;
-	my $total_rrp_est;
-	
+    my $total_rrp = 0;      # RRP Total, its value will be assigned to $total_rrp_gsti or $total_rrp_gste depending of $bookseller->{'listincgst'}
+    my $total_rrp_gsti = 0; # RRP Total, GST included
+    my $total_rrp_gste = 0; # RRP Total, GST excluded
+    my $gist_rrp = 0;
+    my $total_rrp_est = 0;
+
     my $qty_total;
     my @books_loop;
+    my $suggestion;
 
     for my $order ( @results ) {
         my $rrp = $order->{'listprice'} || 0;
@@ -281,7 +284,7 @@ if ( $op eq 'delete_confirm' ) {
         $line{biblios}              = $countbiblio - 1;
         $line{left_subscription}    = 1 if scalar @subscriptions >= 1;
         $line{subscriptions}        = scalar @subscriptions;
-        $line{left_holds}           = 1 if $holds >= 1;
+        ($holds >= 1) ? $line{left_holds} = 1 : $line{left_holds} = 0;
         $line{left_holds_on_order}  = 1 if $line{left_holds}==1 && ($line{items} == 0 || $itemholds );
         $line{holds}                = $holds;
         $line{holds_on_order}       = $itemholds?$itemholds:$holds if $line{left_holds_on_order};
@@ -303,6 +306,12 @@ if ( $op eq 'delete_confirm' ) {
 	} else {
 	    $line{'title'} = "Deleted bibliographic notice, can't find title.";
 	}
+
+        $suggestion = GetSuggestionInfoFromBiblionumber($line{biblionumber});
+        $line{suggestionid}         = $suggestion->{suggestionid};
+        $line{surnamesuggestedby}   = $suggestion->{surnamesuggestedby};
+        $line{firstnamesuggestedby} = $suggestion->{firstnamesuggestedby};
+
         push @books_loop, \%line;
     }
 

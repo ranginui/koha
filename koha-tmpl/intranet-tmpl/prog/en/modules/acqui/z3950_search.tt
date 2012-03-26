@@ -120,7 +120,7 @@ tr.selected { background-color : #FFFFCC; } tr.selected td { background-color : 
 
         </p>
     [% END %]
-    <fieldset class="action"><input type="submit"  class="submit" value="Search" onclick="cursor :'wait'"/> <a class="cancel close" href="#">Cancel</a></fieldset>
+    <fieldset class="action"><input type="submit"  class="submit" value="Search" onclick="cursor :'wait'"/> <a class="cancel" href="/cgi-bin/koha/acqui/basket.pl?booksellerid=[% booksellerid %]&amp;basketno=[% basketno %]">Cancel</a></fieldset>
     </div>
     </form>
 
@@ -155,7 +155,20 @@ tr.selected { background-color : #FFFFCC; } tr.selected td { background-color : 
     [% END %]</tbody>
 </table>
     [% ELSE %]
-        <p>Nothing found. <a href="javascript: history.back()">Try another search</a>.</p>
+        [% IF ( emptyserverlist ) %]
+            <div class="dialog alert">You didn't select any Z39.50 target.</div>
+        [% ELSE %]
+            [% IF ( errconn ) %]
+                <div class="dialog alert">
+                    <ul>
+                    [% FOREACH errcon IN errconn %]
+                        <li>Connection failed to [% errcon.server %]</li>
+                    [% END %]
+                    </ul>
+                </div>
+            [% END %]
+        [% END %]
+        <div class="dialog message">Nothing found. <a href="javascript: history.back()">Try another search</a>.</div>
     [% END %]
 
 

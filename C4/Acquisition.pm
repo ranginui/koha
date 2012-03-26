@@ -923,7 +923,6 @@ sub NewOrder {
 =cut
 
 sub NewOrderItem {
-    #my ($biblioitemnumber,$ordernumber, $biblionumber) = @_;
     my ($itemnumber, $ordernumber)  = @_;
     my $dbh = C4::Context->dbh;
     my $query = qq|
@@ -1069,16 +1068,13 @@ sub ModReceiveOrder {
     )
     = @_;
     my $dbh = C4::Context->dbh;
-#     warn "DATE BEFORE : $daterecieved";
-#    $daterecieved=POSIX::strftime("%Y-%m-%d",CORE::localtime) unless $daterecieved;
-#     warn "DATE REC : $daterecieved";
     $datereceived = C4::Dates->output('iso') unless $datereceived;
     my $suggestionid = GetSuggestionFromBiblionumber( $dbh, $biblionumber );
     if ($suggestionid) {
         ModSuggestion( {suggestionid=>$suggestionid,
-						STATUS=>'AVAILABLE',
-						biblionumber=> $biblionumber}
-						);
+                        STATUS=>'AVAILABLE',
+                        biblionumber=> $biblionumber}
+                        );
     }
 
     my $sth=$dbh->prepare("
@@ -1639,8 +1635,6 @@ sub GetHistory {
         $line->{count} = $cnt++;
         $line->{toggle} = 1 if $cnt % 2;
         push @order_loop, $line;
-        $line->{creationdate} = format_date( $line->{creationdate} );
-        $line->{datereceived} = format_date( $line->{datereceived} );
         $total_qty         += $line->{'quantity'};
         $total_qtyreceived += $line->{'quantityreceived'};
         $total_price       += $line->{'quantity'} * $line->{'ecost'};

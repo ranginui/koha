@@ -143,10 +143,11 @@ eval {
         import Memoize::Memcached qw(memoize_memcached);
 
         my $memcached = {
-            servers    => [$servers],
-            key_prefix => C4::Context->config('memcached_namespace') || 'koha',
-        };
-        memoize_memcached( 'GetMarcStructure', memcached => $memcached, expire_time => 600 );    #cache for 10 minutes
+            servers     => [$servers],
+            key_prefix  => C4::Context->config('memcached_namespace') || 'koha',
+            expire_time => 600
+        }; # cache for 10 mins, if you want to cache for different make a different memcached hash
+        memoize_memcached( 'GetMarcStructure', memcached => $memcached );
     }
 };
 
@@ -320,7 +321,7 @@ sub ModBiblio {
     SetUTF8Flag($record);
     my $dbh = C4::Context->dbh;
 
-    $frameworkcode = "" unless $frameworkcode;
+    $frameworkcode = "" if !$frameworkcode || $frameworkcode eq "Default"; # XXX
 
     _strip_item_fields($record, $frameworkcode);
 
@@ -1043,9 +1044,12 @@ for the given frameworkcode
 
 sub GetMarcFromKohaField {
     my ( $kohafield, $frameworkcode ) = @_;
-    return 0, 0 unless $kohafield and defined $frameworkcode;
+    return (0, undef) unless $kohafield and defined $frameworkcode;
     my $relations = C4::Context->marcfromkohafield;
-    return ( $relations->{$frameworkcode}->{$kohafield}->[0], $relations->{$frameworkcode}->{$kohafield}->[1] );
+    if ( my $mf = $relations->{$frameworkcode}->{$kohafield} ) {
+        return @$mf;
+    }
+    return (0, undef);
 }
 
 =head2 GetMarcBiblio
@@ -1612,7 +1616,8 @@ sub GetMarcAuthors {
                 $separator = C4::Context->preference('authoritysep');
             }
             push @subfields_loop,
-              { code      => $subfieldcode,
+              { tag       => $field->tag(),
+                code      => $subfieldcode,
                 value     => $value,
                 link_loop => \@this_link_loop,
                 separator => $separator
@@ -2137,6 +2142,7 @@ sub TransformHtmlToMarc {
     my $record = MARC::Record->new();
     my $i      = 0;
     my @fields;
+#FIXME This code assumes that the CGI params will be in the same order as the fields in the template; this is no absolute guarantee!
     while ( $params[$i] ) {    # browse all CGI params
         my $param    = $params[$i];
         my $newfield = 0;
@@ -2176,19 +2182,23 @@ sub TransformHtmlToMarc {
 
                 # > 009, deal with subfields
             } else {
-                while ( defined $params[$j] && $params[$j] =~ /_code_/ ) {    # browse all it's subfield
-                    my $inner_param = $params[$j];
-                    if ($newfield) {
-                        if ( $cgi->param( $params[ $j + 1 ] ) ne '' ) {         # only if there is a value (code => value)
-                            $newfield->add_subfields( $cgi->param($inner_param) => $cgi->param( $params[ $j + 1 ] ) );
-                        }
-                    } else {
-                        if ( $cgi->param( $params[ $j + 1 ] ) ne '' ) {         # creating only if there is a value (code => value)
-                            $newfield = MARC::Field->new( $tag, $ind1, $ind2, $cgi->param($inner_param) => $cgi->param( $params[ $j + 1 ] ), );
-                        }
+                # browse subfields for this tag (reason for _code_ match)
+                while(defined $params[$j] && $params[$j] =~ /_code_/) {
+                    last unless defined $params[$j+1];
+                    #if next param ne subfield, then it was probably empty
+                    #try next param by incrementing j
+                    if($params[$j+1]!~/_subfield_/) {$j++; next; }
+                    my $fval= $cgi->param($params[$j+1]);
+                    #check if subfield value not empty and field exists
+                    if($fval ne '' && $newfield) {
+                        $newfield->add_subfields( $cgi->param($params[$j]) => $fval);
+                    }
+                    elsif($fval ne '') {
+                        $newfield = MARC::Field->new( $tag, $ind1, $ind2, $cgi->param($params[$j]) => $fval );
                     }
                     $j += 2;
-                }
+                } #end-of-while
+                $i= $j-1; #update i for outer loop accordingly
             }
             push @fields, $newfield if ($newfield);
         }
@@ -3156,9 +3166,24 @@ sub _koha_marc_update_bib_ids {
     # we drop the original field
     # we add the new builded field.
     my ( $biblio_tag,     $biblio_subfield )     = GetMarcFromKohaField( "biblio.biblionumber",          $frameworkcode );
+    die qq{No biblionumber tag for framework "$frameworkcode"} unless $biblio_tag;
     my ( $biblioitem_tag, $biblioitem_subfield ) = GetMarcFromKohaField( "biblioitems.biblioitemnumber", $frameworkcode );
+    die qq{No biblioitemnumber tag for framework "$frameworkcode"} unless $biblio_tag;
 
-    if ( $biblio_tag != $biblioitem_tag ) {
+    if ( $biblio_tag == $biblioitem_tag ) {
+
+        # biblionumber & biblioitemnumber are in the same field (can't be <10 as fields <10 have only 1 value)
+        my $new_field = MARC::Field->new(
+            $biblio_tag, '', '',
+            "$biblio_subfield"     => $biblionumber,
+            "$biblioitem_subfield" => $biblioitemnumber
+        );
+
+        # drop old field and create new one...
+        my $old_field = $record->field($biblio_tag);
+        $record->delete_field($old_field) if $old_field;
+        $record->insert_fields_ordered($new_field);
+    } else {
 
         # biblionumber & biblioitemnumber are in different fields
 
@@ -3184,20 +3209,6 @@ sub _koha_marc_update_bib_ids {
 
         # drop old field and create new one...
         $old_field = $record->field($biblioitem_tag);
-        $record->delete_field($old_field) if $old_field;
-        $record->insert_fields_ordered($new_field);
-
-    } else {
-
-        # biblionumber & biblioitemnumber are in the same field (can't be <10 as fields <10 have only 1 value)
-        my $new_field = MARC::Field->new(
-            $biblio_tag, '', '',
-            "$biblio_subfield"     => $biblionumber,
-            "$biblioitem_subfield" => $biblioitemnumber
-        );
-
-        # drop old field and create new one...
-        my $old_field = $record->field($biblio_tag);
         $record->delete_field($old_field) if $old_field;
         $record->insert_fields_ordered($new_field);
     }

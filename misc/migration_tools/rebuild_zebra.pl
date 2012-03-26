@@ -34,6 +34,9 @@ my $want_help;
 my $as_xml;
 my $process_zebraqueue;
 my $do_not_clear_zebraqueue;
+my $length;
+my $where;
+my $offset;
 my $verbose_logging = 0;
 my $zebraidx_log_opt = " -v none,fatal,warn ";
 my $result = GetOptions(
@@ -51,7 +54,10 @@ my $result = GetOptions(
 	'x'				=> \$as_xml,
     'y'             => \$do_not_clear_zebraqueue,
     'z'             => \$process_zebraqueue,
-    'v+'            => \$verbose_logging,
+    'where:s'        => \$where,
+    'length:i'        => \$length,
+    'offset:i'      => \$offset,
+    'v+'             => \$verbose_logging,
 );
 
 
@@ -294,13 +300,21 @@ sub select_all_records {
 }
 
 sub select_all_authorities {
-    my $sth = $dbh->prepare("SELECT authid FROM auth_header");
+    my $strsth=qq{SELECT authid FROM auth_header};
+    $strsth.=qq{ WHERE $where } if ($where);
+    $strsth.=qq{ LIMIT $length } if ($length && !$offset);
+    $strsth.=qq{ LIMIT $offset,$length } if ($length && $offset);
+    my $sth = $dbh->prepare($strsth);
     $sth->execute();
     return $sth;
 }
 
 sub select_all_biblios {
-    my $sth = $dbh->prepare("SELECT biblionumber FROM biblioitems ORDER BY biblionumber");
+    my $strsth = qq{ SELECT biblionumber FROM biblioitems };
+    $strsth.=qq{ WHERE $where } if ($where);
+    $strsth.=qq{ LIMIT $length } if ($length && !$offset);
+    $strsth.=qq{ LIMIT $offset,$length } if ($offset);
+    my $sth = $dbh->prepare($strsth);
     $sth->execute();
     return $sth;
 }
@@ -309,7 +323,7 @@ sub export_marc_records_from_sth {
     my ($record_type, $sth, $directory, $as_xml, $noxml, $nosanitize) = @_;
 
     my $num_exported = 0;
-    open (OUT, ">:utf8 ", "$directory/exported_records") or die $!;
+    open my $fh, '>:encoding(UTF-8) ', "$directory/exported_records" or die $!;
     my $i = 0;
     my ( $itemtag, $itemsubfield ) = GetMarcFromKohaField("items.itemnumber",'');
     while (my ($record_number) = $sth->fetchrow_array) {
@@ -337,7 +351,7 @@ sub export_marc_records_from_sth {
                 }
             }
             if ( $marcxml ) {
-                print OUT $marcxml if $marcxml;
+                print {$fh} $marcxml if $marcxml;
                 $num_exported++;
             }
             next;
@@ -350,7 +364,7 @@ sub export_marc_records_from_sth {
             # to care, though, at least if you're using the GRS-1 filter.  It does
             # care if you're using the DOM filter, which requires valid XML file(s).
             eval {
-                print OUT ($as_xml) ? $marc->as_xml_record(C4::Context->preference('marcflavour')) : $marc->as_usmarc();
+                print {$fh} ($as_xml) ? $marc->as_xml_record(C4::Context->preference('marcflavour')) : $marc->as_usmarc();
                 $num_exported++;
             };
             if ($@) {
@@ -359,7 +373,7 @@ sub export_marc_records_from_sth {
         }
     }
     print "\nRecords exported: $num_exported\n" if ( $verbose_logging );
-    close OUT;
+    close $fh;
     return $num_exported;
 }
 
@@ -367,7 +381,7 @@ sub export_marc_records_from_list {
     my ($record_type, $entries, $directory, $as_xml, $noxml, $records_deleted) = @_;
 
     my $num_exported = 0;
-    open (OUT, ">:utf8 ", "$directory/exported_records") or die $!;
+    open my $fh, '>:encoding(UTF-8)', "$directory/exported_records" or die $!;
     my $i = 0;
 
     # Skip any deleted records. We check for this anyway, but this reduces error spam
@@ -384,12 +398,12 @@ sub export_marc_records_from_list {
             # strung together with no single root element.  zebraidx doesn't seem
             # to care, though, at least if you're using the GRS-1 filter.  It does
             # care if you're using the DOM filter, which requires valid XML file(s).
-            print OUT ($as_xml) ? $marc->as_xml_record(C4::Context->preference('marcflavour')) : $marc->as_usmarc();
+            print {$fh} ($as_xml) ? $marc->as_xml_record(C4::Context->preference('marcflavour')) : $marc->as_usmarc();
             $num_exported++;
         }
     }
     print "\nRecords exported: $num_exported\n" if ( $verbose_logging );
-    close OUT;
+    close $fh;
     return $num_exported;
 }
 
@@ -397,7 +411,7 @@ sub generate_deleted_marc_records {
     my ($record_type, $entries, $directory, $as_xml) = @_;
 
     my $records_deleted = {};
-    open (OUT, ">:utf8 ", "$directory/exported_records") or die $!;
+    open my $fh, '>:encoding(UTF-8)', "$directory/exported_records" or die $!;
     my $i = 0;
     foreach my $record_number (map { $_->{biblio_auth_number} } @$entries ) {
         print "\r$i" unless ($i++ %100 or !$verbose_logging);
@@ -413,12 +427,12 @@ sub generate_deleted_marc_records {
             fix_unimarc_100($marc);
         }
 
-        print OUT ($as_xml) ? $marc->as_xml_record(C4::Context->preference("marcflavour")) : $marc->as_usmarc();
+        print {$fh} ($as_xml) ? $marc->as_xml_record(C4::Context->preference("marcflavour")) : $marc->as_usmarc();
 
         $records_deleted->{$record_number} = 1;
     }
     print "\nRecords exported: $i\n" if ( $verbose_logging );
-    close OUT;
+    close $fh;
     return $records_deleted;
     
 
@@ -639,7 +653,14 @@ Parameters:
                             warnings and errors from the indexing are shown.
                             Use log level 2 (-v -v) to include all Zebra logs.
 
-    -munge-config           Deprecated option to try
+    --length   1234         how many biblio you want to export
+    --offset 1243           offset you want to start to
+                                example: --offset 500 --length=500 will result in a LIMIT 500,1000 (exporting 1000 records, starting by the 500th one)
+                                note that the numbers are NOT related to biblionumber, that's the intended behaviour.
+    --where                 let you specify a WHERE query, like itemtype='BOOK'
+                            or something like that
+
+    --munge-config          Deprecated option to try
                             to fix Zebra config files.
     --help or -h            show this message.
 _USAGE_
@@ -824,8 +845,8 @@ if ($authorities) {
     # AUTHORITIES : copying mandatory files
     #
     unless (-f C4::Context->zebraconfig('authorityserver')->{config}) {
-    open ZD,">:utf8 ",C4::Context->zebraconfig('authorityserver')->{config};
-    print ZD "
+    open my $zd, '>:encoding(UTF-8)' ,C4::Context->zebraconfig('authorityserver')->{config};
+    print {$zd} "
 # generated by KOHA/misc/migration_tools/rebuild_zebra.pl 
 profilePath:\${srcdir:-.}:$authorityserverdir/tab/:$tabdir/tab/:\${srcdir:-.}/tab/
 
@@ -969,8 +990,8 @@ if ($biblios) {
     # BIBLIOS : copying mandatory files
     #
     unless (-f C4::Context->zebraconfig('biblioserver')->{config}) {
-    open ZD,">:utf8 ",C4::Context->zebraconfig('biblioserver')->{config};
-    print ZD "
+    open my $zd, '>:encoding(UTF-8)', C4::Context->zebraconfig('biblioserver')->{config};
+    print {$zd} "
 # generated by KOHA/misc/migrtion_tools/rebuild_zebra.pl 
 profilePath:\${srcdir:-.}:$biblioserverdir/tab/:$tabdir/tab/:\${srcdir:-.}/tab/
 

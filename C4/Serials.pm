@@ -612,14 +612,6 @@ sub GetSubscriptions {
     my $odd           = 1;
 
     while ( my $line = $sth->fetchrow_hashref ) {
-        if ( $previousbiblio eq $line->{biblionumber} ) {
-            $line->{title} = "";
-            $line->{issn}  = "";
-        } else {
-            $previousbiblio = $line->{biblionumber};
-            $odd           = -$odd;
-        }
-        $line->{toggle} = 1 if $odd == 1;
         $line->{'cannotedit'} =
           (      C4::Context->preference('IndependantBranches')
               && C4::Context->userenv
@@ -2027,12 +2019,11 @@ sub delroutingmember {
 
 =head2 getroutinglist
 
-($count,@routinglist) = getroutinglist($subscriptionid)
+@routinglist = getroutinglist($subscriptionid)
 
 this gets the info from the subscriptionroutinglist for $subscriptionid
 
 return :
-a count of the number of members on routinglist
 the routinglist as an array. Each element of the array contains a hash_ref containing
 routingid - a unique id, borrowernumber, ranking, and biblionumber of subscription
 
@@ -2042,20 +2033,14 @@ sub getroutinglist {
     my ($subscriptionid) = @_;
     my $dbh              = C4::Context->dbh;
     my $sth              = $dbh->prepare(
-        "SELECT routingid, borrowernumber, ranking, biblionumber 
+        'SELECT routingid, borrowernumber, ranking, biblionumber
             FROM subscription 
             JOIN subscriptionroutinglist ON subscription.subscriptionid = subscriptionroutinglist.subscriptionid
-            WHERE subscription.subscriptionid = ? ORDER BY ranking ASC
-                              "
+            WHERE subscription.subscriptionid = ? ORDER BY ranking ASC'
     );
     $sth->execute($subscriptionid);
-    my @routinglist;
-    my $count = 0;
-    while ( my $line = $sth->fetchrow_hashref ) {
-        $count++;
-        push( @routinglist, $line );
-    }
-    return ( $count, @routinglist );
+    my $routinglist = $sth->fetchall_arrayref({});
+    return @{$routinglist};
 }
 
 =head2 countissuesfrom

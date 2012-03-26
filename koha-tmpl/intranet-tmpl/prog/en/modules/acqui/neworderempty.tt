@@ -166,7 +166,6 @@ $(document).ready(function()
     [% ELSE %]
         New order
     [% END %]
-        [% IF ( suggestionid ) %](defined from suggestion #[% suggestionid %])[% END %]
 </h2>
 
 [% IF ( basketno ) %]
@@ -310,6 +309,19 @@ $(document).ready(function()
             [% END %]
         </ol>
     </fieldset>
+
+    [% IF ( suggestionid ) %]
+        <fieldset class="rows">
+        <legend>Suggestion</legend>
+        <ol>
+          <li>
+            <span class="label">Suggested by: </span>
+            [% surnamesuggestedby %][% IF ( firstnamesuggestedby ) %], [% firstnamesuggestedby %][% END %] (<a href="/cgi-bin/koha/suggestion/suggestion.pl?suggestionid=[% suggestionid %]">suggestion #[% suggestionid %]</a>)
+          </li>
+        </ol>
+        </fieldset>
+    [% END %]
+
     [% IF ( items ) %]
     <fieldset class="rows">
         <legend>Item</legend>
@@ -476,9 +488,9 @@ $(document).ready(function()
                     <select id="sort1" size="1" name="sort1">
                     [% FOREACH sort_opt IN CGIsort1 %]
                        [% IF sort_opt.default %]
-                          <option value="[% sort_opt.id %]" selected="selected">[% sort_opt.label %]</option>
+                          <option value="[% sort_opt.value %]" selected="selected">[% sort_opt.label %]</option>
                         [% ELSE %]
-                          <option value="[% sort_opt.id %]">[% sort_opt.label %]</option>
+                          <option value="[% sort_opt.value %]">[% sort_opt.label %]</option>
                         [% END %]
                     [% END %]
                     </select>
@@ -491,12 +503,12 @@ $(document).ready(function()
                 <label for="sort2">Statistic 2: </label>
 
                 [% IF CGIsort2 %]
-                    <select id="sort2" size="1" name="sort1">
+                    <select id="sort2" size="1" name="sort2">
                     [% FOREACH sort_opt IN CGIsort2 %]
                        [% IF sort_opt.default %]
-                          <option value="[% sort_opt.id %]" selected="selected">[% sort_opt.label %]</option>
+                          <option value="[% sort_opt.value %]" selected="selected">[% sort_opt.label %]</option>
                         [% ELSE %]
-                          <option value="[% sort_opt.id %]">[% sort_opt.label %]</option>
+                          <option value="[% sort_opt.value %]">[% sort_opt.label %]</option>
                         [% END %]
                     [% END %]
                     </select>

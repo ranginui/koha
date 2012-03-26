@@ -27,6 +27,7 @@ use C4::Auth;
 use C4::Items;
 use C4::Biblio;
 use C4::Serials;
+use C4::Koha;
 use C4::Reserves qw/MergeHolds/;
 
 my $input = new CGI;
@@ -61,7 +62,7 @@ if ($merge) {
     # Rewriting the leader
     $record->leader(GetMarcBiblio($tobiblio)->leader());
 
-    my $frameworkcode = &GetFrameworkCode($tobiblio);
+    my $frameworkcode = $input->param('frameworkcode');
     my @notmoveditems;
 
     # Modifying the reference record
@@ -108,77 +109,107 @@ if ($merge) {
 	push @errors, $error if ($error); 
     }
 
-    # Errors
-    my @errors_loop  = map{{error => $_}}@errors;
-
     # Parameters
     $template->param(
-	errors  => \@errors_loop,
 	result => 1,
 	biblio1 => $input->param('biblio1')
     );
-
 
 #-------------------------
 # Show records to merge
 #-------------------------
 } else {
-
     my $mergereference = $input->param('mergereference');
     my $biblionumber = $input->param('biblionumber');
 
-    my $data1 = GetBiblioData($biblionumber[0]);
-    my $data2 = GetBiblioData($biblionumber[1]);
+    if (scalar(@biblionumber) != 2) {
+        push @errors, "An unexpected number of records was provided for merging. Currently only two records at a time can be merged.";
+    }
+    else {
+        my $data1 = GetBiblioData($biblionumber[0]);
+        my $record1 = GetMarcBiblio($biblionumber[0]);
 
-    # Ask the user to choose which record will be the kept
-    if (not $mergereference) {
-	$template->param(
-	    choosereference => 1,	
-	    biblio1 => $biblionumber[0],
-	    biblio2 => $biblionumber[1],
-	    title1 => $data1->{'title'},
-	    title2 => $data2->{'title'}
-	    );
-    } else {
+        my $data2 = GetBiblioData($biblionumber[1]);
+        my $record2 = GetMarcBiblio($biblionumber[1]);
 
-	if (scalar(@biblionumber) != 2) {
-	    push @errors, "An unexpected number of records was provided for merging. Currently only two records at a time can be merged.";
-	}
+        # Checks if both records use the same framework
+        my $frameworkcode1 = &GetFrameworkCode($biblionumber[0]);
+        my $frameworkcode2 = &GetFrameworkCode($biblionumber[1]);
 
-	# Checks if both records use the same framework
-	my $frameworkcode1 = &GetFrameworkCode($biblionumber[0]);
-	my $frameworkcode2 = &GetFrameworkCode($biblionumber[1]);
-	my $framework;
-	if ($frameworkcode1 ne $frameworkcode2) {
-	    push @errors, "The records selected for merging are using different frameworks. Currently merging is only available for records using the same framework.";
-	} else {
-	    $framework = $frameworkcode1;	
-	}
 
-	# Getting MARC Structure
-	my $tagslib = GetMarcStructure(1, $framework);
+        my $subtitle1 = GetRecordValue('subtitle', $record1, $frameworkcode1);
+        my $subtitle2 = GetRecordValue('subtitle', $record2, $frameworkcode1);
 
-	my $notreference = ($biblionumber[0] == $mergereference) ? $biblionumber[1] : $biblionumber[0];
+        if ($mergereference) {
 
-	# Creating a loop for display
-	my @record1 = _createMarcHash(GetMarcBiblio($mergereference), $tagslib);
-	my @record2 = _createMarcHash(GetMarcBiblio($notreference), $tagslib);
+            my $framework;
+            if ($frameworkcode1 ne $frameworkcode2) {
+                $framework = $input->param('frameworkcode')
+                  or push @errors, "Famework not selected.";
+            } else {
+                $framework = $frameworkcode1;
+            }
 
-	# Errors
-	my @errors_loop  = map{{error => $_}}@errors;
+            # Getting MARC Structure
+            my $tagslib = GetMarcStructure(1, $framework);
 
-	# Parameters
-	$template->param(
-	    errors  => \@errors_loop,
-	    biblio1 => $mergereference,
-	    biblio2 => $notreference,
-	    mergereference => $mergereference,
-	    record1 => @record1,
-	    record2 => @record2,
-	    framework => $framework
-	    );
+            my $notreference = ($biblionumber[0] == $mergereference) ? $biblionumber[1] : $biblionumber[0];
+
+            # Creating a loop for display
+            my @record1 = _createMarcHash(GetMarcBiblio($mergereference), $tagslib);
+            my @record2 = _createMarcHash(GetMarcBiblio($notreference), $tagslib);
+
+            # Parameters
+            $template->param(
+                biblio1 => $mergereference,
+                biblio2 => $notreference,
+                mergereference => $mergereference,
+                record1 => @record1,
+                record2 => @record2,
+                framework => $framework,
+            );
+        }
+        else {
+
+        # Ask the user to choose which record will be the kept
+            $template->param(
+                choosereference => 1,
+                biblio1 => $biblionumber[0],
+                biblio2 => $biblionumber[1],
+                title1 => $data1->{'title'},
+                subtitle1 => $subtitle1,
+                title2 => $data2->{'title'},
+                subtitle2 => $subtitle2
+            );
+            if ($frameworkcode1 ne $frameworkcode2) {
+                my $frameworks = getframeworks;
+                my @frameworkselect;
+                foreach my $thisframeworkcode ( keys %$frameworks ) {
+                    my %row = (
+                        value         => $thisframeworkcode,
+                        frameworktext => $frameworks->{$thisframeworkcode}->{'frameworktext'},
+                    );
+                    if ($frameworkcode1 eq $thisframeworkcode){
+                        $row{'selected'} = 1;
+                        }
+                    push @frameworkselect, \%row;
+                }
+                $template->param(
+                    frameworkselect => \@frameworkselect,
+                    frameworkcode1 => $frameworkcode1,
+                    frameworkcode2 => $frameworkcode2,
+                );
+            }
+        }
     }
 }
+
+if (@errors) {
+    # Errors
+    my @errors_loop  = map{{error => $_}}@errors;
+    $template->param( errors  => \@errors_loop );
+}
+
 output_html_with_http_headers $input, $cookie, $template->output;
 exit;
 
