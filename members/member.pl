@@ -86,13 +86,13 @@ if ($AddPatronLists=~/code/){
 my $member=$input->param('member');
 my $orderbyparams=$input->param('orderby');
 my @orderby;
-if ($orderbyparams){
-	my @orderbyelt=split(/,/,$orderbyparams);
-	push @orderby, {$orderbyelt[0]=>$orderbyelt[1]||0};
-}
-else {
+#if ($orderbyparams){
+#	my @orderbyelt=split(/,/,$orderbyparams);
+#	push @orderby, {$orderbyelt[0]=>$orderbyelt[1]||0};
+#}
+#else {
 	@orderby = ({surname=>0},{firstname=>0});
-}
+#}
 
 $member =~ s/,//g;   #remove any commas from search string
 $member =~ s/\*/%/g;
