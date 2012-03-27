@@ -43,7 +43,8 @@
      });
      </script>
   <input type="submit" value="To Screen" name="submit" class="submit" />
-<!--  <input type="submit" value="To Excel" name="submit" class="button"> --></fieldset>
+  <input type="submit" value="To Excel" name="submit" class="button" />
+  </fieldset>
 </form>
 
 <h2>Payments</h2>

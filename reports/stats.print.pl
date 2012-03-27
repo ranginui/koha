@@ -10,6 +10,8 @@ use C4::Context;
 use Date::Manip;
 use C4::Stats;
 use Text::CSV_XS;
+use C4::Accounts;
+
 &Date_Init("DateFormat=non-US"); # set non-USA date, eg:19/08/2005
 
 my $csv = Text::CSV_XS->new(

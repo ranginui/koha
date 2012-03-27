@@ -26,6 +26,8 @@ use C4::Accounts;
 use C4::Debug;
 use Date::Manip;
 
+&Date_Init("DateFormat=nonUS");
+
 my $input = new CGI;
 my $time  = $input->param('time');
 my $time2 = $input->param('time2');
