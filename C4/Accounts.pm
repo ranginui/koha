@@ -370,6 +370,11 @@ sub manualinvoice {
 
         $desc = " Lost Item";
     }
+    
+    if ( $type eq 'RR' ) {
+	$desc .= " Rental Reward";
+    }
+    
 #    if ( $type eq 'REF' ) {
 #        $desc .= " Cash Refund";
 #        $amountleft = refund( '', $borrowernumber, $amount );
@@ -378,10 +383,20 @@ sub manualinvoice {
         or ( $type eq 'F' )
         or ( $type eq 'A' )
         or ( $type eq 'N' )
-        or ( $type eq 'M' ) )
+        or ( $type eq 'M' )
+        or ( $type eq 'RR' ) )
     {
         $notifyid = 1;
     }
+    
+     if ( $type eq 'RR' ) {
+	 my $credit = $amount;
+	 makepayment( $borrowernumber, $accountno, $credit, $manager_id );
+	 if ( my $rr_pct = C4::Context->preference('RentalRewardsPercent') ) {
+	     $amount = sprintf "%.2f", $credit * (1 + $rr_pct/100);
+	     $amountleft = $amount;
+	 }
+     }
 
     if ( $itemnum ) {
         $desc .= ' ' . $itemnum;
