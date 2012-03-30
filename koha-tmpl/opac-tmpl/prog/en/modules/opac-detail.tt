@@ -1057,17 +1057,6 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
 </div>
 [% END %]
 
-<<<<<<< HEAD
-=======
-[% IF ( Babeltheque ) %]
-<div id="babeltheque">
-  <div id="BW_notes"></div>
-  <div id="BW_critiques"></div>
-  <div id="BW_citations"></div>
-  <div id="BW_etiquettes"></div>
-</div>
-[% END %]
-
 [% IF (Recommendations) %]
 <div id="recommendations">
 <table>
@@ -1078,7 +1067,6 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
 </div>
 [% END %]
 
->>>>>>> fd591e0... Bug 6772 - recommendation system
 [% IF ( OPACFRBRizeEditions ) %][% IF ( XISBNS ) %]
 <div id="editions">
 
