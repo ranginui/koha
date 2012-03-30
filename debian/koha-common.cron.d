@@ -8,3 +8,4 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 */5 * * * * root test -x /usr/sbin/koha-rebuild-zebra && koha-rebuild-zebra $(koha-list --enabled)
 */15 * * * * root koha-foreach --enabled --email /usr/share/koha/bin/cronjobs/process_message_queue.pl
+#10 20 * * *  root . /etc/koha/wheelers-uplad; koha-foreach --enabled --email /usr/share/koha/bin/cronjobswheelers-patrons.pl

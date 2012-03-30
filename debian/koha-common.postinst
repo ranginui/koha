@@ -9,6 +9,7 @@ if [ ! -e "$conf" ] && [ ! -L "$conf" ]
 then
     ln -s debian.cnf "$conf"
 fi
+chmod 0600 /etc/koha/wheelers-uplad
 
 #DEBHELPER#
 
