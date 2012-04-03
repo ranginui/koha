@@ -557,7 +557,7 @@ sub get_saved_reports {
     my $dbh   = C4::Context->dbh();
     my (@cond,@args);
     my $query = "SELECT saved_sql.id, report_id, report,
-                        date_run, date_created, last_modified, savedsql, last_run,
+                        date_run, date_created, saved_sql.last_modified, savedsql, last_run,
                         report_name, type, notes,
                         borrowernumber, surname as borrowersurname, firstname as borrowerfirstname
                  FROM saved_sql 
