@@ -32,6 +32,13 @@ Acquisitions:
         - The default tax rate is   
         - pref: gist
         - (enter in numeric form, 0.12 for 12%)
+    -
+        - pref: ChooseNewBudget
+          default: no
+          choices:
+              yes: Allow
+              no: "Don't Allow"
+        - people to choose to order out of the next budget period
 
     Printing:
     -
