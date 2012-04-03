@@ -299,6 +299,7 @@ function refocus(calendar) {
     <input type="hidden" name="barcode" value="[% barcode %]" />
     <input type="hidden" name="borrowernumber" value="[% borrowernumber %]" />
     <input type="hidden" name="issueconfirmed" value="1" />
+    <input type="hidden" name="inprocess" value="[% inprocess %]" />
     [% IF ( DEBT ) %]<input type="hidden" name="debt_confirmed" value="1" />[% END %]
     [% IF ( INVALID_DATE ) %]
     <p>
@@ -472,6 +473,7 @@ No patron matched <span class="ex">[% message %]</span>
     [% ELSE %]
 	    <input type="text" name="barcode" id="barcode" class="barcode focus" size="14" />
     [% END %]
+    <input type="hidden" name="inprocess" value="[% inprocess %]" />
     <input type="submit" value="Check Out" />
 
     [% IF ( SpecifyDueDate ) %]<div class="date-select">
@@ -683,6 +685,7 @@ No patron matched <span class="ex">[% message %]</span>
     <input type="hidden" name="cardnumber" value="[% cardnumber %]" />
     <input type="hidden" name="borrowernumber" value="[% borrowernumber %]" />
     <input type="hidden" name="branch" value="[% branch %]" />
+    <input type="hidden" name="inprocess" value="[% inprocess %]" />
         <table id="issuest">
     <thead><tr>
         <th scope="col">Due date</th>

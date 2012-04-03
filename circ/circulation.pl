@@ -541,6 +541,9 @@ foreach my $flag ( sort keys %$flags ) {
                 chargesamount => $flags->{'CHARGES'}->{'amount'},
                 charges_is_blocker => 1
             );
+	    if ( C4::Context->preference("IssuingInProcess") && $inprocess) {
+		$template->{VARS}->{'noissues'} = '';
+	    }
         }
         elsif ( $flag eq 'CREDITS' ) {
             $template->param(
