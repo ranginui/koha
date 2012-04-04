@@ -1,16 +1,27 @@
 #!/usr/bin/perl -w
 
+# script to load patron data to wheelers
+# Not upstreamable
+
+# Relies on extra config variables in koha-conf.xml
+# <Wheelers_Passive></Wheelers_Passive> 
+# <Wheelers_Host>io.wheelers.co</Wheelers_Host>
+# <Wheelers_Debug>1</Wheelers_Debug> 
+# <Wheelers_Username>Name</Wheelers_Username>
+# <Wheelers_Password>XXXX</Wheelers_Password>
+
 use strict;
 use POSIX qw(strftime);
 use Net::FTP;
 use C4::Context;
 
-my $FTP_HOST = "io.wheelers.co";
-my $FTP_PASSIVE = exists $ENV{FTP_PASSIVE} ? $ENV{FTP_PASSIVE} : 1;
+my $context = C4::Context->new();
+my $FTP_HOST = $context->config('Wheelers_Host');
+my $FTP_PASSIVE = $context->config('Wheelers_Passive') ? $context->config('Wheelers_Passive') : 1;
 
-my $DEBUG = $ENV{FTP_DEBUG};
-my $ftp_user = $ENV{FTP_USERNAME} or die "Mo FTP_USERNAME env";
-my $ftp_pass = $ENV{FTP_PASSWORD} or die "Mo FTP_PASSWORD env";
+my $DEBUG = $context->config('Wheelers_Debug');
+my $ftp_user = $context->config('Wheelers_Username') or die "Mo FTP_USERNAME";
+my $ftp_pass = $context->config('Wheelers_Password') or die "Mo FTP_PASSWORD";
 
 my $usage = <<EOT;
 Usage:
