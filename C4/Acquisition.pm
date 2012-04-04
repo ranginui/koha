@@ -1043,8 +1043,6 @@ sub NewOrder {
 #### ------------------------------
     my $dbh = C4::Context->dbh;
     my @params;
-
-
     # if these parameters are missing, we can't continue
     for my $key (qw/basketno quantity biblionumber budget_id/) {
         croak "Mandatory parameter $key missing" unless $orderinfo->{$key};

@@ -169,6 +169,9 @@ if ( $ordernumber eq '' and defined $params->{'breedingid'}){
 
 if ( $ordernumber eq '' ) {    # create order
     $new = 'yes';
+    if (C4::Context->preference('ChooseNewBudget')){
+        $template->param('nextbudget' => 1);
+    }
 
     # 	$ordernumber=newordernum;
     if ( $biblionumber && !$suggestionid ) {

@@ -420,6 +420,10 @@ $(document).ready(function()
                     [% END %]
                 [% END %]
                 </select>
+		[% IF nextbudget %]
+		      <label for="budgetperiod" style="float:none;width:auto;">Current: <input type="radio" name="period" value="0" checked="yes"> Next: <input type="radio" name="period" value="1"></label>
+	        [% END %]
+
                 <label for="showallbudgets" style="float:none;width:auto;">&nbsp;Show all:</label>
                 <input type="checkbox" id="showallbudgets" />
                 [% END %]

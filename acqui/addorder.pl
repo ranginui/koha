@@ -4,6 +4,7 @@
 #written 29/2/00 by chris@katipo.co.nz
 
 # Copyright 2000-2002 Katipo Communications
+# Parts Copyright 2011 Catalyst IT
 #
 # This file is part of Koha.
 #
@@ -128,6 +129,7 @@ use C4::Suggestions;	# ModStatus
 use C4::Biblio;			# AddBiblio TransformKohaToMarc
 use C4::Items;
 use C4::Output;
+use C4::Budgets;
 
 ### "-------------------- addorder.pl ----------"
 
@@ -204,6 +206,10 @@ if ( $orderinfo->{quantity} ne '0' ) {
         ModOrder( $orderinfo);
     }
     else { # else, it's a new line
+    	if ($orderinfo->{'period'}){
+            # the user has chosen to use the next budget period
+            $orderinfo->{'budget_id'} = GetNewFund($orderinfo->{'budget_id'});
+        }
         @$orderinfo{qw(basketno ordernumber )} = NewOrder($orderinfo);
     }
 

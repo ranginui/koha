@@ -73,6 +73,8 @@ BEGIN {
 
         &HideCols
         &GetCols
+	    
+	GetNewFund
 	);
 }
 
@@ -950,6 +952,23 @@ sub _filter_fields{
 	return (\@keys,\@values);
 }
 
+sub GetNewFund {
+    my $fundid = shift;
+    my $dbh = C4::Context->dbh();
+    my $query = " SELECT budget_code,budget_period_startdate,budget_period_enddate FROM aqbudgets,aqbudgetperiods WHERE aqbudgets.budget_period_id=aqbudgetperiods.budget_period_id AND budget_id=?";
+    my $sth = $dbh->prepare($query);
+    $sth->execute($fundid);
+    if (my $data = $sth->fetchrow_hashref()){
+	$query = "SELECT budget_id FROM aqbudgets,aqbudgetperiods WHERE aqbudgets.budget_period_id=aqbudgetperiods.budget_period_id AND budget_code = ? AND budget_period_startdate >= ? order by budget_period_startdate limit 1";
+	$sth = $dbh->prepare($query);
+	$sth->execute($data->{'budget_code'},$data->{'budget_period_enddate'});
+	my $newbudget = $sth->fetchrow_hashref();
+	if ($newbudget && $newbudget->{'budget_id'}){
+	    return $newbudget->{'budget_id'};
+	}
+    }
+    return $fundid; # if we cant find another one, return original
+}
 END { }    # module clean-up code here (global destructor)
 
 1;
