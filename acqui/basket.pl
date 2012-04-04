@@ -315,28 +315,26 @@ if ( $op eq 'delete_confirm' ) {
         push @books_loop, \%line;
     }
 
-my $total_est_gste;
+    my $total_est_gste;
     my $total_est_gsti;
     my $gist_est;
     if ($gist){                                                    # if we have GST
        if ( $bookseller->{'listincgst'} ) {                        # if prices already includes GST
            $total_rrp_gsti = $total_rrp;                           # we know $total_rrp_gsti
            $total_rrp_gste = $total_rrp_gsti / ( $gist + 1 );      # and can reverse compute other values
-           $gist_rrp       = $total_rrp_gsti - $total_rrp_gste;    #
-           $total_est_gste = $total_rrp_gste - ( $total_rrp_gste * $discount );
-           $total_est_gsti = $total_rrp_est;
+           $gist_rrp       = $total_rrp_gsti - $total_rrp_gste;
         } else {                                                    # if prices does not include GST
            $total_rrp_gste = $total_rrp;                           # then we use the common way to compute other values
-           $gist_rrp       = $total_rrp_gste * $gist;              #
-           $total_rrp_gsti = $total_rrp_gste + $gist_rrp;          #
-           $total_est_gste = $total_rrp_est;
-           $total_est_gsti = $total_rrp_gsti - ( $total_rrp_gsti * $discount );
+           $gist_rrp       = $total_rrp_gste * $gist;
+           $total_rrp_gsti = $total_rrp_gste + $gist_rrp;
        }
-       $gist_est = $gist_rrp - ( $gist_rrp * $discount );
+       $total_est_gste = $total_rrp_gste - ( $total_rrp_gste * $discount );
+       $total_est_gsti = $total_rrp_gsti - ( $total_rrp_gsti * $discount );
+       $gist_est = $total_est_gsti / (1+$gist) * ($gist); # could also be ($total_est_gsti - $total_est_gste )
     } else {
-    $total_rrp_gsti = $total_rrp;
-    $total_est_gsti = $total_rrp_est;
-}
+        $total_rrp_gsti = $total_rrp;
+        $total_est_gsti = $total_rrp_est;
+    }
 
     my $contract = &GetContract($basket->{contractnumber});
     my @orders = GetOrders($basketno);
