@@ -342,8 +342,8 @@
 		    The total at the bottom of the page should be within a few cents of the total for the invoice.
 		</p>
 		</td>
-			    <td><b>Tax rate</b></td>
-		<td>[% gst %]</td>
+			    <td><b>Tax</b></td>
+		        <td>[% gst %]</td>
 	    	</tr> 
 	    [% END %]
 	    <tr>
