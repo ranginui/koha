@@ -78,7 +78,6 @@ my $invoice=$input->param('invoice') || '';
 my $freight=$input->param('freight');
 my $input_gst = ($input->param('gst') eq '' ? undef : $input->param('gst'));
 my $gstrate= $input_gst // $bookseller->{gstrate} // C4::Context->preference("gist") // 0;
-my $gst = 0;
 my $datereceived =  ($input->param('op') eq 'new') ? C4::Dates->new($input->param('datereceived')) 
 					:  C4::Dates->new($input->param('datereceived'), 'iso')   ;
 $datereceived = C4::Dates->new() unless $datereceived;
@@ -174,8 +173,6 @@ for (my $i = 0 ; $i < $countlines ; $i++) {
     %line          = %{ $parcelitems[$i] };
     $line{invoice} = $invoice;
     $line{gstrate}     = $gstrate;
-    $line{gst} = $parcelitems[$i]->{'gst'} * $gstrate;
-    $gst += $parcelitems[$i]->{'gst'} * $gstrate;
     $line{total} = sprintf($cfstr, $total);
     $line{supplierid} = $supplierid;
     push @loop_received, \%line;
@@ -320,7 +317,7 @@ $template->param(
     totalquantity         => $totalquantity,
     tototal               => sprintf($cfstr, $tototal),
     ordergrandtotal       => sprintf($cfstr, $ordergrandtotal),
-    gst                   => sprintf($cfstr, $gst),
+    gst                   => sprintf($cfstr, $tototal*$gstrate),
     grandtot              => sprintf($cfstr, $tototal*(1+$gstrate)), # FIXME assumes budgeted cost is gst exclusive (currently correct), will need to be fixed once a pref exists for gst incl/excl gst
     totalPunitprice       => sprintf("%.2f", $totalPunitprice),
     totalPquantity        => $totalPquantity,
