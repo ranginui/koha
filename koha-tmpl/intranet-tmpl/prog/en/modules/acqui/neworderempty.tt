@@ -14,10 +14,13 @@ function Check(ff) {
 
     _alertString +="-------------------------------------------------------------------\n\n";
 
-    if ( isNull(ff.title,1)  &&  isNull(ff.entertitle,1)   ){
+[% UNLESS( biblionumber ) %]
+// this caused errors so I enclosed it within an UNLESS, if biblionumber then ff.entertitle doesnt exist so checking it will cause a type error
+    if(  isNull(ff.entertitle,1)   ){
         ok=1;
                     _alertString += "\n- " + _("Title cannot be empty");
     }
+[% END %]
     
     if(isNull(ff.budget_id,1)){
 		ok=1;

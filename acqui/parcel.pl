@@ -77,7 +77,7 @@ my $bookseller=GetBookSellerFromId($supplierid);
 my $invoice=$input->param('invoice') || '';
 my $freight=$input->param('freight');
 my $input_gst = ($input->param('gst') eq '' ? undef : $input->param('gst'));
-my $gst= $input_gst // $bookseller->{gstrate} // C4::Context->preference("gist") // 0;
+my $gstrate= $input_gst // $bookseller->{gstrate} // C4::Context->preference("gist") // 0;
 my $datereceived =  ($input->param('op') eq 'new') ? C4::Dates->new($input->param('datereceived')) 
 					:  C4::Dates->new($input->param('datereceived'), 'iso')   ;
 $datereceived = C4::Dates->new() unless $datereceived;
@@ -167,12 +167,12 @@ my @loop_received = ();
 for (my $i = 0 ; $i < $countlines ; $i++) {
 
     #$total=($parcelitems[$i]->{'unitprice'} + $parcelitems[$i]->{'freight'}) * $parcelitems[$i]->{'quantityreceived'};   #weird, are the freight fees counted by book? (pierre)
-    $total = ($parcelitems[$i]->{'unitprice'}) * $parcelitems[$i]->{'quantityreceived'};    #weird, are the freight fees counted by book? (pierre)
+    $total = ($parcelitems[$i]->{'ecost'}) * $parcelitems[$i]->{'quantityreceived'};    #weird, are the freight fees counted by book? (pierre)
     $parcelitems[$i]->{'unitprice'} += 0;
     my %line;
     %line          = %{ $parcelitems[$i] };
     $line{invoice} = $invoice;
-    $line{gst}     = $gst;
+    $line{gstrate}     = $gstrate;
     $line{total} = sprintf($cfstr, $total);
     $line{supplierid} = $supplierid;
     push @loop_received, \%line;
@@ -217,7 +217,9 @@ for (my $i = 0 ; $i < $countpendings ; $i++) {
     $line{ordertotal} = sprintf("%.2f",$line{ecost}*$line{quantity});
     $line{unitprice} = sprintf("%.2f",$line{unitprice});
     $line{invoice} = $invoice;
-    $line{gst} = $gst;
+    $line{gstrate}     = $gstrate;
+    $line{gst} = $parcelitems[$i]->{'gst'} * $gstrate;
+    $line{total} = sprintf($cfstr, $total);
     $line{total} = $total;
     $line{supplierid} = $supplierid;
     $ordergrandtotal += $line{ecost} * $line{quantity};
@@ -303,7 +305,7 @@ $template->param(
     formatteddatereceived => $datereceived->output(),
     name                  => $bookseller->{'name'},
     supplierid            => $supplierid,
-    gst                   => $gst,
+    gstrate                   => $gstrate,
     freight               => $freight,
     invoice               => $invoice,
     countreceived         => $countlines,
@@ -315,8 +317,8 @@ $template->param(
     totalquantity         => $totalquantity,
     tototal               => sprintf($cfstr, $tototal),
     ordergrandtotal       => sprintf($cfstr, $ordergrandtotal),
-    gst                   => sprintf($cfstr, $gst),
-    grandtot              => sprintf($cfstr, $tototal * (1+$gst)),
+    gst                   => sprintf($cfstr, $tototal*$gstrate),
+    grandtot              => sprintf($cfstr, $tototal*(1+$gstrate)), # FIXME assumes budgeted cost is gst exclusive (currently correct), will need to be fixed once a pref exists for gst incl/excl gst
     totalPunitprice       => sprintf("%.2f", $totalPunitprice),
     totalPquantity        => $totalPquantity,
     totalPqtyrcvd         => $totalPqtyrcvd,

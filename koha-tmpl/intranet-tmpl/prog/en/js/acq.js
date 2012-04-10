@@ -686,7 +686,7 @@ function calcNeworderTotal(){
     f.ecost.value = ecost.toFixed(2);
     f.total.value = total.toFixed(2);
     f.listprice.value =  listprice.toFixed(2);
-    f.unitprice.value = ecost.toFixed(2);
+    //f.unitprice.value = ecost.toFixed(2);
 
 //  gst-stuff needs verifing, mason.
     if (f.GST) {
