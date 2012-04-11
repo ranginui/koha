@@ -41,8 +41,7 @@ BEGIN {
 	if ( psgi_env ) { die 'psgi:exit' }
 	else { exit }
     }
-
-    $VERSION     = 3.02;                                                                                                            # set version for version checking
+    $VERSION     = 3.02;    # set version for version checking
     $debug       = $ENV{DEBUG};
     @ISA         = qw(Exporter);
     @EXPORT      = qw(&checkauth &get_template_and_user &haspermission &get_user_subpermissions);
@@ -373,7 +372,7 @@ sub get_template_and_user {
         $LibraryNameTitle =~ s/<(?:\/?)(?:br|p)\s*(?:\/?)>/ /sgi;
         $LibraryNameTitle =~ s/<(?:[^<>'"]|'(?:[^']*)'|"(?:[^"]*)")*>//sg;
         # clean up the busc param in the session if the page is not opac-detail
-        if ($in->{'template_name'} =~ /opac-(.+)\.(?:tt|tmpl)$/ && $1 !~ /^(?:MARC|ISBD)?detail$/) {
+        if (C4::Context->preference("OpacBrowseResults") && $in->{'template_name'} =~ /opac-(.+)\.(?:tt|tmpl)$/ && $1 !~ /^(?:MARC|ISBD)?detail$/) {
             my $sessionSearch = get_session($sessionID || $in->{'query'}->cookie("CGISESSID"));
             $sessionSearch->clear(["busc"]) if ($sessionSearch->param("busc"));
         }
@@ -1664,6 +1663,7 @@ sub getborrowernumber {
     }
     return 0;
 }
+
 
 END { }    # module clean-up code here (global destructor)
 1;

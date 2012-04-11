@@ -1054,6 +1054,8 @@ CREATE TABLE `items` ( -- holdings/item information
   KEY `homebranch` (`homebranch`),
   KEY `holdingbranch` (`holdingbranch`),
   KEY `itemcallnumber` (`itemcallnumber`),
+  KEY `items_location` (`location`),
+  KEY `items_ccode` (`ccode`),
   CONSTRAINT `items_ibfk_1` FOREIGN KEY (`biblioitemnumber`) REFERENCES `biblioitems` (`biblioitemnumber`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `items_ibfk_2` FOREIGN KEY (`homebranch`) REFERENCES `branches` (`branchcode`) ON UPDATE CASCADE,
   CONSTRAINT `items_ibfk_3` FOREIGN KEY (`holdingbranch`) REFERENCES `branches` (`branchcode`) ON UPDATE CASCADE
@@ -2809,6 +2811,21 @@ CREATE TABLE IF NOT EXISTS `social_data` (
   `score_avg` DECIMAL(5,2),
   `num_scores` INT,
   PRIMARY KEY  (`isbn`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- 'Ratings' table. This tracks the star ratings set by borrowers.
+--
+
+DROP TABLE IF EXISTS ratings;
+CREATE TABLE ratings (
+    borrowernumber int(11) NOT NULL, --- the borrower this rating is for
+    biblionumber int(11) NOT NULL, --- the biblio it's for
+    rating_value tinyint(1) NOT NULL, --- the rating, from 1-5
+    timestamp timestamp NOT NULL default CURRENT_TIMESTAMP,
+    PRIMARY KEY  (borrowernumber,biblionumber),
+    CONSTRAINT ratings_ibfk_1 FOREIGN KEY (borrowernumber) REFERENCES borrowers (borrowernumber) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT ratings_ibfk_2 FOREIGN KEY (biblionumber) REFERENCES biblio (biblionumber) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

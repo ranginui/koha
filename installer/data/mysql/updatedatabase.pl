@@ -4929,7 +4929,6 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     INSERT INTO `systempreferences` (variable,value,explanation,options,type) VALUES ('AllowPKIAuth','None','Use the field from a client-side SSL certificate to look a user in the Koha database','None|Common Name|emailAddress','Choice');
     });
     print "Upgrade to $DBversion done (Bug 6296 New System preference AllowPKIAuth)\n";
-    SetVersion($DBversion);
 }
 
 $DBversion = "3.07.00.029";
@@ -5090,7 +5089,7 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 $DBversion = "3.07.00.041";
 if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     $dbh->do("INSERT INTO systempreferences (variable,value,options,explanation,type) VALUES('SubscriptionDuplicateDroppedInput','','','List of fields which must not be rewritten when a subscription is duplicated (Separated by pipe |)','Free')");
-    print "Upgrade to $DBversion done (Add System Preferences SubscriptionDuplicateDroppedInput)\n";
+    print "Upgrade to $DBversion done (Add system preference SubscriptionDuplicateDroppedInput)\n";
     SetVersion($DBversion);
 }
 
@@ -5158,6 +5157,45 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     print "Upgrade to $DBversion done (Setting up issues tables for hourly loans (lengthunit fix))\n";
     SetVersion($DBversion);
 }
+
+$DBversion = "3.07.00.047";
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+    $dbh->do("CREATE INDEX items_location ON items(location)");
+    $dbh->do("CREATE INDEX items_ccode ON items(ccode)");
+    print "Upgrade to $DBversion done (items_location and items_ccode indexes added for ShelfBrowser)";
+    SetVersion($DBversion);
+}
+
+$DBversion = "3.07.00.048";
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+    $dbh->do(
+        q | CREATE TABLE ratings (
+  borrowernumber int(11) NOT NULL,
+  biblionumber int(11) NOT NULL,
+  rating_value tinyint(1) NOT NULL,
+  timestamp timestamp NOT NULL default CURRENT_TIMESTAMP,
+  PRIMARY KEY  (borrowernumber,biblionumber),
+  CONSTRAINT ratings_ibfk_1 FOREIGN KEY (borrowernumber) REFERENCES borrowers (borrowernumber) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT ratings_ibfk_2 FOREIGN KEY (biblionumber) REFERENCES biblio (biblionumber) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 |
+    );
+
+    $dbh->do(
+q /INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('OpacStarRatings','disable',NULL,'disable|all|details','Choice') /
+    );
+
+    print
+"Upgrade to $DBversion done (Add 'ratings' table and 'OpacStarRatings' syspref)\n";
+    SetVersion($DBversion);
+}
+
+$DBversion = "3.07.00.049";
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+    $dbh->do("INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES('OpacBrowseResults','1','Disable/enable browsing and paging search results from the OPAC detail page.',NULL,'YesNo')");
+    print "Upgrade to $DBversion done (Add system preference OpacBrowseResults ))\n";
+    SetVersion($DBversion);
+}
+
 
 =head1 FUNCTIONS
 

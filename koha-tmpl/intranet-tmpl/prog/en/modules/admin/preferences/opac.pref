@@ -22,6 +22,14 @@ OPAC:
                   no: Disable
             - "Koha OPAC as public. Private OPAC requires authentification before accessing the OPAC."
         -
+            - "Show star-ratings on"
+            - pref: OpacStarRatings
+              choices:
+                  all: "results and details"
+                  disable: "no"
+                  details: "only details"
+            - "pages."
+        -
             - pref: OpacMaintenance
               choices:
                   yes: Show
@@ -315,6 +323,14 @@ OPAC:
                   yes: Enable
                   no: Disable
             - social network links in opac detail pages
+        -
+            - pref: OpacBrowseResults
+              default: 1
+              choices:
+                  yes: Enable
+                  no: Disable
+            - browsing and paging search results from the OPAC detail page.
+
     Policy:
         -
             - pref: singleBranchMode

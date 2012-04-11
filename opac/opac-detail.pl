@@ -2,6 +2,7 @@
 
 # Copyright 2000-2002 Katipo Communications
 # Copyright 2010 BibLibre
+# Copyright 2011 KohaAloha, NZ
 #
 # This file is part of Koha.
 #
@@ -36,6 +37,7 @@ use C4::XISBN qw(get_xisbns get_biblionumber_from_isbn);
 use C4::External::Amazon;
 use C4::External::Syndetics qw(get_syndetics_index get_syndetics_summary get_syndetics_toc get_syndetics_excerpt get_syndetics_reviews get_syndetics_anotes );
 use C4::Review;
+use C4::Ratings;
 use C4::Members;
 use C4::VirtualShelves;
 use C4::XSLT;
@@ -94,8 +96,11 @@ if (C4::Context->preference("OPACXSLTDetailsDisplay") ) {
     $template->param( 'XSLTBloc' => XSLTParse4Display($biblionumber, $record, "OPACXSLTDetailsDisplay" ) );
 }
 
+my $OpacBrowseResults = C4::Context->preference("OpacBrowseResults");
+$template->{VARS}->{'OpacBrowseResults'} = $OpacBrowseResults;
 
 # We look for the busc param to build the simple paging from the search
+if ($OpacBrowseResults) {
 my $session = get_session($query->cookie("CGISESSID"));
 my %paging = (previous => {}, next => {});
 if ($session->param('busc')) {
@@ -375,6 +380,7 @@ if ($session->param('busc')) {
     $template->param('listResults' => \@listResults) if (@listResults);
     $template->param('indexPag' => 1 + $offset, 'totalPag' => $arrParamsBusc{'total'}, 'indexPagEnd' => scalar(@arrBiblios) + $offset);
 }
+}
 
 
 
@@ -549,7 +555,7 @@ my $subtitle         = GetRecordValue('subtitle', $record, GetFrameworkCode($bib
                      MARCAUTHORS             => $marcauthorsarray,
                      MARCSERIES              => $marcseriesarray,
                      MARCURLS                => $marcurlsarray,
-		     MARCHOSTS               => $marchostsarray,
+                     MARCHOSTS               => $marchostsarray,
                      norequests              => $norequests,
                      RequestOnOpac           => C4::Context->preference("RequestOnOpac"),
                      itemdata_ccode          => $itemfields{ccode},
@@ -559,6 +565,7 @@ my $subtitle         = GetRecordValue('subtitle', $record, GetFrameworkCode($bib
                      itemdata_itemnotes          => $itemfields{itemnotes},
                      authorised_value_images => $biblio_authorised_value_images,
                      subtitle                => $subtitle,
+                     OpacStarRatings         => C4::Context->preference("OpacStarRatings"),
     );
 
 if (C4::Context->preference("AlternateHoldingsField") && scalar @items == 0) {
@@ -629,6 +636,10 @@ if ( C4::Context->preference('ShowReviewer') and C4::Context->preference('ShowRe
 
 my $reviews = getreviews( $biblionumber, 1 );
 my $loggedincommenter;
+
+
+
+
 foreach ( @$reviews ) {
     my $borrowerData   = GetMember('borrowernumber' => $_->{borrowernumber});
     # setting some borrower info into this hash
@@ -640,6 +651,8 @@ foreach ( @$reviews ) {
     }
     $_->{userid}    = $borrowerData->{'userid'};
     $_->{cardnumber}    = $borrowerData->{'cardnumber'};
+    $_->{datereviewed} = format_date($_->{datereviewed});
+
     if ($borrowerData->{'borrowernumber'} eq $borrowernumber) {
 		$_->{your_comment} = 1;
 		$loggedincommenter = 1;
@@ -907,6 +920,17 @@ if (C4::Context->preference("OPACURLOpenInNewWindow")) {
 my $OpacExportOptions=C4::Context->preference("OpacExportOptions");
 my @export_options = split(/\|/,$OpacExportOptions);
 $template->{VARS}->{'export_options'} = \@export_options;
+
+if ( C4::Context->preference('OpacStarRatings') !~ /disable/ ) {
+    my $rating = GetRating( $biblionumber, $borrowernumber );
+    $template->param(
+        rating_value   => $rating->{'rating_value'},
+        rating_total   => $rating->{'rating_total'},
+        rating_avg     => $rating->{'rating_avg'},
+        rating_avg_int => $rating->{'rating_avg_int'},
+        borrowernumber => $borrowernumber
+    );
+}
 
 #Search for title in links
 my $marccontrolnumber   = GetMarcControlnumber ($record, $marcflavour);
