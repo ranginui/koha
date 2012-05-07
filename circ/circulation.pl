@@ -696,6 +696,7 @@ $template->param(
     circview => 1,
     soundon           => C4::Context->preference("SoundOn"),
     fast_cataloging   => $fast_cataloging,
+    CircPayFinesRedirect => (C4::Context->preference('CircPayFinesRedirect') ? $total : 0 ),
 );
 
 # save stickyduedate to session

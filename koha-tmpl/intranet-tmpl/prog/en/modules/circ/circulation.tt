@@ -53,6 +53,16 @@
 //		    return printx_window('qslip'); }
 //		});
 
+        [% IF (CircPayFinesRedirect) %]
+        $('#mainform').bind('submit', function(){
+            if ($('#barcode').val() == '') {
+                window.location = "/cgi-bin/koha/members/pay.pl?borrowernumber=[% borrowernumber %]"; 
+                return false;
+            }    
+        });  
+        [% END %]
+
+
 
 var allcheckboxes = $(".checkboxed");
 	$("#renew_all").click(function(){
