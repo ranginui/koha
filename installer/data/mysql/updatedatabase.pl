@@ -4633,7 +4633,7 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
 }
 $DBversion = "3.06.04.001";
 if( C4::Context->preference("Version") < TransformToNum($DBversion) ){
-    $dbh->do("INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES('CircPayFindsRedirect','    0','When an empty barcode is entered into the checkout field will redirect to pay fines page if borrowser has fines to     pay (after quickslip if enabled)',NULL,'YesNo')");
+    $dbh->do("INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES('CircPayFinesRedirect','    0','When an empty barcode is entered into the checkout field will redirect to pay fines page if borrowser has fines to     pay (after quickslip if enabled)',NULL,'YesNo')");
     print "Upgrade to $DBversion done\n";
     SetVersion ($Dbversion);
 }
