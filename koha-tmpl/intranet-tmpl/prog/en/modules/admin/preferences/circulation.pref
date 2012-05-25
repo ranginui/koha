@@ -91,6 +91,13 @@ Circulation:
                   yes: Record
                   no: "Don't record"
             - local use when an unissued item is checked in.
+        -
+            - When an empty barcode field is submitted in circulation
+            - pref: CircPayFinesRedirect
+              choices:
+                  yes: "Redirect to pay to fines screen if borrower has outstanding fines"
+                  no: "do nothing"
+            - .
     Checkout Policy:
         -
             - pref: AllowNotForLoanOverride
