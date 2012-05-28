@@ -1,0 +1,71 @@
+[% INCLUDE 'help-top.inc' %] <h1>Reserves</h1>
+
+<h2>Placing Reserves in Staff Client</h2>
+
+<p>There are several ways to place reserves from the staff client. The most obvious is using the 'Place Reserve' button at the top of any bibliographic record.</p>
+
+<p>You can also click the smaller 'Place Reserve' link found at the top of your catalog search results, or the 'Reserves' link found below each result.</p>
+
+<p>You will be asked to search for a borrower by barcode or any part of their name to start the reserve process.</p>
+
+<p>If you'd like to search for the borrower first and then the bib record for the reservation, you can open the borrower record and click on the 'Search to Reserve' button at the top of the borrower record.</p>
+
+<p>After clicking the button you will be brought to the catalogue search page where you can find the book(s) you want to reserve. Under each title on the results you'll see an option to 'Reserve for Patron Name.'</p>
+
+<p>If you want to place a reserve on multiple items, simply check the boxes to the left of them and click the arrow to the right of the 'Place Reserve' button.</p>
+
+<p>Depending on how many items you choose to reserve at once you will be see a different reservations form. If you are reserving one bibliographic record you will see a list of all of the items you can reserve.</p>
+
+<ul>
+ <li>Enter any notes that might apply to this reservation</li>
+ <li>Choose the library where the borrower will pick up the item</li>
+ <li>If the borrower wants the reserve to start on a date other than today, enter that in the 'Reserve starts on date' field <ul>
+ <li>This option will only appear if the AllowHoldDateInFuture system preference is set to 'Allow'</li>
+</ul>
+</li>
+ <li>If the patron has specified that they don't want the item after a certain date, or if you have limits on reservation lengths, you can enter an expiration date for the reservation in the 'Reservation expires on date' <ul>
+ <li>To have expired holds canceled automatically you will need to have the Expired Holds cron job set to run on a regular basis.</li>
+</ul>
+</li>
+ <li>Next choose if you want to reserve the next available item or a specific item by clicking the radio button next to an individual item.</li>
+</ul>
+
+<p>If you're placing a reservation on multiple items you will be presented with the next available option for all titles. If no items are available to reserve it will say so on the confirmation screen.</p>
+
+<h2>Managing Reserves</h2>
+
+<p>Reservations can be altered and canceled from the Reservations tab found on the left of the bibliographic record.</p>
+
+<p>From the list of reservations you can change the order of the reservations, the pickup location and/or cancel the reservation.</p>
+
+<p>Note: Depending on how you have your HideBorrowerName system preference set the list may show borrower names instead of card numbers in the Borrower column like in the image above.</p>
+
+<p>To rearrange or delete reserves, simply make a selection from the 'Priority' pull down or click the arrows to the right of the priority pull down.</p>
+
+<p>To delete or cancel a reserve, choose 'del' from the menu or click the red 'X' to the right of the hold line.</p>
+
+<p>Clicking the down arrow to the right of the reservation will stick the reservation at the bottom of the list even if more requests are made.</p>
+
+<p>For example, your library has home-bound borrowers that are allowed to keep books out for months at a time. It would not be fair to other borrowers if a home-bound borrower were able to issue a brand new book and keep it for months. For this reason, the home-bound borrower's reserve request would stay at the bottom of the queue until everyone else who wanted to read that book has already done so.</p>
+
+<p>Once you have made your changes, click the 'Update reserve(s)' button and your changes will be saved.</p>
+
+<h2>Receiving Reserves</h2>
+
+<p>When items that are on reserve are returned or issued the system will remind the circulation librarian that the item is on reserve and offer them options for managing the reserve.</p>
+
+<p>When you check in an item that has a reserve on it the system will ask you to either confirm and transfer the item or just confirm the reserve</p>
+
+<p>Clicking the Confirm button will mark the item as reserved for the patron. If the item needs to be transferred the item will also be marked as in transit to the proper branch. Clicking 'Ignore' will retain the reserevation, but allow you to issue the item to another patron. Choosing to confirm and print will present you with a printable page that you can slip inside the book with the necessary reservation and/or transfer information.</p>
+
+<p>Once confirmed the reservation will show on the borrower record and on the issue screen under the 'Reserved' tab.</p>
+
+<p>The item record will also show that the item is on reserve.</p>
+
+<p>In some cases a borrower may come in to pick up a reserved item for their partner (or someone else in their household). In this case you want to make sure that the reservation is cancelled when you issue the item to someone else. When trying to issue an item that is already waiting for someone else you will be presented with a warning message.</p>
+
+<p>From here you can issue the item to the borrower at the desk and cancel the reservation for the borrower.</p>
+
+<p><strong>See the full documentation for Reserves in the <a href="http://manual.koha-community.org/3.6/en/holds.html">manual</a> (online).</strong></p>
+
+[% INCLUDE 'help-bottom.inc' %]

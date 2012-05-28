@@ -1,0 +1,11 @@
+[% INCLUDE 'help-top.inc' %] <h1>Most Circulated Items</h1>
+
+<p>This report will simply list the items that have the been issued the most.</p>
+
+<p>If you choose to output to the browser your results will print to the screen.</p>
+
+<p>You can also choose to export to a file that you can manipulate to your needs.</p>
+
+<p><strong>See the full documentation for the Most Circulation Items report in the <a href="http://manual.koha-community.org/3.6/en/statsreports.html#mostcirculated">manual</a> (online).</strong></p>
+
+[% INCLUDE 'help-bottom.inc' %]

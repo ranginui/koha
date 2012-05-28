@@ -1,0 +1,11 @@
+[% INCLUDE 'help-top.inc' %] <h1>Member Search</h1>
+
+<p>Clicking on the link to the Member module will bring you to a search/browse screen for members. From here you can search for a member by entering any part of their name or barcode in the search box at the top.</p>
+
+<p>If you want to search for more than just a part of a member name or number, you can click the plus sign [+] to the right of the search box.</p>
+
+<p>You can also browse through the member records by clicking on the linked letters across the top.</p>
+
+<p><strong>See the full documentation for Borrower Search in the <a href="http://manual.koha-community.org/3.6/en/patronsearch.html">manual</a> (online).</strong></p>
+
+[% INCLUDE 'help-bottom.inc' %]

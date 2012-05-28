@@ -1,0 +1,23 @@
+[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Can't Delete Member</title>
+[% INCLUDE 'doc-head-close.inc' %] </head>
+<body id="pat_deletemem" class="pat">
+[% INCLUDE 'header.inc' %] [% INCLUDE 'patron-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/members/members-home.pl">Members</a> &rsaquo; Cannot Delete Borrower</div>
+<div id="doc3" class="yui-t2">
+ 
+ <div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+ [% INCLUDE 'members-toolbar.inc' %] <div class="dialog alert">
+ <h3>Cannot Delete Member</h3>
+ <ul>[% IF ( ItemsOnIssues ) %] <li>Member has [% ItemsOnIssues %] item(s) issued.</li>
+ [% END %] [% IF ( charges ) %] <li>Member has [% charges %] in fines.</li>
+ [% END %] [% IF ( guarantees ) %] <li>Member's record has guaranteed accounts attached.</li>
+ [% END %]</ul>
+ </div>
+</div>
+</div>
+
+<div class="yui-b">
+[% INCLUDE 'circ-menu.inc' %] </div>
+</div>
+[% INCLUDE 'intranet-bottom.inc' %]
