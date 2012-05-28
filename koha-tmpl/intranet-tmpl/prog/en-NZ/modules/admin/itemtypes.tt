@@ -6,7 +6,7 @@
 	$("#table_item_type").tablesorter({
 		sortList: [[1,0]],
 		headers: { 0: { sorter: false},5: { sorter: false}}
-		   		}).tablesorterPager({container: $("#pagertable_item_type"),positionFixed: false,size: 50});
+		}).tablesorterPager({container: $("#pagertable_item_type"),positionFixed: false,size: 50});
 	
 }); </script>
 <script type="text/javascript">

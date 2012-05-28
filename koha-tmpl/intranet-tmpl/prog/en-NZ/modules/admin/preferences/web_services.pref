@@ -1,6 +1,6 @@
 --- 
-web_services.pref: 
-  web_services.pref ILS-DI: 
+Web services: 
+  ILS-DI: 
     - 
       - 
         choices: 
@@ -13,7 +13,7 @@ web_services.pref:
         class: Text
         pref: ILS-DI:AuthorizedIPs
       - " allowed IPs to use the ILS-DI services"
-  web_services.pref OAI-PMH: 
+  OAI-PMH: 
     - 
       - 
         choices: 

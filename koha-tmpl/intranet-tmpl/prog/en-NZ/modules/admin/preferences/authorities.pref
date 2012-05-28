@@ -1,5 +1,5 @@
 --- 
-authorities.pref: 
+Authorities: 
   General: 
     - 
       - When editing records,
@@ -82,4 +82,4 @@ authorities.pref:
           1: Do
         default: ''
         pref: CatalogModuleRelink
-      - automatically relink headings that have previously been linked when saving records in the cataloging module.
+      - automatically relink headings that have previously been linked when saving records in the cataloguing module.

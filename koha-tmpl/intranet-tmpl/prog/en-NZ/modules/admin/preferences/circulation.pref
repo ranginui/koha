@@ -1,5 +1,5 @@
 --- 
-circulation.pref: 
+Circulation: 
   Fines Policy: 
     - 
       - Calculate fines based on days overdue
@@ -145,7 +145,7 @@ circulation.pref:
           "": Don't allow
           1: Allow
         pref: AllowItemsOnHoldCheckout
-      - checkouts of items items reserved to someone else. If allowed do not generate RESERVE_WAITING and RESERVED warning. This allows self checkouts for those items.
+      - issues of items items reserved to someone else. If allowed do not generate RESERVE_WAITING and RESERVED warning. This allows self issues for those items.
     - 
       - 
         choices: 
