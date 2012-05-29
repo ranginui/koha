@@ -125,6 +125,7 @@ my $issueconfirmed = $query->param('issueconfirmed');
 my $cancelreserve  = $query->param('cancelreserve');
 my $organisation   = $query->param('organisations');
 my $print          = $query->param('print');
+my $finesredirect   = $query->param('finesredirect');
 my $newexpiry      = $query->param('dateexpiry');
 my $debt_confirmed = $query->param('debt_confirmed') || 0; # Don't show the debt error dialog twice
 
@@ -178,6 +179,11 @@ if ( $print eq 'yes' && $borrowernumber ne '' ) {
     printslip( $borrowernumber );
     $query->param( 'borrowernumber', '' );
     $borrowernumber = '';
+}
+
+if ( $finesredirect && $borrowernumber ne '' && $barcode eq '' ){
+    # FIXME redirrect to pay fines
+    print $query->redirect("/cgi-bin/koha/members/pay.pl?borrowernumber=$borrowernumber");
 }
 
 #

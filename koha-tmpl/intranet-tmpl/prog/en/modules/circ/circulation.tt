@@ -53,15 +53,6 @@
 //		    return printx_window('qslip'); }
 //		});
 
-        [% IF (CircPayFinesRedirect) %]
-        $('#mainform').bind('submit', function(){
-            if ($('#barcode').val() == '') {
-                window.location = "/cgi-bin/koha/members/pay.pl?borrowernumber=[% borrowernumber %]"; 
-                return false;
-            }    
-        });  
-        [% END %]
-
 
 
 var allcheckboxes = $(".checkboxed");
@@ -149,7 +140,7 @@ var allcheckboxes = $(".checkboxed");
      $("input.radio").click(function(){
         radioCheckBox($(this));
      });
- });
+});
 
 function validate1(date) {
     var today = new Date();
@@ -306,6 +297,7 @@ function refocus(calendar) {
     </p>
 [% END %]
 
+    <input type="hidden" name="circpayfinesredirect" value="[% CircPayFinesRedirect %]" />
     <input type="hidden" name="barcode" value="[% barcode %]" />
     <input type="hidden" name="borrowernumber" value="[% borrowernumber %]" />
     <input type="hidden" name="issueconfirmed" value="1" />
