@@ -74,9 +74,6 @@
                 [% IF ( search_box.add_field ) %]
                     <a href="JavaScript:add_field();" id="ButtonPlus" title="Add another field">[+]</a>
 				[% END %]
-              [% IF ( search_box.scan_index ) %]
-                <label for="scan">Scan indexes</label> <input type="checkbox" name="scan" id="scan" value="1" />
-              [% END %]
             [% END %]
 		</div>
     [% END %]

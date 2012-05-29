@@ -126,7 +126,8 @@ melm 246        Title,Title:p,Title-abbreviated,Title-expanded,Title-former
 melm 247        Title,Title:p,Title-former,Title-other-variant,Related-periodical
 melm 260$a      pl:w,pl:p
 melm 260$b      Publisher:w,Publisher:p
-melm 260$c      copydate,copydate:s
+#melm 260$c      copydate,copydate:s
+melm 260$c      pubdate,pubdate:n,pubdate:w,pubdate:s
 melm 260        pl
 melm 300        Extent:w,Extent:p
 melm 400$a      Name-and-title
