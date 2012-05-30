@@ -97,7 +97,6 @@ for (@failedrenews) { $renew_failed{$_} = 1; }
 my $findborrower = $query->param('findborrower');
 $findborrower =~ s|,| |g;
 my $borrowernumber = $query->param('borrowernumber');
-
 $branch  = C4::Context->userenv->{'branch'};  
 $printer = C4::Context->userenv->{'branchprinter'};
 
@@ -178,12 +177,16 @@ if ( $barcode eq '' && $query->param('charges') eq 'yes' ) {
 if ( $print eq 'yes' && $borrowernumber ne '' ) {
     printslip( $borrowernumber );
     $query->param( 'borrowernumber', '' );
-    $borrowernumber = '';
 }
 
 if ( $finesredirect && $borrowernumber ne '' && $barcode eq '' ){
     # FIXME redirrect to pay fines
     print $query->redirect("/cgi-bin/koha/members/pay.pl?borrowernumber=$borrowernumber");
+}
+
+# this was initially inside the previous if with the same conditions but was interfering with $finesredirect
+if ( $print eq 'yes' && $borrowernumber ne '' ) {
+    $borrowernumber = '';
 }
 
 #
