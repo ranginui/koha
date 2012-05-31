@@ -1,4 +1,4 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Circulation &rsaquo; Holds to Pull</title>
+[% USE KohaDates %] [% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Circulation &rsaquo; Holds to Pull</title>
 [% INCLUDE 'doc-head-close.inc' %]
 <!-- Additions to enable Calendar system -->
 <link rel="stylesheet" type="text/css" href="[% themelang %]/lib/calendar/calendar-system.css" />
@@ -53,13 +53,8 @@ $.tablesorter.addParser({
  <th>Title <a href="/cgi-bin/koha/circ/pendingreserves.pl?order=biblio&amp;from=[% from %]&amp;to=[% to %]">Sort</a>
  </th>
  <th>
- Libraries <a href="/cgi-bin/koha/circ/pendingreserves.pl?order=library&amp;from=[% from %]&amp;to=[% to %]">Sort</a>
- </th>
- <th>
  Available Call Numbers <a href="/cgi-bin/koha/circ/pendingreserves.pl?order=call&amp;from=[% from %]&amp;to=[% to %]">Sort</a>
  </th>
- <th>
- Available Copy No </th>
  <th>
  Available Enumeration </th>
  <th>
@@ -70,6 +65,8 @@ $.tablesorter.addParser({
  </th>
  <th >Earliest Reserve Date <a href="/cgi-bin/koha/circ/pendingreserves.pl?order=date&amp;from=[% from %]&amp;to=[% to %]">Sort</a>
  </th>
+ <th>
+ Status </th>
  </tr>
  </thead>
  <tbody>
@@ -95,7 +92,7 @@ $.tablesorter.addParser({
  [% END %] [% FOREACH reserveloo IN reserveloop %] <tr>
  [% IF ( reserveloo.borrowernumber ) %] <td><p><b>[% reserveloo.pullcount %]</b></p></td>
  <td>[% reserveloo.count %]</td> 
- <td>[% reserveloo.rcount %]</td> 
+ <td>[% reserveloo.rcount %] [% reserveloo.l_patron %] [% reserveloo.email %] </td> 
  <td>
  <p>
  [% INCLUDE 'biblio-default-view.inc' biblionumber = reserveloo.biblionumber %] [% reserveloo.title |html %] [% reserveloo.subtitle %] </a>
@@ -105,16 +102,15 @@ $.tablesorter.addParser({
  &nbsp;
  </td>
  <td>"</td>
- [% END %] <td><p>[% reserveloo.holdingbranch %]</p></td>
- <td><p>[% reserveloo.itemcallnumber %]</p></td>
- <td><p>[% reserveloo.copyno %]</p></td>
+ [% END %] <td><p>[% reserveloo.itemcallnumber %]</p></td>
  <td><p>[% reserveloo.enumchron %]</p></td>
  <td><p>[% reserveloo.itype %]</p></td> 
  <td><p>[% reserveloo.location %]</p></td>
  <td width="15%">
- <p>[% reserveloo.reservedate %]</p>
+ <p>[% reserveloo.reservedate | $KohaDates %]</p>
  <p>in [% reserveloo.branch %]</p>
  [% IF ( reserveloo.statusw ) %]<p>Waiting</p>[% END %][% IF ( reserveloo.statusf ) %]<p>Fullfilled</p>[% END %] </td>
+ <td>[% IF (reserveloo.itype == 'ART') %] <a href="/cgi-bin/koha/reserve/modrequest.pl?rank-request=F;biblionumber=[% reserveloo.biblionumber %];borrowernumber=[% reserveloo.borrowernumber %];from=borrower&resdate=[% reserveloo.reservedate %]"> Fulfilled </a>[% END %]</td> 
  </tr>
  [% END %] [% IF ( next_or_previous ) %] <tr>
  <td colspan="3" align="left">

@@ -183,25 +183,25 @@ Enhanced Content:
     - 
       - 
         choices: 
-          "": Zeige keine
-          1: Zeige
+          "": Don't add
+          1: Add
         pref: NovelistSelectEnabled
-      - Inhalte von Novelist Select im OPAC (erfordert die Angabe eines Profils und eines Passworts, die im Link sichtbar sind).
+      - Novelist Select content to the OPAC (requires that you have entered in a user profile and password, which can be seen in image links).
     - 
-      - Zeige die Inhalte von Novelist Select
+      - Display Novelist Select content
       - 
         choices: 
-          above: "\xC3\xBCber der Exemplardatentabelle"
-          below: unter der Exemplardatentabelle
-          right: "unterhalb des Men\xC3\xBCs auf der linken Seite"
-          tab: in einem eigenen Reiter
+          above: above the holdings table
+          below: below the holdings table
+          right: under the Save Record dropdown, on the right
+          tab: in an OPAC tab
         pref: NovelistSelectView
       - .
     - 
-      - "Verwende f\xC3\xBCr die Anzeige von Novelist Select Inhalten das Benutzerprofil"
+      - Access Novelist Select using user profile
       - 
         pref: NovelistSelectProfile
-      - und das Passwort
+      - and password
       - 
         class: password
         pref: NovelistSelectPassword

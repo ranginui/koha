@@ -185,7 +185,7 @@ OPAC:
         pref: OpacNav
         type: textarea
     - 
-      - "Zeige das folgende HTML in der linken Spalte der Startseite und im Benutzerkonto oberhalb von OpacNav und vor vorhandenen Navigationsreitern an:"
+      - "Show the following HTML on the left hand column of the main page and patron account on the OPAC, after OpacNav, and before patron account links if available:"
       - 
         class: code
         pref: OpacNavBottom
