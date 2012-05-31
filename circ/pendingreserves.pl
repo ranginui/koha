@@ -128,6 +128,8 @@ if ( $run_report ) {
             reserves.found,
             biblio.title,
             biblio.author,
+            borrowers.surname as l_patron,
+            borrowers.email as email,
             count(DISTINCT items.itemnumber) as icount,
             count(DISTINCT reserves.borrowernumber) as rcount
     FROM  reserves
@@ -135,6 +137,7 @@ if ( $run_report ) {
         LEFT JOIN biblio ON reserves.biblionumber=biblio.biblionumber
         LEFT JOIN branchtransfers ON items.itemnumber=branchtransfers.itemnumber
         LEFT JOIN issues ON items.itemnumber=issues.itemnumber
+        LEFT JOIN borrowers ON reserves.borrowernumber=borrowers.borrowernumber
     WHERE
     reserves.found IS NULL
     $sqldatewhere
@@ -187,6 +190,31 @@ if ( $run_report ) {
                 pullcount		=> $data->{icount} <= $data->{rcount} ? $data->{icount} : $data->{rcount},
                 itype			=> $data->{l_itype},
                 location		=> $data->{l_location}
+                reservedate      => $data->{l_reservedate},
+                priority         => $data->{priority},
+                name             => $data->{l_patron},
+                title            => $data->{title},
+                author           => $data->{author},
+                borrowernumber   => $data->{borrowernumber},
+                itemnum          => $data->{itemnumber},
+                phone            => $data->{phone},
+                email            => $data->{email},
+                biblionumber     => $data->{biblionumber},
+                statusw          => ( $data->{found} eq "W" ),
+                statusf          => ( $data->{found} eq "F" ),
+                holdingbranch    => $data->{l_holdingbranch},
+                branch           => $data->{l_branch},
+                itemcallnumber   => $data->{l_itemcallnumber},
+                enumchron        => $data->{l_enumchron},
+		copyno           => $data->{l_copynumber},
+                notes            => $data->{notes},
+                notificationdate => $data->{notificationdate},
+                reminderdate     => $data->{reminderdate},
+                count				  => $data->{icount},
+                rcount			  => $data->{rcount},
+                pullcount		  => $data->{icount} <= $data->{rcount} ? $data->{icount} : $data->{rcount},
+                itype				  => $data->{l_itype},
+                location			  => $data->{l_location}
             }
         );
     }

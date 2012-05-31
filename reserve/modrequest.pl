@@ -49,6 +49,7 @@ my @itemnumber=$query->param('itemnumber');
 my @suspend_until=$query->param('suspend_until');
 my $multi_hold = $query->param('multi_hold');
 my $biblionumbers = $query->param('biblionumbers');
+my @resdate = $query->param('resdate');
 my $count=@rank;
 
 my $CancelBiblioNumber=$query->param('CancelBiblioNumber');
@@ -65,9 +66,21 @@ if ($CancelBorrowerNumber) {
 
 # 2) Cancel or modify the queue list of reserves (without item linked)
 else {
-    for (my $i=0;$i<$count;$i++){
+    for ( my $i = 0 ; $i < $count ; $i++ ) {
         undef $itemnumber[$i] unless $itemnumber[$i] ne '';
-        ModReserve($rank[$i],$biblionumber[$i],$borrower[$i],$branch[$i],$itemnumber[$i],$suspend_until[$i]); #from C4::Reserves
+        if ( $rank[$i] eq 'F' ) {    # fill reserve
+            ModReserveFill(
+                {
+                    'biblionumber'   => $biblionumber[$i],
+                    'borrowernumber' => $borrower[$i],
+                    'reservedate'    => $resdate[$i]
+                }
+            );
+        }
+        else {
+            ModReserve( $rank[$i], $biblionumber[$i], $borrower[$i],
+                $branch[$i], $itemnumber[$i] );    #from C4::Reserves
+        }
     }
 }
 my $from=$query->param('from');

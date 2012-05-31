@@ -1,3 +1,4 @@
+[% USE KohaDates %]
 [% INCLUDE 'doc-head-open.inc' %]
 <title>Koha &rsaquo; Circulation &rsaquo; Holds to pull</title>
 [% INCLUDE 'doc-head-close.inc' %]
@@ -67,39 +68,77 @@ $(document).ready(function() {
     [% IF ( reserveloop ) %]
     <table id="holdst">
     <thead>
-        <tr>
-        <th>Pull this many items</th>
-        <th>Items available</th>
-        <th>Patrons with holds</th>
-        <th>Title</th>
-        <th>Libraries</th>
-        <th>Available call numbers</th>
-        <th>Available copy No</th>
-        <th>Available enumeration</th>
-        <th>Available itypes</th>
-        <th>Available locations</th>
-        <th>Earliest hold date</th>
-        </tr>
+    <tr>
+        <th>
+				Pull This Many Items
+        </th>        
+        <th>
+				Items Available
+        </th>
+        <th>
+				Patrons with Holds
+        </th>
+        <th>Title
+        <a href="/cgi-bin/koha/circ/pendingreserves.pl?order=biblio&amp;from=[% from %]&amp;to=[% to %]">Sort</a>
+        </th>
+        <th>
+            Available Call Numbers
+				<a href="/cgi-bin/koha/circ/pendingreserves.pl?order=call&amp;from=[% from %]&amp;to=[% to %]">Sort</a>
+        </th>
+        <th>
+            Available Enumeration
+        </th>
+        <th>
+            Available Itypes
+				<a href="/cgi-bin/koha/circ/pendingreserves.pl?order=itype&amp;from=[% from %]&amp;to=[% to %]">Sort</a>
+        </th>
+        <th>
+            Available Locations
+				<a href="/cgi-bin/koha/circ/pendingreserves.pl?order=location&amp;from=[% from %]&amp;to=[% to %]">Sort</a>
+        </th>
+        <th >Earliest Hold Date
+            <a href="/cgi-bin/koha/circ/pendingreserves.pl?order=date&amp;from=[% from %]&amp;to=[% to %]">Sort</a>
+        </th>
+	<th>
+	Status
+	</th>
+    </tr>
     </thead>
     <tbody>
+        [% IF ( next_or_previous ) %]
         [% FOREACH reserveloo IN reserveloop %]
         <tr>
-        [% IF ( reserveloo.borrowernumber ) %]
-            <td><p><b>[% reserveloo.pullcount %]</b></p></td>
-            <td>[% reserveloo.count %]</td>
-            <td>[% reserveloo.rcount %]</td>
-            <td>
-            <p>
-        [% INCLUDE 'biblio-default-view.inc' biblionumber = reserveloo.biblionumber %]
-                    [% reserveloo.title |html %]
-                </a> [% IF ( reserveloo.author ) %]<p> by [% reserveloo.author %]</p>[% END %]
-            </p>
+            [% IF ( reserveloo.borrowernumber ) %]
+                <td><p><b>[% reserveloo.pullcount %]</b></p></td>
+                <td>[% reserveloo.count %]</td>  
+                <td>[% reserveloo.rcount %]
+		[% reserveloo.l_patron %] 
+		[% reserveloo.email %]
+		</td> 
+                <td>
+                    <p>
+            [% INCLUDE 'biblio-default-view.inc' biblionumber = reserveloo.biblionumber %]
+                                [% reserveloo.title |html %] [% reserveloo.subtitle %]
+                            </a>
+                    </p>
+                </td>
+            [% ELSE %]
+                <td colspan="3">
+                    &nbsp;
+                </td>
+                <td>"</td>
+            [% END %]
+            <td><p>[% reserveloo.itemcallnumber %]</p></td>
+            <td><p>[% reserveloo.enumchron %]</p></td>
+            <td><p>[% reserveloo.itype %]</p></td> 
+            <td><p>[% reserveloo.location %]</p></td>
+            <td width="15%">
+                <p>[% reserveloo.reservedate | $KohaDates %]</p>
+                <p>in [% reserveloo.branch %]</p>
+                [% IF ( reserveloo.statusw ) %]<p>Waiting</p>[% END %][% IF ( reserveloo.statusf ) %]<p>Fullfilled</p>[% END %]
             </td>
-        [% ELSE %]
-            <td>"</td>
-            <td>"</td>
-            <td>"</td>
-            <td>"</td>
+	    <td>[% IF (reserveloo.itype == 'ART') %] <a href="/cgi-bin/koha/reserve/modrequest.pl?rank-request=F;biblionumber=[% reserveloo.biblionumber %];borrowernumber=[% reserveloo.borrowernumber %];from=borrower&resdate=[% reserveloo.reservedate %]"> Fulfilled </a>[% END %]</td> 
+        </tr>
         [% END %]
         <td>[% reserveloo.holdingbranch %]</td>
         <td><p>[% reserveloo.itemcallnumber %]</p></td>
