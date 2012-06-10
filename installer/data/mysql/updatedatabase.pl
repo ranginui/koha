@@ -5282,11 +5282,18 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     SetVersion($DBversion);
 }
 
-$DBversion = 'XXX';
+$DBversion = '3.08.06.001';
 if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
     $dbh->do("ALTER TABLE items ADD COLUMN nonpublicnote MEDIUMTEXT AFTER itemnotes");
     $dbh->do("ALTER TABLE deleteditems ADD COLUMN nonpublicnote MEDIUMTEXT AFTER itemnotes");
-    $dbh->do("UPDATE marc_subfield_structure SET kohafield='items.nonpublicnote' WHERE (kohafield IS NULL OR kohafield = '') AND tagfield='952' AND tagsubfield='x'");
+    unless ( C4::Context->preference("marcflavour") eq 'UNIMARC' ) {
+        $sth = $dbh->prepare("SELECT COUNT(*) FROM marc_subfield_structure WHERE kohafield='items.nonpublicnote'");
+        $sth->execute;
+        my ($count) = $sth->fetchrow;
+        unless ( $count ) {
+            $dbh->do("UPDATE marc_subfield_structure SET kohafield='items.nonpublicnote' WHERE (kohafield IS NULL OR kohafield = '') AND tagfield='952' AND tagsubfield='x'");
+        }
+    }
     print "Upgrade to $DBversion done (Make nonpublicnote easier to use. <b>If you have mapped your items to a MARC field other than 952 (system default), please check your Koha to MARC mapping for items.nonpublicnote</b>)\n";
 }
 
