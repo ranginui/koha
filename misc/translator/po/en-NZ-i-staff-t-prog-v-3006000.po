@@ -32529,7 +32529,7 @@ msgstr "Are you sure you want to remove the tag from this title?"
 #: intranet-tmpl/prog/en/includes/circ-toolbar.inc:2
 #: intranet-tmpl/prog/en/includes/members-toolbar.inc:2
 msgid "Are you sure you want to renew this patron\\'s registration?"
-msgstr "Are you sure you want to renew this member\\'s registration?"
+msgstr "Are you sure you want to renew this member\'s registration?"
 
 #. SCRIPT
 #: intranet-tmpl/prog/en/modules/acqui/basket.tt:59

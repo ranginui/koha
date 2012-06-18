@@ -70,7 +70,7 @@
 </form>
 
 
-[% END %] [% ELSE %] <h4>Logging on to the catalog has not been enabled by the library.</h4>
+[% END %] [% ELSE %] <h4>Logging on to the catalogue has not been enabled by the library.</h4>
 <ul>
  <li>To report this error, you can <a href="mailto:[% admin %]">email the Koha Administrator</a>.</li>
  <li>Use top menu bar to navigate to another part of Koha.</li>

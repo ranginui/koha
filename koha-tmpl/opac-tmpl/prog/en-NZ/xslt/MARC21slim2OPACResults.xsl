@@ -510,7 +510,7 @@
  bibliography <img src="/opac-tmpl/prog/famfamfam/silk/text_list_bullets.png" alt="bibliography" title="bibliography" class="natureofcontents"/>
  </xsl:when>
  <xsl:when test="contains($controlField008-24,'c')">
- catalog </xsl:when>
+ catalogue </xsl:when>
  <xsl:when test="contains($controlField008-24,'d')">
  dictionary </xsl:when>
  <xsl:when test="contains($controlField008-24,'e')">

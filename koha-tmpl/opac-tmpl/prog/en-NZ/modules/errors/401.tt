@@ -8,7 +8,7 @@
  <h4>Error 401</h4>
  <ul>
  <li>This error means that the you are trying to access a link that you're not authorised to see.</li>
- <li>Try logging in to the catalog</li>
+ <li>Try logging in to the catalogue</li>
  <li>To report this error, you can <a href="mailto:[% admin %]">email the Koha Administrator</a>.</li>
  <li>Use top menu bar to navigate to another part of Koha.</li>
  </ul>
