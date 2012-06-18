@@ -32,6 +32,7 @@ use C4::Auth;
 use C4::Dates qw/format_date format_date_in_iso/;
 use C4::Debug;
 use Date::Calc qw/Today Add_Delta_YMD/;
+use C4::Biblio;
 
 my $input = new CGI;
 my $startdate=$input->param('from');
@@ -162,6 +163,14 @@ if ( $run_report ) {
     $sth->execute(@query_params);
 
     while ( my $data = $sth->fetchrow_hashref ) {
+	my $source = '';
+        $this=$data->{biblionumber}.":".$data->{borrowernumber};
+	if ($data->{l_itype} eq 'ART'){
+	    # get the source (773a)
+	    my $record = GetMarcBiblio($data->{biblionumber});
+	    $source = GetRecordValue('source', $record, GetFrameworkCode($data->{'biblionumber'}));
+	}
+        my @itemlist;
         push(
             @reservedata,
             {
@@ -214,7 +223,8 @@ if ( $run_report ) {
                 rcount			  => $data->{rcount},
                 pullcount		  => $data->{icount} <= $data->{rcount} ? $data->{icount} : $data->{rcount},
                 itype				  => $data->{l_itype},
-                location			  => $data->{l_location}
+                location			  => $data->{l_location},
+		source           => $source
             }
         );
     }

@@ -81,6 +81,9 @@ $(document).ready(function() {
         <th>Title
         <a href="/cgi-bin/koha/circ/pendingreserves.pl?order=biblio&amp;from=[% from %]&amp;to=[% to %]">Sort</a>
         </th>
+	<th>
+	Source
+	</th>
         <th>
             Available Call Numbers
 				<a href="/cgi-bin/koha/circ/pendingreserves.pl?order=call&amp;from=[% from %]&amp;to=[% to %]">Sort</a>
@@ -113,7 +116,7 @@ $(document).ready(function() {
                 <td>[% reserveloo.count %]</td>  
                 <td>[% reserveloo.rcount %]
 		[% reserveloo.l_patron %] 
-		[% reserveloo.email %]
+		<a href="mailto:[% reserveloo.email %]">[% reserveloo.email %]</a>
 		</td> 
                 <td>
                     <p>
@@ -128,6 +131,10 @@ $(document).ready(function() {
                 </td>
                 <td>"</td>
             [% END %]
+	    <td><p>[% FOREACH source IN reserveloo.source %]
+	    [% source.subfield %]
+	    [% END %]
+	    </p></td>
             <td><p>[% reserveloo.itemcallnumber %]</p></td>
             <td><p>[% reserveloo.enumchron %]</p></td>
             <td><p>[% reserveloo.itype %]</p></td> 
@@ -137,7 +144,7 @@ $(document).ready(function() {
                 <p>in [% reserveloo.branch %]</p>
                 [% IF ( reserveloo.statusw ) %]<p>Waiting</p>[% END %][% IF ( reserveloo.statusf ) %]<p>Fullfilled</p>[% END %]
             </td>
-	    <td>[% IF (reserveloo.itype == 'ART') %] <a href="/cgi-bin/koha/reserve/modrequest.pl?rank-request=F;biblionumber=[% reserveloo.biblionumber %];borrowernumber=[% reserveloo.borrowernumber %];from=borrower&resdate=[% reserveloo.reservedate %]"> Fulfilled </a>[% END %]</td> 
+	    <td>[% IF (reserveloo.itype == 'ART') %] <a href="/cgi-bin/koha/reserve/modrequest.pl?rank-request=F;biblionumber=[% reserveloo.biblionumber %];borrowernumber=[% reserveloo.borrowernumber %];from=holdsqueue&resdate=[% reserveloo.reservedate %]&todate=[% to %]&fromdate=[% from %]"> Fulfilled </a>[% END %]</td> 
         </tr>
         [% END %]
         <td>[% reserveloo.holdingbranch %]</td>

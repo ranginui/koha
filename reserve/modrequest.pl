@@ -89,6 +89,10 @@ if ( $from eq 'borrower'){
     print $query->redirect("/cgi-bin/koha/members/moremember.pl?borrowernumber=$borrower[0]");
 } elsif ( $from eq 'circ'){
     print $query->redirect("/cgi-bin/koha/circ/circulation.pl?borrowernumber=$borrower[0]");
+} elsif ($from eq 'holdsqueue'){
+    my $to = $query->param('todate');
+    my $fromdate = $query->param('fromdate');
+    print $query->redirect("/cgi-bin/koha/circ/pendingreserves.pl?run_report=1&to=$to&from=$formdate");
 } else {
      my $url = "/cgi-bin/koha/reserve/request.pl?";
      if ($multi_hold) {
