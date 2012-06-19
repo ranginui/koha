@@ -92,7 +92,7 @@ if ( $from eq 'borrower'){
 } elsif ($from eq 'holdsqueue'){
     my $to = $query->param('todate');
     my $fromdate = $query->param('fromdate');
-    print $query->redirect("/cgi-bin/koha/circ/pendingreserves.pl?run_report=1&to=$to&from=$formdate");
+    print $query->redirect("/cgi-bin/koha/circ/pendingreserves.pl?run_report=1&to=$to&from=$fromdate");
 } else {
      my $url = "/cgi-bin/koha/reserve/request.pl?";
      if ($multi_hold) {
