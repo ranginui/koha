@@ -13,7 +13,7 @@
         <input type="hidden" name="op" value="do_search" />
         <input type="hidden" name="type" value="opac" />
 <fieldset class="rows">
-            <legend>Browse by author or subject</legend>
+            <legend>Browse by subject</legend>
 <ol>
  <li><label for="authtypecode">Search: </label> <select name="authtypecode" id="authtypecode">
                 [% FOREACH authtypesloo IN authtypesloop %]

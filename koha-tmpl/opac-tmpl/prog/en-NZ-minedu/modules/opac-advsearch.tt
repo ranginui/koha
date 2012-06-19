@@ -44,8 +44,6 @@
 [% END %] <option value="au,wrdl">Author</option>
  
 [% IF ( expanded_options ) %] <option value="au,phr">&nbsp;&nbsp;&nbsp;&nbsp; Author Phrase</option>
- <option value="pn,wrdl">&nbsp;&nbsp;&nbsp;&nbsp; Personal Name</option>
- <option value="pn,phr">&nbsp;&nbsp;&nbsp;&nbsp; Personal Name Phrase</option>
 [% END %] [% IF ( expanded_options ) %] <option value="ab">Abstract</option>
 [% END %] <option value="pb,wrdl">Publisher</option>
  <option value="pl,wrdl">Publisher Location</option>
