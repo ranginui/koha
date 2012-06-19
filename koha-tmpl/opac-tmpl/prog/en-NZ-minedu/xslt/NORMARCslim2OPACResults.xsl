@@ -780,7 +780,7 @@
  </xsl:if>
  <xsl:if test="count(key('item-by-status', 'Waiting'))>0">
  <span class="unavailable">
- <xsl:text>On reserve (</xsl:text>
+ <xsl:text>On request (</xsl:text>
 
  <xsl:value-of select="count(key('item-by-status', 'Waiting'))"/>
  <xsl:text>). </xsl:text> </span>
