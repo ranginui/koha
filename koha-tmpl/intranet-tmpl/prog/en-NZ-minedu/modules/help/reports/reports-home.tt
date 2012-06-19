@@ -1,0 +1,16 @@
+[% INCLUDE 'help-top.inc' %] <h1>Reports</h1>
+
+<p>Koha's reporting module allows you to gather data from your system. There are two main types of reports: <ul>
+ <li>Custom Reports <ul>
+ <li>Koha's data is stored in a MySQL database which means that librarians can generate nearly any report they would like by either using the Guided Reports Wizard or writing their own SQL query.</li>
+</ul>
+</li>
+ <li>Statistical Reports <ul>
+ <li>Statistic reports will show you counts and sums. These reports are all about numbers and statistics, for reports that return more detailed data, use the Guided Report Wizard.</li>
+</ul>
+</li>
+</ul>
+
+<p><strong>See the full documentation for Reports in the <a href="http://manual.koha-community.org/3.6/en/reports.html">manual</a> (online).</strong></p>
+
+[% INCLUDE 'help-bottom.inc' %]

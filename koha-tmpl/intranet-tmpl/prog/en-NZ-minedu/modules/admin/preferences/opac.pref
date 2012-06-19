@@ -1,0 +1,490 @@
+--- 
+OPAC: 
+  Appearance: 
+    - 
+      - Use the
+      - 
+        choices: opac-templates
+        pref: opacthemes
+      - theme on the OPAC.
+    - 
+      - The OPAC is located at http://
+      - 
+        class: url
+        pref: OPACBaseURL
+      - . (This must be filled in correctly for RSS, unAPI, and search plugins to work.)
+    - 
+      - Show
+      - 
+        class: long
+        pref: LibraryName
+      - as the name of the library on the OPAC.
+    - 
+      - 
+        choices: 
+          "": Disable
+          1: Enable
+        pref: OpacPublic
+      - Koha OPAC as public. Private OPAC requires authentification before accessing the OPAC.
+    - 
+      - 
+        choices: 
+          "": Don't show
+          1: Show
+        pref: OpacMaintenance
+      - "a warning that the OPAC is under maintenance, instead of the OPAC itself. Note: this shows the same warning as when the database needs to be upgraded, but unconditionally."
+    - 
+      - By default, show bib records
+      - 
+        choices: 
+          isbd: as specified in the ISBD template.
+          marc: in their MARC form.
+          normal: in simple form.
+        pref: BiblioDefaultView
+    - 
+      - When patrons click on a link to another website from your OPAC (like Amazon or OCLC),
+      - 
+        choices: 
+          "": don't
+          1: do
+        pref: OPACURLOpenInNewWindow
+      - open the website in a new window.
+    - 
+      - 
+        choices: 
+          "": Show
+          1: Don't show
+        pref: hidelostitems
+      - lost items on search and detail pages.
+    - 
+      - Show biblio records on OPAC result page
+      - 
+        choices: 
+          "": normally.
+          1: using XSLT stylesheets.
+        pref: OPACXSLTResultsDisplay
+    - 
+      - Show item details pages on the OPAC
+      - 
+        choices: 
+          "": normally.
+          1: using XSLT stylesheets.
+        pref: OPACXSLTDetailsDisplay
+    - 
+      - On pages displayed with XSLT stylesheets on the OPAC,
+      - 
+        choices: 
+          "": don't show
+          1: show
+        pref: DisplayOPACiconsXSLT
+      - icons for itemtype and authorized values.
+    - 
+      - 
+        choices: 
+          "": Don't include
+          1: Include
+        pref: COinSinOPACResults
+      - "COinS / OpenURL / Z39.88 in OPAC search results.  <br/>Warning: Enabling this feature will slow OPAC search response times."
+    - 
+      - 
+        choices: 
+          "": Don't show
+          1: Show
+        pref: OPACDisplayRequestPriority
+      - patrons the priority level of their holds in the OPAC.
+    - 
+      - 
+        choices: 
+          "": Don't show
+          1: Show
+        default: 0
+        pref: OPACShowCheckoutName
+      - the name of the patron that has an item checked out on item detail pages on the OPAC.
+    - 
+      - 
+        choices: 
+          "": Don't show
+          1: Show
+        default: 0
+        pref: OpacKohaUrl
+      - "'Powered by Koha' text on OPAC footer."
+    - 
+      - 
+        choices: 
+          "": Don't show
+          1: Show
+        default: 0
+        pref: OpacShowRecentComments
+      - a link to recent comments in the OPAC masthead.
+    - 
+      - 
+        choices: 
+          "": Don't highlight
+          1: Highlight
+        pref: OpacHighlightedWords
+      - words the patron searched for in their search results.
+    - 
+      - 
+        choices: 
+          "": Don't show
+          1: Show
+        pref: AuthorisedValueImages
+      - images for <a href="/cgi-bin/koha/admin/authorised_values.pl">authorized values</a> (such as lost statuses and locations) in search results and item detail pages on the OPAC.
+    - 
+      - Use the image at
+      - 
+        class: url
+        pref: opacsmallimage
+      - in the OPAC header, instead of the Koha logo. If this image is a different size than the Koha logo, you will need to customize the CSS. (This should be a complete URL, starting with <code>http://</code>.)
+    - 
+      - Use the image at
+      - 
+        class: url
+        pref: OpacFavicon
+      - for the OPAC's favicon. (This should be a complete URL, starting with <code>http://</code>.)
+    - 
+      - "Include the following JavaScript on all pages in the OPAC:"
+      - 
+        class: code
+        pref: opacuserjs
+        type: textarea
+    - 
+      - Include the additional CSS stylesheet
+      - 
+        class: file
+        pref: opaccolorstylesheet
+      - to override specified settings from the default stylesheet. Enter the filename (if the file is in the server's css directory) or a complete URL beginning with <code>http://</code> (if the file lives on a remote server). Leave blank to disable.
+    - 
+      - Use the CSS stylesheet <!-- TMPL_VAR NAME="opacthemelang" -->/css/
+      - 
+        class: file
+        pref: opaclayoutstylesheet
+      - on all pages in the OPAC, instead of the default (leave blank to disable).
+    - 
+      - Use the remote CSS stylesheet
+      - 
+        class: file
+        pref: opacstylesheet
+      - on all pages in the OPAC, instead of the default. (This should be a complete URL, starting with <code>http://</code>.)
+    - 
+      - "Include the following CSS on all pages in the OPAC:"
+      - 
+        class: code
+        pref: OPACUserCSS
+        type: textarea
+    - 
+      - "Show the following HTML in its own column on the main page of the OPAC:"
+      - 
+        class: code
+        pref: OpacMainUserBlock
+        type: textarea
+    - 
+      - "Show the following HTML on the left hand column of the main page and patron account on the OPAC (generally navigation links):"
+      - 
+        class: code
+        pref: OpacNav
+        type: textarea
+    - 
+      - "Show the following HTML on the left hand column of the main page and patron account on the OPAC, after OpacNav, and before patron account links if available:"
+      - 
+        class: code
+        pref: OpacNavBottom
+        type: textarea
+    - 
+      - "Include the following HTML in the header of all pages in the OPAC:"
+      - 
+        class: code
+        pref: opacheader
+        type: textarea
+    - 
+      - "Include the following HTML in the footer of all pages in the OPAC:"
+      - 
+        class: code
+        pref: opaccredits
+        type: textarea
+    - 
+      - "Include a \"More Searches\" box on the detail pages of items on the OPAC, with the following HTML (leave blank to disable):"
+      - "<br />Note: The placeholders {BIBLIONUMBER}, {CONTROLNUMBER}, {TITLE}, {ISBN} and {AUTHOR} will be replaced with information from the displayed record."
+      - 
+        class: code
+        pref: OPACSearchForTitleIn
+        type: textarea
+    - 
+      - "Include a \"Links\" column on the \"my summary\" tab when a user is logged in to the OPAC, with the following HTML (leave blank to disable):"
+      - "<br />Note: The placeholders {BIBLIONUMBER}, {TITLE}, {ISBN} and {AUTHOR} will be replaced with information from the displayed record."
+      - 
+        class: code
+        pref: OPACMySummaryHTML
+        type: textarea
+    - 
+      - "Include the following HTML under the facets in OPAC search results:"
+      - 
+        class: code
+        pref: OPACResultsSidebar
+        type: textarea
+    - 
+      - 
+        choices: 
+          "": Don't add
+          1: Add
+        pref: OpacAddMastheadLibraryPulldown
+      - a library select pulldown menu on the OPAC masthead.
+    - 
+      - "Display this HTML when no results are found for a search in the OPAC:"
+      - 
+        class: code
+        pref: OPACNoResultsFound
+        type: textarea
+    - 
+      - "Display the URI in the 856u field as an image on: "
+      - 
+        choices: 
+          "": Neither Details or Results pages
+          Both: Both Details and Results pages
+          Details: Details page only
+          Results: Results page only
+        pref: OPACDisplay856uAsImage
+      - "Note: The corresponding OPACXSLT option must be turned on."
+  Features: 
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: opacuserlogin
+      - patrons to log in to their accounts on the OPAC.
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: OpacPasswordChange
+      - patrons to change their own password on the OPAC. Note that this must be off to use LDAP authentication.
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: OPACPatronDetails
+      - patrons to notify the library of changes to their contact information from the OPAC.
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: OPACFinesTab
+      - patrons to access the Fines tab on the My Account page on the OPAC.
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: OpacBrowser
+      - patrons to browse subject authorities on OPAC (run misc/cronjobs/build_browser_and_cloud.pl to create the browser list)
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: OpacAuthorities
+      - patrons to search your authority records.
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: opacbookbag
+      - patrons to store items in a temporary "Cart" on the OPAC.
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: OpacTopissue
+      - patrons to access a list of the most checked out items on the OPAC. Note that this is somewhat experimental, and should be avoided if your collection has a large number of items.
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: suggestion
+      - patrons to make purchase suggestions on the OPAC.
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: reviewson
+      - patrons to make comments on items on the OPAC.
+    - 
+      - 
+        choices: 
+          "": Hide
+          1: Show
+        pref: ShowReviewer
+      - reviewer's name above comments in OPAC.
+    - 
+      - 
+        choices: 
+          "": Hide
+          1: Show
+        pref: ShowReviewerPhoto
+      - reviewer's photo beside comments in OPAC.
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: RequestOnOpac
+      - patrons to place holds on items from the OPAC.
+    - 
+      - Display
+      - 
+        class: long
+        pref: numSearchRSSResults
+      - search results in the RSS feed.
+    - 
+      - 
+        choices: 
+          "": Disable
+          1: Enable
+        default: 1
+        pref: OpacBrowseResults
+      - browsing and paging search results from the OPAC detail page.
+  Policy: 
+    - 
+      - 
+        choices: 
+          "": Allow
+          1: Don't allow
+        default: 0
+        pref: singleBranchMode
+      - patrons to select their branch on the OPAC.
+    - 
+      - 
+        choices: 
+          "": Don't limit
+          1: Limit
+        pref: SearchMyLibraryFirst
+      - patrons' searches to the library they are registered at.
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: OPACItemHolds
+      - patrons to place holds on specific items in the OPAC. If this is disabled, users can only put a hold on the next available item.
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: OpacRenewalAllowed
+      - patrons to renew their own books on the OPAC.
+    - 
+      - Use
+      - 
+        choices: 
+          "": 'NULL'
+          checkoutbranch: the branch the item was checked out from
+          itemhomebranch: the item's home branch
+          opacrenew: "'OPACRenew'"
+          patronhomebranch: the patron's home branch
+        pref: OpacRenewalBranch
+      - as branchcode to store in the statistics table.
+    - 
+      - Only allow patrons to renew their own books on the OPAC if they have less than
+      - 
+        class: currency
+        pref: OPACFineNoRenewals
+      - "[% local_currency %] in fines (set a large value to always allow renewal)."
+    - 
+      - 
+        choices: 
+          "": Don't show
+          1: Show
+        pref: OPACViewOthersSuggestions
+      - purchase suggestions from other patrons on the OPAC.
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        default: 0
+        pref: AllowPurchaseSuggestionBranchChoice
+      - patrons to select branch when making a purchase suggestion
+    - 
+      - 
+        class: code
+        pref: OpacHiddenItems
+        type: textarea
+      - Allows to define custom rules for hiding specific items at opac. See docs/opac/OpacHiddenItems.txt for more informations.
+  Privacy: 
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: AnonSuggestions
+      - patrons that aren't logged in to make purchase suggestions. Suggestions are connected to the AnonymousPatron syspref
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: opacreadinghistory
+      - patrons to see what books they have checked out in the past.
+    - 
+      - 
+        choices: 
+          "": Don't keep
+          1: Keep
+        default: 0
+        pref: EnableOpacSearchHistory
+      - patron search history in the OPAC.
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        default: 0
+        pref: OPACPrivacy
+      - patrons to choose their own privacy settings for their reading history.  This requires opacreadinghistory and AnonymousPatron
+    - 
+      - Use borrowernumber
+      - 
+        class: integer
+        pref: AnonymousPatron
+      - as the Anonymous Patron (for anonymous suggestions and reading history)
+  Shelf Browser: 
+    - 
+      - 
+        choices: 
+          "": Don't show
+          1: Show
+        pref: OPACShelfBrowser
+      - a shelf browser on item details pages, allowing patrons to see what's near that item on the shelf. Note that this uses up a fairly large amount of resources on your server, and should be avoided if your collection has a large number of items.
+    - 
+      - 
+        choices: 
+          "": Don't use
+          1: Use
+        default: 1
+        pref: ShelfBrowserUsesLocation
+      - the item location when finding items for the shelf browser.
+    - 
+      - 
+        choices: 
+          "": Don't use
+          1: Use
+        default: 1
+        pref: ShelfBrowserUsesHomeBranch
+      - the item home branch when finding items for the shelf browser.
+    - 
+      - 
+        choices: 
+          "": Don't use
+          1: Use
+        default: 0
+        pref: ShelfBrowserUsesCcode
+      - the item collection code when finding items for the shelf browser.

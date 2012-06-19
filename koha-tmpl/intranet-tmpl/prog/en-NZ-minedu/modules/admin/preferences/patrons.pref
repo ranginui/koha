@@ -1,0 +1,131 @@
+--- 
+Patrons: 
+  - 
+    - List
+    - 
+      choices: 
+        category_type: general patron types
+        categorycode: specific categories
+      pref: AddPatronLists
+    - under the new patron menu.
+  - 
+    - 
+      choices: 
+        "": Don't send
+        1: Send
+      pref: AutoEmailOpacUser
+    - an email to newly created patrons with their account details.
+  - 
+    - Use
+    - 
+      choices: 
+        B_email: alternate
+        "OFF": first valid
+        email: home
+        emailpro: work
+      default: 'OFF'
+      pref: AutoEmailPrimaryAddress
+    - patron email address for sending out emails.
+  - 
+    - 
+      choices: 
+        "": Don't
+        1: Do
+      pref: autoMemberNum
+    - default the card number field on the patron addition screen to the next available card number (for example, if the largest currently used card number is 26345000012941, then this field will default to 26345000012942).
+  - 
+    - "The following database columns must be filled in on the patron entry screen:"
+    - 
+      class: multi
+      pref: BorrowerMandatoryField
+    - (separate columns with |)
+  - 
+    - "Guarantors can be the following of those they guarantee:"
+    - 
+      class: multi
+      pref: borrowerRelationship
+    - (input multiple choices separated by |)
+  - 
+    - "Borrowers can have the following titles:"
+    - 
+      class: multi
+      pref: BorrowersTitles
+    - (separate multiple choices with |)
+  - 
+    - 
+      choices: 
+        katipo: Do
+        none: Don't
+      pref: checkdigit
+    - check and construct borrower card numbers in the Katipo style. This overrides <code>autoMemberNum</code> if on.
+  - 
+    - 
+      choices: 
+        "": Don't allow
+        1: Allow
+      pref: EnhancedMessagingPreferences
+    - patrons to choose which notices they receive and when they receive them. Note that this only applies to certain kinds of notices.
+  - 
+    - 
+      choices: 
+        "": Don't enable
+        1: Enable
+      pref: ExtendedPatronAttributes
+    - searching, editing and display of custom attributes on patrons.
+  - 
+    - 
+      choices: 
+        "": Don't allow
+        1: Allow
+      pref: intranetreadinghistory
+    - staff to access a patron's checkout history (it is stored regardless).
+  - 
+    - The late fine for a specific checkout will only go up to
+    - 
+      class: currency
+      pref: MaxFine
+    - "[% local_currency %]."
+  - 
+    - 
+      choices: 
+        "": Don't
+        1: Do
+      pref: memberofinstitution
+    - allow patrons to be linked to institutions (which must be set up as Institution patrons).
+  - 
+    - Login passwords for staff and patrons must be at least
+    - 
+      class: integer
+      pref: minPasswordLength
+    - characters long.
+  - 
+    - Show a notice that a patron is about to expire
+    - 
+      class: integer
+      pref: NotifyBorrowerDeparture
+    - days beforehand.
+  - 
+    - 
+      choices: 
+        "": Don't allow
+        1: Allow
+      pref: patronimages
+    - images to be uploaded and shown for patrons on the staff client.
+  - 
+    - By default, show
+    - 
+      class: integer
+      pref: PatronsPerPage
+    - results per page in the staff client.
+  - 
+    - "Use the SMS::Send::"
+    - 
+      pref: SMSSendDriver
+    - driver to send SMS messages.
+  - 
+    - 
+      choices: 
+        "": Don't
+        1: Do
+      pref: uppercasesurnames
+    - store and display surnames in upper case.

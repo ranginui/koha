@@ -1,0 +1,13 @@
+[% INCLUDE 'help-top.inc' %] <h1>Members</h1>
+
+<p>The Patrons module stores the information you add about your patrons.</p>
+
+<p>From here you can search for a borrower by entering any part of their name, username, email address or barcode in the search box at the top.</p>
+
+<p>If you want to search for more than just a part of a borrower name, username, email address or barcode, you can click the plus sign [+] to the right of the search box.</p>
+
+<p>You can also browse through the member records by clicking on the linked letters across the top.</p>
+
+<p><strong>See the full documentation for the Borrowers module in the <a href="http://manual.koha-community.org/3.6/en/patrons.html">manual</a> (online).</strong></p>
+ 
+[% INCLUDE 'help-bottom.inc' %]

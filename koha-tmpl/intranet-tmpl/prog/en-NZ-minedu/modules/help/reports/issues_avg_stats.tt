@@ -1,0 +1,11 @@
+[% INCLUDE 'help-top.inc' %] <h1>Average Loan Time</h1>
+
+<p>This report will list the average time items are out on loan based on the criteria you enter</p>
+
+<p>If you choose to output to the browser your results will print to the screen.</p>
+
+<p>You can also choose to export to a file that you can manipulate to your needs.</p>
+
+<p><strong>See the full documentation for the Average Loan Time report in the <a href="http://manual.koha-community.org/3.6/en/statsreports.html#avloantime">manual</a> (online).</strong></p>
+
+[% INCLUDE 'help-bottom.inc' %]
