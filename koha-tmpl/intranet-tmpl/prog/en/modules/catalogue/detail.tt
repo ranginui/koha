@@ -268,7 +268,7 @@ function verify_images() {
                     [% END %]
                     <td class="location">[% UNLESS ( singlebranchmode ) %][% itemloo.branchname %] [% END %]</td>
                     <td class="homebranch">[% itemloo.homebranch %]<span class="shelvingloc">[% itemloo.location %]</span> </td>
-		    [% IF ( itemdata_ccode ) %]<td>[% itemloo.ccode %]</td>[% END %]
+		    [% IF ( itemdata_ccode ) %]<td>[% itemloo.description %]</td>[% END %]
                     <td class="itemcallnumber">[% IF ( itemloo.itemcallnumber ) %] [% itemloo.itemcallnumber %][% END %]</td>
                     <td class="status">
 
