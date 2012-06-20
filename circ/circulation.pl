@@ -180,7 +180,6 @@ if ( $print eq 'yes' && $borrowernumber ne '' ) {
 }
 
 if ( $finesredirect && $borrowernumber ne '' && $barcode eq '' ){
-    # FIXME redirrect to pay fines
     print $query->redirect("/cgi-bin/koha/members/pay.pl?borrowernumber=$borrowernumber");
 }
 
