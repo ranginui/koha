@@ -18,38 +18,40 @@
 # Suite 330, Boston, MA  02111-1307 USA
 #
 
-
-use strict; 
+use strict;
 use LWP::Simple;
 use warnings;
 use CGI;
 
+my $cgi        = new CGI;
+my $image_type = 'jpeg';
 
-my $cgi = new CGI;
-my $image_type = 'jpg';
-
-my $id = $cgi->param('id');
+my $id   = $cgi->param('id');
 my $type = $cgi->param('type');
 my $size = $cgi->param('size');
 my $url;
 
-if ($type eq 'amazon'){    
+if ( $type eq 'amazon' ) {
     $url = "http://images.amazon.com/images/P/$id.01.TZZZZZZZ.jpg";
-    if ($size eq 'medium'){
-	$url =  "http://images.amazon.com/images/P/$id.01.MZZZZZZZ.jpg";
-    }	
-    elsif ($size eq 'shelfbrowse'){
-	$url =  "http://images.amazon.com/images/P/$id.01._AA75_PU_PU-5_.jpg";
+    if ( $size eq 'medium' ) {
+        $url = "http://images.amazon.com/images/P/$id.01.MZZZZZZZ.jpg";
     }
-    elsif ($size eq 'large') {
-	$url =  "http://images.amazon.com/images/P/$id.01._THUMBZZZ_PB_PU_PU0_.jpg";
+    elsif ( $size eq 'shelfbrowse' ) {
+        $url = "http://images.amazon.com/images/P/$id.01._AA75_PU_PU-5_.jpg";
+    }
+    elsif ( $size eq 'large' ) {
+        $url =
+          "http://images.amazon.com/images/P/$id.01._THUMBZZZ_PB_PU_PU0_.jpg";
     }
 }
 
-print $cgi->header("image/$image_type");
+print $cgi->header(
+    -type    => "image/$image_type",
+    -expires => "+100d"
+);
 
 # print $cgi->header;
 # print $url;
-# binmode; 
+# binmode;
 my $content = get($url);
 print $content;
