@@ -87,8 +87,8 @@
             <option value="pb,wrdl">Publisher</option>
             <option value="pl,wrdl">Publisher location</option>
 [% IF ( expanded_options ) %]
-            <option value="nb">&nbsp;&nbsp;&nbsp;&nbsp; ISBN</option>
-            <option value="ns">&nbsp;&nbsp;&nbsp;&nbsp; ISSN</option>
+            <option value="nb">ISBN</option>
+            <option value="ns">ISSN</option>
 [% ELSE %]
             <option value="nb">ISBN</option>
 [% END %]

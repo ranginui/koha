@@ -47,8 +47,8 @@
 [% END %] [% IF ( expanded_options ) %] <option value="ab">Abstract</option>
 [% END %] <option value="pb,wrdl">Publisher</option>
  <option value="pl,wrdl">Publisher Location</option>
-[% IF ( expanded_options ) %] <option value="nb">&nbsp;&nbsp;&nbsp;&nbsp; ISBN</option>
- <option value="ns">&nbsp;&nbsp;&nbsp;&nbsp; ISSN</option>
+[% IF ( expanded_options ) %] <option value="nb">ISBN</option>
+ <option value="ns">ISSN</option>
 [% ELSE %] <option value="nb">ISBN</option>
 [% END %] <option value="bc">Barcode</option>
  </select>
