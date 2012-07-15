@@ -19,7 +19,7 @@
  <option value="ln,rtrn">Language</option>
  <option value="ab">Abstract</option>
  <option value="nt">Notes/Comments</option>
- <option value="cn-class">Bulletin</option>
+ <option value="cn-class,phr">Bulletin</option>
  <option value="pb">Publisher</option>
  <option value="pl">Publisher Location</option>
  <option value="yr">Publication Date (yyyy)</option>
