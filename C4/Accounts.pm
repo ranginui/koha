@@ -106,13 +106,16 @@ sub recordpayment {
     $sth->execute($borrowernumber);
 
     # offset transactions
+    my $offset;
     while ( ( $accdata = $sth->fetchrow_hashref ) and ( $amountleft > 0 ) ) {
         if ( $accdata->{'amountoutstanding'} < $amountleft ) {
             $newamtos = 0;
             $amountleft -= $accdata->{'amountoutstanding'};
+            $offset = $accdata->{'amountoutstanding'};
         }
         else {
             $newamtos   = $accdata->{'amountoutstanding'} - $amountleft;
+            $offset = $amountleft;
             $amountleft = 0;
         }
         my $thisacct = $accdata->{accountno};
@@ -122,17 +125,23 @@ sub recordpayment {
         );
         $usth->execute( $newamtos, $borrowernumber, $thisacct );
         $usth->finish;
-#        $usth = $dbh->prepare(
-#            "INSERT INTO accountoffsets
-#     (borrowernumber, accountno, offsetaccount,  offsetamount)
-#     VALUES (?,?,?,?)"
-#        );
-#        $usth->execute( $borrowernumber, $accdata->{'accountno'},
-#            $nextaccntno, $newamtos );
+        $usth = $dbh->prepare(
+            "INSERT INTO accountoffsets
+     (borrowernumber, accountno, offsetaccount,  offsetamount)
+     VALUES (?,?,?,?)"
+        );
+       if ($offset < 0){
+          $offset = $offset * -1;
+       }
+        $usth->execute( $borrowernumber, $accdata->{'accountno'},
+            $nextaccntno, $offset  );
         $usth->finish;
     }
 
     # create new line
+
+
+
     my $usth = $dbh->prepare(
         "INSERT INTO accountlines
   (borrowernumber, accountno,date,amount,description,accounttype,amountoutstanding,manager_id)
@@ -216,13 +225,22 @@ sub makepayment {
             );
         $ins->execute($borrowernumber, $nextaccntno, $payment, $data->{'itemnumber'}, $manager_id);
         $ins->finish;
+        my $usth = $dbh->prepare(
+            "INSERT INTO accountoffsets
+     (borrowernumber, accountno, offsetaccount,  offsetamount)
+     VALUES (?,?,?,?)"
+        );
+        $usth->execute( $borrowernumber, $accountno,
+            $nextaccntno, $amount  );
+        $usth->finish;
+
     }
 
     # FIXME - The second argument to &UpdateStats is supposed to be the
     # branch code.
     # UpdateStats is now being passed $accountno too. MTJ
     UpdateStats( $user, 'payment', $amount, '', '', '', $borrowernumber,
-        $accountno );
+        $nextaccntno );
     #from perldoc: for SELECT only #$sth->finish;
 
     #check to see what accounttype
@@ -708,6 +726,7 @@ sub recordpayment_selectaccts {
     my $rows = $dbh->selectall_arrayref($sql, { Slice => {} }, $borrowernumber);
 
     # offset transactions
+my $offset;
     my $sth     = $dbh->prepare('UPDATE accountlines SET amountoutstanding= ? ' .
         'WHERE (borrowernumber = ?) AND (accountno=?)');
     for my $accdata ( @{$rows} ) {
@@ -717,13 +736,26 @@ sub recordpayment_selectaccts {
         if ( $accdata->{amountoutstanding} < $amountleft ) {
             $newamtos = 0;
             $amountleft -= $accdata->{amountoutstanding};
+            $offset = $accdata->{'amountoutstanding'};
         }
         else {
             $newamtos   = $accdata->{amountoutstanding} - $amountleft;
+             $offset = $amountleft;
             $amountleft = 0;
         }
         my $thisacct = $accdata->{accountno};
         $sth->execute( $newamtos, $borrowernumber, $thisacct );
+        my $usth = $dbh->prepare(
+            "INSERT INTO accountoffsets
+     (borrowernumber, accountno, offsetaccount,  offsetamount)
+     VALUES (?,?,?,?)"
+        );
+       if ($offset < 0){
+          $offset = $offset * -1;
+       }
+        $usth->execute( $borrowernumber, $accdata->{'accountno'},
+            $nextaccntno, $offset  );
+
     }
 
     # create new line
@@ -764,6 +796,17 @@ sub makepartialpayment {
 
     $dbh->do(  $insert, undef, $borrowernumber, $nextaccntno, 0 - $amount,
         "Payment, thanks - $user", 'Pay', $data->{'itemnumber'}, $manager_id);
+    my $offset = $amount;
+    my $usth = $dbh->prepare(
+            "INSERT INTO accountoffsets
+     (borrowernumber, accountno, offsetaccount,  offsetamount)
+     VALUES (?,?,?,?)"
+        );
+       if ($offset < 0){
+          $offset = $offset * -1;
+       }
+        $usth->execute( $borrowernumber, $accountno,
+            $nextaccntno, $offset  );
 
     UpdateStats( $user, 'payment', $amount, '', '', '', $borrowernumber, $accountno );
 

@@ -1,0 +1,69 @@
+[% USE KohaDates %]
+[% USE format %]
+[% money = format('$%6.2f') %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Koha &rsaquo; Reports</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body>
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'circ-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; Reports</div>
+<div id="doc" class="yui-t7">
+
+   <div id="bd">
+    <div id="yui-main">
+
+	<div class="yui-g">
+	<h1>Totals for [% startdate |$KohaDates %] to [% enddate |$KohaDates %]</h1>
+  <form action="/cgi-bin/koha/reports/daily_stats.pl">
+  Enter startdate here in yyyy-mm-dd format <input type="text" name="startdate" value="[% startdate %]">
+  End date: <input type="text" name="enddate" value="[% enddate %]"><br />
+  <input type="submit" value="Change dates">
+  </form>	
+    <h3>Payments</h3>
+    <ul>
+    [% overdues = 0 %]
+    [% lost = 0 %]
+    [% total = 0 %]
+    [% FOREACH pay IN allcharges %]
+    [% IF pay.1 == 'CR' %]
+    [% ELSIF pay.1 == 'Rent' || pay.1 == 'Pay' %]
+        [% total = total + pay.0 %]
+    <li>Rental [% pay.3 %]: [% money(pay.0) %]
+    [% ELSIF pay.1 =='FU' || pay.1 =='F' %]
+        [% overdues = pay.0 + overdues %]
+    [% ELSIF pay.1 =='L' || pay.1 =='LR' %]
+       [% lost = lost + pay.0 %]
+    
+    [% ELSE %]
+        [% total = total + pay.0 %]
+        <li>[% pay.2 %] : [% money(pay.0) %]</li>
+    
+    [% END %]
+    [% END %]
+
+    <li> Overdues : [% money(overdues) %]</li>
+    <li> Lost : [% money(lost) %]</li>
+    [% total = total + overdues + lost %]
+    <li><b>Total : [% money(total) %]</b></li>
+    </ul>
+	<h3>Circulation</h3>
+	<ul>
+	[% FOREACH stat IN circ_stats %]
+	<li>[%stat.0%] [%stat.1%]</li>
+	[% END %]
+	</ul>
+    <h3> Reserves </h3>
+    <ul>
+    <li>Filled Reserves : [% filled %]</li>
+    <li>Waiting : [% waiting %]</li>
+    <li>Cancelled : [% cancelled %]</li>
+    <li>New Reserves : [% new %]</li>
+    </ul>
+</div>
+
+</div>
+</div>
+[% INCLUDE 'intranet-bottom.inc' %]
