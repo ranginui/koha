@@ -123,7 +123,7 @@ function verify_images() {
             [% itemtype %]
           [% END %]
           </span>
-        [% END %] 
+        [% END %]
         [% IF ( holdcount ) %]<span class="results_summary"><span class="label">Holds:</span> <span class="holdcount"><a href="/cgi-bin/koha/reserve/request.pl?biblionumber=[% biblionumber %]">[% holdcount %]</a></span></span>[% ELSE %][% END %]
 
         [% IF ( AmazonEnabled ) %][% IF ( AmazonCoverImages ) %]</div><div class="yui-u" id="bookcoverimg">
@@ -265,7 +265,7 @@ function verify_images() {
             [% itemtype %]
           [% END %]
           </li>
-        [% END %] 
+        [% END %]
         </ul>
    [% END %]
 
