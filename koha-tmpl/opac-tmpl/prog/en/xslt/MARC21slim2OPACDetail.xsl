@@ -26,6 +26,7 @@
     <xsl:variable name="UseAuthoritiesForTracings" select="marc:sysprefs/marc:syspref[@name='UseAuthoritiesForTracings']"/>
     <xsl:variable name="TraceSubjectSubdivisions" select="marc:sysprefs/marc:syspref[@name='TraceSubjectSubdivisions']"/>
     <xsl:variable name="Show856uAsImage" select="marc:sysprefs/marc:syspref[@name='OPACDisplay856uAsImage']"/>
+    <xsl:variable name="BiblioItemtypeImage" select="marc:sysprefs/marc:syspref[@name='BiblioItemtypeImage']"/>
     <xsl:variable name="TracingQuotesLeft">
       <xsl:choose>
         <xsl:when test="marc:sysprefs/marc:syspref[@name='UseICU']='1'">{</xsl:when>
@@ -159,12 +160,14 @@
         </xsl:choose>
 
    <xsl:if test="$DisplayOPACiconsXSLT!='0'">
+        <xsl:if test="$BiblioItemtypeImage='Control'">
         <xsl:if test="$materialTypeCode!=''">
         <span class="results_summary type"><span class="label">Type: </span>
         <xsl:element name="img"><xsl:attribute name="src">/opac-tmpl/prog/famfamfam/<xsl:value-of select="$materialTypeCode"/>.png</xsl:attribute><xsl:attribute name="alt">materialTypeLabel</xsl:attribute><xsl:attribute name="class">materialtype</xsl:attribute></xsl:element>
         <xsl:value-of select="$materialTypeLabel"/>
         </span>
         </xsl:if>
+	</xsl:if>
    </xsl:if>
 
         <!--Series: Alternate Graphic Representation (MARC 880) -->

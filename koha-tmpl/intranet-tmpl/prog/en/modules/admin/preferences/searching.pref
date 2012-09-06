@@ -172,3 +172,10 @@ Searching:
             - pref: FacetLabelTruncationLength
               class: integer
             - characters, in OPAC/staff interface.
+        -
+            - "Display "
+            - pref: BiblioItemtypeImage
+              choices:
+                  Control: "Itemtype information from the MARC control fields"
+                  Koha: "Itemtype information from the Koha biblio level itemtype"
+		  

@@ -3,6 +3,7 @@
 # Copyright 2008 Garry Collum and the Koha Development team
 # Copyright 2010 BibLibre
 # Copyright 2011 KohaAloha, NZ
+# Copyright 2012 Catalyst IT, NZ
 #
 # This file is part of Koha.
 #
@@ -797,6 +798,7 @@ my $content_type = ($format eq 'rss' or $format eq 'atom') ? $format : 'html';
 if (C4::Context->preference('GoogleIndicTransliteration')) {
         $template->param('GoogleIndicTransliteration' => 1);
 }
+$template->{VARS}->{'BiblioItemtypeImage'} = C4::Context->preference('BiblioItemtypeImage');
 
     $template->param( borrowernumber    => $borrowernumber);
 output_with_http_headers $cgi, $cookie, $template->output, $content_type;

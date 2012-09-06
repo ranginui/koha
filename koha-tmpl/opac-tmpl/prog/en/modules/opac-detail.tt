@@ -325,15 +325,15 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
     [% IF ( responsibility ) %]<h5 clases="author">[% FOREACH res IN responsibility %][% res.subfield %] [% END %]</h5>[% END %]
     [% IF ( author ) %]<h5 class="author">by <a href="/cgi-bin/koha/opac-search.pl?q=au:[% author |url %]">[% author |html %]</a></h5>[% END %] 
 
-    <span class="results_summary">[% UNLESS ( item_level_itypes ) %]
-        [
+    <span class="results_summary">
+     [% IF !item_level_itypes ||  BiblioItemtypeImage == 'Koha' %]
         [% IF ( description ) %]
             [% description %]
         [% ELSE %]
             [% itemtype %]
         [% END %]
-        ] [% END %]
-        [% IF ( unititle ) %], [% unititle %][% END %]
+     [% END %]
+     [% IF ( unititle ) %], [% unititle %][% END %]
     </span>
 
     [% IF ( MARCAUTHORS ) %]
@@ -442,6 +442,16 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
         </div>
         [% END %]
         [% END %]
+
+        [% IF !item_level_itypes ||  BiblioItemtypeImage == 'Koha' %]
+          <div class="results_summary"><span class="label">Itemtype:</span>
+          [% IF ( description ) %]
+            [% description %]
+          [% ELSE %]
+            [% itemtype %]
+	  [% END %]
+	  </div>
+	[% END %]
 
 <!-- This puts the LTFL reviews in, and if TabbedView is not set, puts the remaining content above the Tabs instead of in them -->
 [% IF ( LibraryThingForLibrariesID ) %]

@@ -402,7 +402,6 @@ if (C4::Context->preference('OPACBaseURL')){
 }
 
 # Displaying tags
-
 my $tag_quantity;
 if (C4::Context->preference('TagsEnabled') and $tag_quantity = C4::Context->preference('TagsShowOnDetail')) {
     $template->param(
@@ -412,5 +411,8 @@ if (C4::Context->preference('TagsEnabled') and $tag_quantity = C4::Context->pref
     $template->param(TagLoop => get_tags({biblionumber=>$biblionumber, approved=>1,
                                 'sort'=>'-weight', limit=>$tag_quantity}));
 }
+
+$template->{VARS}->{'BiblioItemtypeImage'} = C4::Context->preference('BiblioItemtypeImage');
+
 
 output_html_with_http_headers $query, $cookie, $template->output;

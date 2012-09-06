@@ -495,4 +495,4 @@ OPAC:
               choices:
                   yes: Use
                   no: "Don't use"
-            - "the item collection code when finding items for the shelf browser."      
+            - "the item collection code when finding items for the shelf browser."
