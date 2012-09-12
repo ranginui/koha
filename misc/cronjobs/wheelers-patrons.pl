@@ -71,7 +71,7 @@ $out .= join "\t", (
   "EOL\n"
 );
 
-$out .= $_->[0] . ("\t" x 11) . $_->[1] . ("\t" x 11) . "EOL\n" foreach @$patrons;
+$out .= $_->[0] . ("\t" x 12) . $_->[1] . ("\t" x 10) . "EOL\n" foreach @$patrons;
 
 $out .= "# -- eof --";
 
