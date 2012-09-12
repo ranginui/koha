@@ -84,7 +84,7 @@ foreach my $accountline ( @{$accts}) {
     $accountline->{date} = format_date($accountline->{date});
     $accountline->{amount} = sprintf '%.2f', $accountline->{amount};
     $accountline->{amountoutstanding} = sprintf '%.2f', $accountline->{amountoutstanding};
-    if ($accountline->{accounttype} =~ /^Pay/) {
+    if ($accountline->{accounttype} eq 'Pay') {
         $accountline->{payment} = 1;
         $reverse_col = 1;
     }

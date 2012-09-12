@@ -229,7 +229,7 @@ sub pay_fee {
         $trans->screen_msg('Invalid patron barcode.');
         return $trans;
     }
-    $trans->pay($patron->{borrowernumber},$fee_amt, $pay_type);
+    $trans->pay($patron->{borrowernumber},$fee_amt);
     $trans->ok(1);
 
     return $trans;

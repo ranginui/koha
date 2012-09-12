@@ -60,13 +60,11 @@ patron.
 
 =head2 recordpayment
 
-  &recordpayment($borrowernumber, $payment, $sip_paytype);
+  &recordpayment($borrowernumber, $payment);
 
 Record payment by a patron. C<$borrowernumber> is the patron's
 borrower number. C<$payment> is a floating-point number, giving the
-amount that was paid. C<$sip_paytype> is an optional flag to indicate this
-payment was made over a SIP2 interface, rather than the staff client. The
-value passed is the SIP2 payment type value (message 37, characters 21-22)
+amount that was paid. 
 
 Amounts owed are paid off oldest first. That is, if the patron has a
 $1 fine from Feb. 1, another $1 fine from Mar. 1, and makes a payment
@@ -79,7 +77,7 @@ will be credited to the next one.
 sub recordpayment {
 
     #here we update the account lines
-    my ( $borrowernumber, $data, $sip_paytype ) = @_;
+    my ( $borrowernumber, $data ) = @_;
     my $dbh        = C4::Context->dbh;
     my $newamtos   = 0;
     my $accdata    = "";
@@ -127,14 +125,10 @@ sub recordpayment {
     # create new line
     my $usth = $dbh->prepare(
         "INSERT INTO accountlines
-  (borrowernumber, accountno,date,amount,description,accounttype,amountoutstanding, manager_id)
-  VALUES (?,?,now(),?,?,?,?,?)"
+  (borrowernumber, accountno,date,amount,description,accounttype,amountoutstanding)
+  VALUES (?,?,now(),?,'Payment,thanks','Pay',?)"
     );
-    my $payment_description = "Payment, thanks";
-    $payment_description .= " (via SIP2)" if defined $sip_paytype;
-    my $paytype = "Pay";
-    $paytype .= "-$sip_paytype" if defined $sip_paytype;
-    $usth->execute( $borrowernumber, $nextaccntno, 0 - $data, $payment_description, $paytype, 0 - $amountleft, $manager_id );
+    $usth->execute( $borrowernumber, $nextaccntno, 0 - $data, 0 - $amountleft );
     $usth->finish;
     UpdateStats( $branch, 'payment', $data, '', '', '', $borrowernumber, $nextaccntno );
     $sth->finish;
@@ -623,7 +617,7 @@ sub getcredits {
 	my $dbh = C4::Context->dbh;
 	my $sth = $dbh->prepare(
 			        "SELECT * FROM accountlines,borrowers
-      WHERE amount < 0 AND accounttype not like 'Pay%' AND accountlines.borrowernumber = borrowers.borrowernumber
+      WHERE amount < 0 AND accounttype <> 'Pay' AND accountlines.borrowernumber = borrowers.borrowernumber
 	  AND timestamp >=TIMESTAMP(?) AND timestamp < TIMESTAMP(?)"
       );  
 

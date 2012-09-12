@@ -47,9 +47,8 @@ sub pay {
     my $self           = shift;
     my $borrowernumber = shift;
     my $amt            = shift;
-    my $type           = shift;
     warn("RECORD:$borrowernumber::$amt");
-    recordpayment( $borrowernumber, $amt,$type );
+    recordpayment( $borrowernumber, $amt );
 }
 
 #sub DESTROY {
