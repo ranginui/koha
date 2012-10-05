@@ -5302,6 +5302,13 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     SetVersion($DBversion);
 }
 
+$DBversion = "3.08.05.001";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES('BiblioItemtypeImage', 'Control','Control what biblio level itemtype image displays','Control|Koha','Choice')");
+    print "Upgrade to $DBversion done (Add new BiblioItemtypeImage to system preferences)";
+    SetVersion($DBversion);
+}
+
 $DBversion = "3.08.06.000";
 if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     print "Upgrade to $DBversion (3.8.6 release) done\n";
@@ -5311,21 +5318,6 @@ if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
 $DBversion = "3.08.07.000";
 if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
     print "Upgrade to $DBversion (3.8.7 release) done\n";
-    SetVersion($DBversion);
-}
-
-
-$DBversion = "3.08.05.001";
-if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
-    $dbh->do("INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES('BiblioItemtypeImage', 'Control','Control what biblio level itemtype image displays','Control|Koha','Choice')");
-    print "Upgrade to $DBversion done (Add new BiblioItemtypeImage to system preferences)";
-    SetVersion($DBversion);
-}
-
-$DBversion = "XXX";
-if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
-    $dbh->do("INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES('BiblioItemtypeImage', 'Control','Control what biblio level itemtype image displays','Control|Koha','Choice')");
-    print "Upgrade to $DBversion done (Add new BiblioItemtypeImage to system preferences)";
     SetVersion($DBversion);
 }
 
