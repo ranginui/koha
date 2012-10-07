@@ -161,7 +161,7 @@ if ( $run_report ) {
 
     my $sth = $dbh->prepare($strsth);
     $sth->execute(@query_params);
-
+    my $this;
     while ( my $data = $sth->fetchrow_hashref ) {
 	my $source = '';
         $this=$data->{biblionumber}.":".$data->{borrowernumber};
@@ -198,7 +198,7 @@ if ( $run_report ) {
                 rcount			=> $data->{rcount},
                 pullcount		=> $data->{icount} <= $data->{rcount} ? $data->{icount} : $data->{rcount},
                 itype			=> $data->{l_itype},
-                location		=> $data->{l_location}
+                location		=> $data->{l_location},
                 reservedate      => $data->{l_reservedate},
                 priority         => $data->{priority},
                 name             => $data->{l_patron},
