@@ -123,5 +123,29 @@ update_from_ldap.pl -m <column_to_match_on>
 
 =head1 OPTIONS
 
+=over 8
+
+=item B<-h> | B<--help>
+
+Print a brief help message and exits.
+
+=item B<--man>
+
+Prints the manual page and exits
+
+=item B<-m>
+
+Select this column from the borrowers table match as userid when querying ldap
+
+=back
+
+=head1 DESCRIPTION
+
+This script it designed to update the borrowers table with data fetched from an LDAP 
+Server. 
+
+=head2 Configuration
+
+This relies on your LDAP configuration being correct in koha-conf.xml
 
 =cut
