@@ -13,7 +13,7 @@
 </script>
 </head>
 <body id="pat_pay" class="pat">
-[% INCLUDE 'header.inc' %] [% INCLUDE 'patron-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/members/members-home.pl">Members</a> &rsaquo; Pay Fines for [% borrower.firstname %] [% borrower.surname %]</div>
+[% INCLUDE 'header.inc' %] [% INCLUDE 'patron-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/members/members-home.pl">Members</a> &rsaquo; Pay fines for [% borrower.firstname %] [% borrower.surname %]</div>
 
 <div id="doc3" class="yui-t2">
  
@@ -38,14 +38,14 @@
 <table>
 <thead>
 <tr>
- <th>Fines &amp; Charges</th>
+ <th>Fines &amp; charges</th>
  <th>Sel</th>
  <th>Description</th>
- <th>Account Type</th>
+ <th>Account type</th>
  <th>Notify id</th>
  <th>Level</th>
  <th>Amount</th>
- <th>Amount Outstanding</th>
+ <th>Amount outstanding</th>
 </tr>
 </thead>
 <tfoot>
@@ -73,7 +73,7 @@
  <td>
  [% IF ( line.amountoutstanding > 0 ) %] <input type="checkbox" checked="checked" name="incl_par_[% line.accountno %]" />
  [% END %] </td>
- <td>[% line.description %] [% line.title |html_entity %]</td>
+ <td>[% line.description %] ([% line.title |html_entity %])</td>
  <td>[% line.accounttype %]</td>
  <td>[% line.notify_id %]</td>
  <td>[% line.notify_level %]</td>
@@ -82,7 +82,7 @@
 </tr>
 [% END %] [% IF ( account_grp.total ) %] <tr>
 
- <td class="total" colspan="7">Sub Total:</td>
+ <td class="total" colspan="7">Sub total:</td>
  <td>[% account_grp.total | format('%.2f') %]</td>
 </tr>
 [% END %] [% END %] </tbody>

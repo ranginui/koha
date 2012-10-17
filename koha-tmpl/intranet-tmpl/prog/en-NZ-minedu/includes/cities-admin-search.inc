@@ -1,4 +1,4 @@
-
+<div class="gradient">
 <h1 id="logo"><a href="/cgi-bin/koha/mainpage.pl">[% LibraryName %]</a></h1><!-- Begin Cities Resident Search Box -->
 [% IF ( CAN_user_circulate ) %][% IF ( CircAutocompl ) %]<script type="text/javascript">
 //<![CDATA[
@@ -45,7 +45,7 @@ YAHOO.util.Event.onContentReady("header_search", function() {
 //]]>
 </script>[% END %][% END %] <div id="header_search">
  <div id="city_search" class="residentsearch">
- <p class="tip">City Search:</p>
+ <p class="tip">City search:</p>
  <form action="[% script_name %]" method="post">
  <input type="text" name="city_name" value="[% searchfield %]" size="40" />
  <input type="submit" name="submit" value="OK" class="submit" />
@@ -75,7 +75,8 @@ YAHOO.util.Event.onContentReady("header_search", function() {
  <input type="submit" value="Submit"  class="submit" />
  </form>
  </div>[% END %] <ul>
- <li><a href="/cgi-bin/koha/admin/cities.pl#city_search">Search Cities</a></li>
- [% IF ( CAN_user_circulate ) %]<li><a href="/cgi-bin/koha/circ/circulation.pl#circ_search">Issue</a></li>[% END %] [% IF ( CAN_user_catalogue ) %]<li><a href="/cgi-bin/koha/catalogue/search.pl#catalog_search">Search the Catalogue</a></li>[% END %] </ul> 
+ <li><a href="/cgi-bin/koha/admin/cities.pl#city_search">Search cities</a></li>
+ [% IF ( CAN_user_circulate ) %]<li><a href="/cgi-bin/koha/circ/circulation.pl#circ_search">Check out</a></li>[% END %] [% IF ( CAN_user_catalogue ) %]<li><a href="/cgi-bin/koha/catalogue/search.pl#catalog_search">Search the catalog</a></li>[% END %] </ul> 
+</div>
 </div>
 <!-- End Cities Resident Search Box -->

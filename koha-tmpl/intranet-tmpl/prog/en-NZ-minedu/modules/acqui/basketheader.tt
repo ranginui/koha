@@ -78,7 +78,7 @@ li.list2 {
 </head>
 <body id="acq_basketheader" class="acq">
 [% INCLUDE 'header.inc' %] [% INCLUDE 'acquisitions-search.inc' %] <div id="breadcrumbs">
- <a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/acqui/acqui-home.pl">Acquisitions</a> &rsaquo; <a href="/cgi-bin/koha/acqui/supplier.pl?supplierid=[% booksellerid %]">[% booksellername %]</a> &rsaquo; [% IF ( add_form ) %] [% IF ( basketno ) %]Edit basket '[% basketname %]' [% ELSE %]add a basket to [% booksellername %] [% END %] [% END %] </div>
+ <a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/acqui/acqui-home.pl">Acquisitions</a> &rsaquo; <a href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% booksellerid %]">[% booksellername %]</a> &rsaquo; [% IF ( add_form ) %] [% IF ( basketno ) %]Edit basket '[% basketname %]' [% ELSE %]add a basket to [% booksellername %] [% END %] [% END %] </div>
 
 <div id="doc3" class="yui-t2">
  <div id="bd">

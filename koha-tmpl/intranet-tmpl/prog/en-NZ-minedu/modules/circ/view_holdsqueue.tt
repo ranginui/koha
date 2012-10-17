@@ -1,4 +1,4 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Circulation &rsaquo; Reserves Queue</title>
+[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Circulation &rsaquo; Holds queue</title>
 [% INCLUDE 'doc-head-close.inc' %] <style type="text/css"> p { margin-top: 0; }</style>
 </head>
 <body id="circ_view_holdsqueue" class="circ">
@@ -14,7 +14,7 @@ $(document).ready(function() {
 
 <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a>
 &rsaquo; <a href="/cgi-bin/koha/circ/circulation-home.pl">Circulation</a>
-&rsaquo; <a href="/cgi-bin/koha/circ/view_holdsqueue.pl">Reserves Queue</a>
+&rsaquo; <a href="/cgi-bin/koha/circ/view_holdsqueue.pl">Holds queue</a>
 [% IF ( run_report ) %] &rsaquo; Results[% END %] </div>
 
 <div id="doc" class="yui-t7">
@@ -32,13 +32,14 @@ $(document).ready(function() {
  <tr>
  <th class="hq-title">Title</th>
  <th class="hq-collection">Collection</th>
- <th class="hq-callnumber">Call Number</th>
- <th class="hq-copynumber">Copy Number</th>
+ <th class="hq-callnumber">Call number</th>
+ <th class="hq-copynumber">Copy number</th>
  <th class="hq-enumchron">Enumeration</th>
  <th class="hq-barcode">Barcode</th>
  <th class="hq-patron">Member</th>
- <th class="hq-sendto">Send To</th>
+ <th class="hq-sendto">Send to</th>
  <th class="hq-date">Date</th>
+ <th class="hq-notes">Notes</th>
  </tr>
  </thead>
  <tbody>[% FOREACH itemsloo IN itemsloop %] <tr>
@@ -58,6 +59,7 @@ $(document).ready(function() {
  <td class="hq-patron"><p><a href="/cgi-bin/koha/circ/circulation.pl?findborrower=[% itemsloo.cardnumber %]#reserves">[% itemsloo.surname %], [% itemsloo.firstname %] ([% itemsloo.cardnumber %])</a></p> <p>[% itemsloo.phone %]</p></td>
  <td class="hq-sendto">[% itemsloo.pickbranch %]</td>
  <td class="hq-date">[% itemsloo.reservedate %]</td>
+ <td class="hq-notes">[% itemsloo.notes %]</td>
  </tr>
  [% END %]</tbody>
  </table>

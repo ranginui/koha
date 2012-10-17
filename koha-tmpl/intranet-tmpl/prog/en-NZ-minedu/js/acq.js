@@ -664,7 +664,10 @@ function calcNeworderTotal(){
 
     //do real stuff
     var rrp   = new Number(listprice*exchangerate);
-    var ecost = new Number(Math.floor(rrp * (100 - discount ))/100);
+    var ecost = rrp;
+    if (100-discount != 100) { //Prevent rounding issues if no discount
+        ecost = new Number(Math.floor(rrp * (100 - discount ))/100);
+    }
     var GST   = new Number(0);
     if (gst_on) {
             rrp=rrp * (1+f.gstrate.value / 100);
@@ -686,6 +689,11 @@ function calcNeworderTotal(){
     if (f.GST) {
         f.GST.value=GST;
     }
+
+    // In case the discount changed, we should update the message
+    var discount_2dp = discount.toFixed(2);
+    $('#discount_value').html(discount_2dp);
+
     return true;
 }
 
@@ -748,7 +756,7 @@ function fetchSortDropbox(f) {
 
 for (i=1;i<=2;i++) {
 
-    var sort_dropbox = document.getElementById('sort'+i);
+    var sort_zone = document.getElementById('sort'+i+'_zone');
     var url = '../acqui/fetch_sort_dropbox.pl?sort='+i+'&budget_id='+budgetId;
 
     var xmlhttp = null;
@@ -768,7 +776,13 @@ for (i=1;i<=2;i++) {
         }
     };
     // rc =  eval ( xmlhttp.responseText );
-    sort_dropbox.innerHTML  =  xmlhttp.responseText;
+    var retRootType = xmlhttp.responseXML.firstChild.nodeName;
+    var existingInputs = sort_zone.getElementsByTagName('input');
+    if (existingInputs.length > 0 && retRootType == 'input') {
+        // when sort is already an input, do not override to preseve value
+        return;
+    }
+    sort_zone.innerHTML = xmlhttp.responseText;
 }
 }
 

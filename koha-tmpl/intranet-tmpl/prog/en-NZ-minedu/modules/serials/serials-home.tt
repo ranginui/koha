@@ -1,16 +1,19 @@
 [% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Serials [% biblionumber %]</title>
-[% INCLUDE 'doc-head-close.inc' %] <script type="text/javascript" src="[% themelang %]/lib/jquery/plugins/jquery.tablesorter.min.js"></script>
+<link rel="stylesheet" type="text/css" href="[% themelang %]/css/datatables.css" />
+[% INCLUDE 'doc-head-close.inc' %] <script type="text/javascript" src="[% themelang %]/lib/jquery/plugins/jquery.dataTables.min.js"></script>
+[% INCLUDE 'datatables-strings.inc' %] <script type="text/javascript" src="[% themelang %]/js/datatables.js"></script>
 <script type="text/javascript">
 //<![CDATA[
  $(document).ready(function() {
-        $("#srlt").tablesorter({
-            headers: {
-                2: { sorter: false },
-                4: { sorter: false },
-				5: { sorter: false }
-            }
-        }); 
- }); 
+    var srlt = $("#srlt").dataTable($.extend(true, {}, dataTablesDefaults, {
+        "aoColumnDefs": [
+            { "aTargets": [ -1, -2, -3 ], "bSortable": false, "bSearchable": false },
+        ],
+        "sPaginationType": "four_button"
+    } ) );
+
+    srlt.fnAddFilters("filter", 750);
+ });
  //]]>
 </script>
 </head>
@@ -29,9 +32,11 @@
  <th>
  Status </th>
  <th>
- Publisheddate </th>
+ Published date
+ </th>
  <th>
- Planneddate </th>
+ Planned date
+ </th>
  <th>
  Notes
  </th>
@@ -58,26 +63,37 @@
  <th>Title</th>
  <th> Notes </th>
  <th>
- Library (Callnumber) </th>
- [% IF ( routing ) %] <th>Routing list</th>
- [% END %] <th colspan="2">&nbsp;</th>
+ Library (callnumber)
+ </th>
+ [% IF ( routing && CAN_user_serials_routing ) %] <th>Routing list</th>
+ [% END %] <th>&nbsp;</th>
+ <th>&nbsp;</th>
  </tr>
  </thead>
+ <tfoot>
+ <tr>
+ <td><input type="text" class="filter" data-column_num="0" placeholder="Search ISSN" /></td>
+ <td><input type="text" class="filter" data-column_num="1" placeholder="Search title" /></td>
+ <td><input type="text" class="filter" data-column_num="2" placeholder="Search notes" /></td>
+ <td><input type="text" class="filter" data-column_num="3" placeholder="Search library" /></td>
+ [% IF ( routing && CAN_user_serials_routing ) %]<td></td>[% END %] <td></td>
+ <td></td>
+ </tr>
+ </tfoot>
  <tbody> 
- [% FOREACH subscription IN subscriptions %] [% UNLESS ( loop.odd ) %] <tr class="highlight">
- [% ELSE %] <tr>
- [% END %] <td>
+ [% FOREACH subscription IN subscriptions %] <tr>
+ <td>
  [% IF ( subscription.issn ) %][% subscription.issn %] [% END %] </td>
  <td><a href="/cgi-bin/koha/serials/subscription-detail.pl?subscriptionid=[% subscription.subscriptionid %]" class="button" title="subscription detail">[% subscription.title |html %]</a>
  </td>
  <td>[% IF ( subscription.notes ) %][% subscription.notes %][% END %] [% IF ( subscription.internalnotes ) %]([% subscription.internalnotes %])[% END %] </td>
  <td>
  [% IF ( subscription.branchname ) %][% subscription.branchname %][% END %] [% IF ( subscription.callnumber ) %]([% subscription.callnumber %])[% END %] </td>
- [% IF ( routing ) %] <td>
+ [% IF ( routing && CAN_user_serials_routing ) %] <td>
  [% IF ( subscription.cannotedit ) %] &nbsp; [% ELSE %] [% IF ( subscription.routingedit ) %] <a href="/cgi-bin/koha/serials/routing.pl?subscriptionid=[% subscription.subscriptionid %]">Edit</a>
  [% ELSE %] <a href="/cgi-bin/koha/serials/routing.pl?subscriptionid=[% subscription.subscriptionid %]&amp;op=new">New</a>
  [% END %] [% END %] </td>
- [% END %] <td><a href="/cgi-bin/koha/serials/serials-collection.pl?subscriptionid=[% subscription.subscriptionid %]">Issue History</a>
+ [% END %] <td><a href="/cgi-bin/koha/serials/serials-collection.pl?subscriptionid=[% subscription.subscriptionid %]">Issue history</a>
  </td>
  <td>
  [% IF ( subscription.cannotedit ) %] &nbsp; [% ELSE %] [% IF ( CAN_user_serials_receive_serials ) %]<a href="/cgi-bin/koha/serials/serials-edit.pl?subscriptionid=[% subscription.subscriptionid %]&amp;serstatus=1,3,7">Serial receive</a>[% END %] [% END %] </td>

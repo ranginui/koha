@@ -1,4 +1,4 @@
-[% INCLUDE 'doc-head-open.inc' %][% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha Online[% END %] Catalogue &rsaquo; Recent Comments [% INCLUDE 'doc-head-close.inc' %] <link rel="alternate" href="[% OPACBaseURL %]/cgi-bin/koha/opac-showreviews.pl?format=rss" type="application/rss+xml" title="[% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha Online[% END %] Catalogue Recent Comments" />
+[% USE KohaDates %] [% INCLUDE 'doc-head-open.inc' %][% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha online[% END %] catalogue &rsaquo; Recent comments [% INCLUDE 'doc-head-close.inc' %] <link rel="alternate" href="[% OPACBaseURL %]/cgi-bin/koha/opac-showreviews.pl?format=rss" type="application/rss+xml" title="[% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha online[% END %] catalogue recent comments" />
 <script type="text/javascript">
 //<![CDATA[
 $(document).ready(function(){
@@ -30,7 +30,7 @@ $(document).ready(function(){
 
  <p class="commentline[% IF ( review.your_comment ) %] yours[% END %]">
  [% IF ( review.avatarurl ) %] <img class="avatar" src="[% review.avatarurl %]" height="40" width="40" alt="" />
- [% END %] [% FILTER html_break %] [% review.review |html %] [% END %] <span style="font-size:87%;font-color:#CCC;">Added [% review.datereviewed %] [% IF ( review.your_comment ) %] by <strong>you</strong>[% ELSE %] [% IF ( review.borrowernumber && ShowReviewer != "none" ) %] by [% SWITCH ShowReviewer %] [% CASE 'full' %] [% review.borrtitle %] [% review.firstname %] [% review.surname %] [% CASE 'first' %] [% review.firstname %] [% CASE 'surname' %] [% review.surname %] [% CASE 'firstandinitial' %] [% review.firstname %] [% review.surname|truncate(2,'.') %] [% CASE 'username' %] [% review.userid %] [% END %] [% END %][% END %]</span></p>
+ [% END %] [% FILTER html_break %] [% review.review |html %] [% END %] <span style="font-size:87%;font-color:#CCC;">Added [% review.datereviewed | $KohaDates %] [% IF ( review.your_comment ) %] by <strong>you</strong>[% ELSE %] [% IF ( review.borrowernumber && ShowReviewer != "none" ) %] by [% SWITCH ShowReviewer %] [% CASE 'full' %] [% review.borrtitle %] [% review.firstname %] [% review.surname %] [% CASE 'first' %] [% review.firstname %] [% CASE 'surname' %] [% review.surname %] [% CASE 'firstandinitial' %] [% review.firstname %] [% review.surname|truncate(2,'.') %] [% CASE 'username' %] [% review.userid %] [% END %] [% END %][% END %]</span></p>
  </td>
  <td>
 [% IF ( review.BiblioDefaultViewmarc ) %]<a class="title" href="/cgi-bin/koha/opac-MARCdetail.pl?biblionumber=[% review.biblionumber |url %]" title="View details for this title">

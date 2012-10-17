@@ -39,7 +39,7 @@
 <ul>
  <li>Choose your CSV file and choose to match on 'Cardnumber' to prevent adding of duplicate card numbers to the system</li>
  <li>Next you can choose default values to apply to all borrowers you are importing <ul>
- <li>ex. If you're importing borrowers specific to one branch you can use the field on the Import form to apply the branch code to all those you are importing.</li>
+ <li>ex. If you're importing patrons specific to one library you can use the field on the Import form to apply the branchcode to all those you are importing.</li>
 </ul>
 </li>
  <li>Finally you need to decide on what data you want to replace if there are duplicates. <ul>
@@ -49,6 +49,6 @@
 </li>
 </ul>
 
-<p><strong>See the full documentation for Borrower Import in the <a href="http://manual.koha-community.org/3.6/en/patronimport.html">manual</a> (online).</strong></p>
+<p><strong>See the full documentation for Borrower Import in the <a href="http://manual.koha-community.org/3.8/en/patronimport.html">manual</a> (online).</strong></p>
 
 [% INCLUDE 'help-bottom.inc' %] 

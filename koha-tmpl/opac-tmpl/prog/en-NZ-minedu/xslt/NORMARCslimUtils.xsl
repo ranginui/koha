@@ -170,6 +170,7 @@
  </xsl:if>
  </xsl:for-each>
  </xsl:variable>
+ <xsl:if test="string-length($str) &gt; 0">
  <xsl:choose>
  <xsl:when test="boolean($bibno)">
  <a>
@@ -193,6 +194,7 @@
  <xsl:value-of select="$str"/>
  </xsl:otherwise>
  </xsl:choose>
+ </xsl:if>
  </span>
  </xsl:if>
  </xsl:for-each>

@@ -1,7 +1,7 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Link to host item</title>
+[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Cataloging &rsquo; Link to host item</title>
 [% INCLUDE 'doc-head-close.inc' %] </head>
 <body id="catalog_linkitem" class="catalog">
-[% INCLUDE 'header.inc' %] [% INCLUDE 'cat-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/cataloging/addbooks.pl">Cataloguing</a> &rsaquo; Link a host item to <i>[% bibliotitle |html %]</i></div>
+[% INCLUDE 'header.inc' %] [% INCLUDE 'cat-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/cataloguing/addbooks.pl">Cataloguing</a> &rsaquo; Link a host item to <i>[% bibliotitle |html %]</i></div>
 <div id="doc3" class="yui-t2">
 
 [% IF ( error ) %] <div class="dialog alert">

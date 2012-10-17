@@ -21,13 +21,23 @@ Administration:
       - The CAS Authentication Server can be found at
       - 
         pref: casServerUrl
+    - 
+      - Use
+      - 
+        choices: 
+          Common Name: the Common Name
+          None: 'no'
+          emailAddress: the emailAddress
+        default: None
+        pref: AllowPkiAuth
+      - field for SSL client certificate authentication
   Interface options: 
     - 
       - Use
       - 
         class: email
         pref: KohaAdminEmailAddress
-      - "as the email address for the administrator of Koha. (This is the default From: address for emails unless there is one for the particular branch, and is referred to when an internal error occurs.)"
+      - "as the email address for the administrator of Koha. (This is the default From: address for emails unless there is one for the particular library, and is referred to when an internal error occurs.)"
     - 
       - Show
       - 

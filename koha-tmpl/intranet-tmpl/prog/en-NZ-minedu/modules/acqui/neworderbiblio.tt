@@ -1,7 +1,7 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Acquisitions &rsaquo; Search Existing Records</title>
+[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Acquisitions &rsaquo; Search existing records</title>
 [% INCLUDE 'greybox.inc' %] [% INCLUDE 'doc-head-close.inc' %] </head>
 <body id="acq_neworderbiblio" class="acq">
-[% INCLUDE 'header.inc' %] [% INCLUDE 'acquisitions-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/acqui/acqui-home.pl">Acquisitions</a> &rsaquo; <a href="/cgi-bin/koha/acqui/supplier.pl?supplierid=[% booksellerid %]">[% name %]</a> &rsaquo; <a href="/cgi-bin/koha/acqui/basket.pl?=[% basketno %]">Basket [% basketno %]</a> &rsaquo; Search Existing Records</div>
+[% INCLUDE 'header.inc' %] [% INCLUDE 'acquisitions-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/acqui/acqui-home.pl">Acquisitions</a> &rsaquo; <a href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% booksellerid %]">[% name %]</a> &rsaquo; <a href="/cgi-bin/koha/acqui/basket.pl?=[% basketno %]">Basket [% basketno %]</a> &rsaquo; Search existing records</div>
 
 <div id="doc3" class="yui-t2">
  
@@ -9,7 +9,7 @@
  <div id="yui-main">
  <div class="yui-b">
  
-<h1>Search Existing Records</h1>
+<h1>Search existing records</h1>
 
 
 [% IF ( total ) %] <b>[% total %] results found </b> 

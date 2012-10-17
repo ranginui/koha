@@ -1,4 +1,4 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Acquisitions &rsaquo; [% UNLESS ( basketno ) %]New [% END %][% IF ( delete_confirm ) %]Delete [% END %]Basket [% basketname|html %] ([% basketno %]) for [% name|html %]</title>
+[% USE KohaDates %] [% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Acquisitions &rsaquo; [% UNLESS ( basketno ) %]New [% END %][% IF ( delete_confirm ) %]Delete [% END %]Basket [% basketname|html %] ([% basketno %]) for [% name|html %]</title>
 [% INCLUDE 'doc-head-close.inc' %] [% UNLESS ( closedate ) %] <script type="text/javascript" src="[% themelang %]/lib/jquery/plugins/jquery.tablesorter.min.js"></script>
 <script type="text/javascript">
 //<![CDATA[
@@ -9,6 +9,7 @@
                 10: { sorter: false }
             }
         });
+        $("#cancelledorderst").tablesorter();
     });
             function confirm_close() {
                 var is_confirmed = confirm(_('Are you sure you want to close this basket?'));
@@ -64,7 +65,7 @@
 </style>
 </head>
 <body id="acq_basket" class="acq">
-[% INCLUDE 'header.inc' %] [% INCLUDE 'acquisitions-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/acqui/acqui-home.pl">Acquisitions</a> &rsaquo; <a href="/cgi-bin/koha/acqui/supplier.pl?supplierid=[% booksellerid %]">[% name|html %]</a> &rsaquo; [% UNLESS ( basketno ) %]New [% END %][% IF ( delete_confirm ) %]Delete [% END %]Basket [% basketname|html %] ([% basketno %]) for [% name|html %]</div>
+[% INCLUDE 'header.inc' %] [% INCLUDE 'acquisitions-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/acqui/acqui-home.pl">Acquisitions</a> &rsaquo; <a href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% booksellerid %]">[% name|html %]</a> &rsaquo; [% UNLESS ( basketno ) %]New [% END %][% IF ( delete_confirm ) %]Delete [% END %]Basket [% basketname|html %] ([% basketno %]) for [% name|html %]</div>
 
 <div id="doc3" class="yui-t2">
 
@@ -123,7 +124,7 @@
  [% END %] [% END %] [% END %] [% IF ( NO_BOOKSELLER ) %] <h2>Vendor not found</h2>
  [% ELSE %] [% IF ( delete_confirmed ) %] <h3>Basket deleted</h3>
  <META HTTP-EQUIV=Refresh CONTENT="0; url=booksellers.pl">
- [% ELSE %] <h1>[% UNLESS ( basketno ) %]New [% END %][% IF ( delete_confirm ) %]Delete [% END %]Basket [% basketname|html %] ([% basketno %]) for <a href="supplier.pl?supplierid=[% booksellerid %]">[% name|html %]</a></h1>
+ [% ELSE %] <h1>[% UNLESS ( basketno ) %]New [% END %][% IF ( delete_confirm ) %]Delete [% END %]Basket [% basketname|html %] ([% basketno %]) for <a href="supplier.pl?booksellerid=[% booksellerid %]">[% name|html %]</a></h1>
  [% IF ( delete_confirm ) %] <h2>
  <span class="yui-button yui-link-button">
  <em class="first-child">
@@ -141,7 +142,7 @@
  <div class="yui-u first">
  <ol>
  [% IF ( basketnote ) %]<li><span class="label">Internal note:</span> [% basketnote %]</li>[% END %] [% IF ( basketbooksellernote ) %]<li><span class="label">Vendor note:</span> [% basketbooksellernote %]</li>[% END %] [% IF ( basketcontractno ) %] <li><span class="label">Contract name:</span> <a href="../admin/aqcontract.pl?op=add_form&amp;contractnumber=[% basketcontractno %]&amp;booksellerid=[% booksellerid %]">[% basketcontractname %]</a></li>
- [% END %] [% IF ( authorisedbyname ) %]<li><span class="label">Managed by:</span> [% authorisedbyname %]</li>[% END %] [% IF ( creationdate ) %]<li><span class="label">Opened on:</span> [% creationdate %]</li>[% END %] [% IF ( closedate ) %]<li><span class="label">Closed on:</span> [% closedate %]</li>[% END %] </ol>
+ [% END %] [% IF ( authorisedbyname ) %]<li><span class="label">Managed by:</span> [% authorisedbyname %]</li>[% END %] [% IF ( creationdate ) %]<li><span class="label">Opened on:</span> [% creationdate | $KohaDates %]</li>[% END %] [% IF ( closedate ) %]<li><span class="label">Closed on:</span> [% closedate | $KohaDates %]</li>[% END %] [% IF ( estimateddeliverydate ) %]<li><span class="label">Estimated delivery date:</span> [% estimateddeliverydate | $KohaDates  %]</li>[% END %] </ol>
  </div>
  [% IF ( closedate ) %] <div class="yui-u">
  <form action="/cgi-bin/koha/acqui/basketgroup.pl" method="post">
@@ -179,7 +180,7 @@
  </thead>
  <tfoot>
  [% IF ( GST ) %] <tr>
- <th scope="row">Total Tax Exc.</th>
+ <th scope="row">Total tax exc.</th>
  <td>[% total_rrp_gste %]</td>
  <td>&nbsp;</td>
  <td>[% qty_total %]</td>
@@ -195,7 +196,7 @@
  <td>[% gist_est %]</td>
  </tr>
  <tr>
- <th scope="row">Total Tax Inc. ([% currency %])</th>
+ <th scope="row">Total tax inc. ([% currency %])</th>
  <td>[% total_rrp_gsti %]</td>
  <td>&nbsp;</td>
  <td>[% qty_total %]</td>
@@ -207,25 +208,34 @@
  <td>&nbsp;</td>
  <td>[% qty_total %]</td>
  <td>[% total_est_gsti %]</td>
+ <td colspan="3">&nbsp;</td>
  </tr>
  [% END %] </tfoot>
  <tbody>
  [% FOREACH books_loo IN books_loop %] [% IF ( books_loo.order_received ) %]<tr class="disabled">[% ELSE %][% IF ( books_loo.toggle ) %]<tr class="highlight">[% ELSE %]<tr>[% END %][% END %] <td>
  <p>[% IF ( books_loo.order_received ) %] (rcvd)[% END %] <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% books_loo.biblionumber %]">[% books_loo.title |html %]</a> by [% books_loo.author %]
- [% IF ( books_loo.notes ) %] [% books_loo.notes %][% END %]
+ <br />
  [% IF ( books_loo.isbn ) %] - [% books_loo.isbn %][% END %]
  [% IF ( books_loo.issn ) %] - [% books_loo.issn %][% END %]
  [% IF ( books_loo.publishercode ) %], [% books_loo.publishercode %][% END %]
  [% IF ( books_loo.publicationyear ) %], [% books_loo.publicationyear %][% END %]
+ [% IF ( books_loo.editionstatement ) %], [% books_loo.editionstatement %][% END %]
  [% IF ( books_loo.suggestionid ) %]
  <br/>
  Suggested by: [% books_loo.surnamesuggestedby %][% IF ( books_loo.firstnamesuggestedby ) %], [% books_loo.firstnamesuggestedby %] [% END %]
- (<a href="/cgi-bin/koha/suggestion/suggestion.pl?suggestionid=[% books_loo.suggestionid %]">suggestion #[% books_loo.suggestionid %]</a>) [% END %] </p>
+ (<a href="/cgi-bin/koha/suggestion/suggestion.pl?suggestionid=[% books_loo.suggestionid %]&amp;op=show">suggestion #[% books_loo.suggestionid %]</a>)
+ [% END %]
+ [% IF ( books_loo.notes ) %]
+ <p class="ordernote"><strong>Note: </strong>[% books_loo.notes|html %] [<a href="/cgi-bin/koha/acqui/modordernotes.pl?ordernumber=[% books_loo.ordernumber %]">Change note</a>]</p>
+ [% ELSE %]
+ [<a href="/cgi-bin/koha/acqui/modordernotes.pl?ordernumber=[% books_loo.ordernumber %]">Add note</a>]
+ [% END %]
+ </p>
  </td>
- <td class="number">[% books_loo.rrp %]</td>
- <td class="number">[% books_loo.ecost %]</td>
- <td class="number">[% books_loo.quantity %]</td>
- <td class="number">[% books_loo.line_total %]</td>
+ <td class="number [% IF books_loo.rrp.search('^0') %]error[% END %]">[% books_loo.rrp %]</td>
+ <td class="number [% IF books_loo.ecost.search('^0') %]error[% END %]">[% books_loo.ecost %]</td>
+ <td class="number [% IF books_loo.quantity.search('^0') %]error[% END %]">[% books_loo.quantity %]</td>
+ <td class="number [% IF books_loo.line_total.search('^0') %]error[% END %]">[% books_loo.line_total %]</td>
  <td>[% books_loo.budget_name %]</td>
  [% IF ( active ) %] [% UNLESS ( closedate ) %] <td>
  <a href="neworderempty.pl?ordernumber=[% books_loo.ordernumber %]&amp;booksellerid=[% booksellerid %]&amp;basketno=[% basketno %]">Modify</a>
@@ -248,7 +258,46 @@
  </table>
  [% END %] [% IF ( listincgst ) %]<small class="highlight">** Vendor's listings already include GST.</small>
  [% END %] </div>
- <br />
+ [% IF (cancelledorders_loop) %] <div id="cancelledorders">
+ <h2>Cancelled orders</h2>
+ <table id="cancelledorderst">
+ <thead>
+ <tr>
+ <th>Order</th>
+ <th>RRP</th>
+ <th>Est.</th>
+ <th>Qty.</th>
+ <th>Total</th>
+ <th>Fund</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH order IN cancelledorders_loop %] <tr style="color:grey">
+ <td>
+ <p>
+ [% IF ( order.order_received ) %] (rcvd)[% END %]
+ [% IF (order.title) %]
+ [% order.title |html %] by [% order.author %]<br />
+ [% ELSE %] <em>Deleted bibliographic record, can't find title</em><br />
+ [% END %]
+ [% IF ( order.notes ) %] [% order.notes %][% END %]
+ [% IF ( order.isbn ) %] - [% order.isbn %][% END %]
+ [% IF ( order.issn ) %] - [% order.issn %][% END %]
+ [% IF ( order.publishercode ) %], [% order.publishercode %][% END %]
+ [% IF ( order.publicationyear ) %], [% order.publicationyear %][% END %]
+ [% IF ( books_loo.editionstatement ) %], [% books_loo.editionstatement %][% END %]
+ </p>
+ </td>
+ <td><p>[% order.rrp %]</p></td>
+ <td><p>[% order.ecost %]</p></td>
+ <td><p>[% order.quantity %]</p></td>
+ <td><p>[% order.line_total %]</p></td>
+ <td><p>[% order.budget_name %]</p></td>
+ </tr>
+ [% END %] </tbody>
+ </table>
+ </div>
+ [% END %] <br />
  [% UNLESS ( closedate ) %]
  [% INCLUDE 'acquisitions-add-to-basket.inc' %]
  [% END %]

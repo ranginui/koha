@@ -1,5 +1,10 @@
-[% INCLUDE 'doc-head-open.inc' %][% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha Online[% END %] Catalogue &rsaquo; Details for: [% title |html %][% FOREACH subtitl IN subtitle %], [% subtitl.subfield |html %][% END %] [% INCLUDE 'doc-head-close.inc' %] <script type="text/javascript" src="[% themelang %]/lib/jquery/plugins/jquery.tablesorter.min.js"></script>
-<script type="text/JavaScript" language="JavaScript">
+[% USE KohaDates %] [% INCLUDE 'doc-head-open.inc' %][% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha online[% END %] catalogue &rsaquo; Details for: [% title |html %][% FOREACH subtitl IN subtitle %], [% subtitl.subfield |html %][% END %] [% INCLUDE 'doc-head-close.inc' %] <script type="text/javascript" src="[% themelang %]/lib/jquery/plugins/jquery.tablesorter.min.js"></script>
+<script type="text/javascript" src="[% themelang %]/lib/jquery/plugins/jquery.tools.min.js"></script>
+[% IF ( SocialNetworks ) %] <script type="text/javascript" src="https://apis.google.com/js/plusone.js">
+      {lang: '[% lang %]'}
+    </script>
+[% END %] [% IF ( OpacStarRatings != 'disable' ) %]<script type="text/javascript" src="/opac-tmpl/prog/en/lib/jquery/plugins/jquery.rating.js"></script>
+<link rel="stylesheet" type="text/css" href="/opac-tmpl/prog/en/css/jquery.rating.css" />[% END %] <script type="text/JavaScript" language="JavaScript">
 //<![CDATA[
 
     [% IF ( OpacBrowseResults && busc ) %]
@@ -7,7 +12,7 @@
         var pag_index_ini = [% indexPag %];
         [% IF ( listResults ) %]
             [% FOREACH listResult IN listResults %]
-                arrPagination[[% listResult.index %]] = {url:"[% listResult.url %]", title:"[% listResult.title|html %]", author:"[% listResult.author|html %]", biblionumber:[% listResult.biblionumber %]};
+                arrPagination[[% listResult.index %]] = {url:"[% listResult.url %]", title:"[% listResult.title|remove('\n')|html %]", author:"[% listResult.author|html %]", biblionumber:[% listResult.biblionumber %]};
            [% END %]
         [% END %]
     [% END %]
@@ -37,6 +42,9 @@
 	[% END %]
 	[% IF OpenLibraryCovers %]
 	KOHA.OpenLibrary.GetCoverFromIsbn();
+	[% END %]
+	[% IF OPACLocalCoverImages %]
+	KOHA.LocalCover.GetCoverFromBibnumber(true);
 	[% END %]
         [% IF ( NovelistSelectProfile ) %]
         novSelect.loadContentForISBN('[% normalized_isbn %]','[% NovelistSelectProfile %]', '[% NovelistSelectPassword %]', function(d){});
@@ -72,8 +80,56 @@
         });
     [% END %]
 
-});
+        $(".branch-info-tooltip-trigger").tooltip({delay: 100, position: "top right"});
+[% IF ( OpacStarRatings != 'disable' ) %]
+// -----------------------------------------------------
+// star-ratings code
+// -----------------------------------------------------
+// hide 'rate' button if javascript enabled
 
+$('input[name="rate_button"]').remove();
+
+$(function () {
+  $(".auto-submit-star").rating({
+    callback: function (value, link) {
+
+      // if the new value equals the old value, dont execute callback...
+      // just do nothing!
+      if ($("#rating_value").attr("value") != value) {
+
+        $(function () {
+
+          $.post("/cgi-bin/koha/opac-ratings-ajax.pl", {
+            rating_old_value: $("#rating_value").attr("value"),
+            borrowernumber: "[% borrowernumber %]",
+            biblionumber: "[% biblionumber %]",
+            rating_value: value,
+            auth_error: value
+          }, function (data) {
+
+            if (data.auth_status != 'ok') {
+              window.alert('Your CGI session cookie is not current. Please refresh the page and try again.');
+            } else {
+              $("#rating_value").val(data.rating_value);
+
+              if (data.rating_value) {
+                $("#rating_value_text").text('your rating: ' + data.rating_value + ', ');
+              } else {
+                $("#rating_value_text").text('');
+              }
+
+              $("#rating_text").text('average rating: ' + data.rating_avg_int + ' (' + data.rating_total + ' votes)');
+
+            }
+          }, "json");
+        });
+      };
+    }
+  });
+});
+// -----------------------------------------------------
+[% END %]
+});
 
 [% IF ( OpacBrowseResults && busc ) %]
 var timeoutRFW;
@@ -203,12 +259,20 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
 		YAHOO.util.Event.addListener("furthersearches", "click", furthersearchesMenu.show, null, furthersearchesMenu);
 		YAHOO.widget.Overlay.windowResizeEvent.subscribe(positionfurthersearchesMenu);
  });
-	
 //]]>
 </script>
 [% IF ( opacuserlogin ) %][% IF ( loggedinusername ) %][% IF ( TagsEnabled ) %]<style type="text/css">
     #addtagl { display: none; }
-</style>[% END %][% END %][% END %] </head>
+</style>[% END %][% END %][% END %] <style type="text/css">
+.branch-info-tooltip {
+  display: none;
+  padding: 20px;
+  background: #fff;
+  border: 1px solid black;
+}
+</style>
+
+</head>
 <body id="opac-detail">
 <div id="doc3" class="yui-t7">
  <div id="bd">
@@ -219,18 +283,27 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
  <div id="catalogue_detail_biblio">
 
  <div id="bookcover">
- [% IF ( OPACAmazonEnabled ) %][% IF ( OPACAmazonCoverImages ) %][% IF ( OPACurlOpenInNewWindow ) %]<a href="http://www.amazon[% AmazonTld %]/gp/reader/[% normalized_isbn %]/ref=sib_dp_pt/002-7879865-0184864#reader-link" target="_blank"><img border="0" src="http://images.amazon.com/images/P/[% normalized_isbn %].01.MZZZZZZZ.jpg" alt="Cover Image" /></a>[% ELSE %]<a href="http://www.amazon[% AmazonTld %]/gp/reader/[% normalized_isbn %]/ref=sib_dp_pt/002-7879865-0184864#reader-link"><img border="0" src="http://images.amazon.com/images/P/[% normalized_isbn %].01.MZZZZZZZ.jpg" alt="Cover Image" /></a>[% END %][% END %][% END %] [% IF ( SyndeticsEnabled ) %][% IF ( SyndeticsCoverImages ) %][% IF ( content_identifier_exists ) %][% IF ( using_https ) %] <img src="https://secure.syndetics.com/index.aspx?isbn=[% normalized_isbn %]/[% SyndeticsCoverImageSize %].GIF&amp;client=[% SyndeticsClientCode %]&amp;type=xw10&amp;upc=[% normalized_upc %]&amp;oclc=[% normalized_oclc %]" alt="" class="thumbnail" />
+ [% IF ( OPACLocalCoverImages ) %]<div style="block" title="[% biblionumber |url %]" class="[% biblionumber %]" id="local-thumbnail-preview"></div>[% END %] [% IF ( OPACAmazonEnabled ) %][% IF ( OPACAmazonCoverImages ) %][% IF ( OPACurlOpenInNewWindow ) %]<a href="http://www.amazon[% AmazonTld %]/gp/reader/[% normalized_isbn %]/ref=sib_dp_pt/002-7879865-0184864#reader-link" target="_blank"><img border="0" src="http://images.amazon.com/images/P/[% normalized_isbn %].01.MZZZZZZZ.jpg" alt="Cover image" /></a>[% ELSE %]<a href="http://www.amazon[% AmazonTld %]/gp/reader/[% normalized_isbn %]/ref=sib_dp_pt/002-7879865-0184864#reader-link"><img border="0" src="http://images.amazon.com/images/P/[% normalized_isbn %].01.MZZZZZZZ.jpg" alt="Cover image" /></a>[% END %][% END %][% END %] [% IF ( SyndeticsEnabled ) %][% IF ( SyndeticsCoverImages ) %][% IF ( content_identifier_exists ) %][% IF ( using_https ) %] <img src="https://secure.syndetics.com/index.aspx?isbn=[% normalized_isbn %]/[% SyndeticsCoverImageSize %].GIF&amp;client=[% SyndeticsClientCode %]&amp;type=xw10&amp;upc=[% normalized_upc %]&amp;oclc=[% normalized_oclc %]" alt="" class="thumbnail" />
  [% ELSE %] <img src="http://www.syndetics.com/index.aspx?isbn=[% normalized_isbn %]/[% SyndeticsCoverImageSize %].GIF&amp;client=[% SyndeticsClientCode %]&amp;type=xw10&amp;upc=[% normalized_upc %]&amp;oclc=[% normalized_oclc %]" alt="" class="thumbnail" />[% END %] [% ELSE %]<span class="no-image">No cover image available</span>[% END %][% END %][% END %] [% IF ( GoogleJackets ) %]<div style="block" title="[% biblionumber |url %]" class="[% normalized_isbn %]" id="gbs-thumbnail-preview"></div>[% END %] [% IF OpenLibraryCovers %]<div style="block" title="[% biblionumber |url %]" class="[% normalized_isbn %]" id="openlibrary-thumbnail-preview"></div>[% END %] [% IF ( BakerTaylorEnabled ) %][% IF ( normalized_isbn ) %][% IF ( OPACurlOpenInNewWindow ) %]<a href="https://[% BakerTaylorBookstoreURL |html %][% normalized_isbn %]" target="_blank"><img alt="See Baker &amp; Taylor" src="[% BakerTaylorImageURL |html %][% normalized_isbn %]" /></a>[% ELSE %]<a href="https://[% BakerTaylorBookstoreURL |html %][% normalized_isbn %]"><img alt="See Baker &amp; Taylor" src="[% BakerTaylorImageURL |html %][% normalized_isbn %]" /></a>[% END %][% END %][% END %] </div>
 
  <abbr class="unapi-id" title="koha:biblionumber:[% biblionumber %]"><!-- unAPI --></abbr>
  [% IF ( ocoins ) %]
  <!-- COinS / Openurl -->
  <span class="Z3988" title="[% ocoins %]"></span>
- [% END %] <div id="views"><span class="view"><span id="Normalview">Normal View</span></span> <span class="view"><a id="MARCview" href="/cgi-bin/koha/opac-MARCdetail.pl?biblionumber=[% biblionumber %]">MARC View</a></span> [% IF ( ISBD ) %]<span class="view"><a id="ISBDview" href="/cgi-bin/koha/opac-ISBDdetail.pl?biblionumber=[% biblionumber %]">ISBD View</a></span>[% END %] </div>
+ [% END %] <div id="views"><span class="view"><span id="Normalview">Normal view</span></span> <span class="view"><a id="MARCview" href="/cgi-bin/koha/opac-MARCdetail.pl?biblionumber=[% biblionumber %]">MARC view</a></span> [% IF ( ISBD ) %]<span class="view"><a id="ISBDview" href="/cgi-bin/koha/opac-ISBDdetail.pl?biblionumber=[% biblionumber %]">ISBD view</a></span>[% END %] </div>
  [% IF ( OPACXSLTDetailsDisplay ) %] [% XSLTBloc %] [% ELSE %] <h1 class="title">[% title |html %][% IF ( subtitle ) %] <span class="subtitle">[% FOREACH subtitl IN subtitle %][% subtitl.subfield |html %] [% END %]</span>[% END %]</h1>
- [% IF ( author ) %]<h5 class="author">by <a href="/cgi-bin/koha/opac-search.pl?q=au:[% author |url %]">[% author |html %]</a></h5>[% END %] <span class="results_summary">[% UNLESS ( item_level_itypes ) %] [ [% IF ( description ) %] [% description %] [% ELSE %] [% itemtype %] [% END %] ] [% END %] [% IF ( unititle ) %], [% unititle %][% END %] </span>
+ [% IF ( responsibility ) %]<h5 clases="author">[% FOREACH res IN responsibility %][% res.subfield %] [% END %]</h5>[% END %] [% IF ( author ) %]<h5 class="author">by <a href="/cgi-bin/koha/opac-search.pl?q=au:[% author |url %]">[% author |html %]</a></h5>[% END %] <span class="results_summary">
+ [% IF !item_level_itypes ||  BiblioItemtypeImage == 'Koha' %]
+ [% IF ( description ) %]
+ [% description %]
+ [% ELSE %]
+ [% itemtype %]
+ [% END %]
+ [% END %]
+ [% IF ( unititle ) %], [% unititle %][% END %]
+ </span>
 
- [% IF ( MARCAUTHORS ) %] <span class="results_summary"><span class="label">Authors:</span>
+ [% IF ( MARCAUTHORS ) %] <span class="results_summary"><span class="label">Additional authors:</span>
  [% FOREACH MARCAUTHOR IN MARCAUTHORS %] [% FOREACH MARCAUTHOR_SUBFIELDS_LOO IN MARCAUTHOR.MARCAUTHOR_SUBFIELDS_LOOP %][% MARCAUTHOR_SUBFIELDS_LOO.separator %]<a title="‡[% MARCAUTHOR_SUBFIELDS_LOO.code %] [% MARCAUTHOR_SUBFIELDS_LOO.value %]" href="/cgi-bin/koha/opac-search.pl?q=[% FOREACH link_loo IN MARCAUTHOR_SUBFIELDS_LOO.link_loop %][% link_loo.operator |url %][% link_loo.limit |url %]:[% link_loo.link |url %][% END %]">[% MARCAUTHOR_SUBFIELDS_LOO.value %]</a>[% END %] [% UNLESS ( loop.last ) %]| [% END %] [% END %] </span>
  [% END %] [% IF ( MARCSERIES ) %] <span class="results_summary"><span class="label">Series:</span>
  [% FOREACH MARCSERIE IN MARCSERIES %] [% FOREACH MARCSERIES_SUBFIELDS_LOO IN MARCSERIE.MARCSERIES_SUBFIELDS_LOOP %] [% IF ( MARCSERIES_SUBFIELDS_LOO.value ) %]<a href="/cgi-bin/koha/opac-search.pl?q=se:[% MARCSERIES_SUBFIELDS_LOO.value |url %]">[% MARCSERIES_SUBFIELDS_LOO.value %]</a>[% END %][% IF ( MARCSERIES_SUBFIELDS_LOO.volumenum ) %]. [% MARCSERIES_SUBFIELDS_LOO.volumenum %][% END %] [% END %] [% UNLESS ( loop.last ) %]|[% END %] [% END %] </span>
@@ -250,7 +323,7 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
  [% ELSE %] [% IF ( subjects ) %]<span class="results_summary"><span class="label">Subject(s):</span> [% FOREACH subject IN subjects %]<a href="/cgi-bin/koha/opac-search.pl?q=su:[% subject.subject |url %]">[% subject.subject %]</a> | [% END %]</span>[% END %] [% END %] [% IF ( copyrightdate ) %] <span class="results_summary"><span class="label">Year: </span>[% copyrightdate %]</span>
  [% END %] [% UNLESS ( item_level_itypes ) %]<img src="[% imageurl %]" alt="[% description %]" title="[% description %]" />
  <span class="results_summary"><span class="label">Item type: </span>
- [% IF ( description ) %] [% description %] [% ELSE %] [% itemtype %] [% END %] </span>[% END %] [% IF ( MARCURLS ) %] <div class="results_summary"><span class="label">Online Resources:</span>
+ [% IF ( description ) %] [% description %] [% ELSE %] [% itemtype %] [% END %] </span>[% END %] [% IF ( MARCURLS ) %] <div class="results_summary"><span class="label">Online resources:</span>
  <ul> [% FOREACH MARCurl IN MARCURLS %] <li>[% IF ( MARCurl.part ) %][% MARCurl.part %] <br />[% END %] 
  <!-- here you might do a tmpl_if name="toc" and use greybox or equivalent for table of contents -->
  
@@ -261,7 +334,8 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
  [% END %] [% END %] [% IF ( AuthorisedValueImages ) %] [% IF ( authorised_value_images ) %] <div class="authorised_value_images">
  [% FOREACH authorised_value_image IN authorised_value_images %] <img src="[% authorised_value_image.imageurl %]" alt="[% authorised_value_image.label %]" title="[% authorised_value_image.label %]" />
  [% END %] </div>
- [% END %]
+ [% END %] [% END %] [% IF !item_level_itypes ||  BiblioItemtypeImage == 'Koha' %] <div class="results_summary"><span class="label">Itemtype:</span>
+ [% IF ( description ) %] [% description %] [% ELSE %] [% itemtype %] [% END %] </div>
  [% END %]
 
 <!-- This puts the LTFL reviews in, and if TabbedView is not set, puts the remaining content above the Tabs instead of in them -->
@@ -299,18 +373,18 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
  [% ELSE %] <span id="login4tags" class="tagstatus">Log in to add tags.</span>
  [% END %] [% END %] </div>
  [% END %] [% END %] [% END %] [% IF ( SyndeticsEnabled ) %][% IF ( SyndeticsSeries ) %][% IF ( SyndeticsSERIES1Exists ) %] <span class="results_summary">
- <span class="label">Series Information:</span>
+ <span class="label">Series information:</span>
 
  [% IF ( using_https ) %]<a target="_blank" href="https://secure.syndetics.com/ffseries.aspx?isbn=[% normalized_isbn %]&amp;type=series&amp;num=1&amp;client=[% SyndeticsClientCode %][% IF ( normalized_upc ) %]&amp;upc=[% normalized_upc %][% END %][% IF ( normalized_oclc ) %]&amp;oclc=[% normalized_oclc %][% END %]">Click to open in new window</a>
  [% ELSE %] <a target="_blank" href="http://www.syndetics.com/ffseries.aspx?isbn=[% normalized_isbn %]&amp;type=series&amp;num=1&amp;client=[% SyndeticsClientCode %][% IF ( normalized_upc ) %]&amp;upc=[% normalized_upc %][% END %][% IF ( normalized_oclc ) %]&amp;oclc=[% normalized_oclc %][% END %]">Click to open in new window</a>
  [% END %] </span>
  [% END %][% END %] [% IF ( SyndeticsAVPROFILEExists ) %] <span class="results_summary">
- <span class="label">Audiovisual Profile:</span>
+ <span class="label">Audiovisual profile:</span>
  [% IF ( using_https ) %]<a target="_blank" href="https://secure.syndetics.com/index.aspx?isbn=[% normalized_isbn %]/avprofile.html&amp;client=[% SyndeticsClientCode %][% IF ( normalized_upc ) %]&amp;upc=[% normalized_upc %][% END %][% IF ( normalized_oclc ) %]&amp;oclc=[% normalized_oclc %][% END %]&amp;type=xw10">Click to open in new window</a>
  [% ELSE %] <a target="_blank" href="http://www.syndetics.com/index.aspx?isbn=[% normalized_isbn %]/avprofile.html&amp;client=[% SyndeticsClientCode %][% IF ( normalized_upc ) %]&amp;upc=[% normalized_upc %][% END %][% IF ( normalized_oclc ) %]&amp;oclc=[% normalized_oclc %][% END %]&amp;type=xw10">Click to open in new window</a>
  [% END %] </span>
  [% END %] [% IF ( SyndeticsFICTIONExists ) %] <span class="results_summary">
- <span class="label">Fiction Notes:</span>
+ <span class="label">Fiction notes:</span>
  [% IF ( using_https ) %]<a target="_blank" href="https://secure.syndetics.com/index.aspx?isbn=[% normalized_isbn %]/fiction.html&amp;client=[% SyndeticsClientCode %][% IF ( normalized_upc ) %]&amp;upc=[% normalized_upc %][% END %][% IF ( normalized_oclc ) %]&amp;oclc=[% normalized_oclc %][% END %]&amp;type=xw10">Click to open in new window</a>
  [% ELSE %] <a target="_blank" href="http://www.syndetics.com/index.aspx?isbn=[% normalized_isbn %]/fiction.html&amp;client=[% SyndeticsClientCode %][% IF ( normalized_upc ) %]&amp;upc=[% normalized_upc %][% END %][% IF ( normalized_oclc ) %]&amp;oclc=[% normalized_oclc %][% END %]&amp;type=xw10">Click to open in new window</a>
  [% END %] </span>
@@ -319,21 +393,51 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
  [% IF ( using_https ) %] <a target="_blank" href="https://secure.syndetics.com/ffawards.aspx?isbn=[% normalized_isbn %]&amp;type=awards&amp;client=[% SyndeticsClientCode %][% IF ( normalized_upc ) %]&amp;upc=[% normalized_upc %][% END %][% IF ( normalized_oclc ) %]&amp;oclc=[% normalized_oclc %][% END %]">Click to open in new window</a>
  [% ELSE %]<a target="_blank" href="http://www.syndetics.com/ffawards.aspx?isbn=[% normalized_isbn %]&amp;type=awards&amp;client=[% SyndeticsClientCode %][% IF ( normalized_upc ) %]&amp;upc=[% normalized_upc %][% END %][% IF ( normalized_oclc ) %]&amp;oclc=[% normalized_oclc %][% END %]">Click to open in new window</a>
  [% END %] </span>
- [% END %][% END %][% END %] [% IF ( BakerTaylorContentURL ) %] <span class="results_summary">
- <span class="label">Enhanced Content:</span> 
+ [% END %][% END %][% END %] [% IF ( OpacStarRatings != 'disable' ) %] <form method="post" action="/cgi-bin/koha/opac-ratings.pl">
+ <div class="results_summary">
+
+ [% FOREACH i  IN [ 1 2 3 4 5  ] %] [% IF rating_avg == i && borrowernumber %] <input class="auto-submit-star" type="radio" name="rating"  value="[% i %]"  checked="checked" />
+ [% ELSIF rating_avg == i %] <input class="auto-submit-star" type="radio" name="rating" value="[% i %]" checked="checked" disabled="disabled" />
+ [% ELSIF borrowernumber  %] <input class="auto-submit-star" type="radio" name="rating" value="[% i %]" />
+ [% ELSE   %] <input class="auto-submit-star" type="radio" name="rating" value="[% i %]" disabled="disabled" />
+ [% END %]
+ [% END %]
+
+<!-- define some hidden vars for ratings -->
+
+ <input  type="hidden" name='biblionumber'  value="[% biblionumber %]" />
+ <input  type="hidden" name='borrowernumber'  value="[% borrowernumber %]" />
+ <input  type="hidden" name='rating_value' id='rating_value' value="[% rating_value %]" />
+ <input  type="hidden" name='rating_total' id='rating_total' value="[% rating_total %]" />
+ <input  type="hidden" name='rating_avg_int' id='rating_avg_int' value="[% rating_avg_int %]" />
+
+ [% UNLESS ( rating_readonly ) %]&nbsp; <input name="rate_button" type="submit" value="Rate me" />[% END %]&nbsp; [% IF ( rating_value ) %] <span id="rating_value_text">your rating: [% rating_value %], </span>
+ [% ELSE %] <span id="rating_value_text"></span>
+ [% END %] <span id="rating_text">average rating: [% rating_avg_int %] ([% rating_total %] votes)</span>
+
+ </div>
+ </form>
+ [% END %] [% IF ( BakerTaylorContentURL ) %] <span class="results_summary">
+ <span class="label">Enhanced content: </span>
  [% IF ( OPACurlOpenInNewWindow ) %]<a href="[% BakerTaylorContentURL |html %]" target="_blank">Content Cafe</a>[% ELSE %]<a href="[% BakerTaylorContentURL |html %]">Content Cafe</a>[% END %] </span>
  [% END %] [% IF ( NovelistSelectProfile ) %] [% IF ( NovelistSelectView == 'above') %] <span class="results_summary">
  <span class="label">Novelist Select: </span> 
  <div data-novelist-novelistselect=[% normalized_isbn %]></div>
  </span>
- [% END %] [% END %] </div>
+ [% END %] [% END %] [% IF ( Babeltheque ) %] <input type="hidden" name="BW_id_isbn" id="BW_id_isbn" value="[% normalized_isbn %]"/>
+
+ <div id="BW_notes"></div>
+ <div id="BW_critiques"></div>
+ <div id="BW_critiques_pro"></div>
+ <div id="BW_citations"></div>
+ [% END %] </div>
 
 <div id="bibliodescriptions" class="toptabs">
 
 <ul> 
 [% IF ( defaulttab == 'holdings' ) %]<li id="tab_holdings" class="ui-tabs-selected">[% ELSE %]<li id="tab_holdings">[% END %] <a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]#holdings">Holdings ( [% count %] )</a>
 </li>
-<li id="tab_descriptions"> <a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]#descriptions">Title Notes</a></li>
+<li id="tab_descriptions"> <a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]#descriptions">Title notes</a></li>
 [% IF ( SYNDETICS_TOC ) %] <li id="tab_toc"> <a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]#toc">TOC</a></li>
 [% END %] [% IF ( SyndeticsEnabled ) %] [% IF ( SyndeticsExcerpt ) %][% IF ( SYNDETICS_EXCERPT ) %] <li id="tab_excerpt"> <a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]#excerpt">Excerpt</a></li>
  [% END %][% END %] [% IF ( SyndeticsReviews ) %][% IF ( SYNDETICS_REVIEWS ) %] <li id="tab_reviews"> <a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]#reviews">Reviews</a></li>
@@ -343,24 +447,27 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
  [% ELSE %] <script src="http://www.librarything.com/forlibraries/widget.js?id=[% LibraryThingForLibrariesID %]" type="text/javascript"></script>
  <noscript>This page contains enriched content visible when JavaScript is enabled or by clicking <a href="http://www.librarything.com/forlibraries/noscript.php?id=99-274208589&amp;accessibility=1">here</a>.</noscript>
  [% END %] </li>
- [% END %][% END %] [% IF ( SyndeticsAuthorNotes ) %][% IF ( SYNDETICS_ANOTES ) %] <li id="tab_anotes"> <a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]#anotes">About the Author</a></li>
- [% END %][% END %] [% END %] [% IF ( LibraryThingForLibrariesID ) %] [% IF ( LibraryThingForLibrariesTabbedView ) %] <li id="tab_LFTLSimilarItems"> <a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]#LFTLSimilarItems">Similar Items</a></li>
- <li id="tab_LTFLTagBrowse"> <a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]#LTFLTagBrowse">Tag Browser</a></li>
+ [% END %][% END %] [% IF ( SyndeticsAuthorNotes ) %][% IF ( SYNDETICS_ANOTES ) %] <li id="tab_anotes"> <a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]#anotes">About the author</a></li>
+ [% END %][% END %] [% END %] [% IF ( LibraryThingForLibrariesID ) %] [% IF ( LibraryThingForLibrariesTabbedView ) %] <li id="tab_LFTLSimilarItems"> <a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]#LFTLSimilarItems">Similar items</a></li>
+ <li id="tab_LTFLTagBrowse"> <a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]#LTFLTagBrowse">Tag browser</a></li>
 [% END %] [% END %] [% IF ( subscriptionsnumber ) %] [% IF ( defaulttab == 'subscriptions' ) %]<li id="tab_subscriptions" class="ui-tabs-selected">[% ELSE %]<li id="tab_subscriptions">[% END %] <a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]#subscriptions">Subscriptions</a>
  </li>
 [% END %] [% IF ( reviewson ) %] <li id="tab_comments"><a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]#comments">Comments ( [% IF reviews.defined %][% reviews.size %][% ELSE %][% END %] )</a></li>
 [% END %] [% IF ( NovelistSelectProfile ) %] [% IF ( NovelistSelectView == 'tab') %] <li id="tab_NovelistSelect"> <a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]#NovelistSelect">Novelist Select</a></li>
  [% END %] [% END %] [% IF ( OPACAmazonEnabled ) %][% IF ( OPACAmazonSimilarItems ) %][% IF ( AMAZON_SIMILAR_PRODUCTS ) %] <li id="tab_related"><a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]#similars">Related</a></li>
 [% END %][% END %][% END %] [% IF ( OPACFRBRizeEditions ) %][% IF ( XISBNS ) %] <li id="tab_editions"><a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]#editions">Editions</a></li>
-[% END %][% END %] [% IF ( OPACAmazonEnabled ) %][% IF ( OPACAmazonReviews ) %]<li id="tab_amazonreviews><a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]#amazonreviews">Amazon Reviews</a></li>[% END %][% END %] [% IF ( Babeltheque ) %]<li id="tab_babeltheque"><a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]#babeltheque">Babelthèque</a></li>[% END %] [% IF ( serialcollection ) %] [% IF ( defaulttab == 'serialcollection' ) %]<li id="tab_serialcollection" class="ui-tabs-selected">
- [% ELSE %]<li>[% END %] <a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]#serialcollection">Serial Collection</a></li>
- [% END %] </ul>
+[% END %][% END %] [% IF ( OPACAmazonEnabled ) %][% IF ( OPACAmazonReviews ) %] <li id="tab_amazonreviews"><a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]#amazonreviews">Amazon reviews</a></li>
+[% END %][% END %] [% IF ( Babeltheque ) %] <li id="tab_babeltheque"><a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]#babeltheque">Babelthèque</a></li>
+[% END %] [% IF ( serialcollection ) %] [% IF ( defaulttab == 'serialcollection' ) %]<li id="tab_serialcollection" class="ui-tabs-selected">[% ELSE %]<li id="tab_serialcollection">[% END %] <a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]#serialcollection">Serial collection</a>
+ </li>
+[% END %] [% IF ( OPACLocalCoverImages ) %][% IF ( localimages ) %] <li id="tab_images"><a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]#images">Images</a></li>
+[% END %][% END %] </ul>
 
 [% IF ( serialcollection ) %] <div id="serialcollection">
  <table id="serialcollectiont">
  <thead>
  <tr>
- <th id="serial_library">Branch</th>
+ <th id="serial_library">Library</th>
  <th id="seral_collection">Serial collection</th>
  </tr>
  </thead>
@@ -377,21 +484,27 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
  [% ELSE %] <table id="holdingst">
  <thead><tr>
  [% IF ( item_level_itypes ) %]<th id="item_itemtype">Item type</th>[% END %] <th id="item_location">Location</th>
- [% IF ( itemdata_ccode ) %]<th id="item_ccode">Collection</th>[% END %] <th id="item_callnumber">Call Number</th>
- [% IF ( itemdata_enumchron ) %]<th id="item_enumchron">Vol Info</th>[% END %] [% IF ( itemdata_uri ) %]<th id="item_url">url</th>[% END %] [% IF ( itemdata_copynumber ) %]<th id="item_copy">Copy</th>[% END %] <th id="item_status">Status</th>
- [% IF ( itemdata_itemnotes ) %]<th id="item_notes">Notes</th>[% END %] <th id="item_datedue">Date Due</th>
+ [% IF ( itemdata_ccode ) %]<th id="item_ccode">Collection</th>[% END %] <th id="item_callnumber">Call number</th>
+ [% IF ( itemdata_enumchron ) %]<th id="item_enumchron">Vol info</th>[% END %] [% IF ( itemdata_uri ) %]<th id="item_url">url</th>[% END %] [% IF ( itemdata_copynumber ) %]<th id="item_copy">Copy</th>[% END %] <th id="item_status">Status</th>
+ [% IF ( itemdata_itemnotes ) %]<th id="item_notes">Notes</th>[% END %] <th id="item_datedue">Date due</th>
  </tr></thead>
- <tbody>[% FOREACH ITEM_RESULT IN ITEM_RESULTS %] <tr>[% IF ( item_level_itypes ) %]<td>[% UNLESS ( noItemTypeImages ) %][% IF ( ITEM_RESULT.imageurl ) %]<img src="[% ITEM_RESULT.imageurl %]" title="[% ITEM_RESULT.description %]" alt="[% ITEM_RESULT.description %]" />[% END %][% END %] [% ITEM_RESULT.description %]</td>[% END %] <td>[% UNLESS ( singleBranchMode ) %][% IF ( ITEM_RESULT.branchurl ) %]<a href="[% ITEM_RESULT.branchurl %]">[% ITEM_RESULT.branchname %]</a>[% ELSE %][% ITEM_RESULT.branchname %][% END %][% END %] <span class="shelvingloc">[% ITEM_RESULT.location_description %]</span> </td>
- [% IF ( itemdata_ccode ) %]<td>[% ITEM_RESULT.ccode %]</td>[% END %] <td>[% IF ( ITEM_RESULT.itemcallnumber ) %] [% ITEM_RESULT.itemcallnumber %][% IF ( OPACShelfBrowser ) %] (<a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% ITEM_RESULT.biblionumber %]&amp;shelfbrowse_itemnumber=[% ITEM_RESULT.itemnumber %]#shelfbrowser">Browse Shelf</a>)[% END %][% END %]</td>
+ <tbody>[% FOREACH ITEM_RESULT IN ITEM_RESULTS %] <tr>[% IF ( item_level_itypes ) %]<td>[% UNLESS ( noItemTypeImages ) %][% IF ( ITEM_RESULT.imageurl ) %]<img src="[% ITEM_RESULT.imageurl %]" title="[% ITEM_RESULT.description %]" alt="[% ITEM_RESULT.description %]" />[% END %][% END %] [% ITEM_RESULT.description %]</td>[% END %] <td>
+ [% UNLESS ( singleBranchMode ) %] <span class="[% ITEM_RESULT.branch_opac_info ? 'branch-info-tooltip-trigger' : '' %]">
+ [% IF ( ITEM_RESULT.branchurl ) %] <a href="[% ITEM_RESULT.branchurl %]">[% ITEM_RESULT.branchname %]</a>
+ [% ELSE %] [% ITEM_RESULT.branchname %] [% END %] </span>
+ <div class="branch-info-tooltip">[% ITEM_RESULT.branch_opac_info %]</div>
+ [% END %] <span class="shelvingloc">[% ITEM_RESULT.location_description %]</span>
+ </td>
+ [% IF ( itemdata_ccode ) %]<td>[% ITEM_RESULT.ccode %]</td>[% END %] <td>[% IF ( ITEM_RESULT.itemcallnumber ) %] [% ITEM_RESULT.itemcallnumber %][% IF ( OPACShelfBrowser ) %] (<a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% ITEM_RESULT.biblionumber %]&amp;shelfbrowse_itemnumber=[% ITEM_RESULT.itemnumber %]#shelfbrowser">Browse shelf</a>)[% END %][% END %]</td>
  [% IF ( itemdata_enumchron ) %]<td>[% ITEM_RESULT.enumchron %]</td>[% END %] [% IF ( itemdata_uri ) %]<td><a href="[% ITEM_RESULT.uri %]">[% ITEM_RESULT.uri %]</a></td>[% END %] [% IF ( itemdata_copynumber ) %]<td>[% ITEM_RESULT.copynumber %]</td>[% END %] <td>[% INCLUDE 'item-status.inc' item = ITEM_RESULT %]</td>
- [% IF ( itemdata_itemnotes ) %]<td>[% ITEM_RESULT.itemnotes %]</td>[% END %] <td>[% ITEM_RESULT.datedue %]</td>
+ [% IF ( itemdata_itemnotes ) %]<td>[% ITEM_RESULT.itemnotes %]</td>[% END %] <td>[% ITEM_RESULT.datedue | $KohaDates %]</td>
  </tr>
  [% END %]</tbody>
  </table>
  [% END %] [% ELSE %] [% IF ( ALTERNATEHOLDINGS ) %] [% FOREACH ALTERNATEHOLDING IN ALTERNATEHOLDINGS %] <div id="alternateholdings"><span class="holdings_label">Holdings:</span> [% ALTERNATEHOLDING.holding %]</div>
  [% END %] [% ELSE %] <div id="noitems">No physical items for this record</div>
  [% END %] [% END %] [% IF ( OpenOPACShelfBrowser ) %] <div id="shelfbrowser">
-<h5 style="text-align: center;">[% IF ( starting_homebranch ) %]Browsing [% starting_homebranch %] Shelves[% END %][% IF ( starting_location ) %], Shelving Location: [% starting_location %][% END %][% IF ( starting_ccode ) %], Collection Code: [% starting_ccode %][% END %] <a style="font-size: 75%;" href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]">Close Shelf Browser</a></h5>
+<h5 style="text-align: center;">[% IF ( starting_homebranch ) %]Browsing [% starting_homebranch %] Shelves[% END %][% IF ( starting_location ) %], Shelving location: [% starting_location %][% END %][% IF ( starting_ccode ) %], Collection code: [% starting_ccode %][% END %] <a style="font-size: 75%;" href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]">Close shelf browser</a></h5>
 
  
  <table><tr>
@@ -421,7 +534,7 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
 <div class="content_set">
 [% IF ( OPACAmazonEnabled ) %] [% IF ( OPACAmazonReviews ) %] [% FOREACH AMAZON_EDITORIAL_REVIEW IN AMAZON_EDITORIAL_REVIEWS %] [% IF ( AMAZON_EDITORIAL_REVIEW.Content ) %] <h4>From [% AMAZON_EDITORIAL_REVIEW.Source %]:</h4>
  <div>[% AMAZON_EDITORIAL_REVIEW.Content %]</div>
- [% END %] [% END %] [% END %] [% END %] [% IF ( SyndeticsEnabled ) %] [% IF ( SyndeticsSummary ) %] [% IF ( SYNDETICS_SUMMARY ) %] <h4>Enhanced Descriptions from Syndetics:</h4>
+ [% END %] [% END %] [% END %] [% END %] [% IF ( SyndeticsEnabled ) %] [% IF ( SyndeticsSummary ) %] [% IF ( SYNDETICS_SUMMARY ) %] <h4>Enhanced descriptions from Syndetics:</h4>
  <p>[% SYNDETICS_SUMMARY %]</p>
 [% END %] [% END %] [% END %] [% IF ( MARCNOTES ) %] <div id="marcnotes">
  [% FOREACH MARCNOTE IN MARCNOTES %] <p>[% MARCNOTE.marcnote FILTER html_line_break %]</p>
@@ -432,7 +545,7 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
 
 [% IF ( SyndeticsEnabled ) %] [% IF ( SyndeticsTOC ) %][% IF ( SYNDETICS_TOC ) %] <div id="toc">
 <div class="content_set">
-<h3>Table of Contents provided by Syndetics</h3>
+<h3>Table of contents provided by Syndetics</h3>
 <ul>
 [% FOREACH SYNDETICS_TO IN SYNDETICS_TOC %] [% IF ( SYNDETICS_TO.p ) %] <li><b>[% SYNDETICS_TO.l %] [% SYNDETICS_TO.t %]</b>[% IF ( SYNDETICS_TO.p ) %] ([% SYNDETICS_TO.p %])[% END %]</li>
  [% END %] [% END %] </ul>
@@ -451,7 +564,7 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
 </div>
 [% END %][% END %] [% IF ( SyndeticsAuthorNotes ) %][% IF ( SYNDETICS_ANOTES ) %] <div id="anotes">
 <div class="content_set">
-<h3>Author Notes provided by Syndetics</h3>
+<h3>Author notes provided by Syndetics</h3>
 [% FOREACH SYNDETICS_ANOTE IN SYNDETICS_ANOTES %] [% IF ( SYNDETICS_ANOTE.content ) %] [% SYNDETICS_ANOTE.content %] [% END %] [% END %] </div>
 </div>
 [% END %][% END %]
@@ -464,7 +577,7 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
 [% END %] [% END %] [% IF ( subscriptionsnumber ) %] <div id="subscriptions">
  <h2>This is a serial</h2>
  <p>There are [% subscriptionsnumber %] subscription(s) associated with this title.</p>
- [% FOREACH subscription IN subscriptions %] [% IF ( subscription.branchname ) %]<h3>At library: [% subscription.branchname %]</h3>[% ELSE %] [% IF ( subscription.branchcode ) %]<h3>At branch: [% subscription.branchcode %]</h3>[% END %][% END %] [% IF ( subscription.subscriptionnotes ) %]<p>[% subscription.subscriptionnotes %] </p>[% END %] <p>Subscription from: [% subscription.histstartdate %] to:[% IF ( subscription.histenddate ) %] [% subscription.histenddate %] [% ELSE %] now (current)[% END %]</p>
+ [% FOREACH subscription IN subscriptions %] [% IF ( subscription.branchname ) %]<h3>At library: [% subscription.branchname %]</h3>[% ELSE %] [% IF ( subscription.branchcode ) %]<h3>At library: [% subscription.branchcode %]</h3>[% END %][% END %] [% IF ( subscription.subscriptionnotes ) %]<p>[% subscription.subscriptionnotes %] </p>[% END %] <p>Subscription from: [% subscription.histstartdate | $KohaDates %] to:[% IF ( subscription.histenddate ) %] [% subscription.histenddate | $KohaDates %] [% ELSE %] now (current)[% END %]</p>
  [% IF ( subscription.missinglist ) %]<p>Missing issues: [% subscription.missinglist %]</p>[% END %] [% IF ( subscription.opacnote ) %]<p>([% subscription.opacnote %])</p>[% END %] [% IF ( subscription.latestserials ) %] <p> The [% subscription.opacdisplaycount %] latest issues for this subscription:</p>
  <table>
  <tr>
@@ -476,7 +589,7 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
  [% FOREACH latestserial IN subscription.latestserials %] <tr>
  <td> [% latestserial.serialseq %] </td>
  <td> [% latestserial.planneddate %] </td>
- <td> [% IF ( latestserial.status1 ) %]Awaited [% ELSE %] [% IF ( latestserial.status2 ) %]Arrived [% ELSE %] [% IF ( latestserial.status3 ) %]Late [% ELSE %] [% IF ( latestserial.status4 ) %]Missing [% ELSE %] [% IF ( latestserial.status5 ) %]Not Issued [% END %] [% END %] [% END %] [% END %] [% END %] </td>
+ <td> [% IF ( latestserial.status1 ) %]Awaited [% ELSE %] [% IF ( latestserial.status2 ) %]Arrived [% ELSE %] [% IF ( latestserial.status3 ) %]Late [% ELSE %] [% IF ( latestserial.status4 ) %]Missing [% ELSE %] [% IF ( latestserial.status5 ) %]Not issued [% END %] [% END %] [% END %] [% END %] [% END %] </td>
  <td> [% latestserial.notes %] </td>
  </tr>
  [% END %] </table>
@@ -515,32 +628,35 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
  [% IF ( reviews ) %] [% FOREACH review IN reviews %] [% IF ( review.your_comment ) %] <div class="commentline yours" id="c[% review.reviewid %]">
  [% IF ( review.avatarurl ) %] <img class="avatar" src="[% review.avatarurl %]" height="80" width="80" alt="" />
  [% END %] <h5>
- Your Comment</h5>
- <small>[% review.datereviewed %]</small>
+ Your comment </h5>
+ <small>[% review.datereviewed | $KohaDates %]</small>
  <p>
  [% FILTER html_break %] [% review.review |html %] [% END %] <a href="#" onclick="Dopop('/cgi-bin/koha/opac-review.pl?biblionumber=[% review.biblionumber %]&amp;reviewid=[% review.reviewid %]');">Edit</a>
  </p></div>
  [% ELSE %] <div class="commentline">
- [% IF ( ShowReviewer ) %] [% IF ( review.avatarurl ) %] <img class="avatar" src="[% review.avatarurl %]" height="80" width="80" alt="" />
- [% END %] <h5>
- Comment by [% review.title %] [% review.firstname %] [% review.surname %] </h5>
- [% END %] <small>[% review.datereviewed %]</small>
- <p>
+ [% IF ( ShowReviewer != "none" ) %] [% IF ( review.avatarurl ) %] <img class="avatar" src="[% review.avatarurl %]" height="80" width="80" alt="" />
+ [% END %] [% SWITCH ShowReviewer %] [% CASE 'full' %] <h5>Comment by [% review.title %] [% review.firstname %] [% review.surname %]</h5>
+ [% CASE 'first' %] <h5>Comment by [% review.firstname %]</h5>
+ [% CASE 'surname' %] <h5>Comment by [% review.surname %]</h5>
+ [% CASE 'firstandinitial' %] <h5>Comment by [% review.firstname %] [% review.surname|truncate(2,'.') %]</h5>
+ [% CASE 'username' %] <h5>Comment by [% review.userid %]</h5>
+ [% END %] <small>[% review.datereviewed | $KohaDates %]</small>
+ [% ELSIF ( ShowReviewer == "none") %] <h5>Borrower comment on [% review.datereviewed | $KohaDates %]</h5>
+ [% END %] <p>
  [% FILTER html_break %] [% review.review |html %] [% END %] </p></div>
  [% END %] [% END %] [% ELSE %] <p>There are no comments for this item.</p>
  [% END %] [% IF ( loggedinusername ) %] [% UNLESS ( loggedincommenter ) %] <div id="addcomment"> <a href="#" onclick="Dopop('/cgi-bin/koha/opac-review.pl?biblionumber=[% biblionumber %]'); return false;">
  Post or edit your comments on this item. </a></div>
  [% END %] [% ELSE %] <div id="addcomment"><a href="/cgi-bin/koha/opac-user.pl">Log in to your account</a> to post a comment.</div>
  [% END %] </div>
-[% END %] [% IF ( Babeltheque ) %] <div id="babeltheque">
- <div id="BW_notes"></div>
- <div id="BW_critiques"></div>
- <div id="BW_citations"></div>
- <div id="BW_etiquettes"></div>
+[% END %] [% IF (Recommendations) %] <div id="recommendations">
+<table>
+[% FOREACH recommendation IN recommendation_loop %] <tr><td><a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% recommendation.biblionumber %]">[% recommendation.title | html %]</a></td></tr>
+[% END %] </table>
 </div>
 [% END %] [% IF ( OPACFRBRizeEditions ) %][% IF ( XISBNS ) %] <div id="editions">
 
-<h4>Other Editions of this Work</h4>
+<h4>Other editions of this work</h4>
 <table>
 [% FOREACH XISBN IN XISBNS %] <tr>
 <td>
@@ -554,7 +670,7 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
 [% IF ( OPACAmazonEnabled ) %][% IF ( OPACAmazonSimilarItems ) %][% IF ( AMAZON_SIMILAR_PRODUCTS ) %]
 <!-- Amazon Similar items -->
 <div id="similars">
-<h4>Related Titles</h4>
+<h4>Related titles</h4>
 <table><tr>
 [% FOREACH AMAZON_SIMILAR_PRODUCT IN AMAZON_SIMILAR_PRODUCTS %] [% FOREACH similar_biblionumber IN AMAZON_SIMILAR_PRODUCT.similar_biblionumbers %] <td>[% IF ( OPACAmazonCoverImages ) %]<a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% similar_biblionumber.biblionumber %]"><img alt="" src="http://images.amazon.com/images/P/[% similar_biblionumber.ASIN %].01._SS50_.jpg" />[% END %] [% IF ( SyndeticsEnabled ) %][% IF ( SyndeticsCoverImages ) %][% IF ( similar_biblionumber.content_identifier_exists ) %] [% IF ( using_https ) %] <img border="0" src="https://secure.syndetics.com/index.aspx?isbn=[% similar_biblionumber.browser_normalized_isbn %]/SC.GIF&amp;client=[% SyndeticsClientCode %][% IF ( similar_biblionumber.browser_normalized_upc ) %]&amp;upc=[% similar_biblionumber.browser_normalized_upc %][% END %][% IF ( similar_biblionumber.browser_normalized_oclc ) %]&amp;oclc=[% similar_biblionumber.browser_normalized_oclc %][% END %]&amp;type=xw10" alt="" />
  [% ELSE %]<img border="0" src="http://www.syndetics.com/index.aspx?isbn=[% similar_biblionumber.browser_normalized_isbn %]/SC.GIF&amp;client=[% SyndeticsClientCode %][% IF ( similar_biblionumber.browser_normalized_upc ) %]&amp;upc=[% similar_biblionumber.browser_normalized_upc %][% END %][% IF ( similar_biblionumber.browser_normalized_oclc ) %]&amp;oclc=[% similar_biblionumber.browser_normalized_oclc %][% END %]&amp;type=xw10" alt="" />[% END %] [% ELSE %]<span class="no-image">No cover image available</span>[% END %][% END %][% END %] <a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% similar_biblionumber.biblionumber %]">[% similar_biblionumber.title |html %]</a> </td>
@@ -566,10 +682,10 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
 [% IF ( OPACAmazonReviews ) %]
 <!-- Amazon Reviews -->
 <div id="amazonreviews">
- [% IF ( amazon_average_rating ) %] <div class="clearfix"><h3 style="float: left;">Average Rating (from Amazon[% AmazonTld %]): </h3><span class="starMT" style="float: left;"><span class="starFull" style="float: left; width:[% amazon_average_rating / 2 %]px"></span></span> [% IF ( normalized_isbn ) %][% IF ( OPACurlOpenInNewWindow ) %]<a href="http://www.amazon[% AmazonTld %]/gp/customer-reviews/write-a-review.html/002-2970817-7876066?%5Fencoding=UTF8&amp;asin=[% normalized_isbn %]&amp;store=books" target="_blank">Add your own review</a>[% ELSE %]<a href="http://www.amazon[% AmazonTld %]/gp/customer-reviews/write-a-review.html/002-2970817-7876066?%5Fencoding=UTF8&amp;asin=[% normalized_isbn %]&amp;store=books">Add your own review</a>[% END %][% END %]</div>
+ [% IF ( amazon_average_rating ) %] <div class="clearfix"><h3 style="float: left;">Average rating (from Amazon[% AmazonTld %]): </h3><span class="starMT" style="float: left;"><span class="starFull" style="float: left; width:[% amazon_average_rating / 2 %]px"></span></span> [% IF ( normalized_isbn ) %][% IF ( OPACurlOpenInNewWindow ) %]<a href="http://www.amazon[% AmazonTld %]/gp/customer-reviews/write-a-review.html/002-2970817-7876066?%5Fencoding=UTF8&amp;asin=[% normalized_isbn %]&amp;store=books" target="_blank">Add your own review</a>[% ELSE %]<a href="http://www.amazon[% AmazonTld %]/gp/customer-reviews/write-a-review.html/002-2970817-7876066?%5Fencoding=UTF8&amp;asin=[% normalized_isbn %]&amp;store=books">Add your own review</a>[% END %][% END %]</div>
 
  [% FOREACH AMAZON_CUSTOMER_REVIEW IN AMAZON_CUSTOMER_REVIEWS %] <div class="content_set">
- <div class="clearfix" style="margin: .5em 0;"><h4 style="float: left;">[% AMAZON_CUSTOMER_REVIEW.Summary |html %]</h4> <span class="starMT" style="float: left;"><span class="starFull" style="float: left; width:[% Rating * 10 %]px"></span></span> </div> [% AMAZON_CUSTOMER_REVIEW.Date %] [% IF ( AMAZON_CUSTOMER_REVIEW.Content ) %] <p style="margin-left: .2em;">[% AMAZON_CUSTOMER_REVIEW.Content |html %]</p>
+ <div class="clearfix" style="margin: .5em 0;"><h4 style="float: left;">[% AMAZON_CUSTOMER_REVIEW.Summary |html %]</h4> <span class="starMT" style="float: left;"><span class="starFull" style="float: left; width:[% Rating * 10 %]px"></span></span> </div> [% AMAZON_CUSTOMER_REVIEW.Date | $KohaDates %] [% IF ( AMAZON_CUSTOMER_REVIEW.Content ) %] <p style="margin-left: .2em;">[% AMAZON_CUSTOMER_REVIEW.Content |html %]</p>
  [% END %] </div>
  [% END %] [% ELSE %] <p> Sorry, there are no reviews from this library available for this title. [% IF ( normalized_isbn ) %][% IF ( OPACurlOpenInNewWindow ) %]<a href="http://www.amazon[% AmazonTld %]/gp/customer-reviews/write-a-review.html/002-2970817-7876066?%5Fencoding=UTF8&amp;asin=[% normalized_isbn %]&amp;store=books" target="_blank">Add your own review</a>[% ELSE %]<a href="http://www.amazon[% AmazonTld %]/gp/customer-reviews/write-a-review.html/002-2970817-7876066?%5Fencoding=UTF8&amp;asin=[% normalized_isbn %]&amp;store=books">Add your own review</a>[% END %][% END %]</p>
 
@@ -579,13 +695,25 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
 [% END %]
 
 
-</div>
+[% IF ( OPACLocalCoverImages ) %]
+<div id="images">
+<p>Click on an image to view it in the image viewer</p>
+[% FOREACH image IN localimages %] [% IF image %] <a class="localimage" href="/cgi-bin/koha/opac-imageviewer.pl?biblionumber=[% biblionumber %]&amp;imagenumber=[% image %]"><img alt="" src="/cgi-bin/koha/opac-image.pl?thumbnail=1&amp;imagenumber=[% image %]" /></a>
+[% END %] [% END %] </div>
+[% END %] </div>
 [% IF ( NovelistSelectProfile ) %][% IF ( NovelistSelectView == 'below' ) %] <div id="NovelistSelect">
 <h3>Novelist Select</h3>
 <div data-novelist-novelistselect="[% normalized_isbn %]"></div>
 </div>
 [% END %][% END %] </div>
-</div>
+
+[% IF ( Babeltheque ) %] <div>
+ <div id="BW_etiquettes"></div>
+ <div id="BW_suggestions"></div>
+ </div>
+ <div class="clearfix"></div>
+ <div id="BW_videos"></div>
+[% END %] </div>
 
 
 <div class="yui-u">
@@ -608,45 +736,24 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
  </div>
  </div>
  [% END %] </div>
-[% END %] <ul id="action">
-
-[% UNLESS ( norequests ) %] [% IF ( opacuserlogin ) %] [% IF ( RequestOnOpac ) %] [% IF ( AllowOnShelfHolds ) %] <li><a class="reserve" href="/cgi-bin/koha/opac-reserve.pl?biblionumber=[% biblionumber %]">Request Item(s)</a></li>
- [% ELSE %] [% IF ( ItemsIssued ) %] <li><a class="reserve" href="/cgi-bin/koha/opac-reserve.pl?biblionumber=[% biblionumber %]">Request Item(s)</a></li>
- [% END %] [% END %] [% END %] [% END %] [% END %] <li><a class="print" href="#" onclick="window.print();">Print</a></li>
-[% IF ( virtualshelves ) %] [% IF ( opacuserlogin ) %][% IF ( loggedinusername ) %] <li><a class="addtoshelf" href="/cgi-bin/koha/opac-addbybiblionumber.pl?biblionumber=[% biblionumber %]" onclick="Dopop('opac-addbybiblionumber.pl?biblionumber=[% biblionumber %]'); return false;">
- Save to Your Lists</a></li>
- [% END %][% END %] [% END %] [% IF ( opacbookbag ) %]<li><a class="addtocart" href="#" onclick="addRecord('[% biblionumber %]'); return false;">Add to Your Cart</a></li>[% END %] <li style="display:none;"><a href="#" id="furthersearches">More searches</a></li>
-</ul>
-
-[% IF ( OPACSearchForTitleIn ) %] <div id="furtherm" class="yuimenu">
-<div class="bd">
-<h4>Search for this title in:</h4>
-<ul class="first-of-type">
-
-[% OPACSearchForTitleIn %] </ul>
-</div>
-</div>
-[% END %] <div id="export" class="detailtagcell">
- <form method="get" action="/cgi-bin/koha/opac-export.pl">
- <label for="format">Save Record:</label>
- <select name="format" id="format">
- <option value="">-- Choose Format --</option>
- <option value="bibtex">BIBTEX</option>
- <option value="dc">Dublin Core (XML)</option>
- <option value="marcxml">MARCXML</option>
- <option value="marc8">MARC (non-Unicode/MARC-8)</option>
- <option value="utf8">MARC (Unicode/UTF-8)</option> 
- <option value="mods">MODS (XML)</option>
- <option value="ris">RIS</option>
- </select><input type="hidden" name="op" value="export" /><input type="hidden" name="bib" value="[% biblionumber %]" />
-<input type="submit" name="save" value="Go" /></form>
- </div>
-
- [% IF ( NovelistSelectProfile ) %] [% IF ( NovelistSelectView == 'right') %] <div id="NovelistSelect">
+[% END %] [% INCLUDE 'opac-detail-sidebar.inc' %] [% IF ( NovelistSelectProfile ) %] [% IF ( NovelistSelectView == 'right') %] <div id="NovelistSelect">
  <h4>Novelist Select</h4>
  <div data-novelist-novelistselect=[% normalized_isbn %]></div>
  </div>
- [% END %] [% END %] </div>
+ [% END %] [% END %] [% IF ( Babeltheque ) %] <div class="babeltheque_adds">
+ <div id="BW_critiques_aj"></div>
+ <div id="BW_citations_aj"></div>
+ </div>
+[% END %] [% IF ( SocialNetworks ) %] <div class="social_networks">
+ <span>Share</span>
+ <a href="http://www.facebook.com/sharer.php?u=[% current_url |url %]&amp;t=[% title |url %]" title="Share on Facebook"><img alt="Share on Facebook" src="/opac-tmpl/prog/images/socnet/facebook16.png" /></a>
+ <a href="http://twitter.com/share" title="Share on Twitter"><img alt="Share on Twitter" src="/opac-tmpl/prog/images/socnet/twitter16.png" /></a>
+ <a href="http://www.linkedin.com/shareArticle?mini=true&amp;url=[% current_url |url %]&amp;title=[% title |url %]" title="Share on LinkedIn"><img alt="Share on LinkedIn" src="/opac-tmpl/prog/images/socnet/linkedin16.png" /></a>
+ <a href="http://www.delicious.com/save?url=[% current_url |url %]&amp;title=[% title |url %]" title="Share on Delicious"><img alt="Share on Delicious" src="/opac-tmpl/prog/images/socnet/delicious16.gif" /></a>
+ <g:plusone size="small"></g:plusone>
+ <a href="mailto:ADRESSE?subject=TO READ : [% title %]>&amp;body=[% title %]> [% current_url |url %]" title="Share by email"><img alt="Share by email" src="/opac-tmpl/prog/images/socnet/mailto16.png" /></a>
+ </div>
+[% END %] </div>
 </div>
 </div>
 
@@ -660,4 +767,5 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
 <noscript>This page contains enriched content visible when JavaScript is enabled or by clicking <a href="http://www.librarything.com/forlibraries/noscript.php?id=
 [% LibraryThingForLibrariesID %]&amp;accessibility=1">here</a>.</noscript>
 [% END %] [% END %] [% IF ( NovelistSelectProfile ) %] <script type="text/javascript" src="http://imageserver.ebscohost.com/novelistselect/ns2init.js"></script>
+[% END %] [% IF ( Babeltheque ) %] <script type="text/javascript" src="[% Babeltheque_url_js %]"></script>
 [% END %] [% INCLUDE 'opac-bottom.inc' %] 

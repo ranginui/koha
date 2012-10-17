@@ -1,4 +1,4 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Reports &rsaquo; Catalog by Item Types</title>
+[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Reports &rsaquo; Catalog by item types</title>
 [% INCLUDE 'doc-head-close.inc' %] <script type="text/javascript" src="[% themelang %]/lib/jquery/plugins/jquery.tablesorter.min.js"></script>
 <script type="text/javascript">
 //<![CDATA[
@@ -9,7 +9,7 @@ $(document).ready(function() {
 </script>
 </head>
 <body id="rep_itemtypes" class="rep">
-[% INCLUDE 'header.inc' %] [% INCLUDE 'cat-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/reports/reports-home.pl">Reports</a>[% IF ( do_it ) %] &rsaquo; <a href="/cgi-bin/koha/reports/manager.pl?report_name=itemtypes">Catalogue by Item Type</a> &rsaquo; Results[% ELSE %] &rsaquo; Catalogue by Item Type[% END %]</div>
+[% INCLUDE 'header.inc' %] [% INCLUDE 'cat-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/reports/reports-home.pl">Reports</a>[% IF ( do_it ) %] &rsaquo; <a href="/cgi-bin/koha/reports/manager.pl?report_name=itemtypes">Catalogue by Item Type</a> &rsaquo; Results[% ELSE %] &rsaquo; Catalog by item type[% END %]</div>
 
 <div id="doc3" class="yui-t2">
  

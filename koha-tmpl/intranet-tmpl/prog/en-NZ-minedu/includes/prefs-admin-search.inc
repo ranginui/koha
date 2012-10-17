@@ -1,3 +1,4 @@
+<div class="gradient">
 <h1 id="logo"><a href="/cgi-bin/koha/mainpage.pl">[% LibraryName %]</a></h1><!-- Begin Stopwords Resident Search Box -->
 <div id="header_search">
  <div id="syspref_search" class="residentsearch">
@@ -5,7 +6,7 @@
  <form action="/cgi-bin/koha/admin/preferences.pl">
  <input type="hidden" name="tab" value="[% last_tab %]" />
  <input type="hidden" name="op" value="search" />
- <input type="text" size="40" name="searchfield" value="[% searchfield %]" />
+ <input type="text" size="40" name="searchfield" value="[% searchfield |html %]" />
  <input type="submit" class="submit" value="Search" />
  </form>
  </div>
@@ -17,7 +18,8 @@
  </form>
  </div>
  [% END %] <ul>
- <li><a href="/cgi-bin/koha/admin/roadtype.pl#syspref_search">Search System Preferences</a></li>
- [% IF ( CAN_user_circulate ) %]<li><a href="/cgi-bin/koha/circ/circulation.pl#circ_search">Issue</a></li>[% END %] [% IF ( CAN_user_catalogue ) %]<li><a href="/cgi-bin/koha/catalogue/search.pl#catalog_search">Search the Catalogue</a></li>[% END %] </ul>
+ <li><a href="/cgi-bin/koha/admin/roadtype.pl#syspref_search">Search system preferences</a></li>
+ [% IF ( CAN_user_circulate ) %]<li><a href="/cgi-bin/koha/circ/circulation.pl#circ_search">Check out</a></li>[% END %] [% IF ( CAN_user_catalogue ) %]<li><a href="/cgi-bin/koha/catalogue/search.pl#catalog_search">Search the catalog</a></li>[% END %] </ul>
+</div>
 </div>
 <!-- End Stopwords Resident Search Box -->

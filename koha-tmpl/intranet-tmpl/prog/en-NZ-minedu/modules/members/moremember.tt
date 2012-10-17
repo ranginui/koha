@@ -1,4 +1,10 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Borrowers &rsaquo; [% IF ( unknowuser ) %] Borrower does not exist [% ELSE %] Borrower Details for [% INCLUDE 'patron-title.inc' %] [% END %] </title>
+[% USE KohaDates %] [% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Patrons &rsaquo;
+[% IF ( unknowuser ) %]
+ Patron does not exist
+[% ELSE %]
+ Patron details for [% INCLUDE 'patron-title.inc' %]
+[% END %]
+</title>
 [% INCLUDE 'doc-head-close.inc' %] [% INCLUDE 'calendar.inc' %] <script type="text/javascript" src="[% themelang %]/lib/jquery/plugins/jquery.tablesorter.min.js"></script>
 <script type="text/javascript" src="[% themelang %]/lib/jquery/plugins/jquery.checkboxes.min.js"></script>
 <script type="text/JavaScript" language="JavaScript">
@@ -113,7 +119,8 @@ function validate1(date) {
 [% INCLUDE 'header.inc' %] [% INCLUDE 'patron-search.inc' %] <div id="breadcrumbs">
  <a href="/cgi-bin/koha/mainpage.pl">Home</a>
 &rsaquo; <a href="/cgi-bin/koha/members/members-home.pl">Members</a>
-&rsaquo; [% IF ( unknowuser ) %]Borrower does not exist[% ELSE %]Borrower Details for [% INCLUDE 'patron-title.inc' %][% END %] </div>
+&rsaquo; [% IF ( unknowuser ) %]Patron does not exist[% ELSE %]Patron details for [% INCLUDE 'patron-title.inc' %][% END %]
+</div>
 
 <div id="doc3" class="yui-t1">
  
@@ -135,10 +142,10 @@ function validate1(date) {
 
 [% IF ( unknowuser ) %] <div class="dialog message">This member does not exist.</div>
 [% ELSE %] [% IF ( reregistration ) %]<div class="dialog message">Member's account has been renewed until [% dateexpiry %]</div>[% END %] [% IF ( flagged ) %] <ul>
- [% IF ( debarred ) %] <li>Borrower is restricted <form class="inline compact" action="/cgi-bin/koha/members/setdebar.pl" method="post">
+ [% IF ( userdebarred ) %] <li>Patron is restricted[% IF ( userdebarreddate ) %] until [% userdebarreddate%] [% IF (debarredcomment ) %]([% debarredcomment %])[% END %][% END %]
+ <form class="inline compact" action="/cgi-bin/koha/members/setdebar.pl" method="post">
  <input type="hidden" name="borrowernumber" value="[% borrowernumber %]" />
- <input type="hidden" name="status" value="0" />
- <input type="submit" value="Lift Restriction" />
+ <input type="submit" value="Lift restriction" />
  </form>
  </li>
  [% END %] [% IF ( gonenoaddress ) %]<li>Member's address is in doubt.</li>[% END %] [% IF ( lost ) %]<li>Member's card has been reported lost.</li>[% END %] </ul>
@@ -195,17 +202,25 @@ function validate1(date) {
 [% UNLESS ( no_patron_attribute_types ) %]
 <div id="patron-extended-attributes" style="padding-top: 1em;">
 <h3>Additional attributes and identifiers</h3>
-<table>
+[% FOREACH attribute IN attributes_loop %] [% IF attribute.class %] <h4>[% attribute.lib %]</h4>
+ <table id=aai_[% attribute.class %]>
+ [% ELSE %] <table id="aai">
+ [% END %] <thead>
  <tr>
  <th>Type</th>
+ <th>Description</th>
  <th>Value</th>
  </tr>
- [% FOREACH extendedattribute IN extendedattributes %] <tr>
- <td>[% extendedattribute.code %] ([% extendedattribute.description %])</td>
- <td>[% extendedattribute.value %] [% IF ( extendedattribute.value_description ) %] ([% extendedattribute.value_description %]) [% END %] </td>
+ </thead>
+ <tbody>
+ [% FOREACH item IN attribute.items %] <tr>
+ <td>[% item.code %]</td>
+ <td>[% item.description %]</td>
+ <td>[% item.value %] [% IF ( item.value_description ) %] ([% item.value_description %]) [% END %] </td>
  </tr>
- [% END %] </table>
-</div>
+ [% END %] </tbody>
+ </table>
+[% END %] </div>
 <div class="action"><a href="memberentry.pl?op=modify&amp;borrowernumber=[% borrowernumber %]&amp;step=4">Edit</a></div>
 [% END %] [% END %] [% IF ( EnhancedMessagingPreferences ) %] <div id="patron-messaging-prefs" style="padding-top: 1em;">
 <h3>Member messaging preferences</h3>
@@ -240,22 +255,22 @@ function validate1(date) {
  <div class="action"><a href="memberentry.pl?op=modify&amp;borrowernumber=[% borrowernumber %]&amp;step=3">Edit</a></div>
  
  [% UNLESS ( I ) %] <div id="patron-alternate-address" style="padding-top: 1em;">
- <h3>Alternate Address</h3>
+ <h3>Alternate address</h3>
  <div class="rows"> <ol><li><span class="label">Address: </span>[% B_address %]</li>
  <li><span class="label">Address 2: </span>[% B_address2 %]</li>
  <li><span class="label">City: </span>[% B_city %]</li>
- [% IF ( B_state ) %]<li><span class="label">State: </span>[% B_state %]</li>[% END %] <li><span class="label">Zip/Postal Code: </span>[% B_zipcode %]</li>
+ [% IF ( B_state ) %]<li><span class="label">State: </span>[% B_state %]</li>[% END %] <li><span class="label">Zip/Postal code: </span>[% B_zipcode %]</li>
  [% IF ( B_country ) %]<li><span class="label">Country: </span>[% B_country %]</li>[% END %] [% IF ( B_phone ) %]<li><span class="label">Phone: </span>[% B_phone %]</li>[% END %] [% IF ( B_email ) %]<li><span class="label">Email: </span><a href="mailto:[% B_email %]">[% email %]</a></li>[% END %]</ol></div>
 </div>
 <div class="action"><a href="memberentry.pl?op=modify&amp;borrowernumber=[% borrowernumber %]&amp;step=6">Edit</a></div>
  [% END %] <div id="patron-alternative-contact" style="padding-top: 1em;">
- <h3>Alternative Contact</h3> 
+ <h3>Alternative contact</h3>
  <div class="rows"> <ol><li><span class="label">Surname: </span>[% altcontactsurname %]</li>
  <li><span class="label">First name: </span>[% altcontactfirstname %]</li> 
  <li><span class="label">Address: </span>[% altcontactaddress1 %]</li>
  <li><span class="label">Address 2: </span>[% altcontactaddress2 %]</li>
  <li><span class="label">City: </span>[% altcontactaddress3 %]</li>
- [% IF ( altcontactstate ) %]<li><span class="label">State: </span>[% altcontactstate %]</li>[% END %] <li><span class="label">Zip/Postal Code: </span>[% altcontactzipcode %]</li>
+ [% IF ( altcontactstate ) %]<li><span class="label">State: </span>[% altcontactstate %]</li>[% END %] <li><span class="label">Zip/Postal code: </span>[% altcontactzipcode %]</li>
  [% IF ( altcontactcountry ) %]<li><span class="label">Country: </span>[% altcontactcountry %]</li>[% END %] [% IF ( altcontactphone ) %]<li><span class="label">Phone: </span>[% altcontactphone %]</li>[% END %] </ol></div>
 </div>
 <div class="action"><a href="memberentry.pl?op=modify&amp;borrowernumber=[% borrowernumber %]&amp;step=2">Edit</a></div>
@@ -265,8 +280,8 @@ function validate1(date) {
 
 <div id="finesholdsissues" class="toptabs">
  <ul>
- <li><a href="/cgi-bin/koha/members/moremember.pl#checkedout">[% issuecount %] Issues</a></li>
- [% IF ( relissuecount ) %] <li><a href="/cgi-bin/koha/members/moremember.pl#relissues">Relatives' Issues</a></li>
+ <li><a href="/cgi-bin/koha/members/moremember.pl#checkedout">[% issueloop.size %] Issues</a></li>
+ [% IF relissueloop.size %] <li><a href="/cgi-bin/koha/members/moremember.pl#relissues">Relatives' Issues</a></li>
  [% END %] <li><a href="/cgi-bin/koha/members/moremember.pl#finesandcharges">Fines &amp; Charges</a></li>
  <li>[% IF ( countreserv ) %] <a href="/cgi-bin/koha/members/moremember.pl#onhold">[% countreserv %] Reserve(s)</a>
  [% ELSE %] <a href="/cgi-bin/koha/members/moremember.pl#onhold">0 Reserves</a>
@@ -287,10 +302,10 @@ function validate1(date) {
  <tr>
  <th scope="col">Due date</th>
  <th scope="col">Title</th>
- <th scope="col">Item Type</th>
+ <th scope="col">Item type</th>
  <th scope="col">Issued on</th> 
  <th scope="col">Issued from</th> 
- <th scope="col">Call no</th>
+ <th scope="col">Call no.</th>
  <th scope="col">Charge</th>
  <th scope="col">Price</th>
  <th scope="col">Renew <p class="column-tool"><a href="#" id="CheckAllitems">select all</a> | <a href="#" id="CheckNoitems">none</a></p></th>
@@ -320,13 +335,18 @@ function validate1(date) {
  [% END %] </span>
  <span class="renewals-disabled">
  [% END %] [% IF ( issueloo.norenew_reason_on_reserve ) %] <a href="/cgi-bin/koha/reserve/request.pl?biblionumber=[% issueloo.biblionumber %]">On Reserve</a>
- [% END %] [% IF ( issueloo.norenew_reason_too_many ) %] Not Renewable [% END %] [% IF ( issueloo.can_confirm ) %] </span>
+ [% END %]
+ [% IF ( issueloo.norenew_reason_too_many ) %]
+ Not renewable
+ [% END %]
+ [% IF ( issueloo.can_confirm ) %]
+ </span>
  [% END %] [% ELSE %] <input type="checkbox" name="all_items[]" value="[% issueloo.itemnumber %]" checked="checked" style="display: none;" />
  [% IF ( issueloo.red ) %] <input type="checkbox" name="items[]" value="[% issueloo.itemnumber %]" checked="checked" onclick="uncheck_sibling(this);" />
  [% ELSE %] <input type="checkbox" name="items[]" value="[% issueloo.itemnumber %]" onclick="uncheck_sibling(this);" />
  [% END %] [% END %] </td>
- [% END %] [% IF ( issueloo.return_failed ) %] <td class="problem">Return Failed</td>
- [% ELSE %] [% IF ( issueloo.norenew_reason_on_reserve ) %] <td><a href="/cgi-bin/koha/reserve/request.pl?biblionumber=[% issueloo.biblionumber %]">On Reserve</a></td>
+ [% END %] [% IF ( issueloo.return_failed ) %] <td class="problem">Checkin failed</td>
+ [% ELSE %] [% IF ( issueloo.norenew_reason_on_reserve ) %] <td><a href="/cgi-bin/koha/reserve/request.pl?biblionumber=[% issueloo.biblionumber %]">On hold</a></td>
  [% ELSE %] <td><input type="checkbox" name="barcodes[]"  value="[% issueloo.barcode %]" onclick="uncheck_sibling(this);" />
  <input type="checkbox" name="all_barcodes[]" value="[% issueloo.barcode %]" checked="checked" style="display: none;" />
  </td>
@@ -334,25 +354,25 @@ function validate1(date) {
  [% END %] </tbody>
  </table>
  <fieldset class="action">
- [% IF ( CAN_user_circulate_override_renewals ) %] [% IF ( AllowRenewalLimitOverride ) %] <label for="override_limit">Override Renewal Limit:</label>
+ [% IF ( CAN_user_circulate_override_renewals ) %] [% IF ( AllowRenewalLimitOverride ) %] <label for="override_limit">Override renewal limit:</label>
  <input type="checkbox" name="override_limit" id="override_limit" value="1" />
- [% END %] [% END %] <input type="submit" name="renew_checked" value="Renew or Return checked items" />
+ [% END %] [% END %] <input type="submit" name="renew_checked" value="Renew or return checked items" />
  <input type="submit" id="renew_all" name="renew_all" value="Renew all" />
  </fieldset>
  [% ELSE %]<p>Member has nothing on issue.</p>
 [% END %] </div>
 
 
-[% IF ( relissuecount ) %] <div id="relissues">
+[% IF relissueloop %] <div id="relissues">
  <table id="relissuest">
  <thead>
  <tr>
  <th scope="col">Due date</th>
  <th scope="col">Title</th>
- <th scope="col">Item Type</th>
+ <th scope="col">Item type</th>
  <th scope="col">Issued on</th> 
  <th scope="col">Issued from</th>
- <th scope="col">Call no</th>
+ <th scope="col">Call no.</th>
  <th scope="col">Charge</th>
  <th scope="col">Price</th>
  <th scope="col">Member</th>
@@ -387,10 +407,11 @@ function validate1(date) {
  <thead><tr>
  <th>Reserve date</th>
  <th>Title</th>
- <th>Call Number</th>
+ <th>Call number</th>
  <th>Barcode</th>
  <th>Priority</th>
  <th>Delete?</th>
+ <th>&nbsp;</th>
  </tr></thead>
  <tbody>[% FOREACH reservloo IN reservloop %] <tr class="[% reservloo.color %]">
  <td>[% reservloo.reservedate %]</td>
@@ -411,13 +432,64 @@ function validate1(date) {
  <input type="hidden" name="biblionumber" value="[% reservloo.biblionumber %]" />
  <input type="hidden" name="borrowernumber" value="[% borrowernumber %]" />
  </td>
+ <td>[% IF ( reservloo.suspend ) %]Suspended [% IF ( reservloo.suspend_until ) %] until [% reservloo.suspend_until | $KohaDates %][% END %][% END %]</td>
  </tr>
  [% END %]</tbody>
  </table>
 
- <fieldset class="action"><input type="submit" class="cancel" name="submit" value="Cancel Marked Requests" /></fieldset>
+ <fieldset class="action"><input type="submit" class="cancel" name="submit" value="Cancel marked holds" /></fieldset>
  </form>
- [% ELSE %]<p>Member has nothing on reserve.</p>[% END %] </div>
+
+ [% IF SuspendHoldsIntranet %] <fieldset class="action">
+ <form action="/cgi-bin/koha/reserve/modrequest_suspendall.pl" method="post">
+ <input type="hidden" name="from" value="borrower" />
+ <input type="hidden" name="borrowernumber" value="[% borrowernumber %]" />
+ <input type="submit" value="Suspend all holds" />
+
+ [% IF AutoResumeSuspendedHolds %] <label for="suspend_until">until</label>
+ <input type="text" size="10" id="suspend_until" name="suspend_until"/>
+ <img src="[% themelang %]/lib/calendar/cal.gif" alt="Show Calendar"  border="0" id="CalendarSuspendUntil" style="cursor: pointer;" />
+ <span class="hint">Specify date on which to resume [% INCLUDE 'date-format.inc' %]: </span>
+
+ <script language="JavaScript" type="text/javascript">
+			 //<![CDATA[
+                   function validate1(date) {
+                         var today = new Date();
+                         if ( date < today ) {
+                             return true;
+                          } else {
+                             return false;
+                          }
+                     };
+                     function refocus(calendar) {
+                        $('#barcode').focus();
+                        calendar.hide();
+                     };
+				//#TODO - ADD syspref (AllowPostDatedCheckouts).
+                     Calendar.setup(
+                          {
+                             inputField : "suspend_until",
+                             ifFormat : "[% DHTMLcalendar_dateformat %]",
+                             button : "CalendarSuspendUntil",
+//                           disableFunc : validate1,
+//                           dateStatusFunc : validate1,
+                             onClose : refocus
+                           }
+                        );
+				//]]>
+             </script>
+ [% END %] </form>
+ </fieldset>
+
+ <fieldset class="action">
+ <form action="/cgi-bin/koha/reserve/modrequest_suspendall.pl" method="post">
+ <input type="hidden" name="from" value="borrower" />
+ <input type="hidden" name="borrowernumber" value="[% borrowernumber %]" />
+ <input type="hidden" name="suspend" value="0" />
+ <input type="submit" value="Resume all suspended holds" />
+ </form>
+ </fieldset>
+ [% END # IF SuspendHoldsIntranet %] [% ELSE %]<p>Member has nothing on reserve.</p>[% END %] </div>
 
 </div>
 [% END %] <!-- unknowuser -->

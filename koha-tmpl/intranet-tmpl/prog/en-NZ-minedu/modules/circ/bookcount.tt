@@ -1,4 +1,4 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Circulation &rsaquo; Circulation Statistics for [% title |html %]</title>
+[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Circulation &rsaquo; Circulation statistics for [% title |html %]</title>
 [% INCLUDE 'doc-head-close.inc' %] <script type="text/javascript">
 $(document).ready(function(){
     $(".striped tr:even").addClass("highlight");
@@ -7,7 +7,7 @@ $(document).ready(function(){
 </script>
 </head>
 <body id="circ_bookcount" class="circ">
-[% INCLUDE 'header.inc' %] [% INCLUDE 'circ-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/circ/circulation-home.pl">Circulation</a> &rsaquo; Circulation Statistics for [% title |html %]</div>
+[% INCLUDE 'header.inc' %] [% INCLUDE 'circ-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/circ/circulation-home.pl">Circulation</a> &rsaquo; Circulation statistics for [% title |html %]</div>
 
 <div id="doc3" class="yui-t2">
  
@@ -19,7 +19,7 @@ $(document).ready(function(){
 [% title |html %] [% IF ( author ) %] by [% author |html %][% END %]</h2>
 <h3>Barcode [% barcode %]</h3>
 <table>
- <tr><th>Home Library</th><th>Current Library</th><th>Date arrived<br />at current library </th><th>Number of checkouts<br />since last transfer</th></tr>
+ <tr><th>Home library</th><th>Current library</th><th>Date arrived<br />at current library </th><th>Number of checkouts<br />since last transfer</th></tr>
  
  <tr><td>[% homebranch %]</td>
  <td>[% holdingbranch %]</td>
@@ -31,7 +31,7 @@ $(document).ready(function(){
  <tr>
  <th>Library</th>
  <th>No. of times issued</th>
- <th>Last Seen</th>
+ <th>Last seen</th>
  </tr>
  [% FOREACH branchloo IN branchloop %] [% IF ( branchloo.selected ) %] <tr class="mybranch">
  [% ELSE %] <tr>

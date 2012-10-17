@@ -1,5 +1,5 @@
-[% INCLUDE 'doc-head-open.inc' %] [% UNLESS ( multi_hold ) %] <title>Koha &rsaquo; Circulation &rsaquo; Reserves &rsaquo; Place a reserve on [% title |html %]</title>
-[% ELSE %] <title>Koha &rsaquo; Circulation &rsaquo; Reserves &rsaquo; Confirm Reserves</title>
+[% USE KohaDates %] [% INCLUDE 'doc-head-open.inc' %] [% UNLESS ( multi_hold ) %] <title>Koha &rsaquo; Circulation &rsaquo; Reserves &rsaquo; Place a reserve on [% title |html %]</title>
+[% ELSE %] <title>Koha &rsaquo; Circulation &rsaquo; Holds &rsaquo; Confirm holds</title>
 [% END %] [% INCLUDE 'doc-head-close.inc' %] [% INCLUDE 'calendar.inc' %] <script type="text/javascript">
     // <![CDATA[
 var patron_homebranch = "[% borrower_branchname |replace("'", "\'") |replace('"', '\"') |replace('\n', '\\n') |replace('\r', '\\r') %]";
@@ -121,6 +121,8 @@ function checkMultiHold() {
 			$("#requestany").attr("checked","checked");
 		}
 	});
+
+    $('#hold-request-form').preventDoubleFormSubmit();
  });
 
 // ]]>
@@ -128,7 +130,7 @@ function checkMultiHold() {
 </head>
 <body id="circ_request" class="catalog">
 [% INCLUDE 'header.inc' %] [% INCLUDE 'circ-search.inc' %] [% UNLESS ( multi_hold ) %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/catalogue/search.pl">Catalogue</a> &rsaquo; <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% biblionumber %]">[% title |html %]</a> &rsaquo; Place a reserve on [% title |html %]</div>
-[% ELSE %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/catalogue/search.pl">Catalogue</a> &rsaquo; Confirm Reserves</div>
+[% ELSE %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/catalogue/search.pl">Catalogue</a> &rsaquo; Confirm holds</div>
 [% END %] <div id="doc3" class="yui-t2">
 
  <div id="bd">
@@ -146,7 +148,7 @@ function checkMultiHold() {
  </div>
  [% END %] [% UNLESS ( multi_hold ) %] <h1>Place a reserve on [% INCLUDE 'biblio-default-view.inc' %][% title |html %]</a></h1>
  [% ELSE %] <h1>Confirm Reserves</h1>
- [% END %] [% UNLESS ( borrowernumber ) %] [% IF ( messageborrower ) %] <div class="dialog alert"><h3>Member Not Found</h3><p>No member with this name, Please, try another</p> </div>
+ [% END %] [% UNLESS ( borrowernumber ) %] [% IF ( messageborrower ) %] <div class="dialog alert"><h3>Member Not Found</h3><p>No patron with this name, please, try another</p> </div>
  [% END %] <form action="request.pl?biblionumber=[% biblionumber %]" method="post">
  [% UNLESS ( CGIselectborrower ) %] <fieldset class="brief">
  <label for="patron">Borrower: </label>
@@ -163,13 +165,13 @@ function checkMultiHold() {
  [% END %] </form>
  [% ELSE %] [% IF ( warnings ) %] <div class="dialog alert">
 
- [% UNLESS ( multi_hold ) %] <h3>Cannot request item(s)</h3>
+ [% UNLESS ( multi_hold ) %] <h3>Cannot place hold</h3>
  <ul>
  [% IF ( maxreserves ) %] <li><strong>Too Many Reserves: </strong> <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% borrowernumber %]">[% borrowerfirstname %] [% borrowersurname %] </a> has too many holds.</li>
  [% END %] [% IF ( alreadyreserved ) %] <li><a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% borrowernumber %]">[% borrowerfirstname %] [% borrowersurname %]</a> <strong>already has a hold</strong> on this item </li>
  [% END %] [% IF ( none_available ) %] <li> <strong>No copies are available</strong> to be placed on reserve</li>
  [% END %] </ul>
- [% ELSE %] <h3>Cannot request some items</h3>
+ [% ELSE %] <h3>Cannot place hold on some items</h3>
  [% END %] </div>
 [% END %] [% IF ( messages ) %] <div class="dialog message"><ul>
  [% IF ( expiry ) %] <li><a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% borrowernumber %]">[% borrowerfirstname %] [% borrowersurname %]</a>'s <strong>account has expired</strong></li>
@@ -178,7 +180,7 @@ function checkMultiHold() {
 [% END %] [% IF ( messageborrower ) %] <div class="dialog alert"><h3>Member not found:</h3> <p>Name or barcode not found. Please try an other </p></div>
  [% END %] <fieldset class="rows left">
  <legend>Reserve details</legend>
- [% UNLESS ( multi_hold ) %] <form action="placerequest.pl" method="post" onsubmit="return check();" name="form">
+ [% UNLESS ( multi_hold ) %] <form action="placerequest.pl" method="post" onsubmit="return check();" name="form" id="hold-request-form">
  [% ELSE %] <form action="placerequest.pl" method="post" onsubmit="return checkMultiHold();" name="form">
  [% END %] <input type="hidden" size="10" name="borrowernumber" value="[% borrowernumber %]" />
  <input type="hidden" name="type" value="str8" />
@@ -210,7 +212,7 @@ function checkMultiHold() {
  [% IF ( reserve_in_future ) %] <li>
  <label for="reserve_date">Reserve starts on date:</label>
  <input name="reserve_date" id="reserve_date" size="10" readonly="readonly">
- <img src="[% themelang %]/lib/calendar/cal.gif" alt="Show Calendar" border="0" id="CalendarReserveDate" style="cursor: pointer;" />
+ <img src="[% themelang %]/lib/calendar/cal.gif" alt="Show calendar" border="0" id="CalendarReserveDate" style="cursor: pointer;" />
  <script language="JavaScript" type="text/javascript">
 		//<![CDATA[
 		function validate1(date) {
@@ -240,7 +242,7 @@ function checkMultiHold() {
  [% END %] <li>
  <label for="expiration_date">Reserve expires on date:</label>
  <input name="expiration_date" id="expiration_date" size="10" readonly="readonly" />
- <img src="[% themelang %]/lib/calendar/cal.gif" alt="Show Calendar" border="0" id="CalendarExpirationDate" style="cursor: pointer;" />
+ <img src="[% themelang %]/lib/calendar/cal.gif" alt="Show calendar" border="0" id="CalendarExpirationDate" style="cursor: pointer;" />
  <script language="JavaScript" type="text/javascript">
 		//<![CDATA[
 		function validate1(date) {
@@ -265,7 +267,7 @@ function checkMultiHold() {
 		);
 		//]]>
 	    </script>
- <a href='#' onclick="document.getElementById('expiration_date').value='';">Clear Date</a>
+ <a href='#' onclick="document.getElementById('expiration_date').value='';">Clear date</a>
  </li>
 
  [% UNLESS ( multi_hold ) %] <li> <label for="requestany">Place a reserve on the next available copy </label>
@@ -289,8 +291,8 @@ function checkMultiHold() {
  <th>Reserve</th>
  [% IF ( item_level_itypes ) %] <th>Item type</th>
  [% END %] <th>Barcode</th>
- <th>Home Library</th>
- <th>Last Location</th>
+ <th>Home library</th>
+ <th>Last location</th>
  <th>Call no.</th>
  <th>Copy no.</th>
  [% IF itemdata_enumchron %] <th>Vol no.</th>
@@ -337,7 +339,7 @@ function checkMultiHold() {
  <table id="requesttitles">
  <tr>
  <th>Title</th>
- [% UNLESS ( item_level_itypes ) %] <th>Item Type</th>
+ [% UNLESS ( item_level_itypes ) %] <th>Item type</th>
  [% END %] <th>Priority</th>
  <th>Information</th>
  </tr>
@@ -391,10 +393,11 @@ function checkMultiHold() {
  <th>Notes</th>
  <th>Date</th>
  <th>Expiration</th>
- <th>Pick up Library</th>
+ <th>Pick up library</th>
  <th>Details</th>
- [% IF ( CAN_user_reserveforothers_modify_holds_priority ) %] <th><img src="/intranet-tmpl/[% theme %]/img/go-bottom.png" border="0" alt="Toggle Set to Lowest Priority" /></th>
+ [% IF ( CAN_user_reserveforothers_modify_holds_priority ) %] <th><img src="/intranet-tmpl/[% theme %]/img/go-bottom.png" border="0" alt="Toggle set to lowest priority" /></th>
  [% END %] <th>&nbsp;</th>
+ [% IF SuspendHoldsIntranet %]<th>&nbsp;</th><!-- Suspend Holds Column Header -->[% END %]
  </tr>
  [% FOREACH reserveloo IN biblioloo.reserveloop %] [% UNLESS ( loop.odd ) %]<tr class="highlight">[% ELSE %]<tr>[% END %] <td>
  <input type="hidden" name="borrowernumber" value="[% reserveloo.borrowernumber %]" />
@@ -411,15 +414,15 @@ function checkMultiHold() {
  <img src="/intranet-tmpl/[% theme %]/img/go-up.png" border="0" alt="Go up" />
  </a>
 
- <a href="request.pl?action=move&where=top&borrowernumber=[% reserveloo.borrowernumber %]&biblionumber=[% reserveloo.biblionumber %]&date=[% reserveloo.date %]" title="Move Reserve To Top">
+ <a title="Move hold to top" href="request.pl?action=move&amp;where=top&amp;borrowernumber=[% reserveloo.borrowernumber %]&amp;biblionumber=[% reserveloo.biblionumber %]&amp;date=[% reserveloo.date %]">
  <img src="/intranet-tmpl/[% theme %]/img/go-top.png" border="0" alt="Go top" />
  </a>
 
- <a href="request.pl?action=move&where=bottom&borrowernumber=[% reserveloo.borrowernumber %]&biblionumber=[% reserveloo.biblionumber %]&date=[% reserveloo.date %]" title="Move Reserve To Bottom">
+ <a title="Move hold to bottom" href="request.pl?action=move&amp;where=bottom&amp;borrowernumber=[% reserveloo.borrowernumber %]&amp;biblionumber=[% reserveloo.biblionumber %]&amp;date=[% reserveloo.date %]">
  <img src="/intranet-tmpl/[% theme %]/img/go-bottom.png" border="0" alt="Go bottom" />
  </a>
 
- <a href="request.pl?action=move&where=down&borrowernumber=[% reserveloo.borrowernumber %]&biblionumber=[% reserveloo.biblionumber %]&date=[% reserveloo.date %]" title="Move Reserve Down">
+ <a title="Move hold down" href="request.pl?action=move&amp;where=down&amp;borrowernumber=[% reserveloo.borrowernumber %]&amp;biblionumber=[% reserveloo.biblionumber %]&amp;date=[% reserveloo.date %]">
  <img src="/intranet-tmpl/[% theme %]/img/go-down.png" border="0" alt="Go down" />
  </a>
  </td>
@@ -443,10 +446,16 @@ function checkMultiHold() {
  <td>
  [% IF ( reserveloo.wait ) %] <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% reserveloo.biblionumber %]">
  [% IF ( reserveloo.barcodenumber ) %] [% reserveloo.barcodenumber %] <input type="hidden" name="itemnumber" value="[% reserveloo.itemnumber %]" />
- [% ELSE %] No Barcode [% END %] </a>
+ [% ELSE %]
+ No barcode
+ [% END %]
+ </a>
  [% ELSE %] [% IF ( reserveloo.constrainttypea ) %] [% IF ( reserveloo.item_level_hold ) %] <i>Only item <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% reserveloo.biblionumber %]">
  [% IF ( reserveloo.barcodenumber ) %] [% reserveloo.barcodenumber %] <input type="hidden" name="itemnumber" value="[% reserveloo.itemnumber %]" />
- [% ELSE %] No Barcode [% END %] </a>
+ [% ELSE %]
+ No barcode
+ [% END %]
+ </a>
  </i>
  [% ELSE %] <i>Next available</i>
  <input type="hidden" name="itemnumber" value="" />
@@ -454,7 +463,7 @@ function checkMultiHold() {
  [% END %] [% END %] [% END %] </td>
 
  [% IF ( CAN_user_reserveforothers_modify_holds_priority ) %] <td>
- <a title="Toggle Lowest Priority" href="request.pl?action=setLowestPriority&amp;borrowernumber=[% reserveloo.borrowernumber %]&amp;biblionumber=[% reserveloo.biblionumber %]&amp;date=[% reserveloo.date %]"> 
+ <a title="Toggle lowest priority" href="request.pl?action=setLowestPriority&amp;borrowernumber=[% reserveloo.borrowernumber %]&amp;biblionumber=[% reserveloo.biblionumber %]&amp;date=[% reserveloo.date %]">
  [% IF ( reserveloo.lowestPriority ) %] <img src="/intranet-tmpl/[% theme %]/img/go-bottom.png" border="0" alt="Unset Lowest Priority" />
  [% ELSE %] <img src="/intranet-tmpl/[% theme %]/img/go-down.png" border="0" alt="Set To Lowest Priority" />
  [% END %] </a>
@@ -465,7 +474,40 @@ function checkMultiHold() {
  </a>
  </td>
 
- </tr>
+ [% IF SuspendHoldsIntranet %] <td>
+ [% UNLESS ( reserveloo.wait ) %] <input type="button" value="[% IF ( reserveloo.suspend ) %]Unsuspend[% ELSE %]Suspend[% END %]" onclick="window.location.href='request.pl?action=toggleSuspend&amp;borrowernumber=[% reserveloo.borrowernumber %]&amp;biblionumber=[% reserveloo.biblionumber %]&amp;date=[% reserveloo.date %]&amp;suspend_until=' + $('#suspend_until_[% reserveloo.borrowernumber %]').val()" />
+
+ [% IF AutoResumeSuspendedHolds %] <label for="suspend_until_[% reserveloo.borrowernumber %]">[% IF ( reserveloo.suspend ) %] on [% ELSE %] until [% END %]</label>
+ <input name="suspend_until" id="suspend_until_[% reserveloo.borrowernumber %]" size="10" readonly="readonly" value="[% reserveloo.suspend_until | $KohaDates %]" />
+ <img src="[% themelang %]/lib/calendar/cal.gif" alt="Show calendar" border="0" id="SuspendUntilDate_[% reserveloo.borrowernumber %]" style="cursor: pointer;" />
+ <script language="JavaScript" type="text/javascript">
+		//<![CDATA[
+		function validate1(date) {
+			var today = new Date();
+			if ( (date > today) ||
+                    ( date.getDate() == today.getDate() &&
+                      date.getMonth() == today.getMonth() &&
+                      date.getFullYear() == today.getFullYear() ) ) {
+				return false;
+			} else {
+				return true;
+			}
+		};
+		Calendar.setup(
+			{
+				inputField : "suspend_until_[% reserveloo.borrowernumber %]",
+				ifFormat : "[% DHTMLcalendar_dateformat %]",
+				button : "SuspendUntilDate_[% reserveloo.borrowernumber %]",
+				disableFunc : validate1,
+				dateStatusFunc : validate1
+			}
+		);
+		//]]>
+	    </script>
+ <a href='#' onclick="document.getElementById('suspend_until_[% reserveloo.borrowernumber %]').value='';">Clear Date</a>
+ [% END %] [% ELSE %] <input type="hidden" name="suspend_until" value="" />
+ [% END %] </td>
+ [% END # IF SuspendHoldsIntranet %] </tr>
 
  [% END %] <!-- existing reserveloop -->
  </table>

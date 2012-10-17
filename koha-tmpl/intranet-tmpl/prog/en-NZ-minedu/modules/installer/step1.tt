@@ -1,6 +1,6 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Web Installer &rsaquo; Step 1</title>
+[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Web installer &rsaquo; Step 1</title>
 [% INCLUDE 'installer-doc-head-close.inc' %] <div>
-<h1 id="logo"><img alt="Koha" src="/intranet-tmpl/prog/img/koha.org-logo.gif" /> Web Installer &rsaquo; Step 1</h1>
+<h1 id="logo"><img alt="Koha" src="/intranet-tmpl/prog/img/koha.org-logo.gif" /> Web installer &rsaquo; Step 1</h1>
 [% UNLESS ( language ) %] <p>You are about to install Koha.</p>
 
 <p>Please pick your language from the following list. If your language is not listed, please inform your systems administrator.</p>
@@ -13,9 +13,9 @@
  [% END %] [% END %] [% END %] </select>
 </p>
 
-<p> Click Next to continue <input value="Next &gt;&gt;" type="submit" /></p>
+<p> Click 'Next' to continue <input value="Next &gt;&gt;" type="submit" /></p>
 </form>
-[% END %] [% IF ( language ) %] [% UNLESS ( checkmodule ) %] [% IF ( missing_modules ) %] <p>Some perl modules are missing. Modules in red <b>must</b> be installed before you may continue.<br />
+[% END %] [% IF ( language ) %] [% UNLESS ( checkmodule ) %] [% IF ( missing_modules ) %] <p>Some Perl modules are missing. Modules in red <b>must</b> be installed before you may continue.<br />
  <ul>
  [% FOREACH missing_module IN missing_modules %] [% IF ( missing_module.require ) %] <li style="color:#FF0000;font-weight:bold;">[% missing_module.name %] [% ELSE %] <li>[% missing_module.name %] [% END %] <br /> Version: [% missing_module.version %] <br /> Usage: [% missing_module.usage %] </li>
  [% END %] [% END %] [% IF ( problems ) %] <p>I encountered some problems.</p>
@@ -25,7 +25,7 @@
  [% END %] [% END %] <form name="checkmodules" action="install.pl">
 [% IF ( checkmodule ) %] <input type="hidden" name="step" value="2" />
 <p> All dependencies installed.</p>
-<p>Please click next to continue <input value="Next &gt;&gt;" type="submit" /></p>
+<p>Please click 'Next' to continue <input value="Next &gt;&gt;" type="submit" /></p>
 [% ELSE %] <input type="hidden" name="step" value="1" />
 <p>Click to recheck dependencies <input value="Recheck" type="submit" /></p>
 [% END %] </form>

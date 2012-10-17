@@ -1,5 +1,6 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Circulation &rsaquo; Offline Circulation File Upload</title>
-[% INCLUDE 'doc-head-close.inc' %] [% INCLUDE 'file-upload.inc' %] [% INCLUDE 'background-job.inc' %] <script type="text/javascript">
+[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Circulation &rsaquo; Offline circulation file upload</title>
+[% INCLUDE 'doc-head-close.inc' %] [% INCLUDE 'file-upload.inc' %] <script type="text/javascript" src="[% themelang %]/js/background-job-progressbar.js"></script>
+<script type="text/javascript">
 //<![CDATA[
 $(document).ready(function(){
 	$("#processfile").hide();
@@ -31,21 +32,21 @@ function CheckForm(f) {
 </style>
 </head>
 <body id="ocirc_process_koc" class="circ ocirc">
-[% INCLUDE 'header.inc' %] [% INCLUDE 'circ-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/circ/circulation-home.pl">Circulation</a> &rsaquo; [% IF ( transactions_loaded ) %] <a href="/cgi-bin/koha/offline_circ/process_koc.pl">Offline Circulation File Upload</a> &rsaquo; Results[% ELSE %] Offline Circulation File Upload[% END %]</div>
+[% INCLUDE 'header.inc' %] [% INCLUDE 'circ-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/circ/circulation-home.pl">Circulation</a> &rsaquo; [% IF ( transactions_loaded ) %] <a href="/cgi-bin/koha/offline_circ/process_koc.pl">Offline circulation file upload</a> &rsaquo; Results[% ELSE %] Offline circulation file upload[% END %]</div>
 
 <div id="doc" class="yui-t7">
 
  <div id="bd">
 
-[% IF ( transactions_loaded ) %] <h2>Koha Offline Circulation</h2>
+[% IF ( transactions_loaded ) %] <h2>Koha offline circulation</h2>
  <p>Your data was processed. Here are the results:</p>
  [% FOREACH message IN messages %] [% IF ( message.message ) %] <div class="dialog alert">
  [% IF ( message.ERROR_file_version ) %]<p>Warning: This file is version [% message.upload_version %], but I only know how to import version [% message.current_version %]. I'll try my best.</p>[% END %] </div>
- [% END %] [% IF ( message.ERROR_no_borrower_from_item ) %]<p>Warning: Unable to determine library member from item barcode ([% message.badbarcode %]). Cannot return</p>[% END %] [% IF ( message.issue ) %]<p>Issued <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% message.biblionumber %]">[% message.title |html %]</a> ([% message.barcode %]) to <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% message.borrowernumber %]">[% message.firstname %] [% message.surname %]</a> ([% message.cardnumber %]): [% message.datetime %]</p>[% END %] [% IF ( message.renew ) %]<p>Renewed <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% message.biblionumber %]">[% message.title |html %]</a> ([% message.barcode %]) for <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% message.borrowernumber %]">[% message.firstname %] [% message.surname %]</a> ([% message.cardnumber %]): [% message.datetime %]</p>[% END %] [% IF ( message.return ) %]<p>Returned<a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% message.biblionumber %]">[% message.title |html %]</a> ([% message.barcode %]) from <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% message.borrowernumber %]">[% message.firstname %] [% message.surname %]</a> ([% message.cardnumber %]): [% message.datetime %]</p>[% END %] [% IF ( message.payment ) %]<p>Accepted payment ([% message.amount %]) from <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% message.borrowernumber %]">[% message.firstname %] [% message.surname %]</a> ([% message.cardnumber %]): [% message.datetime %]</p>[% END %] [% END %] [% ELSE %] <h2>Upload Offline Circulation Data</h2>
+ [% END %] [% IF ( message.ERROR_no_borrower_from_item ) %]<p>Warning: Unable to determine library member from item barcode ([% message.badbarcode %]). Cannot return</p>[% END %] [% IF ( message.issue ) %]<p>Issued <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% message.biblionumber %]">[% message.title |html %]</a> ([% message.barcode %]) to <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% message.borrowernumber %]">[% message.firstname %] [% message.surname %]</a> ([% message.cardnumber %]): [% message.datetime %]</p>[% END %] [% IF ( message.renew ) %]<p>Renewed <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% message.biblionumber %]">[% message.title |html %]</a> ([% message.barcode %]) for <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% message.borrowernumber %]">[% message.firstname %] [% message.surname %]</a> ([% message.cardnumber %]): [% message.datetime %]</p>[% END %] [% IF ( message.return ) %]<p>Returned<a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% message.biblionumber %]">[% message.title |html %]</a> ([% message.barcode %]) from <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% message.borrowernumber %]">[% message.firstname %] [% message.surname %]</a> ([% message.cardnumber %]): [% message.datetime %]</p>[% END %] [% IF ( message.payment ) %]<p>Accepted payment ([% message.amount %]) from <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% message.borrowernumber %]">[% message.firstname %] [% message.surname %]</a> ([% message.cardnumber %]): [% message.datetime %]</p>[% END %] [% END %] [% ELSE %] <h2>Upload offline circulation data</h2>
  <div id="fileuploadform">
  <form method="post" action="[% SCRIPT_NAME %]" enctype="multipart/form-data">
  <fieldset class="brief">
- <ol><li><label for="fileToUpload">Choose .koc File: </label>
+ <ol><li><label for="fileToUpload">Choose .koc file: </label>
  <input type="file" id="fileToUpload" size="50" name="fileToUpload" /></li></ol>
  <fieldset class="action"><input type="button" class="submit" value="Upload file" onclick="CheckUpload(this.form);" /></fieldset>
  </fieldset>

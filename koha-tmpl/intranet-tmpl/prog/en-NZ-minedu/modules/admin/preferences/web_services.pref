@@ -40,3 +40,10 @@ Web Services:
         class: file
         pref: OAI-PMH:ConfFile
       - . If empty, Koha OAI Server operates in normal mode, otherwise it operates in extended mode. In extended mode, it's possible to parameter other formats than marcxml or Dublin Core. OAI-PMH:ConfFile specify a YAML configuration file which list available metadata formats and XSL file used to create them from marcxml records.
+    - 
+      - 
+        choices: 
+          "": Disable
+          1: Enable
+        pref: OAI-PMH:AutoUpdateSets
+      - automatic update of OAI-PMH sets when a bibliographic record is created or updated

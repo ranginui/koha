@@ -9,7 +9,7 @@
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   exclude-result-prefixes="marc items">
  <xsl:import href="MARC21slimUtils.xsl"/>
- <xsl:output method = "xml" indent="yes" omit-xml-declaration = "yes" />
+ <xsl:output method = "html" indent="yes" omit-xml-declaration = "yes" />
  <xsl:template match="/">
  <xsl:apply-templates/>
  </xsl:template>
@@ -25,6 +25,7 @@
  <xsl:variable name="UseAuthoritiesForTracings" select="marc:sysprefs/marc:syspref[@name='UseAuthoritiesForTracings']"/>
  <xsl:variable name="TraceSubjectSubdivisions" select="marc:sysprefs/marc:syspref[@name='TraceSubjectSubdivisions']"/>
  <xsl:variable name="Show856uAsImage" select="marc:sysprefs/marc:syspref[@name='Display856uAsImage']"/>
+ <xsl:variable name="BiblioItemtypeImage" select="marc:sysprefs/marc:syspref[@name='BiblioItemtypeImage']"/>
  <xsl:variable name="TracingQuotesLeft">
  <xsl:choose>
  <xsl:when test="marc:sysprefs/marc:syspref[@name='UseICU']='1'">{</xsl:when>
@@ -100,7 +101,7 @@
  </xsl:if>
 
  <xsl:if test="marc:datafield[@tag=245]">
- <h1>
+ <h2>
  <xsl:for-each select="marc:datafield[@tag=245]">
  <xsl:call-template name="subfieldSelect">
  <xsl:with-param name="codes">a</xsl:with-param>
@@ -121,8 +122,22 @@
  <xsl:call-template name="subfieldSelect">
  <xsl:with-param name="codes">fgknps</xsl:with-param>
  </xsl:call-template>
+ <xsl:if test="marc:subfield[@code='c']">
+ <xsl:value-of select="marc:subfield[@code='c']"/>
+ </xsl:if>
+ 
  </xsl:for-each>
- </h1>
+ </h2>
+ </xsl:if>
+
+ <xsl:if test="marc:datafield[@tag=773]">
+ <h4>
+ <xsl:for-each select="marc:datafield[@tag=773]">
+ <xsl:call-template name="subfieldSelect">
+ <xsl:with-param name="codes">tg</xsl:with-param>
+ </xsl:call-template>
+ </xsl:for-each>
+ </h4>
  </xsl:if>
 
  <!-- Author Statement: Alternate Graphic Representation (MARC 880) -->
@@ -141,7 +156,7 @@
  <!-- Author Statement -->
  <xsl:call-template name="showAuthor"><xsl:with-param name="authorfield" select="marc:datafield[@tag=100 or @tag=110 or @tag=111]"/><xsl:with-param name="UseAuthoritiesForTracings" select="$UseAuthoritiesForTracings"/></xsl:call-template>
  <xsl:call-template name="showAuthor"><xsl:with-param name="authorfield" select="marc:datafield[@tag=700 or @tag=710 or @tag=711]"/><xsl:with-param name="UseAuthoritiesForTracings" select="$UseAuthoritiesForTracings"/></xsl:call-template>
-
+ <xsl:if test="$BiblioItemtypeImage='Control'">
  <xsl:if test="$materialTypeCode!=''">
  <span class="results_summary type"><span class="label">Type: </span>
  <xsl:element name="img"><xsl:attribute name="src">/intranet-tmpl/prog/img/famfamfam/<xsl:value-of select="$materialTypeCode"/>.png</xsl:attribute><xsl:attribute name="alt"></xsl:attribute></xsl:element>
@@ -149,7 +164,7 @@
  <xsl:value-of select="$materialTypeLabel"/>
  </span>
  </xsl:if>
-
+ </xsl:if>
  <!--Series: Alternate Graphic Representation (MARC 880) -->
  <xsl:if test="$display880">
  <xsl:call-template name="m880Select">
@@ -296,10 +311,16 @@
  <xsl:with-param name="label">Publisher: </xsl:with-param>
  </xsl:call-template>
  </xsl:if>
- 
+
  <xsl:if test="marc:datafield[@tag=260]">
  <span class="results_summary publisher"><span class="label">Publisher: </span>
  <xsl:for-each select="marc:datafield[@tag=260]">
+ <xsl:if test="marc:subfield[@code='a']">
+ <xsl:call-template name="subfieldSelect">
+ <xsl:with-param name="codes">a</xsl:with-param>
+ </xsl:call-template>
+ </xsl:if>
+ <xsl:text> </xsl:text>
  <xsl:if test="marc:subfield[@code='b']">
  <a href="/cgi-bin/koha/catalogue/search.pl?q=pb:{marc:subfield[@code='b']}">
  <xsl:call-template name="subfieldSelect">
@@ -311,11 +332,11 @@
  <xsl:call-template name="chopPunctuation">
  <xsl:with-param name="chopString">
  <xsl:call-template name="subfieldSelect">
- <xsl:with-param name="codes">acg</xsl:with-param>
+ <xsl:with-param name="codes">cg</xsl:with-param>
  </xsl:call-template>
  </xsl:with-param>
  </xsl:call-template>
- <xsl:choose><xsl:when test="position()=last()"><xsl:text>.</xsl:text></xsl:when><xsl:otherwise><xsl:text>; </xsl:text></xsl:otherwise></xsl:choose>
+ <xsl:choose><xsl:when test="position()=last()"><xsl:text></xsl:text></xsl:when><xsl:otherwise><xsl:text>; </xsl:text></xsl:otherwise></xsl:choose>
  </xsl:for-each>
  </span>
  </xsl:if>
@@ -536,33 +557,35 @@
  </span>
  </xsl:if>
  <xsl:if test="marc:datafield[@tag=505]">
- <xsl:for-each select="marc:datafield[@tag=505]">
- <span class="results_summary contents">
+ <div class="results_summary contents">
  <xsl:choose>
- <xsl:when test="@ind1=0">
+ <xsl:when test="marc:datafield[@tag=505]/@ind1=0">
  <span class="label">Contents:</span>
  </xsl:when>
- <xsl:when test="@ind1=1">
+ <xsl:when test="marc:datafield[@tag=505]/@ind1=1">
  <span class="label">Incomplete contents:</span>
  </xsl:when>
- <xsl:when test="@ind1=1">
+ <xsl:when test="marc:datafield[@tag=505]/@ind1=2">
  <span class="label">Partial contents:</span>
  </xsl:when>
- </xsl:choose> 
+ </xsl:choose>
+ <xsl:for-each select="marc:datafield[@tag=505]">
+ <div class='contentblock'>
  <xsl:choose>
  <xsl:when test="@ind2=0">
- <xsl:call-template name="subfieldSelect">
+ <xsl:call-template name="subfieldSelectSpan">
  <xsl:with-param name="codes">tru</xsl:with-param>
  </xsl:call-template>
  </xsl:when>
  <xsl:otherwise>
- <xsl:call-template name="subfieldSelect">
- <xsl:with-param name="codes">au</xsl:with-param>
+ <xsl:call-template name="subfieldSelectSpan">
+ <xsl:with-param name="codes">atru</xsl:with-param>
  </xsl:call-template>
  </xsl:otherwise>
  </xsl:choose>
- </span>
+ </div>
  </xsl:for-each>
+ </div>
  </xsl:if>
 
  <!-- 773 -->
@@ -630,6 +653,11 @@
  <xsl:if test="marc:datafield[@tag=775]">
  <span class="results_summary other_editions"><span class="label">Other Editions: </span>
  <xsl:for-each select="marc:datafield[@tag=775]">
+ <xsl:variable name="f775">
+ <xsl:call-template name="chopPunctuation"><xsl:with-param name="chopString"><xsl:call-template name="subfieldSelect">
+ <xsl:with-param name="codes">a_t</xsl:with-param>
+ </xsl:call-template></xsl:with-param></xsl:call-template>
+ </xsl:variable>
  <xsl:if test="marc:subfield[@code='i']">
  <xsl:call-template name="subfieldSelect">
  <xsl:with-param name="codes">i</xsl:with-param>
@@ -642,11 +670,11 @@
  <xsl:attribute name="href">/cgi-bin/koha/catalogue/search.pl?q=Control-number:<xsl:call-template name="extractControlNumber"><xsl:with-param name="subfieldW" select="marc:subfield[@code='w']"/></xsl:call-template></xsl:attribute>
  </xsl:when>
  <xsl:otherwise>
- <xsl:attribute name="href">/cgi-bin/koha/catalogue/search.pl?q=ti,phr:<xsl:value-of select="translate(marc:subfield[@code='t'], '.', '')"/></xsl:attribute>
+ <xsl:attribute name="href">/cgi-bin/koha/catalogue/search.pl?q=ti,phr:<xsl:value-of select="translate($f775, '()', '')"/></xsl:attribute>
  </xsl:otherwise>
  </xsl:choose>
  <xsl:call-template name="subfieldSelect">
- <xsl:with-param name="codes">t</xsl:with-param>
+ <xsl:with-param name="codes">a_t</xsl:with-param>
  </xsl:call-template>
  </a>
  <xsl:choose>
@@ -801,6 +829,11 @@
  </xsl:for-each>
  <xsl:for-each select="marc:subfield[@code='b']">
  <xsl:value-of select="."/>
+ <xsl:choose>
+ <xsl:when test="position() != last()">
+ <xsl:text> -- </xsl:text>
+ </xsl:when>
+ </xsl:choose>
  </xsl:for-each>
  <xsl:if test="marc:subfield[@code='c'] or marc:subfield[@code='d'] or marc:subfield[@code='n']">
  <xsl:call-template name="subfieldSelect">

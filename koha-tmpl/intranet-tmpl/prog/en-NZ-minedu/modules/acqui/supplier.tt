@@ -1,9 +1,9 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Vendor [% bookselname %]</title>
+[% USE KohaDates %] [% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Vendor [% bookselname %]</title>
 [% INCLUDE 'doc-head-close.inc' %] <script type="text/javascript">
 //<![CDATA[
 function confirm_deletion() {
     if (confirm(_("Confirm deletion of this vendor ?"))) {
-        window.location="/cgi-bin/koha/acqui/supplier.pl?supplierid=[% id %]&op=delete";
+        window.location="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% booksellerid %]&op=delete";
     }
 }
 function check(f) {
@@ -17,17 +17,17 @@ if (f.company.value == "") {
 </script>
 </head>
 <body id="acq_supplier" class="acq">
-[% INCLUDE 'header.inc' %] [% INCLUDE 'acquisitions-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/acqui/acqui-home.pl">Acquisitions</a> &rsaquo; [% IF ( enter ) %][% IF ( id ) %] <a href="/cgi-bin/koha/acqui/supplier.pl?supplierid=[% id %]">[% name %]</a> &rsaquo; Update: [% name %][% ELSE %]Add vendor[% END %] [% ELSE %][% name %][% END %]</div>
+[% INCLUDE 'header.inc' %] [% INCLUDE 'acquisitions-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/acqui/acqui-home.pl">Acquisitions</a> &rsaquo; [% IF ( enter ) %][% IF ( booksellerid ) %] <a href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% booksellerid %]">[% name %]</a> &rsaquo; Update: [% name %][% ELSE %]Add vendor[% END %] [% ELSE %][% name %][% END %]</div>
 
 <div id="doc" class="yui-t7">
 
 <div id="bd">
  <div id="yui-main">
- [% IF ( enter ) %] [% IF ( id ) %] <h1>Update: [% name %]</h1>
+ [% IF ( enter ) %] [% IF ( booksellerid ) %] <h1>Update: [% name %]</h1>
  [% ELSE %] <h1>Add vendor</h1>
  [% END %] [% END %] [% UNLESS ( enter ) %][% INCLUDE 'acquisitions-toolbar.inc' %][% END %] [% IF ( enter ) %] <form action="updatesupplier.pl" name="updatesupplier" method="post">
  <div class="yui-g">
- <input type="hidden" name="id" value="[% id %]" />
+ <input type="hidden" name="booksellerid" value="[% booksellerid %]" />
  <fieldset class="rows">
  <legend>Company details</legend>
  <ol><li><label for="company" class="required">Name * </label>
@@ -111,10 +111,14 @@ if (f.company.value == "") {
  <li><label for="discount">Discount</label>
  <input type="text" size="6" id="discount" name="discount" value="[% discount %]" />%</li>
  <li><label for="gstrate">Tax rate</label><input type="text" name="gstrate" id="gstrate" size="6" value="[% gstrate %]"/>% (leave blank for default tax of [% default_gst_rate %]%)</li>
+ <li>
+ <label for="deliverytime">Delivery time</label>
+ <input type="text" size="2" id="deliverytime" name="deliverytime" value="[% deliverytime %]" /> days
+ </li>
  <li><label for="notes">Notes</label>
  <textarea cols="40" rows="4" id="notes" name="notes" >[% notes %]</textarea></li></ol>
  </fieldset>
- <fieldset class="action"><input type="button" value="Save" onclick="check(this.form);" /> [% IF ( id ) %] <a class="cancel" href="/cgi-bin/koha/acqui/supplier.pl?supplierid=[% id %]">[% ELSE %]<a class="cancel" href="/cgi-bin/koha/acqui/acqui-home.pl">
+ <fieldset class="action"><input type="button" value="Save" onclick="check(this.form);" /> [% IF ( booksellerid ) %] <a class="cancel" href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% booksellerid %]">[% ELSE %]<a class="cancel" href="/cgi-bin/koha/acqui/acqui-home.pl">
  [% END %]Cancel</a></fieldset>
  </div>
  </form>
@@ -122,9 +126,9 @@ if (f.company.value == "") {
  <div class="yui-g">
  <div id="supplier-company-details" class="yui-u first">
  <h2>Vendor details</h2>
- <p><span class="label">Company Name: </span>[% name %]</p>
- <p><span class="label">Postal Address: </span>[% postal %]</p>
- <p><span class="label">Physical Address: </span>[% address1 %][% address2 %][% address3 %][% address4 %]</p>
+ <p><span class="label">Company name: </span>[% name %]</p>
+ <p><span class="label">Postal address: </span>[% postal %]</p>
+ <p><span class="label">Physical address: </span>[% address1 %][% address2 %][% address3 %][% address4 %]</p>
  <p><span class="label">Phone: </span>[% phone %]</p>
  <p><span class="label">Fax: </span>[% fax %]</p>
  [% IF ( url ) %] <p><span class="label">Website: </span><a href="[% url %]">[% url %]</a></p>
@@ -147,16 +151,18 @@ if (f.company.value == "") {
  [% IF ( active ) %] Active [% ELSE %] Inactive [% END %]</p>
  <p><strong>List prices are: </strong>[% listprice %]</p>
  <p><strong>Invoice prices are: </strong>[% invoiceprice %]</p>
- [% IF ( GST ) %]<p><strong>Tax Number Registered: </strong>
+ [% IF ( GST ) %]<p><strong>Tax number registered: </strong>
  [% IF ( gstreg ) %]Yes[% ELSE %]No[% END %]</p>
- <p><strong>List Item Price Includes Tax: </strong>
+ <p><strong>List item price includes tax: </strong>
  [% IF ( listincgst ) %]Yes[% ELSE %]No[% END %]</p>
- <p><strong>Invoice Item Price Includes Tax: </strong>
+ <p><strong>Invoice item price includes tax: </strong>
  [% IF ( invoiceincgst ) %]Yes[% ELSE %]No[% END %]</p>[% END %] <p><strong>Discount: </strong>
  [% discount %] %</p>
  <p><strong>Tax rate: </strong>
  [% GST %]%[% UNLESS ( default_tax ) %] (default)[% END %]</p>
- [% IF ( notes ) %]<p><strong>Notes: </strong>
+ [% IF deliverytime.defined %] <p><strong>Delivery time: </strong>
+ [% deliverytime %] days</p>
+ [% END %] [% IF ( notes ) %]<p><strong>Notes: </strong>
  [% notes %]</p>[% END %] </div>
  [% IF ( contracts ) %] <div id="supplier-contracts" class="yui-g">
  <h2>Contract(s)</h2>
@@ -172,8 +178,8 @@ if (f.company.value == "") {
  <a href="/cgi-bin/koha/admin/aqcontract.pl?op=add_form&amp;contractnumber=[% contract.contractnumber %]&amp;booksellerid=[% contract.booksellerid %]">[% contract.contractname %]</a>
  </td>
  <td>[% contract.contractdescription %]</td>
- <td>[% contract.contractstartdate %]</td>
- <td>[% contract.contractenddate %]</td>
+ <td>[% contract.contractstartdate | $KohaDates %]</td>
+ <td>[% contract.contractenddate | $KohaDates %]</td>
  <td><a href="/cgi-bin/koha/admin/aqcontract.pl?op=add_form&amp;contractnumber=[% contract.contractnumber %]&amp;booksellerid=[% contract.booksellerid %]">Edit</a></td>
  <td><a href="/cgi-bin/koha/admin/aqcontract.pl?op=delete_confirm&amp;contractnumber=[% contract.contractnumber %]&amp;booksellerid=[% contract.booksellerid %]">Delete</a></td>
  </tr>

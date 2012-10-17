@@ -1,66 +1,62 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Circulation History for [% INCLUDE 'patron-title.inc' %]</title>
-[% INCLUDE 'doc-head-close.inc' %] <script type="text/javascript" src="[% themelang %]/lib/jquery/plugins/jquery.tablesorter.min.js"></script>
-<script type="text/javascript" src="[% themelang %]/lib/jquery/plugins/jquery.tablesorter.pager.js"></script>
+[% USE KohaDates %] [% INCLUDE 'doc-head-open.inc' %] <title>Circulation History for [% INCLUDE 'patron-title.inc' %]</title>
+[% INCLUDE 'doc-head-close.inc' %] <link rel="stylesheet" type="text/css" href="/intranet-tmpl/prog/en/css/datatables.css" />
+<script type="text/javascript" src="/intranet-tmpl/prog/en/lib/jquery/plugins/jquery.dataTables.min.js"></script>
+[% INCLUDE 'datatables-strings.inc' %] <script type="text/javascript" src="/intranet-tmpl/prog/en/js/datatables.js"></script>
 <script type="text/javascript" id="js">$(document).ready(function() {
-	$.tablesorter.addParser({
-		id: 'articles',
-		is: function(s) {return false;  },
-		format: function(s) { return s.toLowerCase().replace(/^(the|an|a) /,''); },
-		type: 'text'
-	});
-	$.tablesorter.defaults.widgets = ['zebra'];
-	$("#table_readingrec").tablesorter({[% IF ( dateformat_metric ) %]
-		dateFormat: 'uk',[% END %]
-		sortList: [[8,1]],
-		headers: { 1: { sorter: 'articles' }, 9: { sorter: 'shortDate'} }
-	}).tablesorterPager({container: $("#pagertable_readingrec"),positionFixed: false,size: 20});
+ $(document).ready(function() {
+    $("#table_readingrec").dataTable($.extend(true, {}, dataTablesDefaults, {
+        "sPaginationType": "four_button",
+    }));
+ });
 }); </script>
 </head>
 <body id="pat_readingrec" class="pat">
-[% INCLUDE 'header.inc' %] [% INCLUDE 'patron-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/members/members-home.pl">Members</a> &rsaquo; Circulation History for [% INCLUDE 'patron-title.inc' %]</div>
+[% INCLUDE 'header.inc' %] [% INCLUDE 'patron-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/members/members-home.pl">Members</a> &rsaquo; Circulation history for [% INCLUDE 'patron-title.inc' %]</div>
 
 <div id="doc3" class="yui-t2">
  
  <div id="bd">
  <div id="yui-main">
  <div class="yui-b">
-[% INCLUDE 'circ-toolbar.inc' %] <h1>Circulation History</h1>
-[% IF ( loop_reading ) %] <form action="/cgi-bin/koha/members/readingrec.pl" method="get"><input type="hidden" name="borrowernumber" id="borrowernumber" value="[% borrowernumber %]" /></form>
+[% INCLUDE 'circ-toolbar.inc' %] <h1>Circulation history</h1>
+[% IF loop_reading %] <form action="/cgi-bin/koha/members/readingrec.pl" method="get"><input type="hidden" name="borrowernumber" id="borrowernumber" value="[% borrowernumber %]" /></form>
 
-<div id="pagertable_readingrec">
-[% INCLUDE 'table-pager.inc' perpage='20' %] </div>
+
 <table id="table_readingrec">
 <thead>
  <th>Date</th>
  <th>Title</th>
  <th>Author</th>
- <th>Call No.</th>
+ <th>Call no.</th>
  <th>Barcode</th>
- <th>Number of Renewals</th>
+ <th>Number of renewals</th>
  <th>Issued on</th>
  <th>Issued from</th>
- <th>Date Due</th>
- <th>Return Date</th>
+ <th>Date due</th>
+ <th>Return date</th>
 </thead>
-[% FOREACH loop_readin IN loop_reading %] [% IF ( loop_readin.returndate ) %]<tr>[% ELSE %]<tr class="onissue">[% END %] <td>
- [% loop_readin.issuestimestamp %] </td>
- <td><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% loop_readin.biblionumber %]">[% loop_readin.title |html %]</a></td>
+[% FOREACH issue IN loop_reading %] [% IF  issue.returndate  %]<tr>[% ELSE %]<tr class="onissue">[% END %] <td>
+ [% issue.issuestimestamp | $KohaDates %] </td>
+ <td><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% issue.biblionumber %]">[% issue.title |html %]</a></td>
 
- <td>[% loop_readin.author %]</td>
-
- <td>[% loop_readin.classification %]</td>
-
- <td>[% loop_readin.barcode %]</td>
+ <td>[% issue.author %]</td>
 
  <td>
- [% loop_readin.renewals %]</td>
+ [% IF issue.classification %] [% issue.classification %] [% ELSE %] [% issue.itemcallnumber %] [% END %] </td>
+
+ <td>[% issue.barcode %]</td>
+
  <td>
- [% loop_readin.issuedate %]</td>
+ [% issue.renewals %]</td>
  <td>
- [% loop_readin.issuingbranch %]</td>
- <td>[% IF ( loop_readin.date_due ) %][% loop_readin.date_due %][% ELSE %]&nbsp;[% END %]</td>
+ [% issue.issuedate | $KohaDates %]</td>
  <td>
- [% IF ( loop_readin.returndate ) %] [% loop_readin.returndate %] [% ELSE %] Issued [% END %] </td>
+ [% issue.issuingbranch %]</td>
+ <td>[% IF issue.date_due %]
+ [% issue.date_due | $KohaDates %]
+ [% ELSE %]&nbsp;[% END %]</td>
+ <td>
+ [% IF  issue.returndate %] [% issue.returndate | $KohaDates %] [% ELSE %] Issued [% END %] </td>
 </tr>
 [% END %] </table>
 [% ELSE %] <div class="dialog message">This borrower has no circulation history.</div>

@@ -1,4 +1,4 @@
-[% INCLUDE 'help-top.inc' %] <h1>Cataloguing Help</h1><h2>How to edit a bibliographic record?</h2>
+[% INCLUDE 'help-top.inc' %] <h1>Cataloging help</h1><h2>How to edit a bibliographic record?</h2>
 
 <p>To edit a bibliographic record, use the cataloguing search to find the record. This can be done either via the cataloguing interface or the catalogue search. A search with in the Cataloguing module will search the catalogue and the reservoir (see below).</p>
 

@@ -1,5 +1,6 @@
 [% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Tools &rsaquo; Batch item modification</title>
-[% INCLUDE 'doc-head-close.inc' %] [% INCLUDE 'background-job.inc' %] <link rel="stylesheet" type="text/css" href="[% themelang %]/css/pages/batchMod.css" />
+[% INCLUDE 'doc-head-close.inc' %] <script type="text/javascript" src="[% themelang %]/js/background-job-progressbar.js"></script>
+<link rel="stylesheet" type="text/css" href="[% themelang %]/css/pages/batchMod.css" />
 <script type="text/javascript" src="[% themelang %]/lib/jquery/plugins/jquery.tablesorter.min.js"></script>
 <script src="[% themelang %]/lib/yui/cookie/cookie-min.js"></script>
 <script type="text/javascript" src="[% themelang %]/lib/jquery/plugins/jquery.checkboxes.min.js"></script>

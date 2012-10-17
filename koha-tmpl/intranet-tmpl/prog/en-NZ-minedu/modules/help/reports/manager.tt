@@ -1,11 +1,11 @@
 [% INCLUDE 'help-top.inc' %] <h1>Catalogue by Item Type</h1>
 
-<p>This report will list the total number of items of each item type per branch.</p>
+<p>This report will list the total number of items of each item type per library.</p>
 
 <p>If you choose to output to the browser your results will print to the screen.</p>
 
 <p>You can also choose to export to a file that you can manipulate to your needs.</p>
 
-<p><strong>See the full documentation for the Catalog by Item Type report in the <a href="http://manual.koha-community.org/3.6/en/statsreports.html#catbyitem">manual</a> (online).</strong></p>
+<p><strong>See the full documentation for the Catalog by Item Type report in the <a href="http://manual.koha-community.org/3.8/en/statsreports.html#catbyitem">manual</a> (online).</strong></p>
 
-[% INCLUDE 'help-bottom.inc' %]
+[% INCLUDE 'help-bottom.inc' %] 

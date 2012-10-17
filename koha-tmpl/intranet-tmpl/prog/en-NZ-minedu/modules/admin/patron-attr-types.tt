@@ -1,4 +1,15 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Administration &rsaquo; Borrower Attribute Types [% IF ( attribute_type_form ) %] [% IF ( edit_attribute_type ) %] &rsaquo; Modify borrower attribute type [% ELSE %] &rsaquo; Add borrower attribute type [% END %] [% END %] [% IF ( delete_attribute_type_form ) %] &rsaquo; Confirm deletion of borrower attribute type &quot;[% code |html %]&quot; [% END %] </title>
+[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Administration &rsaquo; Patron attribute types
+[% IF ( attribute_type_form ) %]
+ [% IF ( edit_attribute_type ) %]
+ &rsaquo; Modify patron attribute type
+ [% ELSE %]
+ &rsaquo; Add patron attribute type
+ [% END %]
+[% END %]
+[% IF ( delete_attribute_type_form ) %]
+ &rsaquo; Confirm deletion of patron attribute type &quot;[% code |html %]&quot;
+[% END %]
+</title>
 [% INCLUDE 'doc-head-close.inc' %] <script type="text/javascript">
 //<![CDATA[
 
@@ -31,7 +42,7 @@ function CheckAttributeTypeForm(f) {
 </script>
 </head>
 <body id="admin_patron-attr-types" class="admin">
-[% INCLUDE 'header.inc' %] [% INCLUDE 'cat-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/admin/admin-home.pl">Administration</a> &rsaquo; [% IF ( display_list ) %]Borrower Attribute Types[% ELSE %]<a href="/cgi-bin/koha/admin/patron-attr-types.pl">Member Attribute Types</a>[% END %] [% IF ( attribute_type_form ) %] [% IF ( edit_attribute_type ) %] &rsaquo; Modify borrower attribute type [% ELSE %] &rsaquo; Add borrower attribute type [% END %] [% END %] [% IF ( delete_attribute_type_form ) %] &rsaquo; Confirm deletion of borrower attribute type &quot;[% code |html %]&quot; [% END %] </div>
+[% INCLUDE 'header.inc' %] [% INCLUDE 'cat-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/admin/admin-home.pl">Administration</a> &rsaquo; [% IF ( display_list ) %]Patron attribute types[% ELSE %]<a href="/cgi-bin/koha/admin/patron-attr-types.pl">Member attribute types</a>[% END %] [% IF ( attribute_type_form ) %] [% IF ( edit_attribute_type ) %] &rsaquo; Modify borrower attribute type [% ELSE %] &rsaquo; Add borrower attribute type [% END %] [% END %] [% IF ( delete_attribute_type_form ) %] &rsaquo; Confirm deletion of borrower attribute type &quot;[% code |html %]&quot; [% END %] </div>
 
 <div id="doc3" class="yui-t2">
 
@@ -102,6 +113,24 @@ function CheckAttributeTypeForm(f) {
  [% END %] [% END %] </select>
  <span>Authorized value category; if one is selected, the member record input page will only allow values to be chosen from the authorised value list. However, an authorised value list is not enforced during batch member import.</span>
  </li>
+ <li>
+ <label for="category">Category: </label>
+ <select name="category_code" id="category">
+ <option value=""></option>
+ [% FOREACH cat IN categories %] [% IF ( cat.categorycode == category_code ) %]<option value="[% cat.categorycode %]" selected="selected">[% cat.description %]</option>[% ELSE %]<option value="[% cat.categorycode %]">[% cat.description %]</option>[% END %] [% END %] </select>
+ <span>Choose one to limit this attribute to one patron type. Please leave blank if you want these attributes to be available for all types of patrons.</span>
+ </li>
+ <li>
+ <label for="class">Class: </label>
+ <select name="class">
+ <option value="" />
+ [% FOREACH class IN classes_val_loop %] [% IF ( class.selected ) %] <option value="[% class.authorised_value %]" selected="selected">
+ [% class.lib %] </option>
+ [% ELSE %] <option value="[% class.authorised_value %]" >
+ [% class.lib %] </option>
+ [% END %] [% END %] </select>
+ <span>Group attributes types with a block title (based on Authorised values category 'PA_CLASS')</span>
+ </li>
  </ol>
  </fieldset>
  <fieldset class="action">
@@ -133,30 +162,37 @@ function CheckAttributeTypeForm(f) {
 	}	//]]>
 	</script>
  <ul class="toolbar">
- <li><a id="newrule" href="[% script_name %]?op=add_attribute_type">New Member Attribute Type</a></li>
+ <li><a id="newrule" href="[% script_name %]?op=add_attribute_type">New patron attribute type</a></li>
 </ul></div>
 
-<h2>Member Attribute Types</h2>
+<h2>Member attribute types</h2>
 [% IF ( added_attribute_type ) %] <div class="dialog message">Added member attribute type &quot;[% added_attribute_type %]&quot;</div>
 [% END %] [% IF ( edited_attribute_type ) %] <div class="dialog message">Modified member attribute type &quot;[% edited_attribute_type %]&quot;</div>
 [% END %] [% IF ( deleted_attribute_type ) %] <div class="dialog message">Deleted patron attribute type &quot;[% deleted_attribute_type %]&quot;</div>
 [% END %] [% IF ( ERROR_delete_in_use ) %] <div class="dialog message">Could not delete member attribute type &quot;[% ERROR_delete_in_use %]&quot; &mdash; it is in use by [% ERROR_num_patrons %] member records</div>
 [% END %] [% IF ( ERROR_delete_not_found ) %] <div class="dialog message">Could not delete member attribute type &quot;[% ERROR_delete_not_found %]&quot; &mdash; it was already absent from the database.</div>
-[% END %] [% IF ( available_attribute_types ) %]<table>
+[% END %] [% IF ( available_attribute_types ) %] [% FOREACH attribute IN available_attribute_types %] [% IF attribute.class %] <h4>[% attribute.lib %]</h4>
+ [% END %] <table class="patron_attributes_types">
+ <thead>
  <tr>
  <th>Code</th>
  <th>Description</th>
  <th>Actions</th>
  </tr>
- [% FOREACH available_attribute_type IN available_attribute_types %] <tr>
- <td>[% available_attribute_type.code |html %]</td>
- <td>[% available_attribute_type.description %]</td>
+ </thead>
+ <tbody>
+ [% FOREACH item IN attribute.items %] <tr>
+ <td>[% item.code |html %]</td>
+ <td>[% item.description %]</td>
  <td>
- <a href="[% available_attribute_type.script_name %]?op=edit_attribute_type&amp;code=[% available_attribute_type.code |html %]">Edit</a>
- <a href="[% available_attribute_type.script_name %]?op=delete_attribute_type&amp;code=[% available_attribute_type.code |html %]">Delete</a>
+ <a href="[% item.script_name %]?op=edit_attribute_type&amp;code=[% item.code |html %]">Edit</a>
+ <a href="[% item.script_name %]?op=delete_attribute_type&amp;code=[% item.code |html %]">Delete</a>
  </td>
  </tr>
- [% END %] </table>[% ELSE %]<p>There are no saved member attribute types.</p>[% END %] <div class="pages">[% pagination_bar %]</div>
+ [% END %] </tbody>
+ </table>
+ [% END %] [% ELSE %] <p>There are no saved member attribute types.</p>
+[% END %] <div class="pages">[% pagination_bar %]</div>
 
 [% END %] </div>
 </div>

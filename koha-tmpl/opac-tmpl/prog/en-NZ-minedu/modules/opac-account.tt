@@ -1,4 +1,4 @@
-[% INCLUDE 'doc-head-open.inc' %][% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha Online[% END %] Catalogue &rsaquo; Account for [% FOREACH BORROWER_INF IN BORROWER_INFO %][% BORROWER_INF.firstname %] [% BORROWER_INF.surname %][% END %] [% INCLUDE 'doc-head-close.inc' %] </head>
+[% USE KohaDates %] [% INCLUDE 'doc-head-open.inc' %][% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha online[% END %] catalogue &rsaquo; Your fines and charges [% INCLUDE 'doc-head-close.inc' %] </head>
 <body id="opac-account">
 <div id="doc3" class="yui-t1">
  <div id="bd">
@@ -7,26 +7,26 @@
  <div id="useraccount" class="container">
 <!--CONTENT-->
  [% FOREACH BORROWER_INF IN BORROWER_INFO %]
- <h3><a href="/cgi-bin/koha/opac-user.pl">[% BORROWER_INF.firstname %] [% BORROWER_INF.surname %]'s account</a> <img src="[% themelang %]../../images/caret.gif" width="16" height="16" alt="&gt;" border="0" /> Fines and Charges</h3>
+ <h3><a href="/cgi-bin/koha/opac-user.pl">[% BORROWER_INF.firstname %] [% BORROWER_INF.surname %]'s account</a> <img src="[% themelang %]../../images/caret.gif" width="16" height="16" alt="&gt;" border="0" /> Fines and charges</h3>
  [% END %] [% IF ( ACCOUNT_LINES ) %] <table>
  <thead>
  <tr>
  <th>Date</th>
  <th>Description</th>
- <th>Fine Amount</th>
- <th>Amount Outstanding</th>
+ <th>Fine amount</th>
+ <th>Amount outstanding</th>
  </tr>
  </thead>
 
  <tfoot>
  <tr>
- <th class="sum" colspan="3">Total Due</th>
+ <th class="sum" colspan="3">Total due</th>
  <td class="sum">[% total %]</td>
  </tr>
  </tfoot>
 
  <tbody>
- [% FOREACH ACCOUNT_LINE IN ACCOUNT_LINES %] [% IF ( ACCOUNT_LINE.odd ) %]<tr class="highlight">[% ELSE %]<tr>[% END %] <td>[% ACCOUNT_LINE.date %]</td>
+ [% FOREACH ACCOUNT_LINE IN ACCOUNT_LINES %] [% IF ( ACCOUNT_LINE.odd ) %]<tr class="highlight">[% ELSE %]<tr>[% END %] <td>[% ACCOUNT_LINE.date | $KohaDates %]</td>
  <td>[% ACCOUNT_LINE.description %] [% IF ( ACCOUNT_LINE.title ) %][% ACCOUNT_LINE.title |html %][% END %]</td>
  [% IF ( ACCOUNT_LINE.amountcredit ) %]<td class="credit">[% ELSE %]<td class="debit">[% END %][% ACCOUNT_LINE.amount %]</td>
  [% IF ( ACCOUNT_LINE.amountoutstandingcredit ) %]<td class="credit">[% ELSE %]<td class="debit">[% END %][% ACCOUNT_LINE.amountoutstanding %]</td>
@@ -34,7 +34,7 @@
  [% END %] </tbody>
 
  </table>
- [% ELSE %] <h4>You have no Fines or Charges</h4>
+ [% ELSE %] <h4>You have no fines or charges</h4>
  [% END %] </div>
 </div>
 </div>

@@ -1,5 +1,20 @@
 [% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Orders with uncertain prices for Vendor [% booksellername %]</title>
-[% INCLUDE 'doc-head-close.inc' %] <script type="text/javascript" src="[% themelang %]/js/acq.js"></script>
+<link rel="stylesheet" type="text/css" href="[% themelang %]/css/datatables.css" />
+[% INCLUDE 'doc-head-close.inc' %] <script type="text/javascript" src="[% themelang %]/lib/jquery/plugins/jquery.dataTables.min.js"></script>
+[% INCLUDE 'datatables-strings.inc' %] <script type="text/javascript" src="[% themelang %]/js/datatables.js"></script>
+<script type="text/javascript">
+//<![CDATA[
+ $(document).ready(function() {
+    var uncertainpricet = $("#uncertainpricet").dataTable($.extend(true, {}, dataTablesDefaults, {
+        "aoColumnDefs": [
+            { "aTargets": [ -1, -2, -3 ], "bSortable": false, "bSearchable": false },
+        ],
+        "sPaginationType": "four_button"
+    } ) );
+ });
+ //]]>
+</script>
+<script type="text/javascript" src="[% themelang %]/js/acq.js"></script>
 <script type="text/javascript">
 //<![CDATA[
 function check(form) {
@@ -9,13 +24,13 @@ function check(form) {
 </script>
 </head>
 <body id="acq_uncertainprice" class="acq">
-[% INCLUDE 'header.inc' %] [% INCLUDE 'acquisitions-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/acqui/acqui-home.pl">Acquisitions</a> &rsaquo;<a href="/cgi-bin/koha/acqui/supplier.pl?supplierid=[% booksellerid %]">[% booksellername %]</a> &rsaquo; Uncertain prices for vendor: [% booksellername %]</div>
+[% INCLUDE 'header.inc' %] [% INCLUDE 'acquisitions-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/acqui/acqui-home.pl">Acquisitions</a> &rsaquo;<a href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% booksellerid %]">[% booksellername %]</a> &rsaquo; Uncertain prices for vendor: [% booksellername %]</div>
 
 <div id="doc" class="yui-t7">
  <div id="bd">
  <div id="yui-main">
  [% IF ( validate ) %] <META HTTP-EQUIV=Refresh CONTENT="0; url=[% scriptname %]?booksellerid=[% booksellerid %]">
- [% ELSE %] <h1>Orders with uncertain prices for vendor <a href="/cgi-bin/koha/acqui/supplier.pl?supplierid=[% booksellerid %]">[% booksellername %]</a> <a href="/cgi-bin/koha/acqui/supplier.pl?supplierid=[% booksellerid %]&amp;op=enter">(edit)</a></h1>
+ [% ELSE %] <h1>Orders with uncertain prices for vendor <a href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% booksellerid %]">[% booksellername %]</a> <a href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% booksellerid %]&amp;op=enter">(edit)</a></h1>
  <h2>Contact information</h2>
  <p><strong>Address: </strong>
  [% booksellerpostal %] [% bookselleraddress1 %] [% bookselleraddress2 %] [% bookselleraddress3 %] [% bookselleraddress4 %] <a href="[% booksellerurl %]">[% booksellerurl %]</a>
@@ -43,7 +58,8 @@ function check(form) {
  <form action="[% scriptname %]" method="post" name="uncertainprices">
  <input type="hidden" name="booksellerid" value="[% booksellerid %]" />
  <input type="hidden" name="op" value="validate" />
- <table>
+ <table id="uncertainpricet">
+ <thead>
  <tr>
  <th>basket</th>
  <th>order</th>
@@ -52,6 +68,8 @@ function check(form) {
  <th>price</th>
  <th>quantity</th>
  </tr>
+ </thead>
+ <tbody>
  [% FOREACH uncertainpriceorder IN uncertainpriceorders %] <tr>
  <td>
  [% uncertainpriceorder.basketname %] </td>
@@ -76,7 +94,8 @@ function check(form) {
 	                                        onchange="uncheckbox(this.form, [% uncertainpriceorder.ordernumber %]);" />
  </td>
  </tr>
- [% END %] </table>
+ [% END %] </tbody>
+ </table>
  <fieldset class="action"><input type="button" value="Save" onclick="check(this.form)" /></fieldset>
  </form>
  [% END %] </div>

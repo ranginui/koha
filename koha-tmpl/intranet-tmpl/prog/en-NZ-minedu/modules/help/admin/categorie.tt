@@ -64,6 +64,6 @@
 </li>
 </ul>
 
-<p><strong>See the full documentation for Borrower Categories in the <a href="http://manual.koha-community.org/3.6/en/patscirc.html#patcats">manual</a> (online).</strong></p>
+<p><strong>See the full documentation for Borrower Categories in the <a href="http://manual.koha-community.org/3.8/en/patscirc.html#patcats">manual</a> (online).</strong></p>
 
 [% INCLUDE 'help-bottom.inc' %]

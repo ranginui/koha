@@ -14,7 +14,7 @@
 
 <p>If you want to place a reserve on multiple items, simply check the boxes to the left of them and click the arrow to the right of the 'Place Reserve' button.</p>
 
-<p>Depending on how many items you choose to reserve at once you will be see a different reservations form. If you are reserving one bibliographic record you will see a list of all of the items you can request.</p>
+<p>Depending on how many items you choose to place a hold on at once you will see a different place hold form. If you are placing a hold on one bibliographic record you will see a list of all of the items you can place a hold on.</p>
 
 <ul>
  <li>Enter any notes that might apply to this reservation</li>
@@ -32,40 +32,30 @@
 
 <p>If you're placing a reservation on multiple items you will be presented with the next available option for all titles. If no items are available to reserve it will say so on the confirmation screen.</p>
 
+<p>Once your hold is placed, if you'd like to have Koha forget that you used the 'Search to Hold' function, you can choose to have Koha 'forget' the patron's name by clicking the arrow to the right of the 'Place Hold' button on the search results and choosing the 'Forget' option.</p>
+
 <h2>Managing Reserves</h2>
 
 <p>Reservations can be altered and canceled from the Reservations tab found on the left of the bibliographic record.</p>
 
 <p>From the list of reservations you can change the order of the reservations, the pickup location and/or cancel the reservation.</p>
 
-<p>Note: Depending on how you have your HideBorrowerName system preference set the list may show borrower names instead of card numbers in the Borrower column like in the image above.</p>
+<p><strong>Note</strong> If you have your AutoResumeSuspendedHolds preference set to "Don't allow" then you will not have the option to put an end date on the hold suspension</p>
+
+<p><strong>Note</strong> Depending on how you have your HidePatronName system preference set the list may show card numbers instead of names in the Patron column like in the image above.</p>
 
 <p>To rearrange or delete reserves, simply make a selection from the 'Priority' pull down or click the arrows to the right of the priority pull down.</p>
 
 <p>To delete or cancel a reserve, choose 'del' from the menu or click the red 'X' to the right of the hold line.</p>
 
+<p>If you use the priority pull down to rearrange or delete holds you will need to click the 'Update hold(s)' button to save your changes.</p>
+
 <p>Clicking the down arrow to the right of the reservation will stick the reservation at the bottom of the list even if more requests are made.</p>
 
 <p>For example, your library has home-bound borrowers that are allowed to keep books out for months at a time. It would not be fair to other borrowers if a home-bound borrower were able to issue a brand new book and keep it for months. For this reason, the home-bound borrower's reserve request would stay at the bottom of the queue until everyone else who wanted to read that book has already done so.</p>
 
-<p>Once you have made your changes, click the 'Update reserve(s)' button and your changes will be saved.</p>
+<p>If a patron asks to have their hold suspended you can do so by clicking the Suspend button to far right. If the patron gives you a date for the items to become unsuspended you can enter that in the date box and click the 'Update hold(s)' button to save your changes.</p>
 
-<h2>Receiving Reserves</h2>
+<p><strong>See the full documentation for Reserves in the <a href="http://manual.koha-community.org/3.8/en/holds.html">manual</a> (online).</strong></p>
 
-<p>When items that are on reserve are returned or issued the system will remind the circulation librarian that the item is on reserve and offer them options for managing the reserve.</p>
-
-<p>When you check in an item that has a reserve on it the system will ask you to either confirm and transfer the item or just confirm the reserve</p>
-
-<p>Clicking the Confirm button will mark the item as reserved for the patron. If the item needs to be transferred the item will also be marked as in transit to the proper branch. Clicking 'Ignore' will retain the reserevation, but allow you to issue the item to another patron. Choosing to confirm and print will present you with a printable page that you can slip inside the book with the necessary reservation and/or transfer information.</p>
-
-<p>Once confirmed the reservation will show on the borrower record and on the issue screen under the 'Reserved' tab.</p>
-
-<p>The item record will also show that the item is on reserve.</p>
-
-<p>In some cases a borrower may come in to pick up a reserved item for their partner (or someone else in their household). In this case you want to make sure that the reservation is cancelled when you issue the item to someone else. When trying to issue an item that is already waiting for someone else you will be presented with a warning message.</p>
-
-<p>From here you can issue the item to the borrower at the desk and cancel the reservation for the borrower.</p>
-
-<p><strong>See the full documentation for Reserves in the <a href="http://manual.koha-community.org/3.6/en/holds.html">manual</a> (online).</strong></p>
-
-[% INCLUDE 'help-bottom.inc' %]
+[% INCLUDE 'help-bottom.inc' %] 

@@ -1,9 +1,9 @@
-[% INCLUDE 'help-top.inc' %] <h1>Authority types</h1>
+[% INCLUDE 'help-top.inc' %] <h1>Authority Types</h1>
 
-<p>Authority Types are basically MARC Frameworks for Authority records and because of that the rules below refer to the bibliographic frameworks.</p>
+<p>Authority Types are MARC Frameworks for Authority records. Therefore, the rules below refer to the bibliographic frameworks.</p>
 
 <p>Koha comes with many of the necessary Authority frameworks already installed.</p>
 
-<p><strong>See the full documentation for Authorities in the <a href="http://manual.koha-community.org/3.6/en/catadmin.html#authoritiesadmin">manual</a> (online).</strong></p>
+<p><strong>See the full documentation for Authorities in the <a href="http://manual.koha-community.org/3.8/en/catadmin.html#authoritiesadmin">manual</a> (online).</strong></p>
 
-[% INCLUDE 'help-bottom.inc' %]
+[% INCLUDE 'help-bottom.inc' %] 

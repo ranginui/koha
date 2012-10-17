@@ -1,4 +1,10 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Acquisitions &rsaquo; Order Staged MARC Records [% IF ( batch_details ) %] &rsaquo; Batch [% import_batch_id %] [% ELSE %] &rsaquo; Batch List [% END %] </title>
+[% USE KohaDates %] [% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Acquisitions &rsaquo; Order staged MARC records
+[% IF ( batch_details ) %]
+ &rsaquo; Batch [% import_batch_id %]
+[% ELSE %]
+ &rsaquo; Batch list
+[% END %]
+</title>
 [% INCLUDE 'doc-head-close.inc' %] <script type="text/javascript" src="[% themelang %]/lib/jquery/plugins/jquery.tablesorter.min.js"></script>
 <script type="text/javascript" src="[% themelang %]/js/acq.js"></script>
 <script type="text/JavaScript">
@@ -14,7 +20,7 @@
 </script>
 </head>
 <body id="acq_addorderiso2709" class="acq">
-[% INCLUDE 'header.inc' %] [% INCLUDE 'acquisitions-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/acqui/acqui-home.pl">Acquisitions</a> &rsaquo; <a href="/cgi-bin/koha/acqui/supplier.pl?supplierid=[% booksellerid %]">[% booksellername %]</a> &rsaquo; <a href="/cgi-bin/koha/acqui/basket.pl?basketno=[% basketno %]">Basket [% basketno %]</a> &rsaquo; Add orders from iso2709 file</div>
+[% INCLUDE 'header.inc' %] [% INCLUDE 'acquisitions-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/acqui/acqui-home.pl">Acquisitions</a> &rsaquo; <a href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% booksellerid %]">[% booksellername %]</a> &rsaquo; <a href="/cgi-bin/koha/acqui/basket.pl?basketno=[% basketno %]">Basket [% basketno %]</a> &rsaquo; Add orders from iso2709 file</div>
 <div id="doc3" class="yui-t2">
  <div id="bd">
  <div id="yui-main">
@@ -61,7 +67,7 @@
  <td>[% batch_lis.file_name %]</td>
  <td>[% batch_lis.comments %]</td>
  <td>[% batch_lis.import_status %]</td>
- <td>[% batch_lis.upload_timestamp %]</td>
+ <td>[% batch_lis.staged_date | $KohaDates %] [% batch_lis.staged_hour %]</td>
  <td>[% batch_lis.num_biblios %]</td>
  <td><a href="[% batch_lis.scriptname %]?import_batch_id=[% batch_lis.import_batch_id %]&amp;basketno=[% basketno %]&amp;booksellerid=[% booksellerid %]">Add orders</a></td>
  </tr>
@@ -103,7 +109,7 @@
  </fieldset>
  [% END %] <!-- items -->
  <fieldset class="rows">
- <legend>Accounting Details</legend>
+ <legend>Accounting details</legend>
  <ol>
  <li>
  <!-- origquantityrec only here for javascript compatibility (additem.js needs it, useless here, usefull when receiveing an order -->
@@ -130,22 +136,24 @@
  </li>
  <li><div class="hint">The 2 following fields are available for your own usage. They can be useful for statistical purposes</div>
  <label for="sort1">Planning value1: </label>
-
+ <span id="sort1_zone">
  [% IF CGIsort1 %] <select id="sort1" size="1" name="sort1">
  [% FOREACH sort_opt IN CGIsort1 %] [% IF sort_opt.default %] <option value="[% sort_opt.id %]" selected="selected">[% sort_opt.label %]</option>
  [% ELSE %] <option value="[% sort_opt.id %]">[% sort_opt.label %]</option>
  [% END %] [% END %] </select>
  [% ELSE %] <input type="text" id="sort1" size="20" name="sort1" value="[% sort1 %]" />
- [% END %] </li>
+ [% END %] </span>
+ </li>
  <li>
  <label for="sort2">Planning value2: </label>
-
+ <span id="sort2_zone">
  [% IF CGIsort2 %] <select id="sort2" size="1" name="sort1">
  [% FOREACH sort_opt IN CGIsort2 %] [% IF sort_opt.default %] <option value="[% sort_opt.id %]" selected="selected">[% sort_opt.label %]</option>
  [% ELSE %] <option value="[% sort_opt.id %]">[% sort_opt.label %]</option>
  [% END %] [% END %] </select>
  [% ELSE %] <input type="text" id="sort2" size="20" name="sort2" value="[% sort2 %]" />
- [% END %] </li>
+ [% END %] </span>
+ </li>
  <li>
  
  </li>

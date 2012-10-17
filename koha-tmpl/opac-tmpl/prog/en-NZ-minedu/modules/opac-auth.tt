@@ -1,8 +1,8 @@
-[% INCLUDE 'doc-head-open.inc' %][% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha Online[% END %] 
+[% INCLUDE 'doc-head-open.inc' %][% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha online[% END %]
 [% IF ( opacuserlogin ) %]
- Catalog &rsaquo; Log in to Your Account
+ catalog &rsaquo; Log in to your account
 [% ELSE %]
- Catalog &rsaquo; Catalog Login Disabled
+ catalog &rsaquo; Catalog login disabled
 [% END %]
 [% INCLUDE 'doc-head-close.inc' %]
 
@@ -27,7 +27,7 @@
 [% END %]
 [% IF ( loginprompt ) %]
 <!-- login prompt time-->
-<h3>Log In to Your Account</h3>
+<h3>Log in to your account</h3>
 [% IF ( timed_out ) %]
 <!-- This is what is displayed if login has timed out -->
 <p>Sorry, your session has timed out. Please log in again.</p>
@@ -41,18 +41,18 @@
 [% IF ( invalid_username_or_password ) %]
 <!-- This is what is displayed if user doesnt have permission -->
 <p>You entered an incorrect username or password. Please try again! And remember, usernames and passwords are case sensitive.</p>
-[% END %] [% IF ( casAuthentication ) %] <h4>Cas Login</h4>
+[% END %] [% IF ( casAuthentication ) %] <h4>Cas login</h4>
 
 [% IF ( invalidCasLogin ) %]
 <!-- This is what is displayed if cas login has failed -->
 <p>Sorry, the CAS login failed.</p>
-[% END %] <p>If you have a<acronym title="Central Authentication Service">CAS</acronym> account, [% IF ( casServerUrl ) %] please <a href="[% casServerUrl %]">click here to login</a>.<p>
+[% END %] <p>If you have a <acronym title="Central Authentication Service">CAS</acronym> account, [% IF ( casServerUrl ) %] please <a href="[% casServerUrl %]">click here to login</a>.<p>
 [% END %] [% IF ( casServersLoop ) %] please choose against which one you would like to authenticate: </p>
 <ul>
  [% FOREACH casServer IN casServersLoop %] <li><a href="[% casServer.value %]">[% casServer.name %]</a></li>
  [% END %] [% END %] </ul>
 
-<h4>Local Login</h4>
+<h4>Local login</h4>
 <p>If you do not have a CAS account, but a local account, you can still log in :</p>
 
 [% END %] <form action="[% url %]" name="auth" id="auth" method="post">
@@ -64,13 +64,13 @@
 <li><label for="password">Password</label><input type="password"  size="25" id="password"  name="password" /></li>
 </ol></fieldset>
 
-<input type="submit" value="Log In" class="submit" />
+<input value="Log in" type="submit" class="submit" />
 <div id="nologininstructions"> <h5>Don't have a password yet?</h5><p> If you don't have a password yet, stop by the circulation desk the next time you're in the library. We'll happily set one up for you.</p>
 <h5>Don't have a library card?</h5><p> If you don't have a library card, stop by your local library to sign up.</p></div>
 </form>
 
 
-[% END %] [% ELSE %] <h4>Logging on to the catalogue has not been enabled by the library.</h4>
+[% END %] [% ELSE %] <h4>Logging on to the catalog has not been enabled by the library.</h4>
 <ul>
  <li>To report this error, you can <a href="mailto:[% admin %]">email the Koha Administrator</a>.</li>
  <li>Use top menu bar to navigate to another part of Koha.</li>

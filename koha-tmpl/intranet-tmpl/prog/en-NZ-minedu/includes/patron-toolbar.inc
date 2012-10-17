@@ -27,9 +27,9 @@
 { text: "[% categorie.description %]",  url: "/cgi-bin/koha/members/memberentry.pl?op=add&amp;categorycode=[% categorie.categorycode %]" },
 [% END %]
 [% ELSE %]
-			{ text: _("Adult Member"),  url: "/cgi-bin/koha/members/memberentry.pl?op=add&amp;category_type=A" },
-			{ text: _("Child Member"),  url: "/cgi-bin/koha/members/memberentry.pl?op=add&amp;category_type=C" },
-			{ text: _("Professional Member"),  url: "/cgi-bin/koha/members/memberentry.pl?op=add&amp;category_type=P" },
+            { text: _("Adult patron"),  url: "/cgi-bin/koha/members/memberentry.pl?op=add&amp;category_type=A" },
+            { text: _("Child patron"),  url: "/cgi-bin/koha/members/memberentry.pl?op=add&amp;category_type=C" },
+            { text: _("Professional patron"),  url: "/cgi-bin/koha/members/memberentry.pl?op=add&amp;category_type=P" },
 			{ text: _("Organisation"),  url: "/cgi-bin/koha/members/memberentry.pl?op=add&amp;category_type=I" },
 			{ text: _("Staff"),  url: "/cgi-bin/koha/members/memberentry.pl?op=add&amp;category_type=S" },
 			{ text: _("Statistical"),  url: "/cgi-bin/koha/members/memberentry.pl?op=add&amp;category_type=X" },
@@ -38,7 +38,7 @@
 
 	    new YAHOO.widget.Button({
 	        type: "menu",
-	        label: _("New"),
+	        label: _("New patron"),
 	        name: "newmenubutton",
 	        menu: newmenu,
 	        container: "newmenuc"
@@ -52,10 +52,10 @@
  <li id="newmenuc">
  <form action="/cgi-bin/koha/members/memberentry.pl" method="get">
  <input type="hidden" name="op" value="add" />
- <label for="newcategorycode">New Borrower: </label><select name="categorycode" id="newcategorycode">
- [% IF ( AddPatronLists_categorycode ) %] [% FOREACH categorie IN categories %]<option value="[% categorie.categorycode %]">[% categorie.description %]</option>[% END %] [% ELSE %] <option value="A">Adult Member</option>
- <option value="C">Child Member</option>
- <option value="P">Professional Member</option>
+ <label for="newcategorycode">New patron: </label><select name="categorycode" id="newcategorycode">
+ [% IF ( AddPatronLists_categorycode ) %] [% FOREACH categorie IN categories %]<option value="[% categorie.categorycode %]">[% categorie.description %]</option>[% END %] [% ELSE %] <option value="A">Adult patron</option>
+ <option value="C">Child patron</option>
+ <option value="P">Professional patron</option>
  <option value="I">Organisation</option>
  <option value="S">Staff</option>
  <option value="X">Statistical</option>

@@ -21,6 +21,7 @@ Patrons:
       choices: 
         B_email: alternate
         "OFF": first valid
+        cardnumber: cardnumber as
         email: home
         emailpro: work
       default: 'OFF'
@@ -34,17 +35,23 @@ Patrons:
       pref: autoMemberNum
     - default the card number field on the patron addition screen to the next available card number (for example, if the largest currently used card number is 26345000012941, then this field will default to 26345000012942).
   - 
-    - "The following database columns must be filled in on the patron entry screen:"
+    - "The following <a href='http://schema.koha-community.org/tables/borrowers.html' target='blank'>database columns</a> must be filled in on the patron entry screen:"
     - 
       class: multi
       pref: BorrowerMandatoryField
+    - (separate columns with |)
+  - 
+    - "The following <a href='http://schema.koha-community.org/tables/borrowers.html' target='blank'>database columns</a> will not appear on the patron entry screen:"
+    - 
+      class: multi
+      pref: BorrowerUnwantedField
     - (separate columns with |)
   - 
     - "Guarantors can be the following of those they guarantee:"
     - 
       class: multi
       pref: borrowerRelationship
-    - (input multiple choices separated by |)
+    - (input multiple choices separated by |). Leave empty to deactivate
   - 
     - "Borrowers can have the following titles:"
     - 
@@ -129,3 +136,10 @@ Patrons:
         1: Do
       pref: uppercasesurnames
     - store and display surnames in upper case.
+  - 
+    - When renewing borrowers, base the new expiry date on
+    - 
+      choices: 
+        dateexpiry: current membership expiry date.
+        now: current date.
+      pref: BorrowerRenewalPeriodBase

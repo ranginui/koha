@@ -1,4 +1,10 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Catalogue &rsaquo; [% IF ( unknownbiblionumber ) %] Unknown record [% ELSE %] Labeled MARC Details for [% bibliotitle %] [% END %] </title>
+[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Catalog &rsaquo;
+ [% IF ( unknownbiblionumber ) %]
+ Unknown record
+ [% ELSE %]
+ Labeled MARC details for [% bibliotitle %]
+ [% END %]
+</title>
 
  [% INCLUDE 'doc-head-close.inc' %] <script type="text/javascript">
 	//<![CDATA[
@@ -14,7 +20,11 @@
 <body id="catlaog_labeledMARCdetail" class="catalog">
  [% INCLUDE 'header.inc' %] [% INCLUDE 'cat-search.inc' %] <div id="breadcrumbs">
  <a href="/cgi-bin/koha/mainpage.pl">Home</a>
- &rsaquo; <a href="/cgi-bin/koha/catalogue/search.pl">Catalogue</a> &rsaquo; [% IF ( unknownbiblionumber ) %] Unknown record [% ELSE %] MARC Details for <i>[% bibliotitle %]</i>
+ &rsaquo; <a href="/cgi-bin/koha/catalogue/search.pl">Catalogue</a> &rsaquo;
+ [% IF ( unknownbiblionumber ) %]
+ Unknown record
+ [% ELSE %]
+ MARC details for <i>[% bibliotitle %]</i>
  [% END %] </div>
 
  <div id="doc3" class="yui-t2">
@@ -25,7 +35,7 @@
  <div class="yui-b">
 
  [% INCLUDE 'cat-toolbar.inc' %] [% UNLESS ( popup ) %] <h1>Labeled MARC biblio : [% biblionumber %] ( [% bibliotitle %] )</h1>
- [% END %] <p><b>With Framework :[% framework %]</b></p>
+ [% END %] <p><b>With framework :[% framework %]</b></p>
  <!-- div id="bibliotabs" class="toptabs numbered" -->
  <div>
  <table class="labeledmarc-table">

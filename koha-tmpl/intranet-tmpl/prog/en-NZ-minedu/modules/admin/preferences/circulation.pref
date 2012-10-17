@@ -21,7 +21,7 @@ Circulation:
           "": Don't allow
           1: Allow
         pref: AllowItemsOnHoldCheckout
-      - checkouts of items items reserved to someone else. If allowed do not generate RESERVE_WAITING and RESERVED warning. This allows self checkouts for those items.
+      - checkouts of items reserved to someone else. If allowed do not generate RESERVE_WAITING and RESERVED warning. This allows self checkouts for those items.
     - 
       - 
         choices: 
@@ -56,14 +56,14 @@ Circulation:
           "": Don't
           1: Do
         pref: AutomaticItemReturn
-      - automatically transfer items to their home branch when they are returned.
+      - automatically transfer items to their home library when they are returned.
     - 
       - 
         choices: 
           "": Don't enforce
           1: Enforce
         pref: UseBranchTransferLimits
-      - branch transfer limits based on
+      - library transfer limits based on
       - 
         choices: 
           ccode: collection code
@@ -117,8 +117,8 @@ Circulation:
     - 
       - 
         choices: 
-          "": Don't prevent
-          1: Prevent
+          "": Prevent
+          1: Don't prevent
         pref: IssuingInProcess
       - patrons from checking out an item whose rental charge would take them over the limit.
     - 
@@ -230,6 +230,18 @@ Circulation:
         pref: ReservesMaxPickUpDelay
       - days.
     - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: ExpireReservesMaxPickUpDelay
+      - holds to expire automatically if they have not been picked by within the time period specified in ReservesMaxPickUpDelay
+    - 
+      - If using ExpireReservesMaxPickUpDelay, charge a borrower who allows his or her waiting hold to expire a fee of
+      - 
+        class: currency
+        pref: ExpireReservesMaxPickUpDelayCharge
+    - 
       - Satisfy holds from the libraries
       - 
         class: multi
@@ -254,7 +266,7 @@ Circulation:
           "": Don't allow
           1: Allow
         pref: OPACAllowUserToChooseBranch
-      - a user to choose the branch to pick up a hold from.
+      - a user to choose the library to pick up a hold from.
     - 
       - 
         choices: 
@@ -282,6 +294,34 @@ Circulation:
           1: Enable
         pref: DisplayMultiPlaceHold
       - the ability to place holds on multiple biblio from the search results
+    - 
+      - 
+        choices: 
+          "": Don't transfer
+          1: Transfer
+        pref: TransferWhenCancelAllWaitingHolds
+      - items when cancelling all waiting holds.
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: AutoResumeSuspendedHolds
+      - suspended holds to be automatically resumed by a set date.
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: SuspendHoldsIntranet
+      - holds to be suspended from the intranet.
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: SuspendHoldsOpac
+      - holds to be suspended from the OPAC.
   Interface: 
     - 
       - 
@@ -387,6 +427,20 @@ Circulation:
           1: Record
         pref: RecordLocalUseOnReturn
       - local use when an unissued item is checked in.
+    - 
+      - When an empty barcode field is submitted in circulation
+      - 
+        choices: 
+          "": clear the screen
+          1: open a print quick slip window
+        pref: CircAutoPrintQuickSlip
+      - .
+    - 
+      - Include the stylesheet at
+      - 
+        class: url
+        pref: NoticeCSS
+      - on Notices. (This should be a complete URL, starting with <code>http://</code>)
   Self Checkout: 
     - 
       - 

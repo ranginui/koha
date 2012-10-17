@@ -54,7 +54,7 @@
  <td><input type="radio" name="Line" value="datetime" /></td>
  <td><input type="radio" name="Column" value="datetime" /></td>
  <td><label for="from">From</label> <input type="text" size="10" id="from" name="Filter" />
- <img src="[% themelang %]/lib/calendar/cal.gif" alt="Show Calendar" border="0" id="openCalendarFrom" style="cursor: pointer;" />
+ <img src="[% themelang %]/lib/calendar/cal.gif" alt="Show calendar" border="0" id="openCalendarFrom" style="cursor: pointer;" />
  <script type="text/javascript">
 				   //<![CDATA[ 
 				   function validate1(date) {
@@ -82,7 +82,7 @@
 					//]]>
 					</script>
  <label for="to">To</label> <input size="10" id="to" name="Filter" value="" type="text" />
- <img src="[% themelang %]/lib/calendar/cal.gif" alt="Show Calendar" id="openCalendarTo" style="cursor: pointer;" border="0" />
+ <img src="[% themelang %]/lib/calendar/cal.gif" alt="Show calendar" id="openCalendarTo" style="cursor: pointer;" border="0" />
  <script type="text/javascript">
 					//<![CDATA[  
 					function validate2(date) {
@@ -126,7 +126,7 @@
  </select>
  </td>
  <td>
- <label for="PeriodDaySel">Select Day: </label><select name="PeriodDaySel" id="PeriodDaySel">
+ <label for="PeriodDaySel">Select day: </label><select name="PeriodDaySel" id="PeriodDaySel">
  <option value =""></option>
  <option value ="Monday">Monday</option>
  <option value ="Tuesday">Tuesday</option>
@@ -136,7 +136,7 @@
  <option value ="Saturday">Saturday</option>
  <option value ="Sunday">Sunday</option>
  </select>
- <label for="PeriodMonthSel">Select Month:</label> <select name="PeriodMonthSel" id="PeriodMonthSel">
+ <label for="PeriodMonthSel">Select month:</label> <select name="PeriodMonthSel" id="PeriodMonthSel">
  <option value =""></option>
  <option value ="January">January</option>
  <option value ="February">February</option>
@@ -154,7 +154,7 @@
  </td>
  </tr>
  <tr>
- <td>Member Category</td>
+ <td>Member category</td>
  <td><input type="radio" name="Line" value="borrowers.categorycode" /></td>
  <td><input type="radio" name="Column" value="borrowers.categorycode" /></td>
  <td><select name="Filter" id="borcat">
@@ -163,7 +163,7 @@
  </td> 
  </tr>
  <tr class="highlight">
- <td>Item Type</td>
+ <td>Item type</td>
  <td><input type="radio" name="Line" value="itemtype" /></td>
  <td><input type="radio" name="Column" value="itemtype" /></td>
  <td><select name="Filter" id="itemtype">
@@ -190,7 +190,7 @@
  </td>
  </tr>
  <tr>
- <td>Shelving Location</td>
+ <td>Shelving location</td>
  <td><input type="radio" name="Line" value="items.location" /></td>
  <td><input type="radio" name="Column" value="items.location" /></td>
  <td><select name="Filter" id="location">
@@ -199,12 +199,12 @@
  </td> 
  </tr>
  <tr class="highlight">
- <td>Item Call Number</td>
+ <td>Item call number</td>
  <td></td>
  <td></td>
  <td>From <input type="text" name="Filter" size="10" /> (inclusive) to <input type="text" name="Filter" size="10" /> (exclusive) </td>
  </tr>
- [% IF ( hassort1 ) %] <tr><td>Member sort1</td>
+ [% IF ( hassort1 ) %] <tr><td>Patron sort 1</td>
  <td><input type="radio" name="Line" value="borrowers.sort1" /></td>
  <td><input type="radio" name="Column" value="borrowers.sort1" /></td>
  <td><select name="Filter" id="sort1">
@@ -212,7 +212,7 @@
  [% FOREACH Bsort IN Bsort1 %] [% IF ( Bsort.selected ) %]<option value="[% Bsort.authorised_value %]" selected="selected">[% Bsort.lib %]</option>[% ELSE %]<option value="[% Bsort.authorised_value %]" >[% Bsort.lib %]</option>[% END %] [% END %] </select>
  </td> 
  </tr>
- [% END %] [% IF ( hassort2 ) %] <tr class="highlight"><td>Member sort2</td>
+ [% END %] [% IF ( hassort2 ) %] <tr class="highlight"><td>Patron sort 2</td>
  <td><input type="radio" name="Line" value="borrowers.sort2" /></td>
  <td><input type="radio" name="Column" value="borrowers.sort2" /></td>
  <td><select name="Filter" id="sort2">
@@ -220,7 +220,7 @@
  [% FOREACH Bsort IN Bsort2 %] [% IF ( Bsort.selected ) %]<option value="[% Bsort.authorised_value %]" selected="selected">[% Bsort.lib %]</option>[% ELSE %]<option value="[% Bsort.authorised_value %]" >[% Bsort.lib %]</option>[% END %] [% END %] </select>
  </td> 
  </tr>
- [% END %] <tr><td>Home branch</td>
+ [% END %] <tr><td>Home library</td>
  <td><input type="radio" name="Line" value="items.homebranch" /></td>
  <td><input type="radio" name="Column" value="items.homebranch" /></td>
  <td><select name="Filter" id="homebranch">
@@ -229,7 +229,7 @@
  </td>
  </tr>
 
- <tr><td>Holding branch</td>
+ <tr><td>Holding library</td>
  <td><input type="radio" name="Line" value="items.holdingbranch" /></td>
  <td><input type="radio" name="Column" value="items.holdingbranch" /></td>
  <td><select name="Filter" id="holdingbranch">

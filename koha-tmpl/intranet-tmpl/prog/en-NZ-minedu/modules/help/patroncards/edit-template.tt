@@ -21,6 +21,6 @@
 </li>
 </ul>
 
-<p><strong>See the full documentation for the Borrower Card Templates in the <a href="http://manual.koha-community.org/3.6/en/patroncardcreator.html#patrontemplate">manual</a> (online).</strong></p>
+<p><strong>See the full documentation for the Borrower Card Templates in the <a href="http://manual.koha-community.org/3.8/en/patroncardcreator.html#patrontemplate">manual</a> (online).</strong></p>
 
 [% INCLUDE 'help-bottom.inc' %]

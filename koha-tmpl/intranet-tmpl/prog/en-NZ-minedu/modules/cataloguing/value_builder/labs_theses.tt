@@ -1,4 +1,4 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Koha:_Labs Thesis Selection plugin</title>
+[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Labs thesis selection plugin</title>
 [% INCLUDE 'doc-head-close.inc' %] <script type="text/javascript">
 //<![CDATA[
 function openWindow(targeturl, windowname) {
@@ -29,7 +29,7 @@ a.catalogue:hover {
 
 <body id="cat_labs_theses" class="cat" style="padding:1em;">
 <div id="mainbloc">
- <h1>Laboratory Search</h1>
+ <h1>Laboratory search</h1>
  
  <form name="f" method="post" action="/cgi-bin/koha/cataloguing/plugin_launcher.pl">
  <div class="bloc25">
@@ -48,7 +48,7 @@ a.catalogue:hover {
  </form>
 
 [% IF ( resultlist ) %] <div class="bloc25">
- <h2>Laboratory Search results</h2>
+ <h2>Laboratory search results</h2>
  <div id="resultnumber">
  <p class="resultcount">
  [% IF ( total ) %] Results [% from %] to [% to %] of [% total %][% ELSE %]No results found [% END %] </p>

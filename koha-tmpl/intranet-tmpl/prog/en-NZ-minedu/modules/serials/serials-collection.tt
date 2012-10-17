@@ -1,4 +1,4 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Serials &rsaquo; Serial Collection information for [% bibliotitle %]</title>
+[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Serials &rsaquo; Serial collection information for [% bibliotitle %]</title>
 [% INCLUDE 'doc-head-close.inc' %] <script type="text/javascript">
 //<![CDATA[
 function print_slip(subscriptionid,issue){
@@ -46,7 +46,7 @@ $(document).ready(function() {
 </script>
 </head>
 <body id="ser_serials-collection" class="yui-skin-sam ser">
-[% INCLUDE 'header.inc' %] [% INCLUDE 'serials-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/serials/serials-home.pl">Serials</a> &rsaquo; Serial Collection information for <i>[% bibliotitle %]</i></div>
+[% INCLUDE 'header.inc' %] [% INCLUDE 'serials-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/serials/serials-home.pl">Serials</a> &rsaquo; Serial collection information for <i>[% bibliotitle %]</i></div>
 
 <div id="doc3" class="yui-t2">
  
@@ -55,31 +55,52 @@ $(document).ready(function() {
  <div class="yui-b">
 
 
-[% UNLESS ( popup ) %] [% INCLUDE 'serials-toolbar.inc' %] <h1>Serial Collection information for <i>[% bibliotitle %]</i>
+[% UNLESS ( popup ) %] [% INCLUDE 'serials-toolbar.inc' %] <h1>Serial collection information for <i>[% bibliotitle %]</i>
  [% IF location %] ([% location %] ) [% END %] [% IF ( callnumber ) %]callnumber: [% callnumber %][% END %]</h1>
 [% END %] [% IF ( subscriptions ) %] <table>
-[% IF ( subscriptions.size == 1 ) %] <caption> Subscription Summary</caption>
-[% ELSE %] <caption> Subscription Summaries</caption>
+[% IF ( subscriptions.size == 1 ) %] <caption> Subscription summary</caption>
+[% ELSE %] <caption> Subscription summaries</caption>
 [% END %] <tr>
- <th>Subscription Num. </th>
+ <th>Subscription num.</th>
  <th>Frequency</th>
  <th>Numbering pattern</th>
  <th>Library</th>
  <th>Call number</th>
  <th>Notes</th>
- <th>Routing</th>
- <th>Renew</th>
+ [% IF ( routing && CAN_user_serials_routing ) %]<th>Routing</th>[% END %] <th>Renew</th>
 </tr>
 [% FOREACH subscription IN subscriptions %] [% UNLESS ( loop.odd ) %]<tr class="highlight">[% ELSE %]<tr>[% END %] <td><a href="subscription-detail.pl?subscriptionid=[% subscription.subscriptionid %]"># [% subscription.subscriptionid %]</a> </td>
  <td> [% IF ( subscription.periodicity1 ) %] 1/day [% END %] [% IF ( subscription.periodicity2 ) %] 1/week [% END %] [% IF ( subscription.periodicity3 ) %] 1/2 weeks [% END %] [% IF ( subscription.periodicity4 ) %] 1/3 weeks [% END %] [% IF ( subscription.periodicity5 ) %] 1/Month [% END %] [% IF ( subscription.periodicity6 ) %] 1/2 Months (6/year) [% END %] [% IF ( subscription.periodicity7 ) %] 1/quarter [% END %] [% IF ( subscription.periodicity8 ) %] 1/quarter [% END %] [% IF ( subscription.periodicity9 ) %] 2/year [% END %] [% IF ( subscription.periodicity10 ) %] 1/year [% END %] [% IF ( subscription.periodicity11 ) %] 1/2 years [% END %]</td>
  <td>
- [% IF ( subscription.numberpattern1 ) %] Number [% END %] [% IF ( subscription.numberpattern2 ) %] Volume, Number, Issue [% END %] [% IF ( subscription.numberpattern3 ) %] Volume, Number [% END %] [% IF ( subscription.numberpattern4 ) %] Volume, Issue [% END %] [% IF ( subscription.numberpattern5 ) %] Number, Issue [% END %] [% IF ( subscription.numberpattern6 ) %] Seasonal only [% END %] [% IF ( subscription.numberpattern7 ) %] None of the above [% END %]</td>
+ [% IF ( subscription.numberpattern1 ) %]
+ Number
+ [% END %]
+ [% IF ( subscription.numberpattern2 ) %]
+ Volume, number, issue
+ [% END %]
+ [% IF ( subscription.numberpattern3 ) %]
+ Volume, number
+ [% END %]
+ [% IF ( subscription.numberpattern4 ) %]
+ Volume, issue
+ [% END %]
+ [% IF ( subscription.numberpattern5 ) %]
+ Number, issue
+ [% END %]
+ [% IF ( subscription.numberpattern6 ) %]
+ Seasonal only
+ [% END %]
+ [% IF ( subscription.numberpattern7 ) %]
+ None of the above
+ [% END %]</td>
  <td> [% subscription.branchcode %]</td>
  <td> [% subscription.callnumber %]</td>
- <td> [% subscription.notes %] [% IF ( subscription.subscriptionexpired ) %]<br /><span class="problem"> Subscription Expired</span>
+ <td> [% subscription.notes %] [% IF ( subscription.subscriptionexpired ) %]<br /><span class="problem"> Subscription expired</span>
  [% END %] </td>
- <td><a href="/cgi-bin/koha/serials/routing.pl?subscriptionid=[% subscription.subscriptionid %]">Edit Routing List</a></td>
- [% IF ( subscription.abouttoexpire ) %]<td class="problem"> <a href="/cgi-bin/koha/serials/subscription-renew.pl?subscriptionid=[% subscription.subscriptionid %]" onclick="popup([% subscription.subscriptionid %]); return false;">Renew</a></td>
+ [% IF ( routing && CAN_user_serials_routing ) %] <td>
+ <a href="/cgi-bin/koha/serials/routing.pl?subscriptionid=[% subscription.subscriptionid %]">Edit routing list</a>
+ </td>
+ [% END %] [% IF ( subscription.abouttoexpire ) %]<td class="problem"> <a href="/cgi-bin/koha/serials/subscription-renew.pl?subscriptionid=[% subscription.subscriptionid %]" onclick="popup([% subscription.subscriptionid %]); return false;">Renew</a></td>
  [% ELSE %] [% IF ( subscription.subscriptionexpired ) %]<td class="problem"> <a href="/cgi-bin/koha/serials/subscription-renew.pl?subscriptionid=[% subscription.subscriptionid %]" onclick="popup([% subscription.subscriptionid %]); return false;">Renew</a></td>
  [% ELSE %] <td> &nbsp;</td>
  [% END %] [% END %] </tr>
@@ -93,7 +114,11 @@ $(document).ready(function() {
  [% END %] [% END %] </ul>
 
  [% FOREACH year IN years %] <div id="subscription-year-[% year.year %]">
- <table>
+ [% IF ( CAN_user_serials_receive_serials ) %] <p>
+ <input type="submit" value="Edit serials" />&nbsp;
+ <input type="button" value="Generate Next" onclick="javascript:generateNext([% subscriptionidlist %])" />
+ </p>
+ [% END %] <table>
  <tr>
 [% IF ( subscriptions.size > 1 ) %] <th># Subs</th>
 [% END %] <th>Date published </th>
@@ -103,11 +128,9 @@ $(document).ready(function() {
  <th>Status </th>
  <th>Notes
  </th>
- <th>Branch </th>
- <th>Routing
+ <th>Library
  </th>
-
- [% IF ( CAN_user_serials_receive_serials ) %]<th>Edit</th>[% END %] </tr>
+ [% IF ( routing ) %]<th>Routing</th>[% END %] [% IF ( CAN_user_serials_receive_serials ) %]<th>Edit</th>[% END %] </tr>
  [% FOREACH serial IN year.serials %] [% UNLESS ( loop.odd ) %]<tr class="highlight">[% ELSE %]<tr>[% END %] [% IF ( subscriptions.size > 1 ) %] <td><a href="serials-collection.pl?subscriptionid=[% serial.subscriptionid %]">[% serial.subscriptionid %]</a></td>
 [% END %] <td>
  [% serial.publisheddate %] </td>
@@ -121,21 +144,17 @@ $(document).ready(function() {
  [% serial.notes %] </td>
  <td>
  [% serial.branchcode %] </td>
- <td>
+ [% IF ( routing ) %] <td>
  <a href="" onclick="print_slip([% serial.subscriptionid |html %], '[% serial.serialseq |html %] ([% serial.planneddate %])'); return false" >Print list</a>
  </td>
- [% IF ( CAN_user_serials_receive_serials ) %] <td>
+ [% END %] [% IF ( CAN_user_serials_receive_serials ) %] <td>
  [% IF ( serial.cannotedit ) %] disabled [% ELSE %] [% IF ( serial.subscriptionexpired ) %] <input type="checkbox" name="serialid" value="[% serial.serialid %]" disabled="disabled" />
  [% ELSE %] [% IF ( serial.checked ) %] <input type="checkbox" name="serialid" checked="checked" value="[% serial.serialid %]" />
  [% ELSE %] <input type="checkbox" name="serialid" value="[% serial.serialid %]" />
  [% END %] [% END %] [% END %] </td>
  [% END %] </tr>
  [% END %] </table>
- [% IF ( CAN_user_serials_receive_serials ) %] <p>
- <input type="submit" value="Edit serials" />&nbsp;
- <input type="button" value="Generate Next" onclick="javascript:generateNext([% subscriptionidlist %])" />
- </p>
- [% END %] </div>
+ </div>
  [% END %] <input type="hidden" name="subscriptionid" value="[% subscriptionidlist %]" />
 
 </div>

@@ -4,21 +4,12 @@
 <link rel="stylesheet" type="text/css" media="print" href="[% themelang %]/css/print.css" />
 [% IF ( intranetstylesheet ) %] <link rel="stylesheet" type="text/css" href="[% intranetstylesheet %]" />
 [% ELSE %] <link rel="stylesheet" type="text/css" href="[% themelang %]/css/staff-global.css" />
-[% END %] [% IF ( css_libs ) %] [% FOREACH css_lib IN css_libs %] <link rel="stylesheet" type="text/css" href="[% themelang %]/[% css_lib.lib %]" />
- [% END %] [% END %] [% IF ( css_module ) %] <link rel="stylesheet" type="text/css" href="[% themelang %]/css/modules/[% css_module %]" />
-[% END %] [% IF ( css_page ) %] <link rel="stylesheet" type="text/css" href="[% themelang %]/css/pages/[% css_page %]" />
-[% END %] [% IF ( css_widgets ) %] [% FOREACH css_widget IN css_widgets %] <link rel="stylesheet" type="text/css" href="[% themelang %]/[% css_widget.widget %]" />
- [% END %] [% END %] [% IF ( IntranetUserCSS ) %]<style type="text/css">[% IntranetUserCSS %]</style>[% END %] <script type="text/javascript" src="[% themelang %]/lib/jquery/jquery.js"></script>
+[% END %] [% IF ( IntranetUserCSS ) %]<style type="text/css">[% IntranetUserCSS %]</style>[% END %] <script type="text/javascript" src="[% themelang %]/lib/jquery/jquery.js"></script>
 <script type="text/javascript" src="[% themelang %]/lib/jquery/plugins/ui.tabs.js"></script>
 <script type="text/javascript" src="[% themelang %]/lib/jquery/plugins/jquery.hotkeys.min.js"></script>
 <script type="text/javascript" src="[% themelang %]/lib/jquery/plugins/jquery.cookie.min.js"></script>
 <script type="text/javascript" src="[% themelang %]/lib/jquery/plugins/jquery.highlight-3.js"></script>
-
-[% IF ( js_libs ) %] [% FOREACH js_lib IN js_libs %] <script type="text/javascript" src="[% themelang %]/[% js_lib.lib %]"></script>
- [% END %] [% END %] [% IF ( js_module ) %] <script type="text/javascript" src="[% themelang %]/js/modules/[% js_module %]"></script>
-[% END %] [% IF ( js_page ) %] <script type="text/javascript" src="[% themelang %]/js/pages/[% js_page %]"></script>
-[% END %] [% IF ( js_widgets ) %] [% FOREACH js_widget IN js_widgets %] <script type="text/javascript" src="[% themelang %]/[% js_widget.widget %]"></script>
- [% END %] [% END %] [% IF ( login ) %] <link rel="stylesheet" type="text/css" href="[% themelang %]/css/login.css" />
+[% IF ( login ) %] <link rel="stylesheet" type="text/css" href="[% themelang %]/css/login.css" />
 [% END %] [% IF ( wizard ) %] <link rel="stylesheet" type="text/css" href="[% themelang %]/css/wizard.css" />
 [% END %]
 
@@ -53,9 +44,16 @@
         var MSG_NO_RECORD_ADDED = _("No item was added to your cart");
         var MSG_CONFIRM_DEL_BASKET = _("Are you sure you want to empty your cart?");
         var MSG_CONFIRM_DEL_RECORDS = _("Are you sure you want to remove the selected items?");
+        var MSG_IN_YOUR_CART = _("Items in your cart: ");
         var MSG_NON_RESERVES_SELECTED = _("One or more selected items cannot be reserved.");
     [% END %]
     //]]>
     </script>
  [% IF ( virtualshelves || intranetbookbag ) %] <script type="text/javascript" language="javascript" src="[% themelang %]/js/basket.js"></script>
- [% END %] 
+ [% END %] [% IF LocalCoverImages %] <script type="text/javascript" language="javascript" src="[% themelang %]/js/localcovers.js"></script>
+<script type="text/javascript" language="javascript">
+//<![CDATA[
+var NO_LOCAL_JACKET = _("No cover image available");
+//]]>
+</script>
+[% END %] 

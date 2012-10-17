@@ -1,5 +1,17 @@
 [% USE KohaDates %] [% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Acquisitions &rsaquo; Ordered</title>
-[% INCLUDE 'doc-head-close.inc' %] </head>
+<link rel="stylesheet" type="text/css" href="[% themelang %]/css/datatables.css" />
+[% INCLUDE 'doc-head-close.inc' %] <script type="text/javascript" src="[% themelang %]/lib/jquery/plugins/jquery.dataTables.min.js"></script>
+[% INCLUDE 'datatables-strings.inc' %] <script type="text/javascript" src="[% themelang %]/js/datatables.js"></script>
+<script type="text/javascript">
+//<![CDATA[
+ $(document).ready(function() {
+    var spent = $("#spent").dataTable($.extend(true, {}, dataTablesDefaults, {
+        "sPaginationType": "four_button"
+    } ) );
+ });
+ //]]>
+</script>
+</head>
 <body id="acq_ordered" class="acq">
 [% INCLUDE 'header.inc' %] [% INCLUDE 'acquisitions-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/acqui/acqui-home.pl">Acquisitions</a> &rsaquo; Ordered - [% fund_code %]</div>
 
@@ -19,22 +31,22 @@
  <th> Order </th>
  <th> Vendor </th>
  <th> Itemtype </th>
- <th> Left on Order </th>
+ <th> Left on order </th>
  <th> Estimated cost per unit </th>
- <th> Date Ordered </th>
+ <th> Date ordered </th>
  <th> Subtotal </th>
  </tr>
  </thead>
-
+ <tbody>
 [% FOREACH order IN ordered %] [% IF loop.odd %] <tr class="highlight">
  [% ELSE %] <tr>
  [% END %] <td class="cell">
  [% order.title %] </td>
  <td class="cell">
- <a href="/cgi-bin/koha/acqui/neworderempty.pl?ordernumber=[% order.ordernumber %]&booksellerid=[% order.booksellerid %]&basketno=[% order.basketno %]">[% order.ordernumber %]</a>
- </td>
+ [% IF ( CAN_user_acquisition_order_manage ) %] <a href="/cgi-bin/koha/acqui/neworderempty.pl?ordernumber=[% order.ordernumber %]&amp;booksellerid=[% order.booksellerid %]&amp;basketno=[% order.basketno %]">[% order.ordernumber %]</a>
+ [% ELSE %] [% order.ordernumber %] [% END %] </td>
  <td class="cell">
- <a href="/cgi-bin/koha/acqui/supplier.pl?supplierid=[% order.booksellerid %]">[% order.booksellerid %]</a>
+ <a href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% order.booksellerid %]">[% order.booksellerid %]</a>
  </td>
  <td class="cell">
  [% order.itype %] </td>
@@ -47,7 +59,8 @@
  <td class="cell" align="right">
  [% order.subtotal %] </td>
  </tr>
-[% END %] <tfoot>
+[% END %] </tbody>
+ <tfoot>
  <tr>
  <td> Total </td>
  <td> </td>

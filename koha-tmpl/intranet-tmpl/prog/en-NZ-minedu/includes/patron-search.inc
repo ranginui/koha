@@ -1,4 +1,4 @@
-
+<div class="gradient">
 <h1 id="logo"><a href="/cgi-bin/koha/mainpage.pl">[% LibraryName %]</a></h1><!-- Begin Patrons Resident Search Box -->
 [% IF ( CAN_user_circulate ) %][% IF ( CircAutocompl ) %]<script type="text/javascript">
 //<![CDATA[
@@ -50,7 +50,16 @@ YAHOO.util.Event.onContentReady("header_search", function() {
  <input id="searchmember" size="25" class="focus" name="member" type="text" value="[% member %]"/>
  [% IF ( branchloop ) %] <span class="filteraction" id="filteraction_off"> <a href="#" onclick="$('#filters').toggle();$('.filteraction').toggle();">[-]</a></span>
  <span class="filteraction" id="filteraction_on"> <a href="#" onclick="$('#filters').toggle();$('.filteraction').toggle();">[+]</a></span>
- [% END %] order by: <select name="orderby" id="searchorderby">
+ [% END %] <label for="searchfields">Search fields:</label>
+ <select name="searchfields" id="searchfields">
+ <option selected="selected" value=''>Standard</option>
+ <option value='email,emailpro,B_email,'>Email</option>
+ <option value='borrowernumber'>Borrower number</option>
+ <option value='phone,phonepro,B_phone,altcontactphone,mobile'>Phone number</option>
+ </select>
+
+ <label for="orderby">Order by:</label>
+ <select name="orderby" id="searchorderby">
  <option value="surname,0">Surname</option>
  <option value="cardnumber,0">Cardnumber</option>
  </select>
@@ -93,9 +102,10 @@ YAHOO.util.Event.onContentReady("header_search", function() {
  </form>
  </div>
  [% END %] <ul>
- <li><a href="/cgi-bin/koha/members/members-home.pl#patron_search">Search Members</a></li>
- [% IF ( CAN_user_circulate ) %]<li><a href="/cgi-bin/koha/circ/circulation.pl#circ_search">Issue</a></li>[% END %] [% IF ( CAN_user_circulate ) %]<li><a href="/cgi-bin/koha/circ/returns.pl#checkin_search">Return</a></li>[% END %] [% IF ( CAN_user_catalogue ) %]<li><a href="/cgi-bin/koha/catalogue/search.pl#catalog_search">Search the Catalogue</a></li>[% END %] </ul>
-</div>
+ <li><a href="/cgi-bin/koha/members/members-home.pl#patron_search">Search patrons</a></li>
+ [% IF ( CAN_user_circulate ) %]<li><a href="/cgi-bin/koha/circ/circulation.pl#circ_search">Check out</a></li>[% END %] [% IF ( CAN_user_circulate ) %]<li><a href="/cgi-bin/koha/circ/returns.pl#checkin_search">Return</a></li>[% END %] [% IF ( CAN_user_catalogue ) %]<li><a href="/cgi-bin/koha/catalogue/search.pl#catalog_search">Search the catalog</a></li>[% END %] </ul>
+</div><!-- /header_search -->
+</div><!-- /gradient -->
 <script type="text/javascript">//<![CDATA[
 $(document).ready(function() {
     [% IF ( advsearch ) %]$("#filteraction_on").toggle();

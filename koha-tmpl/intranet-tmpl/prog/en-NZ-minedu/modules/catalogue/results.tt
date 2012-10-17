@@ -1,6 +1,5 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Catalog &rsaquo; [% IF ( searchdesc ) %]Results of Search [% IF ( query_desc ) %]for '[% query_desc | html %]'[% END %][% IF ( limit_desc ) %]&nbsp;with limit(s):&nbsp;'[% limit_desc | html %]'[% END %][% ELSE %]You did not specify any search criteria[% END %]</title>
-[% INCLUDE 'doc-head-close.inc' %] <script type="text/javascript" src="/intranet-tmpl/prog/en/lib/jquery/plugins/jquery.highlight-3.js"></script>
-<script type="text/javascript">
+[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Catalog &rsaquo; [% IF ( searchdesc ) %]Results of search [% IF ( query_desc ) %]for '[% query_desc | html %]'[% END %][% IF ( limit_desc ) %]&nbsp;with limit(s):&nbsp;'[% limit_desc | html %]'[% END %][% ELSE %]You did not specify any search criteria[% END %]</title>
+[% INCLUDE 'doc-head-close.inc' %] <script type="text/javascript">
 //<![CDATA[
 var MSG_NO_ITEM_SELECTED = _("Nothing is selected.");
 var MSG_NON_RESERVES_SELECTED = _("One or more selected items cannot be placed on reserve.");
@@ -40,6 +39,11 @@ function cartList(){
             Dopop('/cgi-bin/koha/virtualshelves/addbybiblionumber.pl?newshelf=1&' + vShelfAdd());
         }
         return false;
+    } else if($("#addto").find("option:selected").attr("value") == "morelists"){
+        if (vShelfAdd()) {
+            Dopop('/cgi-bin/koha/virtualshelves/addbybiblionumber.pl?' + vShelfAdd());
+        }
+        return false;
     }
     if($("#addto").find("option:selected").attr("value") == "addtocart"){
         addMultiple();
@@ -59,17 +63,20 @@ $(".addtocart").show();
         var param1 = "<label for=\"addto\">"+_("Add to:")+"<\/label><select name=\"addto\" id=\"addto\"><option value=\"\"><\/option>";
         [% IF ( intranetbookbag ) %]     param1 += "<option value=\"addtocart\">"+_("Cart")+"<\/option>"; [% END %]
         [% IF ( virtualshelves ) %][% IF ( addbarshelves ) %]
-        param1 += "<optgroup label=\""+_("Your Lists:")+"\">";[% FOREACH addbarshelvesloo IN addbarshelvesloop %]
+        param1 += "<optgroup label=\""+_("Your lists:")+"\">";[% FOREACH addbarshelvesloo IN addbarshelvesloop %]
         param1 += "<option id=\"s[% addbarshelvesloo.shelfnumber %]\" value=\"addtolist\">[% addbarshelvesloo.shelfname |html %]<\/option>";[% END %]
         param1 += "<\/optgroup>";[% END %]
-        [% IF ( addpubshelves ) %]param1 += "<optgroup label=\""+_("Public Lists:")+"\">"[% FOREACH addpubshelvesloo IN addpubshelvesloop %]+"<option id=\"s[% addpubshelvesloo.shelfnumber %]\" value=\"addtolist\">[% addpubshelvesloo.shelfname |html %]<\/option>"[% END %]
+        [% IF ( addpubshelves ) %]param1 += "<optgroup label=\""+_("Public lists:")+"\">"[% FOREACH addpubshelvesloo IN addpubshelvesloop %]+"<option id=\"s[% addpubshelvesloo.shelfnumber %]\" value=\"addtolist\">[% addpubshelvesloo.shelfname |html %]<\/option>"[% END %]
+        param1 += "<\/optgroup>";[% END %]
+        [% IF ( ( addbarshelvesloop && addbarshelvesloop.size>9 ) || (addpubshelvesloop && addpubshelvesloop.size>9 )) %]
+            param1 += "<option value=\"morelists\">[ "+_("More lists")+" ]<\/option>";
         [% END %]
-        param1 +="<\/optgroup><option value=\"newlist\">"+_("[ New List ]")+"<\/option>"
+        param1 +="<option value=\"newlist\">"+_("[ New list ]")+"<\/option>"
         [% END %]
         param1 += "<\/select> <input id=\"cartsubmit\" type=\"submit\" class=\"submit\" value=\""+_("Save")+"\" />";
  $('#sortsubmit').hide();
-        $("span.clearall").html("<a id=\"CheckNone\" href=\"#\">"+_("Clear All")+"<\/a>");
-        $("span.checkall").html("<a id=\"CheckAll\" href=\"#\">"+_("Select All")+"<\/a>");
+        $("span.clearall").html("<a id=\"CheckNone\" href=\"#\">"+_("Clear all")+"<\/a>");
+        $("span.checkall").html("<a id=\"CheckAll\" href=\"#\">"+_("Select all")+"<\/a>");
         $("span.addto").html(param1);
         $("#addto").change(function(){
                 cartList();
@@ -84,25 +91,32 @@ $(".addtocart").show();
     $("#selection_ops").show();
     $(".selection").show();
     [% IF ( query_desc ) %]
+    toHighlight = $("p,span.results_summary,a.title");
         var query_desc = "[% query_desc |replace("'", "\'") |replace('"', '\"') |replace('\n', '\\n') |replace('\r', '\\r') %]";
         q_array = query_desc.split(" ");
+        // ensure that we don't have "" at the end of the array, which can
+        // break the highlighter
+        while (q_array.length > 0 && q_array[q_array.length-1] == "") {
+            q_array = q_array.splice(0,-1);
+        }
         highlightOn();
         $("#highlight_toggle_on" ).hide().click(function() {highlightOn() ;});
         $("#highlight_toggle_off").show().click(function() {highlightOff();});
     [% END %]
 });
 
-function highlightOff() {
-    $("p").removeHighlight();
+
+[% IF ( query_desc ) %]function highlightOff() {
+    toHighlight.removeHighlight();
     $(".highlight_toggle").toggle();
 }
 function highlightOn() {
     var x;
     for (x in q_array) {
-        $("p").highlight(q_array[x]);
+        toHighlight.highlight(q_array[x]);
     }
     $(".highlight_toggle").toggle();
-}
+}[% END %]
 
 function selectAll () {
     $(".selection").attr("checked", "checked");
@@ -253,8 +267,8 @@ YAHOO.util.Event.onContentReady("searchheader", function () {
  [% total %] result(s) found [% IF ( query_desc ) %]for <span style="font-weight: bold;">'[% query_desc |html %]'</span>[% END %][% IF ( limit_desc ) %]&nbsp;with limit(s): <span style="font-weight: bold;">'[% limit_desc %]'</span>[% END %][% IF ( LibraryName ) %] in [% LibraryName %] Catalogue[% END %].<br />&nbsp;
  </h3>
  <div id="selection_ops" class="cartlist" style="display:none">
- <a href="#" onclick="selectAll(); return false;">Select All</a>
- | <a href="#" onclick="clearAll(); return false;">Clear All</a>
+ <a href="#" onclick="selectAll(); return false;">Select all</a>
+ | <a href="#" onclick="clearAll(); return false;">Clear all</a>
  | <a href="#" class="highlight_toggle" id="highlight_toggle_off">Unhighlight</a>
  <a href="#" class="highlight_toggle" id="highlight_toggle_on">Highlight</a>
  | <span class="addto"></span>
@@ -278,7 +292,7 @@ YAHOO.util.Event.onContentReady("searchheader", function () {
  <!-- Search Results Table -->
  [% IF ( total ) %]
  [% IF ( scan ) %]
- <h1>Scan Index:</h1>
+ <h1>Scan index:</h1>
  <form action="/cgi-bin/koha/catalogue/search.pl" method="get">
  <table>
  <tr>
@@ -290,14 +304,14 @@ YAHOO.util.Event.onContentReady("searchheader", function () {
  <td>
  <label for="scan-index">Indexed in:</label>
  <select name="idx" id="scan-index">
- <option value="">Any Word</option>
- [% IF ( ms_anycommaphr) %]<option selected="selected" value="any,phr">Any Phrase</option>
- [% ELSE %]<option value="any,phr">Any Phrase</option>[% END %] [% IF ( ms_ti ) %]<option selected="selected" value="ti">Title</option>
- [% ELSE %]<option value="ti">Title</option>[% END %] [% IF ( ms_ticommaphr ) %]<option selected="selected" value="ti,phr">Title Phrase</option>
- [% ELSE %]<option value="ti,phr">Title Phrase</option>[% END %] [% IF ( ms_aucommaphr ) %]<option selected="selected" value="au,phr">Author</option>
+ <option value="">Any word</option>
+ [% IF ( ms_anycommaphr) %]<option selected="selected" value="any,phr">Any phrase</option>
+ [% ELSE %]<option value="any,phr">Any phrase</option>[% END %] [% IF ( ms_ti ) %]<option selected="selected" value="ti">Title</option>
+ [% ELSE %]<option value="ti">Title</option>[% END %] [% IF ( ms_ticommaphr ) %]<option selected="selected" value="ti,phr">Title phrase</option>
+ [% ELSE %]<option value="ti,phr">Title phrase</option>[% END %] [% IF ( ms_aucommaphr ) %]<option selected="selected" value="au,phr">Author</option>
  [% ELSE %]<option value"au,phr">Author</option>[% END %] [% IF ( ms_su ) %]<option selected="selected" value="su">Subject</option>
- [% ELSE %]<option value="su">Subject</option>[% END %] [% IF ( ms_sucommaphr ) %]<option selected="selected" value="su,phr">Subject Phrase</option>
- [% ELSE %]<option value="su,phr">Subject Phrase</option>[% END %] [% IF ( ms_se ) %]<option selected="selected" value="se">Series</option>
+ [% ELSE %]<option value="su">Subject</option>[% END %] [% IF ( ms_sucommaphr ) %]<option selected="selected" value="su,phr">Subject phrase</option>
+ [% ELSE %]<option value="su,phr">Subject phrase</option>[% END %] [% IF ( ms_se ) %]<option selected="selected" value="se">Series</option>
  [% ELSE %]<option value="su">Series</option>[% END %] [% IF ( ms_pb ) %]<option selected="selected" value="pb">Publisher</option>
  [% ELSE %]<option value="pb">Publisher</option>[% END %] [% IF ( ms_nt ) %]<option selected="selected" value="nt">Notes</option>
  [% ELSE %]<option value="nt">Notes</option>[% END %] [% IF ( ms_sn ) %]<option selected="selected" value="sn">ISBN</option>
@@ -341,7 +355,8 @@ YAHOO.util.Event.onContentReady("searchheader", function () {
  [% facet.facet_label_value %] </a> ([% facet.facet_count %]) </li>
  [% END %] [% IF ( facets_loo.expandable ) %] <li class="showmore">
  <a href="/cgi-bin/koha/catalogue/search.pl?q=[% facets_loo.searchdesc %][% IF ( offset ) %]&amp;offset=[% offset %][% END %]&amp;expand=[% facets_loo.expand %]#[% facets_loo.type_id %]">
- Show More </a>
+ Show more
+ </a>
  </li>
  [% END %] </ul>
  </li>
@@ -378,9 +393,19 @@ YAHOO.util.Event.onContentReady("searchheader", function () {
  <input type="checkbox" class="selection" id="bib[% SEARCH_RESULT.biblionumber %]" name="biblionumber" value="[% SEARCH_RESULT.biblionumber %]" style="display:none" />
  </td>
  <td>
+ [% IF ( SEARCH_RESULT.XSLTResultsRecord ) %]
+ [% SEARCH_RESULT.result_number %].
+ [% SEARCH_RESULT.XSLTResultsRecord %]
+ [% ELSE %]
  <p>[% SEARCH_RESULT.result_number %]. [% biblionumber = SEARCH_RESULT.biblionumber %] [% INCLUDE 'biblio-default-view.inc' %] <b>[% IF ( SEARCH_RESULT.title ) %][% SEARCH_RESULT.title |html %][% ELSE %]No title[% END %]</b>
  </a>
- [% FOREACH subtitl IN SEARCH_RESULT.subtitle %], [% subtitl.subfield %][% END %] [% IF ( SEARCH_RESULT.volume ) %],[% SEARCH_RESULT.volume %][% END %] [% IF ( SEARCH_RESULT.volumeddesc ) %], [% SEARCH_RESULT.volumeddesc %][% END %] </p>
+ [% FOREACH subtitl IN SEARCH_RESULT.subtitle %], [% subtitl.subfield %][% END %]
+ [% IF ( SEARCH_RESULT.source_t ) %]
+ [% FOREACH source IN SEARCH_RESULT.source_t %][% source.subfield %][% END %]
+ [% FOREACH source IN SEARCH_RESULT.source_g %][% source.subfield %][% END %]
+ [% END %]
+ [% IF ( SEARCH_RESULT.volume ) %],[% SEARCH_RESULT.volume %][% END %] [% IF ( SEARCH_RESULT.volumeddesc ) %], [% SEARCH_RESULT.volumeddesc %][% END %]
+ </p>
  [% IF ( SEARCH_RESULT.summary ) %] [% IF ( SEARCH_RESULT.author ) %] <a href="/cgi-bin/koha/catalogue/search.pl?idx=au&amp;q=[% SEARCH_RESULT.author |url %]" title="Search for this Author">[% SEARCH_RESULT.author %]</a>
  [% ELSE %] &nbsp; [% END %] <p>
  [% UNLESS ( item_level_itypes ) %] [% IF !noItemTypeImages && SEARCH_RESULT.imageurl %] <img src="[% SEARCH_RESULT.imageurl %]" title="[% SEARCH_RESULT.description %]" style="float: left; margin: .1em;" alt="[% SEARCH_RESULT.description %]" />
@@ -394,7 +419,7 @@ YAHOO.util.Event.onContentReady("searchheader", function () {
  [% IF ( SEARCH_RESULT.searchhighlightblob ) %]<p class="searchhighlightblob">[% SEARCH_RESULT.searchhighlightblob %]</p>[% END %] [% IF ( SEARCH_RESULT.authorised_value_images ) %] <p>
  [% FOREACH authorised_value_image IN SEARCH_RESULT.authorised_value_images %] <img src="[% authorised_value_image.imageurl %]" alt="[% authorised_value_image.description %]" />
  [% END %] </p>
- [% END %] [% END %] <p class="hold">[% IF ( SEARCH_RESULT.norequests ) %] <span class="noholdstext">No reserves allowed</span>
+ [% END %] [% END %] [% END %] <p class="hold">[% IF ( SEARCH_RESULT.norequests ) %] <span class="noholdstext">No reserves allowed</span>
  [% ELSE %] <a id="reserve_[% SEARCH_RESULT.biblionumber %]" href="/cgi-bin/koha/reserve/request.pl?biblionumber=[% SEARCH_RESULT.biblionumber %]">Reserves</a>
  [% IF ( holdfor ) %] <span class="holdforlink">| <a href="/cgi-bin/koha/reserve/request.pl?biblionumber=[% SEARCH_RESULT.biblionumber %]&amp;findborrower=[% holdfor_cardnumber %]">Request item(s) for [% holdfor_firstname %] [% holdfor_surname %] ([% holdfor_cardnumber %])</a></span>[% END %] [% END %] [% IF ( CAN_user_editcatalogue_edit_catalogue ) %] | <a href="/cgi-bin/koha/cataloguing/addbiblio.pl?biblionumber=[% SEARCH_RESULT.biblionumber %]">Edit record</a>
  [% END %] [% IF ( CAN_user_editcatalogue_edit_items ) %] | <a href="/cgi-bin/koha/cataloguing/additem.pl?biblionumber=[% SEARCH_RESULT.biblionumber %]">Edit items</a>

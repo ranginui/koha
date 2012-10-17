@@ -211,7 +211,7 @@
  <xsl:variable name="start" select="position()"/>
  <xsl:variable name="ends">
  <xsl:for-each select="../marc:subfield[position() &gt; $start]">
- <xsl:if test="@code=3 or @code=9 or @code=2">
+ <xsl:if test="@code=9">
  <xsl:variable name="end" select="position() + $start"/>
  <xsl:value-of select="$end"/>
  <xsl:text>,</xsl:text>
@@ -229,7 +229,7 @@
  </xsl:choose>
  </xsl:variable>
  <xsl:variable name="display">
- <xsl:for-each select="../marc:subfield[position() &gt; $start and position() &lt; $end]">
+ <xsl:for-each select="../marc:subfield[position() &gt; $start and position() &lt; $end and @code!=2 and @code!=3]">
  <xsl:value-of select="."/>
  <xsl:if test="not(position()=last())">
  <xsl:text>, </xsl:text>
@@ -241,7 +241,18 @@
  <xsl:text>/cgi-bin/koha/opac-search.pl?q=an:</xsl:text>
  <xsl:value-of select="."/>
  </xsl:attribute>
+ <xsl:choose>
+ <xsl:when test="string-length($display) &gt; 0">
+ <xsl:call-template name="chopPunctuation">
+ <xsl:with-param name="chopString">
  <xsl:value-of select="$display"/>
+ </xsl:with-param>
+ </xsl:call-template>
+ </xsl:when>
+ <xsl:otherwise>
+ <xsl:value-of select="."/>
+ </xsl:otherwise>
+ </xsl:choose>
  </a>
  <xsl:variable name="ncommas"
                  select="string-length($ends) - string-length(translate($ends, ',', ''))" />
@@ -251,7 +262,7 @@
  </xsl:if>
  </xsl:for-each>
  </xsl:when>
- <xsl:otherwise>
+ <xsl:when test="marc:subfield[@code=a]">
  <a>
  <xsl:attribute name="href">
  <xsl:text>/cgi-bin/koha/opac-search.pl?q=su:</xsl:text>
@@ -267,7 +278,8 @@
  </xsl:with-param>
  </xsl:call-template>
  </a>
- </xsl:otherwise>
+ </xsl:when>
+ <xsl:otherwise/>
  </xsl:choose>
  <xsl:if test="not(position()=last())">
  <xsl:text> | </xsl:text>

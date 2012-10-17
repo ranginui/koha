@@ -1,46 +1,49 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Circulation &rsaquo; Return [% title |html %]</title>
+[% USE KohaDates %] [% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Circulation &rsaquo; Check in [% title |html %]</title>
 [% INCLUDE 'doc-head-close.inc' %] <script type="text/javascript">
 //<![CDATA[
 function Dopop(link) {
-    var newin=window.open(link,'popup','width=600,height=400,resizable=1,toolbar=0,scrollbars=1,top');
+    var newin = window.open(link, 'popup', 'width=600,height=400,resizable=1,toolbar=0,scrollbars=1,top');
+    $("#barcode").focus();
 }
-	 $(document).ready(function() {
-	 	$("#exemptcheck").change(function(){
-			if(this.checked == true) {
-				$("#barcode").addClass("alert");
-				$("#exemptfines").show();
-			} else {
-				$("#barcode").removeClass("alert");
-				$("#exemptfines").hide();
-			}
-			$("#barcode").focus();
-		});
-	 	$("#dropboxcheck").change(function(){
-			if (this.checked == true) {
-				$("#barcode").addClass("alert");
-				$("#dropboxmode").show();
-			} else {
-				$("#barcode").removeClass("alert");
-				$("#dropboxmode").hide();
-			}
-			$("#barcode").focus();
-		});
-		[% IF ( overduecharges ) %]$("#barcode").focus(function(){
-			if(($("#exemptcheck").attr("checked") == true)||($("#dropboxcheck").attr("checked") == true)){
-				$("#barcode").addClass("alert");
-			} else {
-				$("#barcode").removeClass("alert");
-			}
-		});
-		$("#barcode").blur(function(){
-			$("#barcode").removeClass("alert");
-		});[% END %]
-	 });
+$(document).ready(function () {
+    $("#exemptcheck").change(function () {
+        if (this.checked == true) {
+            $("#barcode").addClass("alert");
+            $("#exemptfines").show();
+        } else {
+            $("#barcode").removeClass("alert");
+            $("#exemptfines").hide();
+        }
+        $("#barcode").focus();
+    });
+    $("#dropboxcheck").change(function () {
+        if (this.checked == true) {
+            $("#barcode").addClass("alert");
+            $("#dropboxmode").show();
+        } else {
+            $("#barcode").removeClass("alert");
+            $("#dropboxmode").hide();
+        }
+        $("#barcode").focus();
+    });
+    [% IF(overduecharges) %] $("#barcode").focus(function () {
+        if (($("#exemptcheck").attr("checked") == true) || ($("#dropboxcheck").attr("checked") == true)) {
+            $("#barcode").addClass("alert");
+        } else {
+            $("#barcode").removeClass("alert");
+        }
+    });
+    $("#barcode").blur(function () {
+        $("#barcode").removeClass("alert");
+    });
+    [% END %]
+});
 //]]>
 </script>
 </head>
 <body id="circ_returns" class="circ">
-[% INCLUDE 'header.inc' %] [% INCLUDE 'checkin-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/circ/circulation-home.pl">Circulation</a> &rsaquo; Return</div>
+
+[% INCLUDE 'header.inc' %] [% INCLUDE 'checkin-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/circ/circulation-home.pl">Circulation</a> &rsaquo; Check in</div>
 
 <div id="doc" class="yui-t7">
 
@@ -72,7 +75,7 @@ function Dopop(link) {
 </div>
 [% END %]
 <!-- case of a mistake in transfer loop -->
-[% IF ( WrongTransfer ) %]<div id="return2" class="dialog message"><!-- WrongTransfer --><h3>Please return <a href="/cgi-bin/koha/catalogue/detail.pl?type=intra&amp;biblionumber=[% itembiblionumber %]">[% title |html %]</a> to [% TransferWaitingAt %] or <a href="/cgi-bin/koha/circ/returns.pl?itemnumber=[% itemnumber %]&amp;canceltransfer=1">Cancel Transfer</a></h3>
+[% IF ( WrongTransfer ) %]<div id="return2" class="dialog message"><!-- WrongTransfer --><h3>Please return <a href="/cgi-bin/koha/catalogue/detail.pl?type=intra&amp;biblionumber=[% itembiblionumber %]">[% title |html %]</a> to [% TransferWaitingAt %]</h3><h3><a href="#" onclick="Dopop('transfer-slip.pl?transferitem=[% itemnumber %]&amp;&amp;branchcode=[% homebranch %]&amp;op=slip'); return true;">Print slip</a> or <a href="/cgi-bin/koha/circ/returns.pl?itemnumber=[% itemnumber %]&amp;canceltransfer=1">Cancel transfer</a></h3>
 [% IF ( wborcnum ) %]<h5>Reserve for:</h5>
  <ul><li><a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% borrowernumber %]">
  [% borsurname %], [% borfirstname %]</a> ([% borcnum %])</li>
@@ -85,7 +88,7 @@ function Dopop(link) {
  <input type="hidden" name="WT-waitingAt" value="[% TransferWaitingAt %]" />
  <input type="hidden" name="WT-From" value="[% wtransfertFrom %]" />
  <input type="submit" class="approve" value="Confirm" />
- <input type="submit" value="Print Slip and Confirm" class="print" onclick="Dopop('hold-transfer-slip.pl?transfer=1&amp;borrowernumber=[% borrowernumber %]&amp;biblionumber=[% itembiblionumber %]&amp;op=slip'); this.form.submit();" />
+ <input type="submit" value="Print slip and confirm" class="print" onclick="Dopop('hold-transfer-slip.pl?transfer=1&amp;borrowernumber=[% borrowernumber %]&amp;biblionumber=[% itembiblionumber %]&amp;op=slip'); this.form.submit();" />
  </form>
  [% END %]</div>
 [% END %]
@@ -99,7 +102,7 @@ function Dopop(link) {
 [% IF ( soundon ) %]
 <audio src="/intranet-tmpl/prog/sound/ending.ogg" autoplay="autoplay" autobuffer="autobuffer"></audio>
 [% END %] <div id="hold-found1" class="dialog message">
- <h3>Reserve Found (item is already waiting): <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% itembiblionumber %]">[% title |html %]</a></h3>
+ <h3>Hold found (item is already waiting): <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% itembiblionumber %]">[% title |html %]</a></h3>
  [% IF ( reservenotes ) %]<h4>Notes: [% reservenotes %]</h4>[% END %] <h4>Reserve for:</h4>
  <ul>
  <li><a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% borrowernumber %]">[% borsurname %], [% borfirstname %]</a> ([% borcnum %])</li>
@@ -111,7 +114,7 @@ function Dopop(link) {
  [% END %] <form method="post" action="returns.pl" class="confirm">
  <input type="submit" class="approve" value="Confirm" />
 
- <input type="submit" value="Print and Confirm" class="print" onclick="Dopop('hold-transfer-slip.pl?borrowernumber=[% borrowernumber %]&amp;biblionumber=[% itembiblionumber %]&amp;op=slip'); this.form.submit();" />
+ <input type="submit" value="Print and confirm" class="print" onclick="Dopop('hold-transfer-slip.pl?borrowernumber=[% borrowernumber %]&amp;biblionumber=[% itembiblionumber %]&amp;op=slip'); this.form.submit();" />
  [% FOREACH inputloo IN inputloop %] <input type="hidden" name="ri-[% inputloo.counter %]" value="[% inputloo.barcode %]" />
  <input type="hidden" name="dd-[% inputloo.counter %]" value="[% inputloo.duedate %]" />
  <input type="hidden" name="bn-[% inputloo.counter %]" value="[% inputloo.borrowernumber %]" />
@@ -141,7 +144,7 @@ function Dopop(link) {
  [% ELSE %] <h4><strong>Reserve at</strong> [% destbranchname %]</h4>
  [% END %] <form method="post" action="returns.pl" class="confirm">
  <input type="submit" class="approve" value="Confirm" />
- <input type="submit" value="Print Slip and Confirm" class="print" onclick="Dopop('hold-transfer-slip.pl?transfer=1&amp;borrowernumber=[% borrowernumber %]&amp;biblionumber=[% itembiblionumber %]&amp;op=slip'); this.form.submit();" />
+ <input type="submit" value="Print slip and confirm" class="print" onclick="Dopop('hold-transfer-slip.pl?transfer=1&amp;borrowernumber=[% borrowernumber %]&amp;biblionumber=[% itembiblionumber %]&amp;op=slip'); this.form.submit();" />
  [% FOREACH inputloo IN inputloop %] <input type="hidden" name="ri-[% inputloo.counter %]" value="[% inputloo.barcode %]" />
  <input type="hidden" name="dd-[% inputloo.counter %]" value="[% inputloo.duedate %]" />
  <input type="hidden" name="bn-[% inputloo.counter %]" value="[% inputloo.borrowernumber %]" />
@@ -154,9 +157,9 @@ function Dopop(link) {
  [% END %]
 
  [% IF ( transfer ) %]
- <!-- transfer: item with no reservation, must be returned to its homebranch -->
+ <!-- transfer: item with no reservation, must be returned to its home library -->
  <div id="return1" class="dialog message">
- <h3>Please return <a href="/cgi-bin/koha/catalogue/detail.pl?type=intra&amp;biblionumber=[% itembiblionumber %]">[% title or "item" |html %]</a> to [% homebranchname %]</h3>
+ <h3>Please return <a href="/cgi-bin/koha/catalogue/detail.pl?type=intra&amp;biblionumber=[% itembiblionumber %]">[% title or "item" |html %]</a> to [% homebranchname %]<br/>( <a href="#" onclick="Dopop('transfer-slip.pl?transferitem=[% itemnumber %]&amp;branchcode=[% homebranch %]&amp;op=slip'); return true;">Print slip</a> )</h3>
  </div>
  [% IF ( soundon ) %] <audio src="/intranet-tmpl/prog/sound/opening.ogg" autoplay="autoplay" autobuffer="autobuffer"></audio>
  [% END %]
@@ -167,9 +170,10 @@ function Dopop(link) {
  [% IF ( soundon ) %]
  <audio src="/intranet-tmpl/prog/sound/opening.ogg" autoplay="autoplay" autobuffer="autobuffer"></audio>
  [% END %] <div id="item-transfer" class="dialog message"><h3> This item needs to be transferred to [% homebranchname %]</h3>
- Transfer Now?<br />
+ Transfer now?<br />
  <form method="post" action="returns.pl" name="mainform" id="mainform">
- <input type="submit" name="dotransfer" value="Yes" class="submit" />
+ [% IF itemnumber %] <input type="submit" name="dotransfer" value="Yes, Print slip" class="print" onclick="Dopop('transfer-slip.pl?transferitem=[% itemnumber %]&amp;&amp;branchcode=[% homebranch %]&amp;op=slip'); return true;" />
+ [% END %] <input type="submit" name="dotransfer" value="Yes" class="submit" />
  <input type="submit" name="notransfer" value="No" class="submit" />
  <input type="hidden" name="tobranch" value="[% homebranch %]" />
  <input type="hidden" name="transferitem" value="[% itemnumber %]" />
@@ -186,7 +190,7 @@ function Dopop(link) {
  <!-- diffbranch -->
  [% IF ( soundon ) %]
  <audio src="/intranet-tmpl/prog/sound/opening.ogg" autoplay="autoplay" autobuffer="autobuffer"></audio>
- [% END %] <h3>Item Consigned:</h3>
+ [% END %] <h3>Item consigned:</h3>
  <table>
  <caption><a href="/cgi-bin/koha/catalogue/detail.pl?type=intra&amp;biblionumber=[% itembiblionumber %]">[% title |html %]</a></caption>
  <tr>
@@ -210,7 +214,7 @@ function Dopop(link) {
  [% IF ( soundon ) %]
  <audio src="/intranet-tmpl/prog/sound/opening.ogg" autoplay="autoplay" autobuffer="autobuffer"></audio>
  [% END %] <div id="hold-found2" class="dialog message">
- <h3>Reserve Found: <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% itembiblionumber %]">[% title |html %]</a></h3>
+ <h3>Hold found: <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% itembiblionumber %]">[% title |html %]</a></h3>
  [% IF ( reservenotes ) %]<h4>Notes: [% reservenotes %]</h4>[% END %] <h5>Reserve for:</h5>
  <ul>
  <li><a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% borrowernumber %]">
@@ -221,10 +225,10 @@ function Dopop(link) {
  [% IF ( transfertodo ) %] <h4><strong>Transfer to:</strong> [% destbranchname %]</h4>
  [% ELSE %] <h4><strong>Reserve at</strong> [% destbranchname %]</h4>
  [% END %] <form method="post" action="returns.pl" class="confirm">
- [% IF ( transfertodo ) %] <input value="Confirm reserve and Transfer" type="submit" class="approve" />
- <input type="submit" value="Print slip, Transfer, and Confirm" class="print" onclick="Dopop('hold-transfer-slip.pl?transfer=1&amp;borrowernumber=[% borrowernumber %]&amp;biblionumber=[% itembiblionumber %]&amp;op=slip'); this.form.submit();" />
+ [% IF ( transfertodo ) %] <input type="submit" class="approve" value="Confirm hold and transfer" />
+ <input type="submit" value="Print slip, transfer, and confirm" class="print" onclick="Dopop('hold-transfer-slip.pl?transfer=1&amp;borrowernumber=[% borrowernumber %]&amp;biblionumber=[% itembiblionumber %]&amp;op=slip'); this.form.submit();" />
  [% ELSE %] <input value="Confirm reserve" type="submit" class="approve" />
- <input type="submit" value="Print Slip and Confirm" class="print" onclick="Dopop('hold-transfer-slip.pl?borrowernumber=[% borrowernumber %]&amp;biblionumber=[% itembiblionumber %]&amp;op=slip'); this.form.submit();" />
+ <input type="submit" value="Print slip and confirm" class="print" onclick="Dopop('hold-transfer-slip.pl?borrowernumber=[% borrowernumber %]&amp;biblionumber=[% itembiblionumber %]&amp;op=slip'); this.form.submit();" />
  [% END %] <input type="submit" class="deny" value="Ignore" onclick="$('.dialog:visible').hide('slow'); $('#barcode').focus(); return false;" />
  [% FOREACH inputloo IN inputloop %] <input type="hidden" name="ri-[% inputloo.counter %]" value="[% inputloo.barcode %]" />
  <input type="hidden" name="dd-[% inputloo.counter %]" value="[% inputloo.duedate %]" />
@@ -237,12 +241,13 @@ function Dopop(link) {
  </form>
  </div>
  [% END %] [% ELSE %] [% IF ( errmsgloop ) %] <div class="dialog alert">
- [% FOREACH errmsgloo IN errmsgloop %] [% IF ( errmsgloo.badbarcode ) %] <p class="problem">No Item with barcode: [% errmsgloo.msg %]</p>
+ [% FOREACH errmsgloo IN errmsgloop %] [% IF ( errmsgloo.badbarcode ) %] <p class="problem">No item with barcode: [% errmsgloo.msg %]</p>
  [% END %] [% IF ( errmsgloo.ispermanent ) %] <p class="problem">Please return to [% errmsgloo.msg %]</p>
  [% END %] [% IF ( errmsgloo.notissued ) %] <p class="problem">Not issued.</p>
- [% END %] [% IF ( errmsgloo.localuse) %] <p class="problem">Local Use recorded</p>
+ [% END %] [% IF ( errmsgloo.localuse) %] <p class="problem">Local use recorded</p>
  [% END %] [% IF ( errmsgloo.waslost ) %] <p class="problem">Item was lost, now found.</p>
  [% END %] [% IF ( errmsgloo.withdrawn ) %] <p class="problem">Item is withdrawn.</p>
+ [% END %] [% IF ( errmsgloo.debarred ) %] <p class="problem"><a href="/cgi-bin/koha/circ/circulation.pl?borrowernumber=[% errmsgloo.debarborrowernumber %]">[% errmsgloo.debarname %]([% errmsgloo.debarcardnumber %])</a> is now debarred until [% errmsgloo.debarred | $KohaDates %] </p>
  [% END %] [% END %] [% IF ( soundon ) %] <audio src="/intranet-tmpl/prog/sound/critical.ogg" autoplay="autoplay" autobuffer="autobuffer"></audio>
 [% END %] [% ELSE %] [% IF ( soundon ) %] <audio src="/intranet-tmpl/prog/sound/beep.ogg" autoplay="autoplay" autobuffer="autobuffer"></audio>
 [% END %] [% END %] </div>
@@ -271,27 +276,24 @@ function Dopop(link) {
  <div class="yui-u">
  <fieldset id="checkin_options">
  <legend>Options</legend>
-
- <ul>
- [% IF ( overduecharges ) %] <li>
+ [% IF ( overduecharges ) %] <p>
  [% IF ( exemptfine ) %] <input type="checkbox" id="exemptcheck" name="exemptfine" value="exemptfine" checked="checked" />
  [% ELSE %] <input type="checkbox" id="exemptcheck" name="exemptfine" value="exemptfine" />
  [% END %] <label for="exemptcheck">Forgive overdue charges</label>
- </li>
+ </p>
  [% END %] <!-- overduecharges -->
- <li>
+ <p>
  [% IF ( dropboxmode ) %] <input type="checkbox" id="dropboxcheck" name="dropboxmode" value="dropboxmode" checked="checked" />
  [% ELSE %] <input type="checkbox" id="dropboxcheck" name="dropboxmode" value="dropboxmode" />
  [% END %] <label for="dropboxcheck">Dropbox mode</label>
- </li>
- </ul>
+ </p>
  </fieldset>
  </div>
  </form>
 </div>
 
 [% IF ( returned ) %] <div class="yui-g"> <table>
- <tr><th>Item Information</th><th>Member Information</th></tr>
+ <tr><th>Item information</th><th>Patron information</th></tr>
  <tr>
  <td>[% title |html %]</td>
  <td>
@@ -299,9 +301,9 @@ function Dopop(link) {
  <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% riborrowernumber %]">[% riborsurname %], [% ribortitle %] [% riborfirstname %]</a> ([% riborcnum %]) [% IF ( flagset ) %] ([% FOREACH flagloo IN flagloop %] [% flagloo.flag %] [% IF ( flagloo.charges ) %] of [% flagloo.chargeamount %] [% END %] , [% END %])[% END %] </td>
  </tr>
  </table>
-[% END %] [% IF ( riloop ) %] <h2>Returned items</h2>
+[% END %] [% IF ( riloop ) %] <h2>Checked-in items</h2>
  <table>
- <tr><th>Due Date</th><th>Title</th> <th>Author</th> <th>Barcode</th><th>Shelving Location</th><th>Call Number</th><th>Type</th> <th>Member</th><th>Note</th></tr>
+ <tr><th>Due date</th><th>Title</th> <th>Author</th> <th>Barcode</th><th>Shelving location</th><th>Call number</th><th>Type</th> <th>Member</th><th>Note</th></tr>
 
  [% FOREACH riloo IN riloop %] <tr>
  <td>[% IF ( riloo.duedate ) %] [% IF ( riloo.return_overdue ) %] <span class="overdue">[% riloo.duedate %] (overdue)</span>

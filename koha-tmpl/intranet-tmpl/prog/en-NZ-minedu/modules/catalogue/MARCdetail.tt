@@ -1,4 +1,10 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Catalogue &rsaquo; [% IF ( unknownbiblionumber ) %] Unknown record [% ELSE %] MARC Details for [% bibliotitle %] [% END %] </title>
+[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Catalog &rsaquo;
+ [% IF ( unknownbiblionumber ) %]
+ Unknown record
+ [% ELSE %]
+ MARC details for [% bibliotitle %]
+ [% END %]
+</title>
 [% INCLUDE 'doc-head-close.inc' %] <script type="text/javascript">
 //<![CDATA[
 
@@ -28,11 +34,13 @@ function Changefwk(FwkList) {
 [% INCLUDE 'cat-toolbar.inc' %] [% UNLESS ( popup ) %] <h1>MARC biblio : [% biblionumber %] ( [% bibliotitle |html %] )</h1>
 
 
-[% END %] <p><b>With Framework : <select name="Frameworks" id="Frameworks" onchange="Changefwk(this);">
+[% END %] <p><b>With framework : <select name="Frameworks" id="Frameworks" onchange="Changefwk(this);">
  <option value="">Default</option>
  [% FOREACH frameworkcodeloo IN frameworkcodeloop %] [% IF ( frameworkcodeloo.selected ) %]<option value="[% frameworkcodeloo.value %]" selected="selected">[% frameworkcodeloo.frameworktext %]</option>[% ELSE %]<option value="[% frameworkcodeloo.value %]">[% frameworkcodeloo.frameworktext %]</option>[% END %] [% END %] </select> </b></p>
-
-<div id="bibliotabs" class="toptabs numbered">
+[% IF ( ocoins ) %]
+<!-- COinS / OpenURL -->
+<span class="Z3988" title="[% ocoins %]"></span>
+[% END %] <div id="bibliotabs" class="toptabs numbered">
  <ul>
  [% IF ( tab0XX ) %] <li><a href="/cgi-bin/koha/catalogue/MARCdetail.pl#tab0XX"></a></li>
  [% END %] [% IF ( tab1XX ) %] <li><a href="/cgi-bin/koha/catalogue/MARCdetail.pl#tab1XX">1</a></li>

@@ -11,6 +11,15 @@ I18N/L10N:
       pref: dateformat
     - .
   - 
+    - Use
+    - 
+      choices: 
+        Monday: Monday
+        Sunday: Sunday
+      default: Sunday
+      pref: CalendarFirstDayOfWeek
+    - as the first day of week in the calendar.
+  - 
     - "Enable the following languages on the staff interface:"
     - 
       pref: language

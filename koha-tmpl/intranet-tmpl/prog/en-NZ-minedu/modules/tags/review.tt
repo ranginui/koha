@@ -1,4 +1,4 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Home &rsaquo; Tools &rsaquo; Tags &rsaquo; [% IF ( do_it ) %]Review &rsaquo; [% ELSE %]Review Tags[% END %]</title>
+[% INCLUDE 'doc-head-open.inc' %] <title>Home &rsaquo; Tools &rsaquo; Tags &rsaquo; [% IF ( do_it ) %]Review &rsaquo; [% ELSE %]Review tags[% END %]</title>
 [% INCLUDE 'doc-head-close.inc' %] [% INCLUDE 'calendar.inc' %] <script type="text/javascript" src="[% themelang %]/lib/jquery/plugins/jquery.checkboxes.min.js"></script>
 <style type="text/css">
 .setlabel {width: 6em; font-family: courier; background-color:#E8E8E8;}
@@ -184,7 +184,8 @@ td input,td input[type="submit"] { font-size: 85%; padding: 1px; }
  [% ELSIF ( tagloo.approved == 1 ) %]<td class="green"><img alt="OK" src="/intranet-tmpl/prog/img/approve.gif" />
  [% ELSE %]<td class="pending">
  [% END %] </td>
- <td>[% tagloo.term %] </td>
+ <td><a href="/cgi-bin/koha/tags/list.pl?tag=[% tagloo.term %]">[% tagloo.term %]</a>
+ </td>
  <td>[% tagloo.weight_total %] </td>
  [% IF ( tagloo.approved ) %] <td><span class="ajax_buttons" style="visibility:hidden">
  [% IF ( approved == -1 ) %] <input class="ok"  type="submit" title="[% tagloo.term %]" value="Approve" name="approve" />
@@ -209,7 +210,7 @@ td input,td input[type="submit"] { font-size: 85%; padding: 1px; }
 </div>
 <div class="yui-u">
  <fieldset class="brief">
- <h4>Terms Summary</h4>
+ <h4>Terms summary</h4>
  <ul>
  <li><a href="/cgi-bin/koha/tags/review.pl?approved=1">Approved</a>: <span id="terms_summary_approved_count">[% approved_count %]</span>
  </li>
@@ -258,16 +259,16 @@ td input,td input[type="submit"] { font-size: 85%; padding: 1px; }
  <li>
  <label for="from">Date: from </label>
  <input type="text" size="10" id="from" name="from" value="[% filter_date_approved_from %]" />
- <img src="[% themelang %]/lib/calendar/cal.gif" border="0" alt="Show Calendar" style="cursor: pointer;" id="openCalendarFrom" />
+ <img src="[% themelang %]/lib/calendar/cal.gif" border="0" alt="Show calendar" style="cursor: pointer;" id="openCalendarFrom" />
  <div class="hint">[% INCLUDE 'date-format.inc' %]</div>
 
  <label for="to">...to</label>
  <input type="text" size="10" id="to"   name="to"   value="[% filter_date_approved_to %]" />
- <img src="[% themelang %]/lib/calendar/cal.gif" border="0" alt="Show Calendar" style="cursor: pointer;" id="openCalendarTo" />
+ <img src="[% themelang %]/lib/calendar/cal.gif" border="0" alt="Show calendar" style="cursor: pointer;" id="openCalendarTo" />
  <div class="hint">[% INCLUDE 'date-format.inc' %]</div>
  </li>
  </ol>
- <fieldset class="action"><input type="submit" value="Apply Filter(s)" /></fieldset>
+ <fieldset class="action"><input type="submit" value="Apply filter(s)" /></fieldset>
 </fieldset>
 </form>
 <script type="text/javascript">

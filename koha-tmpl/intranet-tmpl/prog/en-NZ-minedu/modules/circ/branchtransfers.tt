@@ -6,7 +6,7 @@
 <div id="doc" class="yui-t7">
  <div id="bd">
 
-[% IF ( found ) %] <div class="yui-g"> <h3>Reserve Found</h3>
+[% IF ( found ) %] <div class="yui-g"> <h3>Reserve found</h3>
  <table>
  <caption>
  [% IF ( reserved ) %] Reserve found for [% name %] (<a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% borrowernumber %]">[% borrowernumber %]</a>). [% END %] [% IF ( waiting ) %] Item is marked waiting at [% branchname %] for [% name %] (<a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% borrowernumber %]">[% borrowernumber %]</a>). [% END %] </caption>
@@ -103,7 +103,7 @@
 
  [% IF ( trsfitemloop ) %] <div class="yui-g">
  <table>
- <caption>Transferred Items</caption>
+ <caption>Transferred items</caption>
  <tr>
  <th>Title</th>
  <th>Author</th>

@@ -1,4 +1,4 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>[% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha Online[% END %] Catalogue &rsaquo; Your Cart</title>
+[% INCLUDE 'doc-head-open.inc' %] <title>[% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha online[% END %] Catalog &rsaquo; Your cart</title>
  [% IF ( print_basket ) %] <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link rel="shortcut icon" href="[% IF ( IntranetFavicon ) %][% IntranetFavicon %][% ELSE %][% themelang %]/includes/favicon.ico[% END %]" type="image/x-icon" />
 <meta http-equiv="Content-Language" content="en-us" />
@@ -76,13 +76,13 @@ function placeHold () {
  [% END %] </head>
 [% IF ( print_basket ) %]<body id="cart_basket" class="cart" onload="print();history.back();">[% ELSE %]<body id="cart_basket" class="cart">[% END %] <div id="doc" class="yui-t7">
 <div class="container">
-[% UNLESS ( print_basket ) %] <h1>Your Cart</h1>
+[% UNLESS ( print_basket ) %] <h1>Your cart</h1>
 
 <div id="toolbar">
 <ul class="toolbar">
  <li>
  <span id="addchild" class="yui-button yui-link-button"><span class="first-child">
- [% IF ( verbose ) %]<a href="basket.pl" class="brief" onclick="showLess(); return false;">Brief Display</a>[% ELSE %]<a href="basket.pl" class="detail" onclick="showMore(); return false;">More Details</a>[% END %] </span></span>
+ [% IF ( verbose ) %]<a href="basket.pl" class="brief" onclick="showLess(); return false;">Brief display</a>[% ELSE %]<a href="basket.pl" class="detail" onclick="showMore(); return false;">More details</a>[% END %] </span></span>
  </li>
  <li>
  <span id="receive" class="yui-button yui-link-button"><span class="first-child">
@@ -101,17 +101,17 @@ function placeHold () {
  </li>
  <li>
  <span id="delete" class="yui-button yui-link-button"><span class="first-child">
- <a class="empty" href="basket.pl" onclick="delBasket('popup'); return false;">Empty and Close</a>
+ <a class="empty" href="basket.pl" onclick="delBasket('popup'); return false;">Empty and close</a>
  </span></span>
  </li>
  <li>
  <span id="hide" class="yui-button yui-link-button"><span class="first-child">
- <a class="hide close" href="basket.pl">Hide Window</a>
+ <a class="hide close" href="basket.pl">Hide window</a>
  </span></span>
  </li>
 </ul>
 </div>
- [% END %] [% IF ( verbose ) %] [% UNLESS ( print_basket ) %]<p style="padding: 7px 0; border-top : 1px solid #E8E8E8;"><a id="CheckAll" href="#">Select All</a> <a id="CheckNone" href="#">Clear All</a> | <b>Selected items :</b>
+ [% END %] [% IF ( verbose ) %] [% UNLESS ( print_basket ) %]<p style="padding: 7px 0; border-top : 1px solid #E8E8E8;"><a id="CheckAll" href="#">Select all</a> <a id="CheckNone" href="#">Clear all</a> | <b>Selected items :</b>
 
  <a href="#" onclick="delSelRecords(); return false;">Remove</a>
 
@@ -182,7 +182,7 @@ function placeHold () {
  <td> [% BIBLIO_RESULT.lccn %]</td>
  </tr>
  [% END %] [% IF ( BIBLIO_RESULT.MARCurlS ) %] <tr>
- <th scope="row">url(s)</th>
+ <th scope="row">URL(s)</th>
  <td>
  [% FOREACH MARCurl IN BIBLIO_RESULT.MARCurlS %] <p>[% IF ( MARCurl.part ) %][% MARCurl.part %] <br />[% END %] [% MARCurl.MARCurl %] [% IF ( MARCurl.notes ) %][% FOREACH note IN MARCurl.notes %][% note.note %]<br />[% END %][% END %] [% END %]</p></td>
  </tr>[% END %] <tr>
@@ -196,8 +196,8 @@ function placeHold () {
 
 [% ELSE %] [% UNLESS ( print_basket ) %] <p style="border-top : 1px solid #E8E8E8;">
  <form action="/cgi-bin/koha/basket/basket.pl" method="get" name="bookbag_form" id="bookbag_form">
- <a id="CheckAll" href="#">Select All</a>
- <a id="CheckNone" href="#">Clear All</a>
+ <a id="CheckAll" href="#">Select all</a>
+ <a id="CheckNone" href="#">Clear all</a>
  | <b>Selected items :</b>
 <a href="#" onclick="delSelRecords(); return false;">Remove</a>
 
@@ -207,7 +207,7 @@ function placeHold () {
  <table id="itemst">
  <thead><tr>
  [% UNLESS ( print_basket ) %]<th>&nbsp;</th>[% END %] <th>Title</th>
- <th>Item Type</th>
+ <th>Item type</th>
  <th>Location</th>
  </tr></thead>
 

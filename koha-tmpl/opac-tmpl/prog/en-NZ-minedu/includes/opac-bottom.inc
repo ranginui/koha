@@ -16,8 +16,10 @@
  [% END %] [% END %] [% END %] [% END %] [% END %] </ul>
  </div>
  [% END %] [% END %] [% IF ( OpacKohaUrl ) %] <span class="koha_url">
- <a class="koha_url" href="http://koha-community.org">Powered by <strong>Koha</strong></a>&nbsp;&nbsp;
+ Powered by <strong>
+ [% IF template.name.match('opac-main.tt') %] <a class="koha_url" href="http://koha-community.org">Koha</a>
+ [% ELSE %] <a class="koha_url" rel="nofollow" href="http://koha-community.org">Koha</a>
+ [% END %] </strong>&nbsp;&nbsp;
  </span>
-[% END %] [% END %] [% IF ( Babeltheque ) %] <script type="text/javascript" src="http://www.babeltheque.com/bw_30.js"></script>
-[% END %] </body>
+ [% END %] [% END %] </body>
 </html>

@@ -114,6 +114,7 @@ td {
 	border-left : 0;
 	font-size : 12px;
 	padding : 5px 5px 5px 5px;
+	height : 100%;
 }
 
 td:last-child {
@@ -124,6 +125,7 @@ td:last-child {
 	border-left : 0;
 	font-size : 12px;
 	padding : 5px 5px 5px 5px;
+	height : 100%;
 }
 
 table.list th {

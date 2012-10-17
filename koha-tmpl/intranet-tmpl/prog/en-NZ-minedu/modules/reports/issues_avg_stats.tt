@@ -1,7 +1,7 @@
 [% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Reports &rsaquo; Average issue period</title>
 [% INCLUDE 'doc-head-close.inc' %] [% INCLUDE 'calendar.inc' %] </head>
 <body id="rep_issues_avg_stats" class="rep">
-[% INCLUDE 'header.inc' %] [% INCLUDE 'cat-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/reports/reports-home.pl">Reports</a> [% IF ( do_it ) %]&rsaquo; <a href="/cgi-bin/koha/reports/issues_avg_stats.pl">Average Loan Period</a> &rsaquo; Results [% ELSE %]&rsaquo; Average Issue Period[% END %]</div>
+[% INCLUDE 'header.inc' %] [% INCLUDE 'cat-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/reports/reports-home.pl">Reports</a> [% IF ( do_it ) %]&rsaquo; <a href="/cgi-bin/koha/reports/issues_avg_stats.pl">Average checkout period</a> &rsaquo; Results [% ELSE %]&rsaquo; Average checkout period[% END %]</div>
 
 <div id="doc3" class="yui-t2">
  
@@ -9,7 +9,7 @@
  <div id="yui-main">
  <div class="yui-b">
 
-[% IF ( do_it ) %] [% FOREACH mainloo IN mainloop %] <h1>Average Loan Period</h1>
+[% IF ( do_it ) %] [% FOREACH mainloo IN mainloop %] <h1>Average checkout period</h1>
  [% IF ( mainloo.loopfilter ) %] <p>Filtered on</p>
  [% FOREACH loopfilte IN mainloo.loopfilter %] <p>[% IF ( loopfilte.err ) %] [% END %] [% loopfilte.crit %] =[% loopfilte.filter %][% IF ( loopfilte.err ) %] [% END %]</p>
  [% END %] [% END %] <table>
@@ -77,7 +77,7 @@
 									);
 								</script>
  <label for="to">To</label> <input size="10" id="to" name="Filter" value="" type="text" />
- <img src="[% themelang %]/lib/calendar/cal.gif" alt="Show Calendar" id="openCalendarTo" style="cursor: pointer;" border="0" />
+ <img src="[% themelang %]/lib/calendar/cal.gif" alt="Show calendar" id="openCalendarTo" style="cursor: pointer;" border="0" />
  <script type="text/javascript">
 								function validate2(date) {
 									var day = date.getDate();
@@ -124,7 +124,7 @@
  <td><input type="radio" name="Line" value="returndate" /></td>
  <td><input type="radio" name="Column" value="returndate" /></td>
  <td > <label for="fromRO">From</label> <input type="text" size="10" id="fromRO" name="Filter" />
- <img src="[% themelang %]/lib/calendar/cal.gif" alt="Show Calendar" border="0" id="openCalendarFromRO" style="cursor: pointer;" />
+ <img src="[% themelang %]/lib/calendar/cal.gif" alt="Show calendar" border="0" id="openCalendarFromRO" style="cursor: pointer;" />
  <script language="JavaScript" type="text/javascript">
 									function validate1(date) {
 										var day = date.getDate();
@@ -153,7 +153,7 @@
 									);
 								</script>
  <label for="toRO">To</label> <input type="text" size="10" id="toRO" name="Filter" value="" />
- <img src="[% themelang %]/lib/calendar/cal.gif" alt="Show Calendar" id="openCalendarToRO" style="cursor: pointer;" border="0" />
+ <img src="[% themelang %]/lib/calendar/cal.gif" alt="Show calendar" id="openCalendarToRO" style="cursor: pointer;" border="0" />
  <script type="text/javascript">
 								function validate2(date) {
 									var day = date.getDate();
@@ -215,7 +215,7 @@
  </tr>
 <!-- Modified according to statistics table
  <tr>
- <td>Issuing Library</td>
+ <td>Issuing library</td>
  <td><input type="radio" name="Line" value="issuingbranch"></td>
  <td><input type="radio" name="Column" value="issuingbranch"></td>
  <td >[% CGIBranch %]</td>

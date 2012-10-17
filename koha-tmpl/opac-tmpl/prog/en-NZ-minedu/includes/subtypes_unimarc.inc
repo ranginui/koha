@@ -1,5 +1,5 @@
  <fieldset>
- <legend>Coded Fields</legend>
+ <legend>Coded fields</legend>
  <p>
  <label>Audience</label>
  <select name="limit" class="subtype">
@@ -10,7 +10,7 @@
  <option value="aud:d">children (9-14)</option>
  <option value="aud:e">Young Adult</option>
  <option value="aud:k">Adult, serious</option>
- <option value="aud:m">Adult, General</option>
+ <option value="aud:m">Adult, general</option>
  <option value="aud:u">Unknown</option>
  </select>
  </p>
@@ -106,7 +106,7 @@
  </select>
  </p>
  <p>
- <label>Video Types</label>
+ <label>Video types</label>
  <select name="limit" class="subtype">
  <option value="">Any</option>
  <option value="Video-mt:a">motion picture</option>
@@ -118,7 +118,7 @@
  <fieldset>
  <legend>Serials</legend><p>
  <p>
- <label>Serial Type</label>
+ <label>Serial type</label>
  <select name="limit" class="subtype">
  <option value="">Any type</option>
  <option value="Type-Of-Serial:a">Periodical</option>

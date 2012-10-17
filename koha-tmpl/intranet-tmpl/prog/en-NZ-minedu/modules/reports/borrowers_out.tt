@@ -1,7 +1,7 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Reports &rsaquo; Members with No Issues</title>
+[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Reports &rsaquo; Patrons with no checkouts</title>
 [% INCLUDE 'doc-head-close.inc' %] [% INCLUDE 'calendar.inc' %] </head>
 <body id="rep_borrowers_out" class="rep">
-[% INCLUDE 'header.inc' %] [% INCLUDE 'cat-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/reports/reports-home.pl">Reports</a> &rsaquo; Borrowers with No Issues</div>
+[% INCLUDE 'header.inc' %] [% INCLUDE 'cat-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/reports/reports-home.pl">Reports</a> &rsaquo; Patrons with no checkouts</div>
 
 <div id="doc3" class="yui-t2">
  
@@ -9,7 +9,7 @@
  <div id="yui-main">
  <div class="yui-b">
 
-[% IF ( do_it ) %] [% FOREACH mainloo IN mainloop %] <h1>Members with no Issues</h1>
+[% IF ( do_it ) %] [% FOREACH mainloo IN mainloop %] <h1>Patrons with no checkouts</h1>
  [% IF ( mainloo.loopfilter ) %] <p>Filtered on</p>
  [% FOREACH loopfilte IN mainloo.loopfilter %] <p>[% IF ( loopfilte.err ) %] [% END %] [% loopfilte.crit %] =[% loopfilte.filter %][% IF ( loopfilte.err ) %] [% END %]</p>
  [% END %] [% END %] <table>
@@ -23,11 +23,11 @@
  [% FOREACH loopcel IN loopro.loopcell %] <td>[% IF ( loopcel.value ) %][% loopcel.value %][% END %] </td>
  [% END %] </tr>
  [% END %] </table>
- [% END %] [% ELSE %] <h1>Members with no Issues</h1>
+ [% END %] [% ELSE %] <h1>Patrons with no checkouts</h1>
  <form method="post" action="/cgi-bin/koha/reports/borrowers_out.pl">
  <fieldset class="rows">
  <ol>
- <li><label for="patroncategory">Borrower category:</label> <select name="Filter" id="patroncategory"><option value="" > Any Category code</option>
+ <li><label for="patroncategory">Borrower category:</label> <select name="Filter" id="patroncategory"><option value="" > Any category code</option>
  [% FOREACH borcatloo IN borcatloop %] <option value="[% borcatloo.value %]" >[% borcatloo.description %] </option> 
  [% END %] </select>
 </li>
@@ -61,7 +61,7 @@
  </select></li>
  <li><label for="criteria">By: </label><select name="Criteria" id="criteria">
  <option value ="" selected="selected">None</option>
- <option value ="categorycode">Member Category</option>
+ <option value ="categorycode">Member category</option>
  <option value ="branchcode">Library</option>
  </select></li>
  </ol>

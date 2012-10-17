@@ -81,11 +81,21 @@ function confirm_items_deletion() {
 	YAHOO.util.Event.onContentReady("cattoolbar", function () {
 		//	Menu for new record, new item, new subscription
 		var newmenu = [
-			[% IF ( CAN_user_editcatalogue_edit_catalogue ) %]{text: _("New Record"), url: "/cgi-bin/koha/cataloguing/addbiblio.pl" },[% END %]
-			[% IF ( CAN_user_editcatalogue_edit_items ) %]{text: _("New Item"), url: "/cgi-bin/koha/cataloguing/additem.pl?biblionumber=[% biblionumber %]#additema" },[% END %]
-			[% IF ( CAN_user_serials_create_subscription ) %]
-			{text: _("New Subscription"), url: "/cgi-bin/koha/serials/subscription-add.pl?biblionumber_for_new_subscription=[% biblionumber %]"},[% END %]
-			[% IF ( EasyAnalyticalRecords ) %][% IF ( CAN_user_editcatalogue_edit_catalogue ) %]{text: _("Analyze items"), url: "/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% biblionumber %]&analyze=1" },[% END %][% END %]
+			[% IF CAN_user_editcatalogue_edit_catalogue %]
+            {text: _("New record"), url: "/cgi-bin/koha/cataloguing/addbiblio.pl" },
+            [% END %]
+			[% IF ( CAN_user_editcatalogue_edit_items ) %]
+            {text: _("New item"), url: "/cgi-bin/koha/cataloguing/additem.pl?biblionumber=[% biblionumber %]#additema" },
+            [% END %]
+            [% IF ( CAN_user_serials_create_subscription ) %]
+                {text: _("New subscription"), url: "/cgi-bin/koha/serials/subscription-add.pl?biblionumber_for_new_subscription=[% biblionumber %]"},
+            [% END %]
+            [% IF ( EasyAnalyticalRecords && CAN_user_editcatalogue_edit_catalogue ) %]
+                {text: _("Analyze items"), url: "/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% biblionumber %]&analyze=1" },
+            [% END %]
+            [% IF CAN_user_editcatalogue_edit_catalogue %]
+                {text: _("New child record"), url: "/cgi-bin/koha/cataloguing/addbiblio.pl?parentbiblionumber=[% biblionumber %]" },
+            [% END %]
 		];
 		if(newmenu.length){
 			new YAHOO.widget.Button({
@@ -98,14 +108,15 @@ function confirm_items_deletion() {
 			 });
 		 }
 	    var editmenu = [
-	        [% IF ( CAN_user_editcatalogue_edit_catalogue ) %]{ text: _("Edit Record"), url: "/cgi-bin/koha/cataloguing/addbiblio.pl?biblionumber=[% biblionumber %]&amp;frameworkcode=&amp;op=" },[% END %]
-	        [% IF ( CAN_user_editcatalogue_edit_items ) %]{ text: _("Edit Items"), url: "/cgi-bin/koha/cataloguing/additem.pl?biblionumber=[% biblionumber %]" },[% END %]
-	        [% IF ( CAN_user_editcatalogue_edit_items ) %]{ text: _("Attach Item"), url: "/cgi-bin/koha/cataloguing/moveitem.pl?biblionumber=[% biblionumber %]" },[% END %]
-                [% IF ( EasyAnalyticalRecords ) %][% IF ( CAN_user_editcatalogue_edit_items ) %]{ text: _("Link to Host Item"), url: "/cgi-bin/koha/cataloguing/linkitem.pl?biblionumber=[% biblionumber %]" },[% END %][% END %]
-	        [% IF ( CAN_user_editcatalogue_edit_catalogue ) %]{ text: _("Edit as New (Duplicate)"), url: "/cgi-bin/koha/cataloguing/addbiblio.pl?biblionumber=[% biblionumber %]&amp;frameworkcode=&amp;op=duplicate" },[% END %]
-			[% IF ( CAN_user_editcatalogue_edit_catalogue ) %]{ text: _("Replace Record via Z39.50"), onclick: {fn: PopupZ3950 } },[% END %]
-			[% IF ( CAN_user_editcatalogue_edit_catalogue ) %]{ text: _("Delete Record"), onclick: {fn: confirm_deletion }[% IF ( count ) %],id:'disabled'[% END %] },[% END %]
-	        [% IF ( CAN_user_editcatalogue_edit_items ) %]{ text: _("Delete all Items"), onclick: {fn: confirm_items_deletion }[% UNLESS ( count ) %],id:'disabled'[% END %] }[% END %]
+            [% IF ( CAN_user_editcatalogue_edit_catalogue ) %]{ text: _("Edit record"), url: "/cgi-bin/koha/cataloguing/addbiblio.pl?biblionumber=[% biblionumber %]&amp;frameworkcode=&amp;op=" },[% END %]
+            [% IF ( CAN_user_editcatalogue_edit_items ) %]{ text: _("Edit items"), url: "/cgi-bin/koha/cataloguing/additem.pl?biblionumber=[% biblionumber %]" },[% END %]
+            [% IF ( CAN_user_editcatalogue_edit_items ) %]{ text: _("Attach item"), url: "/cgi-bin/koha/cataloguing/moveitem.pl?biblionumber=[% biblionumber %]" },[% END %]
+            [% IF ( EasyAnalyticalRecords ) %][% IF ( CAN_user_editcatalogue_edit_items ) %]{ text: _("Link to host item"), url: "/cgi-bin/koha/cataloguing/linkitem.pl?biblionumber=[% biblionumber %]" },[% END %][% END %]
+            [% IF ( LocalCoverImages || OPACLocalCoverImages) %][% IF ( CAN_user_tools_upload_local_cover_images ) %]{ text: _("Upload image"), url: "/cgi-bin/koha/tools/upload-cover-image.pl?biblionumber=[% biblionumber %]&filetype=image" },[% END %][% END %]
+            [% IF ( CAN_user_editcatalogue_edit_catalogue ) %]{ text: _("Edit as new (duplicate)"), url: "/cgi-bin/koha/cataloguing/addbiblio.pl?biblionumber=[% biblionumber %]&amp;frameworkcode=&amp;op=duplicate" },[% END %]
+            [% IF ( CAN_user_editcatalogue_edit_catalogue ) %]{ text: _("Replace record via Z39.50"), onclick: {fn: PopupZ3950 } },[% END %]
+            [% IF ( CAN_user_editcatalogue_edit_catalogue ) %]{ text: _("Delete record"), onclick: {fn: confirm_deletion }[% IF ( count ) %],id:'disabled'[% END %] },[% END %]
+            [% IF ( CAN_user_editcatalogue_edit_items ) %]{ text: _("Delete all items"), onclick: {fn: confirm_items_deletion }[% UNLESS ( count ) %],id:'disabled'[% END %] }[% END %]
 	    ];
 		if(editmenu.length){
 			new YAHOO.widget.Button({
@@ -198,16 +209,16 @@ function confirm_items_deletion() {
 
 <ul class="toolbar" id="cattoolbar">
 
- [% IF ( CAN_user_editcatalogue_edit_catalogue ) %] <li><a id="newbiblio" href="/cgi-bin/koha/cataloguing/addbiblio.pl">New Record</a></li>
- [% END %] [% IF ( CAN_user_editcatalogue_edit_items ) %] <li><a id="newitem" href="/cgi-bin/koha/cataloguing/additem.pl?biblionumber=[% biblionumber %]">New Item</a></li>
- [% END %] [% IF ( CAN_user_serials_create_subscription ) %] <li><a id="newsub" href="/cgi-bin/koha/serials/subscription-add.pl?biblionumber_for_new_subscription=[% biblionumber %]">New Subscription</a></li>
- [% END %] [% IF ( CAN_user_editcatalogue_edit_catalogue ) %] <li><a id="editbiblio" href="/cgi-bin/koha/cataloguing/addbiblio.pl?biblionumber=[% biblionumber %]&amp;frameworkcode=[% current_framework %]&amp;op=">Edit Record</a></li>
- [% END %] [% IF ( CAN_user_editcatalogue_edit_items ) %] <li><a id="edititems" href="/cgi-bin/koha/cataloguing/additem.pl?biblionumber=[% biblionumber %]">Edit Items</a></li>
- [% END %] [% IF ( CAN_user_editcatalogue_edit_catalogue ) %] <li><a id="duplicatebiblio" href="/cgi-bin/koha/cataloguing/addbiblio.pl?biblionumber=[% biblionumber %]&amp;frameworkcode=[% current_framework %]&amp;op=duplicate">Duplicate Record</a></li>
+ [% IF ( CAN_user_editcatalogue_edit_catalogue ) %] <li><a id="newbiblio" href="/cgi-bin/koha/cataloguing/addbiblio.pl">New record</a></li>
+ [% END %] [% IF ( CAN_user_editcatalogue_edit_items ) %] <li><a id="newitem" href="/cgi-bin/koha/cataloguing/additem.pl?biblionumber=[% biblionumber %]">New item</a></li>
+ [% END %] [% IF ( CAN_user_serials_create_subscription ) %] <li><a id="newsub" href="/cgi-bin/koha/serials/subscription-add.pl?biblionumber_for_new_subscription=[% biblionumber %]">New subscription</a></li>
+ [% END %] [% IF ( CAN_user_editcatalogue_edit_catalogue ) %] <li><a id="editbiblio" href="/cgi-bin/koha/cataloguing/addbiblio.pl?biblionumber=[% biblionumber %]&amp;frameworkcode=[% current_framework %]&amp;op=">Edit record</a></li>
+ [% END %] [% IF ( CAN_user_editcatalogue_edit_items ) %] <li><a id="edititems" href="/cgi-bin/koha/cataloguing/additem.pl?biblionumber=[% biblionumber %]">Edit items</a></li>
+ [% END %] [% IF ( CAN_user_editcatalogue_edit_catalogue ) %] <li><a id="duplicatebiblio" href="/cgi-bin/koha/cataloguing/addbiblio.pl?biblionumber=[% biblionumber %]&amp;frameworkcode=[% current_framework %]&amp;op=duplicate">Duplicate record</a></li>
  [% END %] [% IF ( CAN_user_editcatalogue_edit_catalogue ) %] <li><a id="deletebiblio" href="/cgi-bin/koha/cataloguing/addbiblio.pl?op=delete&amp;biblionumber=[% biblionumber %]">Delete</a></li>
  [% END %] <li><a id="addtoshelf" href="/cgi-bin/koha/virtualshelves/addbybiblionumber.pl?biblionumber=[% biblionumber %]">Add to shelf</a></li>
  <li><a id="printbiblio" href="/cgi-bin/koha/catalogue/detailprint.pl?biblionumber=[% biblionumber %]">Print</a></li>
- [% IF ( CAN_user_reserveforothers ) %] [% UNLESS ( norequests ) %]<li><a id="placehold" href="/cgi-bin/koha/reserve/request.pl?biblionumber=[% biblionumber %]">Request item(s)</a></li>[% END %] [% END %] [% IF ( CAN_user_editcatalogue_edit_catalogue ) %]<li id="z3950searchc"><input type="button" id="z3950search" value="Z39.50 Search" onclick="PopupZ3950(); return false;" /></li>[% END %] </ul>
+ [% IF ( CAN_user_reserveforothers ) %] [% UNLESS ( norequests ) %]<li><a id="placehold" href="/cgi-bin/koha/reserve/request.pl?biblionumber=[% biblionumber %]">Request item(s)</a></li>[% END %] [% END %] [% IF ( CAN_user_editcatalogue_edit_catalogue ) %]<li id="z3950searchc"><input type="button" id="z3950search" value="Z39.50 Search" onclick="if (confirm(_('Please note that this Z39.50 search could replace the current record.'))){ PopupZ3950(); } return false;" /></li>[% END %] </ul>
 </form>
 </div>
 

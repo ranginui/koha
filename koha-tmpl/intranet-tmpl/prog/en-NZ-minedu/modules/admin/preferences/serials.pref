@@ -31,6 +31,12 @@ Serials:
       pref: RoutingListAddReserves
     - received serials on hold if they are on a routing list.
   - 
+    - "Include following note on all routing lists:"
+    - 
+      class: code
+      pref: RoutingListNote
+      type: textarea
+  - 
     - Show the
     - 
       class: integer
@@ -50,3 +56,7 @@ Serials:
         simplified: brief history
       pref: SubscriptionHistory
     - view of serial issues.
+  - 
+    - List of fields which must not be rewritten when a subscription is duplicated (Separated by pipe |)
+    - 
+      pref: SubscriptionDuplicateDroppedInput

@@ -1,4 +1,4 @@
- [% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Tools &rsaquo; Member Card Creator &rsaquo; Manage Member Card Batches</title>
+ [% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Tools &rsaquo; Patron card creator &rsaquo; Manage patron card batches</title>
  [% INCLUDE 'doc-head-close.inc' %] [% INCLUDE 'greybox.inc' %] <script type="text/javascript">
         //<![CDATA[
         $(document).ready(function() {
@@ -18,14 +18,16 @@
 </head>
 <body id="pcard_edit-batch" class="tools pcard">
  [% INCLUDE 'header.inc' %] [% INCLUDE 'cat-search.inc' %] <div id="breadcrumbs">
- <a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/tools/tools-home.pl">Tools</a> &rsaquo; <a href="/cgi-bin/koha/patroncards/home.pl">Borrower Card Creator</a> &rsaquo; <a href="/cgi-bin/koha/patroncards/manage.pl?card_element=batch">Manage Borrower Card Batches</a> &rsaquo; Manage Batch Number [% batch_id %] </div>
+ <a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/tools/tools-home.pl">Tools</a> &rsaquo; <a href="/cgi-bin/koha/patroncards/home.pl">Member card creator</a> &rsaquo; <a href="/cgi-bin/koha/patroncards/manage.pl?card_element=batch">Manage patron card batches</a> &rsaquo;
+ Manage batch number [% batch_id %]
+ </div>
  <div id="doc3" class="yui-t2">
  <div id="bd">
  <div id="yui-main">
  <div class="yui-b">
  [% INCLUDE 'patroncards-batches-toolbar.inc' %] [% INCLUDE 'error-messages.inc' %] <div class="yui-g">
  <div class="yui-u first" id="manage-patroncard-batches">
- <div class="hint">Current Branch: [% LoginBranchname %]</div>
+ <div class="hint">Current library: [% LoginBranchname %]</div>
  [% IF ( table_loop ) %] <form name="items" class="checkboxed">
  <h2>Items in batch number [% batch_id %]</h2>
  <table>
@@ -38,7 +40,7 @@
  [% END %] [% END %] </tr>
  [% END %] [% END %] </table>
  </form>
- [% ELSE %] <div class="dialog message"><h4>There are no items in Batch [% batch_id %] yet</h4>
+ [% ELSE %] <div class="dialog message"><h4>There are no items in batch [% batch_id %] yet</h4>
  <p>Use the toolbar above to add items.</p></div>
  [% END %] </div>
  [% IF ( duplicate_message ) %] <div class="yui-u">

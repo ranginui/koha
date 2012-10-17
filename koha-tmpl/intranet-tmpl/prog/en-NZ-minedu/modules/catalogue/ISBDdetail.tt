@@ -1,8 +1,18 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Catalogue &rsaquo; [% IF ( unknownbiblionumber ) %] Unknown record [% ELSE %] ISBD Details for [% title %] [% END %] </title>
+[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Catalog &rsaquo;
+ [% IF ( unknownbiblionumber ) %]
+ Unknown record
+ [% ELSE %]
+ ISBD details for [% title %]
+ [% END %]
+</title>
 [% INCLUDE 'doc-head-close.inc' %] </head>
 <body id="catalog_ISBDdetail" class="catalog">
 
-[% INCLUDE 'header.inc' %] [% INCLUDE 'cat-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/catalogue/search.pl">Catalogue</a> &rsaquo; [% IF ( unknownbiblionumber ) %] Unknown record [% ELSE %] ISBD Details for <i>[% biblionumber %]</i>
+[% INCLUDE 'header.inc' %] [% INCLUDE 'cat-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/catalogue/search.pl">Catalogue</a> &rsaquo;
+ [% IF ( unknownbiblionumber ) %]
+ Unknown record
+ [% ELSE %]
+ ISBD details for <i>[% biblionumber %]</i>
  [% END %] </div>
 
 <div id="doc3" class="yui-t2">
@@ -11,7 +21,11 @@
 [% ELSE %] <div id="bd">
  <div id="yui-main">
  <div class="yui-b">
- [% INCLUDE 'cat-toolbar.inc' %] <div id="catalogue_ISBDdetail">
+ [% INCLUDE 'cat-toolbar.inc' %]
+ [% IF ( ocoins ) %]
+ <!-- COinS / OpenURL -->
+ <span class="Z3988" title="[% ocoins %]"></span>
+ [% END %] <div id="catalogue_ISBDdetail">
  [% ISBD %] </div>
  </div>
  </div>

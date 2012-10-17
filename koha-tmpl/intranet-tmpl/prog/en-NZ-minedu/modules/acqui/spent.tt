@@ -1,5 +1,17 @@
 [% USE KohaDates %] [% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Acquisitions &rsaquo; Spent</title>
-[% INCLUDE 'doc-head-close.inc' %] </head>
+<link rel="stylesheet" type="text/css" href="[% themelang %]/css/datatables.css" />
+[% INCLUDE 'doc-head-close.inc' %] <script type="text/javascript" src="[% themelang %]/lib/jquery/plugins/jquery.dataTables.min.js"></script>
+[% INCLUDE 'datatables-strings.inc' %] <script type="text/javascript" src="[% themelang %]/js/datatables.js"></script>
+<script type="text/javascript">
+//<![CDATA[
+ $(document).ready(function() {
+    var spent = $("#spent").dataTable($.extend(true, {}, dataTablesDefaults, {
+        "sPaginationType": "four_button"
+    } ) );
+ });
+ //]]>
+</script>
+</head>
 <body id="acq_spent" class="acq">
 [% INCLUDE 'header.inc' %] [% INCLUDE 'acquisitions-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/acqui/acqui-home.pl">Acquisitions</a> &rsaquo; Spent - [% fund_code %]</div>
 
@@ -22,10 +34,10 @@
  <th> Invoice </th>
  <th> Itemtype </th>
  <th> Received </th>
- <th> Unit Price </th>
- <th> Freight per Item </th>
- <th> Date Ordered </th>
- <th> Date Received </th>
+ <th> Unit price </th>
+ <th> Freight per item </th>
+ <th> Date ordered </th>
+ <th> Date received </th>
  <th> Subtotal </th>
  </tr>
  </thead>
@@ -35,13 +47,13 @@
  [% END %] <td class="cell">
  [% order.title %] </td>
  <td class="cell">
- <a href="/cgi-bin/koha/acqui/orderreceive.pl?ordernumber=[% order.ordernumber %]&biblio=[% order.biblionumber %]&invoice=[% order.booksellerinvoicenumber %]&supplierid=[% order.booksellerid %]&catview=yes">[% order.ordernumber %]</a>
+ <a href="/cgi-bin/koha/acqui/orderreceive.pl?ordernumber=[% order.ordernumber %]&amp;biblio=[% order.biblionumber %]&amp;invoice=[% order.booksellerinvoicenumber %]&amp;booksellerid=[% order.booksellerid %]&amp;catview=yes">[% order.ordernumber %]</a>
  </td>
  <td class="cell">
- <a href="/cgi-bin/koha/acqui/supplier.pl?supplierid=[% order.booksellerid %]">[% order.booksellerid %]</a>
+ <a href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% order.booksellerid %]">[% order.booksellerid %]</a>
  </td>
  <td class="cell">
- <a href="/cgi-bin/koha/acqui/parcel.pl?invoice=[% order.booksellerinvoicenumber %]&supplierid=[% order.booksellerid %]&datereceived=[% order.datereceived %]">[% order.booksellerinvoicenumber %]</a>
+ <a href="/cgi-bin/koha/acqui/parcel.pl?invoice=[% order.booksellerinvoicenumber %]&amp;booksellerid=[% order.booksellerid %]&amp;datereceived=[% order.datereceived %]">[% order.booksellerinvoicenumber %]</a>
  </td>
  <td class="cell">
  [% order.itype %] </td>

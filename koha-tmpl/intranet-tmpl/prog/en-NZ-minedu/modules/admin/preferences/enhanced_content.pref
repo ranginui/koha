@@ -119,6 +119,14 @@ Enhanced Content:
           1: Do
         pref: Babeltheque
       - "include information (such as reviews and citations) from Babelth\xC3\xA8que in item detail pages on the OPAC."
+    - 
+      - 
+        pref: Babeltheque_url_js
+      - Defined the url for the Babeltheque javascript file (eg. http://www.babeltheque.com/bw_XX.js)
+    - 
+      - 
+        pref: Babeltheque_url_update
+      - Defined the url for the Babeltheque update periodically (eq. http://www.babeltheque.com/.../file.csv.bz2).
   Baker and Taylor: 
     - 
       - 
@@ -179,6 +187,28 @@ Enhanced Content:
           "": in line with the bibliographic information.
           1: in tabs.
         pref: LibraryThingForLibrariesTabbedView
+  Local Cover Images: 
+    - 
+      - 
+        choices: 
+          "": Don't display
+          1: Display
+        pref: LocalCoverImages
+      - local cover images on intranet search and details pages.
+    - 
+      - 
+        choices: 
+          "": Don't display
+          1: Display
+        pref: OPACLocalCoverImages
+      - local cover images on OPAC search and details pages.
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: AllowMultipleCovers
+      - multiple images to be attached to each bibliographic record.
   Novelist Select: 
     - 
       - 

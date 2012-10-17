@@ -9,8 +9,7 @@ Searching:
         pref: NoZebra
       - the Zebra search engine.  It is recommended to use Zebra; the option to not use Zebra is deprecated and is not guaranteed to work.
     - 
-      - 
-        When Zebra is not in use, translate the following MARC fields to the following indexes (each line should look something like <code>'indexname' =&gt; '100a,245a,500*',</code>): ~
+      - When Zebra is not in use, translate the following MARC fields to the following indexes (each line should look something like <code>'indexname' =&gt; '100a,245a,500*',</code>)
       - 
         class: list
         pref: NoZebraIndexes
@@ -96,7 +95,7 @@ Searching:
         choices: 
           acqdate: date added
           author: author
-          callnumber: call number
+          call_number: call number
           popularity: total number of checkouts
           pubdate: date of publication
           relevance: relevance
@@ -132,7 +131,7 @@ Searching:
         choices: 
           acqdate: date added
           author: author
-          callnumber: call number
+          call_number: call number
           popularity: total number of checkouts
           pubdate: date of publication
           relevance: relevance
@@ -174,22 +173,28 @@ Searching:
           1: Show
         pref: OPACItemsResultsDisplay
         type: boolean
-      - an item's branch, location and call number in OPAC search results.
+      - an item's library, location and call number in OPAC search results.
     - 
       - Truncate facets length to
       - 
         class: integer
         pref: FacetLabelTruncationLength
       - characters, in OPAC/staff interface.
-  Search Form: 
     - 
-      - Show checkboxes to search by
+      - "Display "
       - 
         choices: 
-          ccode: collection code
-          itemtypes: itemtype
+          Control: Itemtype information from the MARC control fields
+          Koha: Itemtype information from the Koha biblio level itemtype
+        pref: BiblioItemtypeImage
+  Search Form: 
+    - 
+      - Show tabs in OPAC and staff-side advanced search for limiting searches on the
+      - 
+        class: long
         pref: AdvancedSearchTypes
-      - on the OPAC and staff advanced search pages.
+      - fields (separate values with |). Tabs appear in the order listed.<br/>
+      - "<em>Currently supported values</em>: Item types (<strong>itemtypes</strong>), Collection Codes (<strong>ccode</strong>) and Shelving Location (<strong>loc</strong>)."
     - 
       - By default,
       - 

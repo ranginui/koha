@@ -1,4 +1,4 @@
-
+<div class="gradient">
 <h1 id="logo"><a href="/cgi-bin/koha/mainpage.pl">[% LibraryName %]</a></h1><!-- Begin z3950 Admin Resident Search Box -->
 [% IF ( CAN_user_circulate ) %][% IF ( CircAutocompl ) %]<script type="text/javascript">
 //<![CDATA[
@@ -45,7 +45,7 @@ YAHOO.util.Event.onContentReady("header_search", function() {
 //]]>
 </script>[% END %][% END %] <div id="header_search">
  <div id="z3950_search" class="residentsearch">
- <p class="tip">Z39.50 Server Search:</p>
+ <p class="tip">Z39.50 server search:</p>
  <form action="/cgi-bin/koha/admin/z3950servers.pl" method="post">
  <input type="text" name="searchfield" size="40" value="[% searchfield %]" />
  <input type="submit" class="submit" name="search" value="Search" />
@@ -77,7 +77,8 @@ YAHOO.util.Event.onContentReady("header_search", function() {
  </form>
  </div>
  [% END %] <ul>
- <li><a href="/cgi-bin/koha/admin/z3950servers.pl#z3950_search">Search z390.50 Servers</a></li>
- [% IF ( CAN_user_circulate ) %]<li><a href="/cgi-bin/koha/circ/circulation.pl#circ_search">Issue</a></li>[% END %] [% IF ( CAN_user_catalogue ) %]<li><a href="/cgi-bin/koha/catalogue/search.pl#catalog_search">Search the Catalogue</a></li>[% END %] </ul> 
+ <li><a href="/cgi-bin/koha/admin/z3950servers.pl#z3950_search">Search Z390.50 servers</a></li>
+ [% IF ( CAN_user_circulate ) %]<li><a href="/cgi-bin/koha/circ/circulation.pl#circ_search">Check out</a></li>[% END %] [% IF ( CAN_user_catalogue ) %]<li><a href="/cgi-bin/koha/catalogue/search.pl#catalog_search">Search the catalog</a></li>[% END %] </ul> 
+</div>
 </div>
 <!-- End Members Resident Search Box -->

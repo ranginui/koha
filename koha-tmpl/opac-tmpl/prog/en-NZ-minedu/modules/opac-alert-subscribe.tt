@@ -1,4 +1,4 @@
-[% INCLUDE 'doc-head-open.inc' %][% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha Online[% END %] Catalogue &rsaquo; Serials [% INCLUDE 'doc-head-close.inc' %] </head>
+[% INCLUDE 'doc-head-open.inc' %][% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha online[% END %] catalogue &rsaquo; Serials [% INCLUDE 'doc-head-close.inc' %] </head>
 <body id="opac-alert-subscribe">
 [% INCLUDE 'masthead.inc' %] <div id="doc3" class="yui-t1">
 <div id="bd">

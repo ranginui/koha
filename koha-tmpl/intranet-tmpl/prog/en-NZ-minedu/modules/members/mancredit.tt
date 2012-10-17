@@ -1,4 +1,4 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Members &rsaquo; Create Manual Credit</title>
+[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Borrowers &rsaquo; Create manual credit</title>
 [% INCLUDE 'doc-head-close.inc' %] <script type="text/javascript">
 //<![CDATA[
 $(document).ready(function(){
@@ -8,7 +8,7 @@ $(document).ready(function(){
 </script>
 </head>
 <body id="pat_mancredit" class="pat">
-[% INCLUDE 'header.inc' %] [% INCLUDE 'patron-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/members/members-home.pl">Members</a> &rsaquo; Manual Credit</div>
+[% INCLUDE 'header.inc' %] [% INCLUDE 'patron-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/members/members-home.pl">Members</a> &rsaquo; Manual credit</div>
 
 <div id="doc3" class="yui-t2">
  
@@ -31,7 +31,7 @@ $(document).ready(function(){
 <input type="hidden" name="borrowernumber" id="borrowernumber" value="[% borrowernumber %]" />
 
 <fieldset class="rows">
-<legend>Manual Credit</legend><ol>
+<legend>Manual credit</legend><ol>
  <li><label for="type">Credit Type: </label><select name="type" id="type">
 <option value="C">Credit</option>
 <option value="FOR">Forgiven</option>
@@ -42,7 +42,7 @@ $(document).ready(function(){
  <li><label for="amount">Amount: </label><input type="text" name="amount" id="amount" /> Example: 5.00</li>
 </ol></fieldset>
 
-<fieldset class="action"><input type="submit" name="add" value="Add Credit" /> <a class="cancel" href="/cgi-bin/koha/members/boraccount.pl?borrowernumber=[% borrowernumber %]">Cancel</a></fieldset>
+<fieldset class="action"><input type="submit" name="add" value="Add credit" /> <a class="cancel" href="/cgi-bin/koha/members/boraccount.pl?borrowernumber=[% borrowernumber %]">Cancel</a></fieldset>
 </form>
 
 </div></div>

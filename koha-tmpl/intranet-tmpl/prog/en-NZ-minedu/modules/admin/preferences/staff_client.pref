@@ -50,7 +50,7 @@ Staff Client:
         pref: IntranetNav
         type: textarea
     - 
-      - "Include the following JavaScript on all pages in the staff clien:"
+      - "Include the following JavaScript on all pages in the staff client:"
       - 
         class: code
         pref: intranetuserjs
@@ -62,19 +62,17 @@ Staff Client:
         pref: IntranetFavicon
       - for the Staff Client's favicon. (This should be a complete URL, starting with <code>http://</code>.)
     - 
-      - Show biblio records on result page in the staff client
+      - "Display results in the staff client using XSLT stylesheet at: "
       - 
-        choices: 
-          "": normally.
-          1: using XSLT stylesheets.
+        class: file
         pref: XSLTResultsDisplay
+      - <br />Options:<br />- leave empty for "no xslt"<br />- enter "default" for the default one<br />- put a path to define a xslt file<br />- put an URL for an external specific stylesheet.<br />{langcode} will be replaced with current interface language
     - 
-      - Show item details pages in the staff client
+      - "Display details in the staff client using XSLT stylesheet at: "
       - 
-        choices: 
-          "": normally.
-          1: using XSLT stylesheets.
+        class: file
         pref: XSLTDetailsDisplay
+      - <br />Options:<br />- leave empty for "no xslt"<br />- enter "default" for the default one<br />- put a path to define a xslt file<br />- put an URL for an external specific stylesheet.<br />{langcode} will be replaced with current interface language
     - 
       - Use the Yahoo UI libraries
       - 
@@ -99,6 +97,12 @@ Staff Client:
           Results: Results page (for future use, Results XSLT not functional at this time).
         pref: Display856uAsImage
       - "Note: The corresponding XSLT option must be turned on."
+    - 
+      - Include the stylesheet at
+      - 
+        class: url
+        pref: SlipCSS
+      - on Issue and Reserve Slips. (This should be a complete URL, starting with <code>http://</code>.)
   Options: 
     - 
       - 

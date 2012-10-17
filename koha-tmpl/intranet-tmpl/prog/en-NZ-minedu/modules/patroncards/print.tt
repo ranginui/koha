@@ -1,4 +1,4 @@
- [% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Tools &rsaquo; Member Cards &rsaquo; Member Card Printing/Exporting</title>
+ [% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Tools &rsaquo; Patron cards &rsaquo; Patron card printing/exporting</title>
  [% INCLUDE 'doc-head-close.inc' %] <script type="text/javascript">
         //<![CDATA[
             function Done() {
@@ -14,7 +14,7 @@
  [% IF ( batches ) %] <form>
  <h3>Click on the following link(s) to download the exported batch(es).</h3>
  <fieldset>
- [% FOREACH batche IN batches %] [% IF ( batche.label_ids ) %] <legend>[% batche.card_count %] Single Borrower Cards</legend>
+ [% FOREACH batche IN batches %] [% IF ( batche.label_ids ) %] <legend>[% batche.card_count %] Single patron cards</legend>
  <p>
  <a class="document pdf" href="/cgi-bin/koha/patroncards/[% batche.create_script %]?batch_id=[% batche.batch_id %]&amp;template_id=[% batche.template_id %]&amp;layout_id=[% batche.layout_id %]&amp;start_card=[% batche.start_card %][% batche.label_ids %]">label_single_[% batche.card_count %].pdf</a>
  </p>
@@ -22,7 +22,7 @@
  <p>
  <a class="document pdf" href="/cgi-bin/koha/patroncards/[% batche.create_script %]?template_id=[% batche.template_id %]&amp;layout_id=[% batche.layout_id %]&amp;start_card=[% batche.start_card %][% batche.borrower_numbers %]">label_single_[% batche.card_count %].pdf</a>
  </p>
- [% ELSE %] <legend>Card Batch Number [% batche.batch_id %]</legend>
+ [% ELSE %] <legend>Card batch number [% batche.batch_id %]</legend>
  <p>
  <a class="document pdf" href="/cgi-bin/koha/patroncards/create-pdf.pl?batch_id=[% batche.batch_id %]&amp;template_id=[% batche.template_id %]&amp;layout_id=[% batche.layout_id %]&amp;start_card=[% batche.start_card %]">label_batch_[% batche.batch_id %].pdf</a>
  </p>

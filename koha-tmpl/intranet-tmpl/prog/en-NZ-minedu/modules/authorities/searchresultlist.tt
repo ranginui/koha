@@ -1,4 +1,4 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Authorities &rsaquo; Authority search results</title>
+[% PROCESS 'authorities-search-results.inc' %] [% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Authorities &rsaquo; Authority search results</title>
 [% INCLUDE 'doc-head-close.inc' %] <script type="text/javascript" >
 //<![CDATA[
 function confirm_deletion(id) {
@@ -50,7 +50,7 @@ function searchauthority() {
  </tr>
 [% FOREACH resul IN result %] [% UNLESS ( loop.odd ) %] <tr class="highlight">
  [% ELSE %] <tr>
- [% END %] <td>[% resul.summary %]</td>
+ [% END %] <td>[% PROCESS authresult summary=resul.summary %]</td>
  <td><a href="detail.pl?authid=[% resul.authid %]">Details</a></td>
  [% UNLESS ( resul.isEDITORS ) %] <td>
  <a href="../catalogue/search.pl?type=intranet&amp;op=do_search&amp;idx=an,phr&amp;q=[% resul.authid %]" class="button">[% resul.used %] biblio(s)</a>

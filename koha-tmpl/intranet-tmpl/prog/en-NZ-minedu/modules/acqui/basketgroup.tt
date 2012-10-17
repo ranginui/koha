@@ -1,4 +1,4 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Basket Grouping for [% booksellername |html %]</title>
+[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Basket grouping for [% booksellername |html %]</title>
 [% INCLUDE 'doc-head-close.inc' %] <script type="text/javascript" src="[% themelang %]/js/acq.js"></script>
 [% IF ( grouping ) %] <script type="text/javascript" src="[% yuipath %]/yahoo-dom-event/yahoo-dom-event.js"></script>
 <script type="text/javascript" src="[% yuipath %]/animation/animation-min.js"></script>
@@ -102,11 +102,11 @@ function submitForm(form) {
 
 function yuiToolbar() {
 	var booksellermenu = [
-		{ text: _("Vendor"), url: "/cgi-bin/koha/acqui/supplier.pl?supplierid=[% booksellerid %]" },
-		{ text: _("Edit vendor"), url: "/cgi-bin/koha/acqui/booksellers.pl?booksellerid=[% booksellerid %]"},
+		{ text: _("Vendor"), url: "/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% booksellerid %]" },
+		{ text: _("Edit vendor"), url: "/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% booksellerid %]&op=enter"},
 	]
 	var ordersbutton = [
-	         { text: _("Manage orders"), url: "/cgi-bin/koha/acqui/booksellers.pl?supplierid=[% booksellerid %]" },
+	         { text: _("Manage orders"), url: "/cgi-bin/koha/acqui/booksellers.pl?booksellerid=[% booksellerid %]" },
 	         { text: _("Edit uncertain prices"), url: "/cgi-bin/koha/acqui/uncertainprice.pl?booksellerid=[% booksellerid %]&owner=1" },
 	]
 	new YAHOO.widget.Button("newbasketgroup");
@@ -130,15 +130,15 @@ function yuiToolbar() {
 </script>
 </head>
 <body id="acq_basketgroup" class="acq">
-[% INCLUDE 'header.inc' %] [% INCLUDE 'acquisitions-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/acqui/acqui-home.pl">Acquisitions</a> &rsaquo; <a href="/cgi-bin/koha/acqui/supplier.pl?supplierid=[% booksellerid %]">[% booksellername |html %]</a> &rsaquo; Basket Grouping</div>
+[% INCLUDE 'header.inc' %] [% INCLUDE 'acquisitions-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/acqui/acqui-home.pl">Acquisitions</a> &rsaquo; <a href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% booksellerid %]">[% booksellername |html %]</a> &rsaquo; Basket grouping</div>
 
 <div id="doc" class="yui-t7">
  
  <div class="yui-b"> 
  <div id="toolbar">
- <a href="?op=add&amp;booksellerid=[% booksellerid %]" name="newbasketgroup" id="newbasketgroup">New Basket Group</a>
+ <a href="?op=add&amp;booksellerid=[% booksellerid %]" name="newbasketgroup" id="newbasketgroup">New basket group</a>
  </div>
- <h1>Basket Grouping for <a href="/cgi-bin/koha/acqui/supplier.pl?supplierid=[% booksellerid %]">[% booksellername |html %]</a></h1>
+ <h1>Basket grouping for <a href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% booksellerid %]">[% booksellername |html %]</a></h1>
  </div>
 [% IF ( grouping ) %] <div id="bd"> 
  <div class="yui-g"> 
@@ -148,7 +148,7 @@ function yuiToolbar() {
  <div id="groups">
  <fieldset class="brief">
  <div class="workarea_alt" >
- <h3>Ungrouped Baskets</h3>
+ <h3>Ungrouped baskets</h3>
  <ul id="ungrouped" class="draglist_alt">
  [% IF ( baskets ) %] [% FOREACH basket IN baskets %] <li class="ungrouped" id="b-[% basket.basketno %]" >
  <a href="basket.pl?basketno=[% basket.basketno %]">
@@ -167,19 +167,19 @@ function yuiToolbar() {
  <form action="" method="post" id="groupingform" onsubmit="return submitForm(this)">
  <fieldset id="various" class="brief">
  <ol>
- <li><label for="basketgroupname">Basket Group Name:</label>
+ <li><label for="basketgroupname">Basket group name:</label>
  <input type="text" name="basketgroupname" id="basketgroupname" value="[% name %]" /></li>
- <li><label for="billingplace">Billing Place:</label>
+ <li><label for="billingplace">Billing place:</label>
  <select name="billingplace" id="billingplace" style="width:13em;">
  [% FOREACH billingplaceloo IN billingplaceloop %] [% IF ( billingplaceloo.selected ) %]<option value="[% billingplaceloo.value %]" selected="selected">[% billingplaceloo.branchname %]</option>
  [% ELSE %]<option value="[% billingplaceloo.value %]">[% billingplaceloo.branchname %]</option>[% END%] [% END %] </select></li>
- <li><label for="deliveryplace">Delivery Place:</label>
+ <li><label for="deliveryplace">Delivery place:</label>
  <select name="deliveryplace" id="deliveryplace" style="width:13em;">
  <option value="">--</option>
  [% FOREACH deliveryplaceloo IN deliveryplaceloop %] [% IF ( deliveryplaceloo.selected ) %]<option value="[% deliveryplaceloo.value %]" selected="selected">[% deliveryplaceloo.branchname %]</option>
  [% ELSE %]<option value="[% deliveryplaceloo.value %]">[% deliveryplaceloo.branchname %]</option>[% END %] [% END %] </select></li>
  <li><p>or</p></li>
- <li><label for="freedeliveryplace">Delivery Place:</label>
+ <li><label for="freedeliveryplace">Delivery place:</label>
  <textarea cols="26" rows="3" name="freedeliveryplace" id="freedeliveryplace">[% freedeliveryplace %]</textarea></li>
  <li><label for="deliverycomment">Delivery comment:</label>
  <textarea cols="26" rows="3" name="deliverycomment" id="deliverycomment">[% deliverycomment %]</textarea>
@@ -216,7 +216,7 @@ function yuiToolbar() {
  <table>
  <thead>
  <tr>
- <th>Basket Group</th><th colspan="3">Action</th>
+ <th>Basket group</th><th colspan="3">Action</th>
  </tr>
  </thead>
  <tbody>
@@ -240,13 +240,13 @@ function yuiToolbar() {
  <table>
  <thead>
  <tr>
- <th>Basket Group</th><th colspan="3">Action</th>
+ <th>Basket group</th><th colspan="3">Action</th>
  </tr>
  </thead>
  <tbody>
  [% FOREACH basketgroup IN basketgroups %] [% IF ( basketgroup.closed ) %] <tr>
  <td>
- <a href="/cgi-bin/koha/acqui/basketgroup.pl?op=reopen&amp;booksellerid=[% basketgroup.booksellerid %]&amp;basketgroupid[% basketgroup.id %]">[% IF ( basketgroup.name ) %] [% basketgroup.name %] [% ELSE %] Basket group no. [% basketgroup.id %] [% END %]</a>
+ <a href="/cgi-bin/koha/acqui/basketgroup.pl?op=reopen&amp;booksellerid=[% basketgroup.booksellerid %]&amp;basketgroupid=[% basketgroup.id %]">[% IF ( basketgroup.name ) %] [% basketgroup.name %] [% ELSE %] Basket group no. [% basketgroup.id %] [% END %]</a>
  </td>
  <td>
  <form action="/cgi-bin/koha/acqui/basketgroup.pl" method="get"><input type="hidden" name="op" value="reopen" /><input type="hidden" name="booksellerid" value="[% basketgroup.booksellerid %]" /><input type="hidden" name="basketgroupid" value="[% basketgroup.id %]" /><input type="submit" value="Reopen" /></form>

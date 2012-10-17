@@ -1,13 +1,51 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Administration &rsaquo; Libraries and Groups [% IF ( editcategory ) %] &rsaquo;[% IF ( categorycode ) %]Edit Group [% categorycode %][% ELSE %]New Group[% END %] [% ELSIF ( delete_category ) %] &rsaquo; Confirm Deletion of Group [% categorycode %] [% ELSIF ( add ) %] &rsaquo;[% IF ( heading_branches_add_branch_p ) %]New library[% ELSE %]Modify library [% branchcode %][% END %] [% ELSIF ( delete_confirm ) %] &rsaquo; Confirm deletion of library '[% branchcode %]' [% END %] </title>
+[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Administration &rsaquo; Libraries and groups
+[% IF ( editcategory ) %]
+ &rsaquo;[% IF ( categorycode ) %]Edit group [% categorycode %][% ELSE %]New group[% END %]
+[% ELSIF ( delete_category ) %]
+ &rsaquo; Confirm deletion of group [% categorycode %]
+[% ELSIF ( add ) %]
+ &rsaquo;[% IF ( heading_branches_add_branch_p ) %]New library[% ELSE %]Modify library [% branchcode %][% END %]
+[% ELSIF ( delete_confirm ) %]
+ &rsaquo; Confirm deletion of library '[% branchcode %]'
+[% END %]
+</title>
 [% INCLUDE 'doc-head-close.inc' %] <script type="text/javascript" src="[% themelang %]/lib/jquery/plugins/jquery.tablesorter.min.js"></script>
 <script type="text/javascript" src="[% themelang %]/lib/jquery/plugins/jquery.tablesorter.pager.js"></script>
+<script type="text/javascript" src="[% themelang %]/js/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+<script language="javascript" type="text/javascript">
+tinyMCE.init({
+    mode : "textareas",
+    theme : "advanced",
+    content_css : "[% themelang %]/css/tinymce.css",
+    plugins : "table,save,advhr,advlink,iespell,contextmenu",
+    theme_advanced_buttons1 : "save,|,bold,italic,|,cut,copy,paste,|,justifyleft,justifycenter,justifyright,justifyfull,|,formatselect,|,link,unlink,anchor,cleanup,help,code,advhr,",
+    theme_advanced_buttons2 : "tablecontrols,|,bullist,numlist,|,outdent,indent,|,undo,redo,|,removeformat,|,visualaid,|,sub,sup,|,charmap",
+    theme_advanced_buttons3 : "",
+    theme_advanced_toolbar_location : "top",
+    theme_advanced_toolbar_align : "left",
+    theme_advanced_path_location : "bottom",
+    theme_advanced_resizing : true,
+    apply_source_formatting : true,
+    height : "300",
+    width : "700"
+});
+</script>
 </head>
 <body id="admin_branches" class="admin">
 [% INCLUDE 'header.inc' %] [% INCLUDE 'cat-search.inc' %] <div id="breadcrumbs">
  <a href="/cgi-bin/koha/mainpage.pl">Home</a>
 &rsaquo; <a href="/cgi-bin/koha/admin/admin-home.pl">Administration</a>
-&rsaquo; <a href="/cgi-bin/koha/admin/branches.pl">Libraries and Groups</a>
-[% IF ( editcategory ) %] &rsaquo; [% IF ( categorycode ) %]Edit Group [% categorycode %][% ELSE %]New Group[% END %] [% ELSIF ( delete_category ) %] &rsaquo; Confirm Deletion of Group [% categorycode %] [% ELSIF ( add ) %] &rsaquo; [% IF ( heading_branches_add_branch_p ) %]New library[% ELSE %]Modify library [% branchcode %][% END %] [% ELSIF ( delete_confirm ) %] &rsaquo; Confirm deletion of library '[% branchcode %]' [% END %] </div>
+&rsaquo; <a href="/cgi-bin/koha/admin/branches.pl">Libraries and groups</a>
+[% IF ( editcategory ) %]
+&rsaquo; [% IF ( categorycode ) %]Edit group [% categorycode %][% ELSE %]New group[% END %]
+[% ELSIF ( delete_category ) %]
+&rsaquo; Confirm deletion of group [% categorycode %]
+[% ELSIF ( add ) %]
+&rsaquo; [% IF ( heading_branches_add_branch_p ) %]New library[% ELSE %]Modify library [% branchcode %][% END %]
+[% ELSIF ( delete_confirm ) %]
+&rsaquo; Confirm deletion of library '[% branchcode %]'
+[% END %]
+</div>
 
 <div id="doc3" class="yui-t2">
  
@@ -38,8 +76,8 @@
 	//]]>
 	</script>
  <ul class="toolbar">
- <li><a id="newbranch" href="/cgi-bin/koha/admin/branches.pl?op=add">New Library</a></li>
- <li><a id="newcategory" href="/cgi-bin/koha/admin/branches.pl?op=editcategory">New Group</a></li>
+ <li><a id="newbranch" href="/cgi-bin/koha/admin/branches.pl?op=add">New library</a></li>
+ <li><a id="newcategory" href="/cgi-bin/koha/admin/branches.pl?op=editcategory">New group</a></li>
 </ul></div>
 [% END %] [% IF ( add ) %] [% IF ( ERROR1 ) %]<div class="dialog message">Library with that code already exists &mdash; Please enter a unique code</div>[% END %] <h3>[% IF ( heading_branches_add_branch_p ) %]New library[% ELSE %]Modify library[% END %]</h3>
  <form action="[% action %]" name="Aform" method="post">
@@ -69,17 +107,18 @@
  [% END %] </ol>
 </fieldset>[% END %] <fieldset class="rows">
  <ol>
- <li><label for="branchaddress1">Address Line 1</label><input type="text" name="branchaddress1" id="branchaddress1" value="[% branchaddress1 |html %]" /></li>
- <li><label for="branchaddress2">Address Line 2</label><input type="text" name="branchaddress2" id="branchaddress2" value="[% branchaddress2 |html %]" /></li>
- <li><label for="branchaddress3">Address Line 3</label><input type="text" name="branchaddress3" id="branchaddress3" value="[% branchaddress3 |html %]" /></li>
+ <li><label for="branchaddress1">Address line 1</label><input type="text" name="branchaddress1" id="branchaddress1" value="[% branchaddress1 |html %]" /></li>
+ <li><label for="branchaddress2">Address line 2</label><input type="text" name="branchaddress2" id="branchaddress2" value="[% branchaddress2 |html %]" /></li>
+ <li><label for="branchaddress3">Address line 3</label><input type="text" name="branchaddress3" id="branchaddress3" value="[% branchaddress3 |html %]" /></li>
  <li><label for="branchcity">City</label><input type="text" name="branchcity" id="branchcity" value="[% branchcity |html %]" /></li>
  <li><label for="branchstate">State</label><input type="text" name="branchstate" id="branchstate" value="[% branchstate |html %]" /></li>
- <li><label for="branchzip">Zip/Postal Code</label><input type="text" name="branchzip" id="branchzip" value="[% branchzip |html %]" /></li>
+ <li><label for="branchzip">Zip/Postal code</label><input type="text" name="branchzip" id="branchzip" value="[% branchzip |html %]" /></li>
  <li><label for="branchcountry">Country</label><input type="text" name="branchcountry" id="branchcountry" value="[% branchcountry |html %]" /></li>
  <li><label for="branchphone">Phone</label><input type="text" name="branchphone" id="branchphone" value="[% branchphone |html %]" /></li>
  <li><label for="branchfax">Fax</label><input type="text" name="branchfax" id="branchfax" value="[% branchfax |html %]" /></li>
  <li><label for="branchemail">Email</label><input type="text" name="branchemail" id="branchemail" value="[% branchemail |html %]" /></li>
- <li><label for="branchurl">url</label><input type="text" name="branchurl" id="branchurl" value="[% branchurl |html %]" /></li>
+ <li><label for="branchurl">URL</label><input type="text" name="branchurl" id="branchurl" value="[% branchurl |html %]" /></li>
+ <li><label for="opac_info">OPAC info</label><textarea name="opac_info" id="opac_info">[% opac_info |html %]</textarea></li>
  <li><label for="branchip">IP</label><input type="text" name="branchip" id="branchip" value="[% branchip |html %]" /> <span class="hint">Can be entered as a single IP, or a subnet such as 192.168.1.*</span></li>
  <!--
  <li><label for="branchprinter">Library Printer</label>
@@ -124,7 +163,7 @@
  [% END %] <td>[% branche.branch_name |html %]</td>
  <td>[% branche.branch_code |html %]</td>
  <td>
- [% IF ( branche.address_empty_p ) %] (nothing entered) [% ELSE %] [% IF ( branche.branchaddress1 ) %] [% branche.branchaddress1 |html %][% END %] [% IF ( branche.branchaddress2 ) %] <br />[% branche.branchaddress2 |html %][% END %] [% IF ( branche.branchaddress3 ) %] <br />[% branche.branchaddress3 |html %][% END %] [% IF ( branche.branchcity ) %] <br />[% branche.branchcity |html %][% END %][% IF ( branche.branchstate ) %], [% branche.branchstate |html %][% END %] [% IF ( branche.branchzip ) %] [% branche.branchzip |html %][% END %] [% IF ( branche.branchcountry ) %] <br />[% branche.branchcountry |html %][% END %] [% IF ( branche.branchphone ) %] <br />Ph: [% branche.branchphone |html %][% END %] [% IF ( branche.branchfax ) %] <br />Fax: [% branche.branchfax |html %][% END %] [% IF ( branche.branchemail ) %] <br /><a href="mailto:[% branche.branchemail %]">[% branche.branchemail |html %]</a>[% END %] [% IF ( branche.branchurl ) %] <br /><a href="[% branche.branchurl %]">[% branche.branchurl |html %]</a>[% END %] [% IF ( branche.branchnotes ) %] <br />Notes: [% branche.branchnotes |html %][% END %]
+ [% IF ( branche.address_empty_p ) %] (nothing entered) [% ELSE %] [% IF ( branche.branchaddress1 ) %] [% branche.branchaddress1 |html %][% END %] [% IF ( branche.branchaddress2 ) %] <br />[% branche.branchaddress2 |html %][% END %] [% IF ( branche.branchaddress3 ) %] <br />[% branche.branchaddress3 |html %][% END %] [% IF ( branche.branchcity ) %] <br />[% branche.branchcity |html %][% END %][% IF ( branche.branchstate ) %], [% branche.branchstate |html %][% END %] [% IF ( branche.branchzip ) %] [% branche.branchzip |html %][% END %] [% IF ( branche.branchcountry ) %] <br />[% branche.branchcountry |html %][% END %] [% IF ( branche.branchphone ) %] <br />Ph: [% branche.branchphone |html %][% END %] [% IF ( branche.branchfax ) %] <br />Fax: [% branche.branchfax |html %][% END %] [% IF ( branche.branchemail ) %] <br /><a href="mailto:[% branche.branchemail %]">[% branche.branchemail |html %]</a>[% END %] [% IF ( branche.branchurl ) %] <br /><a href="[% branche.branchurl %]">[% branche.branchurl |html %]</a>[% END %] [% IF ( branche.opac_info ) %] <br />OPAC Info: <div>[% branche.opac_info %]</div>[% END %] [% IF ( branche.branchnotes ) %] <br />Notes: [% branche.branchnotes |html %][% END %]
  [% END %]
  </td>
  <td>
@@ -145,8 +184,9 @@
  [% END %]</tbody>
  </table>
  [% ELSE %] <div class="dialog message">There are no libraries defined. <a href="/cgi-bin/koha/admin/branches.pl?op=add">Start defining libraries</a>.</div>
- [% END %] [% IF ( branchcategories ) %] [% FOREACH branchcategorie IN branchcategories %] <h3>Group(s): [% IF ( branchcategorie.properties ) %]Properties[% ELSE %][% IF ( branchcategorie.searchdomain ) %]Search Domain[% END %][% END %]</h3>
- <table>
+ [% END %] [% IF ( branchcategories ) %] [% FOREACH branchcategorie IN branchcategories %] <h3>Group(s): [% IF ( branchcategorie.properties ) %]Properties[% ELSE %][% IF ( branchcategorie.searchdomain ) %]Search domain[% END %][% END %]</h3>
+ [% IF ( branchcategorie.catloop ) %] <table>
+ <thead>
  <tr>
  <th>Name</th>
  <th>Code</th>
@@ -154,22 +194,32 @@
  <th>&nbsp;</th>
  <th>&nbsp;</th>
  </tr>
-[% IF ( branchcategorie.catloop ) %][% FOREACH catloo IN branchcategorie.catloop %] <tr>
+ </thead>
+ <tbody>
+ [% FOREACH catloo IN branchcategorie.catloop %] <tr>
  <td>[% catloo.categoryname %]</td>
  <td>[% catloo.categorycode %]</td>
  <td>[% catloo.codedescription %]</td>
- <td><a href="[% catloo.action %]?op=editcategory&amp;categorycode=[% catloo.categorycode |url %]">Edit</a>
+ <td>
+ <a href="[% catloo.action %]?op=editcategory&amp;categorycode=[% catloo.categorycode |url %]">Edit</a>
  </td>
- <td><a href="[% catloo.action %]?op=delete_category&amp;categorycode=[% catloo.categorycode |url %]">Delete</a>
+ <td>
+ <a href="[% catloo.action %]?op=delete_category&amp;categorycode=[% catloo.categorycode |url %]">Delete</a>
  </td>
  </tr>
- [% END %][% ELSE %]<tr><td colspan="5">No [% IF ( branchcategorie.properties ) %]Properties[% ELSIF ( branchcategorie.searchdomain ) %]Search Domain[% END %] Defined</td></tr>[% END %] </table>
- [% END %] [% ELSE %] <p>No Groups defined.</p>
+ [% END %] </tbody>
+ </table>
+ [% ELSE %]
+ No [% IF ( branchcategorie.properties ) %]properties[% ELSIF ( branchcategorie.searchdomain ) %]search domain[% END %] defined. <a href="/cgi-bin/koha/admin/branches.pl?op=editcategory">Add a new group</a>.
+ [% END %]
+ [% END %]
+ [% ELSE %]
+ <p>No groups defined.</p>
  [% END %] <!-- NAME="branchcategories" -->
 [% END %]
 
 [% IF ( editcategory ) %]
- <h3>[% IF ( categorycode ) %]Edit Group [% categorycode %][% ELSE %]Add Group[% END %]</h3>
+ <h3>[% IF ( categorycode ) %]Edit group [% categorycode %][% ELSE %]Add group[% END %]</h3>
  <form action="[% action %]" name="Aform" method="post">
  <input type="hidden" name="op" value="addcategory_validate" />
  [% IF ( categorycode ) %] <input type="hidden" name="add" value="0">
@@ -191,7 +241,7 @@
  <input type="text" name="codedescription" id="codedescription" size="70" value="[% codedescription |html %]" />
  </li>
  <li>
- <label for="categorytype">Category Type: </label>
+ <label for="categorytype">Category type: </label>
  <select id="categorytype" name="categorytype">
  [% FOREACH categorytyp IN categorytype %] [% IF ( categorytyp.selected ) %] <option value="[% categorytyp.type %]" selected="selected">
  [% ELSE %] <option value="[% categorytyp.type %]">

@@ -35,12 +35,16 @@
     [% IF ( opacbookbag ) %]var MSG_BASKET_EMPTY = _("Your cart is currently empty");
     var MSG_RECORD_IN_BASKET = _("This item is already in your cart");
     var MSG_RECORD_ADDED = _("This item has been added to your cart");
+    var MSG_RECORD_REMOVED = _("This item has been removed from your cart");
     var MSG_NRECORDS_ADDED = _(" item(s) added to your cart");
     var MSG_NRECORDS_IN_BASKET = _("already in your cart");
     var MSG_NO_RECORD_SELECTED = _("No item was selected");
     var MSG_NO_RECORD_ADDED = _("No item was added to your cart");
     var MSG_CONFIRM_DEL_BASKET = _("Are you sure you want to empty your cart?");
     var MSG_CONFIRM_DEL_RECORDS = _("Are you sure you want to remove the selected items?");
+    var MSG_ITEM_IN_CART = _("In your cart");
+    var MSG_IN_YOUR_CART = _("Items in your cart: ");
+    var MSG_ITEM_NOT_IN_CART = _("Add to your cart");
 	$("#cartDetails").ready(function(){ $("#cmspan").html("<a href=\"#\" id=\"cartmenulink\" class=\"\"><i><\/i><span><i><\/i><span><\/span><span id=\"carticon\"></span> "+_("Cart")+"<span id=\"basketcount\"><\/span><\/span><\/a>"); }); [% ELSE %][% IF ( virtualshelves ) %]
     var MSG_NO_RECORD_SELECTED = _("No item was selected");[% END %][% END %]
     [% IF ( opacuserlogin ) %][% IF ( TagsEnabled ) %]var MSG_TAGS_DISABLED = _("Sorry, tags are not enabled on this system.");
@@ -48,7 +52,7 @@
     var MSG_ILLEGAL_PARAMETER = _("Error! Illegal parameter");
     var MSG_TAG_SCRUBBED = _("Note: Your tag contained markup code that was removed. The tag was added as ");
     var MSG_ADD_TAG_FAILED = _("Error! The add_tag operation failed on");
-    var MSG_ADD_TAG_FAILED_NOTE = _("Note: you can only tag an item with a given term once. Check 'My Tags' to see your current tags.");
+    var MSG_ADD_TAG_FAILED_NOTE = _("Note: you can only tag an item with a given term once. Check 'My tags' to see your current tags.");
     var MSG_DELETE_TAG_FAILED = _("Error! You cannot delete the tag");
     var MSG_DELETE_TAG_FAILED_NOTE = _("Note: you can only delete your own tags.")
     var MSG_LOGIN_REQUIRED = _("You must be logged in to add tags.");
@@ -77,6 +81,12 @@
 <script type="text/javascript" language="javascript">
 //<![CDATA[
 var NO_OL_JACKET = _("No cover image available");
+//]]>
+</script>
+[% END %] [% IF OPACLocalCoverImages %] <script type="text/javascript" language="javascript" src="[% themelang %]/js/localcovers.js"></script>
+<script type="text/javascript" language="javascript">
+//<![CDATA[
+var NO_LOCAL_JACKET = _("No cover image available");
 //]]>
 </script>
 [% END %] [% IF ( BakerTaylorEnabled ) %]<script type="text/javascript" language="javascript" src="[% themelang %]/js/bakertaylorimages.js"></script>

@@ -1,4 +1,10 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Authorities &rsaquo; [% IF ( unknownauthid ) %] Unknown authority record [% ELSE %] Details for Authority #[% authid %] ([% authtypetext %]) [% END %] </title>
+[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Authorities &rsaquo;
+ [% IF ( unknownauthid ) %]
+ Unknown authority record
+ [% ELSE %]
+ Details for authority #[% authid %] ([% authtypetext %])
+ [% END %]
+</title>
 [% INCLUDE 'doc-head-close.inc' %] <script type="text/javascript">
 
 //<![CDATA[
@@ -56,7 +62,13 @@ function searchauthority() {
 </script>
  [% END %] </head>
 <body id="auth_detail" class="auth">
-[% INCLUDE 'header.inc' %] [% INCLUDE 'authorities-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/authorities/authorities-home.pl">Authorities</a> &rsaquo; [% IF ( unknownauthid ) %] Unknown authority record [% ELSE %] Details for Authority #[% authid %] ([% authtypetext %]) [% END %] </div>
+[% INCLUDE 'header.inc' %] [% INCLUDE 'authorities-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/authorities/authorities-home.pl">Authorities</a> &rsaquo;
+ [% IF ( unknownauthid ) %]
+ Unknown authority record
+ [% ELSE %]
+ Details for authority #[% authid %] ([% authtypetext %])
+ [% END %]
+</div>
 
 <div id="doc" class="yui-t7">
 

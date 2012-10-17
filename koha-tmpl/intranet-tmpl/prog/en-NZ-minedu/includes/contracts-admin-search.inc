@@ -75,7 +75,7 @@ YAHOO.util.Event.onContentReady("header_search", function() {
  <input type="submit" value="Submit"  class="submit" />
  </form>
  </div>[% END %] <ul>
- <li><a href="/cgi-bin/koha/admin/aqcontact.pl#contract_description_search">Search Contracts</a></li>
- [% IF ( CAN_user_circulate ) %]<li><a href="/cgi-bin/koha/circ/circulation.pl#circ_search">Issue</a></li>[% END %] [% IF ( CAN_user_catalogue ) %]<li><a href="/cgi-bin/koha/catalogue/search.pl#catalog_search">Search the Catalogue</a></li>[% END %] </ul> 
+ <li><a href="/cgi-bin/koha/admin/aqcontact.pl#contract_description_search">Search contracts</a></li>
+ [% IF ( CAN_user_circulate ) %]<li><a href="/cgi-bin/koha/circ/circulation.pl#circ_search">Check out</a></li>[% END %] [% IF ( CAN_user_catalogue ) %]<li><a href="/cgi-bin/koha/catalogue/search.pl#catalog_search">Search the catalog</a></li>[% END %] </ul> 
 </div>
 <!-- End Patrons Admin Resident Search Box -->

@@ -7,7 +7,7 @@
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   exclude-result-prefixes="marc items">
  <xsl:import href="MARC21slimUtils.xsl"/>
- <xsl:output method = "xml" indent="yes" omit-xml-declaration = "yes" />
+ <xsl:output method = "html" indent="yes" omit-xml-declaration = "yes" />
  <xsl:key name="item-by-status" match="items:item" use="items:status"/>
  <xsl:key name="item-by-status-and-branch" match="items:item" use="concat(items:status, ' ', items:homebranch)"/>
 
@@ -27,6 +27,8 @@
  <xsl:variable name="AlternateHoldingsField" select="substring(marc:sysprefs/marc:syspref[@name='AlternateHoldingsField'], 1, 3)"/>
  <xsl:variable name="AlternateHoldingsSubfields" select="substring(marc:sysprefs/marc:syspref[@name='AlternateHoldingsField'], 4)"/>
  <xsl:variable name="AlternateHoldingsSeparator" select="marc:sysprefs/marc:syspref[@name='AlternateHoldingsSeparator']"/>
+ <xsl:variable name="singleBranchMode" select="marc:sysprefs/marc:syspref[@name='singleBranchMode']"/>
+ <xsl:variable name="BiblioItemtypeImage" select="marc:sysprefs/marc:syspref[@name='BiblioItemtypeImage']"/>
  <xsl:variable name="leader" select="marc:leader"/>
  <xsl:variable name="leader6" select="substring($leader,7,1)"/>
  <xsl:variable name="leader7" select="substring($leader,8,1)"/>
@@ -448,8 +450,22 @@
  </span>
  </xsl:if>
 
+ <xsl:if test="marc:datafield[@tag=773]">
+ <xsl:for-each select="marc:datafield[@tag=773]">
+ <xsl:if test="marc:subfield[@code='t']">
+ <span class="results_summary">
+ <span class="label">Source: </span>
+ <xsl:value-of select="marc:subfield[@code='t']"/>
+ </span>
+ </xsl:if>
+ </xsl:for-each>
+ </xsl:if>
+
 <xsl:if test="$DisplayOPACiconsXSLT!='0'">
  <span class="results_summary">
+
+ <xsl:if test="$BiblioItemtypeImage='Control'">
+
  <xsl:if test="$typeOf008!=''">
  <span class="label">Type: </span>
  <xsl:choose>
@@ -463,10 +479,10 @@
  </xsl:when>
  <xsl:when test="$leader6='t'"><img src="/opac-tmpl/prog/famfamfam/silk/book.png" alt="book" title="book" class="materialtype"/> Book</xsl:when>
  <xsl:when test="$leader6='o'"><img src="/opac-tmpl/prog/famfamfam/silk/report_disk.png" alt="kit" title="kit" class="materialtype"/> Kit</xsl:when>
- <xsl:when test="$leader6='p'"><img src="/opac-tmpl/prog/famfamfam/silk/report_disk.png" alt="mixed materials" title="mixed materials" class="materialtype"/>Mixed Materials</xsl:when>
+ <xsl:when test="$leader6='p'"><img src="/opac-tmpl/prog/famfamfam/silk/report_disk.png" alt="mixed materials" title="mixed materials" class="materialtype"/>Mixed materials</xsl:when>
  <xsl:when test="$leader6='m'"><img src="/opac-tmpl/prog/famfamfam/silk/computer_link.png" alt="computer file" title="computer file" class="materialtype"/> Computer File</xsl:when>
  <xsl:when test="$leader6='e' or $leader6='f'"><img src="/opac-tmpl/prog/famfamfam/silk/map.png" alt="map" title="map" class="materialtype"/> Map</xsl:when>
- <xsl:when test="$leader6='g' or $leader6='k' or $leader6='r'"><img src="/opac-tmpl/prog/famfamfam/silk/film.png" alt="visual material" title="visual material" class="materialtype"/> Visual Material</xsl:when>
+ <xsl:when test="$leader6='g' or $leader6='k' or $leader6='r'"><img src="/opac-tmpl/prog/famfamfam/silk/film.png" alt="visual material" title="visual material" class="materialtype"/> Visual material</xsl:when>
  <xsl:when test="$leader6='c' or $leader6='d'"><img src="/opac-tmpl/prog/famfamfam/silk/music.png" alt="score" title="score" class="materialtype"/> Score</xsl:when>
  <xsl:when test="$leader6='i'"><img src="/opac-tmpl/prog/famfamfam/silk/sound.png" alt="sound" title="sound" class="materialtype"/> Sound</xsl:when>
  <xsl:when test="$leader6='j'"><img src="/opac-tmpl/prog/famfamfam/silk/sound.png" alt="music" title="music" class="materialtype"/> Music</xsl:when>
@@ -710,6 +726,7 @@
  Specialised;</xsl:when>
  </xsl:choose>
  </xsl:if>
+ </xsl:if>
 <xsl:text> </xsl:text> <!-- added blank space to fix font display problem, see Bug 3671 -->
  </span>
 </xsl:if>
@@ -723,14 +740,30 @@
  <xsl:with-param name="label">Publisher:</xsl:with-param>
  </xsl:call-template>
  </xsl:if>
- 
+
  <xsl:if test="marc:datafield[@tag=260]">
- <span class="results_summary">
- <span class="label">Publisher:</span> 
+ <span class="results_summary publisher"><span class="label">Publisher:</span>
  <xsl:for-each select="marc:datafield[@tag=260]">
+ <xsl:if test="marc:subfield[@code='a']">
  <xsl:call-template name="subfieldSelect">
- <xsl:with-param name="codes">abcg</xsl:with-param>
+ <xsl:with-param name="codes">a</xsl:with-param>
  </xsl:call-template>
+ </xsl:if>
+ <xsl:text> </xsl:text>
+ <xsl:if test="marc:subfield[@code='b']">
+ <xsl:call-template name="subfieldSelect">
+ <xsl:with-param name="codes">b</xsl:with-param>
+ </xsl:call-template>
+ </xsl:if>
+ <xsl:text> </xsl:text>
+ <xsl:call-template name="chopPunctuation">
+ <xsl:with-param name="chopString">
+ <xsl:call-template name="subfieldSelect">
+ <xsl:with-param name="codes">cg</xsl:with-param>
+ </xsl:call-template>
+ </xsl:with-param>
+ </xsl:call-template>
+ <xsl:choose><xsl:when test="position()=last()"><xsl:text></xsl:text></xsl:when><xsl:otherwise><xsl:text>; </xsl:text></xsl:otherwise></xsl:choose>
  </xsl:for-each>
  </span>
  </xsl:if>
@@ -741,7 +774,7 @@
  <xsl:with-param name="basetags">246</xsl:with-param>
  <xsl:with-param name="codes">ab</xsl:with-param>
  <xsl:with-param name="class">results_summary</xsl:with-param>
- <xsl:with-param name="label">Other Title: </xsl:with-param>
+ <xsl:with-param name="label">Other title: </xsl:with-param>
  </xsl:call-template>
  </xsl:if>
  
@@ -769,7 +802,7 @@
  </xsl:if>
  <xsl:if test="marc:datafield[@tag=856]">
  <span class="results_summary">
- <span class="label">Online Access: </span>
+ <span class="label">Online access: </span>
  <xsl:for-each select="marc:datafield[@tag=856]">
  <xsl:variable name="SubqText"><xsl:value-of select="marc:subfield[@code='q']"/></xsl:variable>
  <xsl:if test="$OPACURLOpenInNewWindow='0'">
@@ -827,7 +860,7 @@
  </xsl:for-each>
  </span>
  </xsl:if>
- <span class="results_summary" id="availability">
+ <span class="results_summary availability">
  <span class="label">Availability: </span>
  <xsl:choose>
  <xsl:when test="count(key('item-by-status', 'available'))=0 and count(key('item-by-status', 'reference'))=0">
@@ -849,15 +882,29 @@
  <b><xsl:text>Copies available for loan:</xsl:text></b>
  <xsl:variable name="available_items"
                            select="key('item-by-status', 'available')"/>
+ <xsl:choose>
+ <xsl:when test="$singleBranchMode=1">
+ <xsl:for-each select="$available_items[generate-id() = generate-id(key('item-by-status-and-branch', concat(items:status, ' ', items:homebranch))[1])]">
+ <xsl:if test="items:itemcallnumber != '' and items:itemcallnumber"> [<xsl:value-of select="items:itemcallnumber"/>]</xsl:if>
+ <xsl:text> (</xsl:text>
+ <xsl:value-of select="count(key('item-by-status-and-branch', concat(items:status, ' ', items:homebranch)))"/>
+ <xsl:text>)</xsl:text>
+ <xsl:choose><xsl:when test="position()=last()"><xsl:text>. </xsl:text></xsl:when><xsl:otherwise><xsl:text>, </xsl:text></xsl:otherwise></xsl:choose>
+ </xsl:for-each>
+ </xsl:when>
+ <xsl:otherwise>
  <xsl:for-each select="$available_items[generate-id() = generate-id(key('item-by-status-and-branch', concat(items:status, ' ', items:homebranch))[1])]">
  <xsl:value-of select="items:homebranch"/>
  <xsl:if test="items:itemcallnumber != '' and items:itemcallnumber"> [<xsl:value-of select="items:itemcallnumber"/>]</xsl:if>
  <xsl:text> (</xsl:text>
  <xsl:value-of select="count(key('item-by-status-and-branch', concat(items:status, ' ', items:homebranch)))"/>
  <xsl:text>)</xsl:text>
-<xsl:choose><xsl:when test="position()=last()"><xsl:text>. </xsl:text></xsl:when><xsl:otherwise><xsl:text>, </xsl:text></xsl:otherwise></xsl:choose>
+ <xsl:choose><xsl:when test="position()=last()"><xsl:text>. </xsl:text></xsl:when><xsl:otherwise><xsl:text>, </xsl:text></xsl:otherwise></xsl:choose>
  </xsl:for-each>
+ </xsl:otherwise>
+ </xsl:choose>
  </span>
+
  </xsl:when>
  </xsl:choose>
 
@@ -924,7 +971,7 @@
  </xsl:if>
  <xsl:if test="count(key('item-by-status', 'Waiting'))>0">
  <span class="unavailable">
- <xsl:text>On request (</xsl:text>
+ <xsl:text>On reserve (</xsl:text>
  <xsl:value-of select="count(key('item-by-status', 'Waiting'))"/>
  <xsl:text>). </xsl:text> </span>
  </xsl:if>

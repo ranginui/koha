@@ -21,7 +21,7 @@
  <li><strong>Creators:</strong> this tab contains preferences related to modules that create objects.</li>
  <li><strong>Enhanced Content:</strong> holds preferences that will add content from outside sources to your OPAC and Staff Client. This is where you can turn on cover images, FRBR and tagging.</li>
  <li><strong>I18N/L10N:</strong> holds preferences related to internationalization and localization such as date formats and languages.</li>
- <li><strong>Local Use:</strong> this tab will usually be empty unless your library has a preference just for your library.</li> 
+ <li><strong>Local Use:</strong> this tab will usually be empty unless your library has a preference just for your library.</li>
  <li><strong>Logs:</strong> turn on/off logging functionality in your system.</li>
  <li><strong>OPAC:</strong> customise the OPAC and OPAC functions (aside from the Enhanced Content preferences).</li>
  <li><strong>Members:</strong> holds preferences that control how your system handles borrower functions. Some preferences include the minimum password length and membership number settings.</li>
@@ -31,6 +31,6 @@
  <li><strong>Web Services:</strong> includes preferences related to services like OAI-PMH.</li>
  </ul>
  
-<p><strong>See the full documentation for System Preferences in the <a href="http://manual.koha-community.org/3.6/en/administration.html#globalsysprefs">manual</a> (online).</strong></p>
+<p><strong>See the full documentation for System Preferences in the <a href="http://manual.koha-community.org/3.8/en/administration.html#globalsysprefs">manual</a> (online).</strong></p>
  
 [% INCLUDE 'help-bottom.inc' %]

@@ -26,7 +26,7 @@ function add_member(subscriptionid,borrowernumber){
  <ol>
  <li><label for="member">Name:</label> <input type="hidden" name="surname" value="[% surname %]" />
  <input type="text" name="member" id="member" value="[% member %]" /></li>
- <li><label for="branchcode"> Library :</label><select name="branchcode" id="branchcode">
+ <li><label for="branchcode"> Library:</label><select name="branchcode" id="branchcode">
  <option value="">Any</option>[% FOREACH branchloo IN branchloop %] [% IF ( branchloo.selected ) %] <option value="[% branchloo.value %]" selected="selected">[% branchloo.branchname %]</option>[% ELSE %] <option value="[% branchloo.value %]">[% branchloo.branchname %]</option>[% END %] [% END %]</select></li>
  <li><label for="categorycode">Category:</label><select name="categorycode" id="categorycode">
  <option value="">Any</option>[% FOREACH categoryloo IN categoryloop %] [% IF ( categoryloo.selected ) %] <option value="[% categoryloo.categorycode %]" selected="selected">[% categoryloo.description %]</option>[% ELSE %] <option value="[% categoryloo.categorycode %]">[% categoryloo.description %]</option>[% END %] [% END %]</select></li>

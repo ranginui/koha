@@ -1,8 +1,8 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Catalogue &rsaquo; Subject Search Results</title>
+[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Catalog &rsaquo; Subject search results</title>
 [% INCLUDE 'doc-head-close.inc' %] </head>
 <body id="catalog_subject" class="catalog">
 
-[% INCLUDE 'header.inc' %] [% INCLUDE 'cat-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/catalogue/search.pl">Catalogue</a> &rsaquo; Subject Search Results</div>
+[% INCLUDE 'header.inc' %] [% INCLUDE 'cat-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/catalogue/search.pl">Catalogue</a> &rsaquo; Subject search results</div>
 
 <div id="doc3" class="yui-t2">
  
@@ -25,7 +25,7 @@
  </td>
  </tr>
 [% END %] </table>
-<p><a  class="button" href="search.pl?[% FOREACH FORMINPUT IN FORMINPUTS %][% FORMINPUT.line |url %]&amp;[% END %]startfrom=[% prevstartfrom %]">Previous Records</a> <a class="button" href="search.pl?[% FOREACH FORMINPUT IN FORMINPUTS %][% FORMINPUT.line %]&amp;[% END %]startfrom=[% nextstartfrom %]">Next Records</a></p>
+<p><a  class="button" href="search.pl?[% FOREACH FORMINPUT IN FORMINPUTS %][% FORMINPUT.line |url %]&amp;[% END %]startfrom=[% prevstartfrom %]">Previous records</a> <a class="button" href="search.pl?[% FOREACH FORMINPUT IN FORMINPUTS %][% FORMINPUT.line %]&amp;[% END %]startfrom=[% nextstartfrom %]">Next records</a></p>
 
 </div>
 

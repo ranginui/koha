@@ -1,5 +1,10 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Tools &rsaquo; Manage Staged MARC Records [% IF ( import_batch_id ) %] &rsaquo; Batch [% import_batch_id %] [% END %] </title>
-[% INCLUDE 'greybox.inc' %] [% INCLUDE 'doc-head-close.inc' %] [% INCLUDE 'background-job.inc' %] <script type="text/JavaScript" language="JavaScript">
+[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Tools &rsaquo; Manage staged MARC records
+[% IF ( import_batch_id ) %]
+ &rsaquo; Batch [% import_batch_id %]
+[% END %]
+</title>
+[% INCLUDE 'greybox.inc' %] [% INCLUDE 'doc-head-close.inc' %] <script type="text/javascript" src="[% themelang %]/js/background-job-progressbar.js"></script>
+<script type="text/JavaScript" language="JavaScript">
 //<![CDATA[
 $(document).ready(function(){
   $("#staged-record-matching-rules select").change(function(){
@@ -22,8 +27,12 @@ $(document).ready(function(){
 </head>
 <body id="tools_manage-marc-import" class="tools">
 [% INCLUDE 'header.inc' %] [% INCLUDE 'cat-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/tools/tools-home.pl">Tools</a> 
-[% IF ( import_batch_id ) %] &rsaquo; <a href="[% script_name %]">Manage Staged MARC Records</a>
- &rsaquo; Batch [% import_batch_id %] [% ELSE %] &rsaquo; Manage Staged MARC Records [% END %] </div>
+[% IF ( import_batch_id ) %] &rsaquo; <a href="[% script_name %]">Manage staged MARC records</a>
+ &rsaquo; Batch [% import_batch_id %]
+[% ELSE %]
+ &rsaquo; Manage staged MARC records
+[% END %]
+</div>
 
 <div id="doc3" class="yui-t2">
  
@@ -31,7 +40,11 @@ $(document).ready(function(){
  <div id="yui-main">
  <div class="yui-b">
 
-<h1>Manage Staged MARC Records [% IF ( import_batch_id ) %] &rsaquo; Batch [% import_batch_id %] [% END %] </h1>
+<h1>Manage staged MARC records
+[% IF ( import_batch_id ) %]
+ &rsaquo; Batch [% import_batch_id %]
+[% END %]
+</h1>
 [% IF ( label_batch_msg ) %] [% IF ( alert ) %] <div class="alert">
 [% ELSE %] <div class="dialog">
 [% END %] <b><p>[% label_batch_msg %]</p></b>
@@ -111,7 +124,7 @@ $(document).ready(function(){
  <tr><td>Number of items added</td><td>[% num_items_added %]</td></tr>
  <tr><td>Number of items ignored because of duplicate barcode</td><td>[% num_items_errored %]</td></tr>
  </table>
- [% END %] [% IF ( did_revert ) %] <div class="dialog message">Undid import of records</div>
+ [% END %] [% IF ( did_revert ) %] <div class="dialog message">Success: Import reversed</div>
  <table>
  <tr><td>Number of records deleted</td><td>[% num_deleted %]</td></tr>
  <tr><td>Number of items deleted</td><td>[% num_items_deleted %]</td></tr>
@@ -142,7 +155,7 @@ Page [% FOREACH page IN pages %] [% IF ( page.current_page ) %] <span class="cur
  <td>[% batch_lis.import_status %]</td>
  <td>[% batch_lis.upload_timestamp %]</td>
  <td>[% batch_lis.num_biblios %]</td>
- <td>[% batch_lis.num_items %][% IF ( batch_lis.num_items ) %] <a href="[% batch_lis.script_name %]?import_batch_id=[% batch_lis.import_batch_id %]&amp;op=create_labels">(Create Label Batch)</a>[% END %]</td>
+ <td>[% batch_lis.num_items %][% IF ( batch_lis.num_items ) %] <a href="[% batch_lis.script_name %]?import_batch_id=[% batch_lis.import_batch_id %]&amp;op=create_labels">(Create label batch)</a>[% END %]</td>
  <td>[% IF ( batch_lis.can_clean ) %] <form method="post" action="[% batch_lis.script_name %]" name="clean_batch_[% batch_lis.import_batch_id %]" id="clean_batch_[% batch_lis.import_batch_id %]" >
  <input type="hidden" name="import_batch_id" value="[% batch_lis.import_batch_id %]" />
  <input type="hidden" name="op" value="clean-batch" />

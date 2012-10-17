@@ -1,7 +1,9 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Administration &rsaquo; MARC Check [% IF ( total ) %] :[% total %] errors found[% ELSE %] : Configuration OK![% END %]</title>
+[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Administration &rsaquo; MARC check
+[% IF ( total ) %] :[% total %] errors found[% ELSE %] : Configuration OK![% END %]</title>
 [% INCLUDE 'doc-head-close.inc' %] </head>
 <body id="admin_checkmarc" class="admin">
-[% INCLUDE 'header.inc' %] [% INCLUDE 'cat-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/admin/admin-home.pl">Administration</a> &rsaquo; MARC Check [% IF ( total ) %]: [% total %] errors found[% ELSE %] : Configuration OK![% END %]</div>
+[% INCLUDE 'header.inc' %] [% INCLUDE 'cat-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/admin/admin-home.pl">Administration</a> &rsaquo; MARC check
+[% IF ( total ) %]: [% total %] errors found[% ELSE %] : Configuration OK![% END %]</div>
 
 <div id="doc3" class="yui-t2">
  
@@ -9,7 +11,7 @@
  <div id="yui-main">
  <div class="yui-b">
 
-<h1>MARC Bibliographic Framework Test</h1>
+<h1>MARC bibliographic framework test</h1>
 <table>
  <tr>
  <th>Test</th>
@@ -104,12 +106,12 @@
 <!-- -->
 [% IF ( branches_empty ) %]
  <tr>
- <td>branch not defined</td>
- <td>at least 1 branch must be defined</td>
+ <td>library not defined</td>
+ <td>at least 1 library must be defined</td>
  </tr>
 [% ELSE %] <tr>
  <td>OK</td> 
- <td>at least 1 branch defined</td>
+ <td>at least 1 library defined</td>
  </tr> 
 [% END %]
 <!-- -->

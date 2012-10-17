@@ -10,6 +10,10 @@ Acquisitions:
           receiving: receiving an order.
         pref: AcqCreateItem
     - 
+      - 
+        pref: UniqueItemFields
+      - (space-separated list of fields that should be unique for items, must be valid SQL fields of items table)
+    - 
       - When closing or reopening a basket,
       - 
         choices: 
@@ -22,7 +26,7 @@ Acquisitions:
       - 
         choices: 
           all: in system, regardless of owner.
-          branch: from staff member's branch.
+          branch: from staff member's library.
           user: created by staff member.
         pref: AcqViewBaskets
     - 

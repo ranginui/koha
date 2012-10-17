@@ -1,4 +1,4 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Serials &rsaquo; Serial Edition [% bibliotitle %]</title>
+[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Serials &rsaquo; Serial edition [% bibliotitle %]</title>
 [% INCLUDE 'doc-head-close.inc' %] <script language="JavaScript" type="text/javascript">
 //<![CDATA[
 function popup(subscriptionid) {
@@ -163,7 +163,7 @@ $(document).ready(function() {
 }</style>
 </head>
 <body id="ser_serials-edit" class="ser">
-[% INCLUDE 'header.inc' %] [% INCLUDE 'serials-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/serials/serials-home.pl">Serials</a> &rsaquo; Serial Edition <i>[% bibliotitle %] [% IF ( callnumber ) %]([% callnumber %])[% END %]</i></div>
+[% INCLUDE 'header.inc' %] [% INCLUDE 'serials-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/serials/serials-home.pl">Serials</a> &rsaquo; Serial edition <i>[% bibliotitle %] [% IF ( callnumber ) %]([% callnumber %])[% END %]</i></div>
 
 <div id="doc3" class="yui-t2">
  
@@ -171,15 +171,15 @@ $(document).ready(function() {
  <div id="yui-main">
  <div class="yui-b">
 
-<h1>Serial Edition <i>[% bibliotitle %]</i>
+<h1>Serial edition <i>[% bibliotitle %]</i>
  [% IF location %] ( [% location %] ) [% END %] [% IF ( callnumber ) %] callnumber: [% callnumber %][% END %]</h1>
-<form method="post" name="f" action="serials-edit.pl" id="serials_edit">
+[% IF internalnotes %]<p>Nonpublic note: [% internalnotes %]</p>[% END %] <form method="post" name="f" action="serials-edit.pl" id="serials_edit">
 <!--onsubmit="return barcode_check()">-->
 
 [% IF ( Errors ) %]
 <div class="dialog alert">
 <ul>
-[% IF ( barcode_not_unique ) %]<li>Error : Barcode Not Unique For [% FOREACH errse IN errseq %]serialseq [% errse.serialseq %]<br/>[% END %]</li>[% END %] </ul>
+[% IF ( barcode_not_unique ) %]<li>Error: Barcode not unique for [% FOREACH errse IN errseq %]serialseq [% errse.serialseq %]<br/>[% END %]</li>[% END %] </ul>
 </div>
 [% END %] <input type="hidden" name="op" value="serialchangestatus" />
  [% FOREACH subscription IN subscriptions %] <input type="hidden" name="subscriptionid" value="[% subscription.subscriptionid %]" />
@@ -220,8 +220,8 @@ $(document).ready(function() {
  [% ELSE %] <option value="4">Missing</option>
  [% END %] [% IF ( serialslis.status7 ) %] <option value="7" selected="selected">Claimed</option>
  [% ELSE %] <option value="7">Claimed</option>
- [% END %] [% IF ( serialslis.status5 ) %] <option value="5" selected="selected">Not Available</option>
- [% ELSE %] <option value="5">Not Available</option>
+ [% END %] [% IF ( serialslis.status5 ) %] <option value="5" selected="selected">Not available</option>
+ [% ELSE %] <option value="5">Not available</option>
  [% END %] [% IF ( serialslis.status6 ) %] <option value="6" selected="selected">Delete</option>
  [% ELSE %] <option value="6">Delete</option>
  [% END %] </select>
@@ -272,7 +272,7 @@ $(document).ready(function() {
  <input type="hidden" name="biblionumber" value="[% newserialloo.biblionumber %]" />
  <input type="hidden" name="itemcount" value="[% newserialloo.issuesatonce %]" />
  <input type="hidden" name="user" value="[% newserialloo.librarian %]" />
- Supplemental Issue <input type="text" name="serialseq" id="serialseq[% newserialloo.serialid %]" value="" size="20" maxlength="100" onchange="if (this.value!=''){unHideItems('items[% newserialloo.subscriptionid %][% newserialloo.serialid %]','label[% newserialloo.subscriptionid %][% newserialloo.serialid %]', '[% newserialloo.serialid %]')} else {HideItems('items[% newserialloo.subscriptionid %][% newserialloo.serialid %]','label[% newserialloo.subscriptionid %][% newserialloo.serialid %]')}" />
+ Supplemental issue <input type="text" name="serialseq" id="serialseq[% newserialloo.serialid %]" value="" size="20" maxlength="100" onchange="if (this.value!=''){unHideItems('items[% newserialloo.subscriptionid %][% newserialloo.serialid %]','label[% newserialloo.subscriptionid %][% newserialloo.serialid %]', '[% newserialloo.serialid %]')} else {HideItems('items[% newserialloo.subscriptionid %][% newserialloo.serialid %]','label[% newserialloo.subscriptionid %][% newserialloo.serialid %]')}" />
  </td>
  <td>
  <input type="text" name="publisheddate" value="[% newserialloo.publisheddate %]" size="10" maxlength="15" />
@@ -293,8 +293,8 @@ $(document).ready(function() {
  [% ELSE %] <option value="4">Missing</option>
  [% END %] [% IF ( newserialloo.status7 ) %] <option value="7" selected="selected">Claimed</option>
  [% ELSE %] <option value="7">Claimed</option>
- [% END %] [% IF ( newserialloo.status5 ) %] <option value="5" selected="selected">Not Available</option>
- [% ELSE %] <option value="5">Not Available</option>
+ [% END %] [% IF ( newserialloo.status5 ) %] <option value="5" selected="selected">Not available</option>
+ [% ELSE %] <option value="5">Not available</option>
  [% END %] [% IF ( newserialloo.status6 ) %] <option value="6" selected="selected">Delete</option>
  [% ELSE %] <option value="6">Delete</option>
  [% END %] </select>
@@ -348,10 +348,10 @@ $(document).ready(function() {
 
 <div class="yui-b">
 [% INCLUDE 'serials-menu.inc' %] <ul>
- [% FOREACH subscription IN subscriptions %] <li><a href="serials-collection.pl?subscriptionid=[% subscription.subscriptionid %]" title="serial collection for [% subscription.bibliotitle %]">Serial collection</a></li>
+ [% FOREACH subscription IN subscriptions %] <li><a href="serials-collection.pl?subscriptionid=[% subscription.subscriptionid %]" title="serial collection for [% subscription.bibliotitle %]">Serial collection #[% subscription.subscriptionid %]</a></li>
  <li><a href="subscription-detail.pl?subscriptionid=[% subscription.subscriptionid %]" title="detail of the subscription">Subscription #[% subscription.subscriptionid %]</a></li>
- [% IF ( subscription.abouttoexpire ) %]<a href="#" onclick="javascript:popup([% subscription.subscriptionid %])">Renew [% subscription.subscriptionid %]</a>
- [% END %] [% END %] <li><a href="/cgi-bin/koha/catalogue/[% default_bib_view %].pl?biblionumber=[% biblionumber %]" title="go to [% bibliotitle %]">Show Biblio</a></li></ul>
+ [% IF ( subscription.abouttoexpire ) %] <li><a href="#" onclick="javascript:popup([% subscription.subscriptionid %])">Renew #[% subscription.subscriptionid %]</a></li>
+ [% END %] [% END %] <li><a href="/cgi-bin/koha/catalogue/[% default_bib_view %].pl?biblionumber=[% biblionumber %]" title="go to [% bibliotitle %]">Show biblio</a></li></ul>
 </div>
 </div>
 [% INCLUDE 'intranet-bottom.inc' %] 

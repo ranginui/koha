@@ -1,4 +1,4 @@
-[% INCLUDE 'doc-head-open.inc' %][% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha Online[% END %] Catalogue &rsaquo; Privacy management for [% firstname %] [% surname %] [% INCLUDE 'doc-head-close.inc' %] </head>
+[% INCLUDE 'doc-head-open.inc' %][% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha online[% END %] catalogue &rsaquo; Your privacy management [% INCLUDE 'doc-head-close.inc' %] </head>
 <body id="opac-privacy">
 <div id="doc3" class="yui-t1">
  <div id="bd">
@@ -17,7 +17,7 @@
  <ul id="opac-privacy-options-list">
  <li class="privacy0">Forever: keep my reading history without limit. This is the option for users who want to keep track of what they are reading.</li>
  <li class="privacy1">Default: keep my reading history according to local laws. This is the default option : the library will keep your reading history for the duration permitted by local laws.</li>
- <li class="privacy2">Never: Delete my reading history immediately. This will delete all record of the item that was returned upon issueing.</li>
+ <li class="privacy2">Never: Delete my reading history immediately. This will delete all record of the item that was issued upon return.</li>
  </ul>
  <p id="note1">Please note that information on any book still issued must be kept by the library no matter which privacy option you choose.</p>
  <p id="note2">Please also note that the library staff can't update these values for you: it's your privacy!</p>

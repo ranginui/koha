@@ -16,6 +16,6 @@
 
 <p>This will allow for easy entry of local cities into the borrower record without risking the potential for typos or mistaken postal codes.</p>
 
-<p><strong>See the full documentation for Cities and Towns in the <a href="http://manual.koha-community.org/3.6/en/patscirc.html#citytowns">manual</a> (online).</strong></p>
+<p><strong>See the full documentation for Cities and Towns in the <a href="http://manual.koha-community.org/3.8/en/patscirc.html#citytowns">manual</a> (online).</strong></p>
 
 [% INCLUDE 'help-bottom.inc' %]

@@ -1,4 +1,8 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Administration &rsaquo; [% IF ( add_form ) %]MARC Frameworks &rsaquo; [% action %] [% searchfield %][% END %] [% IF ( delete_confirm ) %]MARC Frameworks &rsaquo; Confirm Deletion of Tag '[% searchfield %]'[% END %] [% IF ( delete_confirmed ) %]MARC Frameworks &rsaquo; Data Deleted[% END %] [% IF ( else ) %]MARC Frameworks[% END %]</title>
+[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Administration &rsaquo;
+[% IF ( add_form ) %]MARC frameworks &rsaquo; [% action %] [% searchfield %][% END %]
+[% IF ( delete_confirm ) %]MARC frameworks &rsaquo; Confirm deletion of tag '[% searchfield %]'[% END %]
+[% IF ( delete_confirmed ) %]MARC frameworks &rsaquo; Data deleted[% END %]
+[% IF ( else ) %]MARC frameworks[% END %]</title>
 [% INCLUDE 'doc-head-close.inc' %] <script type="text/javascript" src="[% themelang %]/lib/jquery/plugins/jquery.tablesorter.min.js"></script>
 <script type="text/javascript" src="[% themelang %]/lib/jquery/plugins/jquery.tablesorter.pager.js"></script>
 <script type="text/javascript" id="js">$(document).ready(function() {
@@ -35,12 +39,16 @@ $(document).ready(function() {
 [% INCLUDE 'header.inc' %] [% INCLUDE 'cat-search.inc' %] <div id="breadcrumbs">
  <a href="/cgi-bin/koha/mainpage.pl">Home</a>
 &rsaquo; <a href="/cgi-bin/koha/admin/admin-home.pl">Administration</a>
-&rsaquo; <a href="/cgi-bin/koha/admin/biblio_framework.pl">MARC Frameworks</a>
+&rsaquo; <a href="/cgi-bin/koha/admin/biblio_framework.pl">MARC frameworks</a>
 [% IF ( add_form ) %] &rsaquo; <a href="/cgi-bin/koha/admin/marctagstructure.pl?frameworkcode=[% frameworkcode %]">[% frameworktext %] ([% frameworkcode %])</a>
 &rsaquo; [% action %] [% searchfield %] [% ELSIF ( else ) %] &rsaquo; <a href="/cgi-bin/koha/admin/marctagstructure.pl?frameworkcode=[% frameworkcode %]">[% IF ( frameworkcode ) %][% frameworktext %] ([% frameworkcode %])[% ELSE %]Default MARC framework[% END %]</a>
 [% ELSIF ( delete_confirm ) %] &rsaquo; <a href="/cgi-bin/koha/admin/marctagstructure.pl?frameworkcode=[% frameworkcode %]">[% frameworktext %] ([% frameworkcode %])</a>
-&rsaquo; Confirm Deletion of Tag '[% searchfield %]' [% ELSIF ( delete_confirmed ) %] &rsaquo; <a href="/cgi-bin/koha/admin/marctagstructure.pl?frameworkcode=[% frameworkcode %]">[% frameworktext %] ([% frameworkcode %])</a>
-&rsaquo; Data Deleted [% END %] </div>
+&rsaquo; Confirm deletion of tag '[% searchfield %]'
+[% ELSIF ( delete_confirmed ) %]
+&rsaquo; <a href="/cgi-bin/koha/admin/marctagstructure.pl?frameworkcode=[% frameworkcode %]">[% frameworktext %] ([% frameworkcode %])</a>
+&rsaquo; Data deleted
+[% END %]
+</div>
 
 <div id="doc3" class="yui-t2">
  <div id="bd">
@@ -49,7 +57,7 @@ $(document).ready(function() {
 
 [% IF ( else ) %] <div id="toolbar">
  <ul class="toolbar">
- <li><a id="addtag" href="/cgi-bin/koha/admin/marctagstructure.pl?op=add_form&amp;frameworkcode=[% frameworkcode %]">New Tag</a></li>
+ <li><a id="addtag" href="/cgi-bin/koha/admin/marctagstructure.pl?op=add_form&amp;frameworkcode=[% frameworkcode %]">New tag</a></li>
 </ul></div>[% END %] <h1>MARC Framework for [% IF ( frameworkcode ) %][% frameworktext %] ([% frameworkcode %])[% ELSE %]default MARC framework[% END %]</h1>
 
 [% IF ( add_form ) %] <form action="[% script_name %]" name="Aform" method="post">
@@ -69,7 +77,7 @@ $(document).ready(function() {
  <a class="cancel" href="[% script_name %]?frameworkcode=[% frameworkcode %]">Cancel</a>
  </fieldset>
  </form>
-[% END %] [% IF ( delete_confirm ) %] <div class="dialog alert"><h3>Confirm Deletion of Tag <span class="ex">'[% searchfield %]'</span>?</h3>
+[% END %] [% IF ( delete_confirm ) %] <div class="dialog alert"><h3>Confirm deletion of tag <span class="ex">'[% searchfield %]'</span>?</h3>
  <p>Tag: [% searchfield %]</p>
  <p>Description: [% liblibrarian %]</p>
  <form action="[% script_name %]" method="post">
@@ -78,7 +86,7 @@ $(document).ready(function() {
  <input type="submit" class="approve" value="Yes, Delete this Tag" /></form>
  
  <form action="[% script_name %]" method="get"><input type="hidden" name="frameworkcode" value="[% frameworkcode %]" /><input type="submit" value="No, Do Not Delete" class="deny" /></form></div>
-[% END %] [% IF ( delete_confirmed ) %] <div class="dialog message"><h3>Tag Deleted</h3>
+[% END %] [% IF ( delete_confirmed ) %] <div class="dialog message"><h3>Tag deleted</h3>
  <form action="[% script_name %]" method="post"><input type="hidden" name="frameworkcode" value="[% frameworkcode %]" />
  <input type="submit" value="OK" class="approve" />
  </form></div>
@@ -103,7 +111,7 @@ $(document).ready(function() {
  [% ELSE %] <option value="[% frameworkloo.value %]">[% frameworkloo.frameworktext %]</option>
  [% END %] [% END %] </select>
  <input type="submit" value="Search" />
-<p> <label for="select_display">Display only used Tags/Subfields</label>
+<p> <label for="select_display">Display only used tags/subfields</label>
  [% IF ( select_display ) %] <input type="checkbox" name="select_display" id="select_display" value="True" checked="checked"  onchange="this.form.submit();" />
  [% ELSE %] <input type="checkbox" name="select_display" id="select_display" value="True" onchange="this.form.submit();" />
  [% END %]</p>

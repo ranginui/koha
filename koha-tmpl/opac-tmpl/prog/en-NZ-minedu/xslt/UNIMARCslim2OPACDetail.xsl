@@ -9,7 +9,7 @@
   exclude-result-prefixes="marc items">
 
 <xsl:import href="UNIMARCslimUtils.xsl"/>
-<xsl:output method = "xml" indent="yes" omit-xml-declaration = "yes" />
+<xsl:output method = "html" indent="yes" omit-xml-declaration = "yes" />
 <xsl:template match="/">
  <xsl:apply-templates/>
 </xsl:template>
@@ -19,14 +19,13 @@
  <xsl:variable name="leader6" select="substring($leader,7,1)"/>
  <xsl:variable name="leader7" select="substring($leader,8,1)"/>
  <xsl:variable name="biblionumber" select="marc:datafield[@tag=090]/marc:subfield[@code='a']"/>
- <xsl:variable name="DisplayOPACiconsXSLT" select="marc:sysprefs/marc:syspref[@name='DisplayOPACiconsXSLT']"    />
- <xsl:variable name="OPACURLOpenInNewWindow" select="marc:sysprefs/marc:syspref[@name='OPACURLOpenInNewWindo    w']"/>
+ <xsl:variable name="DisplayOPACiconsXSLT" select="marc:sysprefs/marc:syspref[@name='DisplayOPACiconsXSLT']"/>
+ <xsl:variable name="OPACURLOpenInNewWindow" select="marc:sysprefs/marc:syspref[@name='OPACURLOpenInNewWindow']"/>
  <xsl:variable name="URLLinkText" select="marc:sysprefs/marc:syspref[@name='URLLinkText']"/>
- <xsl:variable name="ShowISBD" select="marc:sysprefs/marc:syspref[@name='viewISBD']"/>
 
  <xsl:if test="marc:datafield[@tag=200]">
  <xsl:for-each select="marc:datafield[@tag=200]">
- <h1>
+ <h1 class="title">
  <xsl:call-template name="addClassRtl" />
  <xsl:for-each select="marc:subfield">
  <xsl:choose>
@@ -67,23 +66,6 @@
  </xsl:for-each>
  </xsl:if>
 
- <div id="views">
- <span class="view">
- <span id="Normalview">Normal View</span>
- </span>
- <span class="view">
- <a id="MARCviewPop" href="/cgi-bin/koha/opac-showmarc.pl?id={marc:datafield[@tag=090]/marc:subfield[@code='a']}" title="MARC" rel="gb_page_center[600,500]">MARC View</a>
- </span>
- <span class="view">
- <a id="MARCview" href="/cgi-bin/koha/opac-MARCdetail.pl?biblionumber={marc:datafield[@tag=090]/marc:subfield[@code='a']}" title="MARC">Expanded MARC View</a>
- </span>
- <xsl:if test="$ShowISBD!='0'">
- <span class="view">
- <a id="ISBDview" href="/cgi-bin/koha/opac-ISBDdetail.pl?biblionumber={marc:datafield[@tag=090]/marc:subfield[@code='a']}">Card View (ISBD)</a>
- </span>
- </xsl:if>
- </div>
-
  <xsl:call-template name="tag_title">
  <xsl:with-param name="tag">454</xsl:with-param>
  <xsl:with-param name="label">Translation of</xsl:with-param>
@@ -91,7 +73,7 @@
 
  <xsl:call-template name="tag_title">
  <xsl:with-param name="tag">461</xsl:with-param>
- <xsl:with-param name="label">Set Level</xsl:with-param>
+ <xsl:with-param name="label">Set level</xsl:with-param>
  </xsl:call-template>
 
  <xsl:call-template name="tag_title">
@@ -101,7 +83,7 @@
 
  <xsl:call-template name="tag_7xx">
  <xsl:with-param name="tag">700</xsl:with-param>
- <xsl:with-param name="label">Main Author</xsl:with-param>
+ <xsl:with-param name="label">Main author</xsl:with-param>
  </xsl:call-template>
 
  <xsl:call-template name="tag_7xx">
@@ -116,7 +98,7 @@
 
  <xsl:call-template name="tag_7xx">
  <xsl:with-param name="tag">702</xsl:with-param>
- <xsl:with-param name="label">Secondary Author</xsl:with-param>
+ <xsl:with-param name="label">Secondary author</xsl:with-param>
  </xsl:call-template>
 
  <xsl:call-template name="tag_7xx">
@@ -131,7 +113,7 @@
 
  <xsl:call-template name="tag_title">
  <xsl:with-param name="tag">500</xsl:with-param>
- <xsl:with-param name="label">Uniform Title</xsl:with-param>
+ <xsl:with-param name="label">Uniform title</xsl:with-param>
  </xsl:call-template>
 
  <xsl:call-template name="tag_title">
@@ -398,7 +380,7 @@
 
  <xsl:call-template name="tag_subject">
  <xsl:with-param name="tag">615</xsl:with-param>
- <xsl:with-param name="label">Subject Category</xsl:with-param>
+ <xsl:with-param name="label">Subject category</xsl:with-param>
  </xsl:call-template>
 
  <xsl:call-template name="tag_subject">
@@ -408,7 +390,7 @@
 
  <xsl:if test="marc:datafield[@tag=856]">
  <span class="results_summary">
- <span class="label">Online Resources:</span>
+ <span class="label">Online resources:</span>
  <xsl:for-each select="marc:datafield[@tag=856]">
  <a>
  <xsl:attribute name="href">

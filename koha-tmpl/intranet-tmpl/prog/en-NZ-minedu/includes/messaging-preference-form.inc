@@ -24,7 +24,13 @@
  <!-- <th>RSS</th> -->
  [% UNLESS ( messaging_form_inactive ) %]<th>Do not notify</th>[% END %] </tr>
  [% FOREACH messaging_preference IN messaging_preferences %] <tr>
- <td>[% IF ( messaging_preference.Item_Due ) %]Item Due [% ELSIF ( messaging_preference.Advance_Notice ) %]Advance Notice [% ELSIF ( messaging_preference.Upcoming_Events ) %]Upcoming Events [% ELSIF ( messaging_preference.Hold_Filled ) %]Reservation Filled [% ELSIF ( messaging_preference.Item_Check_in ) %]Item Return [% ELSIF ( messaging_preference.Item_Checkout ) %]Item Issue [% ELSE %]Unknown [% END %]</td>
+ <td>[% IF ( messaging_preference.Item_Due ) %]Item due
+ [% ELSIF ( messaging_preference.Advance_Notice ) %]Advance notice
+ [% ELSIF ( messaging_preference.Upcoming_Events ) %]Upcoming events
+ [% ELSIF ( messaging_preference.Hold_Filled ) %]Hold filled
+ [% ELSIF ( messaging_preference.Item_Check_in ) %]Item check-in
+ [% ELSIF ( messaging_preference.Item_Checkout ) %]Item checkout
+ [% ELSE %]Unknown [% END %]</td>
  [% IF ( messaging_preference.takes_days ) %] <td>
  [% IF ( messaging_form_inactive ) %] <select name="[% messaging_preference.message_attribute_id %]-DAYS" disabled="disabled">
  [% ELSE %] <select name="[% messaging_preference.message_attribute_id %]-DAYS">

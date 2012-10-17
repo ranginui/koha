@@ -1,4 +1,10 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; System Administration &rsaquo; Stop words [% IF ( add_form ) %]&rsaquo; [% IF ( searchfield ) %]Modify[% ELSE %]New[% END %] stop word [% ELSIF ( add_validate ) %]&rsaquo; Data recorded [% ELSIF ( delete_confirm ) %]&rsaquo; Delete stop word '[% searchfield %]' ? [% ELSIF ( delete_confirmed ) %]&rsaquo; Data deleted [% END %] </title>
+[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; System administration &rsaquo; Stop words
+[% IF ( add_form ) %]&rsaquo; [% IF ( searchfield ) %]Modify[% ELSE %]New[% END %] stop word
+[% ELSIF ( add_validate ) %]&rsaquo; Data recorded
+[% ELSIF ( delete_confirm ) %]&rsaquo; Delete stop word '[% searchfield %]' ?
+[% ELSIF ( delete_confirmed ) %]&rsaquo; Data deleted
+[% END %]
+</title>
 [% INCLUDE 'doc-head-close.inc' %] <script language="javascript" type="text/javascript">
 //<![CDATA[
     $(document).ready(function() {
@@ -23,8 +29,17 @@
 [% INCLUDE 'header.inc' %] [% INCLUDE 'stopwords-admin-search.inc' %] <div id="breadcrumbs">
 <a href="/cgi-bin/koha/mainpage.pl">Home</a>
 &rsaquo; <a href="/cgi-bin/koha/admin/admin-home.pl">Administration</a>
-&rsaquo; <a href="/cgi-bin/koha/admin/stopwords.pl">Stop Words</a>
-[% IF ( add_form ) %] &rsaquo; [% IF ( searchfield ) %]Modify[% ELSE %]New[% END %] Stop Word [% ELSIF ( add_validate ) %] &rsaquo; Data recorded [% ELSIF ( delete_confirm ) %] &rsaquo; Delete Stop Word '[% searchfield %]' ? [% ELSIF ( delete_confirmed ) %] &rsaquo; Data deleted [% END %] </div>
+&rsaquo; <a href="/cgi-bin/koha/admin/stopwords.pl">Stop words</a>
+[% IF ( add_form ) %]
+ &rsaquo; [% IF ( searchfield ) %]Modify[% ELSE %]New[% END %] Stop word
+[% ELSIF ( add_validate ) %]
+ &rsaquo; Data recorded
+[% ELSIF ( delete_confirm ) %]
+ &rsaquo; Delete stop word '[% searchfield %]' ?
+[% ELSIF ( delete_confirmed ) %]
+ &rsaquo; Data deleted
+[% END %]
+</div>
 
 <div id="doc3" class="yui-t2">
  
@@ -54,7 +69,7 @@
  <input type="submit" value="OK" class="approve" />
  </form></div>
 [% END %] [% IF ( delete_confirm ) %] <div class="dialog alert">
- <h3>Delete Stop Word <span class="ex">'[% searchfield %]'</span></h3>
+ <h3>Delete stop word <span class="ex">'[% searchfield %]'</span></h3>
  <form action="[% script_name %]" method="post">
  <input type="hidden" name="op" value="delete_confirmed" />
  <input type="hidden" name="searchfield" value="[% searchfield %]" />
@@ -69,10 +84,10 @@
  </form></div>
 [% END %] [% IF ( else ) %] <div id="toolbar">
  <ul class="toolbar">
- <li><a id="newstopword" href="/cgi-bin/koha/admin/stopwords.pl?op=add_form">New Stop Word</a></li>
+ <li><a id="newstopword" href="/cgi-bin/koha/admin/stopwords.pl?op=add_form">New stop word</a></li>
 </ul></div>
 
- <h1>Stop Words</h1>
+ <h1>Stop words</h1>
  <p class="message">NOTE : if you change something in this table, ask your administrator to run misc/batchRebuildBiblioTables.pl script.</p>
 
  [% IF ( searchfield ) %] <p>You searched for <b>[% searchfield %]</b></p>

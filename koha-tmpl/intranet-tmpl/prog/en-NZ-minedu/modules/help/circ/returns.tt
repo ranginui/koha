@@ -3,24 +3,25 @@
 <p>Checking in items can be performed from various different locations</p>
 
 <ul>
- <li>The return box on main staff client</li>
+ <li>The check in box on the top of the main staff client</li>
  <li>The check in option on the quick search bar on the Circulation page</li>
  <li>The return link on the borrower's circulation summary (and on the circulation summary page)</li>
+ <li>The Check in page under the Circulation menu</li>
 </ul>
 
-<h2>Returning Items</h2>
+<h3>Returning Items</h3>
 
 <p>To return an item in scan the barcode for the item into the box provided. A summary of all items returned will appear below the return box</p>
 
 <p>If you are returning items that were put in the dropbox while the library was closed you can check the 'Dropbox mode' box before scanning items. This will effectively roll back the returned date to the last date the library was open.</p>
 
 <ul>
- <li>This requires that you have your closings added to the Holidays &amp; Calendar Tool</li>
+ <li>This requires that you have your closings added to the Holidays & Calendar Tool</li>
 </ul>
 
 <p>You can also choose to forgive all overdue charges for items you are checking in by checking the 'Forgive overdue charges' box before scanning items.</p>
 
-<h2>Return Messages</h2>
+<h3>Return Messages</h3>
 
 <p>There are several messages that can appear when returning items:</p>
 
@@ -33,6 +34,7 @@
 </li>
 </ul>
 </li>
+ <li>If you are checking in an item that should have multiple parts or pieces a message will appear warning you about the number of pieces you should have in your hand</li>
  <li>If you're returning an item in that has a reserve on it, you will be prompted to confirm the reserve <ul>
  <li>Clicking the Confirm hold button will mark the item as waiting for pickup from the library</li>
  <li>Clicking the Print Slip and Confirm button will mark the item as waiting for pickup at the library and present the library with a receipt to print and place on the book with the member's information</li>
@@ -47,6 +49,22 @@
 </li>
 </ul>
 
-<p><strong>See the full documentation for Checking In in the <a href="http://manual.koha-community.org/3.6/en/checkingin.html">manual</a> (online).</strong></p>
+<h2>Receiving Reserves</h2>
 
-[% INCLUDE 'help-bottom.inc' %]
+<p>When items that are on reserve are returned or issued the system will remind the circulation librarian that the item is on reserve and offer them options for managing the reserve.</p>
+
+<p>When you check in an item that has a reserve on it the system will ask you to either confirm and transfer the item or just confirm the reserve</p>
+
+<p>Clicking the Confirm button will mark the item as reserved for the patron. If the item needs to be transferred the item will also be marked as in transit to the proper branch. Clicking 'Ignore' will retain the reserevation, but allow you to issue the item to another patron. Choosing to confirm and print will present you with a printable page that you can slip inside the book with the necessary reservation and/or transfer information.</p>
+
+<p>Once confirmed the reservation will show on the borrower record and on the issue screen under the 'Reserved' tab.</p>
+
+<p>The item record will also show that the item is on reserve.</p>
+
+<p>In some cases a borrower may come in to pick up a reserved item for their partner (or someone else in their household). In this case you want to make sure that the reservation is cancelled when you issue the item to someone else. When trying to issue an item that is already waiting for someone else you will be presented with a warning message.</p>
+
+<p>From here you can issue the item to the borrower at the desk and cancel the reservation for the borrower.</p>
+
+<p><strong>See the full documentation for Checking In in the <a href="http://manual.koha-community.org/3.8/en/checkingin.html">manual</a> (online).</strong></p>
+
+[% INCLUDE 'help-bottom.inc' %] 

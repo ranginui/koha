@@ -1,4 +1,4 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Circulation &rsaquo; Reserve Ratios</title>
+[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Circulation &rsaquo; Hold ratios</title>
 [% INCLUDE 'doc-head-close.inc' %]
 <!-- Additions to enable Calendar system -->
 <link rel="stylesheet" type="text/css" href="[% themelang %]/lib/calendar/calendar-system.css" />
@@ -40,14 +40,14 @@ $.tablesorter.addParser({
 </style>
 </head>
 <body id="circ_reserveratios" class="circ">
-[% INCLUDE 'header.inc' %] [% INCLUDE 'circ-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/circ/circulation-home.pl">Circulation</a> &rsaquo; Reserve Ratios</div>
+[% INCLUDE 'header.inc' %] [% INCLUDE 'circ-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/circ/circulation-home.pl">Circulation</a> &rsaquo; Hold ratios</div>
 
 <div id="doc3" class="yui-t2">
  
  <div id="bd">
  <div id="yui-main">
  <div class="yui-b">
-<h1>Reserve Ratios to Calculate Items Needed</h1>
+<h1>Hold ratios to calculate items needed</h1>
  <h3>Calculated on [% todaysdate %]. From [% from %] to [% to %]</h3>
 <p>These items have a hold ratio &ge; [% ratio %].</p>
 <div class="sql">[% sql %]</div>
@@ -58,18 +58,21 @@ $.tablesorter.addParser({
  </th>
  <th>Items <a href="/cgi-bin/koha/circ/reserveratios.pl?ratio=[% ratio %]&amp;order=itemcount&amp;from=[% from %]&amp;to=[% to %]">Sort</a>
  </th>
- <th>Reserve Ratio</th>
+ <th>Hold ratio</th>
  <th>Title <a href="/cgi-bin/koha/circ/reserveratios.pl?ratio=[% ratio %]&amp;order=biblio&amp;from=[% from %]&amp;to=[% to %]">Sort</a>
  </th>
- <th>Holding Libraries <a href="/cgi-bin/koha/circ/reserveratios.pl?ratio=[% ratio %]&amp;order=branch&amp;from=[% from %]&amp;to=[% to %]">Sort</a>
+ <th>Holding libraries
+ <a href="/cgi-bin/koha/circ/reserveratios.pl?ratio=[% ratio %]&amp;order=branch&amp;from=[% from %]&amp;to=[% to %]">Sort</a>
  </th>
  <th>Location <a href="/cgi-bin/koha/circ/reserveratios.pl?ratio=[% ratio %]&amp;order=location&amp;from=[% from %]&amp;to=[% to %]">Sort</a>
  </th>
  <th>Itype <a href="/cgi-bin/koha/circ/reserveratios.pl?ratio=[% ratio %]&amp;order=itype&amp;from=[% from %]&amp;to=[% to %]">Sort</a>
  </th>
- <th>Call Numbers <a href="/cgi-bin/koha/circ/reserveratios.pl?ratio=[% ratio %]&amp;order=callnumber&amp;from=[% from %]&amp;to=[% to %]">Sort</a>
+ <th>Call numbers
+ <a href="/cgi-bin/koha/circ/reserveratios.pl?ratio=[% ratio %]&amp;order=callnumber&amp;from=[% from %]&amp;to=[% to %]">Sort</a>
  </th>
- <th>Items Needed </th>
+ <th>Items needed
+ </th>
  </tr></thead>
  
  <tbody>[% FOREACH reserveloo IN reserveloop %] <tr>
@@ -91,9 +94,10 @@ $.tablesorter.addParser({
 <div class="yui-b">
 <form action="/cgi-bin/koha/circ/reserveratios.pl" method="post" >
 <fieldset class="brief">
-<h4>Refine Results:</h4>
+<h4>Refine results:</h4>
 <ol><li><label for="ratio">
- Reserve Ratio: </label>
+ Hold ratio:
+</label>
 <input type="text" size="5" id="ratio" name="ratio" value="[% ratio %]" /></li>
 <li><label for="from">
  Start date: </label>

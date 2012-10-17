@@ -1,4 +1,4 @@
-
+<div class="gradient">
 <h1 id="logo"><a href="/cgi-bin/koha/mainpage.pl">[% LibraryName %]</a></h1><!-- Begin Catalogue Resident Search Box -->
 [% IF ( CAN_user_circulate ) %][% IF ( CircAutocompl ) %]<script type="text/javascript">
 //<![CDATA[
@@ -77,6 +77,7 @@ YAHOO.util.Event.onContentReady("header_search", function() {
  </form>
  </div>
  [% END %] <ul>
- [% IF ( CAN_user_circulate ) %]<li><a href="/cgi-bin/koha/circ/circulation.pl#circ_search">Issue</a></li>[% END %] [% IF ( CAN_user_circulate ) %]<li><a href="/cgi-bin/koha/circ/returns.pl#checkin_search">Return</a></li>[% END %] [% IF ( CAN_user_catalogue ) %]<li class="ui-tabs-selected"><a href="/cgi-bin/koha/catalogue/search.pl#catalog_search">Search the Catalogue</a></li>[% END %] </ul> 
-</div>
+ [% IF ( CAN_user_circulate ) %]<li><a href="/cgi-bin/koha/circ/circulation.pl#circ_search">Check out</a></li>[% END %] [% IF ( CAN_user_circulate ) %]<li><a href="/cgi-bin/koha/circ/returns.pl#checkin_search">Return</a></li>[% END %] [% IF ( CAN_user_catalogue ) %]<li class="ui-tabs-selected"><a href="/cgi-bin/koha/catalogue/search.pl#catalog_search">Search the catalog</a></li>[% END %] </ul> 
+</div><!-- /header_search -->
+</div><!-- /gradient -->
 <!-- End Catalogue Resident Search Box -->

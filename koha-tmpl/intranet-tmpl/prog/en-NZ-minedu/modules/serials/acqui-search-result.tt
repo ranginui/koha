@@ -1,4 +1,4 @@
-[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Serials &rsaquo; Select Vendor</title>
+[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Serials &rsaquo; Select vendor</title>
 [% INCLUDE 'doc-head-close.inc' %] <script type="text/javascript" language="Javascript">
 
 function GetIt(aqbooksellerid,name)
@@ -15,7 +15,7 @@ function GetIt(aqbooksellerid,name)
  <div id="bd">
  
 
-<h1>Vendor Search Results</h1>
+<h1>Vendor search results</h1>
 <h2>You searched on <b>vendor [% supplier %],</b> [% count %] results found</h2>
 
 [% IF ( loop_suppliers ) %] <table>

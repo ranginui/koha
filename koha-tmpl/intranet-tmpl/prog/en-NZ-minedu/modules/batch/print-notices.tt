@@ -6,11 +6,7 @@
         pre { font-family: monospace }
         -->
     </style>
- [% IF ( stylesheet ) %] <style type="text/css">
-        <!--
-        [% stylesheet %]
-        -->
-    </style>
+ [% IF ( stylesheet ) %] <link rel="stylesheet" type="text/css" href="[% stylesheet %]">
  [% END %] </head>
 <body id="batch_print-notices" class="batch">
  [% FOREACH message IN messages %] <div class="message">

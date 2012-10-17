@@ -1,4 +1,18 @@
-[% INCLUDE 'doc-head-open.inc' %]<title>Koha &rsaquo; Acquisitions &rsaquo; [% IF ( op_save ) %][% IF ( suttesionid ) %]Edit purchase suggestion #[% suggestionid %][% ELSE %]Enter a new purchase suggestion[% END %][% ELSE %]Suggestions Management[% END %]</title>
+[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Acquisitions &rsaquo;
+ [% IF ( op_save ) %]
+ [% IF ( suggestionid) %]
+ [% IF ( op == 'show' ) %]
+ Show purchase suggestion #[% suggestionid %]
+ [% ELSE %]
+ Edit purchase suggestion #[% suggestionid %]
+ [% END %]
+ [% ELSE %]
+ Enter a new purchase suggestion
+ [% END %]
+ [% ELSE %]
+ Suggestions management
+ [% END %]
+</title>
 [% INCLUDE 'doc-head-close.inc' %] [% INCLUDE 'calendar.inc' %] [% IF ( op_else ) %] <script type="text/javascript" src="[% themelang %]/lib/jquery/plugins/jquery.tablesorter.min.js"></script>
 <script type="text/javascript" src="[% themelang %]/lib/jquery/plugins/jquery.checkboxes.min.js"></script>
 <script type="text/javascript">
@@ -84,9 +98,102 @@ $(document).ready(function() { calcNewsuggTotal(); });
 [% END %] <script type="text/javascript" src="[% themelang %]/js/acq.js"></script>
 </head>
 <body id="acq_suggestion" class="acq">
-[% INCLUDE 'header.inc' %] [% INCLUDE 'cat-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/acqui/acqui-home.pl">Acquisitions</a> &rsaquo; [% IF ( op_save ) %] <a href="/cgi-bin/koha/suggestion/suggestion.pl">Suggestions</a> &rsaquo; [% IF ( suggestionid ) %]Suggestion edit #[% suggestionid %][% ELSE %]New purchase suggestion[% END %][% ELSE %]Suggestions Management[% END %] </div>
+[% INCLUDE 'header.inc' %] [% INCLUDE 'cat-search.inc' %] <div id="breadcrumbs">
+ <a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/acqui/acqui-home.pl">Acquisitions</a> &rsaquo; [% IF ( op_save ) %] <a href="/cgi-bin/koha/suggestion/suggestion.pl">Suggestions</a> &rsaquo;
+ [% IF ( op == 'show' ) %]
+ Show suggestion #[% suggestionid %]
+ [% ELSE %]
+ Suggestion edit #[% suggestionid %]
+ [% END %]
+ [% ELSE %]
+ Suggestions management
+ [% END %]
+</div>
 
-[% IF ( op_save ) %]<div id="doc" class="yui-t7">[% ELSE %]<div id="doc3" class="yui-t2">[% END %] <div id="bd">
+[% IF ( op == 'show' ) %] <div id="doc" class="yui-t7"> <!-- <div id="doc3" class="yui-t2"> -->
+<div id="bd">
+ <div id="yui-main">
+ <div class="yui-b">
+
+ <fieldset class="rows">
+ <legend>Bibliographic information</legend>
+ <ol>
+ <li><span class="label">Title:</span>[% title |html %]</li>
+ <li><span class="label">Author:</span>[% author %]</li>
+ <li><span class="label">Copyright date:</span>[% copyrightdate %]</li>
+ <li><span class="label">ISBN or ISSN or other standard number:</span>[% isbn %]</li>
+ <li><span class="label">Publisher:</span>[% publishercode %]</li>
+ <li><span class="label">Publication place:</span>[% place %]</li>
+ <li><span class="label">Collection title:</span>[% collectiontitle %]</li>
+ <li><span class="label">Document type:</span>
+ [% FOREACH itemtypeloo IN itemtypeloop %]
+ [% IF ( itemtypeloo.selected ) %][% itemtypeloo.description %][% END %]
+ [% END %]
+ </li>
+ [% IF ( patron_reason_loop ) %] <li><span class="label">Reason for suggestion: </span>
+ [% FOREACH patron_reason_loo IN patron_reason_loop %]
+ [% IF ( patron_reason_loo.selected ) %][% patron_reason_loo.lib %][% END %]
+ [% END %]
+ </li>
+ [% END %] <li><span class="label">Notes:</span>[% note %]</li>
+ </ol>
+ </fieldset>
+ <fieldset class="rows"> <legend>Suggestion management</legend>
+ <ol>
+ <li>
+ <span class="label">Status:</span>
+ [% IF ( STATUS == 'ASKED' ) %]Pending
+ [% ELSIF ( STATUS == 'ACCEPTED' ) %]Accepted
+ [% ELSIF ( STATUS == 'CHECKED' ) %]Checked
+ [% ELSIF ( STATUS == 'REJECTED' ) %]Rejected
+ [% ELSE %]No Status
+ [% END %]
+ </li>
+ <li>
+ <table>
+ <thead><tr><th>&nbsp;</th><th>Date</th><th>By</th></tr></thead>
+ <tbody>
+ <tr>
+ <th><span class="label">Suggestion creation</span> </th>
+ <td>[% suggesteddate %]</td>
+ <td>[% IF ( suggestedby_borrowernumber ) %]<a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% suggestedby_borrowernumber %]">[% suggestedby_surname %], [% suggestedby_firstname %]</a> [% suggestedby_branchcode %] ([% suggestedby_description %])[% END %] </td>
+ </tr>
+ <tr>
+ <th><span class="label">Suggestion management</span> </th>
+ <td>[% manageddate %]</td>
+ <td>[% IF ( managedby_borrowernumber ) %]<a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% managedby_borrowernumber %]">[% managedby_surname %], [% managedby_firstname %]</a> [% managedby_branchcode %] ([% managedby_description %])[% END %]</td>
+ </tr>
+ <tr>
+ <th><span class="label">Suggestion accepted</span> </th>
+ <td>[% accepteddate %]</td>
+ <td>[% IF ( acceptedby_borrowernumber ) %]<a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% acceptedby_borrowernumber %]">[% acceptedby_surname %], [% acceptedby_firstname %]</a> [% acceptedby_branchcode %] ([% acceptedby_description %])[% END %]</td>
+ </tr>
+ </tbody>
+ </table></li></ol>
+ </fieldset>
+ <fieldset class="rows"> <legend>Acquisition information</legend>
+ <ol>
+ <li>
+ <span class="label">Library:</span> [% branchname %] </li>
+ <li>
+ <span class="label">Budget:</span> [% budgetname %] </li>
+ <li>
+ <span class="label">Copies:</span>[% quantity %] </li>
+ <li>
+ <span class="label">Currency:</span>[% currency %] </li>
+ <li>
+ <span class="label">Price:</span>[% price %] </li>
+ <li>
+ <span class="label">Total</span>[% total %] </li>
+ </ol>
+ </fieldset>
+
+ <a class="cancel" href="suggestion.pl">&lt;&lt;Back to the list</a>
+
+ </div>
+ </div>
+</div>
+[% ELSE %] [% IF ( op_save ) %]<div id="doc" class="yui-t7">[% ELSE %]<div id="doc3" class="yui-t2">[% END %] <div id="bd">
  <div id="yui-main">
  <div class="yui-b">
 [% IF ( op_save ) %] <form id="add_edit" action="suggestion.pl" method="post">
@@ -99,9 +206,9 @@ $(document).ready(function() { calcNewsuggTotal(); });
  <li><label for="copyrightdate">Copyright date:</label><input type="text" id="copyrightdate" name="copyrightdate" size="4" maxlength="4" value="[% copyrightdate %]" /></li>
  <li><label for="isbn">ISBN or ISSN or other standard number:</label><input type="text" id="isbn" name="isbn" size="50" maxlength="80" value="[% isbn %]"/></li>
  <li><label for="publishercode">Publisher:</label><input type="text" id="publishercode" name="publishercode" size="50" maxlength="80" value="[% publishercode %]"/></li>
- <li><label for="place">Publication Place:</label><input type="text" id="place" name="place" size="50" maxlength="80" value="[% place %]"/></li>
- <li><label for="collectiontitle">Collection Title:</label><input type="text" id="collectiontitle" name="collectiontitle" size="50" maxlength="80" value="[% collectiontitle %]"/></li>
- <li><label for="itemtype">Document Type:</label>
+ <li><label for="place">Publication place:</label><input type="text" id="place" name="place" size="50" maxlength="80" value="[% place %]"/></li>
+ <li><label for="collectiontitle">Collection title:</label><input type="text" id="collectiontitle" name="collectiontitle" size="50" maxlength="80" value="[% collectiontitle %]"/></li>
+ <li><label for="itemtype">Document type:</label>
  <select id="itemtype" name="itemtype" >
  [% FOREACH itemtypeloo IN itemtypeloop %] [% IF ( itemtypeloo.selected ) %]<option selected="selected" value="[% itemtypeloo.itemtype %]">[% ELSE %]<option value="[% itemtypeloo.itemtype %]">[% END %] [% itemtypeloo.description %]</option>
  [% END %] </select>
@@ -130,7 +237,7 @@ $(document).ready(function() { calcNewsuggTotal(); });
  <td><input type="hidden" id="managedby" name="managedby" value="[% managedby %]"/>[% IF ( managedby_borrowernumber ) %]<a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% managedby_borrowernumber %]">[% managedby_surname %], [% managedby_firstname %]</a> [% managedby_branchcode %] ([% managedby_description %])[% END %]</td>
  </tr>
  <tr>
- <th><label for="accepteddate">Suggestion Accepted</label> </th>
+ <th><label for="accepteddate">Suggestion accepted</label> </th>
  <td><input type="text" id="accepteddate" name="accepteddate" size="10" maxlength="10" value="[% accepteddate %]" /></td>
  <td><input type="hidden" id="acceptedby" name="acceptedby" value="[% acceptedby %]"/>[% IF ( acceptedby_borrowernumber ) %]<a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% acceptedby_borrowernumber %]">[% acceptedby_surname %], [% acceptedby_firstname %]</a> [% acceptedby_branchcode %] ([% acceptedby_description %])[% END %]</td>
  </tr>
@@ -157,14 +264,14 @@ $(document).ready(function() { calcNewsuggTotal(); });
  <input type="text" readonly="readonly" id="total" name="total" size="10" value="[% total %]"/>
  </li></ol>
  </fieldset><input type="hidden" id="returnsuggested" name="returnsuggested" value="[% IF ( returnsuggestedby ) %][% returnsuggestedby %][% ELSE %]noone[% END %]"/>
- <fieldset class="action"><input type="hidden" name="op" value="[% op %]" />[% IF ( suggestionid ) %]<input type="submit" value="Save" /> <a class="cancel" href="[% IF ( returnsuggestedby ) %]/cgi-bin/koha/members/moremember.pl?borrowernumber=[% returnsuggestedby %]#suggestions[% ELSE %]suggestion.pl?suggestionid=[% suggestionid %][% END %]">Cancel</a>[% ELSE %]<input type="submit" value="Submit Your Suggestion" /> <a class="cancel" href="suggestion.pl">Cancel</a>[% END %] </fieldset>
+ <fieldset class="action"><input type="hidden" name="op" value="[% op %]" />[% IF ( suggestionid ) %]<input type="submit" value="Save" /> <a class="cancel" href="[% IF ( returnsuggestedby ) %]/cgi-bin/koha/members/moremember.pl?borrowernumber=[% returnsuggestedby %]#suggestions[% ELSE %]suggestion.pl[% END %]">Cancel</a>[% ELSE %]<input type="submit" value="Submit Your Suggestion" /> <a class="cancel" href="suggestion.pl">Cancel</a>[% END %] </fieldset>
  </form>
 [% END %] [% IF ( op_else ) %] <div id="toolbar">
  <ul class="toolbar">
  <li> <a id="newsuggestion" href="suggestion.pl?op=add">New purchase suggestion</a></li>
  </ul></div>
 
-<h1>Suggestions Management</h1>
+<h1>Suggestions management</h1>
 
 [% UNLESS ( notabs ) %] <div id="sorting" class="overlay">Sorting...</div>
 <div id="loadingtab" class="overlay">Loading tab...</div>
@@ -176,13 +283,13 @@ $(document).ready(function() { calcNewsuggTotal(); });
 [% END %] [% FOREACH suggestion IN suggestions %] <div id="[% suggestion.suggestiontype %]">
 <form name="f[% suggestion.suggestiontype %]" method="post" action="/cgi-bin/koha/suggestion/suggestion.pl#[% suggestion.suggestiontype %]">
 
-[% IF ( suggestion.suggestions_loop ) %] <p><a id="CheckAll[% suggestion.suggestiontype %]" href="#">Check All</a> | <a id="UncheckAll[% suggestion.suggestiontype %]" href="#">Uncheck All</a></p>
+[% IF ( suggestion.suggestions_loop ) %] <p><a id="CheckAll[% suggestion.suggestiontype %]" href="#">Check all</a> | <a id="UncheckAll[% suggestion.suggestiontype %]" href="#">Uncheck all</a></p>
  <table id="[% suggestion.suggestiontype %]t">
  <thead>
  <tr><th>&nbsp;</th>
  <th>Suggestion</th>
- <th>Suggested by /on</th>
- <th>Managed by /on</th>
+ <th>Suggested by - on</th>
+ <th>Managed by - on</th>
  <th>Library</th>
  <th>Budget</th>
  <th>Status</th></tr>
@@ -192,14 +299,19 @@ $(document).ready(function() { calcNewsuggTotal(); });
  <input type="checkbox" name="edit_field" value="[% suggestions_loo.suggestionid %]" />
  </td>
  <td>
- <a href="suggestion.pl?suggestionid=[% suggestions_loo.suggestionid %]&amp;op=edit" title="suggestion" >
- [% suggestions_loo.title |html %][% IF ( suggestions_loo.author ) %], by [% suggestions_loo.author %][% END %] </a>
+ <a href="suggestion.pl?suggestionid=[% suggestions_loo.suggestionid %]&amp;op=show" title="suggestion" >
+ [% suggestions_loo.title |html %][% IF ( suggestions_loo.author ) %], by [% suggestions_loo.author %][% END %]</a>
+ [<a href="suggestion.pl?suggestionid=[% suggestions_loo.suggestionid %]&amp;op=edit" title="suggestion" >edit</a>]
  <br />
  [% IF ( suggestions_loo.copyrightdate ) %]&copy; [% suggestions_loo.copyrightdate %] [% END %] [% IF ( suggestions_loo.volumedesc ) %]; Volume:<i>[% suggestions_loo.volumedesc %]</i> [% END %] [% IF ( suggestions_loo.isbn ) %]; ISBN:<i>[% suggestions_loo.isbn %]</i> [% END %][% IF ( suggestions_loo.publishercode ) %]; Published by [% suggestions_loo.publishercode %] [% END %][% IF ( suggestions_loo.publicationyear ) %] in <i>[% suggestions_loo.publicationyear %]</i> [% END %][% IF ( suggestions_loo.place ) %] in <i>[% suggestions_loo.place %]</i> [% END %][% IF ( suggestions_loo.collectiontitle ) %]; [% suggestions_loo.collectiontitle %] [% END %][% IF ( suggestions_loo.itemtype ) %]; [% suggestions_loo.itemtype %] [% END %]<br />[% IF ( suggestions_loo.note ) %]<span class="note">[% suggestions_loo.note %]</span>[% END %] </td>
  <td>
- [% IF ( suggestions_loo.emailsuggestedby ) %]<a href="mailto:[% suggestions_loo.emailsuggestedby %]">[% END %][% suggestions_loo.surnamesuggestedby %][% IF ( suggestions_loo.firstnamesuggestedby ) %], [% suggestions_loo.firstnamesuggestedby %][% END %] [% IF ( suggestions_loo.emailsuggestedby ) %]</a>[% END %] [% IF ( suggestions_loo.suggesteddate ) %] / [% suggestions_loo.suggesteddate %][% END %] </td>
+ [% IF ( suggestions_loo.emailsuggestedby ) %]<a href="mailto:[% suggestions_loo.emailsuggestedby %]">[% END %][% suggestions_loo.surnamesuggestedby %][% IF ( suggestions_loo.firstnamesuggestedby ) %], [% suggestions_loo.firstnamesuggestedby %][% END %] [% IF ( suggestions_loo.emailsuggestedby ) %]</a>[% END %]
+ [% IF ( suggestions_loo.suggesteddate ) %] - [% suggestions_loo.suggesteddate %][% END %]
+ </td>
  <td>
- [% IF ( suggestions_loo.emailmanagedby ) %]<a href="mailto:[% suggestions_loo.emailmanagedby %]">[% END %][% suggestions_loo.surnamemanagedby %][% IF ( suggestions_loo.firstnamemanagedby ) %], [% suggestions_loo.firstnamemanagedby %][% END %] [% IF ( suggestions_loo.emailmanagedby ) %]</a>[% END %] [% IF ( suggestions_loo.manageddate ) %], [% suggestions_loo.manageddate %][% END %] </td>
+ [% IF ( suggestions_loo.emailmanagedby ) %]<a href="mailto:[% suggestions_loo.emailmanagedby %]">[% END %][% suggestions_loo.surnamemanagedby %][% IF ( suggestions_loo.firstnamemanagedby ) %], [% suggestions_loo.firstnamemanagedby %][% END %] [% IF ( suggestions_loo.emailmanagedby ) %]</a>[% END %]
+ [% IF ( suggestions_loo.manageddate ) %] - [% suggestions_loo.manageddate %][% END %]
+ </td>
  <td>
  [% suggestions_loo.branchcode %] </td>
  <td>
@@ -235,18 +347,18 @@ $(document).ready(function() { calcNewsuggTotal(); });
  <fieldset class="action">
  <input type="submit" value="Submit" /></fieldset>
 </form>
-[% ELSE %] <b>No Results.</b>
+[% ELSE %] <b>No results.</b>
 [% END %] </div>
 [% END %] [% END %] </div>
 </div>
 
- [% UNLESS ( op_save ) %] <div class="yui-b">
+ [% UNLESS ( op_save ) %] [% UNLESS ( op == 'show' ) %]<div class="yui-b">
 <form name="suggestionfilter" action="suggestion.pl" method="get">
 <fieldset class="brief"><ol style="display:block;"><li><label for="displayby">Organise by: </label>
  <select name="displayby" id="displayby" style="width:auto;">
  <option value="STATUS">Status</option>
  <option value="branchcode">Library</option>
- <option value="itemtype">Item Type</option>
+ <option value="itemtype">Item type</option>
  <option value="managedby">Managed by</option>
  <option value="acceptedby">Accepted by</option>
  </select> <input type="submit" value="Go" /></li></ol></fieldset>
@@ -259,7 +371,7 @@ $(document).ready(function() { calcNewsuggTotal(); });
  <li><label for="isbn"> ISBN:</label><input type="text" id="isbn"  name="isbn" value="[% isbn %]" /></li>
  <li><label for="publishercode"> Publisher:</label><input type="text" id="publishercode" name="publishercode" value="[% publishercode %]" /></li>
  <li><label for="publicationyear"> Publication year:</label><input type="text" id="publicationyear" name="publicationyear" value="[% publicationyear %]" /></li>
- <li><label for="collectiontitle"> Collection Title:</label><input type="text" id="collectiontitle" name="collectiontitle" value="[% collectiontitle %]" /></li><li><input type="submit" value="Go" /></li></ol>
+ <li><label for="collectiontitle"> Collection title:</label><input type="text" id="collectiontitle" name="collectiontitle" value="[% collectiontitle %]" /></li><li><input type="submit" value="Go" /></li></ol>
  </fieldset>
  <fieldset class="brief"><h4 class="collapse"><a href="#">Suggestion information</a></h4>
  <ol>
@@ -269,11 +381,11 @@ $(document).ready(function() { calcNewsuggTotal(); });
  [% ELSE %]<option value="ACCEPTED">Accepted</option>[% END %] [% IF (statusselected_CHECKED ) %]<option value="CHECKED" selected="selected">Checked</option>
  [% ELSE %]<option value="CHECKED">Checked</option>[% END %] [% IF ( statusselected_REJECTED ) %]<option value="REJECTED" selected="selected">Rejected</option>
  [% ELSE %]<option value="REJECTED">Rejected</option>[% END %] </select></li>
- <li><label for="suggestedby"> Suggested By:</label><select id="suggestedby" name="suggestedby"><option value="">Any</option>
+ <li><label for="suggestedby"> Suggested by:</label><select id="suggestedby" name="suggestedby"><option value="">Any</option>
 [% FOREACH suggestedby_loo IN suggestedby_loop %][% IF ( suggestedby_loo.selected ) %]<option value="[% suggestedby_loo.code %]" selected="selected">[% suggestedby_loo.desc %]</option>[% ELSE %]<option value="[% suggestedby_loo.code %]">[% suggestedby_loo.desc %]</option>[% END %][% END %] </select></li>
  <li><label for="suggesteddate_from"> Suggested on:</label>[% suggesteddate %] <table class="invis">
  <tr>
- <td>from :</td><td><input type="text" id="suggesteddate_from" name="suggesteddate_from" style="width:80px;" /><img src="[% themelang %]/lib/calendar/cal.gif" id="suggesteddate_from_button" alt="Show Calendar" />
+ <td>from :</td><td><input type="text" id="suggesteddate_from" name="suggesteddate_from" style="width:80px;" /><img src="[% themelang %]/lib/calendar/cal.gif" id="suggesteddate_from_button" alt="Show calendar" />
  <script language="JavaScript" type="text/javascript">
                             Calendar.setup(
                             {
@@ -285,7 +397,7 @@ $(document).ready(function() { calcNewsuggTotal(); });
                         </script></td>
  </tr>
  <tr>
- <td>to :</td><td><input type="text" id="suggesteddate_to" name="suggesteddate_to" style="width:80px;" /><img src="[% themelang %]/lib/calendar/cal.gif" id="suggesteddate_to_button" alt="Show Calendar" />
+ <td>to :</td><td><input type="text" id="suggesteddate_to" name="suggesteddate_to" style="width:80px;" /><img src="[% themelang %]/lib/calendar/cal.gif" id="suggesteddate_to_button" alt="Show calendar" />
  <script language="JavaScript" type="text/javascript">
                             Calendar.setup(
                             {
@@ -302,7 +414,7 @@ $(document).ready(function() { calcNewsuggTotal(); });
 [% FOREACH managedby_loo IN managedby_loop %][% IF ( managedby_loo.selected ) %]<option value="[% managedby_loo.code %]" selected="selected">[% managedby_loo.desc %]</option>[% ELSE %]<option value="[% managedby_loo.code %]">[% managedby_loo.desc %]</option>[% END %][% END %] </select></li>
  <li><label for="manageddate_from"> Management date:</label>[% manageddate %] <table class="invis">
  <tr>
- <td>from :</td><td><input type="text" id="manageddate_from" name="manageddate_from" style="width:80px;" /><img src="[% themelang %]/lib/calendar/cal.gif" id="manageddate_from_button" alt="Show Calendar" />
+ <td>from :</td><td><input type="text" id="manageddate_from" name="manageddate_from" style="width:80px;" /><img src="[% themelang %]/lib/calendar/cal.gif" id="manageddate_from_button" alt="Show calendar" />
  <script language="JavaScript" type="text/javascript">
                             Calendar.setup(
                             {
@@ -314,7 +426,7 @@ $(document).ready(function() { calcNewsuggTotal(); });
                         </script></td>
  </tr>
  <tr>
- <td>to :</td><td><input type="text" id="manageddate_to" name="manageddate_to" style="width:80px;" /><img src="[% themelang %]/lib/calendar/cal.gif" id="manageddate_to_button" alt="Show Calendar" />
+ <td>to :</td><td><input type="text" id="manageddate_to" name="manageddate_to" style="width:80px;" /><img src="[% themelang %]/lib/calendar/cal.gif" id="manageddate_to_button" alt="Show calendar" />
  <script language="JavaScript" type="text/javascript">
                             Calendar.setup(
                             {
@@ -331,7 +443,7 @@ $(document).ready(function() { calcNewsuggTotal(); });
 [% FOREACH acceptedby_loo IN acceptedby_loop %][% IF ( acceptedby_loo.selected ) %] <option value="[% acceptedby_loo.code %]" selected="selected">[% acceptedby_loo.desc %]</option>[% ELSE %]<option value="[% acceptedby_loo.code %]">[% acceptedby_loo.desc %]</option>[% END %][% END %] </select></li>
  <li><label for="accepteddate_from"> Accepted on:</label>[% accepteddate %] <table class="invis">
  <tr>
- <td>from :</td><td><input type="text" id="accepteddate_from" name="accepteddate_from" style="width:80px;" /><img src="[% themelang %]/lib/calendar/cal.gif" id="accepteddate_from_button" alt="Show Calendar" />
+ <td>from :</td><td><input type="text" id="accepteddate_from" name="accepteddate_from" style="width:80px;" /><img src="[% themelang %]/lib/calendar/cal.gif" id="accepteddate_from_button" alt="Show calendar" />
  <script language="JavaScript" type="text/javascript">
                             Calendar.setup(
                             {
@@ -343,7 +455,7 @@ $(document).ready(function() { calcNewsuggTotal(); });
                         </script></td>
  </tr>
  <tr>
- <td>to :</td><td><input type="text" id="accepteddate_to" name="accepteddate_to" style="width:80px;" /><img src="[% themelang %]/lib/calendar/cal.gif" id="accepteddate_to_button" alt="Show Calendar" />
+ <td>to :</td><td><input type="text" id="accepteddate_to" name="accepteddate_to" style="width:80px;" /><img src="[% themelang %]/lib/calendar/cal.gif" id="accepteddate_to_button" alt="Show calendar" />
  <script language="JavaScript" type="text/javascript">
                             Calendar.setup(
                             {
@@ -368,5 +480,6 @@ $(document).ready(function() { calcNewsuggTotal(); });
  </fieldset>
  </div>
  </form>
- </div>[% END %] </div>
-[% INCLUDE 'intranet-bottom.inc' %] 
+ </div>
+ [% END %] [% END %] </div>
+[% END %] [% INCLUDE 'intranet-bottom.inc' %] 
