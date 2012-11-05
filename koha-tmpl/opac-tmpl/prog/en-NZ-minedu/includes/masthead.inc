@@ -41,7 +41,7 @@
  [% ELSE %] [% IF ( opac_limit_override ) %] [% IF ( opac_search_limit ) %] <input name="limit" value="[% opac_search_limit %]" type="hidden" />
  [% END %] [% ELSE %] [% IF ( mylibraryfirst ) %] <input name="limit" value="branch:[% mylibraryfirst %]" type="hidden" />
  [% END %] [% END %] [% END %] <input type="submit" value="Go" id="searchsubmit" class="left" />
-[% IF ( opacbookbag ) %]<span id="cmspan"></span>[% END %] [% IF ( virtualshelves ) %]<a href="/cgi-bin/koha/opac-shelves.pl" id="listsmenulink">Lists</a>[% END %] </form>
+[% IF ( opacbookbag ) %]<span id="cmspan"></span>[% END %] [% IF ( virtualshelves ) %]<a href="/cgi-bin/koha/opac-shelves.pl" id="listsmenulink" class=""><span>Lists</span> <img src="/opac-tmpl/prog/images/list.gif" width="5" height="6" alt="" border="0"></a>[% END %] </form>
 [% ELSE %] <div style="width:80%;*margin-bottom:-30px;">
 [% IF ( virtualshelves ) %]<a href="/cgi-bin/koha/opac-shelves.pl" id="listsmenulink">Lists</a>[% END %][% IF ( opacbookbag ) %]<span id="cmspan"></span>[% END %] </div>
 [% END %] <div id="moresearches">
