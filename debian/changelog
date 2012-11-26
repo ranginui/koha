@@ -1,3 +1,11 @@
+koha (3.8.7-1) oldstable; urgency=low
+
+  * New upstream release (3.08.07)
+  * Note that involves 3.8 moving to the oldstable repository as 3.10 takes
+    its place in squeeze.
+
+ -- Robin Sheat <robin@catalyst.net.nz>  Mon, 26 Nov 2012 16:44:01 +1300
+
 koha (3.8.6-1) squeeze; urgency=low
 
   * New upstream release (3.08.06)
