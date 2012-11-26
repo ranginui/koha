@@ -156,6 +156,8 @@
     </table>
     </fieldset>
     </div>
+    [% END %]
+    </div>
 [% IF ( expanded_options ) %]
     [% IF ( usmarc ) %]
         <!-- SUBTYPE LIMITS -->
