@@ -1,0 +1,33 @@
+[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Cataloging &rsaquo; Uploading Open Library Covers</title>
+[% INCLUDE 'doc-head-close.inc' %] </head>
+<body>
+ <script>
+        $(function() {
+            // Set the redirect back to this page, however it'll
+            // have the Open Library bits set, so we know that something
+            // has happened.
+            $('#ol_redirect_url').val(document.location);
+        });
+    </script>
+ [% INCLUDE 'header.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/cataloguing/addbooks.pl">Cataloguing</a> &rsaquo; Upload Covers for <em>[% title | html %]</em> (Record Number [% biblionumber | html %])</div>
+ <div id="doc" class="yui-t7">
+ <div id="bd">
+ <div id="yui-main">
+
+ <h1>Uploading a Cover</h1>
+ <p>No cover for this item was found on the <a href="http://openlibrary.org" target="_blank">Open Library project</a>. You can upload one, or <a href="[% nexturl %]">skip this step</a>.</p>
+ <form action="http://openlibrary.org/api/ils_cover_upload"
+                    method="post"
+                    name="upload">
+ <input type="hidden" name="authorization" value="[% authorization | html %]" />
+ <input type="hidden" name="olid" value="[% olid | html%]" />
+ <input type="hidden" name="redirect_url" id="ol_redirect_url" value="" />
+ <input type="file" name="file" />
+ <input type="submit" name="submit" value="Upload" />
+ </form>
+ </div>
+ </div>
+ </div>
+
+</body>
+</html>

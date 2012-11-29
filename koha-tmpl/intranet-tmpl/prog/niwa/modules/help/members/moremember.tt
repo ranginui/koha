@@ -1,0 +1,92 @@
+[% INCLUDE 'help-top.inc' %] <h1>Member Details</h1>
+
+<p>When viewing a borrower record you have the option to view information from one of many tabs found on the left hand side of the record.</p>
+
+<h2>Issue</h2>
+
+<p>For instruction on issuing items click the Issue tab and read the help file there.</p>
+
+<h2>Details</h2>
+
+<p>All  information will appear on the Details tab. This includes all the contact information, notes, messaging preferences, etc. entered when adding the patron. In the case of patrons who are marked as 'Child' or 'Professional' and their Guarantors additional information will appear on their record.</p>
+
+<ul>
+<li>A child patron will list their Guarantor</li>
+<li>On the Guarantor's record, all children and/or professionals will be listed</li>
+</ul>  <p>Below the borrower's information on the details screen is a tabbed display of the items they have on loan, overdue, and on reserve.</p>
+
+<p>If they have family at the library staff can see what the other family members have checked out.</p>
+
+<h2>Fines</h2>
+
+<p>The borrower's complete accounting history will appear on the Fines tab. Contrary to its name, the Fines tab does not just show fine data, it also shows membership fees, rental fees, reserve fees and any other charge you may have for borrowers.</p>
+
+<h2>Circulation History</h2>
+
+<p>The circulation history tab will appear if you have set the intranetreadinghistory preference to allow it to appear. If you have the OPACPrivacy system preference set to 'Allow' and the borrower has decided that the library cannot keep this information this tab will only show currently issued items.</p>
+
+<h2>Modification Log</h2>
+
+<p>If you have set your BorrowersLog to track changes to patron records, then this tab will appear. The Modification Log will show all changes made to the patron record.</p>
+
+<ul>
+<li>The Librarian field shows the borrower number for the librarian who made the changes</li>
+<li>The Object field lists the borrower that is being modified</li>
+</ul>
+
+<h2>Notices</h2>
+
+<p>The borrowers's messaging preferences are set when adding or editing the borrower. This tab will show the messages that have been sent and those that are queued to be sent</p>
+
+<p>Clicking on the message title will expand the view to show you the full text of the message that was sent.</p>
+
+<h2>Editing Borrowers</h2>
+
+<p>Borrowers in Koha can be edited using one of many edit buttons.</p>
+
+<ul>
+ <li>To edit the entire patron record simply click the 'Edit' button at the top of the patron record.</li>
+ <li>To only change the borrower's password, click the 'Change Password' button <ul>
+ <li>Koha cannot display existing passwords. Leave the field blank to leave password unchanged.</li>
+ <li>This form can automatically generate a random password if you click the link labeled "Click to fill with a randomly generated suggestion. Passwords will be displayed as text."</li>
+</ul>
+</li>
+ <li>To edit a specific section of the patron record (for example the Library Use section) click the 'Edit' link below the section</li>
+ <li>A patron image can be added by browsing for the image on your machine from the 'Manage Borrower Image' section <ul>
+ <li>This form will not appear if you have the patronimages system preference to not allow borrower images</li>
+ <li>To add borrower images in bulk, use the Upload Patron Images Tool</li>
+</ul>
+</li>
+ <li>Borrowers can also be blocked from checking items out by setting Borrower Flags <ul>
+ <li>If you would like your circulation staff to confirm a borrower's address before checking items out to the borrower, you can see the 'Gone no Address' flag</li>
+ <li>If you would like to bar a borrower from the library you can set the 'Restricted' flag <ul>
+ <li>This flag can automatically be set with the Overdue/Notice StatusTriggers</li>
+</ul>
+</li>
+ <li>If you enter in a date and/or note related to the restriction you will see that in the restricted message as well</li>
+ <li>If the patron reports that they have lost their card you can set the 'Lost Card' flag to prevent someone else from using that card to check items out</li>
+</ul>
+</li>
+ <li>Children borrowers do not become adults automatically in Koha. To upgrade a child borrower to an adult borrower category click on the 'More' menu and choose 'Update Child to Adult Borrower' <ul>
+ <li>You will then be presented with a pop up window asking which one of your adult patron categories this Child should be updated to</li>
+</ul>
+</li>
+</ul>
+
+<h2>Duplicate a Borrower</h2>
+
+<p>Sometimes when you're adding a new family to your system you don't want to type the contact information over and over. Koha allows for you to duplicate a patron and change only the parts you want to (or need to) change.</p>
+
+<ul>
+ <li>Open the borrower you want to use as your base (the borrower you want to duplicate information from)</li>
+ <li>Click the 'Duplicate' button at the top of their record</li>
+ <li>All of the fields with the exception of first name, card number, opac login and opac password have been duplicated. Fill in the missing pieces and click 'Save' <ul>
+ <li><span style="background-color: #ffe599;">TIP: Clicking in a field that is already populated with data will clear that field of all information (making it easier for you to type in something different)</span></li>
+</ul>
+</li>
+ <li>You will be brought to your new borrower</li>
+</ul>
+
+<p><strong>See the full documentation for the Borrower Details in the <a href="http://manual.koha-community.org/3.8/en/patroninformation.html">manual</a> (online).</strong></p>
+
+[% INCLUDE 'help-bottom.inc' %]

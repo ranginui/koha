@@ -1,0 +1,11 @@
+[% INCLUDE 'help-top.inc' %] <h1>Borrower With No Issues</h1>
+
+<p>This report will list for you the patrons in your system who haven't checked any items out.</p>
+
+<p>If you choose to output to the browser your results will print to the screen.</p>
+
+<p>You can also choose to export to a file that you can manipulate to your needs.</p>
+
+<p><strong>See the full documentation for the Borrowers with no Issues report in the <a href="http://manual.koha-community.org/3.8/en/statsreports.html#patnocheckouts">manual</a> (online).</strong></p>
+
+[% INCLUDE 'help-bottom.inc' %]

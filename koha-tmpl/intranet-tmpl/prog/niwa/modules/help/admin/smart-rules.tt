@@ -1,0 +1,122 @@
+[% INCLUDE 'help-top.inc' %] <h1>Circulation and Fines Rules</h1>
+
+<p>These rules define how your items are circulated, how/when fines are calculated and how holds are handled.</p>
+
+<ul>
+ <li><em>Get there:</em> More &gt; Administration &gt; Borrowers &amp; Circulation &gt; Circulation and fines rules</li>
+</ul>
+
+<p>The rules are applied from most specific to less specific, using the first found in this order:</p>
+
+<ul>
+ <li>same library, same patron type, same item type</li>
+ <li>same library, same patron type, all item type</li>
+ <li>same library, all patron types, same item type</li>
+ <li>same library, all patron types, all item types</li>
+ <li>all libraries, same borrower type, same item type</li>
+ <li>all libraries, same borrower type, all item types</li>
+ <li>same library, same borrower type, same item type</li>
+ <li>all libraries, all borrower types, all item types</li>
+</ul>
+
+<p style="background-color: #ffe599;">Tip: If you are a single library system choose your branch name before creating rules (sometimes having only rules for the 'all libraries' option can cause issues with holds) <p style="color: #990000;">Important: At the very least you will need to set a default circulation rule. This rule should be set for all item types, all libraries and all borrower categories. That will catch all instances that do not match a specific rule. When issuing if you do not have a rule for all libraries, all item types and all borrower types then you may see borrowers getting blocked from placing reserves. You will also want a rule for your specific library set for all item types and all borrower types to avoid this reserves issue. Koha needs to know what rule to fall back on. <h3>Default Circulation Rules</h3>
+
+<p>Using the issuing rules matrix you can define rules that depend on patron/item type combos. To set your rules, choose a library from the pull down (or 'all libraries' if you want to apply these rules to all branches)</p>
+
+<p>From the matrix you can choose any combination of patron categories and item types to apply the rules to</p>
+
+<ul>
+ <li>First choose which borrower category you'd like the rule to be applied to. If you leave this to 'All' it will apply to all borrower categories</li>
+ <li>Choose the 'Item Type' you would like this rule to apply to. If you leave this to 'All' it will apply to all item types</li>
+ <li>Limit the number of items a member can have checked out at the same time by entering a number in the 'Current Issues Allowed' field</li>
+ <li>Define the period of time an item can be issued to a borrower by entering the number of units (days or hours) in the 'Loan Period' box.</li>
+ <li>Choose which unit of time, Days or Hours, that the loan period and fines will be calculate in</li>
+ <li>You can also define a hard due date for a specific borrower category and item type. A hard due date ignores your usual circulation rules and makes it so that all items of the type defined are due on, before or after the date you specify.</li>
+ <li>'Fine Amount' should have the amount you would like to charge for overdue items <ul>
+ <li style="color: #990000;">Important: Enter only numbers and decimal points (no currency symbols).</li>
+
+</ul>
+</li>
+ <li>Enter the 'Fine Charging Interval' in the unit you set (ex. charge fines every 1 day, or every 2 hours)</li>
+ <li>The 'Fine Grace Period' is the period of time an item can be overdue before you start charging fines. <ul>
+ <li style="color: #990000;">Important: This can only be set for the Day unit, not in Hours</li>
+</ul>
+</li>
+ <li>If your library 'fines' borrowers by suspending their account you can enter the number of days their fine should be suspended in the 'Suspension in Days' field <ul>
+ <li style="color: #990000;">Important: This can only be set for the Day unit, not in Hours</li>
+</ul>
+</li>
+ <li>Next decide if the borrower can renew this item type and if so, enter how many times they can renew it in the 'Renewals Allowed' box</li>
+ <li>If the borrower can place reserves on this item type, enter the total numbers of items (of this type) that can be put on reserve in the 'Reserves Allowed' field</li>
+ <li>Finally, if you charge a rental fee for the item type and want to give a specific patron type a discount on that fee, enter the percentage discount (without the % symbol) in the 'Rental Discount' field</li>
+</ul>
+
+<p>When finished, click 'Add' to save your changes. To modify a rule, create a new one with the same patron type and item type. If you would like to delete your rule, simply click the 'Delete' link to the right of the rule.</p>
+
+<p>To save time you can clone rules from one library to another by choosing the clone option above the rules matrix.</p>
+
+<p>After choosing to clone you will be presented with a confirmation message.</p>
+
+<h3>Default Issues and Reserve Policy</h3>
+
+<p>You can set a default maximum number of checkouts and hold policy that will be used if none is defined below for a particular item type or category.</p>
+
+<p>From this menu you can set a default to apply to all item types and patrons in the library.</p>
+
+<ul>
+ <li>In 'Total Current Checkouts Allowed' enter the total number of items a borrower can have on issue at one time</li>
+ <li>Control where borrowers can place reserves from using the 'Reserve Policy' menu <ul>
+ <li>From Any Library: Patrons from any library may put this item on hold. (default if none is defined)</li>
+ <li>From Home Library: Only patrons from the item's home library may put this book on hold.</li>
+ <li>No Reserves Allowed: No borrower may put this book on reserve.</li>
+</ul>
+</li>
+ <li>Control where the item returns to once it is returned<ul>
+ <li>Item returns home</li>
+ <li>Item returns to issuing branch</li>
+ <li>Item floats <ul>
+ <li>When an item floats it stays where it was returned and does not ever return 'home'</li>
+</ul>
+</li>
+</ul>
+</li>
+ <li>Once your policy is set, you can unset it by clicking the 'Unset' link to the right of the rule</li>
+</ul>
+
+<h3>Issues per borrower</h3>
+
+<p>For this library, you can specify the maximum number of loans that a member of a given category can make, regardless of the item type.</p>
+
+<p style="background-color: #ffe599;">Tip: If the total amount loanable for a given borrower category is left blank, no limit applies, except possibly for a limit you define for a specific item type.</p>
+
+<h3>Item Hold Policies</h3>
+
+For this library, you can edit rules for given itemtypes, regardless of the borrower's category. Currently, this means hold policies. <p>The various Reserve Policies have the following effects:</p>
+
+<ul>
+ <li>From Any Library: Patrons from any library may put this item on hold. (default if none is defined)</li>
+ <li>From Home Library: Only patrons from the item's home library may put this book on hold.</li>
+ <li>No Reserves Allowed: No borrower may put this book on reserve.</li>
+</ul>
+
+<p style="color: #990000;">Important: Note that if the system preference AllowHoldPolicyOverride set to 'allow', these policies can be overridden by your circulation staff.</p>
+
+<p style="color: #990000;">Important: These policies are based on the borrower's home branch, not the branch that the reserving staff member is from.</p>
+
+<p>The various Return Policies have the following effects:</p>
+
+<ul>
+ <li>Item returns home: The item will prompt the librarian to transfer the item to its home library <ul>
+ <li style="color: #990000;">Important: If the AutomaticItemReturn preference is set to automatically transfer the items home, then a prompt will not appear</li>
+</ul>
+</li>
+ <li>Item returns to issuing branch: The item will prompt the librarian to transfer the item back to the library where it was issued<ul>
+ <li style="color: #990000;">Important: If the AutomaticItemReturn preference is set to automatically transfer the items home, then a prompt will not appear</li>
+</ul>
+</li>
+ <li>Item floats: The item will not be transferred from the branch it was returned at, instead it will remain there until transferred manually or returned at another branch</li>
+</ul>
+
+<p><strong>See the full documentation for Circulation and Fine Rules in the <a href="http://manual.koha-community.org/3.8/en/patscirc.html#circfinerules">manual</a> (online).</strong></p>
+
+[% INCLUDE 'help-bottom.inc' %] 

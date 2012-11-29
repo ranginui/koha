@@ -1,0 +1,39 @@
+--- 
+i18n_l10n.pref: 
+  - 
+    - " Format dates like"
+    - 
+      choices: 
+        iso: yyyy-mm-dd
+        metric: " dd/mm/yyyy"
+        us: " mm/dd/yyyy"
+      default: us
+      pref: dateformat
+    - " ."
+  - 
+    - Use
+    - 
+      choices: 
+        Monday: i18n_l10n.pref#CalendarFirstDayOfWeek# Lundi
+        Sunday: Sunday
+      default: Sunday
+      pref: CalendarFirstDayOfWeek
+    - as the first day of week in the calendar.
+  - 
+    - "Enable the following languages on the staff interface:"
+    - 
+      pref: language
+      type: staff-languages
+  - 
+    - 
+      choices: 
+        "": " Don't allow"
+        1: " Allow"
+      default: '0'
+      pref: opaclanguagesdisplay
+    - " borrowers to change the language they see on the OPAC."
+  - 
+    - " Enable the following languages on the OPAC:"
+    - 
+      pref: opaclanguages
+      type: opac-languages

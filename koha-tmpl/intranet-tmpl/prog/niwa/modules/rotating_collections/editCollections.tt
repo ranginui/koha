@@ -1,0 +1,99 @@
+[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; Tools &rsaquo; Rotating collections &rsaquo; Edit collections</title>
+[% INCLUDE 'doc-head-close.inc' %] </head>
+<body id="rcoll_editCollections" class="tools rcoll">
+[% INCLUDE 'header.inc' %] [% INCLUDE 'cat-search.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/tools/tools-home.pl">Tools</a> &rsaquo; <a href="/cgi-bin/koha/rotating_collections/rotatingCollections.pl">Rotating collections</a> &rsaquo; Edit collections</div>
+
+<div id="doc3">
+<div id="bd">
+ <div class="yui-gb">
+ <h1>Rotating collections: Edit collections</h1>
+
+<!--
+ [% IF ( previousActionCreate ) %]
+ [% IF ( createSuccess ) %]
+ <div>Collection '[% createdTitle %]' Created successfully!</div>
+ [% ELSE %]
+ <div>Collection '[% createdTitle %]' Failed to be created!</div>
+ <div>Reason: <strong>[% failureMessage %]</strong></div>
+ [% END %]
+ [% END %]
+
+ [% IF ( previousActionDelete ) %]
+ [% IF ( DeleteSuccess ) %]
+ <div>Collection Deleted successfully!</div>
+ [% ELSE %]
+ <div>Collection Failed to be deleted!</div>
+ [% END %]
+ [% END %]
+-->
+
+ [% IF ( previousActionUpdate ) %]
+ [% IF ( updateSuccess ) %]
+ <div>Collection '[% updatedTitle %]' Updated successfully!</div>
+ [% ELSE %] <div>Collection '[% updatedTitle %]' Failed to be updated!</div>
+ <div>Reason: <strong>[% failureMessage %]</strong></div>
+ [% END %] [% END %] <div>
+ [% IF ( collectionsLoop ) %] <table>
+ <tr>
+ <th>Title</th>
+ <th>Description</th>
+ <th>Holding library</th>
+ <td></td>
+ <td></td>
+ </tr>
+ [% FOREACH collectionsLoo IN collectionsLoop %] <tr>
+ <td>[% collectionsLoo.colTitle %]</td>
+ <td>[% collectionsLoo.colDesc %]</td>
+ <td>[% collectionsLoo.colBranchcode %]</td>
+ <td><a href="editCollections.pl?action=edit&amp;colId=[% collectionsLoo.colId %]">Edit</a></td>
+ <td><a href="editCollections.pl?action=delete&amp;colId=[% collectionsLoo.colId %]">Delete</a></td>
+ </tr>
+ [% END %] </table>
+ [% ELSE %] There are no collections currently defined. [% END %] </div> 
+
+ <div>
+ <br />
+
+ [% IF ( previousActionEdit ) %] <h1>Edit Collection</h1>
+ [% ELSE %] <h1>Create new collection</h1>
+ [% END %] <form action="editCollections.pl" method="post">
+ [% IF ( previousActionEdit ) %] <input type="hidden" name="action" value="update" />
+ <input type="hidden" name="colId" value="[% editColId %]" />
+ [% ELSE %] <input type="hidden" name="action" value="create" />
+ [% END %] <table>
+ <tr>
+ <td>
+ <label for="title">Title: </label>
+ </td>
+ <td>
+ [% IF ( editColTitle ) %]<input type="text" name="title" value="[% editColTitle %]" />
+ [% ELSE %]<input type="text" name="title" />[% END %] </td>
+ </tr>
+ 
+ <tr>
+ <td>
+ <label for="description">Description: </label>
+ </td>
+ <td>
+ [% IF (editColDescription ) %]<input type="text" size="50" name="description" value="[ editColDescription %]" />
+ [% ELSE %]<input type="text" size="50" name="description" />[% END %] </td>
+ </tr>
+
+ <tr>
+ <td colspan="2">
+ [% IF ( previousActionEdit ) %] <input type="submit" value="Update" />
+ [% ELSE %] <input type="submit" value="Create" />
+ [% END %] </td>
+ </tr>
+ </table>
+ </form>
+ </div>
+
+ <div>
+ <br/>
+ <input type="button" value="Return to rotating collections home" onclick="window.location.href='rotatingCollections.pl'">
+ </div>
+
+</div>
+</div>
+[% INCLUDE 'intranet-bottom.inc' %] 

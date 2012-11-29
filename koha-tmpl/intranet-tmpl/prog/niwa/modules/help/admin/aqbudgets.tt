@@ -1,0 +1,34 @@
+[% INCLUDE 'help-top.inc' %] <h1>Funds</h1>
+
+<p>Budgets are broken into funds.</p>
+
+<h2>Add a Fund</h2>
+
+<p>Funds can be added to a budget.</p>
+
+<p style="color: #990000;">Important: A budget must be defined before a fund can be created.</p>
+
+<p>To add a new fund, click the 'New' button and choose the budget to which you would like to add the fund.</p>
+
+<p>In the form that appears, enter the basics about your fund.</p>
+
+<p>The three first fields are required. The rest are optional.</p>
+
+<ul>
+ <li>'Fund Code' is a unique identifier for your fund.</li>
+ <li>Use a fund name that clearly describes said fund.</li>
+ <li>The fund's amount should be should only include numerals and a decimal separator. No other characters should be entered.</li>
+ <li>You can assign a fund to a particular librarian. This option will restrict making changes to that fund to the assigned librarian.</li>
+ <li>Choose which library will use the fund</li>
+ <li>You can restrict who can order from a fund by selecting an owner or a library from the 'Restrict access to' menu.</li>
+ <li>The 'Notes' field is for descriptions to detail when librarians should use the fund.</li>
+ li>Planning categories are used for statistical purposes. To learn more about planning categories, check out the Planning Category FAQ.</li>
+</ul>
+
+<p>When complete, click 'Submit' and you will be brought to a list of all of the funds for the budget.</p>
+
+<p>To the right of each fund you will find the 'Edit,' 'Delete,' and 'Add Child Fund' options. A Child Fund a sub-fund of the parent fund. For example, one might have a parent fund for 'Fiction,' and Child Funds for 'New Releases' and 'Science Fiction.' It is an optional way to further organize your finances.</p>
+
+<p><strong>See the full documentation for Funds in the <a href="http://manual.koha-community.org/3.8/en/acqadmin.html#funds">manual</a> (online).</strong></p>
+
+[% INCLUDE 'help-bottom.inc' %] 

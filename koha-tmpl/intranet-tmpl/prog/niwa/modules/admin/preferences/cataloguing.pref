@@ -1,0 +1,163 @@
+--- 
+cataloguing.pref: 
+  Display: 
+    - 
+      - "Separate multiple displayed authors, series or subjects with "
+      - 
+        class: short
+        pref: authoritysep
+      - .
+    - 
+      - Show
+      - 
+        pref: URLLinkText
+      - as the text of links embedded in MARC records.
+    - 
+      - 
+        choices: 
+          "": Don't use
+          1: Use
+        pref: UseControlNumber
+      - record control number ($w subfields) and control number (001) for linking of bibliographic records.
+    - 
+      - 
+        choices: 
+          "": Display
+          1: Don't display
+        pref: hide_marc
+      - MARC tag numbers, subfield codes and indicators in MARC views.
+    - 
+      - 
+        choices: 
+          economical: Do
+          standard: Don't
+        pref: LabelMARCView
+      - collapse repeated tags of the same type into one tag entry on the display.
+    - 
+      - By default, display biblio records in
+      - 
+        choices: 
+          isbd: ISBD form (see below).
+          labeled_marc: Labelled MARC form
+          marc: MARC form.
+          normal: normal form.
+        pref: IntranetBiblioDefaultView
+    - 
+      - "Use the following as the ISBD template:"
+      - 
+        class: code
+        pref: ISBD
+        type: textarea
+    - 
+      - 
+        choices: 
+          "": Don't hide
+          1: Hide
+        pref: OpacSuppression
+      - items marked as suppressed from OPAC search results. Note that you must have the <code>Suppress</code> index set up in Zebra and at least one suppressed item, or your searches will be broken.
+  Interface: 
+    - 
+      - Use
+      - 
+        choices: class-sources
+        pref: DefaultClassificationSource
+      - as the default classification source.
+    - 
+      - 
+        choices: 
+          "": Display
+          1: Don't display
+        pref: advancedMARCeditor
+      - descriptions of fields and subfields in the MARC editor.
+    - 
+      - 
+        choices: 
+          "": Don't Display
+          1: Display
+        pref: EasyAnalyticalRecords
+      - easy ways to create analytical record relationships
+  Record Structure: 
+    - 
+      - Interpret and store MARC records in the
+      - 
+        choices: 
+          MARC21: MARC21
+          NORMARC: NORMARC
+          UNIMARC: UNIMARC
+        pref: marcflavour
+      - format.
+    - 
+      - Use the item type of the
+      - 
+        choices: 
+          "": biblio record
+          1: specific item
+        pref: item-level_itypes
+      - as the authoritative item type (for determining circulation and fines rules, etc).
+    - 
+      - Map the MARC subfield
+      - 
+        pref: itemcallnumber
+      - "to an item's callnumber. (This can contain multiple subfields to look in; for instance <code>082ab</code> would look in 082 subfields a and b.)<br />Examples: <strong>Dewey</strong>: <code>082ab</code> or <code>092ab</code>; <strong>LOC</strong>: <code>050ab</code> or <code>090ab</code>; <strong>from the item record</strong>: <code>852hi</code>"
+    - 
+      - Display MARC subfield
+      - 
+        pref: AlternateHoldingsField
+      - as holdings information for records that do not have items (This can contain multiple subfields to look in; for instance <code>852abhi</code> would look in 852 subfields a, b, h, and i.), with the subfields separated by
+      - 
+        pref: AlternateHoldingsSeparator
+      - cataloguing.pref#AlternateHoldingsField# .
+    - 
+      - Fill in the <a href="http://www.loc.gov/marc/organizations/orgshome.html">MARC organisation code</a>
+      - 
+        pref: MARCOrgCode
+      - by default in new MARC records (leave blank to disable).
+    - 
+      - When items are created, give them the temporary location of
+      - 
+        class: short
+        pref: NewItemsDefaultLocation
+      - (should be a location code, or blank to disable).
+    - 
+      - 
+        choices: 
+          "": Don't copy
+          1: Copy
+        pref: z3950NormalizeAuthor
+      - authors from the UNIMARC
+      - 
+        class: multi
+        pref: z3950AuthorAuthFields
+      - tags (separated by commas) to the correct author tags when importing a record using Z39.50.
+    - 
+      - Barcodes are
+      - 
+        choices: 
+          "OFF": not generated automatically.
+          annual: generated in the form &lt;year&gt;-0001, &lt;year&gt;-0002.
+          hbyymmincr: generated in the form &lt;branchcode&gt;yymm0001.
+          incremental: generated in the form 1, 2, 3.
+        pref: autoBarcode
+  Spine Labels: 
+    - 
+      - When using the quick spine label printer,
+      - 
+        choices: 
+          "": don't
+          1: do
+        pref: SpineLabelAutoPrint
+      - automatically pop up a print dialogue.
+    - 
+      - "Include the following fields on a quick-printed spine label:"
+      - (Enter in columns from the <code>biblio</code>, <code>biblioitems</code> or <code>items</code> tables, surrounded by &lt; and &gt;.)
+      - 
+        pref: SpineLabelFormat
+        type: textarea
+    - 
+      - 
+        choices: 
+          "": Don't display
+          1: Display
+        pref: SpineLabelShowPrintOnBibDetails
+      - buttons on the bib details page to print item spine labels.
+    - ~

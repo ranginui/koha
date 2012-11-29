@@ -1,0 +1,62 @@
+--- 
+serials.pref: 
+  - 
+    - " Show"
+    - 
+      choices: 
+        holdings: Holdings tab
+        serialcollection: " Serial Collection tab"
+        subscriptions: " Subscriptions tab"
+      pref: opacSerialDefaultTab
+    - " as default tab for serials in OPAC. Please note that the Serial Collection tab is currently available only for UNIMARC."
+  - 
+    - 
+      choices: 
+        "": Don't add
+        1: Add
+      pref: RenewSerialAddsSuggestion
+    - a suggestion for a biblio when its attached serial is renewed.
+  - 
+    - 
+      choices: 
+        "": Don't add
+        1: Add
+      pref: RoutingSerials
+    - received serials to the routing list.
+  - 
+    - 
+      choices: 
+        "": Don't place
+        1: Place
+      pref: RoutingListAddReserves
+    - received serials on reserve if they are on a routing list.
+  - 
+    - "Include following note on all routing lists:"
+    - 
+      class: code
+      pref: RoutingListNote
+      type: textarea
+  - 
+    - Show the
+    - 
+      class: integer
+      pref: StaffSerialIssueDisplayCount
+    - " previous issues of a serial on the staff client."
+  - 
+    - Show the
+    - 
+      class: integer
+      pref: OPACSerialIssueDisplayCount
+    - previous issues of a serial on the OPAC.
+  - 
+    - When showing the subscription information for a bibliographic record, preselect
+    - 
+      choices: 
+        full: full history
+        simplified: brief history
+      pref: SubscriptionHistory
+    - view of serial issues.
+  - 
+    - List of fields which must not be rewritten when a subscription is duplicated (Separated by pipe |)
+    - 
+      pref: SubscriptionDuplicateDroppedInput

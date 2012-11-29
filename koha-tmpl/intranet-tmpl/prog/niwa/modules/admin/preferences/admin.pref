@@ -1,0 +1,119 @@
+--- 
+admin.pref: 
+  CAS Authentication: 
+    - 
+      - 
+        choices: 
+          "": Don't use
+          1: Use
+        default: '0'
+        pref: casAuthentication
+      - CAS for login authentication.
+    - 
+      - 
+        choices: 
+          "": Don't Logout
+          1: Logout
+        default: '0'
+        pref: casLogout
+      - " of CAS when logging out of Koha."
+    - 
+      - The CAS Authentication Server can be found at
+      - 
+        pref: casServerUrl
+    - 
+      - Use
+      - 
+        choices: 
+          Common Name: " the Common Name"
+          None: 'no'
+          emailAddress: " the emailAddress"
+        default: None
+        pref: AllowPkiAuth
+      - field for SSL client certificate authentication
+  Interface options: 
+    - 
+      - Use
+      - 
+        class: email
+        pref: KohaAdminEmailAddress
+      - " as the email address for the administrator of Koha. (This is the default From: address for emails unless there is one for the particular library, and is referred to when an internal error occurs.)"
+    - 
+      - Show
+      - 
+        choices: 
+          "0": 'no'
+          1: some
+          2: lots of
+        default: '0'
+        pref: DebugLevel
+      - debugging information in the browser when an internal error occurs.
+    - 
+      - 
+        choices: 
+          "": Show
+          1: Don't show
+        default: '0'
+        pref: noItemTypeImages
+      - itemtype icons in the catalog.
+    - 
+      - Separate columns in an exported report file with
+      - 
+        choices: 
+          "#": "#'s"
+          ",": commas
+          /: slashes
+          ;: semicolons
+          \: backslashes
+          tabulation: tabs
+        default: ","
+        pref: delimiter
+      - by default.
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: virtualshelves
+      - staff and members to create and view saved lists of books.
+  Login options: 
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        default: '0'
+        pref: insecure
+      - staff to access the staff client without logging in. Enabling this is dangerous, and should not be done in production environments.
+    - 
+      - Automatically log out users after
+      - 
+        class: integer
+        pref: timeout
+      - " seconds of inactivity. Adding d will specify it in days, e.g. 1d is timeout of one day."
+    - 
+      - 
+        choices: 
+          "": Don't require
+          1: Require
+        default: '0'
+        pref: AutoLocation
+      - staff to log in from a computer in the IP address range <a href="/cgi-bin/koha/admin/branches.pl">specified by their library</a> (if any).
+    - 
+      - Store login session information
+      - 
+        choices: 
+          Pg: " in the PostgreSQL database (not supported)."
+          memcached: in a memcached server.
+          mysql: in the MySQL database.
+          tmp: as temporary files.
+        default: mysql
+        pref: SessionStorage
+    - 
+      - 
+        choices: 
+          "": Don't prevent
+          1: Prevent
+        default: '0'
+        pref: IndependantBranches
+      - staff (but not superlibrarians) from modifying objects (holds, items, borrowers, etc.) belonging to other libraries.

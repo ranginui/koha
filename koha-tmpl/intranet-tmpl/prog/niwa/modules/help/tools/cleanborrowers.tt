@@ -1,0 +1,19 @@
+[% INCLUDE 'help-top.inc' %] <h1>Members (anonymise, bulk-delete)</h1>
+
+<p>This tool allows you to bulk anonymise circulation histories (this means that you keep records of how many times items were issued - but not the borrowers who borrowered them) or bulk delete borrowers (remove them from the system completely).</p>
+
+<p style="color: #990000;">Important: Borrowers with outstanding fines or items issued are not saved. They are not completely removed from the system (moved to the delete_borrowers table), but this tool does not provide as many checks as one may desire.</p
+
+<p>To either delete or anonymize patrons</p>
+
+<ul>
+ <li>Check the task you would like to perform (Delete or Anonymise)</li>
+ <li>Enter a date before which you want to alter the data</li>
+ <li>Click 'Next'</li>
+ <li>A confirmation will appear asking if you're sure this is what you want to happen</li>
+ <li>Clicking 'Finish' will delete or anonymise your data</li>
+</ul>
+
+<p><strong>See the full documentation for Anonymizing Borrowers in the <a href="http://manual.koha-community.org/3.8/en/anonpatrons.html">manual</a> (online).</strong></p>
+
+[% INCLUDE 'help-bottom.inc' %]

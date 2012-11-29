@@ -1,0 +1,58 @@
+--- 
+logs.pref: 
+  - 
+    - 
+      choices: 
+        "": Don't log
+        1: Log
+      pref: LetterLog
+    - when an automatic claim notice is sent.
+  - 
+    - 
+      choices: 
+        "": Don't log
+        1: Log
+      pref: BorrowersLog
+    - changes to borrower records.
+  - 
+    - 
+      choices: 
+        "": Don't log
+        1: Log
+      pref: CataloguingLog
+    - any changes to bibliographic or item records. Since this occurs whenever a book is issued or returned as well, it is not advisable to turn this on.
+  - 
+    - 
+      choices: 
+        "": " Don't log"
+        1: " Log"
+      pref: AuthoritiesLog
+    - changes to authority records.
+  - 
+    - 
+      choices: 
+        "": Don't log
+        1: Log
+      pref: FinesLog
+    - when overdue fines are charged or automatically forgiven.
+  - 
+    - 
+      choices: 
+        "": Don't log
+        1: Log
+      pref: IssueLog
+    - when items are issued.
+  - 
+    - 
+      choices: 
+        "": Don't log
+        1: Log
+      pref: ReturnLog
+    - when items are returned.
+  - 
+    - 
+      choices: 
+        "": Don't log
+        1: Log
+      pref: SubscriptionLog
+    - when serials are added, deleted or changed.

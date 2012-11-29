@@ -1,0 +1,85 @@
+--- 
+authorities.pref: 
+  " Linker": 
+    - 
+      - Use the
+      - 
+        choices: 
+          Default: Default
+          FirstMatch: First Match
+          LastMatch: Last Match
+        default: Default
+        pref: LinkerModule
+      - linker module for matching headings to authority records.
+    - 
+      - Set the following options for the authority linker
+      - 
+        class: multi
+        pref: LinkerOptions
+      - (separate options with |)
+    - 
+      - 
+        choices: 
+          "": Do not
+          1: Do
+        default: 1
+        pref: LinkerRelink
+      - relink headings that have previously been linked to authority records.
+    - 
+      - 
+        choices: 
+          "": Do not
+          1: Do
+        default: ''
+        pref: LinkerKeepStale
+      - keep existing links to authority records for headings where the linker is unable to find a match.
+    - 
+      - 
+        choices: 
+          "": Do not
+          1: Do
+        default: ''
+        pref: CatalogModuleRelink
+      - automatically relink headings that have previously been linked when saving records in the cataloguing module.
+  "autorit\xC3\xA9s.pref General": 
+    - 
+      - When editing records,
+      - 
+        choices: 
+          "": don't allow
+          1: allow
+        default: ''
+        pref: BiblioAddsAuthorities
+      - " them to automatically create new authority records if needed, rather than having to reference existing authorities."
+    - 
+      - When editing records,
+      - 
+        choices: 
+          "": do not generate
+          1: generate
+        default: 1
+        pref: AutoCreateAuthorities
+      - authority records that are missing (BiblioAddsAuthorities must be set to "allow" for this to have any effect).
+    - 
+      - 
+        choices: 
+          "": Do
+          1: Don't
+        default: 1
+        pref: dontmerge
+      - automatically update attached biblios when changing an authority record. If this is off, please ask your administrator to enable the merge_authority.pl cronjob.
+    - 
+      - Use the following text for the contents of MARC authority control field 008 position 06-39 (fixed length data elements). Do NOT include the date (position 00-05).
+      - 
+        class: code
+        default: "|| aca||aabn           | a|a     d"
+        pref: MARCAuthorityControlField008
+        type: textarea
+    - 
+      - 
+        choices: 
+          "": Don't use
+          1: Use
+        default: 1
+        pref: UseAuthoritiesForTracings
+      - authority record numbers instead of text strings for searches from subject tracings.

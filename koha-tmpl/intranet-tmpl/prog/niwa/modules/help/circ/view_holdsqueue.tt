@@ -1,0 +1,7 @@
+[% INCLUDE 'help-top.inc' %] <h1>Reserves Queue</h1>
+
+<p>This report will show you all of the reserve at your library. To generate this report, you must have the Build Reserves Queue cron job running.</p>
+
+<p><strong>See the full documentation for the Reserves Queue in the <a href="http://manual.koha-community.org/3.8/en/circreports.html#holdsqueue">manual</a> (online).</strong></p>
+
+[% INCLUDE 'help-bottom.inc' %]

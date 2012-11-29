@@ -1,0 +1,16 @@
+[% INCLUDE 'help-top.inc' %] <h1>Create Manual Invoice</h1>
+
+<p>For fees that are not automatically charged, librarians can create a manual invoice</p>
+<ul>
+ <li>First choose the type of invoice you would like to create <ul>
+ <li>To add additional values to the manual invoice type pull down menu, add them to the MANUAL_INV Authorised Value</li>
+</ul>
+</li>
+ <li>If the fee is associated with an item you can enter its barcode so that the line item shows a link to that item</li>
+ <li>The description field is where you will enter the description of the charge</li>
+ <li>In the amount field, do not enter currency symbols, only numbers and decimals</li>
+</ul>
+
+<p><strong>See the full documentation for Creating Manual Invoices in the <a href="http://manual.koha-community.org/3.8/en/patroninformation.html#manualinvoice">manual</a> (online).</strong></p>
+
+[% INCLUDE 'help-bottom.inc' %]

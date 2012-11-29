@@ -1,0 +1,497 @@
+--- 
+circulation.pref: 
+  Fines Policy: 
+    - 
+      - Calculate fines based on days overdue
+      - 
+        choices: 
+          ignoreCalendar: directly.
+          noFinesWhenClosed: not including days the library is closed.
+        pref: finesCalendar
+        type: choice
+      - ~
+    - 
+      - 
+        choices: 
+          "": Don't calculate
+          production: Calculate and charge
+          test: Calculate (but only for mailing to the admin)
+        pref: finesMode
+        type: choice
+      - fines (when <code>misc/cronjobs/fines.pl</code> is being run).
+  Interface: 
+    - 
+      - 
+        choices: 
+          "": Don't try
+          1: Try
+        pref: CircAutocompl
+      - to guess the borrower being entered while typing a borrower search on the circulation screen.
+      - Only returns the first 10 results at a time.
+    - 
+      - 
+        choices: 
+          "": Don't filter
+          T-prefix: Remove the first number from T-prefix style
+          cuecat: Convert from CueCat form
+          libsuite8: Convert from Libsuite8 form
+          whitespace: Remove spaces from
+        pref: itemBarcodeInputFilter
+      - scanned item barcodes.
+    - 
+      - Sort previous issues on the circulation page from
+      - 
+        choices: 
+          asc: earliest to latest
+          desc: " latest to earliest"
+        pref: previousIssuesDefaultSortOrder
+      - due date.
+    - 
+      - Sort today's issues on the circulation page from
+      - 
+        choices: 
+          asc: earliest to latest
+          desc: latest to earliest
+        pref: todaysIssuesDefaultSortOrder
+        type: choice
+      - due date.
+    - 
+      - 
+        choices: 
+          "": Don't enable
+          1: Enable
+        pref: UseTablesortForCirc
+      - "the sorting of current borrower issues on the circulation screen. <br/>NOTE: Enabling this function may slow down circulation time for borrowers with many items on issue."
+    - 
+      - 
+        choices: 
+          "": Don't enable
+          1: Enable
+        pref: soundon
+      - circulation sounds during return and issue in the staff interface.  Not supported by all web browsers yet.
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: SpecifyDueDate
+      - staff to specify a due date for an issue.
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: AllowAllMessageDeletion
+      - staff to delete messages added from other libraries.
+    - 
+      - Show the
+      - 
+        class: integer
+        pref: numReturnedItemsToShow
+      - last returned items on the returns screen.
+    - 
+      - 
+        choices: 
+          "": Don't notify
+          1: Notify
+        pref: FineNotifyAtCheckin
+      - librarians of overdue fines on the items they are returning.
+    - 
+      - 
+        choices: 
+          "": Don't notify
+          1: Notify
+        pref: WaitingNotifyAtCheckin
+      - librarians of waiting holds for the borrower whose items they are checking in.
+    - 
+      - 
+        choices: 
+          "": Don't require
+          1: Require
+        pref: FilterBeforeOverdueReport
+      - staff to choose which issues to show before running the overdues report.
+    - 
+      - 
+        choices: 
+          "": Don't show
+          1: Show
+        pref: DisplayClearScreenButton
+      - a button to clear the current borrower from the screen on the circulation screen.
+    - 
+      - 
+        choices: 
+          "": " Don't record"
+          1: " Record"
+        pref: RecordLocalUseOnReturn
+      - " local use when an unissued item is returned."
+    - 
+      - When an empty barcode field is submitted in circulation
+      - 
+        choices: 
+          "": clear the screen
+          1: open a print quick slip window
+        pref: CircAutoPrintQuickSlip
+      - " ."
+    - 
+      - " Include the stylesheet at"
+      - 
+        class: url
+        pref: NoticeCSS
+      - " on Notices. (This should be a complete URL, starting with <code>http://</code>)"
+  Issuing Policy: 
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: AllowNotForLoanOverride
+      - staff to override and issue items that are marked as not for loan.
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: AllowRenewalLimitOverride
+      - staff to manually override the renewal limit and renew an issue when it would go over the renewal limit.
+    - 
+      - 
+        choices: 
+          "": " Don't allow"
+          1: " Allow"
+        pref: AllowItemsOnHoldCheckout
+      - issues of items reserved to someone else. If allowed do not generate RESERVE_WAITING and RESERVED warning. This allows self issues for those items.
+    - 
+      - 
+        choices: 
+          "": Don't require
+          1: Require
+        pref: AllFinesNeedOverride
+      - staff to manually override all fines, even fines less than noissuescharge.
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: AllowFineOverride
+      - staff to manually override and check out items to borrowers who have more than noissuescharge in fines.
+    - 
+      - 
+        choices: 
+          "": Don't move
+          1: Move
+        pref: InProcessingToShelvingCart
+      - items that have the location PROC to the location CART when they are returned.
+    - 
+      - 
+        choices: 
+          "": Don't move
+          1: Move
+        pref: ReturnToShelvingCart
+      - all items to the location CART when they are returned.
+    - 
+      - 
+        choices: 
+          "": Don't
+          1: Do
+        pref: AutomaticItemReturn
+      - " automatically transfer items to their home library when they are returned."
+    - 
+      - 
+        choices: 
+          "": Don't enforce
+          1: Enforce
+        pref: UseBranchTransferLimits
+      - " library transfer limits based on"
+      - 
+        choices: 
+          ccode: collection code
+          itemtype: item type
+        pref: BranchTransferLimitsType
+      - .
+    - 
+      - Use the issue and fines rules of
+      - 
+        choices: 
+          ItemHomeLibrary: the library the item is from.
+          PatronLibrary: the library the member is from.
+          PickupLibrary: the library you are logged in at.
+        pref: CircControl
+        type: choice
+    - 
+      - Use the issue and fines rules of
+      - 
+        choices: 
+          holdingbranch: the library the item was issue from.
+          homebranch: the library the item is from.
+        pref: HomeOrHoldingBranch
+        type: choice
+    - 
+      - Calculate the due date using
+      - 
+        choices: 
+          Calendar: the calendar to skip all days the library is closed.
+          Datedue: the calendar to push the due date to the next open day
+          Days: circulation rules only.
+        pref: useDaysMode
+    - 
+      - When renewing issues, base the new due date on
+      - 
+        choices: 
+          date_due: the old due date of the issue.
+          now: the current date.
+        pref: RenewalPeriodBase
+    - 
+      - Prevent members from making reserves on the OPAC if they owe more than
+      - 
+        class: currency
+        pref: maxoutstanding
+      - "[% local_currency %] in fines."
+    - 
+      - Show a warning on the "Transfers to Receive" screen if the transfer has not been received
+      - 
+        class: integer
+        pref: TransfersMaxDaysWarning
+      - days after it was sent.
+    - 
+      - 
+        choices: 
+          "": Prevent
+          1: Don't prevent
+        pref: IssuingInProcess
+      - borrowers from issuing an item whose rental charge would take them over the limit.
+    - 
+      - Prevent members from checking out books if they have more than
+      - 
+        class: integer
+        pref: noissuescharge
+      - "[% local_currency %] in fines."
+    - 
+      - 
+        choices: 
+          "": Don't require
+          1: Require
+        pref: ReturnBeforeExpiry
+      - borrowers to return books before their accounts expire (by restricting due dates to before the patron's expiration date).
+    - 
+      - Send all notices as a BCC to this email address
+      - 
+        pref: OverdueNoticeBcc
+    - 
+      - Include up to
+      - 
+        class: integer
+        pref: PrintNoticesMaxLines
+      - item lines in a printed overdue notice. If the number of items is greater than this number, the notice will end with a warning asking the member to check their online account for a full list of overdue items.  Set to 0 to include all overdue items in the notice, no matter how many there are.
+    - 
+      - 
+        choices: 
+          block: Block
+          confirmation: Ask for confirmation
+          noblock: Don't block
+        pref: OverduesBlockCirc
+      - when issuing out to a borrower that has overdues outstanding
+    - 
+      - On return route the returned item to
+      - 
+        choices: 
+          holdingbranch: the library the item was issued from.
+          homebranch: the library the item is from.
+        pref: HomeOrHoldingBranchReturn
+        type: choice
+  Reserves Policy: 
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: AllowHoldPolicyOverride
+      - staff to override reserve policies when placing reserves.
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: AllowHoldsOnDamagedItems
+      - reserve requests to be placed on damaged items.
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: AllowOnShelfHolds
+      - reserve requests to be placed on items that are not issued.
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: AllowHoldDateInFuture
+      - reserve requests to be placed that do not enter the waiting list until a certain future date.
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: OPACAllowHoldDateInFuture
+      - borrowers to place reserves that don't enter the waiting list until a certain future date. (AllowHoldDateInFuture must also be enabled).
+    - 
+      - Check the
+      - 
+        choices: 
+          ItemHomeLibrary: item's home library
+          PatronLibrary: member's home library
+        pref: ReservesControlBranch
+      - to see if the patron can place a reserve on the item.
+    - 
+      - Mark a reserve as problematic if it has been waiting for more than
+      - 
+        class: integer
+        pref: ReservesMaxPickUpDelay
+      - days.
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: ExpireReservesMaxPickUpDelay
+      - reserves to expire automatically if they have not been picked by within the time period specified in ReservesMaxPickUpDelay
+    - 
+      - If using ExpireReservesMaxPickUpDelay, charge a borrower who allows his or her waiting reserve to expire a fee of
+      - 
+        class: currency
+        pref: ExpireReservesMaxPickUpDelayCharge
+    - 
+      - Satisfy reserves from the libraries
+      - 
+        class: multi
+        pref: StaticHoldsQueueWeight
+      - (as branchcodes, separated by commas; if empty, uses all libraries)
+      - 
+        choices: 
+          "": in that order.
+          1: " in random order."
+        pref: RandomizeHoldsQueueWeight
+      - ~
+    - 
+      - 
+        choices: 
+          "": Don't allow (with independent branches)
+          1: Allow
+        pref: canreservefromotherbranches
+      - a user from one library to place a reserve on an item from another library
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: OPACAllowUserToChooseBranch
+      - " a user to choose the library to pick up a reserve from."
+    - 
+      - 
+        choices: 
+          "": Automatically
+          1: Don't automatically
+        pref: ReservesNeedReturns
+      - mark reserves as found and waiting when a reserve is placed specifically on them and they are already available.
+    - 
+      - Members can only have
+      - 
+        class: integer
+        pref: maxreserves
+      - reserves at once.
+    - 
+      - 
+        choices: 
+          "": Don't enable
+          1: Enable
+        pref: emailLibrarianWhenHoldIsPlaced
+      - sending an email to the Koha administrator email address whenever a reserve request is placed.
+    - 
+      - 
+        choices: 
+          "": Don't enable
+          1: Enable
+        pref: DisplayMultiPlaceHold
+      - the ability to place holds on multiple biblio from the search results
+    - 
+      - 
+        choices: 
+          "": Don't transfer
+          1: Transfer
+        pref: TransferWhenCancelAllWaitingHolds
+      - items when cancelling all waiting reserves.
+    - 
+      - 
+        choices: 
+          "": " Don't allow"
+          1: " Allow"
+        pref: AutoResumeSuspendedHolds
+      - " suspended reserves to be automatically resumed by a set date."
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: SuspendHoldsIntranet
+      - reserves to be suspended from the intranet.
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: SuspendHoldsOpac
+      - reserves to be suspended from the OPAC.
+  Self Circulation: 
+    - 
+      - 
+        choices: 
+          "": Don't show
+          1: Show
+        pref: ShowPatronImageInWebBasedSelfCheck
+      - the member's picture (if one has been added) when they use the web-based self checkout.
+    - 
+      - 
+        choices: 
+          "": Don't enable
+          1: Enable
+        pref: WebBasedSelfCheck
+      - "the web-based self checkout system. (available at: /cgi-bin/koha/sco/sco-main.pl)"
+    - 
+      - Have borrowers login into the web-based self issuing system with their
+      - 
+        choices: 
+          "": Barcode
+          1: Username and Password
+        pref: SelfCheckoutByLogin
+    - 
+      - Time out the current borrower's web-based self issueing system login after
+      - 
+        class: integer
+        pref: SelfCheckTimeout
+      - seconds.
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: AllowSelfCheckReturns
+      - borrowers to return items through web-based self issuing system.
+    - 
+      - "Include the following HTML in the Help page of the web-based self issueing system:"
+      - 
+        class: code
+        pref: SelfCheckHelpMessage
+        type: textarea
+    - 
+      - 
+        choices: 
+          "": Don't allow
+          1: Allow
+        pref: AutoSelfCheckAllowed
+      - the web-based self issueing system to automatically login with this staff login
+      - 
+        pref: AutoSelfCheckID
+      - and this password
+      - 
+        pref: AutoSelfCheckPass
+      - .

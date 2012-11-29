@@ -1,0 +1,419 @@
+[% INCLUDE 'doc-head-open.inc' %] <title>Koha &rsaquo; About Koha</title>
+[% INCLUDE 'doc-head-close.inc' %] <script type="text/javascript">
+//<![CDATA[
+
+     $(document).ready(function() {
+        $('#abouttabs > ul').tabs();
+     });
+//]]>
+</script>
+</head>
+<body id="about_about" class="about">
+[% INCLUDE 'header.inc' %] <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; About Koha</div>
+
+<div id="doc3" class="yui-t7">
+
+ <div id="bd">
+ <div id="yui-main">
+ <div class="yui-g">
+ <h1>About Koha</h1>
+
+ <div id="abouttabs" class="toptabs numbered">
+ <ul>
+ <li><a href="about.pl#about">Server Information</a></li>
+ <li><a href="about.pl#perl">Perl modules</a></li>
+ <li><a href="about.pl#team">Koha Team</a></li>
+ <li><a href="about.pl#licenses">Licenses</a></li>
+ <li><a href="about.pl#translations">Translations</a></li>
+ <li><a href="about.pl#history">Koha Timeline</a></li>
+ </ul>
+
+ <div id="about">
+
+ <table>
+ <caption>Server information</caption>
+ <tr><th scope="row">Koha version: </th><td>[% kohaVersion |html %]</td></tr>
+ <tr><th scope="row">OS version ('uname -a'): </th><td>[% osVersion |html %]</td></tr>
+ <tr><th scope="row">Perl interpreter: </th><td>[% perlPath |html %]</td></tr>
+ <tr><th scope="row">Perl version: </th><td>[% perlVersion |html %]</td></tr>
+ <tr><th scope="row">Perl @INC: </th><td>
+ [% FOREACH perlIncPat IN perlIncPath %] [% perlIncPat.perlinc |html %] <br />
+ [% END %] </td></tr>
+ <tr><th scope="row">MySQL version: </th><td>[% mysqlVersion |html %]</td></tr>
+ <tr><th scope="row">Apache version: </th><td>[% apacheVersion |html %]</td></tr>
+ <tr><th scope="row">Zebra version: </th><td>[% zebraVersion |html %]</td></tr>
+ </table>
+ </div>
+ <div id="perl">
+ <table style="cursor:pointer">
+ <caption>Perl modules</caption>
+ [% FOREACH tabl IN table %] <tr>
+ [% FOREACH ro IN tabl.row %] [% IF ( ro.current ) %] [% IF ( ro.require ) %] <th scope="row" style="font-weight:bold;" title="Module current">
+ [% ELSE %] <th scope="row" style="font-weight:normal" title="Module current">
+ [% END %] [% ELSIF ( ro.upgrade ) %] [% IF ( ro.require ) %] <th scope="row" style="background-color:#FFCB2F;font-weight:bold;" title="Module upgrade needed">
+ [% ELSE %] <th scope="row" style="background-color:#FFCB2F;font-weight:normal" title="Module upgrade needed">
+ [% END %] [% ELSE %] [% IF ( ro.name == '' ) %] <th>
+ [% ELSIF ( ro.require ) %] <th scope="row" style="background-color:#FF8A8A;font-weight:bold;" title="Required module missing">
+ [% ELSE %] <th scope="row" style="background-color:#FF8A8A;font-weight:normal" title="Optional module missing">
+ [% END %] [% END %] [% ro.name %] </th>
+ [% IF ( ro.name == '' ) %] <td>
+ [% ELSIF ( ro.version ) %] <td>[% ro.version %] [% ELSE %] <td style="font-weight:bold">Not Installed [% END %]</td>
+ [% END %] </tr>
+ [% END %] </table>
+ </div>
+ <div id="team">
+ <h2>Special thanks to the following organisations</h2>
+ <ul>
+ <li><a href="http://library.org.nz">Horowhenua Library Trust</a>, New Zealand, and Rosalie Blake, Head of Libraries, (Koha 1.0)</li>
+ <li>The <a href="http://myacpl.org">Nelsonville Public Library System</a>, Ohio, USA (MARC sponsorship, documentation, template maintenance)</li>
+ <li><a href="http://www.emn.fr">EMN (Ecole des Mines de Nantes)</a>, France (Suggestions, Stats wizards and improved LDAP sponsorship)</li>
+ <li><a href="http://www.mines-paristech.fr">Mines Paristech (previously Ecole Nationale Supérieure des Mines de Paris)</a><, France (biblio frameworks, MARC authorities, OPAC basket, Serials sponsorship)</li>
+ <li><a href="http://www.mediathequeouestprovence.fr/">SAN-Ouest Provence</a>, France (Koha 3.0 enhancements to members and reserves modules)</li>
+ <li>The <a href="http://ccfls.org">Crawford County Federated Library System</a>, PA, USA (Koha 3.0 Zebra Integration sponsorship)</li>
+ <li>The <a href="http://www.geauga.lib.oh.us/">Geauga County Public Library</a>, OH, USA (Koha 3.0 beta testing)</li>
+ <li>The <a href="http://library.neu.edu.tr">Near East University</a>, Cyprus</li>
+ <li>OPUS International Consultants, Wellington, New Zealand (Corporate Serials sponsorship)</li>
+ <li><a href="http://www.famfamfam.com/">famfamfam.com</a> Birmingham (UK) based developer Mark James for the famfamfam Silk iconset.</li>
+ <li><a href="http://www.ashs.school.nz/">Albany Senior High School</a>, Auckland, New Zealand (OPAC 'star-ratings' sponsorship)</li>
+ </ul>
+
+ <h2>Koha release team</h2>
+ <ul>
+ <li>Colin Campbell (Koha 3.4 QA Manager)</li>
+ <li><a href="https://www.ohloh.net/p/koha/contributors/6618544614260">Galen Charlton</a> (Koha 3.2 Release Manager)</li>
+ <li><a href="https://www.ohloh.net/p/koha/contributors/6618544609030">Chris Cormack</a> (Koha 1.x, 3.4, 3.6 Release Manager, Koha 3.2 Translation Manager)</li>
+ <li><a href="https://www.ohloh.net/p/koha/contributors/6620692210484">Frédéric Demians</a>(Koha 3.4, 3.6 Translation Manager)</li>
+ <li><a href="https://www.ohloh.net/p/koha/contributors/6618544646984">Nicole C. Engard</a> (Koha 3.x Documentation Manager)</li>
+ <li><a href="https://www.ohloh.net/p/koha/contributors/6618544609053">Joshua Ferraro</a> (Koha 3.0 Release Manager &amp; Translation Manager)</li>
+ <li>Rachel Hamilton-Williams (Kaitiaki from 2004 to present)</li>
+ <li><a href="https://www.ohloh.net/p/koha/contributors/6618544614275">Henri-Damien Laurent</a> (Koha 3.0 Release Maintainer)</li>
+ <li><a href="https://www.ohloh.net/p/koha/contributors/6618544609147">Owen Leonard</a> (Koha 3.x Interface Design)</li>
+ <li><a href="https://www.ohloh.net/p/koha/contributors/6618544615991">Chris Nighswonger</a> (Koha 3.2, 3.4 Release Maintainer, Koha 3.6 Release Maintainer)</li>
+ <li><a href="https://www.ohloh.net/p/koha/contributors/6618544612249">Paul Poulain</a> (Koha 2.0 Release Manager, Koha 2.2 Release Manager/Maintainer, Koha 3.8 Release Manager, Koha 3.10 Release Manager)</li>
+ <li><a href="http://www.ohloh.net/p/koha/contributors/6620692116417">MJ Ray</a> (Koha 2.0 Release Maintainer)</li>
+ <li>Ian Walls Koha 3.6 QA Manager, Koha 3.8 QA Manager, Koha 3.10 QA Manager</li>
+ </ul>
+ <h2>Koha development team</h2>
+ <ul>
+ <li>Md. Aftabuddin</li>
+ <li>Jon Aker</li>
+ <li>Edward Allen</li>
+ <li>Francisco M. Marzoa Alonso</li>
+ <li>Cindy Murdock Ames</li>
+ <li>Richard Anderson</li>
+ <li><a href="https://www.ohloh.net/p/koha/contributors/6620692181851">Nahuel Angelinetti</a></li>
+ <li>Nuño López Ansótegui</li>
+ <li>Tomás Cohen Arazi</li>
+ <li><a href="https://www.ohloh.net/p/koha/contributors/6620692124662">Andrew Arensburger (the small and great C4::Context module)</a></li>
+ <li>Alex Arnaud</li>
+ <li><a href="https://www.ohloh.net/p/koha/contributors/6618544614259">Joe Atzberger</a></li>
+ <li>Larry Baerveldt</li>
+ <li>Al Banks</li>
+ <li>Daniel Banzli</li>
+ <li>Greg Barniskis</li>
+ <li>Benedykt P. Barszcz (Polish for 2.0)</li>
+ <li>D Ruth Bavousett</li>
+ <li>John Beppu</li>
+ <li>David Birmingham</li>
+ <li>Florian Bischof</li>
+ <li>Gaetan Boisson</li>
+ <li>Danny Bouman</li>
+ <li>Stan Brinkerhoff</li>
+ <li>Roger Buck</li>
+ <li>Steven Callender</li>
+ <li><a href="https://www.ohloh.net/p/koha/contributors/6620692376789">Jared Camins-Esakov</a></li>
+ <li>Colin Campbell</li>
+ <li>Fernando Canizo</li>
+ <li>Frédérick Capovilla</li>
+ <li>DeAndre Carroll</li>
+ <li>Chris Catalfo (new plugin MARC editor)</li>
+ <li>Marc Chantreux</li>
+ <li>Jerome Charaoui</li>
+ <li>Andrew Chilton</li>
+ <li>Garry Collum</li>
+ <li>David Cook</li>
+ <li>John Copeland</li>
+ <li>Jeremy Crabtree</li>
+ <li>Christophe Croullebois</li>
+ <li>Nate Curulla</li>
+ <li>Vincent Danjean</li>
+ <li>Elliott Davis</li>
+ <li>Doug Dearden</li>
+ <li>Kip DeGraaf</li>
+ <li>Stéphane Delaune</li>
+ <li>Connor Dewar</li>
+ <li><a href="https://www.ohloh.net/p/koha/contributors/6620692210484">Frédéric Demians</a></li>
+ <li>Jonathan Druart</li>
+ <li>Serhij Dubyk</li>
+ <li>Thomas Dukleth (MARC Frameworks Maintenance)</li>
+ <li>Frederic Durand</li>
+ <li>Sebastiaan Durand</li>
+ <li>Ecole des Mines de Saint Etienne, Philippe Jaillon (OAI-PMH support)</li>
+ <li>Stephen Edwards</li>
+ <li>Andrew Elwell</li>
+ <li>Brian Engard</li>
+ <li><a href="https://www.ohloh.net/p/koha/contributors/6618544677502">Magnus Enger</a></li>
+ <li>Esiee School (Jérome Vizcaino, Michel Lerenard, Pierre Cauchois)</li>
+ <li>Shaun Evans</li>
+ <li>Pat Eyler (Kaitiaki from 2002 to 2004)</li>
+ <li><a href="https://www.ohloh.net/p/koha/contributors/6618544609865">Antoine Farnault</a></li>
+ <li><a href="https://www.ohloh.net/p/koha/contributors/6618544670742">Katrin Fischer</a></li>
+ <li>Clay Fouts</li>
+ <li>Claudia Forsman</li>
+ <li>Marco Gaiarin</li>
+ <li>Pierrick Le Gall</li>
+ <li>Brendan A. Gallagher</li>
+ <li>Tumer Garip</li>
+ <li>Russel Garlick</li>
+ <li>Mark Gavillet</li>
+ <li>Daniel Kahn Gillmor</li>
+ <li>David Goldfein</li>
+ <li>Daniel Grobani</li>
+ <li>Amit Gupta</li>
+ <li>Michael Hafen</li>
+ <li>Christopher Hall</li>
+ <li>Mike Hansen</li>
+ <li>Brian Harrington</li>
+ <li>Friedrich zur Hellen</li>
+ <li>Michaes Herman</li>
+ <li>Claire Hernandez</li>
+ <li>Wolfgang Heymans</li>
+ <li><a href="https://www.ohloh.net/p/koha/contributors/6618544614261">Ryan Higgins</a></li>
+ <li>Sèbastien Hinderer</li>
+ <li>Stephanie Hogan</li>
+ <li>Daniel Holth</li>
+ <li>Andrew Hooper</li>
+ <li>Matthew Hunt</li>
+ <li>Christopher Hyde</li>
+ <li>Cory Jaeger</li>
+ <li>Srdjan Jankovic</li>
+ <li>Philippe Jaillon</li>
+ <li><a href="https://www.ohloh.net/accounts/kohaaloha">Mason James</a></li>
+ <li>Mike Johnson</li>
+ <li>Donovan Jones</li>
+ <li>Janusz Kaczmarek</li>
+ <li>Koustubha Kale</li>
+ <li>Ulrich Kleiber</li>
+ <li>Piotr Kowalski</li>
+ <li>Arnaud Laurin</li>
+ <li>Ambrose Li (translation tool)</li>
+ <li>Gynn Lomax</li>
+ <li>Robert Lyon (Corporate Serials)</li>
+ <li>Francois Marier</li>
+ <li>Jesse Maseto</li>
+ <li>Frère Sébastien Marie</li>
+ <li>Ricardo Dias Marques</li>
+ <li>Julian Maurice</li>
+ <li>Brig C. McCoy</li>
+ <li>Dorian Meid (German translation)</li>
+ <li>Meenakshi. R</li>
+ <li>Matthias Meusburger</li>
+ <li>Sophie Meynieux</li>
+ <li>Alan Millar</li>
+ <li><a href="https://www.ohloh.net/p/koha/contributors/6618544607803">Andrew Moore</a></li>
+ <li>Sharon Moreland</li>
+ <li>Nicolas Morin</li>
+ <li>Mike Mylonas</li>
+ <li>Joy Nelson</li>
+ <li><a href="https://www.ohloh.net/accounts/cnighswonger">Chris Nighswonger</a></li>
+ <li>Albert Oller</li>
+ <li>Eric Olsen</li>
+ <li>H. Passini</li>
+ <li>Dobrica Pavlinusic</li>
+ <li>Maxime Pelletier</li>
+ <li>Polytechnic University</li>
+ <li>Shari Perkins</li>
+ <li>Meenakshi.R</li>
+ <li><a href="https://www.ohloh.net/p/koha/contributors/6620692116417">MJ Ray</a></li>
+ <li>Liz Rea</li>
+ <li>Thatcher Rea</li>
+ <li>Allen Reinmeyer</li>
+ <li>Serge Renaux</li>
+ <li>Martin Renvoize</li>
+ <li>Waylon Robertson</li>
+ <li>Marcel de Rooy</li>
+ <li>Salvador Zaragoza Rubio</li>
+ <li>Brice Sanchez</li>
+ <li>Sam Sanders</li>
+ <li>Adrien Saurat</li>
+ <li><a href="https://www.ohloh.net/p/koha/contributors/6618544619438">Robin Sheat</a></li>
+ <li>John Seymour</li>
+ <li>Juan Romay Sieira</li>
+ <li>Zach Sim</li>
+ <li>Savitra Sirohi</li>
+ <li>Pawel Skuza (Polish for 1.2)</li>
+ <li>Fridolyn Somers</li>
+ <li>Southeastern University</li>
+ <li>Glen Stewart</li>
+ <li>Will Stokes</li>
+ <li>Simon Story</li>
+ <li>David Strainchamps</li>
+ <li>Ed Summers (Some code and Perl packages like MARC::Record)</li>
+ <li>Daniel Sweeney</li>
+ <li>Zeno Tajoli</li>
+ <li>Adam Thick</li>
+ <li><a href="https://www.ohloh.net/p/koha/contributors/6618544609107">Finlay Thompson</a></li>
+ <li>Fabio Tiana</li>
+ <li>Mirko Tietgen</li>
+ <li><a href="https://www.ohloh.net/p/koha/contributors/6620692101577">Steve Tonnesen (early MARC work, Virtual Bookshelves concept, KohaCD)</a></li>
+ <li>Bruno Toumi</li>
+ <li>Andrei V. Toutoukine</li>
+ <li>Kathryn Tyree</li>
+ <li>Darrell Ulm</li>
+ <li>Universidad ORT Uruguay (Ernesto Silva, Andres Tarallo)</li>
+ <li>Marc Veron</li>
+ <li>Aleksa Vujicic</li>
+ <li>Reed Wade</li>
+ <li>Stacey Walker</li>
+ <li>Ian Walls</li>
+ <li><a href="http://www.ohloh.net/accounts/janewagner">Jane Wagner</a></li>
+ <li>Ward van Wanrooij</li>
+ <li><a href="https://www.ohloh.net/accounts/pianohacker">Jesse Weaver</a></li>
+ <li>Rick Welykochy</li>
+ <li>Piotr Wejman</li>
+ <li>Ron Wickersham</li>
+ <li>Brett Wilkins</li>
+ <li><a href="https://www.ohloh.net/p/koha/contributors/6620692127299">Olwen Williams (Database design and data extraction for Koha 1.0)</a></li>
+ <li>Robert Williams</li>
+ <li>James Winter</li>
+ <li>Lars Wirzenius</li>
+ </ul>
+ <h3>Contributing companies and institutions</h3>
+ <ul>
+ <li>BibLibre, France</li>
+ <li>Bibliotheksservice-Zentrum Baden-Württemberg (BSZ), Germany</li>
+ <li>ByWater Solutions, USA</li>
+ <li>Calyx, Australia</li>
+ <li>Catalyst IT, New Zealand</li>
+ <li>Katipo Communications, New Zealand</li>
+ <li>KohaAloha, New Zealand</li>
+ <li>LibLime, USA</li>
+ <li>Libriotech, Norway</li>
+ <li>Nelsonville Public Library, Ohio, USA</li>
+ <li>PTFS, Maryland, USA</li>
+ <li>PTFS Europe Ltd, United Kingdom</li>
+ <li>Rijksmuseum, Amsterdam, The Netherlands</li>
+ <li>SAN-Ouest Provence, France</li>
+ <li>Software Coop, United Kingdom</li>
+ <li>Tamil, France</li>
+ <li>Xercode, Spain</li>
+ </ul>
+
+ <h2>Additional Thanks To...</h2>
+ <ul>
+ <li>Jo Ransom</li>
+ <li>Nicholas Rosasco, (Documentation Compiler)</li>
+ <li>Regula Sebastiao</li>
+ <li>Brooke Johnson</li>
+ <li>Stephen Hedges (early Documentation Manager)</li>
+ </ul>
+ </div>
+
+ <div id="licenses">
+ <h2>Koha</h2>
+ <p>
+ <a href="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html">Koha is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.</a>
+ </p>
+ <h2>YUI</h2>
+ <p>
+ <a href="http://developer.yahoo.com/auth/license.txt">BSD License</a>
+ </p>
+ <h2>Famfamfam iconset</h2>
+ <ul>
+ <li><a href="http://www.famfamfam.com/lab/icons/silk/">FamFamFam Site</a></li>
+ <li><a href="http://creativecommons.org/licenses/by/2.5/">Creative Commons Attribution 2.5 License</a></li>
+ </ul>
+ <h2>The Bridge Material Type Icon Set</h2>
+ <ul>
+ <li><a href="http://apps.carleton.edu/campus/library/bridge_icons/">Bridge Material Type Icons Project</a></li>
+ <li>The Bridge Material Type Icon Set is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 License</a>
+ by the Bridge Consortium of Carleton College and St. Olaf College.</li>
+ </ul>
+
+ <h2>The Noun Project icons</h2>
+ <ul>
+ <li>All images come from <a href="http://thenounproject.com/">The Noun Project</a> collection</li>
+ <li>
+ Circulation ("fair-trade") symbol by Edward Boatman ; Patrons ("children's library") symbol by Edward Boatman, Saul Tannenbaum, Stephen Kennedy, Nikki Snow, Brooke Hamilton ; Search ("magnifying glass") symbol by Philipp Suess ; Lists ("folder") symbol by Jack Biesek, Gladys Brenner, Margaret Faye, Healther Merrifield, Kate Keating, Wendy Olmstead, Todd Pierce, Jamie Cowgill, Jim Bolek ; Cataloging ("price tag") symbol by the Noun Project ; Authorities ("link") symbol by Matthew Exton ; Serials ("newspaper") symbol by John Caserta ; Acquisitions ("present") symbol by David Goodger ; Reports ("pie chart") symbol by Scott Lewis ; Administration ("gears") symbol by Jeremy Minnick ; Tools ("wrench") symbol by National Park Service </li>
+ </ul>
+
+ <h2>jQuery Star Rating Plugin</h2>
+ <p>jQuery Star Rating Plugin v3.14 by <a href="http://www.fyneworks.com/">Fyneworks.com</a> is licensed under the <a target="_blank" href="http://en.wikipedia.org/wiki/MIT_License">MIT License</a> and the <a target="_blank" href="http://creativecommons.org/licenses/GPL/2.0/">GPL License</a>.</p>
+
+ <p>Copyright &copy; 2008 <a href="http://www.fyneworks.com/">Fyneworks.com</a></p>
+
+ </div>
+
+ <div id="translations">
+ <h2>Translation</h2>
+ <ul>
+<li>&#1575;&#1604;&#1593;&#1585;&#1576;&#1610;&#1577; (Arabic)</li>
+<li>&#4768;&#4635;&#4653;&#4763; (Amharic) Getway II Ethiopia Co. (Yohannes Mulugeta (Team Leader), Tegene Assefa, Abiyot Bayou)</li>
+<li>Armenian Tigran Zargaryan</li>
+<li>&#1041;&#1098;&#1083;&#1075;&#1072;&#1088;&#1089;&#1082;&#1080; (Bulgarian) Radoslav Kolev</li>
+<li>euskara (Basque) Fernando Berrizbeitia, the librarians of Eima Katalogoa, and Nere Erkiaga</li>
+<li>&#2476;&#2494;&#2434;&#2482;&#2494; (Bengali) Parthasarathi Mukhopadhyay</li>
+<li>&#20013;&#25991; (Chinese)</li>
+<li>Hrvatski (Croatian)</li>
+<li>&#x010D;e&#353;tina (Czech)</li>
+<li>D&aelig;nsk (Danish)</li>
+<li>Nederlands-Nederland (Dutch-The Netherlands) Sponsored by Rijksmuseum</li>
+<li>Nederlands-Belgi&euml; (Dutch-Belgium)</li>
+<li>English</li>
+<li>suomi, suomen kieli (Finnish) Pasi Korkalo</li>
+<li>Fran&ccedil;ais (French) <a href="http://www.koha-fr.org/category/tags/association">Kohala</a>, Pascale Nalon (ENSMP), and many more </li>
+<li>Galego (Galician) Ignacio Javier</li>
+<li>Deutsch (German) Friedrich zur Hellen, Robert Hillig, Katrin Fischer, Beda Szukics, Mirko Tietgen and Marc Véron</li>
+<li>&#949;&#955;&#955;&#951;&#957;&#953;&#954;&#940; (Greek, Modern [1453- ])Georgia Katsarou, Panoraia Gaitanou</li>
+<li>&#1506;&#1489;&#1512;&#1497;&#1514; (Hebrew)</li>
+<li>&#2361;&#2367;&#2344;&#2381;&#2342;&#2368; (Hindi)</li>
+<li>Magyar (Hungarian)Agnes Imecs</li>
+<li>Norsk Bokmål (Norwegian) Axel Bojer and Thomas Gramstad</li>
+<li>Norsk Nynorsk (Norwegian) Unni Knutsen and Marit Kristine Ådland</li>
+<li>ArmenianTigran Zargaryan</li>
+<li>(Indonesian)</li>
+<li>Italiano (Italian) for 3.2: Zeno Tajoli, Pietro Gozzetti and Paolo Pozzan; for 3.4 and more: Zeno Tajoli, Stefano Bargioni, Paolo Bizzarri</li>
+<li>&#26085;&#26412;&#35486; (Japanese)</li>
+<li>&#54620;&#44397;&#50612; (Korean)</li>
+<li>&#3221;&#3240;&#3277;&#3240;&#3233; (kanna&#7693;a)</li>
+<li>Latina (Latin)</li>
+<li>Lao Anousak Anthony Souphavanh</li>
+<li>M&#257;ori</li>
+<li>&#3374;&#3378;&#3375;&#3390;&#3379;&#3330; (Malayalam)</li>
+<li>&#1601;&#1575;&#1585;&#1587;&#1609; (Persian)</li>
+<li>&#2835;&#2908;&#2879;&#2822; (&#x014D;&#7771;iy&#257;)</li>
+<li>Polski (Polish)</li>
+<li>Portugu&ecirc;s (Portuguese)</li>
+<li>Rom&acirc;n&#259; (Romanian)</li>
+<li>&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081; (Russian) Victor Titarchuk and Serhij Dubyk</li>
+<li>Espa&ntilde;ol (Spanish) Alejandro Tiraboschi (UNC), Bernardo González Kriegel (UNC) and Martín Longo, with the help of the koha-es community.</li>
+<li>Espa&ntilde;ol (Spanish, Venezuela) Ailé Filippi </li>
+<li>Svenska (Swedish)</li>
+<li>Tetun (Tetum) Karen Myers</li>
+<li>&#3616;&#3634;&#3625;&#3634;&#3652;&#3607;&#3618; (Thai)</li>
+<li>T&uuml;rk&ccedil;e (Turkish) Selma Aslan</li>
+<li>&#1575;&#1585;&#1583;&#1608;(Urdu) Ata ur Rehman</li>
+<li>&#1059;&#1082;&#1088;&#1072;&#1111;&#1085;&#1089;&#1100;&#1082;&#1072; (Ukrainian) Victor Titarchuk and Serhij Dubyk</li>
+ </ul>
+
+ </div>
+
+ <div id="history">
+ <h2>Koha history timeline</h2>
+ <table style="cursor:pointer">
+ <thead>
+ <tr>
+ <td  style="font-weight:bold;" >Date</td>
+ <td  style="font-weight:bold;" >Description</td>
+ </tr>
+ </thead>
+ [% FOREACH tabl IN table2 %] <tr class="[% loop.parity %]">
+ [% FOREACH ro IN tabl.row2 %] <td>[% ro.date %]</td>
+ <td>[% ro.desc|html %]</td>
+ [% END %] </tr>
+ [% END %] </table>
+ </div>
+
+ </div>
+</div></div></div>
+[% INCLUDE 'intranet-bottom.inc' %] 

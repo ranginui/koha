@@ -1,0 +1,7 @@
+[% INCLUDE 'help-top.inc' %] <h1>Reserve Ratios</h1>
+
+<p>Reserve ratios help with collection development. Using this report you will be able to see how many of your borrowers have reserves on items and whether you should buy more. By default it will be set to the library needing 3 items per reserve that has been placed. The report will tell you how many additional items need to be purchased to meet this quota.</p>
+
+<p><strong>See the full documentation for Reserve Ratios in the <a href="http://manual.koha-community.org/3.8/en/circreports.html#holdratios">manual</a> (online).</strong></p>
+
+[% INCLUDE 'help-bottom.inc' %] 

@@ -1,0 +1,61 @@
+[% INCLUDE 'help-top.inc' %] <h1>Authorised Values</h1>
+
+<p>Authorised values can be used in several areas of Koha. One reason you would add an authorised value category would be to control the values that can be entered into MARC fields by cataloguers.</p>
+
+<h2>Existing Values</h2>
+
+<p>Koha installs with pre-defined values that your library is likely to use, for instance, 'Lost.'</p> By default, this includes: <ul>
+ <li>'Asort1,' for acquisitions statistical purposes.</li>
+ <li>'Asort2,' used for acquisitions statistical purposes.</li>
+ <li>'BOR_NOTES' is for values for custom borrower notes that appear on the circulation screen and the OPAC.</li>
+ <li>'Bsort1' is for borrower statistical purposes.</li>
+ <li>'Bsort2' is used for borrower statistical purposes.</li>
+ <li>'CART' is the shelving cart location, used by InProcessingToShelvingCart and ReturnToShelvingCart</li>
+ <li>'CCODE' is for collection codes (appears when cataloguing and working with items).</li>
+ <li>'DAMAGED' is for descriptions of damaged items, and appears when cataloguing and working with items.</li>
+ <li>'HINGS_AS' is for General Holdings: Acquisition Status Designator, a data element that specifies the acquisition status for the unit at the time of the holdings report.</li>
+ <li>'HINGS_C' is for General Holdings: Completeness Designator.</li>
+ <li>'HINGS_PF' is for Physical Form Designators</li>
+ <li>'HINGS_RD' is for General Holdings: Retention Designator, a data element that specifies the retention policy for the unit at the time of the holdings report.</li>
+ <li>'HINGS_UT' is for General Holdings: Type of Unit Designator.</li>
+ <li>'LOC' is for the shelving location and usually appears when adding or editing an item.</li>
+ <li>'LOST' is for descriptions for items marked as lost. It appears when adding or editing an item. Values given to lost statuses should be numeric (not alphabetical) in order for statuses to appear properly.</li>
+ <li>'MANUAL_INV' includes values for manual invoicing.</li>
+ <li>'NOT_LOAN' is used to list reasons why a title is not for loan.</li>
+ <li>'PROC' is for the location to be used for NewItemsDefaultLocation (change description as desired), also the location expected by InProcessingToShelvingCart.</li>
+ <li>'RESTRICTED' is used for the restricted status of an item</li>
+ <li>'SUGGEST' is for a list of reasons to accept or reject borrower suggestions. It appears when managing suggestions.</li>
+ <li>'WITHDRAWN' is for a description of a withdrawn item. It appears when adding or editing an item.</li>
+</ul>
+
+<h2>Add New Authorized Value Category</h2>
+
+<p>In addition to the existing categories that come by default with Koha, librarians can add their own authorised value categories to control data that is entered into the system. To add a new category:</p>
+
+<ul>
+ <li>Click 'New Category.'</li>
+ <li>Limit your Category to eleven characters (something short to make it clear what the category is for).</li>
+ <li>When adding a new category, you're asked to create at least one authorised value: <ul>
+ <li>Enter a code for your Authorised Value into the 'Authorised value' field.</li>
+ <li>Use the Description field for the actual value that will be entered.</li>
+</ul>
+</li>
+ <li>Click 'Save.'</li>
+ <li>Your new category and value will appear on the list of Authorised Values.</li>
+</ul>
+
+<h2>Add New Authorized Value</h2>
+
+<p>New authorised values can be added to any existing or new category. To add a value:</p>
+
+<ul>
+ <li>Click 'New authorised value for ...'</li>
+ <li>Enter a code for your Authorised Value into the 'Authorised value' field.</li>
+ <li>Use the Description field for the actual value that will be entered.</li>
+ <li>Click 'Save.'</li>
+ <li>The new value will appear in the list along with existing values.</li>
+</ul>
+
+<p><strong>See the full documentation for Authorised Values in the <a href="http://manual.koha-community.org/3.8/en/basicparams.html#authorizedvalues">manual</a> (online).</strong></p>
+
+[% INCLUDE 'help-bottom.inc' %] 

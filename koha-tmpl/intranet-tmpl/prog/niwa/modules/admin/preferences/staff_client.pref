@@ -1,0 +1,141 @@
+--- 
+staff_client.pref: 
+  " Appearance": 
+    - 
+      - " Use the"
+      - 
+        choices: staff-templates
+        pref: template
+      - " theme on the staff interface."
+    - 
+      - " The staff client is located at http://"
+      - 
+        class: url
+        pref: staffClientBaseURL
+      - " ."
+    - 
+      - " Include the stylesheet at"
+      - 
+        class: url
+        pref: intranetstylesheet
+      - " on all pages in the staff interface, instead of the default. (This should be a complete URL, starting with <code>http://</code>.)"
+    - 
+      - " Include the following CSS on all pages in the staff client:"
+      - 
+        class: code
+        pref: IntranetUserCSS
+        type: textarea
+    - 
+      - " Include the stylesheet <code><!-- TMPL_VAR NAME=\"themelang\" -->/css/</code>"
+      - 
+        class: file
+        pref: intranetcolorstylesheet
+      - " on all pages in the staff interface. (Leave blank to disable.)"
+    - 
+      - Use include files from the
+      - 
+        class: file
+        pref: intranet_includes
+      - " directory in the template directory, instead of <code>includes/</code>. (Leave blank to disable)"
+    - 
+      - "Show the following HTML in its own column on the main page of the staff client:"
+      - 
+        class: code
+        pref: IntranetmainUserblock
+        type: textarea
+    - 
+      - " Show the following HTML to the left of the More menu at the top of each page on the staff client (should be a list of links or blank):"
+      - 
+        class: code
+        pref: IntranetNav
+        type: textarea
+    - 
+      - "Include the following JavaScript on all pages in the staff client:"
+      - 
+        class: code
+        pref: intranetuserjs
+        type: textarea
+    - 
+      - " Use the image at"
+      - 
+        class: url
+        pref: IntranetFavicon
+      - " for the Staff Client's favicon. (This should be a complete URL, starting with <code>http://</code>.)"
+    - 
+      - "Display results in the staff client using XSLT stylesheet at: "
+      - 
+        class: file
+        pref: XSLTResultsDisplay
+      - <br />Options:<br />- leave empty for "no xslt"<br />- enter "default" for the default one<br />- put a path to define a xslt file<br />- put an URL for an external specific stylesheet.<br />{langcode} will be replaced with current interface language
+    - 
+      - "Display details in the staff client using XSLT stylesheet at: "
+      - 
+        class: file
+        pref: XSLTDetailsDisplay
+      - <br />Options:<br />- leave empty for "no xslt"<br />- enter "default" for the default one<br />- put a path to define a xslt file<br />- put an URL for an external specific stylesheet.<br />{langcode} will be replaced with current interface language
+    - 
+      - " Use the Yahoo UI libraries"
+      - 
+        choices: 
+          http://yui.yahooapis.com/2.5.1/build: " from Yahoo's own servers (less demand on your servers)."
+          local: " included with Koha (faster, will work if internet goes down)."
+        pref: yuipath
+    - 
+      - 
+        choices: 
+          "": Don't show
+          1: Show
+        pref: StaffAuthorisedValueImages
+      - images for <a href="/cgi-bin/koha/admin/authorised_values.pl">authorized values</a> (such as lost statuses and locations) in search results.
+    - 
+      - " Display the URI in the 856u field as an image on: "
+      - 
+        choices: 
+          "": " Neither Details or Results pages"
+          Both: " Both Results and Details pages (for future use, Results XSLT not functional at this time)."
+          Details: " Details page only"
+          Results: " Results page (for future use, Results XSLT not functional at this time)."
+        pref: Display856uAsImage
+      - " Note: The corresponding XSLT option must be turned on."
+    - 
+      - Include the stylesheet at
+      - 
+        class: url
+        pref: SlipCSS
+      - on Issue and Reserve Slips. (This should be a complete URL, starting with <code>http://</code>.)
+  " Options": 
+    - 
+      - 
+        choices: 
+          "": " Don't allow"
+          1: " Allow"
+        pref: viewMARC
+      - " staff to view records in plain MARC form on the staff client."
+    - 
+      - 
+        choices: 
+          "": " Don't allow"
+          1: " Allow"
+        pref: viewLabeledMARC
+      - " staff to view records in labeled MARC form on the staff client."
+    - 
+      - 
+        choices: 
+          "": " Don't allow"
+          1: " Allow"
+        pref: viewISBD
+      - " staff to view records in ISBD form on the staff client."
+    - 
+      - 
+        choices: 
+          "": " Show"
+          1: " Don't show"
+        pref: HidePatronName
+      - " the names of borrowers that have items issued or on reserve on detail pages or the \"reserve\" screen."
+    - 
+      - 
+        choices: 
+          "": " Don't show"
+          1: " Show"
+        pref: intranetbookbag
+      - " the cart option in the staff client."

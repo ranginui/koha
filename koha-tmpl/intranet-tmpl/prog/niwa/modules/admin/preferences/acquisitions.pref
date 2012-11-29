@@ -1,0 +1,49 @@
+--- 
+acquisitions.pref: 
+  Policy: 
+    - 
+      - Create an item when
+      - 
+        choices: 
+          cataloguing: cataloguing the record.
+          ordering: placing an order.
+          receiving: receiving an order.
+        pref: AcqCreateItem
+    - 
+      - 
+        pref: UniqueItemFields
+      - (space-separated list of fields that should be unique for items, must be valid SQL fields of items table)
+    - 
+      - " When closing or reopening a basket,"
+      - 
+        choices: 
+          1: " always ask for confirmation."
+          2: " do not ask for confirmation."
+        default: 1
+        pref: BasketConfirmations
+    - 
+      - Show baskets
+      - 
+        choices: 
+          all: in system, regardless of owner.
+          branch: from staff member's library.
+          user: created by staff member.
+        pref: AcqViewBaskets
+    - 
+      - Display currencies using the following format
+      - 
+        choices: 
+          FR: 360 000,00 (FR)
+          US: 360,000.00 (US)
+        pref: CurrencyFormat
+    - 
+      - The default tax rate is
+      - 
+        pref: gist
+      - (enter in numeric form, 0.12 for 12%)
+  Printing: 
+    - 
+      - Use
+      - 
+        pref: OrderPdfFormat
+      - when printing basket groups.

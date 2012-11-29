@@ -1,0 +1,22 @@
+[% INCLUDE 'help-top.inc' %] <h1>Upload Member Images</h1>
+
+<p>Borrower images can be uploaded in bulk if you are allowing borrower images to be attached to borrower records. These images can also be used when creating borrower cards.</p>
+
+<ul>
+ <li>Create a txt file and title it "DATALINK.TXT" or "IDLINK.TXT"</li>
+ <li>On each line in the text file enter the borrower's card number followed by comma (or tab) and then the image file name <ul>
+ <li>Make sure that your TXT file is a plain text document, not RTF.</li>
+</ul>
+</li>
+ <li>Zip up the text file and the image files</li>
+ <li>Go to the Upload Patron Images Tool</li>
+ <li>For a single image, simply point to the image file and enter the patron card number</li>
+ <li>For multiple images, choose to upload a zip file</li>
+ <li>After uploading you will be presented with a confirmation</li>
+</ul>
+
+<p style="color:#990000;">Important: There is a limit of 520K on the size of the picture uploaded and it is recommended that the image be 200x300 pixels, but smaller images will work as well.</p>
+
+<p><strong>See the full documentation for the the Borrower Image Uploader in the <a href="http://manual.koha-community.org/3.8/en/uploadpatronimages.html">manual</a> (online).</strong></p>
+
+[% INCLUDE 'help-bottom.inc' %] 

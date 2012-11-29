@@ -1,0 +1,9 @@
+--- 
+creators.pref: 
+  Member Cards: 
+    - 
+      - Limit the number of creator images stored in the database to
+      - 
+        class: Integer
+        pref: ImageLimit
+      - images.
