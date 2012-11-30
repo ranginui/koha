@@ -1,0 +1,104 @@
+commit bf8d8f3d709aade4ee6eebe8c90d4bf2184f9398
+Author: Robin Sheat <robin@catalyst.net.nz>
+Date:   Tue Nov 6 15:51:48 2012 +1300
+
+    WR98013 - a combination of all the NIWA design changes
+    WR98013 - NIWA - move news DIV location
+    
+    The news DIV has been moved so that it appears in the same DIV as, but
+    below, the login box allowing their planned theme to work.
+    
+    WR98013 - NIWA - move the login box so it also shows up when logged in
+    
+    WR98013 - NIWA - add text to login box
+    
+    WR98013 : NIWA - Moving login text
+    
+    WR98013 - Adding a placeholder
+
+diff --git a/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc b/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc
+index 3f661ad..3729014 100644
+--- a/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc
++++ b/koha-tmpl/opac-tmpl/prog/en/includes/masthead.inc
+@@ -74,7 +74,7 @@
+ [% IF ( ms_value ) %]
+         <input type="text" id = "transl1" name="q" value="[% ms_value |html %]" class="left" style="width: 35%; font-size: 111%;"/><div id="translControl"></div>
+ [% ELSE %]
+-        <input type="text" id = "transl1" name="q" class="left" style="width: 35%; font-size: 111%;"/><div id="translControl"></div>
++        <input type="text" id = "transl1" name="q" class="left" style="width: 35%; font-size: 111%;" placeholder="Search for books, journals, articles, reports""/><div id="translControl"></div>
+ [% END %]
+    [% IF ( OpacAddMastheadLibraryPulldown ) %]
+       <select name="limit" id="select_library" class="left">
+diff --git a/koha-tmpl/opac-tmpl/prog/en/modules/opac-main.tt b/koha-tmpl/opac-tmpl/prog/en/modules/opac-main.tt
+index d2d68c5..f2a95da 100644
+--- a/koha-tmpl/opac-tmpl/prog/en/modules/opac-main.tt
++++ b/koha-tmpl/opac-tmpl/prog/en/modules/opac-main.tt
+@@ -12,7 +12,18 @@
+ 	<div class="yui-b">
+      [% IF ( opacuserlogin ) %]
+ 	 [% IF ( loggedinusername ) %]
+-	     <div id="loggedin" class="yui-g">
++         <div id="loggedin" class="yui-g">
++             [% IF ( koha_news_count ) %]
++             <div id="news" class="container">
++                 <table>
++                     [% FOREACH koha_new IN koha_news %]
++                     <tr><th>[% koha_new.title %]</th></tr>
++                     <tr><td><p>[% koha_new.new %]</p>
++                             <p><i>(published on [% koha_new.newdate %])</i></p></td></tr>
++                     [% END %]
++                 </table>
++             </div>
++            [% END %]
+ 	     <div>
+ 	 [% ELSE %]
+ 	     <div id="notloggedin" class="yui-ge">
+@@ -23,17 +34,6 @@
+ 	 <div>
+     [% END %]
+ 	
+-	[% IF ( koha_news_count ) %]
+-<div id="news" class="container">
+-    <table>
+-    [% FOREACH koha_new IN koha_news %]
+-    <tr><th>[% koha_new.title %]</th></tr>
+-    <tr><td><p>[% koha_new.new %]</p>
+-                <p><i>(published on [% koha_new.newdate %])</i></p></td></tr>
+-    [% END %]
+-    </table>
+-</div>
+-[% END %]
+ 
+ 	[% IF ( OpacMainUserBlock ) %]<div id="opacmainuserblock" class="container">[% OpacMainUserBlock %]</div>[% END %]
+ 
+@@ -44,10 +44,12 @@
+     [% UNLESS ( casAuthentication ) %]
+     <div class="yui-u">
+ 	<div id="login" class="container">
++	 <p>NIWA Staff log in to renew and request items, save searches, etc.</p>
+ 	<form action="/cgi-bin/koha/opac-user.pl" method="post" name="auth" id="auth">
+     <input type="hidden" name="koha_login_context" value="opac" />
+ 	<fieldset class="brief">
+         <legend>Log in to your account:</legend>
++       
+ 		<ol>
+ 		<li><label for="userid">Login:</label><input type="text" id="userid" size="10" name="userid" /></li>
+ 		<li><label for="password">Password:</label><input type="password" id="password" size="10" name="password" /></li>
+@@ -56,6 +58,17 @@
+ 	 </fieldset></fieldset>
+ 	</form>
+ 	</div>
++        [% IF ( koha_news_count ) %]
++        <div id="news" class="container">
++            <table>
++                [% FOREACH koha_new IN koha_news %]
++                <tr><th>[% koha_new.title %]</th></tr>
++                <tr><td><p>[% koha_new.new %]</p>
++                        <p><i>(published on [% koha_new.newdate %])</i></p></td></tr>
++                [% END %]
++            </table>
++        </div>
++        [% END %]
+ 	 </div>
+     [% END %]
+     [% END %]
