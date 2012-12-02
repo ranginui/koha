@@ -627,10 +627,78 @@ sub checkauth {
 
     my $dbh     = C4::Context->dbh;
     my $timeout = _timeout_syspref();
-
-    _version_check($type,$query);
-    # state variables
     my $loggedin = 0;
+    _version_check($type,$query);
+
+    # state variables
+    my %info;
+    my ( $userid, $cookie, $sessionID, $flags, $barshelves, $pubshelves );
+
+
+    # Drupal stuffs
+    if ( C4::Context->preference('DrupalAuth') && $type eq 'opac' ) {
+        require LWP::Simple;
+        import LWP::Simple qw(get);
+        require XML::Simple;
+        import XML::Simple;
+        my $url     = C4::Context->preference('DrupalUrl');
+	my $currenturl = $query->url();
+        my @cookies = $query->cookie();
+        my $drupalcookie;
+        foreach my $cookie (@cookies) {
+
+            if ( $cookie =~ /^SESS.*/ ) {
+                $drupalcookie = $query->cookie($cookie);
+            }
+        }
+        my $content = get("$url/koha-auth/$drupalcookie");
+        my $drupalinfo;
+        eval { $drupalinfo = XMLin($content); };
+
+        if ($@) {
+            print $query->redirect("$url/user/?referer=$currenturl");
+            exit;
+        }
+        elsif ( $drupalinfo->{'username'} ) {
+
+            # checkusername exists
+            $loggedin  = 1;
+            $userid    = $drupalinfo->{'username'};
+            $sessionID = $query->cookie("CGISESSID");
+            my $session;
+            if ( !$sessionID ) {
+                $session = get_session("")
+                  or die "Auth ERROR: Cannot get_session()";
+                $sessionID = $session->id;
+                C4::Context->_new_userenv($sessionID);
+                $cookie = $query->cookie( CGISESSID => $sessionID );
+            }
+            else {
+                $session = get_session($sessionID);
+            }
+            if ( $query->param('logout.x') ) {
+                $session->flush;
+                $session->delete();
+                C4::Context->_unset_userenv($sessionID);
+
+                $sessionID = undef;
+                $userid    = undef;
+                print $query->redirect("$url/user/logout/");
+                exit;
+            }
+            else {
+
+                return ( $userid, $cookie, $sessionID, $flags );
+            }
+        }
+        else {
+            print $query->redirect("$url/user/?referer=$currenturl");
+            exit;
+        }
+    } #end drupal stuffs
+
+
+    # state variables
     my %info;
     my ( $userid, $cookie, $sessionID, $flags, $barshelves, $pubshelves );
     my $logout = $query->param('logout.x');

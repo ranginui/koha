@@ -104,3 +104,14 @@ Administration:
                   Common Name: the Common Name
                   emailAddress: the emailAddress
             - field for SSL client certificate authentication
+    Drupal Authentication:
+        -
+            - pref: DrupalAuth
+              default: 0
+              choices:
+                 yes: Use
+                 no: "Don't Use"
+            - Drupal for an OPAC authentication source
+        -
+            - Drupal base url is
+            - pref: DrupalUrl
