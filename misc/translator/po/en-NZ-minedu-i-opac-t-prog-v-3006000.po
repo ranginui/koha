@@ -4149,7 +4149,7 @@ msgstr "%s%s%s%sKoha online%s catalogue &rsaquo; An error has occurred %s "
 #, c-format
 msgid "%s%s%s%sKoha online%s catalog &rsaquo; Browse by author or subject %s "
 msgstr ""
-"%s%s%s%sKoha online%s catalogue &rsaquo; Browse by author or subject %s "
+"%s%s%s%sKoha online%s catalogue &rsaquo; Browse by subject %s "
 
 #. %1$s:  INCLUDE 'doc-head-open.inc'
 #. %2$s:  IF ( LibraryNameTitle )
@@ -7497,7 +7497,7 @@ msgstr "Brief history"
 #: opac-tmpl/prog/en/modules/opac-authorities-home.tt:16
 #, c-format
 msgid "Browse by author or subject"
-msgstr "Browse by author or subject"
+msgstr "Browse by subject"
 
 #: opac-tmpl/prog/en/includes/masthead.inc:113
 #, c-format
