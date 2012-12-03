@@ -9489,18 +9489,18 @@ msgstr "ReserveTitle"
 #: opac-tmpl/prog/en/modules/opac-detail.tt:610
 #, c-format
 msgid "Holdings ( %s )"
-msgstr "Reservations ( %s )"
+msgstr "Holdings ( %s )"
 
 #: opac-tmpl/prog/en/xslt/MARC21slim2OPACDetail.xsl:706
 #, c-format
 msgid "Holdings Note: "
-msgstr "Resrvations Note:"
+msgstr "Holdings Note:"
 
 #: opac-tmpl/prog/en/modules/opac-shelves.tt:346
 #: opac-tmpl/prog/en/modules/opac-detail.tt:749
 #, c-format
 msgid "Holdings:"
-msgstr "Reservations:"
+msgstr "Holdings:"
 
 #: opac-tmpl/prog/en/modules/opac-user.tt:121
 #, c-format
