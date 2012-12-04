@@ -8,7 +8,7 @@ Enhanced Content:
         choices: 
           "": Don't show
           1: Show
-        default: 0
+        default: '0'
         pref: FRBRizeEditions
       - other editions of an item on the staff client (if found by one of the services below).
     - 
@@ -16,7 +16,7 @@ Enhanced Content:
         choices: 
           "": Don't show
           1: Show
-        default: 0
+        default: '0'
         pref: OPACFRBRizeEditions
       - other editions of an item on the OPAC.
   Amazon: 
@@ -25,7 +25,7 @@ Enhanced Content:
         choices: 
           "": Don't use
           1: Use
-        default: 0
+        default: '0'
         pref: AmazonEnabled
       - data from Amazon on the staff interface (including reviews and "Search Inside" links on item detail pages). This requires that you have signed up for and entered an access key.
     - 
@@ -33,7 +33,7 @@ Enhanced Content:
         choices: 
           "": Don't use
           1: Use
-        default: 0
+        default: '0'
         pref: OPACAmazonEnabled
       - data from Amazon on the OPAC (including reviews and "Search Inside" links on item detail pages). This requires that you have signed up for and entered an access key.
     - 

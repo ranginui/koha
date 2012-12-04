@@ -6,7 +6,7 @@ Administration:
         choices: 
           "": Don't use
           1: Use
-        default: 0
+        default: '0'
         pref: casAuthentication
       - CAS for login authentication.
     - 
@@ -14,7 +14,7 @@ Administration:
         choices: 
           "": Don't Logout
           1: Logout
-        default: 0
+        default: '0'
         pref: casLogout
       - of CAS when logging out of Koha.
     - 
@@ -42,10 +42,10 @@ Administration:
       - Show
       - 
         choices: 
-          0: 'no'
+          "0": 'no'
           1: some
           2: lots of
-        default: 0
+        default: '0'
         pref: DebugLevel
       - debugging information in the browser when an internal error occurs.
     - 
@@ -53,7 +53,7 @@ Administration:
         choices: 
           "": Show
           1: Don't show
-        default: 0
+        default: '0'
         pref: noItemTypeImages
       - itemtype icons in the catalog.
     - 
@@ -82,7 +82,7 @@ Administration:
         choices: 
           "": Don't allow
           1: Allow
-        default: 0
+        default: '0'
         pref: insecure
       - staff to access the staff client without logging in. Enabling this is dangerous, and should not be done in production environments.
     - 
@@ -96,7 +96,7 @@ Administration:
         choices: 
           "": Don't require
           1: Require
-        default: 0
+        default: '0'
         pref: AutoLocation
       - staff to log in from a computer in the IP address range <a href="/cgi-bin/koha/admin/branches.pl">specified by their library</a> (if any).
     - 
@@ -114,6 +114,6 @@ Administration:
         choices: 
           "": Don't prevent
           1: Prevent
-        default: 0
+        default: '0'
         pref: IndependantBranches
       - staff (but not superlibrarians) from modifying objects (holds, items, patrons, etc.) belonging to other libraries.

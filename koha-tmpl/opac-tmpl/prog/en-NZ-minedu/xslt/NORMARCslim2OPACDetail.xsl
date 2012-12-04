@@ -9,7 +9,7 @@
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   exclude-result-prefixes="marc items">
  <xsl:import href="NORMARCslimUtils.xsl"/>
- <xsl:output method = "html" indent="yes" omit-xml-declaration = "yes" />
+ <xsl:output method = "html" indent="yes" omit-xml-declaration = "yes" encoding="UTF-8"/>
  <xsl:template match="/">
  <xsl:apply-templates/>
  </xsl:template>
@@ -60,7 +60,7 @@
 
  <!-- Tittel og ansvarsopplysninger -->
  <xsl:if test="marc:datafield[@tag=245]">
- <h1>
+ <h1 class="title">
  <xsl:for-each select="marc:datafield[@tag=245]">
  <xsl:call-template name="subfieldSelect">
  <xsl:with-param name="codes">a</xsl:with-param>

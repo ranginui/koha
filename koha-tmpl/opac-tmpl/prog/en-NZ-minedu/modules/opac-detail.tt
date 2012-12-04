@@ -457,8 +457,7 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
  [% END %] [% END %] [% IF ( OPACAmazonEnabled ) %][% IF ( OPACAmazonSimilarItems ) %][% IF ( AMAZON_SIMILAR_PRODUCTS ) %] <li id="tab_related"><a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]#similars">Related</a></li>
 [% END %][% END %][% END %] [% IF ( OPACFRBRizeEditions ) %][% IF ( XISBNS ) %] <li id="tab_editions"><a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]#editions">Editions</a></li>
 [% END %][% END %] [% IF ( OPACAmazonEnabled ) %][% IF ( OPACAmazonReviews ) %] <li id="tab_amazonreviews"><a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]#amazonreviews">Amazon reviews</a></li>
-[% END %][% END %] [% IF ( Babeltheque ) %] <li id="tab_babeltheque"><a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]#babeltheque">Babelthèque</a></li>
-[% END %] [% IF ( serialcollection ) %] [% IF ( defaulttab == 'serialcollection' ) %]<li id="tab_serialcollection" class="ui-tabs-selected">[% ELSE %]<li id="tab_serialcollection">[% END %] <a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]#serialcollection">Serial collection</a>
+[% END %][% END %] [% IF ( serialcollection ) %] [% IF ( defaulttab == 'serialcollection' ) %]<li id="tab_serialcollection" class="ui-tabs-selected">[% ELSE %]<li id="tab_serialcollection">[% END %] <a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]#serialcollection">Serial collection</a>
  </li>
 [% END %] [% IF ( OPACLocalCoverImages ) %][% IF ( localimages ) %] <li id="tab_images"><a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber %]#images">Images</a></li>
 [% END %][% END %] </ul>
@@ -746,12 +745,12 @@ YAHOO.util.Event.onContentReady("furtherm", function () {
  </div>
 [% END %] [% IF ( SocialNetworks ) %] <div class="social_networks">
  <span>Share</span>
- <a href="http://www.facebook.com/sharer.php?u=[% current_url |url %]&amp;t=[% title |url %]" title="Share on Facebook"><img alt="Share on Facebook" src="/opac-tmpl/prog/images/socnet/facebook16.png" /></a>
- <a href="http://twitter.com/share" title="Share on Twitter"><img alt="Share on Twitter" src="/opac-tmpl/prog/images/socnet/twitter16.png" /></a>
- <a href="http://www.linkedin.com/shareArticle?mini=true&amp;url=[% current_url |url %]&amp;title=[% title |url %]" title="Share on LinkedIn"><img alt="Share on LinkedIn" src="/opac-tmpl/prog/images/socnet/linkedin16.png" /></a>
- <a href="http://www.delicious.com/save?url=[% current_url |url %]&amp;title=[% title |url %]" title="Share on Delicious"><img alt="Share on Delicious" src="/opac-tmpl/prog/images/socnet/delicious16.gif" /></a>
- <g:plusone size="small"></g:plusone>
- <a href="mailto:ADRESSE?subject=TO READ : [% title %]>&amp;body=[% title %]> [% current_url |url %]" title="Share by email"><img alt="Share by email" src="/opac-tmpl/prog/images/socnet/mailto16.png" /></a>
+ <div><a id="facebook" href="http://www.facebook.com/sharer.php?u=[% current_url |url %]&amp;t=[% title |url %]" title="Share on Facebook">Facebook</a></div>
+ <div><a id="twitter" href="http://twitter.com/share" title="Share on Twitter">Twitter</a></div>
+ <div><a id="linkedin" href="http://www.linkedin.com/shareArticle?mini=true&amp;url=[% current_url |url %]&amp;title=[% title |url %]" title="Share on LinkedIn">LinkedIn</a></div>
+ <div><a id="delicious" href="http://www.delicious.com/save?url=[% current_url |url %]&amp;title=[% title |url %]" title="Share on Delicious">Delicious</a></div>
+ <div><a id="email" href="mailto:?subject=[% title |url %]&amp;body=[% title |url %] ([% current_url |url %])" title="Share by email">Email</a></div>
+ <div><g:plusone size="small"></g:plusone></div>
  </div>
 [% END %] </div>
 </div>

@@ -29,7 +29,7 @@ I18N/L10N:
       choices: 
         "": Don't allow
         1: Allow
-      default: 0
+      default: '0'
       pref: opaclanguagesdisplay
     - patrons to change the language they see on the OPAC.
   - 

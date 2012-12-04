@@ -104,7 +104,7 @@ OPAC:
         choices: 
           "": Don't show
           1: Show
-        default: 0
+        default: '0'
         pref: OPACShowCheckoutName
       - the name of the patron that has an item checked out on item detail pages on the OPAC.
     - 
@@ -112,7 +112,7 @@ OPAC:
         choices: 
           "": Don't show
           1: Show
-        default: 0
+        default: '0'
         pref: OpacKohaUrl
       - "'Powered by Koha' text on OPAC footer."
     - 
@@ -120,7 +120,7 @@ OPAC:
         choices: 
           "": Don't show
           1: Show
-        default: 0
+        default: '0'
         pref: OpacShowRecentComments
       - a link to recent comments in the OPAC masthead.
     - 
@@ -306,6 +306,13 @@ OPAC:
     - 
       - 
         choices: 
+          "": Don't show
+          1: Show
+        pref: OpacCloud
+      - a subject cloud on OPAC (run misc/cronjobs/build_browser_and_cloud.pl to build)
+    - 
+      - 
+        choices: 
           "": Don't allow
           1: Allow
         pref: OpacAuthorities
@@ -375,7 +382,7 @@ OPAC:
         choices: 
           "": Disable
           1: Enable
-        default: 0
+        default: '0'
         pref: SocialNetworks
       - social network links in opac detail pages
     - 
@@ -406,7 +413,7 @@ OPAC:
         choices: 
           "": Allow
           1: Don't allow
-        default: 0
+        default: '0'
         pref: singleBranchMode
       - patrons to select their branch on the OPAC or show branch names with callnumbers.
     - 
@@ -459,7 +466,7 @@ OPAC:
         choices: 
           "": Don't allow
           1: Allow
-        default: 0
+        default: '0'
         pref: AllowPurchaseSuggestionBranchChoice
       - patrons to select library when making a purchase suggestion
     - 
@@ -481,7 +488,7 @@ OPAC:
         choices: 
           "": Don't allow
           1: Allow
-        default: 0
+        default: '0'
         pref: OpacAllowSharingPrivateLists
       - opac users to share private lists with other patrons. This feature is not active yet but will be released soon
   Privacy: 
@@ -504,7 +511,7 @@ OPAC:
         choices: 
           "": Don't keep
           1: Keep
-        default: 0
+        default: '0'
         pref: EnableOpacSearchHistory
       - patron search history in the OPAC.
     - 
@@ -512,7 +519,7 @@ OPAC:
         choices: 
           "": Don't allow
           1: Allow
-        default: 0
+        default: '0'
         pref: OPACPrivacy
       - patrons to choose their own privacy settings for their reading history.  This requires opacreadinghistory and AnonymousPatron
     - 
@@ -550,6 +557,6 @@ OPAC:
         choices: 
           "": Don't use
           1: Use
-        default: 0
+        default: '0'
         pref: ShelfBrowserUsesCcode
       - the item collection code when finding items for the shelf browser.

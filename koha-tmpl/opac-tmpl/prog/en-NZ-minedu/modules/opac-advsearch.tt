@@ -102,6 +102,7 @@
  [% IF ( loop.last ) %]</tr>[% ELSE %][% UNLESS ( loop.count % 5 ) %]</tr><tr>[% END %][% END %] [% END %] </table>
  </fieldset>
  </div>
+ [% END %] </div>
 [% IF ( expanded_options ) %]
  [% IF ( usmarc ) %]
  <!-- SUBTYPE LIMITS -->
