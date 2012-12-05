@@ -141,6 +141,8 @@ LIMIT 10
 EOQ
 #"select biblio.biblionumber,title,max(dateaccessioned) as rec,enumchron from biblio,items where biblio.biblionumber=items.biblionumber and (itype='JOURNAL') and enumchron is not NULL group by biblio.biblionumber,enumchron order by rec desc limit 10;";
 
+=comment
+
 print '<b> New Journals </b>
 <table width="100%">';
 
@@ -155,6 +157,8 @@ MAIN
       ;
 }
 print '</table>';
+
+=cut
 
 if ( $layout eq 'html' ) {
     print $query->end_html;
