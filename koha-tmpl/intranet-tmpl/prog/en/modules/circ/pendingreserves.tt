@@ -139,7 +139,7 @@ $(document).ready(function() {
                 <p>in [% reserveloo.branch %]</p>
                 [% IF ( reserveloo.statusw ) %]<p>Waiting</p>[% END %][% IF ( reserveloo.statusf ) %]<p>Fullfilled</p>[% END %]
             </td>
-	    <td>[% IF (reserveloo.itype == 'ART') %] <a href="/cgi-bin/koha/reserve/modrequest.pl?rank-request=F;biblionumber=[% reserveloo.biblionumber %];borrowernumber=[% reserveloo.borrowernumber %];from=holdsqueue&resdate=[% reserveloo.reservedate %]&todate=[% to %]&fromdate=[% from %]"> Fulfilled </a>[% END %]</td> 
+	    <td>[% IF (reserveloo.itype == 'ART' || reserveloo.itype == 'ARTICLE' ) %] <a href="/cgi-bin/koha/reserve/modrequest.pl?rank-request=F;biblionumber=[% reserveloo.biblionumber %];borrowernumber=[% reserveloo.borrowernumber %];from=holdsqueue&resdate=[% reserveloo.reservedate %]&todate=[% to %]&fromdate=[% from %]"> Fulfilled </a>[% END %]</td> 
         </tr>
         [% END %]
     </tbody>
