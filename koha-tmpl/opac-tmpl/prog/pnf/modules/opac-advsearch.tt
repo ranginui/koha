@@ -133,18 +133,17 @@
 <!-- /BOOLEAN SEARCH OPTIONS -->
     <div id="advsearch-itemtype" class="container">
     <fieldset>
-<legend>Limit to any of the following:</legend>
+    <legend>Limit to any of the following:</legend>
     <table>
         <tr>
-    [% FOREACH itemtypeloo IN advsearchloo.code_loop %]
-        <td><input type="checkbox" id="[% itemtypeloo.ccl FILTER remove(',') %]-[% itemtypeloo.number %]" name="limit" value="mc-[% itemtypeloo.ccl %]:[% itemtypeloo.code %]"/><label for="[% itemtypeloo.ccl FILTER remove(',') %]-[% itemtypeloo.number %]">[% UNLESS ( noItemTypeImages ) %][% IF ( itemtypeloo.imageurl ) %]<img border="0" src="[% itemtypeloo.imageurl %]" alt="[% itemtypeloo.description %]" />[% END %]&nbsp;[% END %]
+    [% FOREACH itemtypeloo IN itemtypeloop %]
+        <td><input type="checkbox" id="[% itemtypeloo.ccl %]-[% itemtypeloo.number %]" name="limit" value="mc-[% itemtypeloo.ccl %]:[% itemtypeloo.code %]"/><label for="[% itemtypeloo.ccl %]-[% itemtypeloo.number %]">[% UNLESS ( noItemTypeImages ) %][% IF ( itemtypeloo.imageurl ) %]<img border="0" src="[% itemtypeloo.imageurl %]" alt="[% itemtypeloo.description %]" />[% END %]&nbsp;[% END %]
         [% itemtypeloo.description %]</label></td>
-        [% IF ( loop.last ) %]</tr>[% ELSE %][% UNLESS ( loop.count % 5 ) %]</tr><tr>[% END %][% END %]
+        [% UNLESS ( itemtypeloo.count5 ) %][% UNLESS ( loop.last ) %]</tr><tr>[% END %][% END %]
     [% END %]
+        </tr>
     </table>
     </fieldset>
-    </div>
-    [% END %]
     </div>
     <fieldset><legend>Language</legend>
     <!-- LANGUAGE LIMIT -->
