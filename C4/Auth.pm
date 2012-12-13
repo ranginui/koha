@@ -31,6 +31,7 @@ use C4::Branch; # GetBranches
 use C4::VirtualShelves;
 use POSIX qw/strftime/;
 use List::MoreUtils qw/ any /;
+use LWP::Simple qw(get $ua);
 
 # use utf8;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $debug $ldap $cas $caslogout);
@@ -637,20 +638,20 @@ sub checkauth {
 
     # Drupal stuffs
     if ( C4::Context->preference('DrupalAuth') && $type eq 'opac' ) {
-        require LWP::Simple;
-        import LWP::Simple qw(get);
         require XML::Simple;
         import XML::Simple;
-        my $url     = C4::Context->preference('DrupalUrl');
-	my $currenturl = $query->url();
-        my @cookies = $query->cookie();
+        my $url        = C4::Context->preference('DrupalUrl');
+        my $currenturl = $query->url();
+        my @cookies    = $query->cookie();
         my $drupalcookie;
+
         foreach my $cookie (@cookies) {
 
             if ( $cookie =~ /^SESS.*/ ) {
                 $drupalcookie = $query->cookie($cookie);
             }
         }
+        $ua->agent('Koha_session_check');
         my $content = get("$url/koha-auth/$drupalcookie");
         my $drupalinfo;
         eval { $drupalinfo = XMLin($content); };
@@ -695,7 +696,7 @@ sub checkauth {
             print $query->redirect("$url/user/?referer=$currenturl");
             exit;
         }
-    } #end drupal stuffs
+    }    #end drupal stuffs
 
 
     # state variables
