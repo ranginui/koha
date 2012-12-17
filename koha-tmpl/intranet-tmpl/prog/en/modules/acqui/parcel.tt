@@ -89,7 +89,7 @@
 	var callback =  {
 		success: function(o) {
 			var jsonString = o.responseText;
-			var gst = "[% gst %]";
+			var gst = "[% gstrate %]";
 			try {
 				var orders = YAHOO.lang.JSON.parse(jsonString);
 				var foundCount = orders.length;
@@ -340,7 +340,7 @@
 		<td>[% totalfreight %]</td>
 	    	</tr> 
 	    [% END %]
-	      [% IF ( gst ) %]
+	      [% IF ( gstrate ) %]
 		    <tr>
 			<td colspan="6">
 		<p class="message">
@@ -349,7 +349,7 @@
 		</p>
 		</td>
 			    <td><b>Tax rate</b></td>
-		<td>[% gst %]</td>
+		<td>[% gstrate %]</td>
 	    	</tr> 
 	    [% END %]
 	    <tr>
