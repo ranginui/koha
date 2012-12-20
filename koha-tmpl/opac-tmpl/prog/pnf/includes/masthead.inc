@@ -95,9 +95,9 @@
       [% END %]
    [% END %]
 
-    <input type=hidden name="op" value="not">
-    <input type=hidden name="idx" value="itype,phr">
-    <input type=hidden name="q" value="ACT">
+    <input type="hidden" name="op" value="not"/>
+    <input type="hidden" name="idx" value="itype,phr"/>
+    <input type="hidden" name="q" value="ACT"/>
     <input type="submit" value="Go" id="searchsubmit" class="left" />
 [% IF ( opacbookbag ) %]<span id="cmspan"></span>[% END %]
 
