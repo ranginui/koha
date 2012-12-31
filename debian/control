@@ -6,8 +6,9 @@ Standards-Version: 3.8.4
 # NOTA BENE: Build dependencies end up as runtime dependencies as well.
 # See debian/rules, the override_dh_gencontrol rules. 
 # There are some exceptions.
-Build-Depends: libalgorithm-checkdigits-perl,
- libanyevent-http-perl,
+Build-Depends: libanyevent-http-perl,
+ libdata-paginator-perl,
+ libalgorithm-checkdigits-perl,
  libanyevent-perl,
  libauthen-cas-client-perl,
  libbiblio-endnotestyle-perl,
@@ -20,7 +21,6 @@ Build-Depends: libalgorithm-checkdigits-perl,
  libclass-accessor-perl,
  libclass-factory-util-perl,
  libdata-ical-perl,
- libdata-paginator-perl,
  libdate-calc-perl,
  libdate-manip-perl,
  libdatetime-event-ical-perl,
@@ -182,8 +182,9 @@ Description: Other dep. for koha
  daemon, debconf, etc.).
 
 Package: koha-perldeps
-Depends: libalgorithm-checkdigits-perl,
- libanyevent-http-perl,
+Depends: libanyevent-http-perl,
+ libdata-paginator-perl,
+ libalgorithm-checkdigits-perl,
  libanyevent-perl,
  libauthen-cas-client-perl,
  libbiblio-endnotestyle-perl,
@@ -196,7 +197,6 @@ Depends: libalgorithm-checkdigits-perl,
  libclass-accessor-perl,
  libclass-factory-util-perl,
  libdata-ical-perl,
- libdata-paginator-perl,
  libdate-calc-perl,
  libdate-manip-perl,
  libdatetime-event-ical-perl,
