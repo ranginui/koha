@@ -550,8 +550,12 @@ elsif ($phase eq 'Run this report'){
 elsif ($phase eq 'Export'){
     binmode STDOUT, ':encoding(UTF-8)';
 
-	# export results to tab separated text or CSV
-	my $sql    = $input->param('sql');  # FIXME: use sql from saved report ID#, not new user-supplied SQL!
+    # export results to tab separated text or CSV
+    my $report = $input->param('reports');
+    my ($sql,$type,$name,$notes) = get_saved_report($report);
+    if (!$sql){
+        $sql    = $input->param('sql');
+    }
     my $format = $input->param('format');
 	my ($sth, $q_errors) = execute_query($sql);
     unless ($q_errors and @$q_errors) {
