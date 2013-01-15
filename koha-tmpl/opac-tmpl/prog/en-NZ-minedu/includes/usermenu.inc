@@ -1,6 +1,7 @@
 [% IF ( opacuserlogin ) %][% IF ( loggedinusername ) %] <div id="menu">
 <ul>
- [% IF ( userview ) %]<li class="active">[% ELSE %]<li>[% END %]<a href="/cgi-bin/koha/opac-user.pl">my summary</a></li>
+ [% IF ( userview ) %]<li class="active">[% ELSE %]<li>[% END %]<a href="/cgi-bin/koha/opac-user.pl" class="first">my account</a></li>
+ <li><a href="/my-alerts/categories">my alerts</a></li>
  [% IF ( OPACFinesTab ) %] [% IF ( accountview ) %]<li class="active">[% ELSE %]<li>[% END %]<a href="/cgi-bin/koha/opac-account.pl">my fines</a></li>
  [% END %] [% IF ( userupdateview ) %]<li class="active">[% ELSE %]<li>[% END %]<a href="/cgi-bin/koha/opac-userupdate.pl">my personal details</a></li>
  [% IF ( TagsEnabled ) %] [% IF ( tagsview ) %]<li class="active">[% ELSE %]<li>[% END %]<a href="/cgi-bin/koha/opac-tags.pl?mine=1">my tags</a></li>
