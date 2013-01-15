@@ -646,8 +646,9 @@ sub checkauth {
         my $drupalcookie;
 
         foreach my $cookie (@cookies) {
-
-            if ( $cookie =~ /^SESS.*/ ) {
+            # Drupal cookies start with 'SSESS' for secure, or just SESS for
+            # normal.
+            if ( $cookie =~ /^S?SESS.*/ ) {
                 $drupalcookie = $query->cookie($cookie);
             }
         }
