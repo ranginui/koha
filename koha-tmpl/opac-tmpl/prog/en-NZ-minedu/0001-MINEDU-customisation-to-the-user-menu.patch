@@ -1,0 +1,34 @@
+From 7ef6d6190bdf96467caf995a508cb6c16c8c6826 Mon Sep 17 00:00:00 2001
+From: Robin Sheat <robin@catalyst.net.nz>
+Date: Wed, 16 Jan 2013 11:53:04 +1300
+Subject: [PATCH 1/2] MINEDU - customisation to the user menu
+
+* Rename "my summary" to "my account"
+* Add "my alerts" which links to a drupal URL
+---
+ .../prog/en-NZ-minedu/includes/usermenu.inc        |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/koha-tmpl/opac-tmpl/prog/en-NZ-minedu/includes/usermenu.inc b/koha-tmpl/opac-tmpl/prog/en-NZ-minedu/includes/usermenu.inc
+index 53dca23..fd16c98 100644
+--- a/koha-tmpl/opac-tmpl/prog/en-NZ-minedu/includes/usermenu.inc
++++ b/koha-tmpl/opac-tmpl/prog/en-NZ-minedu/includes/usermenu.inc
+@@ -1,6 +1,7 @@
+ [% IF ( opacuserlogin ) %][% IF ( loggedinusername ) %] <div id="menu">
+ <ul>
+- [% IF ( userview ) %]<li class="active">[% ELSE %]<li>[% END %]<a href="/cgi-bin/koha/opac-user.pl">my summary</a></li>
++ [% IF ( userview ) %]<li class="active">[% ELSE %]<li>[% END %]<a href="/cgi-bin/koha/opac-user.pl" class="first">my account</a></li>
++ <li><a href="/my-alerts/categories">my alerts</a></li>
+  [% IF ( OPACFinesTab ) %] [% IF ( accountview ) %]<li class="active">[% ELSE %]<li>[% END %]<a href="/cgi-bin/koha/opac-account.pl">my fines</a></li>
+  [% END %] [% IF ( userupdateview ) %]<li class="active">[% ELSE %]<li>[% END %]<a href="/cgi-bin/koha/opac-userupdate.pl">my personal details</a></li>
+  [% IF ( TagsEnabled ) %] [% IF ( tagsview ) %]<li class="active">[% ELSE %]<li>[% END %]<a href="/cgi-bin/koha/opac-tags.pl?mine=1">my tags</a></li>
+@@ -13,4 +14,4 @@
+  [% END %] [% IF ( virtualshelves ) %] [% IF ( listsview ) %]<li class="active">[% ELSE %]<li>[% END %]<a href="/cgi-bin/koha/opac-shelves.pl?display=privateshelves">my lists</a></li>
+  [% END %] </ul>
+ </div>
+-[% END %][% ELSE %][% END %] 
+\ No newline at end of file
++[% END %][% ELSE %][% END %] 
+-- 
+1.7.9.5
+
