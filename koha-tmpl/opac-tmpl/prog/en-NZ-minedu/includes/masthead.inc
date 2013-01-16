@@ -3,7 +3,11 @@
 [% UNLESS ( loggedinusername ) %] <li><a href="/cgi-bin/koha/opac-user.pl">Log in to your account</a></li>[% END %] [% IF ( loggedinusername ) %] <li><span class="members">Welcome, <a href="/cgi-bin/koha/opac-user.pl"><span class="loggedinusername">[% FOREACH USER_INF IN USER_INFO %][% USER_INF.title %] [% USER_INF.firstname %] [% USER_INF.surname %][% END %]</span></a></span></li>
 
  [% END %] [% IF ( ShowOpacRecentSearchLink ) %] <li><a href="/cgi-bin/koha/opac-search-history.pl" title="View your search history">Search history</a> [<a class="logout" href="/cgi-bin/koha/opac-search-history.pl?action=delete" title="Delete your search history" onclick="return confirm(_('Are you sure you want to delete your search history?'));">x</a>]</li>
- [% END %] [% IF ( loggedinusername ) %]<li><a class="logout" id="logout" href="/cgi-bin/koha/opac-main.pl?logout.x=1">Log out</a></li>[% END %] </ul> 
+ [% END %] [% IF ( loggedinusername ) %]<li><a class="logout" id="logout" href="/cgi-bin/koha/opac-main.pl?logout.x=1">Log out</a></li>[% END %]
+ <li>
+ <a class="cart" id="cart" onclick="openBasket()" href="#">My Cart [<span id="basketcount"></span>]</a>
+ </li>
+ </ul>
  [% END %] </div>
  [% IF ( opacheader ) %] [% opacheader %] [% END %] <div id="opac-main-search" class="yui-g">
  [% IF ( opacsmallimage ) %] <h1 id="libraryname" style="background-image: url('[% opacsmallimage %]');">
@@ -41,14 +45,16 @@
  [% ELSE %] [% IF ( opac_limit_override ) %] [% IF ( opac_search_limit ) %] <input name="limit" value="[% opac_search_limit %]" type="hidden" />
  [% END %] [% ELSE %] [% IF ( mylibraryfirst ) %] <input name="limit" value="branch:[% mylibraryfirst %]" type="hidden" />
  [% END %] [% END %] [% END %] <input type="submit" value="Go" id="searchsubmit" class="left" />
-[% IF ( opacbookbag ) %]<span id="cmspan"></span>[% END %] [% IF ( virtualshelves ) %]<a href="/cgi-bin/koha/opac-shelves.pl" id="listsmenulink" class=""><span>Lists</span> <img src="/opac-tmpl/prog/images/list.gif" width="5" height="6" alt="" border="0"></a>[% END %] </form>
+<!-- [% IF ( opacbookbag ) %]<span id="cmspan"></span>[% END %] [% IF ( virtualshelves ) %]<a href="/cgi-bin/koha/opac-shelves.pl" id="listsmenulink" class=""><span>Lists</span> <img src="/opac-tmpl/prog/images/list.gif" width="5" height="6" alt="" border="0"></a>[% END %] --></form>
 [% ELSE %] <div style="width:80%;*margin-bottom:-30px;">
 [% IF ( virtualshelves ) %]<a href="/cgi-bin/koha/opac-shelves.pl" id="listsmenulink">Lists</a>[% END %][% IF ( opacbookbag ) %]<span id="cmspan"></span>[% END %] </div>
 [% END %] <div id="moresearches">
 <a href="/cgi-bin/koha/opac-search.pl">Advanced search</a>
 [% IF ( OpacBrowser ) %]<span class="pipe"> | </span><a href="/cgi-bin/koha/opac-browser.pl">Browse by hierarchy</a>[% END %] [% IF ( OpacAuthorities ) %]<span class="pipe"> | </span><a href="/cgi-bin/koha/opac-authorities-home.pl">Browse by subject</a>[% END %] [% IF ( opacuserlogin && reviewson && OpacShowRecentComments ) %]<span class="pipe"> | </span><a href="/cgi-bin/koha/opac-showreviews.pl">Recent comments</a>[% END %] [% IF ( TagsEnabled ) %]<span class="pipe"> | </span><a href="/cgi-bin/koha/opac-tags.pl">Tag cloud</a>[% END %] [% IF ( OpacCloud ) %]<span class="pipe"> | </span><a href="/cgi-bin/koha/opac-tags_subject.pl">Subject cloud</a>[% END %] [% IF ( OpacTopissue ) %]<span class="pipe"> | </span><a href="/cgi-bin/koha/opac-topissues.pl">Most popular</a>[% END %] [% IF ( suggestion ) %] [% IF ( AnonSuggestions ) %]<span class="pipe"> | </span><a href="/cgi-bin/koha/opac-suggestions.pl">Purchase suggestions</a>
  [% ELSIF ( OPACViewOthersSuggestions ) %]<span class="pipe"> | </span><a href="/cgi-bin/koha/opac-suggestions.pl">Purchase suggestions</a>
- [% END %] [% END %] </div>
+ [% END %] [% END %]
+  <span class="pipe"> | </span><a href="/cgi-bin/koha/opac-shelves.pl">Lists</a>
+  </div>
  </div>
 </div>
 
