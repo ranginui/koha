@@ -9298,8 +9298,12 @@ msgstr ""
 "availability of the items associated with the identifiers."
 
 #. INPUT type=submit name=save
-#: opac-tmpl/prog/en/includes/opac-detail-sidebar.inc:64
 #: opac-tmpl/prog/en/includes/masthead.inc:100
+msgid "Go"
+msgstr "Search"
+
+#. INPUT type=submit name=save
+#: opac-tmpl/prog/en/includes/opac-detail-sidebar.inc:64
 #: opac-tmpl/prog/en/modules/opac-results-grouped.tt:188
 #: opac-tmpl/prog/en/modules/opac-results.tt:348
 #: opac-tmpl/prog/en/modules/opac-downloadcart.tt:23
