@@ -66,6 +66,11 @@ sub do_checkout {
         C4::Context->preference("AllowItemsOnHoldCheckout")
     );
 	my $noerror=1;
+
+    if ( $self->{item}->{itype} =~ /VIDRENT|STKVID|STKAUDBK|MUSCD|INT|ER|DVD|CVID|CDVD|AUDBKTAPE|AUDBKCD|AMAGRENT|AFRENT|ACDROM/ ) {
+        $needsconfirmation->{'ITEM_FEE'} = "Item has a fee, Please take this item to the issue-desk to check out.";
+    }
+
     if (scalar keys %$issuingimpossible) {
         foreach (keys %$issuingimpossible) {
             # do something here so we pass these errors
@@ -74,6 +79,12 @@ sub do_checkout {
         }
     } else {
         foreach my $confirmation (keys %{$needsconfirmation}) {
+        foreach my $confirmation (keys %$needsconfirmation) {
+            if ($confirmation eq 'ITEM_FEE' ) {
+                $self->screen_msg("Item has a fee, Please take item to the issue-desk to check out.");
+                $noerror = 0;
+                last ;
+            } 
             if ($confirmation eq 'RENEW_ISSUE'){
                 $self->screen_msg("Item already checked out to you: renewing item.");
             } elsif ($confirmation eq 'RESERVED' or $confirmation eq 'RESERVE_WAITING') {
