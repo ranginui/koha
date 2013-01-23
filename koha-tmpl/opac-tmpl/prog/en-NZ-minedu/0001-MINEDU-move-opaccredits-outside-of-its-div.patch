@@ -1,0 +1,28 @@
+From e1f356f64b1f49c05438f975f62d93ddc3069ddb Mon Sep 17 00:00:00 2001
+From: Robin Sheat <robin@catalyst.net.nz>
+Date: Thu, 24 Jan 2013 10:57:45 +1300
+Subject: [PATCH] MINEDU - move opaccredits outside of its div.
+
+This allows a footer to go full width
+---
+ .../prog/en-NZ-minedu/includes/opac-bottom.inc     |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/koha-tmpl/opac-tmpl/prog/en-NZ-minedu/includes/opac-bottom.inc b/koha-tmpl/opac-tmpl/prog/en-NZ-minedu/includes/opac-bottom.inc
+index 0c1cfb7..e7b8cfc 100644
+--- a/koha-tmpl/opac-tmpl/prog/en-NZ-minedu/includes/opac-bottom.inc
++++ b/koha-tmpl/opac-tmpl/prog/en-NZ-minedu/includes/opac-bottom.inc
+@@ -1,6 +1,7 @@
+-[% IF ( opaccredits ) %] <div class="ft">
+- [% opaccredits %] </div>
+-[% END %] </div>
++</div>
++[% IF ( opaccredits ) %]
++ [% opaccredits %]
++[% END %] 
+ 
+ [% IF ( opaclanguagesdisplay || OpacKohaUrl ) %] [% IF ( languages_loop && opaclanguagesdisplay ) %] [% UNLESS ( one_language_enabled ) %] <div id="changelanguage" class="ft">
+  <div class="lang" style="float:left;padding: 0.1em 0;"><strong>Languages:&nbsp;</strong></div>
+-- 
+1.7.9.5
+
