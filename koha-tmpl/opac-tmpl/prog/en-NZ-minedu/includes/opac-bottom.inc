@@ -1,6 +1,7 @@
-[% IF ( opaccredits ) %] <div class="ft">
- [% opaccredits %] </div>
-[% END %] </div>
+</div>
+[% IF ( opaccredits ) %]
+ [% opaccredits %]
+[% END %] 
 
 [% IF ( opaclanguagesdisplay || OpacKohaUrl ) %] [% IF ( languages_loop && opaclanguagesdisplay ) %] [% UNLESS ( one_language_enabled ) %] <div id="changelanguage" class="ft">
  <div class="lang" style="float:left;padding: 0.1em 0;"><strong>Languages:&nbsp;</strong></div>
