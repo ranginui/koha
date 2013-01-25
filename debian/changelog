@@ -1,3 +1,9 @@
+koha (3.8.9-1) oldstable; urgency=low
+
+  * New upstream release (3.08.09)
+
+ -- Robin Sheat <robin@catalyst.net.nz>  Fri, 25 Jan 2013 14:35:35 +1300
+
 koha (3.8.8-1) oldstable; urgency=low
 
   * New upstream release (3.08.08) 
