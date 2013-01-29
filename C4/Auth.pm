@@ -685,7 +685,9 @@ sub checkauth {
 
                 $sessionID = undef;
                 $userid    = undef;
-                print $query->redirect("$url/user/logout/");
+		$cookie = $query->cookie( CGISESSID => '' );
+                print $query->redirect(-uri => "$url/user/logout/",
+		-cookie => $cookie);
                 exit;
             }
             else {
