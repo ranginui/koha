@@ -641,7 +641,7 @@ sub checkauth {
         require XML::Simple;
         import XML::Simple;
         my $url        = C4::Context->preference('DrupalUrl');
-        my $currenturl = $query->url();
+        my $currenturl = $query->url(-query=>1);
         my @cookies    = $query->cookie();
         my $drupalcookie;
 
