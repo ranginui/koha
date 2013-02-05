@@ -56,7 +56,7 @@ The functions in this module deal with creating and emailing marc files
 
 =head2 export_and_mail_new
 
-  export_and_mail_new($date,$to,$verbose, $export_items)
+  export_and_mail_new($date,$to,$verbose, $export_items, $not_loan)
 
 Given a date and an email address this will export all records created since the date
 and mail them as an attachment to the $to address
@@ -64,9 +64,9 @@ and mail them as an attachment to the $to address
 =cut
 
 sub export_and_mail_new {
-    my ( $date, $to, $verbose, $export_items ) = @_;
+    my ( $date, $to, $verbose, $export_items, $not_loan ) = @_;
     return unless $to;    # bail if we have no email address
-    my $filename = export_newrecords($date, $verbose, $export_items);
+    my $filename = export_newrecords($date, $verbose, $export_items, $not_loan);
     my $subject = "Records created since $date";
     _mail( $filename, $to ,$subject);
 }
@@ -90,7 +90,7 @@ sub export_and_mail_deleted {
 
 =head2 export_newcords {
 
-  my $filename = export_newrecords($date,$verbose, $export_items);
+  my $filename = export_newrecords($date,$verbose, $export_items, $not_loan);
 
 Given a date, it will export all records created since then to a temp file and return the filename of
 the file. If export_items is set it will attach the item data also
@@ -98,14 +98,24 @@ the file. If export_items is set it will attach the item data also
 =cut
 
 sub export_newrecords {
-    my ($date,$verbose, $export_items)    = @_;
+    my ($date,$verbose, $export_items, $not_loan)    = @_;
     my $context = C4::Context->new();
     my $dbh     = $context->dbh();
 
-    my $query = "SELECT biblionumber FROM biblio WHERE datecreated >= ?";
-    my $sth   = $dbh->prepare($query);
-    $sth->execute($date)
-      || die $sth->err_str;  # no point trying to do anything else, bail out now
+    my $query = q{SELECT biblio.biblionumber FROM items JOIN biblio USING(biblionumber) WHERE biblio.datecreated >= ? };
+    my $sth;
+        if ( defined $not_loan ) {
+            $query .= ' AND items.notforloan != ? ';
+            $sth   = $dbh->prepare($query);
+            $sth->execute($date, $not_loan)
+             || die $sth->err_str;  # no point trying to do anything else, bail out now
+        }
+        else {
+            $sth   = $dbh->prepare($query);
+            $sth->execute($date)
+             || die $sth->err_str;  # no point trying to do anything else, bail out now
+        }
+
     my ( $fh, $filename ) = tempfile();
     binmode( $fh, ":encoding(UTF-8)" );
     while ( my $biblionumber = $sth->fetchrow_hashref() ) {
