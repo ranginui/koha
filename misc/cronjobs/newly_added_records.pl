@@ -36,7 +36,7 @@ BEGIN {
 use Getopt::Long;
 use Pod::Usage;
 
-my ( $help, $days, $months, $verbose, $export_items, $address );
+my ( $help, $days, $months, $verbose, $export_items, $address, $not_loan );
 GetOptions(
     'help|?'    => \$help,
     'days=s'    => \$days,
@@ -44,6 +44,7 @@ GetOptions(
     'v'         => \$verbose,
     'items'     => \$export_items,
     'address=s' => \$address,
+    'not_loan=s'=> \$not_loan,
 );
 
 if ( $help or (not $days and not $months) or not $address ) {
@@ -56,6 +57,7 @@ if ( $help or (not $days and not $months) or not $address ) {
     --days TTT to define the age of marc records to export
     --months TTT to define the age of marc records to export eg -months 1 will export any created in the last calendar month
     --address TTT to define the email address to send the file too
+    --not_loan TTT to define the not for loan value to exclude from the export (useful for on-order records)
      example :
      export PERL5LIB=/path/to/koha;export KOHA_CONF=/etc/koha/koha-conf.xml;./newly_added_records --days 30 --address chrisc\@catalyst.net.nz
 EOF
@@ -74,4 +76,4 @@ elsif ($months) {
     $date->subtract( months => $months );
 }
 
-export_and_mail_new($date,$address,$verbose, $export_items);
+export_and_mail_new($date,$address,$verbose, $export_items, $not_loan);
