@@ -17,8 +17,8 @@
  <label for="masthead_search" class="left"> Search [% UNLESS ( OpacAddMastheadLibraryPulldown ) %] [% IF ( mylibraryfirst ) %] (in [% mylibraryfirst %] only)[% END %] [% END %] </label>
 
  <select name="idx" id="masthead_search" class="left">
- [% IF ( ms_kw ) %] <option selected="selected" value="">Library Catalogue</option>
- [% ELSE %] <option value="">Library Catalogue</option>
+ [% IF ( ms_kw ) %] <option selected="selected" value="kw">Library Catalogue</option>
+ [% ELSE %] <option value="kw">Library Catalogue</option>
  [% END %] [% IF ( ms_ti ) %] <option selected="selected" value="ti">Title</option>
  [% ELSE %] <option value="ti">Title</option>
  [% END %] [% IF ( ms_au ) %] <option selected="selected" value="au">Author</option>
