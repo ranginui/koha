@@ -140,25 +140,22 @@ ORDER BY publisheddate DESC
 LIMIT 10
 EOQ
 #"select biblio.biblionumber,title,max(dateaccessioned) as rec,enumchron from biblio,items where biblio.biblionumber=items.biblionumber and (itype='JOURNAL') and enumchron is not NULL group by biblio.biblionumber,enumchron order by rec desc limit 10;";
-
-=comment
-
-print '<b> New Journals </b>
+if ( $conf->{newJournals} ) {
+    print '<b> New Journals </b>
 <table width="100%">';
 
-$sth = $dbh->prepare($serials_query);
-$sth->execute();
-while ( my $row = $sth->fetchrow_hashref() ) {
-    print <<MAIN
+    $sth = $dbh->prepare($serials_query);
+    $sth->execute();
+    while ( my $row = $sth->fetchrow_hashref() ) {
+        print <<MAIN
 <tr><td valign="top" align="left" border="0" class="newjournal">
 <a href="$conf->{'kohaOpacUrl'}/opac-detail.pl?biblionumber=$row->{'biblionumber'}"><b class="newjournaltitle">$row->{title}</b></a> - <a href="$conf->{'kohaOpacUrl'}/opac-detail.pl?biblionumber=$row->{'biblionumber'}" class="newjournalserialseq">$row->{serialseq}</a>
 </td></tr>
 MAIN
-      ;
+          ;
+    }
+    print '</table>';
 }
-print '</table>';
-
-=cut
 
 if ( $layout eq 'html' ) {
     print $query->end_html;
