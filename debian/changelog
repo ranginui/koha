@@ -1,9 +1,3 @@
-koha (3.08.07-1~mykoha-high+20130212150140.053d29be) squeeze-dev; urgency=low
-
-  * Building git snapshot.
-
- -- Liz Rea <liz@Liz-PC>  Tue, 12 Feb 2013 15:01:41 +1300
-
 koha (3.8.7-1) oldstable; urgency=low
 
   * New upstream release (3.08.07)
