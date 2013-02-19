@@ -67,7 +67,7 @@ sub do_checkout {
     );
 	my $noerror=1;
 
-    if ( $self->{item}->{itype} =~ /VIDRENT|STKVID|STKAUDBK|MUSCD|INT|ER|DVD|CVID|CDVD|AUDBKTAPE|AUDBKCD|AMAGRENT|AFRENT|ACDROM/ ) {
+    if ( $self->{item}->{itype} =~ /^VIDRENT|STKVID|STKAUDBK|MUSCD|INT|ER|DVD|CVID|CDVD|AUDBKTAPE|AUDBKCD|AMAGRENT|AFRENT|ACDROM/ ) {
         $needsconfirmation->{'ITEM_FEE'} = "Item has a fee, Please take this item to the issue-desk to check out.";
     }
 
