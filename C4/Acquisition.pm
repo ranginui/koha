@@ -190,18 +190,21 @@ The other parameters are optional, see ModBasketHeader for more info on them.
 =cut
 
 sub NewBasket {
-    my ( $booksellerid, $authorisedby, $basketname, $basketnote, $basketbooksellernote, $basketcontractnumber, $deliveryplace, $billingplace ) = @_;
+    my ( $booksellerid, $authorisedby, $basketname, $basketnote,
+        $basketbooksellernote, $basketcontractnumber, $deliveryplace,
+        $billingplace ) = @_;
     my $dbh = C4::Context->dbh;
-    my $query = "
-        INSERT INTO aqbasket
-                (creationdate,booksellerid,authorisedby)
-        VALUES  (now(),'$booksellerid','$authorisedby')
-    ";
-    my $sth =
-    $dbh->do($query);
-#find & return basketno MYSQL dependant, but $dbh->last_insert_id always returns null :-(
-    my $basket = $dbh->{'mysql_insertid'};
-    ModBasketHeader($basket, $basketname || '', $basketnote || '', $basketbooksellernote || '', $basketcontractnumber || undef, $booksellerid, $deliveryplace || undef, $billingplace || undef );
+    my $query =
+        'INSERT INTO aqbasket (creationdate,booksellerid,authorisedby) '
+      . 'VALUES  (now(),?,?)';
+    $dbh->do( $query, {}, $booksellerid, $authorisedby );
+
+    my $basket = $dbh->{mysql_insertid};
+    $basketname           ||= q{}; # default to empty strings
+    $basketnote           ||= q{};
+    $basketbooksellernote ||= q{};
+    ModBasketHeader( $basket, $basketname, $basketnote, $basketbooksellernote,
+        $basketcontractnumber, $booksellerid, $deliveryplace, $billingplace );
     return $basket;
 }
 
@@ -2317,9 +2320,11 @@ Orders informations are in $invoice->{orders} (array ref)
 
 sub GetInvoiceDetails {
     my ($invoiceid) = @_;
-    my $invoice;
 
-    return unless $invoiceid;
+    if ( !defined $invoiceid ) {
+        carp 'GetInvoiceDetails called without an invoiceid';
+        return;
+    }
 
     my $dbh = C4::Context->dbh;
     my $query = qq{
@@ -2331,7 +2336,7 @@ sub GetInvoiceDetails {
     my $sth = $dbh->prepare($query);
     $sth->execute($invoiceid);
 
-    $invoice = $sth->fetchrow_hashref;
+    my $invoice = $sth->fetchrow_hashref;
 
     $query = qq{
         SELECT aqorders.*, biblio.*

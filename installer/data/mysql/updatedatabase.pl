@@ -6070,22 +6070,78 @@ if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
    SetVersion ($DBversion);
 }
 
-$DBversion = "3.10.00.00";
+$DBversion = "3.10.00.000";
 if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
    print "Upgrade to $DBversion done (release tag)\n";
    SetVersion ($DBversion);
 }
 
-$DBversion = "3.10.01.00";
+$DBversion = "3.10.01.000";
 if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
    print "Upgrade to $DBversion done (3.10.1 release)\n";
    SetVersion ($DBversion);
 }
 
-$DBversion = "3.10.02.00";
+$DBversion = "3.10.02.000";
 if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
    print "Upgrade to $DBversion done (3.10.2 release)\n";
    SetVersion ($DBversion);
+}
+
+$DBversion = "3.10.02.001";
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+   $dbh->do(q{
+        UPDATE userflags SET flagdesc="<b>Required for staff login.</b> Staff access, allows viewing of catalogue in staff client." where flag="catalogue";
+        });
+   $dbh->do(q{
+        UPDATE userflags SET flagdesc="Edit Authorities" where flag="editauthorities";
+        });
+   $dbh->do(q{
+        UPDATE userflags SET flagdesc="Allow access to the reports module" where flag="reports";
+        });
+   $dbh->do(q{
+        UPDATE userflags SET flagdesc="Set library management parameters (deprecated)" where flag="management";
+        });
+   $dbh->do(q{
+        UPDATE userflags SET flagdesc="Manage serial subscriptions" where flag="serials";
+        });
+   $dbh->do(q{
+        UPDATE userflags SET flagdesc="Manage patrons fines and fees" where flag="updatecharges";
+        });
+   $dbh->do(q{
+        UPDATE userflags SET flagdesc="Check out and check in items" where flag="circulate";
+        });
+   $dbh->do(q{
+        UPDATE userflags SET flagdesc="Manage Koha system settings (Administration panel)" where flag="parameters";
+        });
+   $dbh->do(q{
+        UPDATE userflags SET flagdesc="Add or modify patrons" where flag="borrowers";
+        });
+   $dbh->do(q{
+        UPDATE userflags SET flagdesc="Use all tools (expand for granular tools permissions)" where flag="tools";
+        });
+   $dbh->do(q{
+        UPDATE userflags SET flagdesc="Allow staff members to modify permissions for other staff members" where flag="staffaccess";
+        });
+   $dbh->do(q{
+        UPDATE userflags SET flagdesc="Perform batch modification of patrons" where flag="edit_patrons";
+        });
+
+   print "Upgrade to $DBversion done (Bug 9382 - refresh permission descriptions to make more sense)\n";
+   SetVersion ($DBversion);
+}
+
+$DBversion = "3.10.02.002";
+if (C4::Context->preference("Version") < TransformToNum($DBversion)) {
+    $dbh->do("INSERT INTO systempreferences (variable,value,explanation,options,type) VALUES ('UNIMARCAuthorityField100', 'afrey50      ba0', NULL, NULL, 'Textarea')");
+    print "Upgrade to $DBversion done (Bug 9145 - Add syspref UNIMARCAuthorityField100)\n";
+    SetVersion ($DBversion);
+}
+
+$DBversion = "3.10.03.000";
+if ( C4::Context->preference("Version") < TransformToNum($DBversion) ) {
+    print "Upgrade to $DBversion done (3.10.3 release)\n";
+    SetVersion($DBversion);
 }
 
 =head1 FUNCTIONS
