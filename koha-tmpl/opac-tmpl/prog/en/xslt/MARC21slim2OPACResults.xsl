@@ -505,6 +505,20 @@
     </xsl:when>
     </xsl:choose>
     </p>
+   <xsl:if test="marc:datafield[@tag=490]">
+    <span class="results_summary description"><span class="label">Series: </span>
+        <xsl:for-each select="marc:datafield[@tag=490]">
+            <xsl:call-template name="chopPunctuation">
+              <xsl:with-param name="chopString">
+                <xsl:call-template name="subfieldSelect">
+                    <xsl:with-param name="codes">abceg</xsl:with-param>
+                </xsl:call-template>
+               </xsl:with-param>
+           </xsl:call-template>
+                <xsl:choose><xsl:when test="position()=last()"><xsl:text>.</xsl:text></xsl:when><xsl:othe
+        </xsl:for-each>
+    </span>
+   </xsl:if>
 
     <xsl:if test="marc:datafield[@tag=250]">
 	<span class="results_summary">
