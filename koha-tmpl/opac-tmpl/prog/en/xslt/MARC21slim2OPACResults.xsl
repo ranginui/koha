@@ -515,7 +515,7 @@
                 </xsl:call-template>
                </xsl:with-param>
            </xsl:call-template>
-                <xsl:choose><xsl:when test="position()=last()"><xsl:text>.</xsl:text></xsl:when><xsl:othe
+                <xsl:choose><xsl:when test="position()=last()"><xsl:text>.</xsl:text></xsl:when><xsl:otherwise><xsl:text>; </xsl:text></xsl:otherwise></xsl:choose>
         </xsl:for-each>
     </span>
    </xsl:if>
@@ -898,7 +898,7 @@
       </xsl:call-template>
     </xsl:if>
 
-    <xsl:if test="marc:datafield[@tag=260]">
+<!--    <xsl:if test="marc:datafield[@tag=260]">
         <span class="results_summary publisher"><span class="label">Publisher: </span>
             <xsl:for-each select="marc:datafield[@tag=260]">
                 <xsl:if test="marc:subfield[@code='a']">
@@ -924,7 +924,7 @@
             </xsl:for-each>
         </span>
     </xsl:if>
-
+-->
     <!-- Other Title  Statement: Alternate Graphic Representation (MARC 880) -->
     <xsl:if test="$display880">
        <xsl:call-template name="m880Select">
