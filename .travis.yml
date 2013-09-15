@@ -1,0 +1,63 @@
+language: perl
+perl:
+  - "5.16"
+  - "5.14"
+  - "5.12"
+  - "5.10"
+before_install:
+  - source install_misc/environment_Makefile.PL
+  - cpanm --notest DBI
+  - sudo apt-get install libyaz-dev
+  - cpanm --notest ZOOM
+  - cpanm --notest XML::Simple
+  - cpanm --notest Date::Calc
+  - cpanm --notest MARC::File::XML
+  - cpanm --notest Algorithm::CheckDigits
+  - cpanm --notest Template
+  - sudo apt-get install at
+  - cpanm --notest Schedule::At
+  - cpanm --notest DateTime::Format::DateParse
+  - cpanm --notest DateTime::Format::MySQL
+  - cpanm --notest Modern::Perl
+  - cpanm --notest Library::CallNumber::LC
+  - cpanm --notest AnyEvent::HTTP
+  - cpanm --notest Archive::Extract
+  - cpanm --notest Biblio::EndnoteStyle
+  - cpanm --notest Business::ISBN
+  - cpanm --notest HTML::Scrubber
+  - cpanm --notest MIME::Lite
+  - cpanm --notest String::Random
+  - sudo apt-get install libgd2-xpm-dev
+  - cpanm --notest GD
+  - cpanm --notest Text::Iconv
+  - cpanm --notest Mail::Sendmail
+  - cpanm --notest Date::Manip
+  - cpanm --notest PDF::Reuse
+  - cpanm --notest PDF::Reuse::Barcode
+  - cpanm --notest YAML::Syck
+  - cpanm --notest Text::CSV
+  - cpanm --notest Lingua::Stem
+  - cpanm --notest MARC::Crosswalk::DublinCore
+  - cpanm --notest DateTime::Set
+  - cpanm --notest Text::Unaccent
+  - cpanm --notest XML::LibXSLT
+  - cpanm --notest Text::CSV::Encoded
+  - cpanm --notest PDF::API2
+  - cpanm --notest Module::Bundled::Files
+  - cpanm --notest Test::MockModule
+  - cpanm --notest DBD::Mock
+  - cpanm --notest CGI::Session
+  - cpanm --notest DBD::mysql
+  - cpanm --notest Authen::CAS::Client
+  - cpanm -n Devel::Cover::Report::Coveralls
+install:
+  - perl Makefile.PL
+  - make
+  - cover -test -report coveralls
+script: perl Makefile.PL && make && cover -test -report coveralls
+notifications:
+  recipients:
+    - chris@bigballofwax.co.nz
+  email:
+    on_success: always
+    on_failure: always
