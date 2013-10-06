@@ -246,7 +246,7 @@ CREATE TABLE `borrowers` ( -- this table includes information about your patrons
   `ethnicity` varchar(50) default NULL, -- unused in Koha
   `ethnotes` varchar(255) default NULL, -- unused in Koha
   `sex` varchar(1) default NULL, -- patron/borrower's gender
-  `password` varchar(30) default NULL, -- patron/borrower's encrypted password
+  `password` varchar(60) default NULL, -- patron/borrower's encrypted password
   `flags` int(11) default NULL, -- will include a number associated with the staff member's permissions
   `userid` varchar(75) default NULL, -- patron/borrower's opac and/or staff client log in
   `opacnote` mediumtext, -- a note on the patron/borrower's account that is visible in the OPAC and staff client
@@ -2282,6 +2282,7 @@ CREATE TABLE `z3950servers` ( -- connection information for the Z39.50 targets u
   `type` enum('zed','opensearch') NOT NULL default 'zed',
   `encoding` text default NULL, -- characters encoding provided by this target
   `description` text NOT NULL, -- unused in Koha
+  `recordtype` varchar(45) NOT NULL default 'biblio', -- server contains bibliographic or authority records
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

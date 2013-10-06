@@ -23,6 +23,8 @@ use Digest::MD5 qw(md5_base64);
 use JSON qw/encode_json decode_json/;
 use URI::Escape;
 use CGI::Session;
+use Crypt::Eksblowfish::Bcrypt qw(bcrypt en_base64);
+use Fcntl qw/O_RDONLY/; # O_RDONLY is used in generate_salt
 
 require Exporter;
 use C4::Context;
@@ -46,8 +48,9 @@ BEGIN {
     $debug       = $ENV{DEBUG};
     @ISA         = qw(Exporter);
     @EXPORT      = qw(&checkauth &get_template_and_user &haspermission &get_user_subpermissions);
-    @EXPORT_OK   = qw(&check_api_auth &get_session &check_cookie_auth &checkpw &get_all_subpermissions &get_user_subpermissions
-                      ParseSearchHistoryCookie
+    @EXPORT_OK   = qw(&check_api_auth &get_session &check_cookie_auth &checkpw &checkpw_internal &checkpw_hash
+                      &get_all_subpermissions &get_user_subpermissions
+                      ParseSearchHistoryCookie hash_password
                    );
     %EXPORT_TAGS = ( EditPermissions => [qw(get_all_subpermissions get_user_subpermissions)] );
     $ldap        = C4::Context->config('useldapserver') || 0;
@@ -133,10 +136,17 @@ VALUES                    (     ?,         ?,          ?,         ?,          ?,
 EOQ
 
 sub get_template_and_user {
+
     my $in       = shift;
-    my $template =
-      C4::Templates::gettemplate( $in->{'template_name'}, $in->{'type'}, $in->{'query'}, $in->{'is_plugin'} );
     my ( $user, $cookie, $sessionID, $flags );
+
+    my $template = C4::Templates::gettemplate(
+        $in->{'template_name'},
+        $in->{'type'},
+        $in->{'query'},
+        $in->{'is_plugin'}
+    );
+
     if ( $in->{'template_name'} !~m/maintenance/ ) {
         ( $user, $cookie, $sessionID, $flags ) = checkauth(
             $in->{'query'},
@@ -280,10 +290,10 @@ sub get_template_and_user {
         $template->param( sessionID        => $sessionID );
         
         my ($total, $pubshelves) = C4::VirtualShelves::GetSomeShelfNames(undef, 'MASTHEAD');
-    $template->param(
-        pubshelves     => $total->{pubtotal},
-        pubshelvesloop => $pubshelves,
-    );
+        $template->param(
+            pubshelves     => $total->{pubtotal},
+            pubshelvesloop => $pubshelves,
+        );
     }
      # Anonymous opac search history
      # If opac search history is enabled and at least one search has already been performed
@@ -458,6 +468,20 @@ sub get_template_and_user {
 
         $template->param(OpacPublic => '1') if ($user || C4::Context->preference("OpacPublic"));
     }
+
+    # Check if we were asked using parameters to force a specific language
+    if ( defined $in->{'query'}->param('language') ) {
+        # Extract the language, let C4::Templates::getlanguage choose
+        # what to do
+        my $language = C4::Templates::getlanguage($in->{'query'},$in->{'type'});
+        my $languagecookie = C4::Templates::getlanguagecookie($in->{'query'},$language);
+        if ( ref $cookie eq 'ARRAY' ) {
+            push @{ $cookie }, $languagecookie;
+        } else {
+            $cookie = [$cookie, $languagecookie];
+        }
+    }
+
     return ( $template, $borrowernumber, $cookie, $flags);
 }
 
@@ -1464,9 +1488,94 @@ sub get_session {
     return $session;
 }
 
-sub checkpw {
+# Using Bcrypt method for hashing. This can be changed to something else in future, if needed.
+sub hash_password {
+    my $password = shift;
 
+    # Generate a salt if one is not passed
+    my $settings = shift;
+    unless( defined $settings ){ # if there are no settings, we need to create a salt and append settings
+    # Set the cost to 8 and append a NULL
+        $settings = '$2a$08$'.en_base64(generate_salt('weak', 16));
+    }
+    # Encrypt it
+    return bcrypt($password, $settings);
+}
+
+=head2 generate_salt
+
+    use C4::Auth;
+    my $salt = C4::Auth::generate_salt($strength, $length);
+
+=over
+
+=item strength
+
+For general password salting a C<$strength> of C<weak> is recommend,
+For generating a server-salt a C<$strength> of C<strong> is recommended
+
+'strong' uses /dev/random which may block until sufficient entropy is acheived.
+'weak' uses /dev/urandom and is non-blocking.
+
+=item length
+
+C<$length> is a positive integer which specifies the desired length of the returned string
+
+=back
+
+=cut
+
+
+# the implementation of generate_salt is loosely based on Crypt::Random::Provider::File
+sub generate_salt {
+    # strength is 'strong' or 'weak'
+    # length is number of bytes to read, positive integer
+    my ($strength, $length) = @_;
+
+    my $source;
+
+    if( $length < 1 ){
+        die "non-positive strength of '$strength' passed to C4::Auth::generate_salt\n";
+    }
+
+    if( $strength eq "strong" ){
+        $source = '/dev/random'; # blocking
+    } else {
+        unless( $strength eq 'weak' ){
+            warn "unsuppored strength of '$strength' passed to C4::Auth::generate_salt, defaulting to 'weak'\n";
+        }
+        $source = '/dev/urandom'; # non-blocking
+    }
+
+    sysopen SOURCE, $source, O_RDONLY
+        or die "failed to open source '$source' in C4::Auth::generate_salt\n";
+
+    # $bytes is the bytes just read
+    # $string is the concatenation of all the bytes read so far
+    my( $bytes, $string ) = ("", "");
+
+    # keep reading until we have $length bytes in $strength
+    while( length($string) < $length ){
+        # return the number of bytes read, 0 (EOF), or -1 (ERROR)
+        my $return = sysread SOURCE, $bytes, $length - length($string);
+
+        # if no bytes were read, keep reading (if using /dev/random it is possible there was insufficient entropy so this may block)
+        next unless $return;
+        if( $return == -1 ){
+            die "error while reading from $source in C4::Auth::generate_salt\n";
+        }
+
+        $string .= $bytes;
+    }
+
+    close SOURCE;
+    return $string;
+}
+
+
+sub checkpw {
     my ( $dbh, $userid, $password, $query ) = @_;
+
     if ($ldap) {
         $debug and print STDERR "## checkpw - checking LDAP\n";
         my ($retval,$retcard,$retuserid) = checkpw_ldap(@_);    # EXTERNAL AUTH
@@ -1476,23 +1585,29 @@ sub checkpw {
     if ($cas && $query && $query->param('ticket')) {
         $debug and print STDERR "## checkpw - checking CAS\n";
     # In case of a CAS authentication, we use the ticket instead of the password
-    my $ticket = $query->param('ticket');
+        my $ticket = $query->param('ticket');
         my ($retval,$retcard,$retuserid) = checkpw_cas($dbh, $ticket, $query);    # EXTERNAL AUTH
         ($retval) and return ($retval,$retcard,$retuserid);
-    return 0;
+        return 0;
     }
 
-    # INTERNAL AUTH
+    return checkpw_internal(@_)
+}
+
+sub checkpw_internal {
+    my ( $dbh, $userid, $password ) = @_;
+
     my $sth =
       $dbh->prepare(
 "select password,cardnumber,borrowernumber,userid,firstname,surname,branchcode,flags from borrowers where userid=?"
       );
     $sth->execute($userid);
     if ( $sth->rows ) {
-        my ( $md5password, $cardnumber, $borrowernumber, $userid, $firstname,
+        my ( $stored_hash, $cardnumber, $borrowernumber, $userid, $firstname,
             $surname, $branchcode, $flags )
           = $sth->fetchrow;
-        if ( md5_base64($password) eq $md5password and $md5password ne "!") {
+
+        if ( checkpw_hash($password, $stored_hash) ) {
 
             C4::Context->set_userenv( "$borrowernumber", $userid, $cardnumber,
                 $firstname, $surname, $branchcode, $flags );
@@ -1505,10 +1620,11 @@ sub checkpw {
       );
     $sth->execute($userid);
     if ( $sth->rows ) {
-        my ( $md5password, $cardnumber, $borrowernumber, $userid, $firstname,
+        my ( $stored_hash, $cardnumber, $borrowernumber, $userid, $firstname,
             $surname, $branchcode, $flags )
           = $sth->fetchrow;
-        if ( md5_base64($password) eq $md5password ) {
+
+        if ( checkpw_hash($password, $stored_hash) ) {
 
             C4::Context->set_userenv( $borrowernumber, $userid, $cardnumber,
                 $firstname, $surname, $branchcode, $flags );
@@ -1533,6 +1649,21 @@ sub checkpw {
         return 2;
     }
     return 0;
+}
+
+sub checkpw_hash {
+    my ( $password, $stored_hash ) = @_;
+
+    return if $stored_hash eq '!';
+
+    # check what encryption algorithm was implemented: Bcrypt - if the hash starts with '$2' it is Bcrypt else md5
+    my $hash;
+    if ( substr($stored_hash,0,2) eq '$2') {
+        $hash = hash_password($password, $stored_hash);
+    } else {
+        $hash = md5_base64($password);
+    }
+    return $hash eq $stored_hash;
 }
 
 =head2 getuserflags
@@ -1734,6 +1865,8 @@ __END__
 CGI(3)
 
 C4::Output(3)
+
+Crypt::Eksblowfish::Bcrypt(3)
 
 Digest::MD5(3)
 
